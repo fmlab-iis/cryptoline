@@ -1,0 +1,31 @@
+#! [r$1c] = %%EA
+#! [r$1c, #$2c] = %%EA
+#! r$1c = %%r$1c
+
+#! ldr $1v, $2v -> mov $1v $2v
+#! mov $1v, #0 -> mov $1v 0@uint32
+#! adds $1v, $2v, $3v -> uadds carry $1v $2v $3v
+#! adcs $1v, $2v, $3v -> uadcs carry $1v $2v $3v carry
+#! adc $1v, $1v, #0 -> uadc $1v $1v 0@uint32 carry
+
+#Breakpoint 1, 0x00037094 in ecp_nistz256_mul_by_2 ()
+	#bl	0x370a0 <__ecp_nistz256_mul_by_2>
+	ldr	r4, [r1]                                    #! EA = L0x49028
+	ldr	r5, [r1, #4]                                #! EA = L0x4902c
+	ldr	r6, [r1, #8]                                #! EA = L0x49030
+	adds	r4, r4, r4
+	ldr	r7, [r1, #12]                               #! EA = L0x49034
+	adcs	r5, r5, r5
+	ldr	r8, [r1, #16]                               #! EA = L0x49038
+	adcs	r6, r6, r6
+	ldr	r9, [r1, #20]                               #! EA = L0x4903c
+	adcs	r7, r7, r7
+	ldr	r10, [r1, #24]                              #! EA = L0x49040
+	adcs	r8, r8, r8
+	ldr	r11, [r1, #28]                              #! EA = L0x49044
+	adcs	r9, r9, r9
+	adcs	r10, r10, r10
+	mov	r3, #0
+	adcs	r11, r11, r11
+	adc	r3, r3, #0
+#	b	0x37170 <__ecp_nistz256_add+112>

@@ -1,0 +1,3090 @@
+pwmul_double:
+# %rdi = 0x7fffffffbc60
+# %rsi = 0x612080
+# %rdx = 0x0
+# %rcx = 0x7fffffff6a10
+# %r8  = 0x1000
+# %r9  = 0xf80
+	mov    %rsp,%r11
+	and    $0x1f,%r11
+	add    $0x0,%r11
+	sub    %r11,%rsp
+	mov    %rdi,%rdi
+	mov    %rsi,%rsi
+	vmovdqu 0x614160,%ymm0
+	vmovdqu 0x6140c0,%ymm1
+	mov    $0x100,%rdx
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbc60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612080
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbc60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbc70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612090
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbc70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbc80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbc80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbc90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbc90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbca0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbca0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbcb0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbcb0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbcc0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbcc0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbcd0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6120f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbcd0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbce0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612100
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbce0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbcf0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612110
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbcf0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612120
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612130
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612140
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612150
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612160
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612170
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612180
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612190
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbd90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbd90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbda0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbda0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbdb0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbdb0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbdc0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbdc0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbdd0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6121f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbdd0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbde0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612200
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbde0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbdf0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612210
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbdf0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612220
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612230
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612240
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612250
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612260
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612270
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612280
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612290
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbe90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbe90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbea0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbea0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbeb0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbeb0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbec0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbec0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbed0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6122f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbed0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbee0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612300
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbee0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbef0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612310
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbef0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612320
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612330
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612340
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612350
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612360
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612370
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612380
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612390
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbf90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbf90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbfa0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbfa0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbfb0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbfb0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbfc0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbfc0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbfd0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6123f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbfd0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbfe0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612400
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbfe0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffbff0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612410
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffbff0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc000
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612420
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc000
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc010
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612430
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc010
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc020
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612440
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc020
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc030
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612450
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc030
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc040
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612460
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc040
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc050
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612470
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc050
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc060
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612480
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc060
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc070
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612490
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc070
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc080
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc080
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc090
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc090
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6124f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612500
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc0f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612510
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc0f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc100
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612520
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc100
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc110
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612530
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc110
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc120
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612540
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc120
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc130
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612550
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc130
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc140
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612560
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc140
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc150
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612570
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc150
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc160
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612580
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc160
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc170
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612590
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc170
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc180
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc180
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc190
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc190
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6125f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612600
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc1f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612610
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc1f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc200
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612620
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc200
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc210
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612630
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc210
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc220
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612640
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc220
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc230
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612650
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc230
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc240
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612660
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc240
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc250
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612670
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc250
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc260
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612680
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc260
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc270
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612690
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc270
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc280
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc280
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc290
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc290
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6126f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612700
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc2f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612710
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc2f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc300
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612720
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc300
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc310
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612730
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc310
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc320
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612740
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc320
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc330
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612750
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc330
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc340
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612760
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc340
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc350
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612770
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc350
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc360
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612780
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc360
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc370
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612790
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc370
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc380
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc380
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc390
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc390
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6127f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612800
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc3f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612810
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc3f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc400
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612820
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc400
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc410
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612830
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc410
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc420
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612840
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc420
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc430
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612850
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc430
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc440
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612860
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc440
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc450
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612870
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc450
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc460
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612880
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc460
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc470
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612890
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc470
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc480
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc480
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc490
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc490
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6128f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612900
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc4f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612910
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc4f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc500
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612920
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc500
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc510
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612930
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc510
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc520
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612940
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc520
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc530
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612950
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc530
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc540
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612960
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc540
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc550
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612970
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc550
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc560
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612980
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc560
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc570
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612990
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc570
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc580
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129a0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc580
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc590
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129b0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc590
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129c0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129d0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129e0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x6129f0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc5f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc5f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc600
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc600
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc610
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc610
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc620
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc620
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc630
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc630
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc640
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc640
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc650
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc650
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc660
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc660
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc670
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612a90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc670
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc680
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612aa0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc680
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc690
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ab0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc690
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ac0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ad0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ae0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612af0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc6f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc6f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc700
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc700
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc710
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc710
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc720
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc720
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc730
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc730
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc740
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc740
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc750
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc750
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc760
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc760
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc770
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612b90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc770
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc780
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ba0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc780
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc790
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612bb0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc790
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612bc0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612bd0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612be0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612bf0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc7f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc7f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc800
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc800
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc810
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc810
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc820
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc820
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc830
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc830
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc840
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc840
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc850
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc850
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc860
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc860
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc870
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612c90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc870
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc880
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ca0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc880
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc890
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612cb0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc890
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612cc0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612cd0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ce0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612cf0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc8f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc8f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc900
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc900
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc910
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc910
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc920
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc920
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc930
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc930
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc940
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc940
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc950
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc950
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc960
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc960
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc970
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612d90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc970
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc980
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612da0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc980
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc990
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612db0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc990
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9a0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612dc0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9a0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9b0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612dd0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9b0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9c0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612de0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9c0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9d0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612df0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9d0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9e0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9e0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffc9f0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffc9f0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612e90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ea0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffca90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612eb0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffca90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcaa0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ec0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcaa0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcab0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ed0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcab0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcac0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ee0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcac0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcad0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ef0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcad0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcae0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f00
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcae0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcaf0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f10
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcaf0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f20
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f30
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f40
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f50
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f60
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f70
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb60
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f80
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb60
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb70
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612f90
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb70
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb80
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612fa0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb80
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcb90
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612fb0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcb90
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcba0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612fc0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcba0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcbb0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612fd0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcbb0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcbc0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612fe0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcbc0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcbd0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x612ff0
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcbd0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcbe0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613000
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcbe0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcbf0
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613010
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcbf0
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc00
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613020
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc00
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc10
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613030
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc10
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc20
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613040
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc20
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc30
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613050
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc30
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc40
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613060
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc40
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	vcvtdq2pd (%rdi),%ymm2                          #! EA = L0x7fffffffcc50
+	vcvtdq2pd (%rsi),%ymm3                          #! EA = L0x613070
+	vmulpd %ymm2,%ymm3,%ymm2
+	vmulpd %ymm2,%ymm1,%ymm3
+	vroundpd $0x9,%ymm3,%ymm3
+	vfnmadd231pd %ymm3,%ymm0,%ymm2
+	vcvtpd2dq %ymm2,%xmm2
+	vmovupd %xmm2,(%rdi)                            #! EA = L0x7fffffffcc50
+	add    $0x10,%rsi
+	add    $0x10,%rdi
+	sub    $0x1,%rdx
+	#ja     0x40ad8d <._loopi>
+	add    %r11,%rsp
+	#retq   

@@ -1,0 +1,583 @@
+#! 0x0(%r13) = %%EA
+#! 0x10(%r12) = %%EA
+#! 0x10(%r13) = %%EA
+#! 0x10(%r15) = %%EA
+#! (%rax,%r11,1) = %%EA
+#! (%r12) = %%EA
+#! (%r15) = %%EA
+#! (%rsi) = %%EA
+#! (%rdi) = %%EA
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rdi = %%rdi
+#! %rsi = %%rsi
+#! %eax = %%eax
+#! %ecx = %%ecx
+#! %edx = %%edx
+#! %r8 = %%r8
+#! %r9 = %%r9
+#! %r11 = %%r11
+#! add $1v, $2v -> bvAddC carry $2v (bvVar $1v) (bvVar $2v)
+#! add $1c, $2v -> bvAddC carry $2v (bvConst $1c) (bvVar $2v)
+#! add \$0x8, $1v -> bvAdc $1v (bvConst 8) (bvVar $1v) carry
+#! adc $1v, $2v -> bvAdcC carry $2v (bvVar $1v) (bvVar $2v) carry
+#! adc $1c, $2v -> bvAdcC carry $2v (bvConst $1c) (bvVar $2v) carry
+#! adc \$0x0, $1v -> bvAdc $1v (bvConst 0) (bvVar $1v) carry
+#! mul $1v -> bvMulf rdx rax (bvVar $1v) (bvVar rax)
+#! mul $1c -> bvMulf rdx rax (bvConst $1c) (bvVar rax)
+#! imul $1v, $2v -> bvMulf dontcare $2v (bvVar $1v) (bvVar $2v)
+#! mov $1v, $2v -> bvAssign $2v (bvVar $1v)
+#! mov $1c, $2v -> bvAssign $2v (bvConst $1c)
+#! lea $1v, $2v -> bvAssign $2v (bvConst $1v)
+#! sub \$0x1, $1v -> bvSub $1v (bvVar $1v) (bvConst 1)
+#! sub \$0x8, $1v -> bvSub $1v (bvVar $1v) (bvConst 8)
+#! xor %%ecx,%%ecx -> bvAssign rcx (bvConst 0)
+#! xor %%eax,%%eax -> bvAssign rax (bvConst 0)
+#! xor $1v, $1v -> bvAssign $1v (bvConst 0)
+#
+#mbedtls_mpi_mul_mpi:
+# %rdi = 0x7fffffffdc60
+# %rsi = 0x7fffffffdc80
+# %rdx = 0x7fffffffdca0
+# %rcx = 0x3c
+# %r8  = 0x619040
+# %r9  = 0x3
+#	nop
+#	nop
+#	test   %rbx,%rbx
+#	lea    -0x8(,%rbx,8),%r11
+#	#je     0x407d06 <mbedtls_mpi_mul_mpi+358>
+#	nopl   0x0(%rax,%rax,1)                         #! EA = L0x0
+#	mov    0x10(%r13),%rax                          #! EA = L0x7fffffffdcb0
+#	mov    %r11,%rdx
+#	add    0x10(%r12),%rdx                          #! EA = L0x7fffffffdc70
+#	mov    0x10(%r15),%rsi                          #! EA = L0x7fffffffdc90
+#	mov    %rbp,%rdi
+	mov    (%rax,%r11,1),%rcx                       #! EA = L0x619058
+#	#callq  0x407640 <mpi_mul_hlp>
+#	push   %rbx
+#	mov    %rdi,%r9
+	mov    %rcx,%rbx
+#	mov    %rdx,%rdi
+#	nop
+#	nop
+#	nop
+#	cmp    $0xf,%r9
+#	#jbe    0x4079f6 <mpi_mul_hlp+950>
+	xor    %eax,%eax
+#	#jmpq   0x40786f <mpi_mul_hlp+559>
+#	cmp    $0x7,%r9
+#	#jbe    0x407982 <mpi_mul_hlp+834>
+#	test   %r9,%r9
+#	#je     0x4079c2 <mpi_mul_hlp+898>
+#	nopw   0x0(%rax,%rax,1)                         #! EA = L0x0
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619010
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619088
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619018
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619090
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619020
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619098
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619028
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x6190a0
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+#	mov    0x210768(%rip),%esi        # 0x618130 <lala_index>#! EA = L0x618130
+#	mov    0x210766(%rip),%ecx        # 0x618134 <lala_counter>#! EA = L0x618134
+#	xchg   %ax,%ax
+	add    %rax,(%rdi)                              #! EA = L0x6190a8
+#	add    $0x8,%rdi
+#	nop
+#	nop
+#	mov    %esi,%edx
+#	sar    %cl,%edx
+#	add    $0x1,%ecx
+#	and    $0x1,%edx
+#	movslq %edx,%rax
+#	nop
+#	test   %edx,%edx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	#jne    0x4079d0 <mpi_mul_hlp+912>
+#	mov    %ecx,0x210743(%rip)        # 0x618134 <lala_counter>#! EA = L0x618134
+#	nop
+#	nop
+#	nop
+#	pop    %rbx
+#	sub    $0x8,%r11
+#	sub    $0x1,%rbx
+#	#jne    0x407ce0 <mbedtls_mpi_mul_mpi+320>
+#	mov    0x10(%r13),%rax                          #! EA = L0x7fffffffdcb0
+#	mov    %r11,%rdx
+#	add    0x10(%r12),%rdx                          #! EA = L0x7fffffffdc70
+#	mov    0x10(%r15),%rsi                          #! EA = L0x7fffffffdc90
+#	mov    %rbp,%rdi
+	mov    (%rax,%r11,1),%rcx                       #! EA = L0x619050
+#	#callq  0x407640 <mpi_mul_hlp>
+#	push   %rbx
+#	mov    %rdi,%r9
+	mov    %rcx,%rbx
+#	mov    %rdx,%rdi
+#	nop
+#	nop
+#	nop
+#	cmp    $0xf,%r9
+#	#jbe    0x4079f6 <mpi_mul_hlp+950>
+	xor    %eax,%eax
+#	#jmpq   0x40786f <mpi_mul_hlp+559>
+#	cmp    $0x7,%r9
+#	#jbe    0x407982 <mpi_mul_hlp+834>
+#	test   %r9,%r9
+#	#je     0x4079c2 <mpi_mul_hlp+898>
+#	nopw   0x0(%rax,%rax,1)                         #! EA = L0x0
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619010
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619080
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619018
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619088
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619020
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619090
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619028
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619098
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+#	mov    0x210768(%rip),%esi        # 0x618130 <lala_index>#! EA = L0x618130
+#	mov    0x210766(%rip),%ecx        # 0x618134 <lala_counter>#! EA = L0x618134
+#	xchg   %ax,%ax
+	add    %rax,(%rdi)                              #! EA = L0x6190a0
+#	add    $0x8,%rdi
+#	nop
+#	nop
+#	mov    %esi,%edx
+#	sar    %cl,%edx
+#	add    $0x1,%ecx
+#	and    $0x1,%edx
+#	movslq %edx,%rax
+#	nop
+#	test   %edx,%edx
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrEq (bvrVar carry) (bvrConst 64 0)
+#	#jne    0x4079d0 <mpi_mul_hlp+912>
+#	mov    %ecx,0x210743(%rip)        # 0x618134 <lala_counter>#! EA = L0x618134
+#	nop
+#	nop
+#	nop
+#	pop    %rbx
+#	sub    $0x8,%r11
+#	sub    $0x1,%rbx
+#	#jne    0x407ce0 <mbedtls_mpi_mul_mpi+320>
+#	mov    0x10(%r13),%rax                          #! EA = L0x7fffffffdcb0
+#	mov    %r11,%rdx
+#	add    0x10(%r12),%rdx                          #! EA = L0x7fffffffdc70
+#	mov    0x10(%r15),%rsi                          #! EA = L0x7fffffffdc90
+#	mov    %rbp,%rdi
+	mov    (%rax,%r11,1),%rcx                       #! EA = L0x619048
+#	#callq  0x407640 <mpi_mul_hlp>
+#	push   %rbx
+#	mov    %rdi,%r9
+	mov    %rcx,%rbx
+#	mov    %rdx,%rdi
+#	nop
+#	nop
+#	nop
+#	cmp    $0xf,%r9
+#	#jbe    0x4079f6 <mpi_mul_hlp+950>
+	xor    %eax,%eax
+#	#jmpq   0x40786f <mpi_mul_hlp+559>
+#	cmp    $0x7,%r9
+#	#jbe    0x407982 <mpi_mul_hlp+834>
+#	test   %r9,%r9
+#	#je     0x4079c2 <mpi_mul_hlp+898>
+#	nopw   0x0(%rax,%rax,1)                         #! EA = L0x0
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619010
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619078
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619018
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619080
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619020
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619088
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619028
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619090
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+#	mov    0x210768(%rip),%esi        # 0x618130 <lala_index>#! EA = L0x618130
+#	mov    0x210766(%rip),%ecx        # 0x618134 <lala_counter>#! EA = L0x618134
+#	xchg   %ax,%ax
+	add    %rax,(%rdi)                              #! EA = L0x619098
+#	add    $0x8,%rdi
+#	nop
+#	nop
+#	mov    %esi,%edx
+#	sar    %cl,%edx
+#	add    $0x1,%ecx
+#	and    $0x1,%edx
+#	movslq %edx,%rax
+#	nop
+#	test   %edx,%edx
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrEq (bvrVar carry) (bvrConst 64 0)
+#	#jne    0x4079d0 <mpi_mul_hlp+912>
+#	mov    %ecx,0x210743(%rip)        # 0x618134 <lala_counter>#! EA = L0x618134
+#	nop
+#	nop
+#	nop
+#	pop    %rbx
+#	sub    $0x8,%r11
+#	sub    $0x1,%rbx
+#	#jne    0x407ce0 <mbedtls_mpi_mul_mpi+320>
+#	mov    0x10(%r13),%rax                          #! EA = L0x7fffffffdcb0
+#	mov    %r11,%rdx
+#	add    0x10(%r12),%rdx                          #! EA = L0x7fffffffdc70
+#	mov    0x10(%r15),%rsi                          #! EA = L0x7fffffffdc90
+#	mov    %rbp,%rdi
+	mov    (%rax,%r11,1),%rcx                       #! EA = L0x619040
+#	#callq  0x407640 <mpi_mul_hlp>
+#	push   %rbx
+#	mov    %rdi,%r9
+	mov    %rcx,%rbx
+#	mov    %rdx,%rdi
+#	nop
+#	nop
+#	nop
+#	cmp    $0xf,%r9
+#	#jbe    0x4079f6 <mpi_mul_hlp+950>
+	xor    %eax,%eax
+#	#jmpq   0x40786f <mpi_mul_hlp+559>
+#	cmp    $0x7,%r9
+#	#jbe    0x407982 <mpi_mul_hlp+834>
+#	test   %r9,%r9
+#	#je     0x4079c2 <mpi_mul_hlp+898>
+#	nopw   0x0(%rax,%rax,1)                         #! EA = L0x0
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619010
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619070
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619018
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619078
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619020
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619080
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+	mov    %rax,%rcx
+#	nop
+#	nop
+#	nop
+#	nop
+	xor    %r8,%r8
+	mov    (%rsi),%rax                              #! EA = L0x619028
+	mul    %rbx
+#	add    $0x8,%rsi
+	add    %rcx,%rax
+	mov    %r8,%rcx
+	adc    $0x0,%rdx
+#	nop
+	add    %rax,(%rdi)                              #! EA = L0x619088
+	adc    %rdx,%rcx
+bvAssert bveTrue | bvrEq (bvrVar carry) (bvrConst 64 0)
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrTrue
+#	add    $0x8,%rdi
+#	sub    $0x1,%r9
+	mov    %rcx,%rax
+#	#jne    0x407990 <mpi_mul_hlp+848>
+#	mov    0x210768(%rip),%esi        # 0x618130 <lala_index>#! EA = L0x618130
+#	mov    0x210766(%rip),%ecx        # 0x618134 <lala_counter>#! EA = L0x618134
+#	xchg   %ax,%ax
+	add    %rax,(%rdi)                              #! EA = L0x619090
+#	add    $0x8,%rdi
+#	nop
+#	nop
+#	mov    %esi,%edx
+#	sar    %cl,%edx
+#	add    $0x1,%ecx
+#	and    $0x1,%edx
+#	movslq %edx,%rax
+#	nop
+#	test   %edx,%edx
+bvAssume bveEq (bveVar carry) (bveConst 0) | bvrEq (bvrVar carry) (bvrConst 64 0)
+#	#jne    0x4079d0 <mpi_mul_hlp+912>
+#	mov    %ecx,0x210743(%rip)        # 0x618134 <lala_counter>#! EA = L0x618134
+#	nop
+#	nop
+#	nop
+#	pop    %rbx
+#	sub    $0x8,%r11
+#	sub    $0x1,%rbx
+#	#jne    0x407ce0 <mbedtls_mpi_mul_mpi+320>
+#	mov    (%r15),%eax                              #! EA = L0x7fffffffdc80
+#	imul   0x0(%r13),%eax                           #! EA = L0x7fffffffdca0
+#	mov    %eax,(%r12)                              #! EA = L0x7fffffffdc60
+#	nop
+#	nop

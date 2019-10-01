@@ -1,0 +1,42 @@
+#! [r$1c] = %%EA
+#! [r$1c, #$2c] = %%EA
+#! r$1c = %%r$1c
+#! lr = %%lr
+
+#! ldr $1v, $2v -> mov $1v $2v
+#! mov $1v, #0 -> mov $1v 0@uint32
+#! adds $1v, $2v, $3v -> uadds carry $1v $2v $3v
+#! adcs $1v, $2v, $3v -> uadcs carry $1v $2v $3v carry
+#! adc $1v, $2v, $3v -> uadc $1v $2v $3v carry
+#! adc $1v, $1v, #0 -> uadc $1v $1v 0@uint32 carry
+
+#Breakpoint 1, 0x000370f4 in ecp_nistz256_add ()
+#	#bl	0x37100 <__ecp_nistz256_add>
+#	push	{lr}		; (str lr, [sp, #-4]!)               #! EA = L0x7effec84
+	ldr	r4, [r1]                                    #! EA = L0x49028
+	ldr	r5, [r1, #4]                                #! EA = L0x4902c
+	ldr	r6, [r1, #8]                                #! EA = L0x49030
+	ldr	r7, [r1, #12]                               #! EA = L0x49034
+	ldr	r8, [r1, #16]                               #! EA = L0x49038
+	ldr	r3, [r2]                                    #! EA = L0x49048
+	ldr	r9, [r1, #20]                               #! EA = L0x4903c
+	ldr	r12, [r2, #4]                               #! EA = L0x4904c
+	ldr	r10, [r1, #24]                              #! EA = L0x49040
+	ldr	lr, [r2, #8]                                #! EA = L0x49050
+	ldr	r11, [r1, #28]                              #! EA = L0x49044
+	ldr	r1, [r2, #12]                               #! EA = L0x49054
+	adds	r4, r4, r3
+	ldr	r3, [r2, #16]                               #! EA = L0x49058
+	adcs	r5, r5, r12
+	ldr	r12, [r2, #20]                              #! EA = L0x4905c
+	adcs	r6, r6, lr
+	ldr	lr, [r2, #24]                               #! EA = L0x49060
+	adcs	r7, r7, r1
+	ldr	r1, [r2, #28]                               #! EA = L0x49064
+	adcs	r8, r8, r3
+	adcs	r9, r9, r12
+	adcs	r10, r10, lr
+	mov	r3, #0
+	adcs	r11, r11, r1
+	adc	r3, r3, #0
+#	pop	{lr}		; (ldr lr, [sp], #4)                  #! EA = L0x7effec84

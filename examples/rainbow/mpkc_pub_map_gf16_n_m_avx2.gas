@@ -1,0 +1,4882 @@
+mpkc_pub_map_gf16_n_m_avx2:
+# %rdi = 0x7ffffffe4780
+# %rsi = 0x7ffffffeaf60
+# %rdx = 0x7ffffffe4e60
+# %rcx = 0x20
+# %r8  = 0x20
+# %r9  = 0x7ffffffe4e70
+	lea    0x8(%rsp),%r10                           #! EA = L0x7ffffffe4680
+	and    $0xffffffffffffffe0,%rsp
+	pushq  -0x8(%r10)                               #! EA = L0x7ffffffe4678
+	push   %rbp
+	mov    %rsp,%rbp
+	push   %r15
+	push   %r14
+	push   %r13
+	push   %r12
+	lea    -0x3b0(%rbp),%rax                        #! EA = L0x7ffffffe42a0
+	push   %r10
+	push   %rbx
+	mov    %rdx,%r15
+	mov    %r8d,%ebx
+	sub    $0x420,%rsp
+	mov    %rsi,-0x418(%rbp)                        #! EA = L0x7ffffffe4238
+	mov    0x21c2f3(%rip),%esi        # 0x61eb40 <__asan_option_detect_stack_use_after_return>#! EA = L0x61eb40
+	mov    %rdi,-0x410(%rbp)                        #! EA = L0x7ffffffe4240
+	mov    %ecx,-0x400(%rbp)                        #! EA = L0x7ffffffe4250
+	mov    %rax,-0x420(%rbp)                        #! EA = L0x7ffffffe4230
+	test   %esi,%esi
+	#jne    0x403af6 <mpkc_pub_map_gf16_n_m_avx2+4838>
+	lea    0x380(%rax),%rsi                         #! EA = L0x7ffffffe4620
+	mov    $0x41bd80,%ecx
+	add    $0x1,%ebx
+	and    $0x7,%ecx
+	shr    %ebx
+	mov    %rsi,-0x3f8(%rbp)                        #! EA = L0x7ffffffe4258
+	movq   $0x41b58ab3,(%rax)                       #! EA = L0x7ffffffe42a0
+	movq   $0x419638,0x8(%rax)                      #! EA = L0x7ffffffe42a8
+	movq   $0x402810,0x10(%rax)                     #! EA = L0x7ffffffe42b0
+	shr    $0x3,%rax
+	mov    %rax,-0x428(%rbp)                        #! EA = L0x7ffffffe4228
+	movl   $0xf1f1f1f1,0x7fff8000(%rax)             #! EA = L0x10007fff4854
+	movl   $0xf2f2f2f2,0x7fff8014(%rax)             #! EA = L0x10007fff4868
+	movl   $0xf2f2f2f2,0x7fff8028(%rax)             #! EA = L0x10007fff487c
+	movl   $0xf2f2f2f2,0x7fff8030(%rax)             #! EA = L0x10007fff4884
+	movl   $0xf2f2f2f2,0x7fff8044(%rax)             #! EA = L0x10007fff4898
+	movl   $0xf3f3f3f3,0x7fff8068(%rax)             #! EA = L0x10007fff48bc
+	movl   $0xf3f3f3f3,0x7fff806c(%rax)             #! EA = L0x10007fff48c0
+	mov    %fs:0x28,%rax
+	mov    %rax,-0x38(%rbp)                         #! EA = L0x7ffffffe4618
+	xor    %eax,%eax
+	mov    $0x41bd80,%eax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x8007b7b0
+	mov    $0x41bd9f,%eax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b7b3
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b0f <mpkc_pub_map_gf16_n_m_avx2+4863>
+	mov    $0x41bd9f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b0f <mpkc_pub_map_gf16_n_m_avx2+4863>
+	lea    0x1f(%rbx),%eax                          #! EA = L0x2f
+	vmovdqu 0x1942e(%rip),%xmm4        # 0x41bd80 <__mask_low>#! EA = L0x41bd80
+	shr    $0x5,%eax
+	vinserti128 $0x1,0x19431(%rip),%ymm4,%ymm3        # 0x41bd90 <__mask_low+16>#! EA = L0x41bd90
+	test   %eax,%eax
+	mov    %eax,%r12d
+	#je     0x402a4f <mpkc_pub_map_gf16_n_m_avx2+575>
+	mov    -0x420(%rbp),%rax                        #! EA = L0x7ffffffe4230
+	lea    -0x1(%r12),%esi                          #! EA = L0x0
+	vpxor  %xmm0,%xmm0,%xmm0
+	add    $0x1,%rsi
+	lea    0x20(%rax),%rdi                          #! EA = L0x7ffffffe42c0
+	shl    $0x5,%rsi
+	mov    %rsi,%r8
+	lea    (%rdi,%rsi,1),%rsi                       #! EA = L0x7ffffffe42e0
+	mov    %rdi,%rax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x10007fff4858
+	lea    0x1f(%rdi),%rax                          #! EA = L0x7ffffffe42df
+	mov    %rax,%rcx
+	and    $0x7,%eax
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%ecx                    #! EA = L0x10007fff485b
+	cmp    %al,%cl
+	setle  %r9b
+	test   %cl,%cl
+	setne  %al
+	test   %al,%r9b
+	#jne    0x403b1e <mpkc_pub_map_gf16_n_m_avx2+4878>
+	test   %dl,%dl
+	setne  %cl
+	test   %dl,%dl
+	setle  %al
+	test   %al,%cl
+	#jne    0x403b1e <mpkc_pub_map_gf16_n_m_avx2+4878>
+	vmovdqa %ymm0,(%rdi)                            #! EA = L0x7ffffffe42c0
+	add    $0x20,%rdi
+	cmp    %rsi,%rdi
+	#jne    0x40298d <mpkc_pub_map_gf16_n_m_avx2+381>
+	mov    -0x3f8(%rbp),%rax                        #! EA = L0x7ffffffe4258
+	vpxor  %xmm0,%xmm0,%xmm0
+	lea    -0x2c0(%rax),%rdi                        #! EA = L0x7ffffffe4360
+	lea    (%rdi,%r8,1),%rsi                        #! EA = L0x7ffffffe4380
+	mov    %rdi,%rax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rax                          #! EA = L0x7ffffffe437f
+	mov    %rax,%rcx
+	and    $0x7,%eax
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%ecx                    #! EA = L0x10007fff486f
+	cmp    %al,%cl
+	setle  %r8b
+	test   %cl,%cl
+	setne  %al
+	test   %al,%r8b
+	#jne    0x403b2b <mpkc_pub_map_gf16_n_m_avx2+4891>
+	test   %dl,%dl
+	setne  %cl
+	test   %dl,%dl
+	setle  %al
+	test   %al,%cl
+	#jne    0x403b2b <mpkc_pub_map_gf16_n_m_avx2+4891>
+	vmovdqa %ymm0,(%rdi)                            #! EA = L0x7ffffffe4360
+	add    $0x20,%rdi
+	cmp    %rsi,%rdi
+	#jne    0x4029f9 <mpkc_pub_map_gf16_n_m_avx2+489>
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	add    $0x1f,%eax
+	shr    $0x5,%eax
+	test   %eax,%eax
+	mov    %eax,-0x408(%rbp)                        #! EA = L0x7ffffffe4248
+	#je     0x402beb <mpkc_pub_map_gf16_n_m_avx2+987>
+	mov    -0x3f8(%rbp),%rax                        #! EA = L0x7ffffffe4258
+	mov    %r15,%rdx
+	vmovdqa 0x16c05(%rip),%xmm2        # 0x419680   #! EA = L0x419680
+	lea    -0x140(%rax),%rdi                        #! EA = L0x7ffffffe44e0
+	mov    -0x408(%rbp),%eax                        #! EA = L0x7ffffffe4248
+	lea    -0x1(%rax),%r9d                          #! EA = L0x0
+	mov    %rdi,%rax
+	add    $0x1,%r9
+	shl    $0x5,%r9
+	add    %rdi,%r9
+	mov    %rax,%rcx
+	vmovdqu (%rdx),%xmm1                            #! EA = L0x7ffffffe4e60
+	shr    $0x3,%rcx
+	add    $0x10,%rdx
+	cmpw   $0x0,0x7fff8000(%rcx)                    #! EA = L0x10007fff489c
+	vpsrlw $0x4,%xmm1,%xmm0
+	vpand  %xmm1,%xmm2,%xmm1
+	vpand  %xmm0,%xmm2,%xmm0
+	vpunpcklbw %xmm0,%xmm1,%xmm5
+	#jne    0x403b38 <mpkc_pub_map_gf16_n_m_avx2+4904>
+	lea    0x10(%rax),%rcx                          #! EA = L0x7ffffffe44f0
+	vpunpckhbw %xmm0,%xmm1,%xmm0
+	vmovaps %xmm5,(%rax)                            #! EA = L0x7ffffffe44e0
+	mov    %rcx,%rsi
+	shr    $0x3,%rsi
+	cmpw   $0x0,0x7fff8000(%rsi)                    #! EA = L0x10007fff489e
+	#jne    0x403b43 <mpkc_pub_map_gf16_n_m_avx2+4915>
+	vmovaps %xmm0,0x10(%rax)                        #! EA = L0x7ffffffe44f0
+	add    $0x20,%rax
+	cmp    %r9,%rax
+	#jne    0x402a9a <mpkc_pub_map_gf16_n_m_avx2+650>
+	mov    $0x41bbc0,%esi
+	mov    $0x41bbdf,%r8d
+	mov    %rsi,%rax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x8007b778
+	mov    %r8,%rax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%ecx                    #! EA = L0x8007b77b
+	mov    %rsi,%rax
+	and    $0x7,%eax
+	cmp    %al,%dl
+	setle  %sil
+	test   %dl,%dl
+	setne  %al
+	test   %al,%sil
+	#jne    0x403b4e <mpkc_pub_map_gf16_n_m_avx2+4926>
+	mov    %r8,%rax
+	and    $0x7,%eax
+	cmp    %al,%cl
+	setle  %dl
+	test   %cl,%cl
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b4e <mpkc_pub_map_gf16_n_m_avx2+4926>
+	vmovdqu 0x19068(%rip),%xmm1        # 0x41bbc0 <__gf16_log>#! EA = L0x41bbc0
+	vinserti128 $0x1,0x1906e(%rip),%ymm1,%ymm1        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	mov    %rdi,%rax
+	shr    $0x3,%rax
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x10007fff489c
+	lea    0x1f(%rdi),%rax                          #! EA = L0x7ffffffe44ff
+	mov    %rax,%rcx
+	and    $0x7,%eax
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%ecx                    #! EA = L0x10007fff489f
+	cmp    %al,%cl
+	setle  %r8b
+	test   %cl,%cl
+	setne  %sil
+	test   %sil,%r8b
+	#jne    0x403b60 <mpkc_pub_map_gf16_n_m_avx2+4944>
+	test   %dl,%dl
+	setne  %r8b
+	test   %dl,%dl
+	setle  %sil
+	test   %sil,%r8b
+	#jne    0x403b60 <mpkc_pub_map_gf16_n_m_avx2+4944>
+	cmp    %al,%cl
+	vpshufb (%rdi),%ymm1,%ymm0                      #! EA = L0x7ffffffe44e0
+	setle  %sil
+	test   %cl,%cl
+	setne  %al
+	test   %al,%sil
+	#jne    0x403b6d <mpkc_pub_map_gf16_n_m_avx2+4957>
+	test   %dl,%dl
+	setne  %cl
+	test   %dl,%dl
+	setle  %al
+	test   %al,%cl
+	#jne    0x403b6d <mpkc_pub_map_gf16_n_m_avx2+4957>
+	vmovdqa %ymm0,(%rdi)                            #! EA = L0x7ffffffe44e0
+	add    $0x20,%rdi
+	cmp    %r9,%rdi
+	#jne    0x402b62 <mpkc_pub_map_gf16_n_m_avx2+850>
+	mov    -0x400(%rbp),%ecx                        #! EA = L0x7ffffffe4250
+	test   %ecx,%ecx
+	#je     0x402ec2 <mpkc_pub_map_gf16_n_m_avx2+1714>
+	mov    %ebx,%eax
+	mov    -0x3f8(%rbp),%rsi                        #! EA = L0x7ffffffe4258
+	lea    -0x1(%r12),%r9d                          #! EA = L0x0
+	mov    %rax,-0x3c0(%rbp)                        #! EA = L0x7ffffffe4290
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	mov    $0x41bbc0,%r13d
+	add    $0x1,%r9
+	mov    -0x418(%rbp),%r11                        #! EA = L0x7ffffffe4238
+	mov    $0x41bc00,%r14d
+	lea    -0x140(%rsi),%r10                        #! EA = L0x7ffffffe44e0
+	shl    $0x5,%r9
+	mov    %ebx,-0x430(%rbp)                        #! EA = L0x7ffffffe4220
+	sub    $0x1,%eax
+	vmovdqu 0x18f79(%rip),%xmm9        # 0x41bbc0 <__gf16_log>#! EA = L0x41bbc0
+	lea    0x1(%r10,%rax,1),%rax                    #! EA = L0x7ffffffe4500
+	mov    %r15,-0x438(%rbp)                        #! EA = L0x7ffffffe4218
+	shr    $0x3,%r13
+	vmovdqu 0x18fa1(%rip),%xmm8        # 0x41bc00 <__gf16_exp>#! EA = L0x41bc00
+	shr    $0x3,%r14
+	mov    %rax,-0x3b8(%rbp)                        #! EA = L0x7ffffffe4298
+	mov    %rsi,%rax
+	lea    -0x360(%rsi),%rsi                        #! EA = L0x7ffffffe42c0
+	mov    %rax,%rbx
+	mov    %rsi,-0x3f0(%rbp)                        #! EA = L0x7ffffffe4260
+	add    %rsi,%r9
+	mov    $0x41bbdf,%esi
+	shr    $0x3,%rsi
+	mov    %rsi,-0x3d0(%rbp)                        #! EA = L0x7ffffffe4280
+	mov    $0x41bc1f,%esi
+	shr    $0x3,%rsi
+	mov    %rsi,%r15
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e0
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeaf60
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e1
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeaf70
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e2
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeaf80
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e3
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeaf90
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e4
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeafa0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e5
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeafb0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e6
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeafc0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489c
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e7
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeafd0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e8
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeafe0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44e9
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeaff0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ea
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb000
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44eb
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb010
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ec
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb020
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ed
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb030
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ee
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb040
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489d
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ef
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb050
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f0
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb060
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f1
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb070
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f2
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb080
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f3
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb090
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f4
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0a0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f5
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0b0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f6
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0c0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489e
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f7
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0d0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f8
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0e0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44f9
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb0f0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44fa
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb100
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44fb
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb110
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44fc
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb120
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44fd
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb130
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44fe
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb140
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    %r10,%rax
+	mov    %r10,%rdx
+	shr    $0x3,%rax
+	and    $0x7,%edx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff489f
+	cmp    %dl,%al
+	#jg     0x402cbd <mpkc_pub_map_gf16_n_m_avx2+1197>
+	test   %al,%al
+	#jne    0x403b7a <mpkc_pub_map_gf16_n_m_avx2+4970>
+	movzbl (%r10),%eax                              #! EA = L0x7ffffffe44ff
+	test   %r12d,%r12d
+	mov    %al,-0x140(%rbx)                         #! EA = L0x7ffffffe44e0
+	vpbroadcastb -0x140(%rbx),%ymm6                 #! EA = L0x7ffffffe44e0
+	#je     0x402e9d <mpkc_pub_map_gf16_n_m_avx2+1677>
+	movzbl 0x7fff8000(%r13),%edx                    #! EA = L0x8007b778
+	mov    $0x41bbc0,%ecx
+	mov    -0x3d0(%rbp),%rax                        #! EA = L0x7ffffffe4280
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x8007b77b
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	mov    $0x41bbdf,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b85 <mpkc_pub_map_gf16_n_m_avx2+4981>
+	movzbl 0x7fff8000(%r14),%edx                    #! EA = L0x8007b780
+	mov    $0x41bc00,%ecx
+	vmovdqa %ymm3,%ymm5
+	and    $0x7,%ecx
+	vinserti128 $0x1,0x18e8f(%rip),%ymm9,%ymm7        # 0x41bbd0 <__gf16_log+16>#! EA = L0x41bbd0
+	movzbl 0x7fff8000(%r15),%eax                    #! EA = L0x8007b783
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	mov    $0x41bc1f,%edx
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403b97 <mpkc_pub_map_gf16_n_m_avx2+4999>
+	vinserti128 $0x1,0x18e91(%rip),%ymm8,%ymm2        # 0x41bc10 <__gf16_exp+16>#! EA = L0x41bc10
+	lea    -0x2c0(%rbx),%rdi                        #! EA = L0x7ffffffe4360
+	mov    %r11,%rcx
+	mov    -0x3f0(%rbp),%rax                        #! EA = L0x7ffffffe4260
+	vmovdqu (%rcx),%ymm0                            #! EA = L0x7ffffffeb150
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm1
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rdx                          #! EA = L0x7ffffffe42df
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	vpshufb %ymm1,%ymm7,%ymm1
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	vpaddb %ymm6,%ymm1,%ymm1
+	vpcmpgtb %ymm5,%ymm1,%ymm10
+	cmp    %dl,%r8b
+	setle  %dl
+	vpand  %ymm10,%ymm3,%ymm10
+	test   %r8b,%r8b
+	setne  %r8b
+	test   %r8b,%dl
+	vpsubb %ymm10,%ymm1,%ymm1
+	vpshufb %ymm1,%ymm2,%ymm1
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403ba9 <mpkc_pub_map_gf16_n_m_avx2+5017>
+	vpxor  (%rax),%ymm1,%ymm1                       #! EA = L0x7ffffffe42c0
+	mov    %rdi,%rdx
+	vpsrlw $0x4,%ymm0,%ymm0
+	shr    $0x3,%rdx
+	vpand  %ymm0,%ymm3,%ymm0
+	vmovdqa %ymm1,(%rax)                            #! EA = L0x7ffffffe42c0
+	movzbl 0x7fff8000(%rdx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdi),%rdx                          #! EA = L0x7ffffffe437f
+	vpshufb %ymm0,%ymm7,%ymm0
+	mov    %rdx,%r8
+	and    $0x7,%edx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	vpaddb %ymm6,%ymm0,%ymm0
+	vpcmpgtb %ymm5,%ymm0,%ymm1
+	vpand  %ymm1,%ymm3,%ymm1
+	cmp    %dl,%r8b
+	setle  %dl
+	test   %r8b,%r8b
+	setne  %r8b
+	vpsubb %ymm1,%ymm0,%ymm0
+	vpshufb %ymm0,%ymm2,%ymm0
+	test   %r8b,%dl
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %dl
+	test   %dl,%r8b
+	#jne    0x403bb9 <mpkc_pub_map_gf16_n_m_avx2+5033>
+	vpxor  (%rdi),%ymm0,%ymm0                       #! EA = L0x7ffffffe4360
+	add    $0x20,%rax
+	add    $0x20,%rcx
+	add    $0x20,%rdi
+	vmovdqa %ymm0,-0x20(%rdi)                       #! EA = L0x7ffffffe4360
+	cmp    %rax,%r9
+	#jne    0x402d90 <mpkc_pub_map_gf16_n_m_avx2+1408>
+	add    -0x3c0(%rbp),%r11                        #! EA = L0x7ffffffe4290
+	add    $0x1,%r10
+	cmp    -0x3b8(%rbp),%r10                        #! EA = L0x7ffffffe4298
+	#jne    0x402c9d <mpkc_pub_map_gf16_n_m_avx2+1165>
+	mov    -0x430(%rbp),%ebx                        #! EA = L0x7ffffffe4220
+	mov    -0x438(%rbp),%r15                        #! EA = L0x7ffffffe4218
+	test   %r12d,%r12d
+	#je     0x403013 <mpkc_pub_map_gf16_n_m_avx2+2051>
+	mov    -0x3f8(%rbp),%rsi                        #! EA = L0x7ffffffe4258
+	lea    -0x1(%r12),%r9d                          #! EA = L0x0
+	add    $0x1,%r9
+	mov    %rsi,%rax
+	shl    $0x5,%r9
+	lea    -0x2c0(%rsi),%rdx                        #! EA = L0x7ffffffe4360
+	sub    $0x360,%rax
+	lea    -0x140(%rsi),%rdi                        #! EA = L0x7ffffffe44e0
+	add    %rax,%r9
+	mov    %rax,%rcx
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%esi                    #! EA = L0x10007fff4858
+	lea    0x1f(%rax),%rcx                          #! EA = L0x7ffffffe42df
+	mov    %rcx,%r8
+	and    $0x7,%ecx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff485b
+	cmp    %cl,%r8b
+	setle  %r10b
+	test   %r8b,%r8b
+	setne  %cl
+	test   %cl,%r10b
+	#jne    0x403bc6 <mpkc_pub_map_gf16_n_m_avx2+5046>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %cl
+	test   %cl,%r8b
+	#jne    0x403bc6 <mpkc_pub_map_gf16_n_m_avx2+5046>
+	mov    %rdx,%rcx
+	vmovdqa (%rax),%ymm1                            #! EA = L0x7ffffffe42c0
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%esi                    #! EA = L0x10007fff486c
+	lea    0x1f(%rdx),%rcx                          #! EA = L0x7ffffffe437f
+	mov    %rcx,%r8
+	and    $0x7,%ecx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff486f
+	cmp    %cl,%r8b
+	setle  %r10b
+	test   %r8b,%r8b
+	setne  %cl
+	test   %cl,%r10b
+	#jne    0x403bd6 <mpkc_pub_map_gf16_n_m_avx2+5062>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %cl
+	test   %cl,%r8b
+	#jne    0x403bd6 <mpkc_pub_map_gf16_n_m_avx2+5062>
+	mov    %rdi,%rcx
+	vmovdqa (%rdx),%ymm0                            #! EA = L0x7ffffffe4360
+	shr    $0x3,%rcx
+	movzbl 0x7fff8000(%rcx),%esi                    #! EA = L0x10007fff489c
+	lea    0x1f(%rdi),%rcx                          #! EA = L0x7ffffffe44ff
+	vpsllw $0x4,%ymm0,%ymm0
+	vpxor  %ymm0,%ymm1,%ymm0
+	mov    %rcx,%r8
+	and    $0x7,%ecx
+	shr    $0x3,%r8
+	movzbl 0x7fff8000(%r8),%r8d                     #! EA = L0x10007fff489f
+	cmp    %cl,%r8b
+	setle  %r10b
+	test   %r8b,%r8b
+	setne  %cl
+	test   %cl,%r10b
+	#jne    0x403be6 <mpkc_pub_map_gf16_n_m_avx2+5078>
+	test   %sil,%sil
+	setne  %r8b
+	test   %sil,%sil
+	setle  %cl
+	test   %cl,%r8b
+	#jne    0x403be6 <mpkc_pub_map_gf16_n_m_avx2+5078>
+	add    $0x20,%rax
+	vmovdqa %ymm0,(%rdi)                            #! EA = L0x7ffffffe44e0
+	add    $0x20,%rdx
+	add    $0x20,%rdi
+	cmp    %r9,%rax
+	#jne    0x402ef9 <mpkc_pub_map_gf16_n_m_avx2+1769>
+	test   %ebx,%ebx
+	#je     0x403089 <mpkc_pub_map_gf16_n_m_avx2+2169>
+	mov    -0x410(%rbp),%rsi                        #! EA = L0x7ffffffe4240
+	mov    -0x3f8(%rbp),%rax                        #! EA = L0x7ffffffe4258
+	lea    -0x1(%rbx),%edx                          #! EA = L0xf
+	lea    0x1(%rsi,%rdx,1),%r8                     #! EA = L0x7ffffffe4790
+	sub    $0x140,%rax
+	mov    %rsi,%rdi
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e0
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4780
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e1
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4781
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e2
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4782
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e3
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4783
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e4
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4784
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e5
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4785
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e6
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4786
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489c
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e7
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f0
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4787
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e8
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4788
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44e9
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe4789
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44ea
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478a
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44eb
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478b
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44ec
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478c
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44ed
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478d
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44ee
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478e
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    %rax,%rdx
+	mov    %rax,%rcx
+	shr    $0x3,%rdx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff489d
+	cmp    %cl,%dl
+	#jg     0x403056 <mpkc_pub_map_gf16_n_m_avx2+2118>
+	test   %dl,%dl
+	#jne    0x403bf3 <mpkc_pub_map_gf16_n_m_avx2+5091>
+	mov    %rdi,%rdx
+	mov    %rdi,%rsi
+	movzbl (%rax),%ecx                              #! EA = L0x7ffffffe44ef
+	shr    $0x3,%rdx
+	and    $0x7,%esi
+	movzbl 0x7fff8000(%rdx),%edx                    #! EA = L0x10007fff48f1
+	cmp    %sil,%dl
+	#jg     0x40307a <mpkc_pub_map_gf16_n_m_avx2+2154>
+	test   %dl,%dl
+	#jne    0x403bfe <mpkc_pub_map_gf16_n_m_avx2+5102>
+	mov    %cl,(%rdi)                               #! EA = L0x7ffffffe478f
+	add    $0x1,%rdi
+	add    $0x1,%rax
+	cmp    %r8,%rdi
+	#jne    0x403036 <mpkc_pub_map_gf16_n_m_avx2+2086>
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	mov    -0x418(%rbp),%r12                        #! EA = L0x7ffffffe4238
+	mov    -0x408(%rbp),%edx                        #! EA = L0x7ffffffe4248
+	imul   %ebx,%eax
+	add    %rax,%r12
+	test   %edx,%edx
+	#je     0x403132 <mpkc_pub_map_gf16_n_m_avx2+2338>
+	mov    -0x3f8(%rbp),%rax                        #! EA = L0x7ffffffe4258
+	vmovdqa 0x165c7(%rip),%xmm2        # 0x419680   #! EA = L0x419680
+	lea    -0x140(%rax),%rdi                        #! EA = L0x7ffffffe44e0
+	mov    -0x408(%rbp),%eax                        #! EA = L0x7ffffffe4248
+	lea    -0x1(%rax),%ecx                          #! EA = L0x0
+	add    $0x1,%rcx
+	shl    $0x5,%rcx
+	add    %rdi,%rcx
+	mov    %rdi,%rax
+	vmovdqu (%r15),%xmm1                            #! EA = L0x7ffffffe4e60
+	shr    $0x3,%rax
+	add    $0x10,%r15
+	cmpw   $0x0,0x7fff8000(%rax)                    #! EA = L0x10007fff489c
+	vpsrlw $0x4,%xmm1,%xmm0
+	vpand  %xmm1,%xmm2,%xmm1
+	vpand  %xmm0,%xmm2,%xmm0
+	vpunpcklbw %xmm0,%xmm1,%xmm5
+	#jne    0x403c06 <mpkc_pub_map_gf16_n_m_avx2+5110>
+	lea    0x10(%rdi),%rax                          #! EA = L0x7ffffffe44f0
+	vpunpckhbw %xmm0,%xmm1,%xmm0
+	vmovaps %xmm5,(%rdi)                            #! EA = L0x7ffffffe44e0
+	mov    %rax,%rdx
+	shr    $0x3,%rdx
+	cmpw   $0x0,0x7fff8000(%rdx)                    #! EA = L0x10007fff489e
+	#jne    0x403c0e <mpkc_pub_map_gf16_n_m_avx2+5118>
+	vmovaps %xmm0,0x10(%rdi)                        #! EA = L0x7ffffffe44f0
+	add    $0x20,%rdi
+	cmp    %rdi,%rcx
+	#jne    0x4030d4 <mpkc_pub_map_gf16_n_m_avx2+2244>
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	test   %eax,%eax
+	#je     0x403752 <mpkc_pub_map_gf16_n_m_avx2+3906>
+	mov    -0x3f8(%rbp),%rcx                        #! EA = L0x7ffffffe4258
+	mov    %ebx,%eax
+	mov    %rax,%rdi
+	mov    %rax,-0x3b8(%rbp)                        #! EA = L0x7ffffffe4298
+	mov    %rcx,%rax
+	lea    -0x1e0(%rcx),%r9                         #! EA = L0x7ffffffe4440
+	mov    %rcx,%r14
+	sub    $0x140,%rax
+	mov    %rax,%rsi
+	mov    %rax,-0x408(%rbp)                        #! EA = L0x7ffffffe4248
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	mov    %rsi,-0x400(%rbp)                        #! EA = L0x7ffffffe4250
+	mov    %r9,%r13
+	sub    $0x1,%eax
+	lea    0x1(%rax,%rsi,1),%rax                    #! EA = L0x7ffffffe4500
+	mov    %r9,%rsi
+	shr    $0x3,%rsi
+	mov    %rsi,-0x438(%rbp)                        #! EA = L0x7ffffffe4218
+	lea    -0x1(%r9,%rdi,1),%rsi                    #! EA = L0x7ffffffe444f
+	mov    %rax,-0x418(%rbp)                        #! EA = L0x7ffffffe4238
+	mov    %rsi,-0x440(%rbp)                        #! EA = L0x7ffffffe4210
+	shr    $0x3,%rsi
+	mov    %rsi,-0x448(%rbp)                        #! EA = L0x7ffffffe4208
+	mov    -0x400(%rbp),%eax                        #! EA = L0x7ffffffe4250
+	sub    -0x408(%rbp),%eax                        #! EA = L0x7ffffffe4248
+	cmpq   $0x0,-0x3b8(%rbp)                        #! EA = L0x7ffffffe4298
+	mov    %eax,-0x3c0(%rbp)                        #! EA = L0x7ffffffe4290
+	#je     0x403220 <mpkc_pub_map_gf16_n_m_avx2+2576>
+	mov    -0x438(%rbp),%rax                        #! EA = L0x7ffffffe4218
+	mov    %r13,%rcx
+	and    $0x7,%ecx
+	movzbl 0x7fff8000(%rax),%edx                    #! EA = L0x10007fff4888
+	mov    -0x448(%rbp),%rax                        #! EA = L0x7ffffffe4208
+	movzbl 0x7fff8000(%rax),%eax                    #! EA = L0x10007fff4889
+	cmp    %cl,%dl
+	setle  %cl
+	test   %dl,%dl
+	setne  %dl
+	test   %dl,%cl
+	#jne    0x403c19 <mpkc_pub_map_gf16_n_m_avx2+5129>
+	mov    -0x440(%rbp),%rdx                        #! EA = L0x7ffffffe4210
+	and    $0x7,%edx
+	cmp    %dl,%al
+	setle  %dl
+	test   %al,%al
+	setne  %al
+	test   %al,%dl
+	#jne    0x403c19 <mpkc_pub_map_gf16_n_m_avx2+5129>
+	mov    -0x3b8(%rbp),%rdx                        #! EA = L0x7ffffffe4298
+	mov    $0x80,%ecx
+	xor    %esi,%esi
+	mov    %r13,%rdi
+	vmovdqa %ymm3,-0x3f0(%rbp)                      #! EA = L0x7ffffffe4260
+	vmovaps %xmm4,-0x3d0(%rbp)                      #! EA = L0x7ffffffe4280
+	vzeroupper 
+	#callq  0x401820 <__memset_chk@plt>
+	#jmpq   *0x21c95a(%rip)        # 0x61e180
+	pushq  $0x2d
+	#jmpq   0x401540
+	pushq  0x21cac2(%rip)        # 0x61e008         #! EA = L0x61e008
+	#jmpq   *0x21cac4(%rip)        # 0x61e010
+	push   %rbx
+	mov    %rsp,%rbx
+	and    $0xffffffffffffffc0,%rsp
+	sub    $0x280,%rsp

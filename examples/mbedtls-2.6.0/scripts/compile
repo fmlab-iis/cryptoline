@@ -1,0 +1,1 @@
+gcc -g3 -O3 -I include -L library main.c -lmbedcrypto -lmbedtls

@@ -1,0 +1,11 @@
+lib: [
+  "_build/install/default/lib/cryptoline/META"
+  "_build/install/default/lib/cryptoline/dune-package"
+]
+bin: [
+  "_build/install/default/bin/cv"
+  "_build/install/default/bin/cv_cli"
+]
+doc: [
+  "_build/install/default/doc/cryptoline/README.md"
+]

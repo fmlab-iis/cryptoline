@@ -1,0 +1,43 @@
+crypto_scalarmult_curve25519_donna_freduce_coefficients:
+# %rdi = 0x7fffffffd538
+# %rsi = 0x7fffffffd598
+# %rdx = 0x0
+# %rcx = 0x13
+# %r8  = 0x0
+# %r9  = 0x0
+	push   %r12
+	movabs $0x7ffffffffffff,%rcx
+	mov    $0x13,%rdx
+	mov    (%rdi),%r8                               #! EA = L0x7fffffffd538
+	mov    0x8(%rdi),%r9                            #! EA = L0x7fffffffd540
+	mov    0x10(%rdi),%r10                          #! EA = L0x7fffffffd548
+	mov    0x18(%rdi),%r11                          #! EA = L0x7fffffffd550
+	mov    0x20(%rdi),%r12                          #! EA = L0x7fffffffd558
+	mov    %r8,%rax
+	shr    $0x33,%rax
+	add    %rax,%r9
+	and    %rcx,%r8
+	mov    %r9,%rax
+	shr    $0x33,%rax
+	add    %rax,%r10
+	and    %rcx,%r9
+	mov    %r10,%rax
+	shr    $0x33,%rax
+	add    %rax,%r11
+	and    %rcx,%r10
+	mov    %r11,%rax
+	shr    $0x33,%rax
+	add    %rax,%r12
+	and    %rcx,%r11
+	mov    %r12,%rax
+	shr    $0x33,%rax
+	imul   $0x13,%rax,%rax
+	add    %rax,%r8
+	and    %rcx,%r12
+	mov    %r8,(%rdi)                               #! EA = L0x7fffffffd538
+	mov    %r9,0x8(%rdi)                            #! EA = L0x7fffffffd540
+	mov    %r10,0x10(%rdi)                          #! EA = L0x7fffffffd548
+	mov    %r11,0x18(%rdi)                          #! EA = L0x7fffffffd550
+	mov    %r12,0x20(%rdi)                          #! EA = L0x7fffffffd558
+	pop    %r12
+	#retq   

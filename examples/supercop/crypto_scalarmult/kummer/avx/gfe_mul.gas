@@ -1,0 +1,48 @@
+gfe_mul:
+# %rdi = 0x7fffffffd720
+# %rsi = 0x7fffffffd730
+# %rdx = 0x7fffffffd740
+# %rcx = 0x0
+# %r8  = 0x0
+# %r9  = 0xdd5360b8
+	mov    %rsp,%r11
+	and    $0x1f,%r11
+	add    $0x0,%r11
+	sub    %r11,%rsp
+	mov    %rdx,%rcx
+	mov    (%rsi),%r8                               #! EA = L0x7fffffffd730
+	mov    (%rcx),%rax                              #! EA = L0x7fffffffd740
+	mul    %r8
+	mov    %rax,%r9
+	mov    %rdx,%r10
+	mov    0x8(%rcx),%rax                           #! EA = L0x7fffffffd748
+	ds ds ds mul %r8
+	ds ds ds add %rax,%r10
+	mov    $0x0,%r8
+	ds ds adc %rdx,%r8
+	mov    0x8(%rsi),%rsi                           #! EA = L0x7fffffffd738
+	mov    (%rcx),%rax                              #! EA = L0x7fffffffd740
+	ds ds ds ds mul %rsi
+	ds ds ds add %rax,%r10
+	ds ds ds adc %rdx,%r8
+	mov    0x8(%rcx),%rax                           #! EA = L0x7fffffffd748
+	ds ds ds mul %rsi
+	ds ds add %rax,%r8
+	mov    $0x0,%rsi
+	adc    %rdx,%rsi
+	shld   $0x1,%r8,%rsi
+	shld   $0x1,%r10,%r8
+	mov    0x60b120,%rdx
+	ds ds ds and %rdx,%r10
+	ds ds add %r8,%r9
+	ds ds adc %rsi,%r10
+	ds ds mov %r10,%rsi
+	ds shr $0x3f,%rsi
+	ds ds and %rdx,%r10
+	ds ds ds add %rsi,%r9
+	mov    $0x0,%rsi
+	ds ds ds adc %rsi,%r10
+	mov    %r9,(%rdi)                               #! EA = L0x7fffffffd720
+	mov    %r10,0x8(%rdi)                           #! EA = L0x7fffffffd728
+	ds ds ds add %r11,%rsp
+	#retq   

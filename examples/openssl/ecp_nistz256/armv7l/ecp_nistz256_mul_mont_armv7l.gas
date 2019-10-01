@@ -1,0 +1,430 @@
+#! [r$1c] = %%EA
+#! [r$1c, #$2c] = %%EA
+#! [sp] = %%EA
+#! [sp, #$1c] = %%EA
+#! r$1c = %%r$1c
+#! lr = %%lr
+
+#! ldr $1v, $2v -> mov $1v $2v
+#! ldr.w $1v, $2v -> mov $1v $2v
+#! mov $1v, #0 -> mov $1v 0@uint32
+#! eor.w $1v, $1v, $1v -> mov $1v 0@uint32
+#! str $1v, $2v -> mov $2v $1v
+#! str.w $1v, $2v -> mov $2v $1v
+#! adds $1v, $2v, $3v -> uadds carry $1v $2v $3v
+#! adds.w $1v, $2v, $3v -> uadds carry $1v $2v $3v
+#! adds.w $1v, $2v, #1 -> uadds carry $1v $2v 1@uint32
+#! adcs $1v, $2v -> uadcs carry $1v $1v $2v carry
+#! adcs $1v, $2v, $3v -> uadcs carry $1v $2v $3v carry
+#! adcs.w $1v, $2v, $3v -> uadcs carry $1v $2v $3v carry
+#! adcs.w $1v, $2v, #0 -> uadcs carry $1v $2v 0@uint32 carry
+#! adc.w $1v, $2v, $3v -> uadc $1v $2v $3v carry
+#! adc.w $1v, $2v, #0 -> uadc $1v $2v 0@uint32 carry
+#! subs $1v, $2v, $3v -> usubc carry $1v $2v $3v
+#! subs.w $1v, $2v, $3v -> usubc carry $1v $2v $3v
+#! sbcs.w $1v, $2v, $3v -> usbcs carry $1v $2v $3v carry
+#! sbcs.w $1v, $2v, #0 -> usbcs carry $1v $2v 0@uint32 carry
+#! sbcs.w $1v, $2v, #1 -> usbcs carry $1v $2v 1@uint32 carry
+#! sbc.w $1v, $2v, $3v -> usbc $1v $2v $3v carry
+#! sbc.w $1v, $2v, #0 -> usbc $1v $2v 0@uint32 carry
+#! umull $1v, $2v, $3v, $4v -> mull $2v $1v $3v $4v
+#! umlal $1v, $2v, $3v, $4v -> mull tH tL $3v $4v;\nadds tc $1v $1v tL;\nadc $2v $2v tH tc
+
+Breakpoint 1, 0x000107f4 in ecp_nistz256_mul_mont ()
+	#bl	0x10800 <__ecp_nistz256_mul_mont>
+	stmdb	sp!, {r0, r1, r2, lr}
+	ldr	r2, [r2, #0]                                #! EA = L0x960b0, Value = 0x0020813a
+	ldmia.w	r1, {r4, r5, r6, r7, r8, r9, r10, r11}
+	umull	r3, lr, r4, r2
+	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	umull	r4, r0, r5, r2
+	umull	r5, r1, r6, r2
+	adds.w	r4, r4, lr
+	umull	r6, r12, r7, r2
+	adcs	r5, r0
+	umull	r7, lr, r8, r2
+	adcs	r6, r1
+	umull	r8, r0, r9, r2
+	adcs.w	r7, r7, r12
+	umull	r9, r1, r10, r2
+	adcs.w	r8, r8, lr
+	umull	r10, r12, r11, r2
+	adcs.w	r9, r9, r0
+	adcs.w	r10, r10, r1
+	eor.w	lr, lr, lr
+	adc.w	r11, r12, #0
+	adds	r6, r6, r3
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r7, r7, #0
+	adcs.w	r8, r8, #0
+	adcs.w	r9, r9, r3
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r10, r10, #0
+	ldr	r2, [r2, #4]                                #! EA = L0x960b4, Value = 0x7f7fbfca
+	adcs.w	r11, r11, r3
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs.w	r10, r10, r3
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r11, r11, #0
+	umlal	r4, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r3, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r5, r1, r12, r2
+	str	r3, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00096090
+	eor.w	r12, r12, r12
+	ldr	r3, [sp, #12]                               #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r6, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds	r5, r5, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r7, lr, r3, r2
+	eor.w	r3, r3, r3
+	adcs	r6, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r8, r3, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r7, r7, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r9, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r8, r8, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r10, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs.w	r9, r9, r3
+	ldr	r3, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r11, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs.w	r10, r10, r0
+	adcs.w	r11, r11, r1
+	adcs.w	r3, r3, r12
+	adc.w	lr, lr, #0
+	adds	r7, r7, r4
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r8, r8, #0
+	adcs.w	r9, r9, #0
+	adcs.w	r10, r10, r4
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r11, r11, #0
+	ldr	r2, [r2, #8]                                #! EA = L0x960b8, Value = 0x28bdee5c
+	adcs	r3, r4
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs.w	r11, r11, r4
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r3, r3, #0
+	umlal	r5, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r4, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r6, r1, r12, r2
+	str	r4, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	eor.w	r12, r12, r12
+	ldr	r4, [sp, #12]                               #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r7, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds	r6, r6, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r8, lr, r4, r2
+	eor.w	r4, r4, r4
+	adcs	r7, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r9, r4, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r8, r8, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r10, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r9, r9, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r11, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs.w	r10, r10, r4
+	ldr	r4, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r3, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs.w	r11, r11, r0
+	adcs	r3, r1
+	adcs.w	r4, r4, r12
+	adc.w	lr, lr, #0
+	adds.w	r8, r8, r5
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r9, r9, #0
+	adcs.w	r10, r10, #0
+	adcs.w	r11, r11, r5
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r3, r3, #0
+	ldr	r2, [r2, #12]                               #! EA = L0x960bc, Value = 0xcd203987
+	adcs	r4, r5
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs	r3, r3, r5
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r4, r4, #0
+	umlal	r6, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r5, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r7, r1, r12, r2
+	str	r5, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	eor.w	r12, r12, r12
+	ldr	r5, [sp, #12]                               #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r8, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds	r7, r7, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r9, lr, r5, r2
+	eor.w	r5, r5, r5
+	adcs.w	r8, r8, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r10, r5, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r9, r9, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r11, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r10, r10, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r3, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs.w	r11, r11, r5
+	ldr	r5, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r4, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs	r3, r0
+	adcs	r4, r1
+	adcs.w	r5, r5, r12
+	adc.w	lr, lr, #0
+	adds.w	r9, r9, r6
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r10, r10, #0
+	adcs.w	r11, r11, #0
+	adcs	r3, r6
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r4, r4, #0
+	ldr	r2, [r2, #16]                               #! EA = L0x960c0, Value = 0x09201c18
+	adcs	r5, r6
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs	r4, r4, r6
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r5, r5, #0
+	umlal	r7, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r6, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r8, r1, r12, r2
+	str	r6, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	eor.w	r12, r12, r12
+	ldr	r6, [sp, #12]                               #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r9, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds.w	r8, r8, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r10, lr, r6, r2
+	eor.w	r6, r6, r6
+	adcs.w	r9, r9, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r11, r6, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r10, r10, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r3, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r11, r11, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r4, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs	r3, r6
+	ldr	r6, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r5, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs	r4, r0
+	adcs	r5, r1
+	adcs.w	r6, r6, r12
+	adc.w	lr, lr, #0
+	adds.w	r10, r10, r7
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r11, r11, #0
+	adcs.w	r3, r3, #0
+	adcs	r4, r7
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r5, r5, #0
+	ldr	r2, [r2, #20]                               #! EA = L0x960c4, Value = 0xfaafade7
+	adcs	r6, r7
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs	r5, r5, r7
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r6, r6, #0
+	umlal	r8, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r7, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r9, r1, r12, r2
+	str	r7, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	eor.w	r12, r12, r12
+	ldr	r7, [sp, #12]                               #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r10, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds.w	r9, r9, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r11, lr, r7, r2
+	eor.w	r7, r7, r7
+	adcs.w	r10, r10, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r3, r7, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r11, r11, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r4, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r3, r3, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r5, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs	r4, r7
+	ldr	r7, [sp, #36]	; 0x24                        #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r6, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs	r5, r0
+	adcs	r6, r1
+	adcs.w	r7, r7, r12
+	adc.w	lr, lr, #0
+	adds.w	r11, r11, r8
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r3, r3, #0
+	adcs.w	r4, r4, #0
+	adcs.w	r5, r5, r8
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r6, r6, #0
+	ldr	r2, [r2, #24]                               #! EA = L0x960c8, Value = 0x33712938
+	adcs.w	r7, r7, r8
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs.w	r6, r6, r8
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r7, r7, #0
+	umlal	r9, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r8, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r10, r1, r12, r2
+	str.w	r8, [sp, #36]	; 0x24                      #! EA = L0xbeffec04, Value = 0x00000000
+	eor.w	r12, r12, r12
+	ldr.w	r8, [sp, #12]                             #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r11, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds.w	r10, r10, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r3, lr, r8, r2
+	eor.w	r8, r8, r8
+	adcs.w	r11, r11, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r4, r8, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r3, r3, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r5, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r4, r4, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r6, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs.w	r5, r5, r8
+	ldr.w	r8, [sp, #36]	; 0x24                      #! EA = L0xbeffec04, Value = 0x00000001
+	umlal	r7, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs	r6, r0
+	adcs	r7, r1
+	adcs.w	r8, r8, r12
+	adc.w	lr, lr, #0
+	adds.w	r3, r3, r9
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0xbeffec08, Value = 0x000960b0
+	adcs.w	r4, r4, #0
+	adcs.w	r5, r5, #0
+	adcs.w	r6, r6, r9
+	ldr	r1, [sp, #0]                                #! EA = L0xbeffebe0, Value = 0x0020813a
+	adcs.w	r7, r7, #0
+	ldr	r2, [r2, #28]                               #! EA = L0x960cc, Value = 0x15b59742
+	adcs.w	r8, r8, r9
+	eor.w	r0, r0, r0
+	adc.w	lr, lr, #0
+	subs.w	r7, r7, r9
+	ldr.w	r12, [sp, #4]                             #! EA = L0xbeffebe4, Value = 0x7f7fbfca
+	sbcs.w	r8, r8, #0
+	umlal	r10, r0, r1, r2
+	eor.w	r1, r1, r1
+	sbc.w	r9, lr, #0
+	ldr.w	lr, [sp, #8]                              #! EA = L0xbeffebe8, Value = 0x09201c18
+	umlal	r11, r1, r12, r2
+	str.w	r9, [sp, #36]	; 0x24                      #! EA = L0xbeffec04, Value = 0x00000001
+	eor.w	r12, r12, r12
+	ldr.w	r9, [sp, #12]                             #! EA = L0xbeffebec, Value = 0xfaafade7
+	umlal	r3, r12, lr, r2
+	eor.w	lr, lr, lr
+	adds.w	r11, r11, r0
+	ldr	r0, [sp, #16]                               #! EA = L0xbeffebf0, Value = 0x28bdee5c
+	umlal	r4, lr, r9, r2
+	eor.w	r9, r9, r9
+	adcs	r3, r1
+	ldr	r1, [sp, #20]                               #! EA = L0xbeffebf4, Value = 0xcd203987
+	umlal	r5, r9, r0, r2
+	eor.w	r0, r0, r0
+	adcs.w	r4, r4, r12
+	ldr.w	r12, [sp, #24]                            #! EA = L0xbeffebf8, Value = 0x33712938
+	umlal	r6, r0, r1, r2
+	eor.w	r1, r1, r1
+	adcs.w	r5, r5, lr
+	ldr.w	lr, [sp, #28]                             #! EA = L0xbeffebfc, Value = 0x15b59742
+	umlal	r7, r1, r12, r2
+	eor.w	r12, r12, r12
+	adcs.w	r6, r6, r9
+	ldr.w	r9, [sp, #36]	; 0x24                      #! EA = L0xbeffec04, Value = 0x00000000
+	umlal	r8, r12, lr, r2
+	eor.w	lr, lr, lr
+	adcs	r7, r0
+	adcs.w	r8, r8, r1
+	adcs.w	r9, r9, r12
+	adc.w	lr, lr, #0
+	adds.w	r4, r4, r10
+	ldr	r0, [sp, #32]                               #! EA = L0xbeffec00, Value = 0xbeffec50
+	adcs.w	r5, r5, #0
+	adcs.w	r6, r6, #0
+	adcs.w	r7, r7, r10
+	adcs.w	r8, r8, #0
+	adcs.w	r9, r9, r10
+	adc.w	lr, lr, #0
+	subs.w	r8, r8, r10
+	sbcs.w	r9, r9, #0
+	sbc.w	r10, lr, #0
+	adds.w	r11, r11, #1
+	adcs.w	r3, r3, #0
+	adcs.w	r4, r4, #0
+	sbcs.w	r5, r5, #0
+	sbcs.w	r6, r6, #0
+	sbcs.w	r7, r7, #0
+	sbcs.w	r8, r8, #1
+	adcs.w	r9, r9, #0
+	ldr.w	lr, [sp, #44]	; 0x2c                      #! EA = L0xbeffec0c, Value = 0x000107f9
+	sbc.w	r10, r10, #0
+	add	sp, #48	; 0x30
+	adds.w	r11, r11, r10
+	adcs.w	r3, r3, r10
+	str.w	r11, [r0]                                 #! EA = L0xbeffec50, Value = 0xffffffff
+	adcs.w	r4, r4, r10
+	str	r3, [r0, #4]                                #! EA = L0xbeffec54, Value = 0xffffffff
+	adcs.w	r5, r5, #0
+	str	r4, [r0, #8]                                #! EA = L0xbeffec58, Value = 0xe0622dbb
+	adcs.w	r6, r6, #0
+	str	r5, [r0, #12]                               #! EA = L0xbeffec5c, Value = 0x2d8f7460
+	adcs.w	r7, r7, #0
+	str	r6, [r0, #16]                               #! EA = L0xbeffec60, Value = 0x1f9dd244
+	adcs.w	r8, r8, r10, lsr #31
+	str	r7, [r0, #20]                               #! EA = L0xbeffec64, Value = 0xd2708ba0
+	adc.w	r9, r9, r10
+	str.w	r8, [r0, #24]                             #! EA = L0xbeffec68, Value = 0x00000000
+	str.w	r9, [r0, #28]                             #! EA = L0xbeffec6c, Value = 0xffffffff
+	mov	pc, lr

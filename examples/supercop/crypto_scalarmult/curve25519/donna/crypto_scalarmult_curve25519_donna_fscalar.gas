@@ -1,0 +1,42 @@
+crypto_scalarmult_curve25519_donna_fscalar:
+# %rdi = 0x7fffffffd538
+# %rsi = 0x7fffffffd598
+# %rdx = 0x8000000000000
+# %rcx = 0x0
+# %r8  = 0x0
+# %r9  = 0x0
+	mov    $0x1db41,%rcx
+	mov    (%rsi),%rax                              #! EA = L0x7fffffffd598
+	mul    %rcx
+	shl    $0xd,%rdx
+	mov    %rdx,%r8
+	mov    %rax,%r9
+	mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffd5a0
+	mul    %rcx
+	add    %r8,%rax
+	shl    $0xd,%rdx
+	mov    %rdx,%r8
+	mov    %rax,0x8(%rdi)                           #! EA = L0x7fffffffd540
+	mov    0x10(%rsi),%rax                          #! EA = L0x7fffffffd5a8
+	mul    %rcx
+	add    %r8,%rax
+	shl    $0xd,%rdx
+	mov    %rdx,%r8
+	mov    %rax,0x10(%rdi)                          #! EA = L0x7fffffffd548
+	mov    0x18(%rsi),%rax                          #! EA = L0x7fffffffd5b0
+	mul    %rcx
+	add    %r8,%rax
+	shl    $0xd,%rdx
+	mov    %rdx,%r8
+	mov    %rax,0x18(%rdi)                          #! EA = L0x7fffffffd550
+	mov    0x20(%rsi),%rax                          #! EA = L0x7fffffffd5b8
+	mul    %rcx
+	add    %r8,%rax
+	mov    %rax,0x20(%rdi)                          #! EA = L0x7fffffffd558
+	shl    $0xd,%rdx
+	mov    $0x13,%rcx
+	mov    %rdx,%rax
+	mul    %rcx
+	add    %rax,%r9
+	mov    %r9,(%rdi)                               #! EA = L0x7fffffffd538
+	#retq   

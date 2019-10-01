@@ -1,0 +1,452 @@
+vec256_maa_asm:
+# %rdi = 0x7fffffe4c480
+# %rsi = 0x7fffffe4c620
+# %rdx = 0x7fffffe4c7c0
+# %rcx = 0x1f0
+# %r8  = 0x7fffffe4c000
+# %r9  = 0xc0
+	mov    %rsp,%r11
+	and    $0x1f,%r11
+	add    $0x0,%r11
+	sub    %r11,%rsp
+	vmovupd (%rdx),%ymm0                            #! EA = L0x7fffffe4c7c0
+	vmovupd 0x180(%rsi),%ymm1                       #! EA = L0x7fffffe4c7a0
+	vpand  %ymm1,%ymm0,%ymm2
+	vpand  0x20(%rdx),%ymm1,%ymm3                   #! EA = L0x7fffffe4c7e0
+	vpand  0x40(%rdx),%ymm1,%ymm4                   #! EA = L0x7fffffe4c800
+	vpand  0x60(%rdx),%ymm1,%ymm5                   #! EA = L0x7fffffe4c820
+	vpand  0x80(%rdx),%ymm1,%ymm6                   #! EA = L0x7fffffe4c840
+	vpand  0xa0(%rdx),%ymm1,%ymm7                   #! EA = L0x7fffffe4c860
+	vpand  0xc0(%rdx),%ymm1,%ymm8                   #! EA = L0x7fffffe4c880
+	vpand  0xe0(%rdx),%ymm1,%ymm9                   #! EA = L0x7fffffe4c8a0
+	vpand  0x100(%rdx),%ymm1,%ymm10                 #! EA = L0x7fffffe4c8c0
+	vpand  0x120(%rdx),%ymm1,%ymm11                 #! EA = L0x7fffffe4c8e0
+	vpand  0x140(%rdx),%ymm1,%ymm12                 #! EA = L0x7fffffe4c900
+	vpand  0x160(%rdx),%ymm1,%ymm13                 #! EA = L0x7fffffe4c920
+	vpand  0x180(%rdx),%ymm1,%ymm1                  #! EA = L0x7fffffe4c940
+	vpxor  %ymm1,%ymm5,%ymm5
+	vpxor  %ymm1,%ymm4,%ymm4
+	vpxor  %ymm1,%ymm2,%ymm2
+	vmovapd %ymm1,%ymm1
+	vmovupd 0x160(%rsi),%ymm14                      #! EA = L0x7fffffe4c780
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm13,%ymm13
+	vpxor  %ymm13,%ymm4,%ymm4
+	vpxor  %ymm13,%ymm3,%ymm3
+	vpxor  %ymm13,%ymm1,%ymm1
+	vmovapd %ymm13,%ymm13
+	vmovupd 0x140(%rsi),%ymm14                      #! EA = L0x7fffffe4c760
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm12,%ymm12
+	vpxor  %ymm12,%ymm3,%ymm3
+	vpxor  %ymm12,%ymm2,%ymm2
+	vpxor  %ymm12,%ymm13,%ymm13
+	vmovapd %ymm12,%ymm12
+	vmovupd 0x120(%rsi),%ymm14                      #! EA = L0x7fffffe4c740
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm11,%ymm11
+	vpxor  %ymm11,%ymm2,%ymm2
+	vpxor  %ymm11,%ymm1,%ymm1
+	vpxor  %ymm11,%ymm12,%ymm12
+	vmovapd %ymm11,%ymm11
+	vmovupd 0x100(%rsi),%ymm14                      #! EA = L0x7fffffe4c720
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm10,%ymm10
+	vpxor  %ymm10,%ymm1,%ymm1
+	vpxor  %ymm10,%ymm13,%ymm13
+	vpxor  %ymm10,%ymm11,%ymm11
+	vmovapd %ymm10,%ymm10
+	vmovupd 0xe0(%rsi),%ymm14                       #! EA = L0x7fffffe4c700
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm9,%ymm9
+	vpxor  %ymm9,%ymm13,%ymm13
+	vpxor  %ymm9,%ymm12,%ymm12
+	vpxor  %ymm9,%ymm10,%ymm10
+	vmovapd %ymm9,%ymm9
+	vmovupd 0xc0(%rsi),%ymm14                       #! EA = L0x7fffffe4c6e0
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm8,%ymm8
+	vpxor  %ymm8,%ymm12,%ymm12
+	vpxor  %ymm8,%ymm11,%ymm11
+	vpxor  %ymm8,%ymm9,%ymm9
+	vmovapd %ymm8,%ymm8
+	vmovupd 0xa0(%rsi),%ymm14                       #! EA = L0x7fffffe4c6c0
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm7,%ymm7
+	vpxor  %ymm7,%ymm11,%ymm11
+	vpxor  %ymm7,%ymm10,%ymm10
+	vpxor  %ymm7,%ymm8,%ymm8
+	vmovapd %ymm7,%ymm7
+	vmovupd 0x80(%rsi),%ymm14                       #! EA = L0x7fffffe4c6a0
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm6,%ymm6
+	vpxor  %ymm6,%ymm10,%ymm10
+	vpxor  %ymm6,%ymm9,%ymm9
+	vpxor  %ymm6,%ymm7,%ymm7
+	vmovapd %ymm6,%ymm6
+	vmovupd 0x60(%rsi),%ymm14                       #! EA = L0x7fffffe4c680
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm5,%ymm5
+	vpxor  %ymm5,%ymm9,%ymm9
+	vpxor  %ymm5,%ymm8,%ymm8
+	vpxor  %ymm5,%ymm6,%ymm6
+	vmovapd %ymm5,%ymm5
+	vmovupd 0x40(%rsi),%ymm14                       #! EA = L0x7fffffe4c660
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm3,%ymm3
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm4,%ymm4
+	vpxor  %ymm4,%ymm8,%ymm8
+	vpxor  %ymm4,%ymm7,%ymm7
+	vpxor  %ymm4,%ymm5,%ymm5
+	vmovapd %ymm4,%ymm4
+	vmovupd 0x20(%rsi),%ymm14                       #! EA = L0x7fffffe4c640
+	vpand  %ymm14,%ymm0,%ymm15
+	vpxor  %ymm15,%ymm4,%ymm4
+	vpand  0x20(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm15,%ymm5,%ymm5
+	vpand  0x40(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c800
+	vpxor  %ymm15,%ymm6,%ymm6
+	vpand  0x60(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c820
+	vpxor  %ymm15,%ymm7,%ymm7
+	vpand  0x80(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c840
+	vpxor  %ymm15,%ymm8,%ymm8
+	vpand  0xa0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c860
+	vpxor  %ymm15,%ymm9,%ymm9
+	vpand  0xc0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c880
+	vpxor  %ymm15,%ymm10,%ymm10
+	vpand  0xe0(%rdx),%ymm14,%ymm15                 #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm15,%ymm11,%ymm11
+	vpand  0x100(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm15,%ymm12,%ymm12
+	vpand  0x120(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm15,%ymm13,%ymm13
+	vpand  0x140(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c900
+	vpxor  %ymm15,%ymm1,%ymm1
+	vpand  0x160(%rdx),%ymm14,%ymm15                #! EA = L0x7fffffe4c920
+	vpxor  %ymm15,%ymm2,%ymm2
+	vpand  0x180(%rdx),%ymm14,%ymm14                #! EA = L0x7fffffe4c940
+	vpxor  %ymm14,%ymm3,%ymm3
+	vpxor  %ymm3,%ymm7,%ymm7
+	vpxor  %ymm3,%ymm6,%ymm6
+	vpxor  %ymm3,%ymm4,%ymm4
+	vmovapd %ymm3,%ymm3
+	vmovupd (%rsi),%ymm14                           #! EA = L0x7fffffe4c620
+	vpand  %ymm14,%ymm0,%ymm0
+	vpxor  %ymm0,%ymm3,%ymm3
+	vpand  0x20(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c7e0
+	vpxor  %ymm0,%ymm4,%ymm4
+	vpand  0x40(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c800
+	vpxor  %ymm0,%ymm5,%ymm5
+	vpand  0x60(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c820
+	vpxor  %ymm0,%ymm6,%ymm6
+	vpand  0x80(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c840
+	vpxor  %ymm0,%ymm7,%ymm7
+	vpand  0xa0(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c860
+	vpxor  %ymm0,%ymm8,%ymm8
+	vpand  0xc0(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c880
+	vpxor  %ymm0,%ymm9,%ymm9
+	vpand  0xe0(%rdx),%ymm14,%ymm0                  #! EA = L0x7fffffe4c8a0
+	vpxor  %ymm0,%ymm10,%ymm10
+	vpand  0x100(%rdx),%ymm14,%ymm0                 #! EA = L0x7fffffe4c8c0
+	vpxor  %ymm0,%ymm11,%ymm11
+	vpand  0x120(%rdx),%ymm14,%ymm0                 #! EA = L0x7fffffe4c8e0
+	vpxor  %ymm0,%ymm12,%ymm12
+	vpand  0x140(%rdx),%ymm14,%ymm0                 #! EA = L0x7fffffe4c900
+	vpxor  %ymm0,%ymm13,%ymm13
+	vpand  0x160(%rdx),%ymm14,%ymm0                 #! EA = L0x7fffffe4c920
+	vpxor  %ymm0,%ymm1,%ymm1
+	vpand  0x180(%rdx),%ymm14,%ymm0                 #! EA = L0x7fffffe4c940
+	vpxor  %ymm0,%ymm2,%ymm2
+	vpxor  0x180(%rdi),%ymm2,%ymm0                  #! EA = L0x7fffffe4c600
+	vmovupd %ymm0,0x180(%rdi)                       #! EA = L0x7fffffe4c600
+	vpxor  0x180(%rsi),%ymm0,%ymm0                  #! EA = L0x7fffffe4c7a0
+	vmovupd %ymm0,0x180(%rsi)                       #! EA = L0x7fffffe4c7a0
+	vpxor  0x160(%rdi),%ymm1,%ymm0                  #! EA = L0x7fffffe4c5e0
+	vmovupd %ymm0,0x160(%rdi)                       #! EA = L0x7fffffe4c5e0
+	vpxor  0x160(%rsi),%ymm0,%ymm0                  #! EA = L0x7fffffe4c780
+	vmovupd %ymm0,0x160(%rsi)                       #! EA = L0x7fffffe4c780
+	vpxor  0x140(%rdi),%ymm13,%ymm0                 #! EA = L0x7fffffe4c5c0
+	vmovupd %ymm0,0x140(%rdi)                       #! EA = L0x7fffffe4c5c0
+	vpxor  0x140(%rsi),%ymm0,%ymm0                  #! EA = L0x7fffffe4c760
+	vmovupd %ymm0,0x140(%rsi)                       #! EA = L0x7fffffe4c760
+	vpxor  0x120(%rdi),%ymm12,%ymm0                 #! EA = L0x7fffffe4c5a0
+	vmovupd %ymm0,0x120(%rdi)                       #! EA = L0x7fffffe4c5a0
+	vpxor  0x120(%rsi),%ymm0,%ymm0                  #! EA = L0x7fffffe4c740
+	vmovupd %ymm0,0x120(%rsi)                       #! EA = L0x7fffffe4c740
+	vpxor  0x100(%rdi),%ymm11,%ymm0                 #! EA = L0x7fffffe4c580
+	vmovupd %ymm0,0x100(%rdi)                       #! EA = L0x7fffffe4c580
+	vpxor  0x100(%rsi),%ymm0,%ymm0                  #! EA = L0x7fffffe4c720
+	vmovupd %ymm0,0x100(%rsi)                       #! EA = L0x7fffffe4c720
+	vpxor  0xe0(%rdi),%ymm10,%ymm0                  #! EA = L0x7fffffe4c560
+	vmovupd %ymm0,0xe0(%rdi)                        #! EA = L0x7fffffe4c560
+	vpxor  0xe0(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c700
+	vmovupd %ymm0,0xe0(%rsi)                        #! EA = L0x7fffffe4c700
+	vpxor  0xc0(%rdi),%ymm9,%ymm0                   #! EA = L0x7fffffe4c540
+	vmovupd %ymm0,0xc0(%rdi)                        #! EA = L0x7fffffe4c540
+	vpxor  0xc0(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c6e0
+	vmovupd %ymm0,0xc0(%rsi)                        #! EA = L0x7fffffe4c6e0
+	vpxor  0xa0(%rdi),%ymm8,%ymm0                   #! EA = L0x7fffffe4c520
+	vmovupd %ymm0,0xa0(%rdi)                        #! EA = L0x7fffffe4c520
+	vpxor  0xa0(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c6c0
+	vmovupd %ymm0,0xa0(%rsi)                        #! EA = L0x7fffffe4c6c0
+	vpxor  0x80(%rdi),%ymm7,%ymm0                   #! EA = L0x7fffffe4c500
+	vmovupd %ymm0,0x80(%rdi)                        #! EA = L0x7fffffe4c500
+	vpxor  0x80(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c6a0
+	vmovupd %ymm0,0x80(%rsi)                        #! EA = L0x7fffffe4c6a0
+	vpxor  0x60(%rdi),%ymm6,%ymm0                   #! EA = L0x7fffffe4c4e0
+	vmovupd %ymm0,0x60(%rdi)                        #! EA = L0x7fffffe4c4e0
+	vpxor  0x60(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c680
+	vmovupd %ymm0,0x60(%rsi)                        #! EA = L0x7fffffe4c680
+	vpxor  0x40(%rdi),%ymm5,%ymm0                   #! EA = L0x7fffffe4c4c0
+	vmovupd %ymm0,0x40(%rdi)                        #! EA = L0x7fffffe4c4c0
+	vpxor  0x40(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c660
+	vmovupd %ymm0,0x40(%rsi)                        #! EA = L0x7fffffe4c660
+	vpxor  0x20(%rdi),%ymm4,%ymm0                   #! EA = L0x7fffffe4c4a0
+	vmovupd %ymm0,0x20(%rdi)                        #! EA = L0x7fffffe4c4a0
+	vpxor  0x20(%rsi),%ymm0,%ymm0                   #! EA = L0x7fffffe4c640
+	vmovupd %ymm0,0x20(%rsi)                        #! EA = L0x7fffffe4c640
+	vpxor  (%rdi),%ymm3,%ymm0                       #! EA = L0x7fffffe4c480
+	vmovupd %ymm0,(%rdi)                            #! EA = L0x7fffffe4c480
+	vpxor  (%rsi),%ymm0,%ymm0                       #! EA = L0x7fffffe4c620
+	vmovupd %ymm0,(%rsi)                            #! EA = L0x7fffffe4c620
+	add    %r11,%rsp
+	#retq   

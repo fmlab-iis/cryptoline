@@ -1,0 +1,7 @@
+#!/bin/bash
+
+path=`readlink -f ${1}`
+args="-v -btor -no_carry_constraint"
+pushd /home/mht208/Work/cryptoline
+./verify ${args} ${path}
+popd

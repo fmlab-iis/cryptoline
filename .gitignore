@@ -1,0 +1,15 @@
+.DS_Store
+*.o
+*.cmi
+*.cmo
+*.cma
+*.cmx
+*.cmxa
+._bcdi
+._ncdi
+._d
+TAGS
+cryptoline.log
+_build
+.merlin
+*.log

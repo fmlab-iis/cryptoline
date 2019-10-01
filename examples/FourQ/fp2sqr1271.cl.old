@@ -1,0 +1,223 @@
+proc main (L0x7fffffffdad0, L0x7fffffffdad8, L0x7fffffffdae0, L0x7fffffffdae8) =
+{
+  bveTrue
+  |
+#  bvrTrue
+  bvands [
+    limbs 64 [bvvar L0x7fffffffdad0, bvvar L0x7fffffffdad8] < bvconst 128 (2^127),
+    limbs 64 [bvvar L0x7fffffffdae0, bvvar L0x7fffffffdae8] < bvconst 128 (2^127)
+  ]
+}
+
+(* #jmpq   0x40f359 <fp2sqr1271_a> *)
+#jmpq   0x40f359 <fp2sqr1271_a>;
+(* mov    (%rdi),%r10                              #! EA = L0x7fffffffdad0 *)
+bvAssign r10 (bvVar L0x7fffffffdad0);
+(* mov    0x10(%rdi),%r14                          #! EA = L0x7fffffffdae0 *)
+bvAssign r14 (bvVar L0x7fffffffdae0);
+(* sub    %r14,%r10 *)
+bvSubC carry r10 (bvVar r10) (bvVar r14);
+(* mov    0x8(%rdi),%r11                           #! EA = L0x7fffffffdad8 *)
+bvAssign r11 (bvVar L0x7fffffffdad8);
+(* mov    0x18(%rdi),%rcx                          #! EA = L0x7fffffffdae8 *)
+bvAssign rcx (bvVar L0x7fffffffdae8);
+(* sbb    %rcx,%r11 *)
+bvSbbC carry r11 (bvVar r11) (bvVar rcx) carry;
+(* [r11, r10] - [rcx, r14] is a difference of 127-bit numbers *)
+(* the carry is the 128th bit, it is equal to the 127th bit   *)
+(* btr    $0x3f,%r11 *)
+bvSplit carry0 r11 (bvVar r11) 63;
+ bvSubC carry1 temp (bvConst 0) (bvVar carry0);
+  bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry); 
+   bvAssume bveq (bvvar carry0) (bvvar carry) | bvtrue; 
+    bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry1);
+     bvAssume bveq (bvvar carry0) (bvvar carry1) | bvtrue;
+(* sbb    $0x0,%r10 *)
+bvSbbC carry r10 (bvVar r10) (bvConst 0x0) carry;
+(* mov    %r10,%rdx *)
+bvAssign rdx (bvVar r10);
+(* mov    (%rdi),%r8                               #! EA = L0x7fffffffdad0 *)
+bvAssign r8 (bvVar L0x7fffffffdad0);
+(* add    %r14,%r8 *)
+bvAddC carry r8 (bvVar r14) (bvVar r8);
+(* mov    0x8(%rdi),%r9                            #! EA = L0x7fffffffdad8 *)
+bvAssign r9 (bvVar L0x7fffffffdad8);
+(* adc    %rcx,%r9 *)
+bvAdcC carry r9 (bvVar rcx) (bvVar r9) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0);
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue;
+(* mulx   %r8,%r12,%r13 *)
+bvMulf r13 r12 (bvVar r8) (bvVar rdx);
+(* NOTE the "sbb $0x0,%r11" was here, but seems to be wrong" *)
+(* sbb    $0x0,%r11 *)
+(* NOTE This instruction was moved up from below *)
+bvSbbC carry r11 (bvVar r11) (bvConst 0x0) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* mulx   %r9,%r14,%rax *)
+bvMulf rax r14 (bvVar r9) (bvVar rdx);
+(* mov    %r11,%rdx *)
+bvAssign rdx (bvVar r11);
+(* add    %r14,%r13 *)
+bvAddC carry r13 (bvVar r14) (bvVar r13);
+(* mulx   %r9,%r14,%rcx *)
+bvMulf rcx r14 (bvVar r9) (bvVar rdx);
+(* mov    0x8(%rdi),%r9                            #! EA = L0x7fffffffdad8 *)
+bvAssign r9 (bvVar L0x7fffffffdad8);
+(* adc    %rax,%r14 *)
+bvAdcC carry r14 (bvVar rax) (bvVar r14) carry;
+(* adc    $0x0,%rcx *)
+bvAdcC carry rcx (bvConst 0x0) (bvVar rcx) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* mulx   %r8,%rdx,%rax *)
+bvMulf rax rdx (bvVar r8) (bvVar rdx);
+(* mov    (%rdi),%r8                               #! EA = L0x7fffffffdad0 *)
+bvAssign r8 (bvVar L0x7fffffffdad0);
+(* add    %rdx,%r13 *)
+bvAddC carry r13 (bvVar rdx) (bvVar r13);
+(* adc    %rax,%r14 *)
+bvAdcC carry r14 (bvVar rax) (bvVar r14) carry;
+(* adc    $0x0,%rcx *)
+bvAdcC carry rcx (bvConst 0x0) (bvVar rcx) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* add    %r8,%r8 *)
+bvAddC carry r8 (bvVar r8) (bvVar r8);
+(* adc    %r9,%r9 *)
+bvAdcC carry r9 (bvVar r9) (bvVar r9) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* shld   $0x1,%r14,%rcx *)
+bvConcatShl rcx r14 (bvVar rcx) (bvVar r14) 0x1;
+(* shld   $0x1,%r13,%r14 *)
+bvConcatShl r14 r13 (bvVar r14) (bvVar r13) 0x1;
+(* two shld's plus this btr translates to two bvConcatshl's *)
+(* btr    $0x3f,%r13 *)
+(* bvSplit carry0 r13 (bvVar r13) 63; *)
+(* bvSubC carry temp (bvConst 0) (bvVar carry0); *)
+(* btr    $0x3f,%rcx *)
+bvSplit carry0 rcx (bvVar rcx) 63;
+ bvSubC carry temp (bvConst 0) (bvVar carry0);
+  bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry);
+   bvAssume bveq (bvvar carry0) (bvvar carry) | bvtrue;
+(* adc    %r14,%r12 *)
+bvAdcC carry r12 (bvVar r14) (bvVar r12) carry;
+(* adc    %rcx,%r13 *)
+bvAdcC carry r13 (bvVar rcx) (bvVar r13) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0);
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue;
+(* btr    $0x3f,%r13 *)
+bvSplit carry0 r13 (bvVar r13) 63;
+ bvSubC carry temp (bvConst 0) (bvVar carry0);
+  bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry);
+   bvAssume bveq (bvvar carry0) (bvvar carry) | bvtrue;
+(* adc    $0x0,%r12 *)
+bvAdcC carry r12 (bvConst 0x0) (bvVar r12) carry;
+(* adc    $0x0,%r13 *)
+bvAdcC carry r13 (bvConst 0x0) (bvVar r13) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* mov    %r12,(%rsi)                              #! EA = L0x7fffffffdaf0 *)
+bvAssign L0x7fffffffdaf0 (bvVar r12);
+(* mov    %r13,0x8(%rsi)                           #! EA = L0x7fffffffdaf8 *)
+bvAssign L0x7fffffffdaf8 (bvVar r13);
+(* mov    0x10(%rdi),%rdx                          #! EA = L0x7fffffffdae0 *)
+bvAssign rdx (bvVar L0x7fffffffdae0);
+(* mulx   %r8,%r10,%r11 *)
+bvMulf r11 r10 (bvVar r8) (bvVar rdx);
+(* mulx   %r9,%r14,%rax *)
+bvMulf rax r14 (bvVar r9) (bvVar rdx);
+(* add    %r14,%r11 *)
+bvAddC carry r11 (bvVar r14) (bvVar r11);
+(* mov    0x18(%rdi),%rdx                          #! EA = L0x7fffffffdae8 *)
+bvAssign rdx (bvVar L0x7fffffffdae8);
+(* mulx   %r9,%r14,%rcx *)
+bvMulf rcx r14 (bvVar r9) (bvVar rdx);
+(* adc    %rax,%r14 *)
+bvAdcC carry r14 (bvVar rax) (bvVar r14) carry;
+(* adc    $0x0,%rcx *)
+bvAdcC carry rcx (bvConst 0x0) (bvVar rcx) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* mulx   %r8,%rdx,%rax *)
+bvMulf rax rdx (bvVar r8) (bvVar rdx);
+(* add    %rdx,%r11 *)
+bvAddC carry r11 (bvVar rdx) (bvVar r11);
+(* adc    %rax,%r14 *)
+bvAdcC carry r14 (bvVar rax) (bvVar r14) carry;
+(* adc    $0x0,%rcx *)
+bvAdcC carry rcx (bvConst 0x0) (bvVar rcx) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* shld   $0x1,%r14,%rcx *)
+bvConcatShl rcx r14 (bvVar rcx) (bvVar r14) 0x1;
+(* shld   $0x1,%r11,%r14 *)
+bvConcatShl r14 r11 (bvVar r14) (bvVar r11) 0x1;
+(* two shld's plus this btr translates to two bvConcatshl's *)
+(* btr    $0x3f,%r11 *)
+(* bvSplit carry0 r11 (bvVar r11) 63; *)
+(* bvSubC carry temp (bvConst 0) (bvVar carry0); *)
+(* btr    $0x3f,%rcx *)
+bvSplit carry0 rcx (bvVar rcx) 63;
+ bvSubC carry temp (bvConst 0) (bvVar carry0);
+  bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry);
+   bvAssume bveq (bvvar carry0) (bvvar carry) | bvtrue;
+(* adc    %r14,%r10 *)
+bvAdcC carry r10 (bvVar r14) (bvVar r10) carry;
+(* adc    %rcx,%r11 *)
+bvAdcC carry r11 (bvVar rcx) (bvVar r11) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0);
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue;
+(* btr    $0x3f,%r11 *)
+bvSplit carry0 r11 (bvVar r11) 63;
+ bvSubC carry temp (bvConst 0) (bvVar carry0);
+  bvAssert bvtrue | bveq (bvvar carry0) (bvvar carry);
+   bvAssume bveq (bvvar carry0) (bvvar carry) | bvtrue;
+(* adc    $0x0,%r10 *)
+bvAdcC carry r10 (bvConst 0x0) (bvVar r10) carry;
+(* adc    $0x0,%r11 *)
+bvAdcC carry r11 (bvConst 0x0) (bvVar r11) carry;
+ bvAssert bvtrue | bveq (bvvar carry) (bvconst 64 0); 
+  bvAssume bveq (bvvar carry) (bvconst 0) | bvtrue; 
+(* mov    %r10,0x10(%rsi)                          #! EA = L0x7fffffffdb00 *)
+bvAssign L0x7fffffffdb00 (bvVar r10);
+(* mov    %r11,0x18(%rsi)                          #! EA = L0x7fffffffdb08 *)
+bvAssign L0x7fffffffdb08 (bvVar r11);
+(* #retq *)
+#retq;
+
+{
+#  bveTrue
+  bvands [
+    bveqmod (
+      bvsub
+        ( bvmul
+          (limbs 64 [bvvar L0x7fffffffdad0, bvvar L0x7fffffffdad8])
+          (limbs 64 [bvvar L0x7fffffffdad0, bvvar L0x7fffffffdad8]) )
+        ( bvmul
+          (limbs 64 [bvvar L0x7fffffffdae0, bvvar L0x7fffffffdae8])
+          (limbs 64 [bvvar L0x7fffffffdae0, bvvar L0x7fffffffdae8]) )
+        )
+      (limbs 64 [bvvar L0x7fffffffdaf0, bvvar L0x7fffffffdaf8])
+      (bvconst (2^127 - 1) ),
+    bveqmod (
+      bvadd
+        ( bvmul
+          (limbs 64 [bvvar L0x7fffffffdad0, bvvar L0x7fffffffdad8])
+          (limbs 64 [bvvar L0x7fffffffdae0, bvvar L0x7fffffffdae8]) )
+        ( bvmul
+          (limbs 64 [bvvar L0x7fffffffdae0, bvvar L0x7fffffffdae8])
+          (limbs 64 [bvvar L0x7fffffffdad0, bvvar L0x7fffffffdad8]) )
+        )
+      (limbs 64 [bvvar L0x7fffffffdb00, bvvar L0x7fffffffdb08])
+      (bvconst (2^127 - 1) )
+  ]
+  |
+#  bvrTrue
+  bvands [
+    limbs 64 [bvvar L0x7fffffffdaf0, bvvar L0x7fffffffdaf8] < bvconst 128 (2^127),
+    limbs 64 [bvvar L0x7fffffffdb00, bvvar L0x7fffffffdb08] < bvconst 128 (2^127)
+  ]
+}
+

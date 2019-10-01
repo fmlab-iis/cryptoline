@@ -1,0 +1,378 @@
+#! %rbx = %%rbx
+#! %rbp = %%rbp
+#! %r10 = %%r10
+#! %r12 = %%r12
+#! %r13 = %%r13
+#! %r14 = %%r14
+#! %r15 = %%r15
+#! %eax = %%eax
+#! %ebx = %%ebx
+#! %edx = %%edx
+#! %ebp = %%ebp
+
+#! %ax = %%ax
+
+#! %ymm0 = %%ymm0
+#! %ymm1 = %%ymm1
+#! %ymm2 = %%ymm2
+#! %ymm3 = %%ymm3
+#! %ymm4 = %%ymm4
+#! %ymm5 = %%ymm5
+#! %ymm6 = %%ymm6
+#! %ymm7 = %%ymm7
+#! %ymm8 = %%ymm8
+#! %ymm9 = %%ymm9
+#! %ymm10 = %%ymm10
+#! %ymm11 = %%ymm11
+#! %ymm12 = %%ymm12
+#! %ymm13 = %%ymm13
+#! %ymm14 = %%ymm14
+#! %ymm15 = %%ymm15
+
+
+#! -0x20(%rsi) = %%EA
+#! 0x8(%rsi) = %%EA
+#! 0x10(%rsi) = %%EA
+#! 0x20(%rsi) = %%EA
+#! 0x30(%rsi) = %%EA
+#! 0x40(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! %rsi = %%rsi
+
+#! -0x4(%rdi) = %%EA
+#! -0x8(%rdi) = %%EA
+#! -0xc(%rdi) = %%EA
+#! -0x10(%rdi) = %%EA
+#! -0x14(%rdi) = %%EA
+#! -0x18(%rdi) = %%EA
+#! -0x1c(%rdi) = %%EA
+#! -0x20(%rdi) = %%EA
+#! -0x24(%rdi) = %%EA
+#! -0x28(%rdi) = %%EA
+#! -0x2c(%rdi) = %%EA
+#! -0x30(%rdi) = %%EA
+#! -0x34(%rdi) = %%EA
+#! -0x38(%rdi) = %%EA
+#! -0x3c(%rdi) = %%EA
+#! -0x40(%rdi) = %%EA
+#! -0x60(%rdi) = %%EA
+#! -0x64(%rdi) = %%EA
+#! -0x68(%rdi) = %%EA
+#! -0x6c(%rdi) = %%EA
+#! -0x70(%rdi) = %%EA
+#! 0x4(%rdi) = %%EA
+#! 0x8(%rdi) = %%EA
+#! 0xc(%rdi) = %%EA
+#! 0x10(%rdi) = %%EA
+#! 0x14(%rdi) = %%EA
+#! 0x18(%rdi) = %%EA
+#! 0x1c(%rdi) = %%EA
+#! 0x20(%rdi) = %%EA
+#! 0x24(%rdi) = %%EA
+#! 0x28(%rdi) = %%EA
+#! 0x2c(%rdi) = %%EA
+#! 0x30(%rdi) = %%EA
+#! 0x34(%rdi) = %%EA
+#! 0x38(%rdi) = %%EA
+#! 0x3c(%rdi) = %%EA
+#! 0x40(%rdi) = %%EA
+#! 0x44(%rdi) = %%EA
+#! 0x48(%rdi) = %%EA
+#! 0x4c(%rdi) = %%EA
+#! 0x70(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! %rdi = %%rdi
+
+#! -0x58(%rsp) = %%EA
+#! -0x8(%rsp) = %%EA
+#! 0x4(%rsp) = %%EA
+#! 0x8(%rsp) = %%EA
+#! 0x10(%rsp) = %%EA
+#! 0x18(%rsp) = %%EA
+#! 0x20(%rsp) = %%EA
+#! 0x24(%rsp) = %%EA
+#! 0x40(%rsp) = %%EA
+#! 0x44(%rsp) = %%EA
+#! 0x28(%rsp) = %%EA
+#! 0x30(%rsp) = %%EA
+#! 0x50(%rsp) = %%EA
+#! 0x58(%rsp) = %%EA
+#! 0x60(%rsp) = %%EA
+#! 0x64(%rsp) = %%EA
+#! 0x70(%rsp) = %%EA
+#! 0x80(%rsp) = %%EA
+#! 0x90(%rsp) = %%EA
+#! (%rsp) = %%EA
+#! %rsp = %%rsp
+
+#! 0x20(%rcx) = %%EA
+#! 0x40(%rcx) = %%EA
+#! 0x60(%rcx) = %%EA
+#! 0x90(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! %rcx = %%rcx
+
+#! -0x10(%r11) = %%EA
+#! -0x20(%r11) = %%EA
+#! -0x30(%r11) = %%EA
+#! -0x40(%r11) = %%EA
+#! -0x50(%r11) = %%EA
+#! -0x58(%r11) = %%EA
+#! -0x60(%r11) = %%EA
+#! -0x70(%r11) = %%EA
+#! -0x80(%r11) = %%EA
+#! -0x90(%r11) = %%EA
+#! 0x8(%r11) = %%EA
+#! 0x10(%r11) = %%EA
+#! 0x20(%r11) = %%EA
+#! 0x30(%r11) = %%EA
+#! 0x40(%r11) = %%EA
+#! 0x58(%r11) = %%EA
+#! (%r11) = %%EA
+#! %r11 = %%r11
+
+#! 0x2a60(%rip) =%%EA
+#! 0x202afc(%rip) =%%EA
+#! 0x1e75(%rip) =%%EA
+#! (%rip) =%%EA
+#! %rip =%%rip
+
+#! (%rax,%rax,4) = %%EA
+#! -0xc(%rax) =%%EA
+#! -0x10(%rax) =%%EA
+#! -0x30(%rax) =%%EA
+#! -0x50(%rax) =%%EA
+#! -0x70(%rax) =%%EA
+#! 0x10(%rax) =%%EA
+#! 0x14(%rax) =%%EA
+#! 0x30(%rax) =%%EA
+#! 0x34(%rax) =%%EA
+#! 0x50(%rax) =%%EA
+#! 0x54(%rax) =%%EA
+#! 0x70(%rax) =%%EA
+#! 0x74(%rax) =%%EA
+#! (%rax) =%%EA
+#! %rax = %%rax
+
+#! (%rdx,%rdx,4) = %%EA
+#! %rdx = %%rdx
+
+#! (%r8,%r8,4) = %%EA
+#! (%r9,%r9,4) = %%EA
+#! %r8 = %%r8
+#! %r9 = %%r9
+
+#! %r8d = %%r8d
+#! %r9d = %%r9d
+#! %r10d = %%r10d
+#! %r11d = %%r11d
+#! %r14d = %%r14d
+
+# xmmH xmmL
+# ymmHH ymmHL ymmLH ymmLL
+
+#! y2dvmovdqa $1v, $2v -> bvAssign ymm2LL (bvVar $1v); \nbvAssign ymm2LH (bvVar L0x7fffffffdaa8); \nbvAssign ymm2HL (bvVar L0x7fffffffdab0); \nbvAssign ymm2HH (bvVar L0x7fffffffdab8)
+#! y5dvmovdqa $1v, $2v -> bvAssign ymm5LL (bvVar $1v); \nbvAssign ymm5LH (bvVar L0x404588); \nbvAssign ymm5HL (bvVar L0x404590); \nbvAssign ymm5HH (bvVar L0x404598)
+#! y5d2vmovdqa $1v, $2v -> bvAssign ymm5LL (bvVar $1v); \nbvAssign ymm5LH (bvVar L0x7fffffffdb08); \nbvAssign ymm5HL (bvVar L0x7fffffffdb10); \nbvAssign ymm5HH (bvVar L0x7fffffffdb18)
+#! y7d2vmovdqa $1v, $2v -> bvAssign ymm7LL (bvVar $1v); \nbvAssign ymm7LH (bvVar L0x7fffffffda08); \nbvAssign ymm7HL (bvVar L0x7fffffffda10); \nbvAssign ymm7HH (bvVar L0x7fffffffda18)
+#! y8dvmovdqa $1v, $2v -> bvAssign ymm8LL (bvVar $1v); \nbvAssign ymm8LH (bvVar L0x7fffffffda28); \nbvAssign ymm8HL (bvVar L0x7fffffffda30); \nbvAssign ymm8HH (bvVar L0x7fffffffda38)
+#! y8d2vmovdqa $1v, $2v -> bvAssign ymm8LL (bvVar $1v); \nbvAssign ymm8LH (bvVar L0x7fffffffda88); \nbvAssign ymm8HL (bvVar L0x7fffffffda90); \nbvAssign ymm8HH (bvVar L0x7fffffffda98)
+#! y9dvmovdqa $1v, $2v -> bvAssign ymm9LL (bvVar $1v); \nbvAssign ymm9LH (bvVar L0x7fffffffda68); \nbvAssign ymm9HL (bvVar L0x7fffffffda70); \nbvAssign ymm9HH (bvVar L0x7fffffffda78)
+#! y10dvmovdqa $1v, $2v -> bvAssign ymm10LL (bvVar $1v); \nbvAssign ymm10LH (bvVar L0x7fffffffdac8); \nbvAssign ymm10HL (bvVar L0x7fffffffdad0); \nbvAssign ymm10HH (bvVar L0x7fffffffdad8)
+
+
+#! vpaddq $1v, $2v, $3v -> bvAdd $3vHH (bvVar $1vHH) (bvVar $2vHH); \nbvAdd $3vHL (bvVar $1vHL) (bvVar $2vHL); \nbvAdd $3vLH (bvVar $1vLH) (bvVar $2vLH); \nbvAdd $3vLL (bvVar $1vLL) (bvVar $2vLL) 
+
+
+#! vpmuludq2 $1v, $2v, $3v -> bvSplit $2vLLH $2vLLL (bvVar $2vLL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLLH) (bvconst 0) | bvrTrue; \nbvSplit mllh mlll (bvVar L0x7fffffffdae0) 32; \nbvAssert bveTrue | bvrEq (bvvar mllh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mlll) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mllh) (bvconst 0) | bvrTrue; \nbvMul $3vLL (bvVar $2vLLL) (bvVar mlll); \nbvSplit $2vLHH $2vLHL (bvVar $2vLH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLHH) (bvconst 0) | bvrTrue; \nbvSplit mlhh mlhl (bvVar L0x7fffffffdae8) 32; \nbvAssert bveTrue | bvrEq (bvvar mlhh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mlhl) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mlhh) (bvconst 0) | bvrTrue; \nbvMul $3vLH (bvVar $2vLHL) (bvVar mlhl); \nbvSplit $2vHLH $2vHLL (bvVar $2vHL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHLH) (bvconst 0) | bvrTrue; \nbvSplit mhlh mhll (bvVar L0x7fffffffdaf0) 32; \nbvAssert bveTrue | bvrEq (bvvar mhlh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mhll) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mhlh) (bvconst 0) | bvrTrue; \nbvMul $3vHL (bvVar $2vHLL) (bvVar mhll); \nbvSplit $2vHHH $2vHHL (bvVar $2vHH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHHH) (bvconst 0) | bvrTrue; \nbvSplit mhhh mhhl (bvVar L0x7fffffffdaf8) 32; \nbvAssert bveTrue | bvrEq (bvvar mhhh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mhhl) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mhhh) (bvconst 0) | bvrTrue; \nbvMul $3vHH (bvVar $2vHHL) (bvVar mhhl)
+
+#! vpmuludq1 $1v, $2v, $3v -> bvSplit $2vLLH $2vLLL (bvVar $2vLL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLLH) (bvconst 0) | bvrTrue; \nbvSplit mllh mlll (bvVar L0x7fffffffda40) 32; \nbvAssert bveTrue | bvrEq (bvvar mllh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mlll) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mllh) (bvconst 0) | bvrTrue; \nbvMul $3vLL (bvVar $2vLLL) (bvVar mlll); \nbvSplit $2vLHH $2vLHL (bvVar $2vLH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLHH) (bvconst 0) | bvrTrue; \nbvSplit mlhh mlhl (bvVar L0x7fffffffda48) 32; \nbvAssert bveTrue | bvrEq (bvvar mlhh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mlhl) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mlhh) (bvconst 0) | bvrTrue; \nbvMul $3vLH (bvVar $2vLHL) (bvVar mlhl); \nbvSplit $2vHLH $2vHLL (bvVar $2vHL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHLH) (bvconst 0) | bvrTrue; \nbvSplit mhlh mhll (bvVar L0x7fffffffda50) 32; \nbvAssert bveTrue | bvrEq (bvvar mhlh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mhll) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mhlh) (bvconst 0) | bvrTrue; \nbvMul $3vHL (bvVar $2vHLL) (bvVar mhll); \nbvSplit $2vHHH $2vHHL (bvVar $2vHH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHHH) (bvconst 0) | bvrTrue; \nbvSplit mhhh mhhl (bvVar L0x7fffffffda58) 32; \nbvAssert bveTrue | bvrEq (bvvar mhhh) (bvconst 64 0); \nbvAssert bveTrue | (bvvar mhhl) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar mhhh) (bvconst 0) | bvrTrue; \nbvMul $3vHH (bvVar $2vHHL) (bvVar mhhl)
+
+#! vpmuludq $1v, $2v, $3v -> bvSplit $2vLLH $2vLLL (bvVar $2vLL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLLH) (bvconst 0) | bvrTrue; \nbvSplit $1vLLH $1vLLL (bvVar $1vLL) 32; \nbvAssert bveTrue | bvrEq (bvvar $1vLLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $1vLLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $1vLLH) (bvconst 0) | bvrTrue; \nbvMul $3vLL (bvVar $2vLLL) (bvVar $1vLLL); \nbvSplit $2vLHH $2vLHL (bvVar $2vLH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vLHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vLHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vLHH) (bvconst 0) | bvrTrue; \nbvSplit $1vLHH $1vLHL (bvVar $1vLH) 32; \nbvAssert bveTrue | bvrEq (bvvar $1vLHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $1vLHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $1vLHH) (bvconst 0) | bvrTrue; \nbvMul $3vLH (bvVar $2vLHL) (bvVar $1vLHL); \nbvSplit $2vHLH $2vHLL (bvVar $2vHL) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHLH) (bvconst 0) | bvrTrue; \nbvSplit $1vHLH $1vHLL (bvVar $1vHL) 32; \nbvAssert bveTrue | bvrEq (bvvar $1vHLH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $1vHLL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $1vHLH) (bvconst 0) | bvrTrue; \nbvMul $3vHL (bvVar $2vHLL) (bvVar $1vHLL); \nbvSplit $2vHHH $2vHHL (bvVar $2vHH) 32; \nbvAssert bveTrue | bvrEq (bvvar $2vHHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $2vHHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $2vHHH) (bvconst 0) | bvrTrue; \nbvSplit $1vHHH $1vHHL (bvVar $1vHH) 32; \nbvAssert bveTrue | bvrEq (bvvar $1vHHH) (bvconst 64 0); \nbvAssert bveTrue | (bvvar $1vHHL) < (bvconst 64 2^32); \nbvAssume bveEq (bvvar $1vHHH) (bvconst 0) | bvrTrue; \nbvMul $3vHH (bvVar $2vHHL) (bvVar $1vHHL)
+
+#! vpsrlq \$0x1a, $1v, $2v -> bvSplit $2vLL $1vLL (bvVar $1vLL) 26; \nbvSplit $2vLH $1vLH (bvVar $1vLH) 26; \nbvSplit $2vHL $1vHL (bvVar $1vHL) 26; \nbvSplit $2vHH $1vHH (bvVar $1vHH) 26
+
+#! vpsllq \$0x2, $1v, $2v -> bvMul $2vLL (bvVar $1vLL) (bvConst 4);\nbvMul $2vLH (bvVar $1vLH) (bvConst 4); \nbvMul $2vHL (bvVar $1vHL) (bvConst 4); \nbvMul $2vHH (bvVar $1vHH) (bvConst 4)
+
+
+# We only verify the loop in the avx2 case for the moment.
+#.Loop_avx2:
+
+#	################################################################
+#	# ((inp[0]*r^4+inp[4])*r^4+inp[ 8])*r^4
+#	# ((inp[1]*r^4+inp[5])*r^4+inp[ 9])*r^3
+#	# ((inp[2]*r^4+inp[6])*r^4+inp[10])*r^2
+#	# ((inp[3]*r^4+inp[7])*r^4+inp[11])*r^1
+#	#   \________/\__________/
+#	################################################################
+
+#	#vpaddq		$H2,$T2,$H2		# accumulate input
+#	# jx: This instruction is commented out in the real version, but we keep
+#	# it for verifiction of the loop. (generating the following instruction)
+
+	vpaddq %ymm2,%ymm9,%ymm2	
+	vpaddq %ymm0,%ymm7,%ymm0
+	y7d2vmovdqa (%rsp),%ymm7                            #! EA = L0x7fffffffda00
+	vpaddq %ymm1,%ymm8,%ymm1
+	y8dvmovdqa 0x20(%rsp),%ymm8                        #! EA = L0x7fffffffda20
+	vpaddq %ymm3,%ymm10,%ymm3
+	y9dvmovdqa 0x60(%rsp),%ymm9                        #! EA = L0x7fffffffda60
+	vpaddq %ymm4,%ymm6,%ymm4
+	y10dvmovdqa 0x30(%rax),%ymm10                       #! EA = L0x7fffffffdac0
+	y5d2vmovdqa 0x70(%rax),%ymm5                        #! EA = L0x7fffffffdb00
+
+#	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+#	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+#	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+#	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+#	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+#	#
+#	# however, as h2 is "chronologically" first one available pull
+#	# corresponding operations up, so it's
+#	#
+#	# d4 = h2*r2   + h4*r0 + h3*r1             + h1*r3   + h0*r4
+#	# d3 = h2*r1   + h3*r0           + h1*r2   + h0*r3   + h4*5*r4
+#	# d2 = h2*r0           + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+#	# d1 = h2*5*r4 + h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3
+#	# d0 = h2*5*r3 + h0*r0 + h4*5*r1 + h3*5*r2           + h1*5*r4
+
+	vpmuludq %ymm2,%ymm7,%ymm13
+	vpmuludq %ymm2,%ymm8,%ymm14
+	vpmuludq %ymm2,%ymm9,%ymm15
+	vpmuludq %ymm2,%ymm10,%ymm11
+	vpmuludq %ymm2,%ymm5,%ymm12
+
+	vpmuludq %ymm0,%ymm8,%ymm6
+	vpmuludq %ymm1,%ymm8,%ymm2
+	vpaddq %ymm6,%ymm12,%ymm12
+	vpaddq %ymm2,%ymm13,%ymm13
+	vpmuludq %ymm3,%ymm8,%ymm6
+	vpmuludq1 0x40(%rsp),%ymm4,%ymm2                 #! EA = L0x7fffffffda40
+	vpaddq %ymm6,%ymm15,%ymm15
+	vpaddq %ymm2,%ymm11,%ymm11
+	y8d2vmovdqa -0x10(%rax),%ymm8                       #! EA = L0x7fffffffda80
+
+	vpmuludq %ymm0,%ymm7,%ymm6
+	vpmuludq %ymm1,%ymm7,%ymm2
+	vpaddq %ymm6,%ymm11,%ymm11
+	vpaddq %ymm2,%ymm12,%ymm12
+	vpmuludq %ymm3,%ymm7,%ymm6
+	vpmuludq %ymm4,%ymm7,%ymm2
+#	vmovdqu2 (%rsi),%xmm7                            #! EA = L0x6050e0
+# jx: load next input, no use
+	vpaddq %ymm6,%ymm14,%ymm14
+	vpaddq %ymm2,%ymm15,%ymm15
+#	vinserti128y72 $0x1,0x20(%rsi),%ymm7,%ymm7         #! EA = L0x605100
+# jx: load next input, no use
+	
+
+	vpmuludq %ymm3,%ymm8,%ymm6
+	vpmuludq %ymm4,%ymm8,%ymm2
+#	vmovdqu2 0x10(%rsi),%xmm8                        #! EA = L0x6050f0
+# jx: load next input, no use
+	vpaddq %ymm6,%ymm11,%ymm11
+	vpaddq %ymm2,%ymm12,%ymm12
+	y2dvmovdqa 0x10(%rax),%ymm2                        #! EA = L0x7fffffffdaa0
+	vpmuludq %ymm1,%ymm9,%ymm6
+	vpmuludq %ymm0,%ymm9,%ymm9
+	vpaddq %ymm6,%ymm14,%ymm14
+	vpaddq %ymm9,%ymm13,%ymm13
+#	vinserti128y82 $0x1,0x30(%rsi),%ymm8,%ymm8         #! EA = L0x605110
+# jx: load next input, no use
+#	lea    0x40(%rsi),%rsi                          #! EA = L0x605120
+# jx: compute new input pointer, no use
+	
+	vpmuludq %ymm1,%ymm2,%ymm6
+	vpmuludq %ymm0,%ymm2,%ymm2
+#	vpsrldq $0x6,%ymm7,%ymm9	# splat input
+# jx: splat next input, no use
+	vpaddq %ymm6,%ymm15,%ymm15
+	vpaddq %ymm2,%ymm14,%ymm14
+	vpmuludq %ymm3,%ymm10,%ymm6
+	vpmuludq %ymm4,%ymm10,%ymm2
+#	vpsrldq $0x6,%ymm8,%ymm10
+# jx: splat next input, no use
+	vpaddq %ymm6,%ymm12,%ymm12
+	vpaddq %ymm2,%ymm13,%ymm13
+#	vpunpckhqdq %ymm8,%ymm7,%ymm6	# 4
+# jx: splat next input, no use
+
+	vpmuludq %ymm3,%ymm5,%ymm3
+	vpmuludq %ymm4,%ymm5,%ymm4
+#	vpunpcklqdq %ymm8,%ymm7,%ymm7	# 0:1
+# jx: splat next input, no use
+	vpaddq %ymm3,%ymm13,%ymm2
+	vpaddq %ymm4,%ymm14,%ymm3
+#	vpunpcklqdq %ymm10,%ymm9,%ymm10	# 2:3
+# jx: splat next input, no use
+	vpmuludq2 0x50(%rax),%ymm0,%ymm4                 #! EA = L0x7fffffffdae0
+	vpmuludq %ymm1,%ymm5,%ymm0
+	y5dvmovdqa 0x40(%rcx),%ymm5                        #! EA = L0x404580
+	vpaddq %ymm4,%ymm15,%ymm4
+	vpaddq %ymm0,%ymm11,%ymm0
+
+#	################################################################
+#	# lazy reduction (interleaved with tail of input splat)
+	
+	vpsrlq $0x1a,%ymm3,%ymm14
+#	vpand  %ymm5,%ymm3,%ymm3
+	vpaddq %ymm14,%ymm4,%ymm4
+
+	vpsrlq $0x1a,%ymm0,%ymm11
+#	vpand  %ymm5,%ymm0,%ymm0
+	vpaddq %ymm11,%ymm12,%ymm1
+
+	vpsrlq $0x1a,%ymm4,%ymm15
+#	vpand  %ymm5,%ymm4,%ymm4
+
+#	vpsrlq $0x4,%ymm10,%ymm9
+# jx: splat next input, no use
+
+	vpsrlq $0x1a,%ymm1,%ymm12
+#	vpand  %ymm5,%ymm1,%ymm1
+	vpaddq %ymm12,%ymm2,%ymm2
+
+	vpaddq %ymm15,%ymm0,%ymm0
+	vpsllq $0x2,%ymm15,%ymm15
+	vpaddq %ymm15,%ymm0,%ymm0
+
+#	vpand  %ymm5,%ymm9,%ymm9	# 2
+# jx: splat next input, no use
+#	vpsrlq $0x1a,%ymm7,%ymm8
+# jx: splat next input, no use
+
+	vpsrlq $0x1a,%ymm2,%ymm13
+#	vpand  %ymm5,%ymm2,%ymm2
+	vpaddq %ymm13,%ymm3,%ymm3
+
+#	vpaddq %ymm9,%ymm2,%ymm2	# modulo-scheduled
+# 	# jx: commented out for verification of the loop, while the above
+# 	# instruction exists in the real version.
+#	vpsrlq $0x1e,%ymm10,%ymm10
+# jx: splat next input, no use
+
+	vpsrlq $0x1a,%ymm0,%ymm11
+#	vpand  %ymm5,%ymm0,%ymm0
+	vpaddq %ymm11,%ymm1,%ymm1
+
+#	vpsrlq $0x28,%ymm6,%ymm6	# 4
+# jx: splat next input, no use
+
+	vpsrlq $0x1a,%ymm3,%ymm14
+#	vpand  %ymm5,%ymm3,%ymm3
+	vpaddq %ymm14,%ymm4,%ymm4
+
+#	vpand  %ymm5,%ymm7,%ymm7	# 0
+# jx: splat next input, no use
+#	vpand  %ymm5,%ymm8,%ymm8	# 1
+# jx: splat next input, no use
+#	vpand  %ymm5,%ymm10,%ymm10	# 3
+# jx: splat next input, no use
+#	vpor   0x20(%rcx),%ymm6,%ymm6                   #! EA = L0x404560
+# 	# padbit, yes, always
+# jx: add padbit to next input, no use
+
+#	sub    $0x40,%rdx	# jx: decrease len
+#	#jne    0x4027e0 <poly1305_blocks_avx2+1056>
+
+# loop ends here.

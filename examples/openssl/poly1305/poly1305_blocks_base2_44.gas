@@ -1,0 +1,111 @@
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rbp = %%rbp
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %r$1c = %%r$1c
+#! (%rsi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! add $1v, $2v -> uadds carry $2v $1v $2v
+#! adc $1v, $2v -> uadc $2v $1v $2v carry
+#! adc \$0x0, $1v -> uadc $1v $1v 0@uint64 carry
+#! mulx $1v, $2v, $3v -> umull $3v $2v $1v rdx
+#! andn $1v, $2v, $3v -> assert true && $2v = 0xfffff00000000000@64;\nusplit $1v_H $3v $1v 44
+#! and $1v, $2v -> assert true && $2v = 0x3ffffffffff@64;\nusplit $1v_H $2v $1v 42
+#! shl \$0x28, $1v -> shl $1v $1v 40
+#! shr \$0x18, $1v -> usplit $1v dontcare $1v 24
+#! shrd \$0x2c, $1v, $2v -> usplit $1v_H $1v_L $1v 44;\ncshl $2v dontcare $1v_L $2v 20
+#! shrd \$0x2a, $1v, $2v -> usplit $1v_H $1v_L $1v 42;\ncshl $2v dontcare $1v_L $2v 22
+
+#poly1305_blocks_base2_44:
+# %rdi = 0x16af010
+# %rsi = 0x605080
+# %rdx = 0x10
+# %rcx = 0x1
+# %r8  = 0xaa80ccddeef
+# %r9  = 0xfffffffffff
+#	push   %rbx                                     #! PC = 0x4206944
+#	push   %rbp                                     #! PC = 0x4206945
+#	push   %r12                                     #! PC = 0x4206946
+#	push   %r13                                     #! PC = 0x4206948
+#	push   %r14                                     #! PC = 0x4206950
+#	push   %r15                                     #! PC = 0x4206952
+#	and    $0xfffffffffffffff0,%rdx                 #! PC = 0x4206954
+#	add    %rsi,%rdx                                #! PC = 0x4206958
+	shl    $0x28,%rcx                               #! PC = 0x4206961
+#	push   %rdx                                     #! PC = 0x4206965
+	mov    (%rdi),%rdx                              #! EA = L0x16af010; Value = 0x0000000000000000; PC = 0x4206966
+	mov    0x8(%rdi),%r8                            #! EA = L0x16af018; Value = 0x0000000000000000; PC = 0x4206969
+	mov    0x10(%rdi),%r9                           #! EA = L0x16af020; Value = 0x0000000000000000; PC = 0x4206973
+	mov    0x28(%rdi),%r13                          #! EA = L0x16af038; Value = 0x00000aa80ccddeef; PC = 0x4206977
+	mov    0x30(%rdi),%r14                          #! EA = L0x16af040; Value = 0x0000043322008899; PC = 0x4206981
+	mov    0x20(%rdi),%r15                          #! EA = L0x16af030; Value = 0x000000aa953fd050; PC = 0x4206985
+	movabs $0xfffff00000000000,%rax                 #! PC = 0x4206989
+	#jmp    0x4031a0 <poly1305_blocks_base2_44+64>  #! PC = 0x4206999
+	mov    (%rsi),%r11                              #! EA = L0x605080; Value = 0x8978675645342312; PC = 0x4207008
+	mov    0x8(%rsi),%r12                           #! EA = L0x605088; Value = 0x8798a9bacbdcedfe; PC = 0x4207011
+	lea    0x10(%rsi),%rsi                          #! PC = 0x4207015
+	andn   %r11,%rax,%r10                           #! PC = 0x4207019
+	shrd   $0x2c,%r12,%r11                          #! PC = 0x4207024
+	add    %r10,%rdx                                #! PC = 0x4207029
+	shr    $0x18,%r12                               #! PC = 0x4207032
+	andn   %r11,%rax,%r11                           #! PC = 0x4207036
+	add    %rcx,%r9                                 #! PC = 0x4207041
+	add    %r11,%r8                                 #! PC = 0x4207044
+	add    %r12,%r9                                 #! PC = 0x4207047
+	mulx   %r13,%r10,%rbx                           #! PC = 0x4207050
+	mulx   %r14,%r11,%rcx                           #! PC = 0x4207055
+	mulx   0x38(%rdi),%r12,%rbp                     #! EA = L0x16af048; Value = 0x0000000887766404; PC = 0x4207060
+	mov    %r8,%rdx                                 #! PC = 0x4207066
+	mulx   %r15,%rax,%r8                            #! PC = 0x4207069
+	add    %rax,%r10                                #! PC = 0x4207074
+	adc    %rbx,%r8                                 #! PC = 0x4207077
+	mulx   %r13,%rax,%rbx                           #! PC = 0x4207080
+	add    %rax,%r11                                #! PC = 0x4207085
+	adc    %rbx,%rcx                                #! PC = 0x4207088
+	mulx   %r14,%rax,%rbx                           #! PC = 0x4207091
+	mov    %r9,%rdx                                 #! PC = 0x4207096
+	add    %rax,%r12                                #! PC = 0x4207099
+	adc    %rbx,%rbp                                #! PC = 0x4207102
+	mulx   0x18(%rdi),%rax,%rbx                     #! EA = L0x16af028; Value = 0x000053fea80aabf4; PC = 0x4207105
+	add    %rax,%r10                                #! PC = 0x4207111
+	adc    %rbx,%r8                                 #! PC = 0x4207114
+	mulx   %r15,%rax,%r9                            #! PC = 0x4207117
+	add    %rax,%r11                                #! PC = 0x4207122
+	adc    %rcx,%r9                                 #! PC = 0x4207125
+	mulx   %r13,%rax,%rbx                           #! PC = 0x4207128
+	add    %rax,%r12                                #! PC = 0x4207133
+	adc    %rbx,%rbp                                #! PC = 0x4207136
+	movabs $0xfffff00000000000,%rax                 #! PC = 0x4207139
+	andn   %r10,%rax,%rdx                           #! PC = 0x4207149
+	shrd   $0x2c,%r8,%r10                           #! PC = 0x4207154
+	add    %r10,%r11                                #! PC = 0x4207159
+	adc    $0x0,%r9                                 #! PC = 0x4207162
+	andn   %r11,%rax,%r8                            #! PC = 0x4207166
+	shrd   $0x2c,%r9,%r11                           #! PC = 0x4207171
+	movabs $0x3ffffffffff,%r9                       #! PC = 0x4207176
+	add    %r11,%r12                                #! PC = 0x4207186
+	#?#adc	\$0,%rbp
+	and    %r12,%r9                                 #! PC = 0x4207189
+	shrd   $0x2a,%rbp,%r12                          #! PC = 0x4207192
+	movabs $0x10000000000,%rcx                      #! PC = 0x4207197
+	lea    (%r12,%r12,4),%r12                       #! PC = 0x4207207
+	add    %r12,%rdx                                #! PC = 0x4207211
+#	cmp    (%rsp),%rsi                              #! EA = L0x7ffccc256c00; Value = 0x0000000000605090; PC = 0x4207214
+	#jb     0x4031a0 <poly1305_blocks_base2_44+64>  #! PC = 0x4207218
+#	mov    %rdx,(%rdi)                              #! EA = L0x16af010; PC = 0x4207224
+#	mov    %r8,0x8(%rdi)                            #! EA = L0x16af018; PC = 0x4207227
+#	mov    %r9,0x10(%rdi)                           #! EA = L0x16af020; PC = 0x4207231
+#	mov    0x8(%rsp),%r15                           #! EA = L0x7ffccc256c08; Value = 0x0000000000403160; PC = 0x4207235
+#	mov    0x10(%rsp),%r14                          #! EA = L0x7ffccc256c10; Value = 0x0000000000000000; PC = 0x4207240
+#	mov    0x18(%rsp),%r13                          #! EA = L0x7ffccc256c18; Value = 0x0000000000605090; PC = 0x4207245
+#	mov    0x20(%rsp),%r12                          #! EA = L0x7ffccc256c20; Value = 0x0000000000000000; PC = 0x4207250
+#	mov    0x28(%rsp),%rbp                          #! EA = L0x7ffccc256c28; Value = 0x00000000016af010; PC = 0x4207255
+#	mov    0x30(%rsp),%rbx                          #! EA = L0x7ffccc256c30; Value = 0x0000000000000010; PC = 0x4207260
+#	lea    0x38(%rsp),%rsp                          #! PC = 0x4207265
+	#repz retq                                      #! PC = 0x4207270

@@ -1,0 +1,1162 @@
+#! alpha0 = %%alpha0
+#! q0 = %%q0
+#! q1 = %%q1
+#! a0 = %%a0
+#! a1 = %%a1
+#! a2 = %%a2
+#! a3 = %%a3
+#! a4 = %%a4
+#! a5 = %%a5
+#! a6 = %%a6
+#! a7 = %%a7
+#! a8 = %%a8
+#! a9 = %%a9
+#! a10 = %%a10
+#! a11 = %%a11
+#! a12 = %%a12
+#! a13 = %%a13
+#! a14 = %%a14
+#! a15 = %%a15
+#! b0 = %%b0
+#! b1 = %%b1
+#! b2 = %%b2
+#! b3 = %%b3
+#! b4 = %%b4
+#! b5 = %%b5
+#! b6 = %%b6
+#! b7 = %%b7
+#! b8 = %%b8
+#! b9 = %%b9
+#! b10 = %%b10
+#! b11 = %%b11
+#! b12 = %%b12
+#! b13 = %%b13
+#! b14 = %%b14
+#! b15 = %%b15
+#! m0 = %%m0
+#! m1 = %%m1
+#! m2 = %%m2
+#! m3 = %%m3
+#! m4 = %%m4
+#! m5 = %%m5
+#! m6 = %%m6
+#! m7 = %%m7
+#! m8 = %%m8
+#! m9 = %%m9
+#! m10 = %%m10
+#! m11 = %%m11
+#! m12 = %%m12
+#! m13 = %%m13
+#! m14 = %%m14
+#! m15 = %%m15
+#! u0 = %%u0
+#! u1 = %%u1
+#! u2 = %%u2
+#! u3 = %%u3
+#! u4 = %%u4
+#! u5 = %%u5
+#! u6 = %%u6
+#! u7 = %%u7
+#! u8 = %%u8
+#! u9 = %%u9
+#! u10 = %%u10
+#! u11 = %%u11
+#! u12 = %%u12
+#! u13 = %%u13
+#! u14 = %%u14
+#! u15 = %%u15
+#! u16 = %%u16
+#! mult $1v, $2v -> bvAssign accHH (bvConst 0);\nbvMulf accHL accL (bvVar $1v) (bvVar $2v)
+#! lmul $1v, $2v -> bvMulf tmp $2v (bvVar accL) (bvVar $1v)
+#! macc aa0, $1v -> bvMulf H L (bvVar a0) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa1, $1v -> bvMulf H L (bvVar a1) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa2, $1v -> bvMulf H L (bvVar a2) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa3, $1v -> bvMulf H L (bvVar a3) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa4, $1v -> bvMulf H L (bvVar a4) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa5, $1v -> bvMulf H L (bvVar a5) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa6, $1v -> bvMulf H L (bvVar a6) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa7, $1v -> bvMulf H L (bvVar a7) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa8, $1v -> bvMulf H L (bvVar a8) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa9, $1v -> bvMulf H L (bvVar a9) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa10, $1v -> bvMulf H L (bvVar a10) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa11, $1v -> bvMulf H L (bvVar a11) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa12, $1v -> bvMulf H L (bvVar a12) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa13, $1v -> bvMulf H L (bvVar a13) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa14, $1v -> bvMulf H L (bvVar a14) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc aa15, $1v -> bvMulf H L (bvVar a15) (bvVar $1v);\nbvAddC carry accL (bvVar accL) (bvVar L);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvVar H) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc uu16, 1 -> bvAddC carry accL (bvVar accL) (bvVar u16);\n(* NOTE: ignore carry because it is zero *)\nbvAdc accHL (bvVar accHL) (bvConst 0) carry;\nbvClear carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc $1v, $2v -> bvMulf H L (bvVar $1v) (bvVar $2v);\nbvAddC carry accL (bvVar accL) (bvVar L);\nbvAdcC carry accHL (bvVar accHL) (bvVar H) carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! macc $1v, 1 -> bvAddC carry accL (bvVar accL) (bvVar $1v);\nbvAdcC carry accHL (bvVar accHL) (bvConst 0) carry;\nbvAdc accHH (bvVar accHH) (bvConst 0) carry
+#! shift $1v -> bvAssign $1v (bvVar accL);\nbvAssign accL (bvVar accHL);\nbvAssign accHL (bvVar accHH);\nbvAssign accHH (bvConst 0)
+
+mult 	a0,	b0
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a0,	b1
+macc 	q0,	m1
+shift	u0
+macc 	a0,	b2
+macc 	q0,	m2
+shift	u1
+macc 	a0,	b3
+macc 	q0,	m3
+shift	u2
+macc 	a0,	b4
+macc 	q0,	m4
+shift	u3
+macc 	a0,	b5
+macc 	q0,	m5
+shift	u4
+macc 	a0,	b6
+macc 	q0,	m6
+shift	u5
+macc 	a0,	b7
+macc 	q0,	m7
+shift	u6
+macc 	a0,	b8
+macc 	q0,	m8
+shift	u7
+macc 	a0,	b9
+macc 	q0,	m9
+shift	u8
+macc 	a0,	b10
+macc 	q0,	m10
+shift	u9
+macc 	a0,	b11
+macc 	q0,	m11
+shift	u10
+macc 	a0,	b12
+macc 	q0,	m12
+shift	u11
+macc 	a0,	b13
+macc 	q0,	m13
+shift	u12
+macc 	a0,	b14
+macc 	q0,	m14
+shift	u13
+macc 	a0,	b15
+macc 	q0,	m15
+shift	u14
+shift	u15
+shift	u16
+mult 	a1,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a1,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a1,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a1,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a1,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a1,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a1,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a1,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a1,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a1,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a1,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a1,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a1,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a1,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a1,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a1,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a2,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a2,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a2,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a2,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a2,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a2,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a2,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a2,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a2,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a2,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a2,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a2,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a2,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a2,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a2,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a2,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a3,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a3,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a3,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a3,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a3,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a3,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a3,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a3,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a3,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a3,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a3,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a3,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a3,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a3,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a3,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a3,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a4,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a4,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a4,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a4,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a4,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a4,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a4,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a4,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a4,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a4,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a4,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a4,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a4,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a4,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a4,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a4,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a5,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a5,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a5,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a5,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a5,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a5,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a5,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a5,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a5,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a5,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a5,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a5,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a5,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a5,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a5,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a5,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a6,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a6,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a6,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a6,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a6,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a6,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a6,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a6,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a6,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a6,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a6,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a6,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a6,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a6,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a6,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a6,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a7,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a7,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a7,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a7,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a7,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a7,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a7,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a7,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a7,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a7,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a7,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a7,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a7,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a7,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a7,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a7,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a8,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a8,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a8,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a8,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a8,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a8,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a8,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a8,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a8,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a8,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a8,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a8,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a8,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a8,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a8,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a8,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a9,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a9,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a9,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a9,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a9,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a9,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a9,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a9,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a9,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a9,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a9,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a9,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a9,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a9,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a9,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a9,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a10,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a10,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a10,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a10,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a10,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a10,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a10,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a10,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a10,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a10,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a10,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a10,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a10,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a10,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a10,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a10,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a11,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a11,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a11,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a11,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a11,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a11,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a11,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a11,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a11,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a11,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a11,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a11,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a11,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a11,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a11,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a11,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a12,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a12,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a12,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a12,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a12,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a12,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a12,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a12,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a12,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a12,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a12,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a12,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a12,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a12,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a12,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a12,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a13,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a13,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a13,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a13,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a13,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a13,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a13,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a13,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a13,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a13,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a13,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a13,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a13,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a13,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a13,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a13,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a14,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a14,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a14,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a14,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a14,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a14,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a14,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a14,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a14,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a14,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a14,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a14,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a14,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a14,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a14,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a14,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16
+mult 	a15,	b0
+macc 	u0,	1
+lmul 	alpha0,	q0
+macc 	q0,	m0
+shift	q1
+macc 	a15,	b1
+macc 	u1,	1
+macc 	q0,	m1
+shift	u0
+macc 	a15,	b2
+macc 	u2,	1
+macc 	q0,	m2
+shift	u1
+macc 	a15,	b3
+macc 	u3,	1
+macc 	q0,	m3
+shift	u2
+macc 	a15,	b4
+macc 	u4,	1
+macc 	q0,	m4
+shift	u3
+macc 	a15,	b5
+macc 	u5,	1
+macc 	q0,	m5
+shift	u4
+macc 	a15,	b6
+macc 	u6,	1
+macc 	q0,	m6
+shift	u5
+macc 	a15,	b7
+macc 	u7,	1
+macc 	q0,	m7
+shift	u6
+macc 	a15,	b8
+macc 	u8,	1
+macc 	q0,	m8
+shift	u7
+macc 	a15,	b9
+macc 	u9,	1
+macc 	q0,	m9
+shift	u8
+macc 	a15,	b10
+macc 	u10,	1
+macc 	q0,	m10
+shift	u9
+macc 	a15,	b11
+macc 	u11,	1
+macc 	q0,	m11
+shift	u10
+macc 	a15,	b12
+macc 	u12,	1
+macc 	q0,	m12
+shift	u11
+macc 	a15,	b13
+macc 	u13,	1
+macc 	q0,	m13
+shift	u12
+macc 	a15,	b14
+macc 	u14,	1
+macc 	q0,	m14
+shift	u13
+macc 	a15,	b15
+macc 	u15,	1
+macc 	q0,	m15
+shift	u14
+macc 	u16,	1
+shift	u15
+shift	u16

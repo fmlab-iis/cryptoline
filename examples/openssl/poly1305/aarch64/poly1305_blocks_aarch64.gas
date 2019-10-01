@@ -1,0 +1,49 @@
+poly1305_blocks:
+# x0 = 0x415010
+# x1 = 0x414090
+# x2 = 0x10
+# x3 = 0x1
+# x4 = 0x0
+# x5 = 0x4000800138
+# x6 = 0x436fff
+# x7 = 0x401320
+	ands	x2, x2, #0xfffffffffffffff0                #! PC = 0x4198720
+	#b.eq	0x4011e0 <poly1305_blocks+160>            #! PC = 0x4198724
+	ldp	x4, x5, [x0]                                #! EA = L0x415010; Value = 0x0000000000000000; PC = 0x4198728
+	ldp	x7, x8, [x0,#32]                            #! EA = L0x415030; Value = 0x08899aa80ccddeef; PC = 0x4198732
+	ldr	x6, [x0,#16]                                #! EA = L0x415020; Value = 0x0000000000000000; PC = 0x4198736
+	add	x9, x8, x8, lsr #2                          #! PC = 0x4198740
+	#b	0x401160 <poly1305_blocks+32>                #! PC = 0x4198744
+	ldp	x10, x11, [x1],#16                          #! EA = L0x414090; Value = 0x8978675645342312; PC = 0x4198752
+	sub	x2, x2, #0x10                               #! PC = 0x4198756
+	adds	x4, x4, x10                                #! PC = 0x4198760
+	adcs	x5, x5, x11                                #! PC = 0x4198764
+	mul	x12, x4, x7                                 #! PC = 0x4198768
+	adc	x6, x6, x3                                  #! PC = 0x4198772
+	umulh	x13, x4, x7                               #! PC = 0x4198776
+	mul	x10, x5, x9                                 #! PC = 0x4198780
+	umulh	x11, x5, x9                               #! PC = 0x4198784
+	adds	x12, x12, x10                              #! PC = 0x4198788
+	mul	x10, x4, x8                                 #! PC = 0x4198792
+	adc	x13, x13, x11                               #! PC = 0x4198796
+	umulh	x14, x4, x8                               #! PC = 0x4198800
+	adds	x13, x13, x10                              #! PC = 0x4198804
+	mul	x10, x5, x7                                 #! PC = 0x4198808
+	adc	x14, x14, xzr                               #! PC = 0x4198812
+	umulh	x11, x5, x7                               #! PC = 0x4198816
+	adds	x13, x13, x10                              #! PC = 0x4198820
+	mul	x10, x6, x9                                 #! PC = 0x4198824
+	adc	x14, x14, x11                               #! PC = 0x4198828
+	mul	x11, x6, x7                                 #! PC = 0x4198832
+	adds	x13, x13, x10                              #! PC = 0x4198836
+	adc	x14, x14, x11                               #! PC = 0x4198840
+	and	x10, x14, #0xfffffffffffffffc               #! PC = 0x4198844
+	and	x6, x14, #0x3                               #! PC = 0x4198848
+	add	x10, x10, x14, lsr #2                       #! PC = 0x4198852
+	adds	x4, x12, x10                               #! PC = 0x4198856
+	adcs	x5, x13, xzr                               #! PC = 0x4198860
+	adc	x6, x6, xzr                                 #! PC = 0x4198864
+	#cbnz	x2, 0x401160 <poly1305_blocks+32>         #! PC = 0x4198868
+	stp	x4, x5, [x0]                                #! EA = L0x415010; Value = 0x0000000000000000; PC = 0x4198872
+	str	x6, [x0,#16]                                #! EA = L0x415020; Value = 0x0000000000000000; PC = 0x4198876
+	#ret                                            #! PC = 0x4198880

@@ -1,0 +1,47 @@
+s_mpv_mul_set_vec64:
+# %rdi = 0x628e80
+# %rsi = 0x628e80
+# %rdx = 0x4
+# %rcx = 0x1c761244de0255d
+# %r8  = 0x7fffffffd9b8
+# %r9  = 0x-134ba33998c06ccc
+	xor    %rax,%rax
+	test   %rdx,%rdx
+	#je     0x413eba <s_mpv_mul_set_vec64+426>
+	mov    %rdx,%r8
+	xor    %r9,%r9
+	cmp    $0x8,%r8
+	#jb     0x413dfe <s_mpv_mul_set_vec64+238>
+	mov    (%rsi),%rax                              #! EA = L0x628e80
+	mul    %rcx
+	add    %r9,%rax
+	adc    $0x0,%rdx
+	mov    %rax,(%rdi)                              #! EA = L0x628e80
+	mov    %rdx,%r9
+	dec    %r8
+	#je     0x413eba <s_mpv_mul_set_vec64+426>
+	mov    0x8(%rsi),%rax                           #! EA = L0x628e88
+	mul    %rcx
+	add    %r9,%rax
+	adc    $0x0,%rdx
+	mov    %rax,0x8(%rdi)                           #! EA = L0x628e88
+	mov    %rdx,%r9
+	dec    %r8
+	#je     0x413eba <s_mpv_mul_set_vec64+426>
+	mov    0x10(%rsi),%rax                          #! EA = L0x628e90
+	mul    %rcx
+	add    %r9,%rax
+	adc    $0x0,%rdx
+	mov    %rax,0x10(%rdi)                          #! EA = L0x628e90
+	mov    %rdx,%r9
+	dec    %r8
+	#je     0x413eba <s_mpv_mul_set_vec64+426>
+	mov    0x18(%rsi),%rax                          #! EA = L0x628e98
+	mul    %rcx
+	add    %r9,%rax
+	adc    $0x0,%rdx
+	mov    %rax,0x18(%rdi)                          #! EA = L0x628e98
+	mov    %rdx,%r9
+	dec    %r8
+	#je     0x413eba <s_mpv_mul_set_vec64+426>
+	mov    %r9,%rax

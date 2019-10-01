@@ -1,0 +1,1281 @@
+#! (%r8) = %%EA
+#! %r8 = %%r8
+#! -0x8(%rsp,%r9,8) = %%EA
+#! -0x10(%rsp,%r9,8) = %%EA
+#! 0x10(%rsp,%r9,8) = %%EA
+#! (%rsp,%r9,8) = %%EA
+#! -0x4(%r9) = %%EA
+#! %r9 = %%r9
+#! %r10 = %%r10
+#! %r11 = %%r11
+#! (%r12) = %%EA
+#! (%r12,%r14,8) = %%EA
+#! %r13 = %%r13
+#! (%rsp,%r14,8) = %%EA
+#! 0x18(%rdi,%r14,8) = %%EA
+#! 0x10(%rdi,%r14,8) = %%EA
+#! 0x8(%rdi,%r14,8) = %%EA
+#! (%rdi,%r14,8) = %%EA
+#! 0x10(%rdi,%r14,1) = %%EA
+#! 0x20(%rdi,%r14,1) = %%EA
+#! 0x28(%rcx,%r14,8) = %%EA
+#! 0x20(%rcx,%r14,8) = %%EA
+#! 0x18(%rcx,%r14,8) = %%EA
+#! 0x10(%rcx,%r14,8) = %%EA
+#! (%rcx,%r14,8) = %%EA
+#! 0x38(%rsi,%r14,8) = %%EA
+#! 0x30(%rsi,%r14,8) = %%EA
+#! 0x28(%rsi,%r14,8) = %%EA
+#! 0x20(%rsi,%r14,8) = %%EA
+#! 0x10(%rsi,%r14,8) = %%EA
+#! 0x8(%rsi,%r14,8) = %%EA
+#! 0x20(%rsi,%r14,1) = %%EA
+#! 0x10(%rsi,%r14,1) = %%EA
+#! (%rsi,%r14,8) = %%EA
+#! 0x10(%rsp,%r14,1) = %%EA
+#! 0x20(%rsp,%r14,1) = %%EA
+#! 0x20(%r14) = %%EA
+#! 0x4(%r14) = %%EA
+#! 0x3(%r14) = %%EA
+#! 0x2(%r14) = %%EA
+#! 0x1(%r14) = %%EA
+#! (%r14) = %%EA
+#! %r14 = %%r14
+#! 0x1(%r15) = %%EA
+#! 0x2(%r15) = %%EA
+#! 0x3(%r15) = %%EA
+#! 0x4(%r15) = %%EA
+#! -0x18(%rcx,%r15,8) = %%EA
+#! -0x10(%rcx,%r15,8) = %%EA
+#! -0x8(%rcx,%r15,8) = %%EA
+#! 0x8(%rcx,%r15,8) = %%EA
+#! (%rcx,%r15,8) = %%EA
+#! -0x20(%rsp,%r15,8) = %%EA
+#! -0x18(%rsp,%r15,8) = %%EA
+#! -0x10(%rsp,%r15,8) = %%EA
+#! -0x8(%rsp,%r15,8) = %%EA
+#! 0x8(%rsp,%r15,8) = %%EA
+#! (%rsp,%r15,8) = %%EA
+#! -0x10(%rsi,%r15,8) = %%EA
+#! -0x8(%rsi,%r15,8) = %%EA
+#! 0x8(%rsi,%r15,8) = %%EA
+#! (%rsi,%r15,8) = %%EA
+#! 0x4(%r15) = %%EA
+#! (%r15) = %%EA
+#! %r15 = %%r15
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! 0x8(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! %rcx = %%rcx
+#! (%rdi) = %%EA
+#! %rdi = %%rdi
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! 0x18(%rsi) = %%EA
+#! 0x10(%rsi) = %%EA
+#! 0x8(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! %rsi = %%rsi
+#! 0x8(%rsp) = %%EA
+#! (%rsp) = %%EA
+#! %xmm0 = %%xmm0
+#! %xmm1 = %%xmm1
+#! %xmm2 = %%xmm2
+
+#! add $1v, $2v -> bvAddC carry $2v (bvVar $1v) (bvVar $2v)
+#! add $1c, $2v -> bvAddC carry $2v (bvConst $1c) (bvVar $2v)
+#! adc $1v, $2v -> bvAdcC carry $2v (bvVar $1v) (bvVar $2v) carry
+#! adc $1c, $2v -> bvAdcC carry $2v (bvConst $1c) (bvVar $2v) carry
+#! adc \$0x0, $1v -> bvAdc $1v (bvConst 0) (bvVar $1v) carry
+#! dec $1v -> bvSub $1v (bvVar $1v) (bvConst 1)
+#! mul $1v -> bvMulf rdx rax (bvVar $1v) (bvVar rax)
+#! mul $1c -> bvMulf rdx rax (bvConst $1c) (bvVar rax)
+#! imul $1v, $2v -> bvMulf dontcare $2v (bvVar $1v) (bvVar $2v)
+#! imulq $1v, $2v -> bvMulf dontcare $2v (bvVar $1v) (bvVar $2v)
+#! mov $1v, $2v -> bvAssign $2v (bvVar $1v)
+#! mov $1c, $2v -> bvAssign $2v (bvConst $1c)
+#! lea $1v, $2v -> bvAssign $2v (bvConst $1v)
+#! sbb $1v, $2v -> bvSbbC carry $2v (bvVar $2v) (bvVar $1v) carry
+#! sbb \$0x0, $1v -> bvSbbC carry $1v (bvVar $1v) (bvConst 0) carry
+#! sub $1v, $2v -> bvSubC carry $2v (bvVar $2v) (bvVar $1v)
+#! sub \$0x1, $1v -> bvSub $1v (bvVar $1v) (bvConst 1)
+#! xor $1v, $1v -> bvAssign $1v (bvConst 0)
+#! pxor $1v, $1v -> bvAssign $1v (bvConst 0)
+#! shr \$0x2, $1v -> bvSplit $1v dontcare (bvVar $1v) 2
+#! movdqu $1v, $2v -> bvAssign $2v (bvVar $1v)
+#! movdqa $1v, $2v -> bvAssign $2v (bvVar $1v)
+
+#bn_mul_mont:
+# %rdi = 0x7fffffffdc40
+# %rsi = 0x606080
+# %rdx = 0x6060c0
+# %rcx = 0x606100
+# %r8  = 0x606140
+# %r9  = 0x8
+#	mov    %r9d,%r9d
+#	mov    %rsp,%rax
+#	test   $0x3,%r9d
+#	#jne    0x400860 <bn_mul_mont+64>
+#	cmp    $0x8,%r9d
+#	#jb     0x400860 <bn_mul_mont+64>
+#	mov    0x205920(%rip),%r11d        # 0x60615c <OPENSSL_ia32cap_P+8>#! EA = L0x60615c
+#	cmp    %rsi,%rdx
+#	#jne    0x400ac6 <bn_mul4x_mont+6>
+#	and    $0x80100,%r11d
+#	cmp    $0x80100,%r11d
+#	#je     0x401243 <bn_mulx4x_mont+3>
+#	push   %rbx
+#	push   %rbp
+#	push   %r12
+#	push   %r13
+#	push   %r14
+#	push   %r15
+#	neg    %r9
+#	mov    %rsp,%r11
+#	lea    -0x20(%rsp,%r9,8),%r10                   #! EA = L0x7fffffffdba8
+#	neg    %r9
+#	and    $0xfffffffffffffc00,%r10
+#	sub    %r10,%r11
+#	and    $0xfffffffffffff000,%r11
+#	lea    (%r10,%r11,1),%rsp                       #! EA = L0x7fffffffd800
+#	mov    (%rsp),%r11                              #! EA = L0x7fffffffd800
+#	cmp    %r10,%rsp
+#	#ja     0x400b12 <bn_mul4x_mont+82>
+#	#jmp    0x400b23 <bn_mul4x_mont+99>
+#	mov    %rax,0x8(%rsp,%r9,8)                     #! EA = L0x7fffffffd848
+#	mov    %rdi,0x10(%rsp,%r9,8)                    #! EA = L0x7fffffffd850
+#	mov    %rdx,%r12
+	mov    (%r8),%r8                                #! EA = L0x606140
+	mov    (%r12),%rbx                              #! EA = L0x6060c0
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	xor    %r14,%r14
+	xor    %r15,%r15
+	mov    %r8,%rbp
+	mul    %rbx
+	mov    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400ba0 <bn_mul4x_mont+224>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400ba0 <bn_mul4x_mont+224>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+	lea    0x1(%r14),%r14                           #! EA = L0x1
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060c8
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x2
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060d0
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x3
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060d8
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x4
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060e0
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x5
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060e8
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x6
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060f0
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x7
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    (%r12,%r14,8),%rbx                       #! EA = L0x6060f8
+	xor    %r15,%r15
+	mov    (%rsp),%r10                              #! EA = L0x7fffffffd800
+	mov    %r8,%rbp
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx),%rax                              #! EA = L0x606100
+	adc    $0x0,%rdx
+	imul   %r10,%rbp
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r10
+	mov    0x8(%rsi),%rax                           #! EA = L0x606088
+	adc    $0x0,%rdx
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx),%rax                           #! EA = L0x606108
+	adc    $0x0,%rdx
+	add    0x8(%rsp),%r11                           #! EA = L0x7fffffffd808
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    0x10(%rsi),%rax                          #! EA = L0x606090
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	lea    0x4(%r15),%r15                           #! EA = L0x4
+	adc    $0x0,%rdx
+	mov    %rdi,(%rsp)                              #! EA = L0x7fffffffd800
+	mov    %rdx,%r13
+#	#jmp    0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606110
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd810
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x606098
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd808
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606118
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd818
+	adc    $0x0,%rdx
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi,%r15,8),%rax                       #! EA = L0x6060a0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd810
+	mov    %rdx,%r13
+	mul    %rbx
+	add    %rax,%r10
+	mov    (%rcx,%r15,8),%rax                       #! EA = L0x606120
+	adc    $0x0,%rdx
+	add    (%rsp,%r15,8),%r10                       #! EA = L0x7fffffffd820
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    0x8(%rsi,%r15,8),%rax                    #! EA = L0x6060a8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd818
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    0x8(%rcx,%r15,8),%rax                    #! EA = L0x606128
+	adc    $0x0,%rdx
+	add    0x8(%rsp,%r15,8),%r11                    #! EA = L0x7fffffffd828
+	adc    $0x0,%rdx
+	lea    0x4(%r15),%r15                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    -0x10(%rsi,%r15,8),%rax                  #! EA = L0x6060b0
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x20(%rsp,%r15,8)                  #! EA = L0x7fffffffd820
+	mov    %rdx,%r13
+#	cmp    %r9,%r15
+#	#jb     0x400d50 <bn_mul4x_mont+656>
+	mul    %rbx
+	add    %rax,%r10
+	mov    -0x10(%rcx,%r15,8),%rax                  #! EA = L0x606130
+	adc    $0x0,%rdx
+	add    -0x10(%rsp,%r15,8),%r10                  #! EA = L0x7fffffffd830
+	adc    $0x0,%rdx
+	mov    %rdx,%r11
+	mul    %rbp
+	add    %rax,%r13
+	mov    -0x8(%rsi,%r15,8),%rax                   #! EA = L0x6060b8
+	adc    $0x0,%rdx
+	add    %r10,%r13
+	adc    $0x0,%rdx
+	mov    %r13,-0x18(%rsp,%r15,8)                  #! EA = L0x7fffffffd828
+	mov    %rdx,%rdi
+	mul    %rbx
+	add    %rax,%r11
+	mov    -0x8(%rcx,%r15,8),%rax                   #! EA = L0x606138
+	adc    $0x0,%rdx
+	add    -0x8(%rsp,%r15,8),%r11                   #! EA = L0x7fffffffd838
+	adc    $0x0,%rdx
+	lea    0x1(%r14),%r14                           #! EA = L0x8
+	mov    %rdx,%r10
+	mul    %rbp
+	add    %rax,%rdi
+	mov    (%rsi),%rax                              #! EA = L0x606080
+	adc    $0x0,%rdx
+	add    %r11,%rdi
+	adc    $0x0,%rdx
+	mov    %rdi,-0x10(%rsp,%r15,8)                  #! EA = L0x7fffffffd830
+	mov    %rdx,%r13
+	xor    %rdi,%rdi
+	add    %r10,%r13
+	adc    $0x0,%rdi
+	add    (%rsp,%r9,8),%r13                        #! EA = L0x7fffffffd840
+	adc    $0x0,%rdi
+	mov    %r13,-0x8(%rsp,%r15,8)                   #! EA = L0x7fffffffd838
+	mov    %rdi,(%rsp,%r15,8)                       #! EA = L0x7fffffffd840
+#	cmp    %r9,%r14
+#	#jb     0x400ce0 <bn_mul4x_mont+544>
+	mov    0x10(%rsp,%r9,8),%rdi                    #! EA = L0x7fffffffd850
+	lea    -0x4(%r9),%r15                           #! EA = L0x4
+	mov    (%rsp),%rax                              #! EA = L0x7fffffffd800
+	pxor   %xmm0,%xmm0
+	mov    0x8(%rsp),%rdx                           #! EA = L0x7fffffffd808
+	shr    $0x2,%r15
+	lea    (%rsp),%rsi                              #! EA = L0x7fffffffd800
+	xor    %r14,%r14
+	sub    (%rcx),%rax                              #! EA = L0x606100
+	mov    0x10(%rsi),%rbx                          #! EA = L0x7fffffffd810
+	mov    0x18(%rsi),%rbp                          #! EA = L0x7fffffffd818
+	sbb    0x8(%rcx),%rdx                           #! EA = L0x606108
+#	#jmp    0x400f10 <bn_mul4x_mont+1104>
+	mov    %rax,(%rdi,%r14,8)                       #! EA = L0x7fffffffdc40
+	mov    %rdx,0x8(%rdi,%r14,8)                    #! EA = L0x7fffffffdc48
+	sbb    0x10(%rcx,%r14,8),%rbx                   #! EA = L0x606110
+	mov    0x20(%rsi,%r14,8),%rax                   #! EA = L0x7fffffffd820
+	mov    0x28(%rsi,%r14,8),%rdx                   #! EA = L0x7fffffffd828
+	sbb    0x18(%rcx,%r14,8),%rbp                   #! EA = L0x606118
+	mov    %rbx,0x10(%rdi,%r14,8)                   #! EA = L0x7fffffffdc50
+	mov    %rbp,0x18(%rdi,%r14,8)                   #! EA = L0x7fffffffdc58
+	sbb    0x20(%rcx,%r14,8),%rax                   #! EA = L0x606120
+	mov    0x30(%rsi,%r14,8),%rbx                   #! EA = L0x7fffffffd830
+	mov    0x38(%rsi,%r14,8),%rbp                   #! EA = L0x7fffffffd838
+	sbb    0x28(%rcx,%r14,8),%rdx                   #! EA = L0x606128
+	lea    0x4(%r14),%r14                           #! EA = L0x4
+	dec    %r15
+#	#jne    0x400f10 <bn_mul4x_mont+1104>
+	mov    %rax,(%rdi,%r14,8)                       #! EA = L0x7fffffffdc60
+	mov    0x20(%rsi,%r14,8),%rax                   #! EA = L0x7fffffffd840
+	sbb    0x10(%rcx,%r14,8),%rbx                   #! EA = L0x606130
+	mov    %rdx,0x8(%rdi,%r14,8)                    #! EA = L0x7fffffffdc68
+	sbb    0x18(%rcx,%r14,8),%rbp                   #! EA = L0x606138
+	mov    %rbx,0x10(%rdi,%r14,8)                   #! EA = L0x7fffffffdc70
+	sbb    $0x0,%rax
+	mov    %rbp,0x18(%rdi,%r14,8)                   #! EA = L0x7fffffffdc78
+	xor    %r14,%r14
+	and    %rax,%rsi
+	not    %rax
+	mov    %rdi,%rcx
+	and    %rax,%rcx
+	lea    -0x4(%r9),%r15                           #! EA = L0x4
+	or     %rcx,%rsi
+	shr    $0x2,%r15
+	movdqu (%rsi),%xmm1                             #! EA = L0x7fffffffdc40
+	movdqa %xmm0,(%rsp)                             #! EA = L0x7fffffffd800
+	movdqu %xmm1,(%rdi)                             #! EA = L0x7fffffffdc40
+#	#jmp    0x400fb0 <bn_mul4x_mont+1264>
+	movdqu 0x10(%rsi,%r14,1),%xmm2                  #! EA = L0x7fffffffdc50
+	movdqu 0x20(%rsi,%r14,1),%xmm1                  #! EA = L0x7fffffffdc60
+	movdqa %xmm0,0x10(%rsp,%r14,1)                  #! EA = L0x7fffffffd810
+	movdqu %xmm2,0x10(%rdi,%r14,1)                  #! EA = L0x7fffffffdc50
+	movdqa %xmm0,0x20(%rsp,%r14,1)                  #! EA = L0x7fffffffd820
+	movdqu %xmm1,0x20(%rdi,%r14,1)                  #! EA = L0x7fffffffdc60
+	lea    0x20(%r14),%r14                          #! EA = L0x20
+	dec    %r15
+#	#jne    0x400fb0 <bn_mul4x_mont+1264>
+	movdqu 0x10(%rsi,%r14,1),%xmm2                  #! EA = L0x7fffffffdc70
+	movdqa %xmm0,0x10(%rsp,%r14,1)                  #! EA = L0x7fffffffd830
+	movdqu %xmm2,0x10(%rdi,%r14,1)                  #! EA = L0x7fffffffdc70
+#	mov    0x8(%rsp,%r9,8),%rsi                     #! EA = L0x7fffffffd848
+#	mov    $0x1,%rax
+#	mov    -0x30(%rsi),%r15                         #! EA = L0x7fffffffdc08
+#	mov    -0x28(%rsi),%r14                         #! EA = L0x7fffffffdc10
+#	mov    -0x20(%rsi),%r13                         #! EA = L0x7fffffffdc18
+#	mov    -0x18(%rsi),%r12                         #! EA = L0x7fffffffdc20
+#	mov    -0x10(%rsi),%rbp                         #! EA = L0x7fffffffdc28
+#	mov    -0x8(%rsi),%rbx                          #! EA = L0x7fffffffdc30
+#	lea    (%rsi),%rsp                              #! EA = L0x7fffffffdc38
+#	#repz retq 

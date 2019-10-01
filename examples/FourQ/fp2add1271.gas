@@ -1,0 +1,90 @@
+# fp2add1271:
+# %rdi = 0x7fffffffdc00
+# %rsi = 0x7fffffffdc20
+# %rdx = 0x7fffffffdc40
+# %rcx = 0x7fffffffdc90
+# %r8  = 0x7fffffffffffffff
+# %r9  = 0x7fffffffffffffff
+#! 0x8(%rdi) = %%EA
+#! 0x10(%rdi) = %%EA
+#! 0x18(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! 0x8(%rsi) = %%EA
+#! 0x10(%r9) = %%EA
+#! 0x18(%r9) = %%EA
+#! (%rsi) = %%EA
+#! 0x8(%rcx) = %%EA
+#! 0x10(%rcx) = %%EA
+#! 0x18(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! %rax = %%rax
+#! %rsi = %%rsi
+#! %rbx = %%rbx
+#! %rdx = %%rdx
+#! %rcx = %%rcx
+#! %rbp = %%rbp
+#! %rdi = %%rdi
+#! %r8 = %%r8
+#! %r9 = %%r9
+#! %r10 = %%r10
+#! %r11 = %%r11
+#! %r12 = %%r12
+#! %r13 = %%r13
+#! %r14 = %%r14
+#! %r15 = %%r15
+
+#! add $1v, $2v -> bvAddC carry $2v (bvVar $1v) (bvVar $2v)
+#! add $1c, $2v -> bvAddC carry $2v (bvConst $1c) (bvVar $2v)
+#! adc $1v, $2v -> bvAdcC carry $2v (bvVar $1v) (bvVar $2v) carry
+#! adc $1c, $2v -> bvAdcC carry $2v (bvConst $1c) (bvVar $2v) carry
+#! mul $1v -> bvMulf rdx rax (bvVar $1v) (bvVar rax)
+#! mulq $1v -> bvMulf rdx rax (bvVar $1v) (bvVar rax)
+#! imul $1v, $2v -> bvMulf tmp $2v (bvVar $1v) (bvVar $2v)
+#! mov $1v, $2v -> bvAssign $2v (bvVar $1v)
+#! mov $1c, $2v -> bvAssign $2v (bvConst $1c)
+#! movabs $1c, $2v -> bvAssign $2v (bvConst $1c)
+#! xor %r12d, %r12d -> bvSplit r12h r12l (bvVar r12) 32; \n bvShl r12 (bvVar r12h) 32
+#! xor %edx, %edx -> bvSplit rdxh edx (bvVar rdx) 32; \n bvShl rdx (bvVar rdxh) 32
+#! xor $1v, $1v -> bvAssign $1v (bvConst 0)
+#! and $1v, $2v -> bvAndb $2v (bvVar $1v) (bvVar $2v)
+#! shl $1c, $2v -> bvShl $2v (bvVar $2v) $1c
+#! shr $1c, $2v -> bvSplit $2v tmp (bvVar $2v) $1c
+#! lea $1v, $2v -> bvAssign $2v (bvVar $1v)
+#! sub $1v, $2v -> bvSubC carry $2v (bvVar $2v) (bvVar $1v)
+#! sbb $1v, $2v -> bvSbbC carry $2v (bvVar $2v) (bvVar $1v) carry
+#! sbb $1c, $2v -> bvSbbC carry $2v (bvVar $2v) (bvConst $1c) carry
+#! cmovb $1v, $2v -> bvCmove $2v carry (bvVar $1v) (bvVar $2v)
+
+
+#	push   %r12
+	mov    %rdx,%rcx
+	mov    (%rdi),%rax                              #! EA = L0x7fffffffdc00
+	mov    %rsi,%r9
+	movabs $0x7fffffffffffffff,%r8
+	add    (%rsi),%rax                              #! EA = L0x7fffffffdc20
+	mov    0x8(%rdi),%rdx                           #! EA = L0x7fffffffdc08
+	adc    0x8(%rsi),%rdx                           #! EA = L0x7fffffffdc28
+	xor    %r12d,%r12d
+	mov    %rdx,%r11
+	shr    $0x3f,%r11
+	add    %r11,%rax
+	adc    %r12,%rdx
+	mov    %rax,(%rcx)                              #! EA = L0x7fffffffdc40
+#	pop    %r12
+	mov    %rdx,%rax
+	and    %r8,%rax
+	mov    %rax,0x8(%rcx)                           #! EA = L0x7fffffffdc48
+	mov    0x10(%rdi),%rsi                          #! EA = L0x7fffffffdc10
+	mov    0x10(%r9),%rax                           #! EA = L0x7fffffffdc30
+	mov    0x18(%r9),%rdx                           #! EA = L0x7fffffffdc38
+	mov    0x18(%rdi),%rdi                          #! EA = L0x7fffffffdc18
+	add    %rax,%rsi
+	adc    %rdx,%rdi
+	xor    %edx,%edx
+	mov    %rdi,%rax
+	shr    $0x3f,%rax
+	add    %rsi,%rax
+	adc    %rdi,%rdx
+	mov    %rax,0x10(%rcx)                          #! EA = L0x7fffffffdc50
+	and    %rdx,%r8
+	mov    %r8,0x18(%rcx)                           #! EA = L0x7fffffffdc58

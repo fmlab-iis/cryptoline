@@ -1,0 +1,471 @@
+#! [r$1c] = %%EA
+#! [r$1c :32] = %%EA
+#! [r$1c :32]! = %%EA
+#! [r$1c :256] = %%EA
+#! [r$1c :256]! = %%EA
+#! r$1c! = %%EA
+#! r$1c = %%r$1c
+#! d$1c[$2c] = d$1c_$2c
+#! d$1c[$2c] = d$1c_$2c
+#! d$1c = %%d$1c
+#! q$1c = %%q$1c
+
+#! vld1.32 {$1v}, $2ea -> mov $1v $2ea
+#! vld1.32 {$1v-$2v}, $3ea -> mov $1v_0 $3ea;\nmov $1v_1 $3ea[+4];\nmov $1v[+1]_0 $3ea[+8];\nmov $1v[+1]_1 $3ea[+12];\nmov $1v[+2]_0 $3ea[+16];\nmov $1v[+2]_1 $3ea[+20];\nmov $2v_0 $3ea[+24];\nmov $2v_1 $3ea[+28]
+#! vld1.64 {$1v-$2v}, $3ea -> mov $1v_0 $3ea;\nmov $1v_1 $3ea[+4];\nmov $1v[+1]_0 $3ea[+8];\nmov $1v[+1]_1 $3ea[+12];\nmov $1v[+2]_0 $3ea[+16];\nmov $1v[+2]_1 $3ea[+20];\nmov $2v_0 $3ea[+24];\nmov $2v_1 $3ea[+28]
+#! ldr.w $1v, $2ea -> mov $1v $2ea
+#! ldmia $1ea, {$2v, $3v, $4v, $5v} -> mov $2v $1ea;\nmov $3v $1ea[+4];\nmov $4v $1ea[+8];\nmov $5v $1ea[+12]
+#! ldmia.w $1ea, {$2v, $3v, $4v, $5v} -> mov $2v $1ea;\nmov $3v $1ea[+4];\nmov $4v $1ea[+8];\nmov $5v $1ea[+12]
+#! stmia.w $1ea, {$2v, $3v, $4v, $5v} -> mov $1ea $2v;\nmov $1ea[+4] $3v;\nmov $1ea[+8] $4v;\nmov $1ea[+12] $5v
+#! vst1.32 {$1v}, $2ea -> mov $2ea $1v
+#! vst1.64 {$1v-$2v}, $3ea -> mov $3ea $1v_0;\nmov $3ea[+4] $1v_1;\nmov $3ea[+8] $1v[+1]_0;\nmov $3ea[+12] $1v[+1]_1;\nmov $3ea[+16] $1v[+2]_0;\nmov $3ea[+20] $1va[+2]_1;\nmov $3ea[+24] $2v_0;\nmov $3ea[+28] $2v_1
+#! veor $1v, $1v, $1v -> mov $1v 0@uint32
+#! vorr $1v, $2v, $2v -> mov $1v_0 $2v_0;\nmov $1v_1 $2v_1
+#! vzip.16 $1v, $2v -> usplit $1v_0H $1v_0L $1v_0 16;\nusplit $1v_1H $1v_1L $1v_1 16;\nusplit $2v_0H $2v_0L $2v_0 16;\nusplit $2v_1H $2v_1L $2v_1 16;\njoin $1v_0 $2v_0L $1v_0L;\njoin $1v_1 $2v_0H $1v_0H;\njoin $2v_0 $2v_1L $1v_1L;\njoin $2v_1 $2v_1H $1v_1H
+#! vshl.s64 $1v, $2v, #16 -> cshl $1v_1 $1v_0 $2v_1 $2v_0 16;\nshl $1v_0 $1v_0 16
+#! vshr.u64 $1v, $2v, #16 -> usplit $2v_0H $2v_0L $2v_0 16;\nusplit $2v_1H $2v_1L $2v_1 16;\njoin $1v_0 $2v_1L $2v_0H;\njoin $1v_1 0@uint16 $2v_1H
+#! vadd.i64 $1v, $2v, $3v -> uadd $1v $2v $3v
+#! sbcs.w $1v, $2v, $3v -> usbcs carry $1v $2v $3v carry
+#! sbcs.w $1v, $2v, #0 -> usbcs carry $1v $2v 0@uint32 carry
+#! vmull.u32 $1v, $2v, $3v -> umull $1v_1 $1v_0 $2v_0 $3v;\numull $1v[+1]_1 $1v[+1]_0 $2v_1 $3v
+#! vmul.i32 $1v, $2v, $3v -> umul $1v_0 $2v_0 $3v_0;\numul $1v_1 $2v_1 $3v_1
+#! vmlal.u32 $1v, $2v, $3v -> umull tH tL $2v_0 $3v;\nuadds tC $1v_0 $1v_0 tL;\nuadc $1v_1 $1v_1 tH tC;\numull tH tL 2v_1 $3v;\nuadds tC $1v[+1]_0 $1v[+1]_0 tL;\nuadc $1v[+1]_1 $1v[+1]_1 tH tC
+#! movcc $1v, $2v -> cmov $1v carry $2v $1v
+
+#Breakpoint 1, 0x000106b0 in bn_mul8x_mont_neon ()
+	#cmp	r5, #8
+	#bhi.w	0x10830 <bn_mul8x_mont_neon+400>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f118; Value = 0x82a9b3e0
+	veor	d8, d8, d8
+	#sub.w	r7, sp, r5, lsl #4
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f098; Value = 0x782a9b3e
+	#bic.w	r7, r7, #63	; 0x3f
+	vld1.32	{d30[0]}, [r4 :32]                      #! EA = L0x6f218; Value = 0xcbc98198
+	#mov	sp, r7
+	vzip.16	d28, d8
+	vmull.u32	q6, d28, d0[0]
+	vmull.u32	q7, d28, d0[1]
+	vmull.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmull.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	vmul.i32	d29, d29, d30
+	vmull.u32	q10, d28, d2[0]
+	vld1.32	{d4-d7}, [r3]!                          #! EA = L0x6f198; Value = 0xcbc98198
+	vmull.u32	q11, d28, d2[1]
+	vmull.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmull.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	#sub.w	r9, r5, #1
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#b.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f11c; Value = 0x2d82d6b7
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f120; Value = 0x82ae02d7
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f124; Value = 0x829b3d6b
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f128; Value = 0xcbc98198
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f12c; Value = 0x18f810a0
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f130; Value = 0x02888abc
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f134; Value = 0xdef19181
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	vadd.i64	d12, d12, d10
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	veor	d8, d8, d8
+	#subs.w	r9, r9, #1
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[0]
+	vmlal.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vorr	q5, q6, q6
+	vmlal.u32	q11, d29, d6[1]
+	vorr	q6, q7, q7
+	vmlal.u32	q12, d29, d7[0]
+	vorr	q7, q8, q8
+	vmlal.u32	q13, d29, d7[1]
+	vorr	q8, q9, q9
+	vorr	q9, q10, q10
+	vshr.u64	d10, d10, #16
+	vorr	q10, q11, q11
+	vorr	q11, q12, q12
+	vadd.i64	d10, d10, d11
+	vorr	q12, q13, q13
+	veor	q13, q13, q13
+	vshr.u64	d10, d10, #16
+	#bne.n	0x10770 <bn_mul8x_mont_neon+208>
+	vadd.i64	d12, d12, d10
+	#mov	r7, sp
+	vshr.u64	d10, d12, #16
+	#mov	r8, r5
+	vadd.i64	d13, d13, d10
+	#add	r6, sp, #96	; 0x60
+	vshr.u64	d10, d13, #16
+	vzip.16	d12, d13
+	#b.n	0x10fd0 <bn_mul8x_mont_neon+2352>
+	vadd.i64	d14, d14, d10
+	vst1.32	{d12[0]}, [r7 :32]!                     #! EA = L0xbeffe980; Value = 0x00000000
+	vshr.u64	d10, d14, #16
+	vadd.i64	d15, d15, d10
+	vshr.u64	d10, d15, #16
+	vzip.16	d14, d15
+	vadd.i64	d16, d16, d10
+	vst1.32	{d14[0]}, [r7 :32]!                     #! EA = L0xbeffe984; Value = 0x00000000
+	vshr.u64	d10, d16, #16
+	vadd.i64	d17, d17, d10
+	vshr.u64	d10, d17, #16
+	vzip.16	d16, d17
+	vadd.i64	d18, d18, d10
+	vst1.32	{d16[0]}, [r7 :32]!                     #! EA = L0xbeffe988; Value = 0x00000000
+	vshr.u64	d10, d18, #16
+	vadd.i64	d19, d19, d10
+	vshr.u64	d10, d19, #16
+	vzip.16	d18, d19
+	vadd.i64	d20, d20, d10
+	vst1.32	{d18[0]}, [r7 :32]!                     #! EA = L0xbeffe98c; Value = 0x00000000
+	vshr.u64	d10, d20, #16
+	vadd.i64	d21, d21, d10
+	vshr.u64	d10, d21, #16
+	vzip.16	d20, d21
+	vadd.i64	d22, d22, d10
+	vst1.32	{d20[0]}, [r7 :32]!                     #! EA = L0xbeffe990; Value = 0x00000000
+	vshr.u64	d10, d22, #16
+	vadd.i64	d23, d23, d10
+	vshr.u64	d10, d23, #16
+	vzip.16	d22, d23
+	vadd.i64	d24, d24, d10
+	vst1.32	{d22[0]}, [r7 :32]!                     #! EA = L0xbeffe994; Value = 0x00000000
+	vshr.u64	d10, d24, #16
+	vadd.i64	d25, d25, d10
+	vshr.u64	d10, d25, #16
+	vzip.16	d24, d25
+	vadd.i64	d26, d26, d10
+	vst1.32	{d24[0]}, [r7 :32]!                     #! EA = L0xbeffe998; Value = 0x00000000
+	vshr.u64	d10, d26, #16
+	vadd.i64	d27, d27, d10
+	vshr.u64	d10, d27, #16
+	vzip.16	d26, d27
+	vld1.64	{d12-d15}, [r6 :256]!                   #! EA = L0xbeffe9e0; Value = 0x00000000
+	#subs.w	r8, r8, #8
+	vst1.32	{d26[0]}, [r7 :32]!                     #! EA = L0xbeffe99c; Value = 0x00000000
+	#bne.n	0x10fb0 <bn_mul8x_mont_neon+2320>
+	vst1.32	{d10[0]}, [r7 :32]                      #! EA = L0xbeffe9a0; Value = 0xbefff918
+	#sub.w	r3, r3, r5, lsl #2
+	#subs.w	r1, sp, #0
+	#add.w	r2, sp, r5, lsl #2
+	ldmia	r1!, {r4, r5, r6, r7}                     #! EA = L0xbeffe980; Value = 0xe5ffa4d4
+	ldmia.w	r3!, {r8, r9, r10, r11}                 #! EA = L0x6f198; Value = 0xcbc98198
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	#teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}                 #! EA = L0xbeffea94; Value = 0x00000000
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldmia	r1!, {r4, r5, r6, r7}                     #! EA = L0xbeffe990; Value = 0x45ca7290
+	ldmia.w	r3!, {r8, r9, r10, r11}                 #! EA = L0x6f1a8; Value = 0x9b3e02d8
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	#teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}                 #! EA = L0xbeffeaa4; Value = 0x00000000
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldr.w	r10, [r1]                                 #! EA = L0xbeffe9a0; Value = 0x00000000
+	#mov	r11, sp
+	veor	q0, q0, q0
+	#sub.w	r11, r2, r11
+	veor	q1, q1, q1
+	#mov	r1, sp
+	#sub.w	r0, r0, r11
+	#mov	r3, r2
+	sbcs.w	r10, r10, #0
+	ldmia	r1!, {r4, r5, r6, r7}                     #! EA = L0xbeffe980; Value = 0xe5ffa4d4
+	ldmia.w	r0, {r8, r9, r10, r11}                  #! EA = L0xbeffea94; Value = 0x1a36233c
+	#it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffe9a0; Value = 0x00000000
+	#itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffe9c0; Value = 0x00070098
+	#it	cc
+	movcc	r11, r7
+	ldmia.w	r1, {r4, r5, r6, r7}                    #! EA = L0xbeffe990; Value = 0x45ca7290
+	stmia.w	r0!, {r8, r9, r10, r11}                 #! EA = L0xbeffea94; Value = 0x1a36233c
+	#sub.w	r1, r1, #16
+	ldmia.w	r0, {r8, r9, r10, r11}                  #! EA = L0xbeffeaa4; Value = 0xaa8c6fb7
+	#it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r1 :256]!                     #! EA = L0xbeffe980; Value = 0xe5ffa4d4
+	#itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffe9e0; Value = 0x00000000
+	#it	cc
+	movcc	r11, r7
+	#teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}                 #! EA = L0xbeffeaa4; Value = 0xaa8c6fb7
+	#bne.n	0x110d4 <bn_mul8x_mont_neon+2612>
+	#mov	sp, r12
+	#vpop	{d8-d15}
+	#ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11} #! EA = L0xbeffea68; Value = 0x0006f000
+	#bx	lr

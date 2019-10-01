@@ -1,0 +1,4993 @@
+poly1305_blocks_avx:
+# %rdi = 0x7fffffffda80
+# %rsi = 0x607180
+# %rdx = 0x760
+# %rcx = 0x6a93e220689
+# %r8  = 0x3975c78f38f
+# %r9  = 0x16b45b81430
+	push   %rbx
+	and    $0xffffffffffffffc0,%rsp
+	sub    $0xc8,%rsp
+	mov    $0x1000000,%eax
+	mov    $0x3ffffff,%r8d
+	mov    $0x5,%r9d
+	vmovd  %eax,%xmm1
+	vmovd  %r8d,%xmm0
+	vmovd  %r9d,%xmm2
+	vpshufd $0x44,%xmm1,%xmm1
+	vpshufd $0x44,%xmm0,%xmm0
+	vpshufd $0x44,%xmm2,%xmm2
+	vmovdqa %xmm1,0x98(%rsp)                        #! EA = L0x7fffffffda10
+	vmovdqa %xmm2,0xb8(%rsp)                        #! EA = L0x7fffffffda30
+	mov    0x78(%rdi),%rax                          #! EA = L0x7fffffffdaf8
+	test   $0x4,%al
+	#je     0x402eb9 <poly1305_blocks_avx+102>
+	test   $0x8,%al
+	#je     0x402eca <poly1305_blocks_avx+119>
+	test   $0x1,%al
+	#jne    0x402f2d <poly1305_blocks_avx+218>
+	vmovq  (%rsi),%xmm1                             #! EA = L0x607180
+	vpinsrq $0x1,0x10(%rsi),%xmm1,%xmm1             #! EA = L0x607190
+	vmovq  0x8(%rsi),%xmm3                          #! EA = L0x607188
+	vpinsrq $0x1,0x18(%rsi),%xmm3,%xmm2             #! EA = L0x607198
+	vpand  %xmm0,%xmm1,%xmm7
+	vpsrlq $0x1a,%xmm1,%xmm12
+	vpand  %xmm0,%xmm12,%xmm12
+	vpsllq $0xc,%xmm2,%xmm3
+	vpsrlq $0x34,%xmm1,%xmm1
+	vpor   %xmm3,%xmm1,%xmm6
+	vpand  %xmm0,%xmm6,%xmm3
+	vpsrlq $0x1a,%xmm6,%xmm6
+	vpand  %xmm0,%xmm6,%xmm6
+	vpsrlq $0x28,%xmm2,%xmm2
+	vpor   0x98(%rsp),%xmm2,%xmm2                   #! EA = L0x7fffffffda10
+	add    $0x20,%rsi
+	sub    $0x20,%rdx
+	or     $0x1,%rax
+	mov    %rax,0x78(%rdi)                          #! EA = L0x7fffffffdaf8
+	#jmp    0x402f56 <poly1305_blocks_avx+259>
+	mov    0x78(%rdi),%rax                          #! EA = L0x7fffffffdaf8
+	test   $0x30,%al
+	#je     0x402fb9 <poly1305_blocks_avx+358>
+	vmovdqu 0x3c(%rdi),%xmm5                        #! EA = L0x7fffffffdabc
+	vpshufd $0x0,%xmm5,%xmm1
+	vpshufd $0x55,%xmm5,%xmm11
+	vpshufd $0xaa,%xmm5,%xmm10
+	vpshufd $0xff,%xmm5,%xmm5
+	vmovd  0x4c(%rdi),%xmm4                         #! EA = L0x7fffffffdacc
+	vpshufd $0x0,%xmm4,%xmm4
+	vmovdqa %xmm11,0x88(%rsp)                       #! EA = L0x7fffffffda00
+	vpmuludq 0xb8(%rsp),%xmm11,%xmm13               #! EA = L0x7fffffffda30
+	vmovdqa %xmm13,0x78(%rsp)                       #! EA = L0x7fffffffd9f0
+	vmovdqa %xmm10,0x68(%rsp)                       #! EA = L0x7fffffffd9e0
+	vpmuludq 0xb8(%rsp),%xmm10,%xmm13               #! EA = L0x7fffffffda30
+	vmovdqa %xmm13,0x58(%rsp)                       #! EA = L0x7fffffffd9d0
+	vmovdqa %xmm5,0x48(%rsp)                        #! EA = L0x7fffffffd9c0
+	vpmuludq 0xb8(%rsp),%xmm5,%xmm5                 #! EA = L0x7fffffffda30
+	vmovdqa %xmm5,0x38(%rsp)                        #! EA = L0x7fffffffd9b0
+	vmovdqa %xmm4,0x28(%rsp)                        #! EA = L0x7fffffffd9a0
+	vpmuludq 0xb8(%rsp),%xmm4,%xmm4                 #! EA = L0x7fffffffda30
+	vmovdqa %xmm4,0x18(%rsp)                        #! EA = L0x7fffffffd990
+	cmp    $0x3f,%rdx
+	#jbe    0x403462 <poly1305_blocks_avx+1551>
+	vmovdqu 0x50(%rdi),%xmm4                        #! EA = L0x7fffffffdad0
+	vpshufd $0x0,%xmm4,%xmm5
+	vmovdqa %xmm5,0x8(%rsp)                         #! EA = L0x7fffffffd980
+	vpshufd $0x55,%xmm4,%xmm5
+	vmovdqa %xmm5,-0x8(%rsp)                        #! EA = L0x7fffffffd970
+	vpshufd $0xaa,%xmm4,%xmm13
+	vmovdqa %xmm13,-0x18(%rsp)                      #! EA = L0x7fffffffd960
+	vpshufd $0xff,%xmm4,%xmm4
+	vmovdqa %xmm4,%xmm10
+	vmovdqa %xmm4,-0x28(%rsp)                       #! EA = L0x7fffffffd950
+	vmovd  0x60(%rdi),%xmm4                         #! EA = L0x7fffffffdae0
+	vpshufd $0x0,%xmm4,%xmm4
+	vmovdqa %xmm4,%xmm8
+	vmovdqa %xmm4,-0x38(%rsp)                       #! EA = L0x7fffffffd940
+	vpmuludq 0xb8(%rsp),%xmm5,%xmm4                 #! EA = L0x7fffffffda30
+	vmovdqa %xmm4,-0x48(%rsp)                       #! EA = L0x7fffffffd930
+	vpmuludq 0xb8(%rsp),%xmm13,%xmm4                #! EA = L0x7fffffffda30
+	vmovdqa %xmm4,-0x58(%rsp)                       #! EA = L0x7fffffffd920
+	vpmuludq 0xb8(%rsp),%xmm10,%xmm4                #! EA = L0x7fffffffda30
+	vmovdqa %xmm4,-0x68(%rsp)                       #! EA = L0x7fffffffd910
+	vpmuludq 0xb8(%rsp),%xmm8,%xmm4                 #! EA = L0x7fffffffda30
+	vmovdqa %xmm4,-0x78(%rsp)                       #! EA = L0x7fffffffd900
+	lea    0x20(%rsi),%rax                          #! EA = L0x6071c0
+	mov    %rdx,%rcx
+	vmovdqa %xmm1,0xa8(%rsp)                        #! EA = L0x7fffffffda20
+	#jmp    0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6071a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6071b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6071a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6071b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6071c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6071d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6071e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6071f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6071e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6071f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607200
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607210
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607220
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607230
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607228
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607238
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607240
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607250
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607260
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607270
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607268
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607278
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607280
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607290
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6072a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6072b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6072a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6072b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6072c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6072d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6072e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6072f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6072e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6072f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607300
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607310
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607320
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607330
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607328
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607338
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607340
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607350
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607360
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607370
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607368
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607378
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607380
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607390
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6073a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6073b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6073a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6073b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6073c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6073d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6073e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6073f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6073e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6073f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607400
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607410
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607420
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607430
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607428
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607438
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607440
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607450
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607460
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607470
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607468
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607478
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607480
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607490
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6074a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6074b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6074a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6074b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6074c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6074d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6074e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6074f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6074e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6074f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607500
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607510
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607520
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607530
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607528
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607538
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607540
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607550
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607560
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607570
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607568
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607578
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607580
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607590
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6075a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6075b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6075a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6075b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6075c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6075d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6075e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6075f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6075e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6075f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607600
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607610
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607620
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607630
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607628
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607638
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607640
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607650
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607660
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607670
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607668
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607678
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607680
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607690
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6076a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6076b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6076a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6076b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6076c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6076d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6076e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6076f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6076e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6076f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607700
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607710
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607720
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607730
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607728
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607738
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607740
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607750
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607760
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607770
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607768
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607778
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607780
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607790
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6077a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6077b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6077a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6077b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6077c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6077d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6077e0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6077f0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6077e8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6077f8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607800
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607810
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607820
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607830
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607828
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607838
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607840
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607850
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x607860
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x607870
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x607868
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x607878
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x607880
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x607890
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vpmuludq -0x48(%rsp),%xmm2,%xmm13               #! EA = L0x7fffffffd930
+	vmovdqa -0x58(%rsp),%xmm5                       #! EA = L0x7fffffffd920
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vpmuludq %xmm5,%xmm2,%xmm11
+	vmovdqa -0x68(%rsp),%xmm9                       #! EA = L0x7fffffffd910
+	vpmuludq %xmm9,%xmm6,%xmm5
+	vpmuludq %xmm9,%xmm2,%xmm10
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm9,%xmm3,%xmm4
+	vmovdqa -0x78(%rsp),%xmm8                       #! EA = L0x7fffffffd900
+	vpmuludq %xmm8,%xmm2,%xmm9
+	vpaddq %xmm5,%xmm11,%xmm11
+	vmovdqa %xmm8,%xmm5
+	vpmuludq %xmm8,%xmm12,%xmm8
+	vpmuludq %xmm5,%xmm3,%xmm14
+	vpaddq %xmm4,%xmm13,%xmm13
+	vpmuludq %xmm5,%xmm6,%xmm4
+	vmovdqa 0x8(%rsp),%xmm15                        #! EA = L0x7fffffffd980
+	vpmuludq %xmm15,%xmm6,%xmm5
+	vpaddq %xmm8,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm2,%xmm8
+	vpaddq %xmm14,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm14
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpmuludq %xmm15,%xmm12,%xmm4
+	vpaddq %xmm5,%xmm9,%xmm9
+	vpmuludq %xmm15,%xmm3,%xmm5
+	vmovdqa -0x8(%rsp),%xmm15                       #! EA = L0x7fffffffd970
+	vpmuludq %xmm15,%xmm3,%xmm2
+	vpaddq %xmm14,%xmm13,%xmm13
+	vpmuludq %xmm15,%xmm6,%xmm6
+	vpaddq %xmm4,%xmm11,%xmm11
+	vpmuludq %xmm15,%xmm7,%xmm4
+	vpaddq %xmm5,%xmm10,%xmm10
+	vmovq  -0x20(%rax),%xmm5                        #! EA = L0x6078a0
+	vpinsrq $0x1,-0x10(%rax),%xmm5,%xmm5            #! EA = L0x6078b0
+	vpmuludq %xmm15,%xmm12,%xmm14
+	vpaddq %xmm2,%xmm9,%xmm9
+	vmovdqa -0x18(%rsp),%xmm2                       #! EA = L0x7fffffffd960
+	vpmuludq %xmm2,%xmm12,%xmm15
+	vpaddq %xmm6,%xmm8,%xmm8
+	vpmuludq %xmm2,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm11,%xmm11
+	vmovq  -0x18(%rax),%xmm4                        #! EA = L0x6078a8
+	vpinsrq $0x1,-0x8(%rax),%xmm4,%xmm6             #! EA = L0x6078b8
+	vpmuludq %xmm2,%xmm7,%xmm4
+	vpaddq %xmm14,%xmm10,%xmm10
+	vmovdqa -0x28(%rsp),%xmm1                       #! EA = L0x7fffffffd950
+	vpmuludq %xmm1,%xmm7,%xmm14
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpand  %xmm5,%xmm0,%xmm2
+	vpmuludq %xmm1,%xmm12,%xmm12
+	vpaddq %xmm3,%xmm8,%xmm8
+	vpsrlq $0x1a,%xmm5,%xmm3
+	vpand  %xmm3,%xmm0,%xmm3
+	vpmuludq -0x38(%rsp),%xmm7,%xmm7                #! EA = L0x7fffffffd940
+	vpaddq %xmm4,%xmm10,%xmm10
+	vpsllq $0xc,%xmm6,%xmm15
+	vpsrlq $0x34,%xmm5,%xmm4
+	vpor   %xmm15,%xmm4,%xmm4
+	vpaddq %xmm14,%xmm9,%xmm9
+	vpsrlq $0xe,%xmm6,%xmm5
+	vpand  %xmm5,%xmm0,%xmm5
+	vpaddq %xmm12,%xmm8,%xmm8
+	vpand  %xmm4,%xmm0,%xmm4
+	vpaddq %xmm7,%xmm8,%xmm8
+	vpsrlq $0x28,%xmm6,%xmm6
+	vpor   0x98(%rsp),%xmm6,%xmm6                   #! EA = L0x7fffffffda10
+	vmovdqu (%rax),%xmm12                           #! EA = L0x6078c0
+	vmovdqu 0x10(%rax),%xmm7                        #! EA = L0x6078d0
+	vpunpckldq %xmm7,%xmm12,%xmm15
+	vpunpckhdq %xmm7,%xmm12,%xmm7
+	vpxor  %xmm14,%xmm14,%xmm14
+	vpunpckldq %xmm14,%xmm15,%xmm12
+	vpunpckhdq %xmm14,%xmm15,%xmm15
+	vpunpckldq %xmm14,%xmm7,%xmm14
+	vpxor  %xmm1,%xmm1,%xmm1
+	vpunpckhdq %xmm1,%xmm7,%xmm7
+	vpsllq $0x6,%xmm15,%xmm15
+	vpsllq $0xc,%xmm14,%xmm14
+	vpsllq $0x12,%xmm7,%xmm7
+	vpaddq %xmm12,%xmm13,%xmm12
+	vpaddq %xmm15,%xmm11,%xmm15
+	vpaddq %xmm14,%xmm10,%xmm14
+	vpaddq %xmm7,%xmm9,%xmm7
+	vpaddq 0x98(%rsp),%xmm8,%xmm8                   #! EA = L0x7fffffffda10
+	vpmuludq 0x78(%rsp),%xmm6,%xmm13                #! EA = L0x7fffffffd9f0
+	vmovdqa 0x58(%rsp),%xmm10                       #! EA = L0x7fffffffd9d0
+	vpmuludq %xmm10,%xmm5,%xmm9
+	vpmuludq %xmm10,%xmm6,%xmm11
+	vmovdqa 0x38(%rsp),%xmm1                        #! EA = L0x7fffffffd9b0
+	vpmuludq %xmm1,%xmm5,%xmm10
+	vpaddq %xmm13,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm6,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm12
+	vpmuludq %xmm1,%xmm4,%xmm9
+	vpaddq %xmm11,%xmm15,%xmm15
+	vmovdqa 0x18(%rsp),%xmm1                        #! EA = L0x7fffffffd990
+	vpmuludq %xmm1,%xmm6,%xmm11
+	vpaddq %xmm10,%xmm15,%xmm10
+	vpmuludq %xmm1,%xmm3,%xmm15
+	vpaddq %xmm13,%xmm14,%xmm14
+	vpmuludq %xmm1,%xmm4,%xmm13
+	vpaddq %xmm9,%xmm12,%xmm9
+	vpmuludq %xmm1,%xmm5,%xmm12
+	vpaddq %xmm11,%xmm7,%xmm7
+	vpmuludq 0xa8(%rsp),%xmm5,%xmm11                #! EA = L0x7fffffffda20
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq 0xa8(%rsp),%xmm6,%xmm6                 #! EA = L0x7fffffffda20
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq 0xa8(%rsp),%xmm2,%xmm15                #! EA = L0x7fffffffda20
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq 0xa8(%rsp),%xmm3,%xmm13                #! EA = L0x7fffffffda20
+	vpaddq %xmm11,%xmm7,%xmm11
+	vpmuludq 0xa8(%rsp),%xmm4,%xmm12                #! EA = L0x7fffffffda20
+	vpaddq %xmm6,%xmm8,%xmm6
+	vmovdqa 0x88(%rsp),%xmm8                        #! EA = L0x7fffffffda00
+	vpmuludq %xmm8,%xmm4,%xmm7
+	vpaddq %xmm15,%xmm9,%xmm9
+	vpmuludq %xmm8,%xmm5,%xmm5
+	vpaddq %xmm13,%xmm10,%xmm10
+	vpmuludq %xmm8,%xmm2,%xmm15
+	vpaddq %xmm12,%xmm14,%xmm14
+	vpmuludq %xmm8,%xmm3,%xmm8
+	vpaddq %xmm7,%xmm11,%xmm11
+	vmovdqa 0x68(%rsp),%xmm7                        #! EA = L0x7fffffffd9e0
+	vpmuludq %xmm7,%xmm3,%xmm13
+	vpaddq %xmm5,%xmm6,%xmm6
+	vpmuludq %xmm7,%xmm4,%xmm4
+	vpaddq %xmm15,%xmm10,%xmm10
+	vpmuludq %xmm7,%xmm2,%xmm15
+	vpaddq %xmm8,%xmm14,%xmm14
+	vmovdqa 0x48(%rsp),%xmm5                        #! EA = L0x7fffffffd9c0
+	vpmuludq %xmm5,%xmm2,%xmm7
+	vpaddq %xmm13,%xmm11,%xmm11
+	vpmuludq %xmm5,%xmm3,%xmm3
+	vpaddq %xmm4,%xmm6,%xmm6
+	vpmuludq 0x28(%rsp),%xmm2,%xmm2                 #! EA = L0x7fffffffd9a0
+	vpaddq %xmm15,%xmm14,%xmm14
+	vpaddq %xmm7,%xmm11,%xmm11
+	vpaddq %xmm3,%xmm6,%xmm6
+	vpaddq %xmm2,%xmm6,%xmm2
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpsrlq $0x1a,%xmm11,%xmm5
+	vpand  %xmm0,%xmm9,%xmm9
+	vpand  %xmm0,%xmm11,%xmm11
+	vpaddq %xmm12,%xmm10,%xmm10
+	vpaddq %xmm5,%xmm2,%xmm2
+	vpsrlq $0x1a,%xmm10,%xmm3
+	vpsrlq $0x1a,%xmm2,%xmm7
+	vpand  %xmm0,%xmm10,%xmm10
+	vpand  %xmm0,%xmm2,%xmm2
+	vpaddq %xmm3,%xmm14,%xmm3
+	vpmuludq 0xb8(%rsp),%xmm7,%xmm7                 #! EA = L0x7fffffffda30
+	vpaddq %xmm7,%xmm9,%xmm9
+	vpsrlq $0x1a,%xmm3,%xmm6
+	vpsrlq $0x1a,%xmm9,%xmm12
+	vpand  %xmm0,%xmm3,%xmm3
+	vpand  %xmm0,%xmm9,%xmm7
+	vpaddq %xmm6,%xmm11,%xmm6
+	vpaddq %xmm12,%xmm10,%xmm12
+	vpsrlq $0x1a,%xmm6,%xmm8
+	vpand  %xmm0,%xmm6,%xmm6
+	vpaddq %xmm8,%xmm2,%xmm2
+	sub    $0x40,%rcx
+	add    $0x40,%rax
+	cmp    $0x3f,%rcx
+	#ja     0x403104 <poly1305_blocks_avx+689>
+	vmovdqa 0xa8(%rsp),%xmm1                        #! EA = L0x7fffffffda20
+	lea    -0x40(%rdx),%rax                         #! EA = L0x700
+	and    $0xffffffffffffffc0,%rax
+	lea    0x40(%rsi,%rax,1),%rsi                   #! EA = L0x6078e0
+	and    $0x3f,%edx
+	cmp    $0x1f,%rdx
+	#jbe    0x40362c <poly1305_blocks_avx+2009>
+	test   %rsi,%rsi
+	#je     0x403667 <poly1305_blocks_avx+2068>
+	vpshufd $0x8,%xmm7,%xmm7
+	vpshufd $0x8,%xmm12,%xmm12
+	vpshufd $0x8,%xmm3,%xmm3
+	vpshufd $0x8,%xmm6,%xmm6
+	vpshufd $0x8,%xmm2,%xmm2
+	vpunpcklqdq %xmm12,%xmm7,%xmm7
+	vpunpcklqdq %xmm6,%xmm3,%xmm3
+	vmovdqu %xmm7,(%rdi)                            #! EA = L0x7fffffffda80
+	vmovdqu %xmm3,0x10(%rdi)                        #! EA = L0x7fffffffda90
+	vmovq  %xmm2,0x20(%rdi)                         #! EA = L0x7fffffffdaa0
+	#jmpq   0x4037d8 <poly1305_blocks_avx+2437>
+	mov    -0x8(%rbp),%rbx                          #! EA = L0x7fffffffda68
+	leaveq 
+	#retq   

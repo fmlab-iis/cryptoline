@@ -1,0 +1,32 @@
+bn_GF2m_mul_2x2:
+# %rdi = 0x7fffffffdb80
+# %rsi = 0x1491827acd982ef8
+# %rdx = 0x-67deb6e7d8532108
+# %rcx = 0x-267d107eb6e7d854
+# %r8  = 0x-53210767deb6e7d9
+# %r9  = 0x29ee3ff00000000
+        mov    %rsp,%rax
+        mov    0x20166e(%rip),%r10        #! EA = L0x602058, Value = None
+        bt     $0x21,%r10
+       #jae    0x400a50 <bn_GF2m_mul_2x2+112>
+        movq   %rsi,%xmm0
+        movq   %rcx,%xmm1
+        movq   %rdx,%xmm2
+        movq   %r8,%xmm3
+        movdqa %xmm0,%xmm4
+        movdqa %xmm1,%xmm5
+        pclmullqlqdq %xmm1,%xmm0
+        pxor   %xmm2,%xmm4
+        pxor   %xmm3,%xmm5
+        pclmullqlqdq %xmm3,%xmm2
+        pclmullqlqdq %xmm5,%xmm4
+        xorps  %xmm0,%xmm4
+        xorps  %xmm2,%xmm4
+        movdqa %xmm4,%xmm5
+        pslldq $0x8,%xmm4
+        psrldq $0x8,%xmm5
+        pxor   %xmm4,%xmm2
+        pxor   %xmm5,%xmm0
+        movdqu %xmm2,(%rdi)               #! EA = L0x7fffffffdb80, Value = 0x0000000000000000
+        movdqu %xmm0,0x10(%rdi)           #! EA = L0x7fffffffdb90, Value = 0x0000000000401470
+       #repz retq

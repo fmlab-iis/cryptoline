@@ -1,0 +1,937 @@
+invntt:
+# %rdi = 0x7fffffffaa40
+# %rsi = 0x435540
+# %rdx = 0x7fffffffc440
+# %rcx = 0x7fffffffa268
+# %r8  = 0x-659f6f357ec140da
+# %r9  = 0x-469a6e245fe7e0d9
+	mov    %rsp,%r11
+	and    $0x1f,%r11
+	sub    %r11,%rsp
+	vmovdqa 0x2700(%rip),%ymm0        # 0x4362e0 <_16xqinv>#! EA = L0x4362e0
+	vmovdqa 0x26d8(%rip),%ymm1        # 0x4362c0 <_16xq>#! EA = L0x4362c0
+	vmovdqa 0x2650(%rip),%ymm2        # 0x436240 <_16xv>#! EA = L0x436240
+	mov    %rsi,%r8
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffaa40
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffaa60
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffaa80
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffaaa0
+	vmovdqa 0x80(%rdi),%ymm8                        #! EA = L0x7fffffffaac0
+	vmovdqa 0xa0(%rdi),%ymm9                        #! EA = L0x7fffffffaae0
+	vmovdqa 0xc0(%rdi),%ymm10                       #! EA = L0x7fffffffab00
+	vmovdqa 0xe0(%rdi),%ymm11                       #! EA = L0x7fffffffab20
+	vmovdqa 0x2552(%rip),%ymm3        # 0x436180 <_lowdword>#! EA = L0x436180
+	vpand  %ymm3,%ymm4,%ymm12
+	vpand  %ymm3,%ymm5,%ymm13
+	vpand  %ymm3,%ymm6,%ymm14
+	vpand  %ymm3,%ymm7,%ymm15
+	vpsrld $0x10,%ymm4,%ymm4
+	vpsrld $0x10,%ymm5,%ymm5
+	vpsrld $0x10,%ymm6,%ymm6
+	vpsrld $0x10,%ymm7,%ymm7
+	vpackusdw %ymm5,%ymm4,%ymm5
+	vpackusdw %ymm13,%ymm12,%ymm4
+	vpackusdw %ymm7,%ymm6,%ymm7
+	vpackusdw %ymm15,%ymm14,%ymm6
+	vpermq $0xd8,%ymm4,%ymm4
+	vpermq $0xd8,%ymm5,%ymm5
+	vpermq $0xd8,%ymm6,%ymm6
+	vpermq $0xd8,%ymm7,%ymm7
+	vpand  %ymm3,%ymm8,%ymm12
+	vpand  %ymm3,%ymm9,%ymm13
+	vpand  %ymm3,%ymm10,%ymm14
+	vpand  %ymm3,%ymm11,%ymm15
+	vpsrld $0x10,%ymm8,%ymm8
+	vpsrld $0x10,%ymm9,%ymm9
+	vpsrld $0x10,%ymm10,%ymm10
+	vpsrld $0x10,%ymm11,%ymm11
+	vpackusdw %ymm9,%ymm8,%ymm9
+	vpackusdw %ymm13,%ymm12,%ymm8
+	vpackusdw %ymm11,%ymm10,%ymm11
+	vpackusdw %ymm15,%ymm14,%ymm10
+	vpermq $0xd8,%ymm8,%ymm8
+	vpermq $0xd8,%ymm9,%ymm9
+	vpermq $0xd8,%ymm10,%ymm10
+	vpermq $0xd8,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm4,%ymm12
+	vpsubw %ymm7,%ymm6,%ymm13
+	vpsubw %ymm9,%ymm8,%ymm14
+	vpsubw %ymm11,%ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vmovdqa (%r8),%ymm7                             #! EA = L0x435540
+	vmovdqa 0x20(%r8),%ymm9                         #! EA = L0x435560
+	vmovdqa 0x40(%r8),%ymm11                        #! EA = L0x435580
+	vmovdqa 0x60(%r8),%ymm3                         #! EA = L0x4355a0
+	vpmullw %ymm7,%ymm12,%ymm5
+	vpmulhw %ymm7,%ymm12,%ymm12
+	vpmullw %ymm9,%ymm13,%ymm7
+	vpmulhw %ymm9,%ymm13,%ymm13
+	vpmullw %ymm11,%ymm14,%ymm9
+	vpmulhw %ymm11,%ymm14,%ymm14
+	vpmullw %ymm3,%ymm15,%ymm11
+	vpmulhw %ymm3,%ymm15,%ymm15
+	vpmullw %ymm0,%ymm5,%ymm5
+	vpmullw %ymm0,%ymm7,%ymm7
+	vpmullw %ymm0,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm5,%ymm5
+	vpmulhw %ymm1,%ymm7,%ymm7
+	vpmulhw %ymm1,%ymm9,%ymm9
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vmovdqa 0x24b5(%rip),%ymm3        # 0x436220 <_vpshufb_idx>#! EA = L0x436220
+	vpshufb %ymm3,%ymm4,%ymm12
+	vpshufb %ymm3,%ymm5,%ymm13
+	vpshufb %ymm3,%ymm6,%ymm14
+	vpshufb %ymm3,%ymm7,%ymm15
+	vpblendw $0x55,%ymm4,%ymm13,%ymm4
+	vpblendw $0xaa,%ymm5,%ymm12,%ymm5
+	vpblendw $0x55,%ymm6,%ymm15,%ymm6
+	vpblendw $0xaa,%ymm7,%ymm14,%ymm7
+	vpshufb %ymm3,%ymm8,%ymm12
+	vpshufb %ymm3,%ymm9,%ymm13
+	vpshufb %ymm3,%ymm10,%ymm14
+	vpshufb %ymm3,%ymm11,%ymm15
+	vpblendw $0x55,%ymm8,%ymm13,%ymm8
+	vpblendw $0xaa,%ymm9,%ymm12,%ymm9
+	vpblendw $0x55,%ymm10,%ymm15,%ymm10
+	vpblendw $0xaa,%ymm11,%ymm14,%ymm11
+	vpsubw %ymm5,%ymm4,%ymm12
+	vpsubw %ymm7,%ymm6,%ymm13
+	vpsubw %ymm9,%ymm8,%ymm14
+	vpsubw %ymm11,%ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vmovdqa 0x100(%r8),%ymm7                        #! EA = L0x435640
+	vmovdqa 0x120(%r8),%ymm9                        #! EA = L0x435660
+	vmovdqa 0x140(%r8),%ymm11                       #! EA = L0x435680
+	vmovdqa 0x160(%r8),%ymm3                        #! EA = L0x4356a0
+	vpmullw %ymm7,%ymm12,%ymm5
+	vpmulhw %ymm7,%ymm12,%ymm12
+	vpmullw %ymm9,%ymm13,%ymm7
+	vpmulhw %ymm9,%ymm13,%ymm13
+	vpmullw %ymm11,%ymm14,%ymm9
+	vpmulhw %ymm11,%ymm14,%ymm14
+	vpmullw %ymm3,%ymm15,%ymm11
+	vpmulhw %ymm3,%ymm15,%ymm15
+	vpmullw %ymm0,%ymm5,%ymm5
+	vpmullw %ymm0,%ymm7,%ymm7
+	vpmullw %ymm0,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm5,%ymm5
+	vpmulhw %ymm1,%ymm7,%ymm7
+	vpmulhw %ymm1,%ymm9,%ymm9
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vpmulhw %ymm2,%ymm4,%ymm12
+	vpmulhw %ymm2,%ymm6,%ymm13
+	vpmulhw %ymm2,%ymm8,%ymm14
+	vpmulhw %ymm2,%ymm10,%ymm15
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpsraw $0xb,%ymm14,%ymm14
+	vpsraw $0xb,%ymm15,%ymm15
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm14,%ymm14
+	vpmullw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm4,%ymm4
+	vpsubw %ymm13,%ymm6,%ymm6
+	vpsubw %ymm14,%ymm8,%ymm8
+	vpsubw %ymm15,%ymm10,%ymm10
+	vpshufd $0xb1,%ymm4,%ymm12
+	vpshufd $0xb1,%ymm5,%ymm13
+	vpshufd $0xb1,%ymm6,%ymm14
+	vpshufd $0xb1,%ymm7,%ymm15
+	vpblendd $0x55,%ymm4,%ymm13,%ymm4
+	vpblendd $0xaa,%ymm5,%ymm12,%ymm5
+	vpblendd $0x55,%ymm6,%ymm15,%ymm6
+	vpblendd $0xaa,%ymm7,%ymm14,%ymm7
+	vpshufd $0xb1,%ymm8,%ymm12
+	vpshufd $0xb1,%ymm9,%ymm13
+	vpshufd $0xb1,%ymm10,%ymm14
+	vpshufd $0xb1,%ymm11,%ymm15
+	vpblendd $0x55,%ymm8,%ymm13,%ymm8
+	vpblendd $0xaa,%ymm9,%ymm12,%ymm9
+	vpblendd $0x55,%ymm10,%ymm15,%ymm10
+	vpblendd $0xaa,%ymm11,%ymm14,%ymm11
+	vpsubw %ymm5,%ymm4,%ymm12
+	vpsubw %ymm7,%ymm6,%ymm13
+	vpsubw %ymm9,%ymm8,%ymm14
+	vpsubw %ymm11,%ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vmovdqa 0x200(%r8),%ymm7                        #! EA = L0x435740
+	vmovdqa 0x220(%r8),%ymm9                        #! EA = L0x435760
+	vmovdqa 0x240(%r8),%ymm11                       #! EA = L0x435780
+	vmovdqa 0x260(%r8),%ymm3                        #! EA = L0x4357a0
+	vpmullw %ymm7,%ymm12,%ymm5
+	vpmulhw %ymm7,%ymm12,%ymm12
+	vpmullw %ymm9,%ymm13,%ymm7
+	vpmulhw %ymm9,%ymm13,%ymm13
+	vpmullw %ymm11,%ymm14,%ymm9
+	vpmulhw %ymm11,%ymm14,%ymm14
+	vpmullw %ymm3,%ymm15,%ymm11
+	vpmulhw %ymm3,%ymm15,%ymm15
+	vpmullw %ymm0,%ymm5,%ymm5
+	vpmullw %ymm0,%ymm7,%ymm7
+	vpmullw %ymm0,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm5,%ymm5
+	vpmulhw %ymm1,%ymm7,%ymm7
+	vpmulhw %ymm1,%ymm9,%ymm9
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vshufpd $0x0,%ymm5,%ymm4,%ymm3
+	vshufpd $0xf,%ymm5,%ymm4,%ymm4
+	vshufpd $0x0,%ymm7,%ymm6,%ymm5
+	vshufpd $0xf,%ymm7,%ymm6,%ymm6
+	vshufpd $0x0,%ymm9,%ymm8,%ymm7
+	vshufpd $0xf,%ymm9,%ymm8,%ymm8
+	vshufpd $0x0,%ymm11,%ymm10,%ymm9
+	vshufpd $0xf,%ymm11,%ymm10,%ymm10
+	vpsubw %ymm4,%ymm3,%ymm12
+	vpsubw %ymm6,%ymm5,%ymm13
+	vpsubw %ymm8,%ymm7,%ymm14
+	vpsubw %ymm10,%ymm9,%ymm15
+	vpaddw %ymm3,%ymm4,%ymm3
+	vpaddw %ymm5,%ymm6,%ymm5
+	vpaddw %ymm7,%ymm8,%ymm7
+	vpaddw %ymm9,%ymm10,%ymm9
+	vmovdqa 0x300(%r8),%ymm6                        #! EA = L0x435840
+	vmovdqa 0x320(%r8),%ymm8                        #! EA = L0x435860
+	vmovdqa 0x340(%r8),%ymm10                       #! EA = L0x435880
+	vmovdqa 0x360(%r8),%ymm11                       #! EA = L0x4358a0
+	vpmullw %ymm6,%ymm12,%ymm4
+	vpmulhw %ymm6,%ymm12,%ymm12
+	vpmullw %ymm8,%ymm13,%ymm6
+	vpmulhw %ymm8,%ymm13,%ymm13
+	vpmullw %ymm10,%ymm14,%ymm8
+	vpmulhw %ymm10,%ymm14,%ymm14
+	vpmullw %ymm11,%ymm15,%ymm10
+	vpmulhw %ymm11,%ymm15,%ymm15
+	vpmullw %ymm0,%ymm4,%ymm4
+	vpmullw %ymm0,%ymm6,%ymm6
+	vpmullw %ymm0,%ymm8,%ymm8
+	vpmullw %ymm0,%ymm10,%ymm10
+	vpmulhw %ymm1,%ymm4,%ymm4
+	vpmulhw %ymm1,%ymm6,%ymm6
+	vpmulhw %ymm1,%ymm8,%ymm8
+	vpmulhw %ymm1,%ymm10,%ymm10
+	vpsubw %ymm4,%ymm12,%ymm4
+	vpsubw %ymm6,%ymm13,%ymm6
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm10,%ymm15,%ymm10
+	vpmulhw %ymm2,%ymm3,%ymm12
+	vpmulhw %ymm2,%ymm5,%ymm13
+	vpmulhw %ymm2,%ymm7,%ymm14
+	vpmulhw %ymm2,%ymm9,%ymm15
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpsraw $0xb,%ymm14,%ymm14
+	vpsraw $0xb,%ymm15,%ymm15
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm14,%ymm14
+	vpmullw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm3,%ymm3
+	vpsubw %ymm13,%ymm5,%ymm5
+	vpsubw %ymm14,%ymm7,%ymm7
+	vpsubw %ymm15,%ymm9,%ymm9
+	vperm2i128 $0x2,%ymm3,%ymm4,%ymm11
+	vperm2i128 $0x13,%ymm3,%ymm4,%ymm3
+	vperm2i128 $0x2,%ymm5,%ymm6,%ymm4
+	vperm2i128 $0x13,%ymm5,%ymm6,%ymm5
+	vperm2i128 $0x2,%ymm7,%ymm8,%ymm6
+	vperm2i128 $0x13,%ymm7,%ymm8,%ymm7
+	vperm2i128 $0x2,%ymm9,%ymm10,%ymm8
+	vperm2i128 $0x13,%ymm9,%ymm10,%ymm9
+	vmovdqa %ymm11,%ymm12
+	vmovdqa %ymm4,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm8,%ymm15
+	vpaddw %ymm11,%ymm3,%ymm10
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpsubw %ymm3,%ymm12,%ymm3
+	vpsubw %ymm5,%ymm13,%ymm5
+	vpsubw %ymm7,%ymm14,%ymm7
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x400(%r8),%ymm12                       #! EA = L0x435940
+	vmovdqa 0x420(%r8),%ymm13                       #! EA = L0x435960
+	vmovdqa 0x440(%r8),%ymm14                       #! EA = L0x435980
+	vmovdqa 0x460(%r8),%ymm15                       #! EA = L0x4359a0
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm3
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm7,%ymm7
+	vpsubw %ymm14,%ymm9,%ymm9
+	vmovdqa %ymm10,%ymm12
+	vmovdqa %ymm3,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm7,%ymm15
+	vpaddw %ymm10,%ymm4,%ymm10
+	vpaddw %ymm3,%ymm5,%ymm3
+	vpaddw %ymm6,%ymm8,%ymm6
+	vpaddw %ymm7,%ymm9,%ymm7
+	vpsubw %ymm4,%ymm12,%ymm4
+	vpsubw %ymm5,%ymm13,%ymm5
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x500(%rsi),%ymm14                      #! EA = L0x435a40
+	vmovdqa 0x520(%rsi),%ymm15                      #! EA = L0x435a60
+	vpmullw %ymm14,%ymm4,%ymm11
+	vpmullw %ymm14,%ymm5,%ymm12
+	vpmullw %ymm15,%ymm8,%ymm13
+	vpmulhw %ymm14,%ymm4,%ymm4
+	vpmulhw %ymm14,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm8,%ymm8
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm4,%ymm4
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm8,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpmulhw %ymm2,%ymm10,%ymm12
+	vpmulhw %ymm2,%ymm6,%ymm13
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpsubw %ymm12,%ymm10,%ymm10
+	vpsubw %ymm13,%ymm6,%ymm6
+	vmovdqa %ymm10,%ymm12
+	vmovdqa %ymm3,%ymm13
+	vmovdqa %ymm4,%ymm14
+	vmovdqa %ymm5,%ymm15
+	vpaddw %ymm10,%ymm6,%ymm10
+	vpaddw %ymm3,%ymm7,%ymm3
+	vpaddw %ymm4,%ymm8,%ymm4
+	vpaddw %ymm5,%ymm9,%ymm5
+	vpsubw %ymm6,%ymm12,%ymm6
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x580(%rsi),%ymm15                      #! EA = L0x435ac0
+	vpmullw %ymm15,%ymm6,%ymm11
+	vpmullw %ymm15,%ymm7,%ymm12
+	vpmullw %ymm15,%ymm8,%ymm13
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm8,%ymm8
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm6,%ymm6
+	vpsubw %ymm12,%ymm7,%ymm7
+	vpsubw %ymm13,%ymm8,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpmulhw %ymm2,%ymm3,%ymm12
+	vpsraw $0xb,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpsubw %ymm12,%ymm3,%ymm3
+	vmovdqa %ymm10,(%rdi)                           #! EA = L0x7fffffffaa40
+	vmovdqa %ymm3,0x20(%rdi)                        #! EA = L0x7fffffffaa60
+	vmovdqa %ymm4,0x40(%rdi)                        #! EA = L0x7fffffffaa80
+	vmovdqa %ymm5,0x60(%rdi)                        #! EA = L0x7fffffffaaa0
+	vmovdqa %ymm6,0x80(%rdi)                        #! EA = L0x7fffffffaac0
+	vmovdqa %ymm7,0xa0(%rdi)                        #! EA = L0x7fffffffaae0
+	vmovdqa %ymm8,0xc0(%rdi)                        #! EA = L0x7fffffffab00
+	vmovdqa %ymm9,0xe0(%rdi)                        #! EA = L0x7fffffffab20
+	add    $0x100,%rdi
+	add    $0x80,%r8
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffab40
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffab60
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffab80
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffaba0
+	vmovdqa 0x80(%rdi),%ymm8                        #! EA = L0x7fffffffabc0
+	vmovdqa 0xa0(%rdi),%ymm9                        #! EA = L0x7fffffffabe0
+	vmovdqa 0xc0(%rdi),%ymm10                       #! EA = L0x7fffffffac00
+	vmovdqa 0xe0(%rdi),%ymm11                       #! EA = L0x7fffffffac20
+	vmovdqa 0x1df0(%rip),%ymm3        # 0x436180 <_lowdword>#! EA = L0x436180
+	vpand  %ymm3,%ymm4,%ymm12
+	vpand  %ymm3,%ymm5,%ymm13
+	vpand  %ymm3,%ymm6,%ymm14
+	vpand  %ymm3,%ymm7,%ymm15
+	vpsrld $0x10,%ymm4,%ymm4
+	vpsrld $0x10,%ymm5,%ymm5
+	vpsrld $0x10,%ymm6,%ymm6
+	vpsrld $0x10,%ymm7,%ymm7
+	vpackusdw %ymm5,%ymm4,%ymm5
+	vpackusdw %ymm13,%ymm12,%ymm4
+	vpackusdw %ymm7,%ymm6,%ymm7
+	vpackusdw %ymm15,%ymm14,%ymm6
+	vpermq $0xd8,%ymm4,%ymm4
+	vpermq $0xd8,%ymm5,%ymm5
+	vpermq $0xd8,%ymm6,%ymm6
+	vpermq $0xd8,%ymm7,%ymm7
+	vpand  %ymm3,%ymm8,%ymm12
+	vpand  %ymm3,%ymm9,%ymm13
+	vpand  %ymm3,%ymm10,%ymm14
+	vpand  %ymm3,%ymm11,%ymm15
+	vpsrld $0x10,%ymm8,%ymm8
+	vpsrld $0x10,%ymm9,%ymm9
+	vpsrld $0x10,%ymm10,%ymm10
+	vpsrld $0x10,%ymm11,%ymm11
+	vpackusdw %ymm9,%ymm8,%ymm9
+	vpackusdw %ymm13,%ymm12,%ymm8
+	vpackusdw %ymm11,%ymm10,%ymm11
+	vpackusdw %ymm15,%ymm14,%ymm10
+	vpermq $0xd8,%ymm8,%ymm8
+	vpermq $0xd8,%ymm9,%ymm9
+	vpermq $0xd8,%ymm10,%ymm10
+	vpermq $0xd8,%ymm11,%ymm11
+	vmovdqa %ymm4,%ymm12
+	vmovdqa %ymm6,%ymm13
+	vmovdqa %ymm8,%ymm14
+	vmovdqa %ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vmovdqa (%r8),%ymm13                            #! EA = L0x4355c0
+	vmovdqa 0x20(%r8),%ymm14                        #! EA = L0x4355e0
+	vmovdqa 0x40(%r8),%ymm15                        #! EA = L0x435600
+	vmovdqa 0x60(%r8),%ymm3                         #! EA = L0x435620
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm7,%ymm7
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpsubw %ymm15,%ymm11,%ymm11
+	vmovdqa 0x1d3d(%rip),%ymm3        # 0x436220 <_vpshufb_idx>#! EA = L0x436220
+	vpshufb %ymm3,%ymm4,%ymm12
+	vpshufb %ymm3,%ymm5,%ymm13
+	vpshufb %ymm3,%ymm6,%ymm14
+	vpshufb %ymm3,%ymm7,%ymm15
+	vpblendw $0x55,%ymm4,%ymm13,%ymm4
+	vpblendw $0xaa,%ymm5,%ymm12,%ymm5
+	vpblendw $0x55,%ymm6,%ymm15,%ymm6
+	vpblendw $0xaa,%ymm7,%ymm14,%ymm7
+	vpshufb %ymm3,%ymm8,%ymm12
+	vpshufb %ymm3,%ymm9,%ymm13
+	vpshufb %ymm3,%ymm10,%ymm14
+	vpshufb %ymm3,%ymm11,%ymm15
+	vpblendw $0x55,%ymm8,%ymm13,%ymm8
+	vpblendw $0xaa,%ymm9,%ymm12,%ymm9
+	vpblendw $0x55,%ymm10,%ymm15,%ymm10
+	vpblendw $0xaa,%ymm11,%ymm14,%ymm11
+	vmovdqa %ymm4,%ymm12
+	vmovdqa %ymm6,%ymm13
+	vmovdqa %ymm8,%ymm14
+	vmovdqa %ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vmovdqa 0x100(%r8),%ymm13                       #! EA = L0x4356c0
+	vmovdqa 0x120(%r8),%ymm14                       #! EA = L0x4356e0
+	vmovdqa 0x140(%r8),%ymm15                       #! EA = L0x435700
+	vmovdqa 0x160(%r8),%ymm3                        #! EA = L0x435720
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm7,%ymm7
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpsubw %ymm15,%ymm11,%ymm11
+	vpmulhw %ymm2,%ymm4,%ymm12
+	vpmulhw %ymm2,%ymm6,%ymm13
+	vpmulhw %ymm2,%ymm8,%ymm14
+	vpmulhw %ymm2,%ymm10,%ymm15
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpsraw $0xb,%ymm14,%ymm14
+	vpsraw $0xb,%ymm15,%ymm15
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm14,%ymm14
+	vpmullw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm4,%ymm4
+	vpsubw %ymm13,%ymm6,%ymm6
+	vpsubw %ymm14,%ymm8,%ymm8
+	vpsubw %ymm15,%ymm10,%ymm10
+	vpshufd $0xb1,%ymm4,%ymm12
+	vpshufd $0xb1,%ymm5,%ymm13
+	vpshufd $0xb1,%ymm6,%ymm14
+	vpshufd $0xb1,%ymm7,%ymm15
+	vpblendd $0x55,%ymm4,%ymm13,%ymm4
+	vpblendd $0xaa,%ymm5,%ymm12,%ymm5
+	vpblendd $0x55,%ymm6,%ymm15,%ymm6
+	vpblendd $0xaa,%ymm7,%ymm14,%ymm7
+	vpshufd $0xb1,%ymm8,%ymm12
+	vpshufd $0xb1,%ymm9,%ymm13
+	vpshufd $0xb1,%ymm10,%ymm14
+	vpshufd $0xb1,%ymm11,%ymm15
+	vpblendd $0x55,%ymm8,%ymm13,%ymm8
+	vpblendd $0xaa,%ymm9,%ymm12,%ymm9
+	vpblendd $0x55,%ymm10,%ymm15,%ymm10
+	vpblendd $0xaa,%ymm11,%ymm14,%ymm11
+	vmovdqa %ymm4,%ymm12
+	vmovdqa %ymm6,%ymm13
+	vmovdqa %ymm8,%ymm14
+	vmovdqa %ymm10,%ymm15
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpaddw %ymm10,%ymm11,%ymm10
+	vpsubw %ymm5,%ymm12,%ymm5
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm9,%ymm14,%ymm9
+	vpsubw %ymm11,%ymm15,%ymm11
+	vmovdqa 0x200(%r8),%ymm13                       #! EA = L0x4357c0
+	vmovdqa 0x220(%r8),%ymm14                       #! EA = L0x4357e0
+	vmovdqa 0x240(%r8),%ymm15                       #! EA = L0x435800
+	vmovdqa 0x260(%r8),%ymm3                        #! EA = L0x435820
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm7,%ymm7
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpsubw %ymm15,%ymm11,%ymm11
+	vshufpd $0x0,%ymm5,%ymm4,%ymm3
+	vshufpd $0xf,%ymm5,%ymm4,%ymm4
+	vshufpd $0x0,%ymm7,%ymm6,%ymm5
+	vshufpd $0xf,%ymm7,%ymm6,%ymm6
+	vshufpd $0x0,%ymm9,%ymm8,%ymm7
+	vshufpd $0xf,%ymm9,%ymm8,%ymm8
+	vshufpd $0x0,%ymm11,%ymm10,%ymm9
+	vshufpd $0xf,%ymm11,%ymm10,%ymm10
+	vmovdqa %ymm3,%ymm12
+	vmovdqa %ymm5,%ymm13
+	vmovdqa %ymm7,%ymm14
+	vmovdqa %ymm9,%ymm15
+	vpaddw %ymm3,%ymm4,%ymm3
+	vpaddw %ymm5,%ymm6,%ymm5
+	vpaddw %ymm7,%ymm8,%ymm7
+	vpaddw %ymm9,%ymm10,%ymm9
+	vpsubw %ymm4,%ymm12,%ymm4
+	vpsubw %ymm6,%ymm13,%ymm6
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm10,%ymm15,%ymm10
+	vmovdqa 0x300(%r8),%ymm12                       #! EA = L0x4358c0
+	vmovdqa 0x320(%r8),%ymm13                       #! EA = L0x4358e0
+	vmovdqa 0x340(%r8),%ymm14                       #! EA = L0x435900
+	vmovdqa 0x360(%r8),%ymm15                       #! EA = L0x435920
+	vpmullw %ymm12,%ymm4,%ymm11
+	vpmulhw %ymm12,%ymm4,%ymm4
+	vpmullw %ymm13,%ymm6,%ymm12
+	vpmulhw %ymm13,%ymm6,%ymm6
+	vpmullw %ymm14,%ymm8,%ymm13
+	vpmulhw %ymm14,%ymm8,%ymm8
+	vpmullw %ymm15,%ymm10,%ymm14
+	vpmulhw %ymm15,%ymm10,%ymm10
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm4,%ymm4
+	vpsubw %ymm12,%ymm6,%ymm6
+	vpsubw %ymm13,%ymm8,%ymm8
+	vpsubw %ymm14,%ymm10,%ymm10
+	vpmulhw %ymm2,%ymm3,%ymm12
+	vpmulhw %ymm2,%ymm5,%ymm13
+	vpmulhw %ymm2,%ymm7,%ymm14
+	vpmulhw %ymm2,%ymm9,%ymm15
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpsraw $0xb,%ymm14,%ymm14
+	vpsraw $0xb,%ymm15,%ymm15
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm14,%ymm14
+	vpmullw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm3,%ymm3
+	vpsubw %ymm13,%ymm5,%ymm5
+	vpsubw %ymm14,%ymm7,%ymm7
+	vpsubw %ymm15,%ymm9,%ymm9
+	vperm2i128 $0x2,%ymm3,%ymm4,%ymm11
+	vperm2i128 $0x13,%ymm3,%ymm4,%ymm3
+	vperm2i128 $0x2,%ymm5,%ymm6,%ymm4
+	vperm2i128 $0x13,%ymm5,%ymm6,%ymm5
+	vperm2i128 $0x2,%ymm7,%ymm8,%ymm6
+	vperm2i128 $0x13,%ymm7,%ymm8,%ymm7
+	vperm2i128 $0x2,%ymm9,%ymm10,%ymm8
+	vperm2i128 $0x13,%ymm9,%ymm10,%ymm9
+	vmovdqa %ymm11,%ymm12
+	vmovdqa %ymm4,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm8,%ymm15
+	vpaddw %ymm11,%ymm3,%ymm10
+	vpaddw %ymm4,%ymm5,%ymm4
+	vpaddw %ymm6,%ymm7,%ymm6
+	vpaddw %ymm8,%ymm9,%ymm8
+	vpsubw %ymm3,%ymm12,%ymm3
+	vpsubw %ymm5,%ymm13,%ymm5
+	vpsubw %ymm7,%ymm14,%ymm7
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x400(%r8),%ymm12                       #! EA = L0x4359c0
+	vmovdqa 0x420(%r8),%ymm13                       #! EA = L0x4359e0
+	vmovdqa 0x440(%r8),%ymm14                       #! EA = L0x435a00
+	vmovdqa 0x460(%r8),%ymm15                       #! EA = L0x435a20
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm3
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm7,%ymm7
+	vpsubw %ymm14,%ymm9,%ymm9
+	vmovdqa %ymm10,%ymm12
+	vmovdqa %ymm3,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm7,%ymm15
+	vpaddw %ymm10,%ymm4,%ymm10
+	vpaddw %ymm3,%ymm5,%ymm3
+	vpaddw %ymm6,%ymm8,%ymm6
+	vpaddw %ymm7,%ymm9,%ymm7
+	vpsubw %ymm4,%ymm12,%ymm4
+	vpsubw %ymm5,%ymm13,%ymm5
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x540(%rsi),%ymm14                      #! EA = L0x435a80
+	vmovdqa 0x560(%rsi),%ymm15                      #! EA = L0x435aa0
+	vpmullw %ymm14,%ymm4,%ymm11
+	vpmullw %ymm14,%ymm5,%ymm12
+	vpmullw %ymm15,%ymm8,%ymm13
+	vpmulhw %ymm14,%ymm4,%ymm4
+	vpmulhw %ymm14,%ymm5,%ymm5
+	vpmulhw %ymm15,%ymm8,%ymm8
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm4,%ymm4
+	vpsubw %ymm12,%ymm5,%ymm5
+	vpsubw %ymm13,%ymm8,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpmulhw %ymm2,%ymm10,%ymm12
+	vpmulhw %ymm2,%ymm6,%ymm13
+	vpsraw $0xb,%ymm12,%ymm12
+	vpsraw $0xb,%ymm13,%ymm13
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm13,%ymm13
+	vpsubw %ymm12,%ymm10,%ymm10
+	vpsubw %ymm13,%ymm6,%ymm6
+	vmovdqa %ymm10,%ymm12
+	vmovdqa %ymm3,%ymm13
+	vmovdqa %ymm4,%ymm14
+	vmovdqa %ymm5,%ymm15
+	vpaddw %ymm10,%ymm6,%ymm10
+	vpaddw %ymm3,%ymm7,%ymm3
+	vpaddw %ymm4,%ymm8,%ymm4
+	vpaddw %ymm5,%ymm9,%ymm5
+	vpsubw %ymm6,%ymm12,%ymm6
+	vpsubw %ymm7,%ymm13,%ymm7
+	vpsubw %ymm8,%ymm14,%ymm8
+	vpsubw %ymm9,%ymm15,%ymm9
+	vmovdqa 0x5a0(%rsi),%ymm15                      #! EA = L0x435ae0
+	vpmullw %ymm15,%ymm6,%ymm11
+	vpmullw %ymm15,%ymm7,%ymm12
+	vpmullw %ymm15,%ymm8,%ymm13
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmulhw %ymm15,%ymm8,%ymm8
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm6,%ymm6
+	vpsubw %ymm12,%ymm7,%ymm7
+	vpsubw %ymm13,%ymm8,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm9
+	vpmulhw %ymm2,%ymm3,%ymm12
+	vpsraw $0xb,%ymm12,%ymm12
+	vpmullw %ymm1,%ymm12,%ymm12
+	vpsubw %ymm12,%ymm3,%ymm3
+	vmovdqa %ymm10,(%rdi)                           #! EA = L0x7fffffffab40
+	vmovdqa %ymm3,0x20(%rdi)                        #! EA = L0x7fffffffab60
+	vmovdqa %ymm4,0x40(%rdi)                        #! EA = L0x7fffffffab80
+	vmovdqa %ymm5,0x60(%rdi)                        #! EA = L0x7fffffffaba0
+	vmovdqa %ymm6,0x80(%rdi)                        #! EA = L0x7fffffffabc0
+	vmovdqa %ymm7,0xa0(%rdi)                        #! EA = L0x7fffffffabe0
+	vmovdqa %ymm8,0xc0(%rdi)                        #! EA = L0x7fffffffac00
+	vmovdqa %ymm9,0xe0(%rdi)                        #! EA = L0x7fffffffac20
+	sub    $0x100,%rdi
+	vmovdqa 0x16f1(%rip),%ymm2        # 0x436200 <_f>#! EA = L0x436200
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffaa40
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffaa60
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffaa80
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffaaa0
+	vmovdqa 0x100(%rdi),%ymm8                       #! EA = L0x7fffffffab40
+	vmovdqa 0x120(%rdi),%ymm9                       #! EA = L0x7fffffffab60
+	vmovdqa 0x140(%rdi),%ymm10                      #! EA = L0x7fffffffab80
+	vmovdqa 0x160(%rdi),%ymm11                      #! EA = L0x7fffffffaba0
+	vmovdqa %ymm4,%ymm12
+	vmovdqa %ymm5,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm7,%ymm15
+	vpaddw %ymm4,%ymm8,%ymm4
+	vpaddw %ymm5,%ymm9,%ymm5
+	vpaddw %ymm6,%ymm10,%ymm6
+	vpaddw %ymm7,%ymm11,%ymm7
+	vpsubw %ymm8,%ymm12,%ymm8
+	vpsubw %ymm9,%ymm13,%ymm9
+	vpsubw %ymm10,%ymm14,%ymm10
+	vpsubw %ymm11,%ymm15,%ymm11
+	vmovdqa 0x5c0(%rsi),%ymm3                       #! EA = L0x435b00
+	vpmullw %ymm3,%ymm8,%ymm12
+	vpmullw %ymm3,%ymm9,%ymm13
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm8,%ymm8
+	vpmulhw %ymm3,%ymm9,%ymm9
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmulhw %ymm3,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm8
+	vpsubw %ymm13,%ymm9,%ymm9
+	vpsubw %ymm14,%ymm10,%ymm10
+	vpsubw %ymm15,%ymm11,%ymm11
+	vpaddw %ymm1,%ymm8,%ymm8
+	vpaddw %ymm1,%ymm9,%ymm9
+	vpaddw %ymm1,%ymm10,%ymm10
+	vpaddw %ymm1,%ymm11,%ymm11
+	vpmullw %ymm2,%ymm4,%ymm12
+	vpmullw %ymm2,%ymm5,%ymm13
+	vpmullw %ymm2,%ymm6,%ymm14
+	vpmullw %ymm2,%ymm7,%ymm15
+	vpmulhw %ymm2,%ymm4,%ymm4
+	vpmulhw %ymm2,%ymm5,%ymm5
+	vpmulhw %ymm2,%ymm6,%ymm6
+	vpmulhw %ymm2,%ymm7,%ymm7
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm4,%ymm4
+	vpsubw %ymm13,%ymm5,%ymm5
+	vpsubw %ymm14,%ymm6,%ymm6
+	vpsubw %ymm15,%ymm7,%ymm7
+	vpaddw %ymm1,%ymm4,%ymm4
+	vpaddw %ymm1,%ymm5,%ymm5
+	vpaddw %ymm1,%ymm6,%ymm6
+	vpaddw %ymm1,%ymm7,%ymm7
+	vmovdqa %ymm4,(%rdi)                            #! EA = L0x7fffffffaa40
+	vmovdqa %ymm5,0x20(%rdi)                        #! EA = L0x7fffffffaa60
+	vmovdqa %ymm6,0x40(%rdi)                        #! EA = L0x7fffffffaa80
+	vmovdqa %ymm7,0x60(%rdi)                        #! EA = L0x7fffffffaaa0
+	vmovdqa %ymm8,0x100(%rdi)                       #! EA = L0x7fffffffab40
+	vmovdqa %ymm9,0x120(%rdi)                       #! EA = L0x7fffffffab60
+	vmovdqa %ymm10,0x140(%rdi)                      #! EA = L0x7fffffffab80
+	vmovdqa %ymm11,0x160(%rdi)                      #! EA = L0x7fffffffaba0
+	add    $0x80,%rdi
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffaac0
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffaae0
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffab00
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffab20
+	vmovdqa 0x100(%rdi),%ymm8                       #! EA = L0x7fffffffabc0
+	vmovdqa 0x120(%rdi),%ymm9                       #! EA = L0x7fffffffabe0
+	vmovdqa 0x140(%rdi),%ymm10                      #! EA = L0x7fffffffac00
+	vmovdqa 0x160(%rdi),%ymm11                      #! EA = L0x7fffffffac20
+	vmovdqa 0x5c0(%rsi),%ymm3                       #! EA = L0x435b00
+	vmovdqa %ymm4,%ymm12
+	vmovdqa %ymm5,%ymm13
+	vmovdqa %ymm6,%ymm14
+	vmovdqa %ymm7,%ymm15
+	vpaddw %ymm4,%ymm8,%ymm4
+	vpaddw %ymm5,%ymm9,%ymm5
+	vpaddw %ymm6,%ymm10,%ymm6
+	vpaddw %ymm7,%ymm11,%ymm7
+	vpsubw %ymm8,%ymm12,%ymm8
+	vpsubw %ymm9,%ymm13,%ymm9
+	vpsubw %ymm10,%ymm14,%ymm10
+	vpsubw %ymm11,%ymm15,%ymm11
+	vpmullw %ymm3,%ymm8,%ymm12
+	vpmullw %ymm3,%ymm9,%ymm13
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm8,%ymm8
+	vpmulhw %ymm3,%ymm9,%ymm9
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmulhw %ymm3,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm8
+	vpsubw %ymm13,%ymm9,%ymm9
+	vpsubw %ymm14,%ymm10,%ymm10
+	vpsubw %ymm15,%ymm11,%ymm11
+	vpaddw %ymm1,%ymm8,%ymm8
+	vpaddw %ymm1,%ymm9,%ymm9
+	vpaddw %ymm1,%ymm10,%ymm10
+	vpaddw %ymm1,%ymm11,%ymm11
+	vpmullw %ymm2,%ymm4,%ymm12
+	vpmullw %ymm2,%ymm5,%ymm13
+	vpmullw %ymm2,%ymm6,%ymm14
+	vpmullw %ymm2,%ymm7,%ymm15
+	vpmulhw %ymm2,%ymm4,%ymm4
+	vpmulhw %ymm2,%ymm5,%ymm5
+	vpmulhw %ymm2,%ymm6,%ymm6
+	vpmulhw %ymm2,%ymm7,%ymm7
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm4,%ymm4
+	vpsubw %ymm13,%ymm5,%ymm5
+	vpsubw %ymm14,%ymm6,%ymm6
+	vpsubw %ymm15,%ymm7,%ymm7
+	vpaddw %ymm1,%ymm4,%ymm4
+	vpaddw %ymm1,%ymm5,%ymm5
+	vpaddw %ymm1,%ymm6,%ymm6
+	vpaddw %ymm1,%ymm7,%ymm7
+	vmovdqa %ymm4,(%rdi)                            #! EA = L0x7fffffffaac0
+	vmovdqa %ymm5,0x20(%rdi)                        #! EA = L0x7fffffffaae0
+	vmovdqa %ymm6,0x40(%rdi)                        #! EA = L0x7fffffffab00
+	vmovdqa %ymm7,0x60(%rdi)                        #! EA = L0x7fffffffab20
+	vmovdqa %ymm8,0x100(%rdi)                       #! EA = L0x7fffffffabc0
+	vmovdqa %ymm9,0x120(%rdi)                       #! EA = L0x7fffffffabe0
+	vmovdqa %ymm10,0x140(%rdi)                      #! EA = L0x7fffffffac00
+	vmovdqa %ymm11,0x160(%rdi)                      #! EA = L0x7fffffffac20
+	add    %r11,%rsp
+	#retq   

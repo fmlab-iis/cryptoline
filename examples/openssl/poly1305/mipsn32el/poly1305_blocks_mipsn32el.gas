@@ -1,0 +1,92 @@
+poly1305_blocks:
+# r4 = 0x10013008
+# r5 = 0x10012010
+# r6 = 0x10
+# r7 = 0x1
+# r8 = 0xccddeef
+# r9 = 0x4433220
+# r10 = 0x553fea8
+# r11 = 0xfffff000
+	dsrl	a2,a2,0x4                                  #! PC = 0x268438848
+	nop                                             #! PC = 0x268438856
+	#bnez	a2,0x10000d60 <poly1305_blocks_internal>  #! PC = 0x268438852
+	daddiu	sp,sp,-48                                #! PC = 0x268438880
+	sd	s1,40(sp)                                    #! EA = L0x40800338; Value = 0x00000000; PC = 0x268438884
+	sd	s0,32(sp)                                    #! EA = L0x40800330; Value = 0x10000fa0; PC = 0x268438888
+	ld	t0,0(a0)                                     #! EA = L0x10013008; Value = 0x00000000; PC = 0x268438892
+	ld	t1,8(a0)                                     #! EA = L0x10013010; Value = 0x00000000; PC = 0x268438896
+	ld	t2,16(a0)                                    #! EA = L0x10013018; Value = 0x00000000; PC = 0x268438900
+	ld	t3,24(a0)                                    #! EA = L0x10013020; Value = 0x0ccddeef; PC = 0x268438904
+	ld	s0,32(a0)                                    #! EA = L0x10013028; Value = 0x04433220; PC = 0x268438908
+	ld	s1,40(a0)                                    #! EA = L0x10013030; Value = 0x0553fea8; PC = 0x268438912
+	ldl	a4,7(a1)                                    #! EA = L0x10012017; Value = 0xdcedfe89; PC = 0x268438916
+	ldl	a5,15(a1)                                   #! EA = L0x1001201f; Value = 0xcddeef87; PC = 0x268438920
+	ldr	a4,0(a1)                                    #! EA = L0x10012010; Value = 0x45342312; PC = 0x268438924
+	ldr	a5,8(a1)                                    #! EA = L0x10012018; Value = 0xcbdcedfe; PC = 0x268438928
+	daddiu	a2,a2,-1                                 #! PC = 0x268438932
+	daddiu	a1,a1,16                                 #! PC = 0x268438936
+	daddu	t0,t0,a4                                  #! PC = 0x268438940
+	daddu	t1,t1,a5                                  #! PC = 0x268438944
+	sltu	a6,t0,a4                                   #! PC = 0x268438948
+	sltu	a7,t1,a5                                   #! PC = 0x268438952
+	daddu	t1,t1,a6                                  #! PC = 0x268438956
+	dmultu	t3,t0                                    #! PC = 0x268438960
+	daddu	t2,t2,a3                                  #! PC = 0x268438964
+	sltu	a6,t1,a6                                   #! PC = 0x268438968
+	mflo	a4                                         #! PC = 0x268438972
+	mfhi	a5                                         #! PC = 0x268438976
+	nop                                             #! PC = 0x268438980
+	nop                                             #! PC = 0x268438984
+	dmultu	s1,t1                                    #! PC = 0x268438988
+	daddu	a6,a6,a7                                  #! PC = 0x268438992
+	daddu	t2,t2,a6                                  #! PC = 0x268438996
+	mflo	a6                                         #! PC = 0x268439000
+	mfhi	a7                                         #! PC = 0x268439004
+	nop                                             #! PC = 0x268439008
+	nop                                             #! PC = 0x268439012
+	dmultu	s0,t0                                    #! PC = 0x268439016
+	daddu	a4,a4,a6                                  #! PC = 0x268439020
+	daddu	a5,a5,a7                                  #! PC = 0x268439024
+	mflo	at                                         #! PC = 0x268439028
+	mfhi	t9                                         #! PC = 0x268439032
+	sltu	a6,a4,a6                                   #! PC = 0x268439036
+	daddu	a5,a5,a6                                  #! PC = 0x268439040
+	dmultu	t3,t1                                    #! PC = 0x268439044
+	daddu	a5,a5,at                                  #! PC = 0x268439048
+	sltu	at,a5,at                                   #! PC = 0x268439052
+	mflo	a6                                         #! PC = 0x268439056
+	mfhi	a7                                         #! PC = 0x268439060
+	daddu	t9,t9,at                                  #! PC = 0x268439064
+	nop                                             #! PC = 0x268439068
+	dmultu	s1,t2                                    #! PC = 0x268439072
+	daddu	a5,a5,a6                                  #! PC = 0x268439076
+	daddu	t9,t9,a7                                  #! PC = 0x268439080
+	mflo	at                                         #! PC = 0x268439084
+	nop                                             #! PC = 0x268439088
+	nop                                             #! PC = 0x268439092
+	dmultu	t3,t2                                    #! PC = 0x268439096
+	sltu	a6,a5,a6                                   #! PC = 0x268439100
+	daddu	t9,t9,a6                                  #! PC = 0x268439104
+	mflo	v0                                         #! PC = 0x268439108
+	daddu	a5,a5,at                                  #! PC = 0x268439112
+	daddu	t9,t9,v0                                  #! PC = 0x268439116
+	sltu	at,a5,at                                   #! PC = 0x268439120
+	daddu	t9,t9,at                                  #! PC = 0x268439124
+	li	a6,-4                                        #! PC = 0x268439128
+	and	a6,a6,t9                                    #! PC = 0x268439132
+	dsrl	a7,t9,0x2                                  #! PC = 0x268439136
+	andi	t2,t9,0x3                                  #! PC = 0x268439140
+	daddu	a6,a6,a7                                  #! PC = 0x268439144
+	daddu	t0,a4,a6                                  #! PC = 0x268439148
+	sltu	a6,t0,a6                                   #! PC = 0x268439152
+	daddu	t1,a5,a6                                  #! PC = 0x268439156
+	sltu	a6,t1,a6                                   #! PC = 0x268439160
+	daddu	t2,t2,a6                                  #! PC = 0x268439168
+	#bnez	a2,0x10000d84 <poly1305_blocks_internal+36>#! PC = 0x268439164
+	sd	t0,0(a0)                                     #! EA = L0x10013008; Value = 0x00000000; PC = 0x268439172
+	sd	t1,8(a0)                                     #! EA = L0x10013010; Value = 0x00000000; PC = 0x268439176
+	sd	t2,16(a0)                                    #! EA = L0x10013018; Value = 0x00000000; PC = 0x268439180
+	ld	s1,40(sp)                                    #! EA = L0x40800338; Value = 0x10013008; PC = 0x268439184
+	ld	s0,32(sp)                                    #! EA = L0x40800330; Value = 0x00000010; PC = 0x268439188
+	daddiu	sp,sp,48                                 #! PC = 0x268439196
+	#jr	ra                                          #! PC = 0x268439192

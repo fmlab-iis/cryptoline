@@ -1,0 +1,1149 @@
+
+Breakpoint 1, 0x000104e8 in bn_mul_mont ()
+	tst.w	r12, #7
+	#bne.n	0x10510 <bn_mul_mont+48>
+	ldr.w	r0, [pc, #-48]	; 0x104c0                  #! EA = L0x104be, Value = 0xfdc40000
+	subw	r2, pc, #20
+	ldr	r0, [r0, r2]                                #! EA = L0x702a4, Value = 0x00000003
+	tst.w	r0, #1
+	ldmia.w	sp, {r0, r2}
+	#beq.n	0x10510 <bn_mul_mont+48>
+	add	sp, #8
+	b.n	0x106a0 <bn_mul8x_mont_neon>
+	mov	r12, sp
+	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	vpush	{d8-d15}
+	ldmia.w	r12, {r4, r5}
+	mov	r12, sp
+	cmp	r5, #8
+	bhi.w	0x10830 <bn_mul8x_mont_neon+400>
+	veor	q6, q6, q6
+	sub.w	r7, sp, #128	; 0x80
+	veor	q7, q7, q7
+	sub.w	r7, r7, r5, lsl #4
+	veor	q8, q8, q8
+	bic.w	r7, r7, #63	; 0x3f
+	veor	q9, q9, q9
+	mov	sp, r7
+	veor	q10, q10, q10
+	add.w	r7, r7, #256	; 0x100
+	veor	q11, q11, q11
+	sub.w	r8, r5, #8
+	veor	q12, q12, q12
+	veor	q13, q13, q13
+	vst1.64	{d12-d15}, [r7 :256]!                   #! EA = L0xbeffea80, Value = 0x00000000
+	subs.w	r8, r8, #8
+	vst1.64	{d16-d19}, [r7 :256]!                   #! EA = L0xbeffeaa0, Value = 0x00000001
+	vst1.64	{d20-d23}, [r7 :256]!                   #! EA = L0xbeffeac0, Value = 0x00000000
+	vst1.64	{d24-d27}, [r7 :256]!                   #! EA = L0xbeffeae0, Value = 0x000000ac
+	#bne.n	0x10866 <bn_mul8x_mont_neon+454>
+	add	r6, sp, #256	; 0x100
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f098, Value = 0x782a9b3e
+	add.w	r10, sp, #8
+	vld1.32	{d30[0]}, [r4 :32]                      #! EA = L0x6f218, Value = 0xcbc98198
+	mov	r9, r5
+	b.n	0x10890 <bn_mul8x_mont_neon+496>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f118, Value = 0x82a9b3e0
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	add	r7, sp, #128	; 0x80
+	vld1.32	{d4-d7}, [r3]!                          #! EA = L0x6f198, Value = 0xcbc98198
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	vmlal.u32	q10, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q11, d28, d2[1]
+	vst1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x00000004
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f11c, Value = 0x2d82d6b7
+	vmlal.u32	q6, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q7, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q8, d29, d5[0]
+	vshr.u64	d12, d12, #16
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vadd.i64	d12, d12, d13
+	vmlal.u32	q11, d29, d6[1]
+	vshr.u64	d12, d12, #16
+	vmlal.u32	q12, d29, d7[0]
+	vmlal.u32	q13, d29, d7[1]
+	vadd.i64	d14, d14, d12
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe988, Value = 0x00000000
+	vmlal.u32	q7, d28, d0[0]
+	vld1.64	{d12-d13}, [r6 :128]!                   #! EA = L0xbeffea80, Value = 0x00000000
+	vmlal.u32	q8, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q9, d28, d1[0]
+	vshl.s64	d29, d15, #16
+	vmlal.u32	q10, d28, d1[1]
+	vadd.i64	d29, d29, d14
+	vmlal.u32	q11, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q12, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe990, Value = 0x04000000
+	vmlal.u32	q13, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q6, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f120, Value = 0x82ae02d7
+	vmlal.u32	q7, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q8, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q9, d29, d5[0]
+	vshr.u64	d14, d14, #16
+	vmlal.u32	q10, d29, d5[1]
+	vmlal.u32	q11, d29, d6[0]
+	vadd.i64	d14, d14, d15
+	vmlal.u32	q12, d29, d6[1]
+	vshr.u64	d14, d14, #16
+	vmlal.u32	q13, d29, d7[0]
+	vmlal.u32	q6, d29, d7[1]
+	vadd.i64	d16, d16, d14
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe998, Value = 0x00000000
+	vmlal.u32	q8, d28, d0[0]
+	vld1.64	{d14-d15}, [r6 :128]!                   #! EA = L0xbeffea90, Value = 0x00000000
+	vmlal.u32	q9, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q10, d28, d1[0]
+	vshl.s64	d29, d17, #16
+	vmlal.u32	q11, d28, d1[1]
+	vadd.i64	d29, d29, d16
+	vmlal.u32	q12, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q13, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9a0, Value = 0x00000000
+	vmlal.u32	q6, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q7, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f124, Value = 0x829b3d6b
+	vmlal.u32	q8, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q9, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q10, d29, d5[0]
+	vshr.u64	d16, d16, #16
+	vmlal.u32	q11, d29, d5[1]
+	vmlal.u32	q12, d29, d6[0]
+	vadd.i64	d16, d16, d17
+	vmlal.u32	q13, d29, d6[1]
+	vshr.u64	d16, d16, #16
+	vmlal.u32	q6, d29, d7[0]
+	vmlal.u32	q7, d29, d7[1]
+	vadd.i64	d18, d18, d16
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9a8, Value = 0x00000000
+	vmlal.u32	q9, d28, d0[0]
+	vld1.64	{d16-d17}, [r6 :128]!                   #! EA = L0xbeffeaa0, Value = 0x00000000
+	vmlal.u32	q10, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q11, d28, d1[0]
+	vshl.s64	d29, d19, #16
+	vmlal.u32	q12, d28, d1[1]
+	vadd.i64	d29, d29, d18
+	vmlal.u32	q13, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q6, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9b0, Value = 0x00000000
+	vmlal.u32	q7, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q8, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f128, Value = 0xcbc98198
+	vmlal.u32	q9, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q10, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q11, d29, d5[0]
+	vshr.u64	d18, d18, #16
+	vmlal.u32	q12, d29, d5[1]
+	vmlal.u32	q13, d29, d6[0]
+	vadd.i64	d18, d18, d19
+	vmlal.u32	q6, d29, d6[1]
+	vshr.u64	d18, d18, #16
+	vmlal.u32	q7, d29, d7[0]
+	vmlal.u32	q8, d29, d7[1]
+	vadd.i64	d20, d20, d18
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9b8, Value = 0x00000000
+	vmlal.u32	q10, d28, d0[0]
+	vld1.64	{d18-d19}, [r6 :128]!                   #! EA = L0xbeffeab0, Value = 0x00000000
+	vmlal.u32	q11, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q12, d28, d1[0]
+	vshl.s64	d29, d21, #16
+	vmlal.u32	q13, d28, d1[1]
+	vadd.i64	d29, d29, d20
+	vmlal.u32	q6, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q7, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9c0, Value = 0x00000000
+	vmlal.u32	q8, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q9, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f12c, Value = 0x18f810a0
+	vmlal.u32	q10, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q11, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q12, d29, d5[0]
+	vshr.u64	d20, d20, #16
+	vmlal.u32	q13, d29, d5[1]
+	vmlal.u32	q6, d29, d6[0]
+	vadd.i64	d20, d20, d21
+	vmlal.u32	q7, d29, d6[1]
+	vshr.u64	d20, d20, #16
+	vmlal.u32	q8, d29, d7[0]
+	vmlal.u32	q9, d29, d7[1]
+	vadd.i64	d22, d22, d20
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9c8, Value = 0x00000000
+	vmlal.u32	q11, d28, d0[0]
+	vld1.64	{d20-d21}, [r6 :128]!                   #! EA = L0xbeffeac0, Value = 0x00000000
+	vmlal.u32	q12, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q13, d28, d1[0]
+	vshl.s64	d29, d23, #16
+	vmlal.u32	q6, d28, d1[1]
+	vadd.i64	d29, d29, d22
+	vmlal.u32	q7, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q8, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9d0, Value = 0x00000000
+	vmlal.u32	q9, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q10, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f130, Value = 0x02888abc
+	vmlal.u32	q11, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q12, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q13, d29, d5[0]
+	vshr.u64	d22, d22, #16
+	vmlal.u32	q6, d29, d5[1]
+	vmlal.u32	q7, d29, d6[0]
+	vadd.i64	d22, d22, d23
+	vmlal.u32	q8, d29, d6[1]
+	vshr.u64	d22, d22, #16
+	vmlal.u32	q9, d29, d7[0]
+	vmlal.u32	q10, d29, d7[1]
+	vadd.i64	d24, d24, d22
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9d8, Value = 0x00000000
+	vmlal.u32	q12, d28, d0[0]
+	vld1.64	{d22-d23}, [r6 :128]!                   #! EA = L0xbeffead0, Value = 0x00000000
+	vmlal.u32	q13, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q6, d28, d1[0]
+	vshl.s64	d29, d25, #16
+	vmlal.u32	q7, d28, d1[1]
+	vadd.i64	d29, d29, d24
+	vmlal.u32	q8, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q9, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9e0, Value = 0x00000000
+	vmlal.u32	q10, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q11, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f134, Value = 0xdef19181
+	vmlal.u32	q12, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q13, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q6, d29, d5[0]
+	vshr.u64	d24, d24, #16
+	vmlal.u32	q7, d29, d5[1]
+	vmlal.u32	q8, d29, d6[0]
+	vadd.i64	d24, d24, d25
+	vmlal.u32	q9, d29, d6[1]
+	vshr.u64	d24, d24, #16
+	vmlal.u32	q10, d29, d7[0]
+	vmlal.u32	q11, d29, d7[1]
+	vadd.i64	d26, d26, d24
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9e8, Value = 0x00000000
+	vmlal.u32	q13, d28, d0[0]
+	vld1.64	{d24-d25}, [r6 :128]!                   #! EA = L0xbeffeae0, Value = 0x00000000
+	vmlal.u32	q6, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q7, d28, d1[0]
+	vshl.s64	d29, d27, #16
+	vmlal.u32	q8, d28, d1[1]
+	vadd.i64	d29, d29, d26
+	vmlal.u32	q9, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9f0, Value = 0x00000000
+	vmlal.u32	q11, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q12, d28, d3[1]
+	vld1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x0000b3e0
+	vmlal.u32	q13, d29, d4[0]
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f0b8, Value = 0x9b3e02d8
+	vmlal.u32	q6, d29, d4[1]
+	vmlal.u32	q7, d29, d5[0]
+	vshr.u64	d26, d26, #16
+	vmlal.u32	q8, d29, d5[1]
+	vmlal.u32	q9, d29, d6[0]
+	vadd.i64	d26, d26, d27
+	vmlal.u32	q10, d29, d6[1]
+	vshr.u64	d26, d26, #16
+	vmlal.u32	q11, d29, d7[0]
+	vmlal.u32	q12, d29, d7[1]
+	vadd.i64	d12, d12, d26
+	vst1.32	{d29}, [r10 :64]                        #! EA = L0xbeffe9f8, Value = 0x00000000
+	add.w	r10, sp, #8
+	sub.w	r8, r5, #8
+	b.n	0x10c90 <bn_mul8x_mont_neon+1520>
+	subs.w	r8, r8, #8
+	vmlal.u32	q6, d28, d0[0]
+	vld1.64	{d26-d27}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q7, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe988, Value = 0x0000e600
+	vmlal.u32	q8, d28, d1[0]
+	vld1.32	{d4-d7}, [r3]!                          #! EA = L0x6f1b8, Value = 0x82a9b3e0
+	vmlal.u32	q9, d28, d1[1]
+	it	ne
+	vmlal.u32	q10, d28, d2[0]
+	vmlalne.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vmlal.u32	q13, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe990, Value = 0x0000d6b7
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vmlal.u32	q11, d29, d6[1]
+	vmlal.u32	q12, d29, d7[0]
+	vmlal.u32	q13, d29, d7[1]
+	vst1.64	{d12-d13}, [r7 :128]!                   #! EA = L0xbeffea00, Value = 0x00000000
+	vmlal.u32	q7, d28, d0[0]
+	vld1.64	{d12-d13}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q8, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe998, Value = 0x00005138
+	vmlal.u32	q9, d28, d1[0]
+	it	ne
+	vmlal.u32	q10, d28, d1[1]
+	vmlalne.u32	q11, d28, d2[0]
+	vmlal.u32	q12, d28, d2[1]
+	vmlal.u32	q13, d28, d3[0]
+	vmlal.u32	q6, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9a0, Value = 0x000002d7
+	vmlal.u32	q7, d29, d4[0]
+	vmlal.u32	q8, d29, d4[1]
+	vmlal.u32	q9, d29, d5[0]
+	vmlal.u32	q10, d29, d5[1]
+	vmlal.u32	q11, d29, d6[0]
+	vmlal.u32	q12, d29, d6[1]
+	vmlal.u32	q13, d29, d7[0]
+	vmlal.u32	q6, d29, d7[1]
+	vst1.64	{d14-d15}, [r7 :128]!                   #! EA = L0xbeffea10, Value = 0x0000000e
+	vmlal.u32	q8, d28, d0[0]
+	vld1.64	{d14-d15}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q9, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9a8, Value = 0x00000ad8
+	vmlal.u32	q10, d28, d1[0]
+	it	ne
+	vmlal.u32	q11, d28, d1[1]
+	vmlalne.u32	q12, d28, d2[0]
+	vmlal.u32	q13, d28, d2[1]
+	vmlal.u32	q6, d28, d3[0]
+	vmlal.u32	q7, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9b0, Value = 0x00003d6b
+	vmlal.u32	q8, d29, d4[0]
+	vmlal.u32	q9, d29, d4[1]
+	vmlal.u32	q10, d29, d5[0]
+	vmlal.u32	q11, d29, d5[1]
+	vmlal.u32	q12, d29, d6[0]
+	vmlal.u32	q13, d29, d6[1]
+	vmlal.u32	q6, d29, d7[0]
+	vmlal.u32	q7, d29, d7[1]
+	vst1.64	{d16-d17}, [r7 :128]!                   #! EA = L0xbeffea20, Value = 0x00000000
+	vmlal.u32	q9, d28, d0[0]
+	vld1.64	{d16-d17}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q10, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9b8, Value = 0x00005de0
+	vmlal.u32	q11, d28, d1[0]
+	it	ne
+	vmlal.u32	q12, d28, d1[1]
+	vmlalne.u32	q13, d28, d2[0]
+	vmlal.u32	q6, d28, d2[1]
+	vmlal.u32	q7, d28, d3[0]
+	vmlal.u32	q8, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9c0, Value = 0x00008198
+	vmlal.u32	q9, d29, d4[0]
+	vmlal.u32	q10, d29, d4[1]
+	vmlal.u32	q11, d29, d5[0]
+	vmlal.u32	q12, d29, d5[1]
+	vmlal.u32	q13, d29, d6[0]
+	vmlal.u32	q6, d29, d6[1]
+	vmlal.u32	q7, d29, d7[0]
+	vmlal.u32	q8, d29, d7[1]
+	vst1.64	{d18-d19}, [r7 :128]!                   #! EA = L0xbeffea30, Value = 0x00000000
+	vmlal.u32	q10, d28, d0[0]
+	vld1.64	{d18-d19}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q11, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9c8, Value = 0x00003398
+	vmlal.u32	q12, d28, d1[0]
+	it	ne
+	vmlal.u32	q13, d28, d1[1]
+	vmlalne.u32	q6, d28, d2[0]
+	vmlal.u32	q7, d28, d2[1]
+	vmlal.u32	q8, d28, d3[0]
+	vmlal.u32	q9, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9d0, Value = 0x000010a0
+	vmlal.u32	q10, d29, d4[0]
+	vmlal.u32	q11, d29, d4[1]
+	vmlal.u32	q12, d29, d5[0]
+	vmlal.u32	q13, d29, d5[1]
+	vmlal.u32	q6, d29, d6[0]
+	vmlal.u32	q7, d29, d6[1]
+	vmlal.u32	q8, d29, d7[0]
+	vmlal.u32	q9, d29, d7[1]
+	vst1.64	{d20-d21}, [r7 :128]!                   #! EA = L0xbeffea40, Value = 0x00000000
+	vmlal.u32	q11, d28, d0[0]
+	vld1.64	{d20-d21}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q12, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9d8, Value = 0x00009d48
+	vmlal.u32	q13, d28, d1[0]
+	it	ne
+	vmlal.u32	q6, d28, d1[1]
+	vmlalne.u32	q7, d28, d2[0]
+	vmlal.u32	q8, d28, d2[1]
+	vmlal.u32	q9, d28, d3[0]
+	vmlal.u32	q10, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9e0, Value = 0x00008abc
+	vmlal.u32	q11, d29, d4[0]
+	vmlal.u32	q12, d29, d4[1]
+	vmlal.u32	q13, d29, d5[0]
+	vmlal.u32	q6, d29, d5[1]
+	vmlal.u32	q7, d29, d6[0]
+	vmlal.u32	q8, d29, d6[1]
+	vmlal.u32	q9, d29, d7[0]
+	vmlal.u32	q10, d29, d7[1]
+	vst1.64	{d22-d23}, [r7 :128]!                   #! EA = L0xbeffea50, Value = 0x00000000
+	vmlal.u32	q12, d28, d0[0]
+	vld1.64	{d22-d23}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q13, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9e8, Value = 0x0000bf80
+	vmlal.u32	q6, d28, d1[0]
+	it	ne
+	vmlal.u32	q7, d28, d1[1]
+	vmlalne.u32	q8, d28, d2[0]
+	vmlal.u32	q9, d28, d2[1]
+	vmlal.u32	q10, d28, d3[0]
+	vmlal.u32	q11, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9f0, Value = 0x00009181
+	vmlal.u32	q12, d29, d4[0]
+	vmlal.u32	q13, d29, d4[1]
+	vmlal.u32	q6, d29, d5[0]
+	vmlal.u32	q7, d29, d5[1]
+	vmlal.u32	q8, d29, d6[0]
+	vmlal.u32	q9, d29, d6[1]
+	vmlal.u32	q10, d29, d7[0]
+	vmlal.u32	q11, d29, d7[1]
+	vst1.64	{d24-d25}, [r7 :128]!                   #! EA = L0xbeffea60, Value = 0x00000000
+	vmlal.u32	q13, d28, d0[0]
+	vld1.64	{d24-d25}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q6, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9f8, Value = 0x0000ef48
+	vmlal.u32	q7, d28, d1[0]
+	it	ne
+	vmlal.u32	q8, d28, d1[1]
+	vmlalne.u32	q9, d28, d2[0]
+	vmlal.u32	q10, d28, d2[1]
+	vmlal.u32	q11, d28, d3[0]
+	vmlal.u32	q12, d28, d3[1]
+	it	eq
+	subeq.w	r1, r1, r5, lsl #2
+	vmlal.u32	q13, d29, d4[0]
+	vld1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x0000b3e0
+	vmlal.u32	q6, d29, d4[1]
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f098, Value = 0x782a9b3e
+	vmlal.u32	q7, d29, d5[0]
+	add.w	r10, sp, #8
+	vmlal.u32	q8, d29, d5[1]
+	vmlal.u32	q9, d29, d6[0]
+	vmlal.u32	q10, d29, d6[1]
+	vmlal.u32	q11, d29, d7[0]
+	vst1.64	{d26-d27}, [r7 :128]!                   #! EA = L0xbeffea70, Value = 0x00000000
+	vmlal.u32	q12, d29, d7[1]
+	#bne.w	0x10c90 <bn_mul8x_mont_neon+1520>
+	add	r6, sp, #128	; 0x80
+	vst1.64	{d12-d15}, [r7 :256]!                   #! EA = L0xbeffea80, Value = 0x00000000
+	veor	q2, q2, q2
+	vst1.64	{d16-d19}, [r7 :256]!                   #! EA = L0xbeffeaa0, Value = 0x00000000
+	veor	q3, q3, q3
+	vst1.64	{d20-d23}, [r7 :256]!                   #! EA = L0xbeffeac0, Value = 0x00000000
+	vst1.64	{d24-d25}, [r7 :128]                    #! EA = L0xbeffeae0, Value = 0x00000000
+	subs.w	r9, r9, #8
+	vld1.64	{d12-d15}, [r6 :256]!                   #! EA = L0xbeffea00, Value = 0xd14f69d4
+	vld1.64	{d16-d19}, [r6 :256]!                   #! EA = L0xbeffea20, Value = 0x1a1fe73d
+	vld1.64	{d20-d23}, [r6 :256]!                   #! EA = L0xbeffea40, Value = 0x1d38bbe9
+	vld1.64	{d24-d27}, [r6 :256]!                   #! EA = L0xbeffea60, Value = 0x36e62946
+	itt	ne
+	subne.w	r3, r3, r5, lsl #2
+	#bne.n	0x10890 <bn_mul8x_mont_neon+496>
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f138, Value = 0x9b3e02d8
+	veor	d8, d8, d8
+	vzip.16	d28, d8
+	add	r7, sp, #128	; 0x80
+	vld1.32	{d4-d7}, [r3]!                          #! EA = L0x6f198, Value = 0xcbc98198
+	vmlal.u32	q6, d28, d0[0]
+	vmlal.u32	q7, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q8, d28, d1[0]
+	vshl.s64	d29, d13, #16
+	vmlal.u32	q9, d28, d1[1]
+	vadd.i64	d29, d29, d12
+	vmlal.u32	q10, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q11, d28, d2[1]
+	vst1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x0000b3e0
+	vmlal.u32	q12, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q13, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f13c, Value = 0x2d6b782a
+	vmlal.u32	q6, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q7, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q8, d29, d5[0]
+	vshr.u64	d12, d12, #16
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vadd.i64	d12, d12, d13
+	vmlal.u32	q11, d29, d6[1]
+	vshr.u64	d12, d12, #16
+	vmlal.u32	q12, d29, d7[0]
+	vmlal.u32	q13, d29, d7[1]
+	vadd.i64	d14, d14, d12
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe988, Value = 0x0000e600
+	vmlal.u32	q7, d28, d0[0]
+	vld1.64	{d12-d13}, [r6 :128]!                   #! EA = L0xbeffea80, Value = 0x02198a53
+	vmlal.u32	q8, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q9, d28, d1[0]
+	vshl.s64	d29, d15, #16
+	vmlal.u32	q10, d28, d1[1]
+	vadd.i64	d29, d29, d14
+	vmlal.u32	q11, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q12, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe990, Value = 0x0000d6b7
+	vmlal.u32	q13, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q6, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f140, Value = 0xae02d782
+	vmlal.u32	q7, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q8, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q9, d29, d5[0]
+	vshr.u64	d14, d14, #16
+	vmlal.u32	q10, d29, d5[1]
+	vmlal.u32	q11, d29, d6[0]
+	vadd.i64	d14, d14, d15
+	vmlal.u32	q12, d29, d6[1]
+	vshr.u64	d14, d14, #16
+	vmlal.u32	q13, d29, d7[0]
+	vmlal.u32	q6, d29, d7[1]
+	vadd.i64	d16, d16, d14
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe998, Value = 0x00005138
+	vmlal.u32	q8, d28, d0[0]
+	vld1.64	{d14-d15}, [r6 :128]!                   #! EA = L0xbeffea90, Value = 0x89fd66da
+	vmlal.u32	q9, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q10, d28, d1[0]
+	vshl.s64	d29, d17, #16
+	vmlal.u32	q11, d28, d1[1]
+	vadd.i64	d29, d29, d16
+	vmlal.u32	q12, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q13, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9a0, Value = 0x000002d7
+	vmlal.u32	q6, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q7, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f144, Value = 0x9b382d6b
+	vmlal.u32	q8, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q9, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q10, d29, d5[0]
+	vshr.u64	d16, d16, #16
+	vmlal.u32	q11, d29, d5[1]
+	vmlal.u32	q12, d29, d6[0]
+	vadd.i64	d16, d16, d17
+	vmlal.u32	q13, d29, d6[1]
+	vshr.u64	d16, d16, #16
+	vmlal.u32	q6, d29, d7[0]
+	vmlal.u32	q7, d29, d7[1]
+	vadd.i64	d18, d18, d16
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9a8, Value = 0x00000ad8
+	vmlal.u32	q9, d28, d0[0]
+	vld1.64	{d16-d17}, [r6 :128]!                   #! EA = L0xbeffeaa0, Value = 0x1d5454e9
+	vmlal.u32	q10, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q11, d28, d1[0]
+	vshl.s64	d29, d19, #16
+	vmlal.u32	q12, d28, d1[1]
+	vadd.i64	d29, d29, d18
+	vmlal.u32	q13, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q6, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9b0, Value = 0x00003d6b
+	vmlal.u32	q7, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q8, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f148, Value = 0x9b3e02d8
+	vmlal.u32	q9, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q10, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q11, d29, d5[0]
+	vshr.u64	d18, d18, #16
+	vmlal.u32	q12, d29, d5[1]
+	vmlal.u32	q13, d29, d6[0]
+	vadd.i64	d18, d18, d19
+	vmlal.u32	q6, d29, d6[1]
+	vshr.u64	d18, d18, #16
+	vmlal.u32	q7, d29, d7[0]
+	vmlal.u32	q8, d29, d7[1]
+	vadd.i64	d20, d20, d18
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9b8, Value = 0x00005de0
+	vmlal.u32	q10, d28, d0[0]
+	vld1.64	{d18-d19}, [r6 :128]!                   #! EA = L0xbeffeab0, Value = 0xe8361fe8
+	vmlal.u32	q11, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q12, d28, d1[0]
+	vshl.s64	d29, d21, #16
+	vmlal.u32	q13, d28, d1[1]
+	vadd.i64	d29, d29, d20
+	vmlal.u32	q6, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q7, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9c0, Value = 0x00008198
+	vmlal.u32	q8, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q9, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f14c, Value = 0x2d6b782a
+	vmlal.u32	q10, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q11, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q12, d29, d5[0]
+	vshr.u64	d20, d20, #16
+	vmlal.u32	q13, d29, d5[1]
+	vmlal.u32	q6, d29, d6[0]
+	vadd.i64	d20, d20, d21
+	vmlal.u32	q7, d29, d6[1]
+	vshr.u64	d20, d20, #16
+	vmlal.u32	q8, d29, d7[0]
+	vmlal.u32	q9, d29, d7[1]
+	vadd.i64	d22, d22, d20
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9c8, Value = 0x00003398
+	vmlal.u32	q11, d28, d0[0]
+	vld1.64	{d20-d21}, [r6 :128]!                   #! EA = L0xbeffeac0, Value = 0xc861c4ef
+	vmlal.u32	q12, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q13, d28, d1[0]
+	vshl.s64	d29, d23, #16
+	vmlal.u32	q6, d28, d1[1]
+	vadd.i64	d29, d29, d22
+	vmlal.u32	q7, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q8, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9d0, Value = 0x000010a0
+	vmlal.u32	q9, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q10, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f150, Value = 0xae02d782
+	vmlal.u32	q11, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q12, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q13, d29, d5[0]
+	vshr.u64	d22, d22, #16
+	vmlal.u32	q6, d29, d5[1]
+	vmlal.u32	q7, d29, d6[0]
+	vadd.i64	d22, d22, d23
+	vmlal.u32	q8, d29, d6[1]
+	vshr.u64	d22, d22, #16
+	vmlal.u32	q9, d29, d7[0]
+	vmlal.u32	q10, d29, d7[1]
+	vadd.i64	d24, d24, d22
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9d8, Value = 0x00009d48
+	vmlal.u32	q12, d28, d0[0]
+	vld1.64	{d22-d23}, [r6 :128]!                   #! EA = L0xbeffead0, Value = 0x37d39b22
+	vmlal.u32	q13, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q6, d28, d1[0]
+	vshl.s64	d29, d25, #16
+	vmlal.u32	q7, d28, d1[1]
+	vadd.i64	d29, d29, d24
+	vmlal.u32	q8, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q9, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9e0, Value = 0x00008abc
+	vmlal.u32	q10, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q11, d28, d3[1]
+	vld1.32	{d28[0]}, [r2 :32]!                     #! EA = L0x6f154, Value = 0x9b382d6b
+	vmlal.u32	q12, d29, d4[0]
+	veor	d10, d10, d10
+	vmlal.u32	q13, d29, d4[1]
+	vzip.16	d28, d10
+	vmlal.u32	q6, d29, d5[0]
+	vshr.u64	d24, d24, #16
+	vmlal.u32	q7, d29, d5[1]
+	vmlal.u32	q8, d29, d6[0]
+	vadd.i64	d24, d24, d25
+	vmlal.u32	q9, d29, d6[1]
+	vshr.u64	d24, d24, #16
+	vmlal.u32	q10, d29, d7[0]
+	vmlal.u32	q11, d29, d7[1]
+	vadd.i64	d26, d26, d24
+	vst1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9e8, Value = 0x0000bf80
+	vmlal.u32	q13, d28, d0[0]
+	vld1.64	{d24-d25}, [r6 :128]!                   #! EA = L0xbeffeae0, Value = 0xadf3c7da
+	vmlal.u32	q6, d28, d0[1]
+	veor	d8, d8, d8
+	vmlal.u32	q7, d28, d1[0]
+	vshl.s64	d29, d27, #16
+	vmlal.u32	q8, d28, d1[1]
+	vadd.i64	d29, d29, d26
+	vmlal.u32	q9, d28, d2[0]
+	vmul.i32	d29, d29, d30
+	vmlal.u32	q10, d28, d2[1]
+	vst1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9f0, Value = 0x00009181
+	vmlal.u32	q11, d28, d3[0]
+	vzip.16	d29, d8
+	vmlal.u32	q12, d28, d3[1]
+	vld1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x000002d8
+	vmlal.u32	q13, d29, d4[0]
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f0b8, Value = 0x9b3e02d8
+	vmlal.u32	q6, d29, d4[1]
+	vmlal.u32	q7, d29, d5[0]
+	vshr.u64	d26, d26, #16
+	vmlal.u32	q8, d29, d5[1]
+	vmlal.u32	q9, d29, d6[0]
+	vadd.i64	d26, d26, d27
+	vmlal.u32	q10, d29, d6[1]
+	vshr.u64	d26, d26, #16
+	vmlal.u32	q11, d29, d7[0]
+	vmlal.u32	q12, d29, d7[1]
+	vadd.i64	d12, d12, d26
+	vst1.32	{d29}, [r10 :64]                        #! EA = L0xbeffe9f8, Value = 0x0000ef48
+	add.w	r10, sp, #8
+	sub.w	r8, r5, #8
+	b.n	0x10c90 <bn_mul8x_mont_neon+1520>
+	subs.w	r8, r8, #8
+	vmlal.u32	q6, d28, d0[0]
+	vld1.64	{d26-d27}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q7, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe988, Value = 0x00006960
+	vmlal.u32	q8, d28, d1[0]
+	vld1.32	{d4-d7}, [r3]!                          #! EA = L0x6f1b8, Value = 0x82a9b3e0
+	vmlal.u32	q9, d28, d1[1]
+	it	ne
+	vmlal.u32	q10, d28, d2[0]
+	vmlalne.u32	q11, d28, d2[1]
+	vmlal.u32	q12, d28, d3[0]
+	vmlal.u32	q13, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe990, Value = 0x0000782a
+	vmlal.u32	q6, d29, d4[0]
+	vmlal.u32	q7, d29, d4[1]
+	vmlal.u32	q8, d29, d5[0]
+	vmlal.u32	q9, d29, d5[1]
+	vmlal.u32	q10, d29, d6[0]
+	vmlal.u32	q11, d29, d6[1]
+	vmlal.u32	q12, d29, d7[0]
+	vmlal.u32	q13, d29, d7[1]
+	vst1.64	{d12-d13}, [r7 :128]!                   #! EA = L0xbeffea00, Value = 0xd14f69d4
+	vmlal.u32	q7, d28, d0[0]
+	vld1.64	{d12-d13}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q8, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe998, Value = 0x0000bbc8
+	vmlal.u32	q9, d28, d1[0]
+	it	ne
+	vmlal.u32	q10, d28, d1[1]
+	vmlalne.u32	q11, d28, d2[0]
+	vmlal.u32	q12, d28, d2[1]
+	vmlal.u32	q13, d28, d3[0]
+	vmlal.u32	q6, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9a0, Value = 0x0000d782
+	vmlal.u32	q7, d29, d4[0]
+	vmlal.u32	q8, d29, d4[1]
+	vmlal.u32	q9, d29, d5[0]
+	vmlal.u32	q10, d29, d5[1]
+	vmlal.u32	q11, d29, d6[0]
+	vmlal.u32	q12, d29, d6[1]
+	vmlal.u32	q13, d29, d7[0]
+	vmlal.u32	q6, d29, d7[1]
+	vst1.64	{d14-d15}, [r7 :128]!                   #! EA = L0xbeffea10, Value = 0xb64d1e2c
+	vmlal.u32	q8, d28, d0[0]
+	vld1.64	{d14-d15}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q9, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9a8, Value = 0x00003f10
+	vmlal.u32	q10, d28, d1[0]
+	it	ne
+	vmlal.u32	q11, d28, d1[1]
+	vmlalne.u32	q12, d28, d2[0]
+	vmlal.u32	q13, d28, d2[1]
+	vmlal.u32	q6, d28, d3[0]
+	vmlal.u32	q7, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9b0, Value = 0x00002d6b
+	vmlal.u32	q8, d29, d4[0]
+	vmlal.u32	q9, d29, d4[1]
+	vmlal.u32	q10, d29, d5[0]
+	vmlal.u32	q11, d29, d5[1]
+	vmlal.u32	q12, d29, d6[0]
+	vmlal.u32	q13, d29, d6[1]
+	vmlal.u32	q6, d29, d7[0]
+	vmlal.u32	q7, d29, d7[1]
+	vst1.64	{d16-d17}, [r7 :128]!                   #! EA = L0xbeffea20, Value = 0x1a1fe73d
+	vmlal.u32	q9, d28, d0[0]
+	vld1.64	{d16-d17}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q10, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9b8, Value = 0x0000e880
+	vmlal.u32	q11, d28, d1[0]
+	it	ne
+	vmlal.u32	q12, d28, d1[1]
+	vmlalne.u32	q13, d28, d2[0]
+	vmlal.u32	q6, d28, d2[1]
+	vmlal.u32	q7, d28, d3[0]
+	vmlal.u32	q8, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9c0, Value = 0x000002d8
+	vmlal.u32	q9, d29, d4[0]
+	vmlal.u32	q10, d29, d4[1]
+	vmlal.u32	q11, d29, d5[0]
+	vmlal.u32	q12, d29, d5[1]
+	vmlal.u32	q13, d29, d6[0]
+	vmlal.u32	q6, d29, d6[1]
+	vmlal.u32	q7, d29, d7[0]
+	vmlal.u32	q8, d29, d7[1]
+	vst1.64	{d18-d19}, [r7 :128]!                   #! EA = L0xbeffea30, Value = 0xc243cde3
+	vmlal.u32	q10, d28, d0[0]
+	vld1.64	{d18-d19}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q11, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9c8, Value = 0x00005468
+	vmlal.u32	q12, d28, d1[0]
+	it	ne
+	vmlal.u32	q13, d28, d1[1]
+	vmlalne.u32	q6, d28, d2[0]
+	vmlal.u32	q7, d28, d2[1]
+	vmlal.u32	q8, d28, d3[0]
+	vmlal.u32	q9, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9d0, Value = 0x0000782a
+	vmlal.u32	q10, d29, d4[0]
+	vmlal.u32	q11, d29, d4[1]
+	vmlal.u32	q12, d29, d5[0]
+	vmlal.u32	q13, d29, d5[1]
+	vmlal.u32	q6, d29, d6[0]
+	vmlal.u32	q7, d29, d6[1]
+	vmlal.u32	q8, d29, d7[0]
+	vmlal.u32	q9, d29, d7[1]
+	vst1.64	{d20-d21}, [r7 :128]!                   #! EA = L0xbeffea40, Value = 0x1d38bbe9
+	vmlal.u32	q11, d28, d0[0]
+	vld1.64	{d20-d21}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q12, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9d8, Value = 0x00008580
+	vmlal.u32	q13, d28, d1[0]
+	it	ne
+	vmlal.u32	q6, d28, d1[1]
+	vmlalne.u32	q7, d28, d2[0]
+	vmlal.u32	q8, d28, d2[1]
+	vmlal.u32	q9, d28, d3[0]
+	vmlal.u32	q10, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9e0, Value = 0x0000d782
+	vmlal.u32	q11, d29, d4[0]
+	vmlal.u32	q12, d29, d4[1]
+	vmlal.u32	q13, d29, d5[0]
+	vmlal.u32	q6, d29, d5[1]
+	vmlal.u32	q7, d29, d6[0]
+	vmlal.u32	q8, d29, d6[1]
+	vmlal.u32	q9, d29, d7[0]
+	vmlal.u32	q10, d29, d7[1]
+	vst1.64	{d22-d23}, [r7 :128]!                   #! EA = L0xbeffea50, Value = 0x799c2980
+	vmlal.u32	q12, d28, d0[0]
+	vld1.64	{d22-d23}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q13, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9e8, Value = 0x00002be8
+	vmlal.u32	q6, d28, d1[0]
+	it	ne
+	vmlal.u32	q7, d28, d1[1]
+	vmlalne.u32	q8, d28, d2[0]
+	vmlal.u32	q9, d28, d2[1]
+	vmlal.u32	q10, d28, d3[0]
+	vmlal.u32	q11, d28, d3[1]
+	vld1.32	{d28}, [r10 :64]!                       #! EA = L0xbeffe9f0, Value = 0x00002d6b
+	vmlal.u32	q12, d29, d4[0]
+	vmlal.u32	q13, d29, d4[1]
+	vmlal.u32	q6, d29, d5[0]
+	vmlal.u32	q7, d29, d5[1]
+	vmlal.u32	q8, d29, d6[0]
+	vmlal.u32	q9, d29, d6[1]
+	vmlal.u32	q10, d29, d7[0]
+	vmlal.u32	q11, d29, d7[1]
+	vst1.64	{d24-d25}, [r7 :128]!                   #! EA = L0xbeffea60, Value = 0x36e62946
+	vmlal.u32	q13, d28, d0[0]
+	vld1.64	{d24-d25}, [r6 :128]                    #! EA = L0xbeffeaf0, Value = 0x00000000
+	vmlal.u32	q6, d28, d0[1]
+	vld1.32	{d29}, [r10 :64]!                       #! EA = L0xbeffe9f8, Value = 0x00001028
+	vmlal.u32	q7, d28, d1[0]
+	it	ne
+	vmlal.u32	q8, d28, d1[1]
+	vmlalne.u32	q9, d28, d2[0]
+	vmlal.u32	q10, d28, d2[1]
+	vmlal.u32	q11, d28, d3[0]
+	vmlal.u32	q12, d28, d3[1]
+	it	eq
+	subeq.w	r1, r1, r5, lsl #2
+	vmlal.u32	q13, d29, d4[0]
+	vld1.32	{d28}, [sp :64]                         #! EA = L0xbeffe980, Value = 0x000002d8
+	vmlal.u32	q6, d29, d4[1]
+	vld1.32	{d0-d3}, [r1]!                          #! EA = L0x6f098, Value = 0x782a9b3e
+	vmlal.u32	q7, d29, d5[0]
+	add.w	r10, sp, #8
+	vmlal.u32	q8, d29, d5[1]
+	vmlal.u32	q9, d29, d6[0]
+	vmlal.u32	q10, d29, d6[1]
+	vmlal.u32	q11, d29, d7[0]
+	vst1.64	{d26-d27}, [r7 :128]!                   #! EA = L0xbeffea70, Value = 0x9edf5c2b
+	vmlal.u32	q12, d29, d7[1]
+	#bne.w	0x10c90 <bn_mul8x_mont_neon+1520>
+	add	r6, sp, #128	; 0x80
+	vst1.64	{d12-d15}, [r7 :256]!                   #! EA = L0xbeffea80, Value = 0x02198a53
+	veor	q2, q2, q2
+	vst1.64	{d16-d19}, [r7 :256]!                   #! EA = L0xbeffeaa0, Value = 0x1d5454e9
+	veor	q3, q3, q3
+	vst1.64	{d20-d23}, [r7 :256]!                   #! EA = L0xbeffeac0, Value = 0xc861c4ef
+	vst1.64	{d24-d25}, [r7 :128]                    #! EA = L0xbeffeae0, Value = 0xadf3c7da
+	subs.w	r9, r9, #8
+	vld1.64	{d12-d15}, [r6 :256]!                   #! EA = L0xbeffea00, Value = 0xcfed0400
+	vld1.64	{d16-d19}, [r6 :256]!                   #! EA = L0xbeffea20, Value = 0x9381df1c
+	vld1.64	{d20-d23}, [r6 :256]!                   #! EA = L0xbeffea40, Value = 0xdf659aed
+	vld1.64	{d24-d27}, [r6 :256]!                   #! EA = L0xbeffea60, Value = 0x85cd571d
+	itt	ne
+	add	r7, sp, #128	; 0x80
+	vst1ne.64	{d4-d7}, [sp :256]!                   #! EA = L0xbeffe980, Value = 0x000002d8
+	vshrne.u64	d10, d12, #16
+	vst1.64	{d4-d7}, [sp :256]!                     #! EA = L0xbeffe9a0, Value = 0x0000d782
+	vadd.i64	d13, d13, d10
+	vst1.64	{d4-d7}, [sp :256]!                     #! EA = L0xbeffe9c0, Value = 0x000002d8
+	vshr.u64	d10, d13, #16
+	vst1.64	{d4-d7}, [sp :256]!                     #! EA = L0xbeffe9e0, Value = 0x0000d782
+	vzip.16	d12, d13
+	mov	r8, r5
+	b.n	0x10fd0 <bn_mul8x_mont_neon+2352>
+	vadd.i64	d14, d14, d10
+	vst1.32	{d12[0]}, [r7 :32]!                     #! EA = L0xbeffea00, Value = 0xcfed0400
+	vshr.u64	d10, d14, #16
+	vadd.i64	d15, d15, d10
+	vshr.u64	d10, d15, #16
+	vzip.16	d14, d15
+	vadd.i64	d16, d16, d10
+	vst1.32	{d14[0]}, [r7 :32]!                     #! EA = L0xbeffea04, Value = 0x000638c2
+	vshr.u64	d10, d16, #16
+	vadd.i64	d17, d17, d10
+	vshr.u64	d10, d17, #16
+	vzip.16	d16, d17
+	vadd.i64	d18, d18, d10
+	vst1.32	{d16[0]}, [r7 :32]!                     #! EA = L0xbeffea08, Value = 0x7240e704
+	vshr.u64	d10, d18, #16
+	vadd.i64	d19, d19, d10
+	vshr.u64	d10, d19, #16
+	vzip.16	d18, d19
+	vadd.i64	d20, d20, d10
+	vst1.32	{d18[0]}, [r7 :32]!                     #! EA = L0xbeffea0c, Value = 0x0006e12a
+	vshr.u64	d10, d20, #16
+	vadd.i64	d21, d21, d10
+	vshr.u64	d10, d21, #16
+	vzip.16	d20, d21
+	vadd.i64	d22, d22, d10
+	vst1.32	{d20[0]}, [r7 :32]!                     #! EA = L0xbeffea10, Value = 0x4c408a20
+	vshr.u64	d10, d22, #16
+	vadd.i64	d23, d23, d10
+	vshr.u64	d10, d23, #16
+	vzip.16	d22, d23
+	vadd.i64	d24, d24, d10
+	vst1.32	{d22[0]}, [r7 :32]!                     #! EA = L0xbeffea14, Value = 0x0005ae25
+	vshr.u64	d10, d24, #16
+	vadd.i64	d25, d25, d10
+	vshr.u64	d10, d25, #16
+	vzip.16	d24, d25
+	vadd.i64	d26, d26, d10
+	vst1.32	{d24[0]}, [r7 :32]!                     #! EA = L0xbeffea18, Value = 0x65ffd818
+	vshr.u64	d10, d26, #16
+	vadd.i64	d27, d27, d10
+	vshr.u64	d10, d27, #16
+	vzip.16	d26, d27
+	vld1.64	{d12-d15}, [r6 :256]!                   #! EA = L0xbeffea80, Value = 0x0b3629c5
+	subs.w	r8, r8, #8
+	vst1.32	{d26[0]}, [r7 :32]!                     #! EA = L0xbeffea1c, Value = 0x00068fdc
+	#bne.n	0x10fb0 <bn_mul8x_mont_neon+2320>
+	vadd.i64	d12, d12, d10
+	vshr.u64	d10, d12, #16
+	vld1.64	{d16-d19}, [r6 :256]!                   #! EA = L0xbeffeaa0, Value = 0x7373e975
+	vadd.i64	d13, d13, d10
+	vld1.64	{d20-d23}, [r6 :256]!                   #! EA = L0xbeffeac0, Value = 0xcc6d44ad
+	vshr.u64	d10, d13, #16
+	vld1.64	{d24-d27}, [r6 :256]!                   #! EA = L0xbeffeae0, Value = 0x107c6e2e
+	vzip.16	d12, d13
+	vadd.i64	d14, d14, d10
+	vst1.32	{d12[0]}, [r7 :32]!                     #! EA = L0xbeffea20, Value = 0x9381df1c
+	vshr.u64	d10, d14, #16
+	vadd.i64	d15, d15, d10
+	vshr.u64	d10, d15, #16
+	vzip.16	d14, d15
+	vadd.i64	d16, d16, d10
+	vst1.32	{d14[0]}, [r7 :32]!                     #! EA = L0xbeffea24, Value = 0x0005c593
+	vshr.u64	d10, d16, #16
+	vadd.i64	d17, d17, d10
+	vshr.u64	d10, d17, #16
+	vzip.16	d16, d17
+	vadd.i64	d18, d18, d10
+	vst1.32	{d16[0]}, [r7 :32]!                     #! EA = L0xbeffea28, Value = 0x1595be5d
+	vshr.u64	d10, d18, #16
+	vadd.i64	d19, d19, d10
+	vshr.u64	d10, d19, #16
+	vzip.16	d18, d19
+	vadd.i64	d20, d20, d10
+	vst1.32	{d18[0]}, [r7 :32]!                     #! EA = L0xbeffea2c, Value = 0x00067b44
+	vshr.u64	d10, d20, #16
+	vadd.i64	d21, d21, d10
+	vshr.u64	d10, d21, #16
+	vzip.16	d20, d21
+	vadd.i64	d22, d22, d10
+	vst1.32	{d20[0]}, [r7 :32]!                     #! EA = L0xbeffea30, Value = 0xe7e85e07
+	vshr.u64	d10, d22, #16
+	vadd.i64	d23, d23, d10
+	vshr.u64	d10, d23, #16
+	vzip.16	d22, d23
+	vadd.i64	d24, d24, d10
+	vst1.32	{d22[0]}, [r7 :32]!                     #! EA = L0xbeffea34, Value = 0x00058c73
+	vshr.u64	d10, d24, #16
+	vadd.i64	d25, d25, d10
+	vshr.u64	d10, d25, #16
+	vzip.16	d24, d25
+	vadd.i64	d26, d26, d10
+	vst1.32	{d24[0]}, [r7 :32]!                     #! EA = L0xbeffea38, Value = 0x12bbb4bc
+	vshr.u64	d10, d26, #16
+	vadd.i64	d27, d27, d10
+	vshr.u64	d10, d27, #16
+	vzip.16	d26, d27
+	vld1.64	{d12-d15}, [r6 :256]!                   #! EA = L0xbeffeb00, Value = 0x000000c0
+	subs.w	r8, r8, #8
+	vst1.32	{d26[0]}, [r7 :32]!                     #! EA = L0xbeffea3c, Value = 0x0005a727
+	#bne.n	0x10fb0 <bn_mul8x_mont_neon+2320>
+	vst1.32	{d10[0]}, [r7 :32]                      #! EA = L0xbeffea40, Value = 0xdf659aed
+	sub.w	r3, r3, r5, lsl #2
+	subs.w	r1, sp, #0
+	add.w	r2, sp, r5, lsl #2
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r3!, {r8, r9, r10, r11}
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r3!, {r8, r9, r10, r11}
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r3!, {r8, r9, r10, r11}
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r3!, {r8, r9, r10, r11}
+	sbcs.w	r8, r4, r8
+	sbcs.w	r9, r5, r9
+	sbcs.w	r10, r6, r10
+	sbcs.w	r11, r7, r11
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x11096 <bn_mul8x_mont_neon+2550>
+	ldr.w	r10, [r1]                                 #! EA = L0xbeffea40, Value = 0x00000000
+	mov	r11, sp
+	veor	q0, q0, q0
+	sub.w	r11, r2, r11
+	veor	q1, q1, q1
+	mov	r1, sp
+	sub.w	r0, r0, r11
+	mov	r3, r2
+	sbcs.w	r10, r10, #0
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r0, {r8, r9, r10, r11}
+	it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffea40, Value = 0x00000000
+	itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffea60, Value = 0x85cd571d
+	it	cc
+	movcc	r11, r7
+	ldmia.w	r1, {r4, r5, r6, r7}
+	stmia.w	r0!, {r8, r9, r10, r11}
+	sub.w	r1, r1, #16
+	ldmia.w	r0, {r8, r9, r10, r11}
+	it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r1 :256]!                     #! EA = L0xbeffea00, Value = 0xb6f10400
+	itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffea80, Value = 0x0b3629c5
+	it	cc
+	movcc	r11, r7
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x110d4 <bn_mul8x_mont_neon+2612>
+	ldmia	r1!, {r4, r5, r6, r7}
+	ldmia.w	r0, {r8, r9, r10, r11}
+	it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffeaa0, Value = 0x7373e975
+	itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffeac0, Value = 0xcc6d44ad
+	it	cc
+	movcc	r11, r7
+	ldmia.w	r1, {r4, r5, r6, r7}
+	stmia.w	r0!, {r8, r9, r10, r11}
+	sub.w	r1, r1, #16
+	ldmia.w	r0, {r8, r9, r10, r11}
+	it	cc
+	movcc	r8, r4
+	vst1.64	{d0-d3}, [r1 :256]!                     #! EA = L0xbeffea20, Value = 0x6f9d16c4
+	itt	cc
+	movcc	r9, r5
+	movcc	r10, r6
+	vst1.64	{d0-d3}, [r3 :256]!                     #! EA = L0xbeffeae0, Value = 0x107c6e2e
+	it	cc
+	movcc	r11, r7
+	teq	r1, r2
+	stmia.w	r0!, {r8, r9, r10, r11}
+	#bne.n	0x110d4 <bn_mul8x_mont_neon+2612>
+	mov	sp, r12
+	vpop	{d8-d15}
+	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11}
+	#bx	lr

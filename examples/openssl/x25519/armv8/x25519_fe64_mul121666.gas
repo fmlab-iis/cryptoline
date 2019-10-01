@@ -1,0 +1,90 @@
+#! [x$1c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! x$1c = %%x$1c
+
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! mov $1v, #0x26 -> mov $1v 38@uint64
+#! mov $1v, #0xdb42 -> mov $1v 56130@uint64
+#! movk $1v, #0x1, lsl #16 -> add $1v $1v (2**16)@uint64
+#! add $1v, $2v, $3v, lsl #3 -> shl $3v_x8 $3v 3;\nuadd $1v $2v $3v_x8
+#! add $1v, $2v, $3v, lsl #1 -> shl $3v_x2 $3v 1;\nuadd $1v $2v $3v_x2
+#! add $1v, $2v, $3v -> uadd $1v $2v $3v
+#! adds $1v, $2v, $3v, lsl #1 -> shl $3v_x2 $3v 1;\nuadds carry $1v $2v $3v_x2
+#! adds $1v, $2v, $3v -> uadds carry $1v $2v $3v
+#! adc $1v, xzr, $2v -> uadc $1v 0@uint64 $2v carry
+#! adcs $1v, $2v, $3v -> uadcs carry $1v $2v $3v carry
+#! adcs $1v, $2v, xzr -> uadcs carry $1v $2v 0@uint64 carry
+#! mul $1v, $2v, $3v -> umull $1v_H $1v $2v $3v
+#! umulh $1v, $2v, $3v -> umull $1v $1v_L $2v $3v
+#! ngc $1v, xzr -> usbc $1v@uint64 0@uint64 0@uint64 carry
+#! bic $1v, $2v, $3v -> not $3v_not@uint64 $3v;\nand $1v@uint64 $2v $3v_not
+
+#Breakpoint 1, 0x00000000004008b0 in x25519_fe64_mul121666 ()
+#x25519_fe64_mul121666:
+# x0 = 0xffffffffe168
+# x1 = 0x420048
+# x2 = 0xffffffffe168
+# x3 = 0x26
+# x4 = 0x423c33da4fc00c
+# x5 = 0x15d279d8272e25
+# x6 = 0x8d38f7a2763c6b
+# x7 = 0x54ef3291c89305
+	mov	x3, #0xdb42                	// #56130       #! PC = 0x4196528
+0x00000000004008b4 in x25519_fe64_mul121666 ()
+	movk	x3, #0x1, lsl #16                          #! PC = 0x4196532
+0x00000000004008b8 in x25519_fe64_mul121666 ()
+	ldp	x8, x9, [x1]                                #! EA = L0x420048; Value = 0x0ab903c829a82374; PC = 0x4196536
+0x00000000004008bc in x25519_fe64_mul121666 ()
+	ldp	x10, x11, [x1, #16]                         #! EA = L0x420058; Value = 0x0c829a82374abe23; PC = 0x4196540
+0x00000000004008c0 in x25519_fe64_mul121666 ()
+	mul	x12, x8, x3                                 #! PC = 0x4196544
+0x00000000004008c4 in x25519_fe64_mul121666 ()
+	umulh	x8, x8, x3                                #! PC = 0x4196548
+0x00000000004008c8 in x25519_fe64_mul121666 ()
+	mul	x13, x9, x3                                 #! PC = 0x4196552
+0x00000000004008cc in x25519_fe64_mul121666 ()
+	umulh	x9, x9, x3                                #! PC = 0x4196556
+0x00000000004008d0 in x25519_fe64_mul121666 ()
+	mul	x14, x10, x3                                #! PC = 0x4196560
+0x00000000004008d4 in x25519_fe64_mul121666 ()
+	umulh	x10, x10, x3                              #! PC = 0x4196564
+0x00000000004008d8 in x25519_fe64_mul121666 ()
+	mul	x15, x11, x3                                #! PC = 0x4196568
+0x00000000004008dc in x25519_fe64_mul121666 ()
+	umulh	x11, x11, x3                              #! PC = 0x4196572
+0x00000000004008e0 in x25519_fe64_mul121666 ()
+	adds	x13, x13, x8                               #! PC = 0x4196576
+0x00000000004008e4 in x25519_fe64_mul121666 ()
+	mov	x3, #0x26                  	// #38          #! PC = 0x4196580
+0x00000000004008e8 in x25519_fe64_mul121666 ()
+	adcs	x14, x14, x9                               #! PC = 0x4196584
+0x00000000004008ec in x25519_fe64_mul121666 ()
+	adcs	x15, x15, x10                              #! PC = 0x4196588
+0x00000000004008f0 in x25519_fe64_mul121666 ()
+	adc	x16, xzr, x11                               #! PC = 0x4196592
+0x00000000004008f4 in x25519_fe64_mul121666 ()
+	add	x8, x16, x16, lsl #3                        #! PC = 0x4196596
+0x00000000004008f8 in x25519_fe64_mul121666 ()
+	add	x8, x16, x8, lsl #1                         #! PC = 0x4196600
+0x00000000004008fc in x25519_fe64_mul121666 ()
+	adds	x12, x12, x8, lsl #1                       #! PC = 0x4196604
+0x0000000000400900 in x25519_fe64_mul121666 ()
+	adcs	x13, x13, xzr                              #! PC = 0x4196608
+0x0000000000400904 in x25519_fe64_mul121666 ()
+	adcs	x14, x14, xzr                              #! PC = 0x4196612
+0x0000000000400908 in x25519_fe64_mul121666 ()
+	adcs	x15, x15, xzr                              #! PC = 0x4196616
+0x000000000040090c in x25519_fe64_mul121666 ()
+	ngc	x16, xzr                                    #! PC = 0x4196620
+0x0000000000400910 in x25519_fe64_mul121666 ()
+	bic	x16, x3, x16                                #! PC = 0x4196624
+0x0000000000400914 in x25519_fe64_mul121666 ()
+	add	x12, x12, x16                               #! PC = 0x4196628
+0x0000000000400918 in x25519_fe64_mul121666 ()
+	stp	x14, x15, [x0, #16]                         #! EA = L0xffffffffe178; Value = 0x6c7fc3dee64c58b5; PC = 0x4196632
+0x000000000040091c in x25519_fe64_mul121666 ()
+	stp	x12, x13, [x0]                              #! EA = L0xffffffffe168; Value = 0xc2b92c74545d3499; PC = 0x4196636
+0x0000000000400920 in x25519_fe64_mul121666 ()
+0x00000000004005d8 in main ()
+	#ret                                            #! PC = 0x4196640

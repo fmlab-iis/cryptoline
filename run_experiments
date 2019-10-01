@@ -1,0 +1,289 @@
+#!/bin/bash
+
+function usage {
+    echo "Usage $0 ARGS"
+    echo
+    echo "DESCRIPTION"
+    echo "    Specify one or more arguments to verify sets of examples."
+    echo "    Below is the list of available example sets."
+    echo
+    echo "    -all              Verify all examples."
+    echo "    -boringssl        Verify boringssl examples."
+    echo "    -ecp_nistz256     Verify ecp_nistz256 examples."
+    echo "    -fe25519          Verify fe25519 examples (including ladderstep)."
+    echo "    -fourq            Verify FourQ examples."
+    echo "    -kyber            Verify kyber examples."
+    echo "    -mbedtls          Verify mbedTLS examples."
+    echo "    -pascal           Verify Pascal's examples."
+    echo "    -poly1305         Verify poly1305 examples."
+    echo "    -simple           Verify some simple examples."
+    echo "    -supercop         Verify supercop examples."
+    echo "    -x86_64-mont      Verify x86_64-mont (Montgomery multiplication) examples."
+    echo
+    echo "    For examples that do not require a specific SAT solver, use the following"
+    echo "    argument to specify one SAT solver."
+    echo
+    echo "    -lingeling        Use lingeling if possible."
+    echo "    -minisat          Use minisat if possible."
+    echo "    -cadical          Use cadical if possible."
+    echo
+    echo "    Below are additional arguments."
+    echo
+    echo "    -args ARGS        Pass arguments to the verifier."
+    echo "    -jobs NUM         Specify the number of jobs (default is 1)."
+    echo "    -h                Print help messages."
+    exit
+}
+
+all=false
+enabled=()
+
+take_args=false
+take_jobs=false
+extra_args=""
+num_jobs=1
+for arg in "$@"; do
+    if [[ ${take_args} == true ]]; then
+        extra_args="${extra_args} ${arg}"
+        take_args=false
+    elif [[ ${take_jobs} == true ]]; then
+        num_jobs=${arg}
+        take_jobs=false
+    else
+        case $arg in
+            -h)
+                usage
+                ;;
+            -args)
+                take_args=true
+                ;;
+            -jobs)
+                take_jobs=true
+                ;;
+            -boringssl)
+                enabled+=('@boringssl')
+                ;;
+            -ecp_nistz256)
+                enabled+=('@ecp_nistz256')
+                ;;
+            -fe25519)
+                enabled+=('@fe25519')
+                ;;
+            -fourq)
+                enabled+=('@fourq')
+                ;;
+            -kyber)
+                enabled+=('@kyber')
+                ;;
+            -mbedtls)
+                enabled+=('@mbedtls')
+                ;;
+            -pascal)
+                enabled+=('@pascal')
+                ;;
+            -poly1305)
+                enabled+=('@poly1305')
+                ;;
+            -supercop)
+                enabled+=('@supercop')
+                ;;
+            -x86_64-mont)
+                enabled+=('@x86_64-mont')
+                ;;
+            -simple)
+                enabled+=('@simple')
+                ;;
+            -all)
+                all=true
+                ;;
+            -minisat)
+                minisat=true
+                lingeling=false
+                cadical=false
+                ;;
+            -lingeling)
+                minisat=false
+                lingeling=true
+                cadical=false
+                ;;
+            -cadical)
+                minisat=false
+                lingeling=false
+                cadical=true
+                ;;
+            *)
+        esac
+    fi
+done
+extra_args="${extra_args} -jobs ${num_jobs}"
+
+if [[ "${enabled[@]}" == "" && ${all} == false ]]; then
+    usage
+fi
+
+pairs=(
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519_add.cl:@fe25519,@simple'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519_mul.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519_mul121666_ver2.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519_sq.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519_sub.cl:@fe25519,@simple'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519r64_add.cl:@fe25519,@simple'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519r64_addsub.cl:@fe25519,@simple'
+#    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519r64_mul.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519r64_mul121666.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/qhasm/fe25519r64_sub.cl:@fe25519,@simple'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep1.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep2.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep3.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep3_1.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/qhasm/ladderstep3_2.cl:@fe25519'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_mul_mont_broadwell.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_sub.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_mul_mont.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_mul_by_2_chains.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_from_mont_chains.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_ord_mul_mont_broadwell_without_reduction.cl:@ecp_nistz256'
+    '-v -btor -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_add.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_sqr_mont_broadwell.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_sqr_mont.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/ecp_nistz256/ecp_nistz256_ord_mul_mont_without_reduction-chains.cl:@ecp_nistz256'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_2limbs_00.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_2limbs_01.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0000.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_00010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_000110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0001110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_00100.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_001010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0010110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_00101110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_001100.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0011010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_00110110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_001101110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_01000.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_010010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0100110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_01001110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_010100.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0101010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_01010110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_010101110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0101100.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_01011010.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_010110110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/mbedtls-2.6.0/mbedtls_mpi_mul_mpi_4limbs_0101101110.cl:@mbedtls'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/poly1305/poly1305_blocks.cl:@poly1305'
+    '-v -btor -no_carry_constraint:examples/openssl/poly1305/poly1305_loop_avx2.cl:@poly1305'
+    '-v -btor -no_carry_constraint -isafety:examples/boringssl/x25519_x86_64/x25519_x86_64_mul_chains.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety:examples/boringssl/x25519_x86_64/x25519_x86_64_square_chains.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune1.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune2.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune3.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune3_1.cl:@boringssl'
+    '-v -btor -no_carry_constraint -isafety -qfbv_args "-SE lingeling":examples/boringssl/x25519_x86_64/x25519_x86_64_ladderstep_tune3_2.cl:@boringssl'
+#    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_2.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_2_with_reduction.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_2_without_reduction.cl:@x86_64-mont'
+#    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_4.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/x86_64-mont/x86_64_mont_4_with_reduction.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety:examples/openssl/x86_64-mont/x86_64_mont_4_without_reduction.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_4_without_reduction_cut.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_8_without_reduction_cut.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -isafety -vo appearing:examples/openssl/x86_64-mont/x86_64_mont_16_without_reduction.cl:@x86_64-mont'
+    '-v -btor -no_carry_constraint -vo appearing -isafety -disable_range -cli:examples/pascal-mont/16limbs/montgomery_16_words-chains.cl:@pascal'
+    '-v -btor -no_carry_constraint -vo appearing -disable_safety -disable_range -disable_assertion -cli:examples/pascal-mont/64limbs/montgomery_64_words-chains_cut.cl:@pascal'
+    '-v -btor -no_carry_constraint -isafety -re -slicing -cli:examples/kyber/ntt/ntt_typed.cl:@kyber'
+    '-v -btor -no_carry_constraint -isafety:examples/FourQ/fp2add1271.cl:@fourq'
+    '-v -btor -no_carry_constraint -isafety:examples/FourQ/fp2sub1271.cl:@fourq'
+    '-v -btor -no_carry_constraint -isafety:examples/FourQ/fp2mul1271.cl:@fourq'
+    '-v -btor -no_carry_constraint -isafety:examples/FourQ/fp2sqr1271.cl:@fourq'
+    '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/donna/crypto_scalarmult_curve25519_donna_fmul.cl:@supercop'
+    '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/sandy2x/crypto_scalarmult_curve25519_sandy2x_fe51_mul.cl:@supercop'
+    '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/sandy2x/crypto_scalarmult_curve25519_sandy2x_fe51_nsquare.cl:@supercop'
+)
+
+offset=0
+cols=$(tput cols)
+
+function print_left() {
+    echo -n "${1}"
+    pleft_len=`echo "${1}" | wc -m`
+    offset=$((offset + pleft_len - 1))
+}
+
+function print_right() {
+    len=${#1}
+    offset=$((cols - offset - len))
+    while [[ ${offset} -lt 0 ]]; do
+        offset=$((offset + cols))
+    done
+    offset=$((offset + len))
+    printf "%*s\n" ${offset} "${1}"
+    offset=0
+}
+
+for pair in "${pairs[@]}"; do
+    args=`echo ${pair} | cut -d ':' -f 1`
+    file=`echo ${pair} | cut -d ':' -f 2`
+    tags=`echo ${pair} | cut -d ':' -f 3`
+    if [[ "${extra_args}" != "" ]]; then
+        args="${args}${extra_args}"
+    fi
+
+    if [[ ${all} == false ]]; then
+        skip=true
+        for tag in "${enabled[@]}"; do
+            if [[ `echo "${tags}" | grep "$tag\>"` ]]; then
+                skip=false
+                break
+            fi
+        done
+
+        if [[ ${skip} == true ]]; then
+            continue
+        fi
+    fi
+
+    if [[ ! -f ${file} ]]; then
+        echo "File ${file} not found. Skipped"
+        continue
+    fi
+
+    if [[ `echo "${args}" | grep "\-SE lingeling"` || `echo "${args}" | grep "\-SE minisat"` || `echo "${args}" | grep "\-SE cadical"` ]]; then
+        :
+    elif [[ ${minisat} == true ]]; then
+        args="${args} -qfbv_args \"-SE minisat\""
+    elif [[ ${lingeling} == true ]]; then
+        args="${args} -qfbv_args \"-SE lingeling\""
+    elif [[ ${cadical} == true ]]; then
+        args="${args} -qfbv_args \"-SE cadical\""
+    fi
+
+    fn=`basename -s .cl ${file}`
+    log=${fn}.log
+    runlog=${fn}_run.log
+
+    print_left "Verifying ${file}: "
+
+    start=`date +%s`
+    echo ${args} -o ${log} ${file} | xargs ./verify.sh &> ${runlog}
+    end=`date +%s`
+    runtime=$((end-start))
+    print_left "${runtime} seconds "
+
+    resstr=
+    if [[ -f "${runlog}" ]]; then
+        res=`grep -E "Verification result:\s+\[OK\]" ${runlog}`
+        if [[ "${res}" == "" ]]; then
+            resstr="[FAIL]"
+        else
+            resstr="[OK]"
+        fi
+    else
+        resstr="[ERROR]"
+    fi
+    print_right ${resstr}
+done

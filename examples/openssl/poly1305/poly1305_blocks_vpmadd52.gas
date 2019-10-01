@@ -1,0 +1,127 @@
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rbp = %%rbp
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %r$1c = %%r$1c
+#! (%%r10) = %%EA
+#! $1c(%r10) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rip) = %%EA
+#! %ymm$1c = %%ymm$1c
+#! %xmm$1c = %%xmm$1c
+
+#.L2_44_inp_permd:
+#.long	0,1,1,2,2,3,7,7
+#.L2_44_inp_shift:
+#.quad	0,12,24,64
+#.L2_44_mask:
+#.quad	0xfffffffffff,0xfffffffffff,0x3ffffffffff,0xffffffffffffffff
+#.L2_44_shift_rgt:
+#.quad	44,44,42,64
+#.L2_44_shift_lft:
+#.quad	8,8,10,64
+
+#! vpxord $1ymm, $1ymm, $1ymm -> mov $1ymm_LL 0@uint64;\nmov $1ymm_LH 0@uint64;\nmov $1ymm_HL 0@uint64;\nmov $1ymm_HH 0@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! vmovq $1v, $2xmm -> mov $2xmm_LL $1v;\nmov $2xmm_LH 0@uint64
+#! vmovdqa64 $1ea, $2ymm -> mov $2ymm_LL $1ea;\nmov $2ymm_LH $1ea[+8];\nmov $2ymm_HL $1ea[+16];\nmov $2ymm_HH $1ea[+24]
+#! vmovdqu64 $1ymm, $2ea{%k7} -> mov $2ea $1ymm_LL;\nmov $2ea[+8] $1ymm_LH;\nmov $2ea[+16] $1ymm_HL
+#! vmovdqu64 $1ea, $2ymm{%k7}{z} -> mov $2ymm_LL $1ea;\nmov $2ymm_LH $1ea[+8];\nmov $2ymm_HL $1ea[+16];\nmov $2ymm_HH 0@uint64
+#! vmovdqu32 $1ea, $2xmm -> mov $2xmm_LL $1ea;\nmov $2xmm_LH $1ea[+8]
+#! vpermd $1ymm, $2ymm, $3ymm -> assert true && and [$2ymm_LL = 0x10000@64, $2ymm_LH = 0x20001@64, $2ymm_HL = 0x30002@64, $2ymm_HH = 0x70007@64];\nusplit $1ymm_1 $1ymm_0 $1ymm_LL 32;\nusplit $1ymm_3 $1ymm_2 $1ymm_LH 32;\nusplit $1ymm_7 $1ymm_6 $1ymm_HH 32;\nmov $3ymm_LL $1ymm_LL;\nshl $1ymm_2h $1ymm_2 32;\nuadd $3ymm_LH $1ymm_2h $1ymm_1;\nshl $1ymm_3h $1ymm_3 32;\nuadd $3ymm_HL $1ymm_3h $1ymm_2;\nshl $1ymm_7h $1ymm_7 32;\nadd $3ymm_HH $1ymm_7h $1ymm_7
+#! vpermq \$0xcf, $1ymm, $1ymm -> mov $1ymm_ll $1ymm_HH;\nmov $1ymm_lh $1ymm_HH;\nmov $1ymm_hl $1ymm_LL;\nmov $1ymm_hh $1ymm_HH;\nmov $1ymm_LL $1ymm_ll;\nmov $1ymm_LH $1ymm_lh;\nmov $1ymm_HL $1ymm_hl;\nmov $1ymm_HH $1ymm_hh
+#! vpermq  \$0x0, $1ymm, $2ymm{%k7}{z} -> mov $2ymm_LL $1ymm_LL;\nmov $2ymm_LH $1ymm_LL;\nmov $2ymm_HL $1ymm_LL;\nmov $2ymm_HH 0@uint64
+#! vpermq \$0x55, $1ymm, $2ymm{%k7}{z} -> mov $2ymm_LL $1ymm_LH;\nmov $2ymm_LH $1ymm_LH;\nmov $2ymm_HL $1ymm_LH;\nmov $2ymm_HH 0@uint64
+#! vpermq \$0x93, $1ymm, $1ymm -> mov $1ymm_ll $1ymm_HH;\nmov $1ymm_lh $1ymm_LL;\nmov $1ymm_hl $1ymm_LH;\nmov $1ymm_hh $1ymm_HL;\nmov $1ymm_LL $1ymm_ll;\nmov $1ymm_LH $1ymm_lh;\nmov $1ymm_HL $1ymm_hl;\nmov $1ymm_HH $1ymm_hh
+#! vpermq \$0x93, $1ymm, $2ymm{%k1}{z} -> mov $2ymm_LL $1ymm_HH;\nmov $2ymm_LH 0@uint64;\nmov $2ymm_HL 0@uint64;\nmov $2ymm_HH 0@uint64
+#! vpermq \$0xaa, $1ymm, $2ymm{%k7}{z} -> mov $2ymm_LL $1ymm_HL;\nmov $2ymm_LH $1ymm_HL;\nmov $2ymm_HL $1ymm_HL;\nmov $2ymm_HH 0@uint64
+#! vpsllq \$0x2, $1ymm, $2ymm -> shl $2ymm_LL $1ymm_LL 2;\nshl $2ymm_LH $1ymm_LH 2;\nshl $2ymm_HL $1ymm_HL 2;\nshl $2ymm_HH $1ymm_HH 2
+#! vpsllvq %%ymm24, $1ymm, $2ymm -> assert true && and [ymm24_LL = 8@64, ymm24_LH = 8@64, ymm24_HL = 10@64, ymm24_HH = 64@64];\nusplit slldc80 $2ymm_LL $1ymm_LL 56;\nshl $2ymm_LL $2ymm_LL 8;\nusplit slldc81 $2ymm_LH $1ymm_LH 56;\nshl $2ymm_LH $2ymm_LH 8;\nusplit slldc10 $2ymm_HL $1ymm_HL 54;\nshl $2ymm_HL $2ymm_HL 10;\nmov $2ymm_HH 0@uint64
+#! vpsrlvq %%ymm20, $1ymm, $2ymm -> assert true && and [ymm20_LL = 0@64, ymm20_LH = 12@64, ymm20_HL = 24@64, ymm20_HH = 64@64];\nmov $2ymm_LL $1ymm_LL;\nusplit $2ymm_LH srdc12 $1ymm_LH 12;\nusplit $2ymm_HL srdc24 $1ymm_HL 24;\nmov $2ymm_HH 0@uint64
+#! vpsrlvq %%ymm23, $1ymm, $2ymm -> assert true && and [ymm23_LL = 44@64, ymm23_LH = 44@64, ymm23_HL = 42@64, ymm23_HH = 64@64];\nusplit $2ymm_LL srdc440 $1ymm_LL 44;\nusplit $2ymm_LH srdc441 $1ymm_LH 44;\nusplit $2ymm_HL srdc42 $1ymm_HL 42;\nmov $2ymm_HH 0@uint64
+#! vpaddq $1ymm, $2ymm, $3ymm -> uadd $3ymm_LL $1ymm_LL $2ymm_LL;\nuadd $3ymm_LH $1ymm_LH $2ymm_LH;\nuadd $3ymm_HL $1ymm_HL $2ymm_HL;\nuadd $3ymm_HH $1ymm_HH $2ymm_HH
+#! vpmadd52luq $1ymm, $2ymm, $3ymm -> usplit $1ymm_LLh $1ymm_LLl $1ymm_LL 52;\nassert true && $1ymm_LLh = 0@64;\nassume $1ymm_LLh = 0 && true;\nusplit $2ymm_LLh $2ymm_LLl $2ymm_LL 52;\nassert true && $2ymm_LLh = 0@64;\nassume $2ymm_LLh = 0 && true;\numulj prodLL $1ymm_LLl $2ymm_LLl;\nusplit prodLLh prodLLl prodLL 52;\nvpc prodLLh@uint64 prodLLh;\nvpc prodLLl@uint64 prodLLl;\nuadd $3ymm_LL $3ymm_LL prodLLl;\nusplit $1ymm_LHh $1ymm_LHl $1ymm_LH 52;\nassert true && $1ymm_LHh = 0@64;\nassume $1ymm_LHh = 0 && true;\nusplit $2ymm_LHh $2ymm_LHl $2ymm_LH 52;\nassert true && $2ymm_LHh = 0@64;\nassume $2ymm_LHh = 0 && true;\numulj prodLH $1ymm_LHl $2ymm_LHl;\nusplit prodLHh prodLHl prodLH 52;\nvpc prodLHh@uint64 prodLHh;\nvpc prodLHl@uint64 prodLHl;\nuadd $3ymm_LH $3ymm_LH prodLHl;\nusplit $1ymm_HLh $1ymm_HLl $1ymm_HL 52;\nassert true && $1ymm_HLh = 0@64;\nassume $1ymm_HLh = 0 && true;\nusplit $2ymm_HLh $2ymm_HLl $2ymm_HL 52;\nassert true && $2ymm_HLh = 0@64;\nassume $2ymm_HLh = 0 && true;\numulj prodHL $1ymm_HLl $2ymm_HLl;\nusplit prodHLh prodHLl prodHL 52;\nvpc prodHLh@uint64 prodHLh;\nvpc prodHLl@uint64 prodHLl;\nuadd $3ymm_HL $3ymm_HL prodHLl;\nusplit $1ymm_HHh $1ymm_HHl $1ymm_HH 52;\nassert true && $1ymm_HHh = 0@64;\nassume $1ymm_HHh = 0 && true;\nusplit $2ymm_HHh $2ymm_HHl $2ymm_HH 52;\nassert true && $2ymm_HHh = 0@64;\nassume $2ymm_HHh = 0 && true;\numulj prodHH $1ymm_HHl $2ymm_HHl;\nusplit prodHHh prodHHl prodHH 52;\nvpc prodHHh@uint64 prodHHh;\nvpc prodHHl@uint64 prodHHl;\nuadd $3ymm_HH $3ymm_HH prodHHl
+#! vpmadd52huq $1ymm, $2ymm, $3ymm -> uadd $3ymm_LL $3ymm_LL prodLLh;\nuadd $3ymm_LH $3ymm_LH prodLHh;\nuadd $3ymm_HL $3ymm_HL prodHLh;\nuadd $3ymm_HH $3ymm_HH prodHHh
+# vpandq $1ymm, $2ymm, $3ymm -> assert true & and [$1ymm_LL = 0xfffffffffff@64, $1ymm_LH = 0xfffffffffff@64, $1ymm_HL = 0x3ffffffffff@64, $1ymm_HH = 0xffffffffffffffff@64];\nusplit $3ymm_LL andc440 $2ymm_LL 44;\nusplit $3ymm_LH andc441 $2ymm_LH 44;\nusplit $3ymm_HL andc42 $2ymm_HL 42;\nmov $3ymm_HH $2ymm_HH
+#! vpandq $1ymm, $2ymm, $3ymm -> and $3ymm_LL@uint64 $1ymm_LL $2ymm_LL;\nand $3ymm_LH@uint64 $1ymm_LH $2ymm_LH;\nand $3ymm_HL@uint64 $1ymm_HL $2ymm_HL;\nand $3ymm_HH@uint64 $1ymm_HH $2ymm_HH
+#! vporq $1ymm, $2ymm, $3ymm -> or $3ymm_LL@uint64 $1ymm_LL $2ymm_LL;\nor $3ymm_LH@uint64 $1ymm_LH $2ymm_LH;\nor $3ymm_HL@uint64 $1ymm_HL $2ymm_HL;\nor $3ymm_HH@uint64 $1ymm_HH $2ymm_HH
+#! shl \$0x28, $1v -> shl $1v $1v 40;
+
+#poly1305_blocks_vpmadd52:
+# %rdi = 0x649010
+# %rsi = 0x606080
+# %rdx = 0x10
+# %rcx = 0x1
+# %r8  = 0xaa80ccddeef
+# %r9  = 0xfffffffffff
+	#shr    $0x4,%rdx                                #! PC = 0x4206944
+	#je     0x4032f9 <poly1305_blocks_vpmadd52+409> #! PC = 0x4206948
+	shl    $0x28,%rcx                               #! PC = 0x4206954
+	#mov    0x40(%rdi),%r8                           #! EA = L0x649050; Value = 0xffffffffffffffff; PC = 0x4206958
+	#mov    $0x3,%rax                                #! PC = 0x4206962
+	#mov    $0x1,%r10                                #! PC = 0x4206969
+	#cmp    $0x4,%rdx                                #! PC = 0x4206976
+	#cmovae %r10,%rax                                #! PC = 0x4206980
+	#test   %r8,%r8                                  #! PC = 0x4206984
+	#cmovns %r10,%rax                                #! PC = 0x4206987
+	#and    %rdx,%rax                                #! PC = 0x4206991
+	#je     0x403312 <poly1305_blocks_vpmadd52_4x+18>#! PC = 0x4206994
+	#sub    %rax,%rdx                                #! PC = 0x4207000
+	#mov    $0x7,%r10d                               #! PC = 0x4207003
+	#mov    $0x1,%r11d                               #! PC = 0x4207009
+	#kmovw  %r10d,%k7                                #! PC = 0x4207015
+	#lea    0x104d(%rip),%r10        # 0x404200      #! PC = 0x4207020
+	#kmovw  %r11d,%k1                                #! PC = 0x4207027
+	vmovq  %rcx,%xmm21                              #! PC = 0x4207032
+	vmovdqa64 (%r10),%ymm19                         #! EA = L0x404200; Value = 0x0000000100000000; PC = 0x4207038
+	vmovdqa64 0x20(%r10),%ymm20                     #! EA = L0x404220; Value = 0x0000000000000000; PC = 0x4207044
+	vpermq $0xcf,%ymm21,%ymm21                      #! PC = 0x4207051
+	vmovdqa64 0x40(%r10),%ymm22                     #! EA = L0x404240; Value = 0x00000fffffffffff; PC = 0x4207058
+	vmovdqu64 (%rdi),%ymm16{%k7}{z}                 #! EA = L0x649010; Value = 0x0000000000000000; PC = 0x4207065
+	vmovdqu64 0x28(%rdi),%ymm3{%k7}{z}              #! EA = L0x649038; Value = 0x00000aa80ccddeef; PC = 0x4207071
+	vmovdqu64 0x20(%rdi),%ymm4{%k7}{z}              #! EA = L0x649030; Value = 0x000000aa953fd050; PC = 0x4207081
+	vmovdqu64 0x18(%rdi),%ymm5{%k7}{z}              #! EA = L0x649028; Value = 0x000053fea80aabf4; PC = 0x4207088
+	vmovdqa64 0x60(%r10),%ymm23                     #! EA = L0x404260; Value = 0x000000000000002c; PC = 0x4207098
+	vmovdqa64 0x80(%r10),%ymm24                     #! EA = L0x404280; Value = 0x0000000000000008; PC = 0x4207105
+	#jmp    0x403220 <poly1305_blocks_vpmadd52+192> #! PC = 0x4207112
+	vmovdqu32 (%rsi),%xmm18                         #! EA = L0x606080; Value = 0x8978675645342312; PC = 0x4207136
+	#lea    0x10(%rsi),%rsi                          #! PC = 0x4207142
+	vpermd %ymm18,%ymm19,%ymm18                     #! PC = 0x4207146
+	vpsrlvq %ymm20,%ymm18,%ymm18                    #! PC = 0x4207152
+	vpandq %ymm22,%ymm18,%ymm18                     #! PC = 0x4207158
+	vporq  %ymm21,%ymm18,%ymm18                     #! PC = 0x4207164
+	vpaddq %ymm18,%ymm16,%ymm16                     #! PC = 0x4207170
+	vpermq $0x0,%ymm16,%ymm0{%k7}{z}                #! PC = 0x4207176
+	vpermq $0x55,%ymm16,%ymm1{%k7}{z}               #! PC = 0x4207183
+	vpermq $0xaa,%ymm16,%ymm2{%k7}{z}               #! PC = 0x4207190
+	vpxord %ymm16,%ymm16,%ymm16                     #! PC = 0x4207197
+	vpxord %ymm17,%ymm17,%ymm17                     #! PC = 0x4207203
+	vpmadd52luq %ymm3,%ymm0,%ymm16                  #! PC = 0x4207209
+	vpmadd52huq %ymm3,%ymm0,%ymm17                  #! PC = 0x4207215
+	vpmadd52luq %ymm4,%ymm1,%ymm16                  #! PC = 0x4207221
+	vpmadd52huq %ymm4,%ymm1,%ymm17                  #! PC = 0x4207227
+	vpmadd52luq %ymm5,%ymm2,%ymm16                  #! PC = 0x4207233
+	vpmadd52huq %ymm5,%ymm2,%ymm17                  #! PC = 0x4207239
+	vpsrlvq %ymm23,%ymm16,%ymm18                    #! PC = 0x4207245
+	vpsllvq %ymm24,%ymm17,%ymm17                    #! PC = 0x4207251
+	vpandq %ymm22,%ymm16,%ymm16                     #! PC = 0x4207257
+	vpaddq %ymm18,%ymm17,%ymm17                     #! PC = 0x4207263
+	vpermq $0x93,%ymm17,%ymm17                      #! PC = 0x4207269
+	vpaddq %ymm17,%ymm16,%ymm16                     #! PC = 0x4207276
+	vpsrlvq %ymm23,%ymm16,%ymm18                    #! PC = 0x4207282
+	vpandq %ymm22,%ymm16,%ymm16                     #! PC = 0x4207288
+	vpermq $0x93,%ymm18,%ymm18                      #! PC = 0x4207294
+	vpaddq %ymm18,%ymm16,%ymm16                     #! PC = 0x4207301
+	vpermq $0x93,%ymm16,%ymm18{%k1}{z}              #! PC = 0x4207307
+	vpaddq %ymm18,%ymm16,%ymm16                     #! PC = 0x4207314
+	vpsllq $0x2,%ymm18,%ymm18                       #! PC = 0x4207320
+	vpaddq %ymm18,%ymm16,%ymm16                     #! PC = 0x4207327
+	#dec    %rax                                     #! PC = 0x4207333
+	#jne    0x403220 <poly1305_blocks_vpmadd52+192> #! PC = 0x4207336
+	vmovdqu64 %ymm16,(%rdi){%k7}                    #! EA = L0x649010; PC = 0x4207342
+	#test   %rdx,%rdx                                #! PC = 0x4207348
+	#jne    0x403312 <poly1305_blocks_vpmadd52_4x+18>#! PC = 0x4207351
+	#repz retq                                      #! PC = 0x4207353

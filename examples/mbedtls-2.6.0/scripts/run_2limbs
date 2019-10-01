@@ -1,0 +1,32 @@
+#!/bin/bash
+
+for c0 in 0; do
+  for c1 in 0 10; do
+    vec="${c0}${c1}"
+    bv=`echo ${vec} | rev`
+    fn="mbedtls_mpi_mul_mpi_2limbs_${vec}"
+    echo "Generating ${fn}.cl"
+
+    echo "  Compiling code"
+    sed -e "s/INDEX_TEMPLATE/0b${bv}/g" library/bignum_template.c > library/bignum.c
+    make &> /dev/null
+    ./compile
+
+    echo "  Extracting trace"
+    ./extract-2limbs
+
+    echo "  Cleaning trace"
+    ./clean_gas.py trace.gas ${vec} > ${fn}.gas
+    ./tocl ${fn}.gas > trace.cl
+    ./clean_cl-2limbs.py trace.cl > ${fn}.cl
+  done
+done
+
+for c0 in 0; do
+  for c1 in 0 10; do
+    vec="${c0}${c1}"
+    fn="mbedtls_mpi_mul_mpi_2limbs_${vec}"
+    echo "Verifying ${fn}.cl"
+    ./verify ${fn}.cl &> ${fn}.log
+  done
+done

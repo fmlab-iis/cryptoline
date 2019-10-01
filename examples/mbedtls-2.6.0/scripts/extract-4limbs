@@ -1,0 +1,6 @@
+PYSCRIPT=./itrace-x86_64-4limbs.py
+BINARY=./a.out
+FNAME=mbedtls_mpi_mul_mpi
+OUT=trace.gas
+
+${PYSCRIPT} ${BINARY} ${FNAME} > ${OUT}

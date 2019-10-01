@@ -1,0 +1,1040 @@
+# %ymm0 = %%ymm0
+# %ymm1 = %%ymm1
+#! %ymm2 = %%ymm2
+#! %ymm3 = %%ymm3
+#! %ymm4 = %%ymm4
+#! %ymm5 = %%ymm5
+#! %ymm6 = %%ymm6
+#! %ymm7 = %%ymm7
+#! %ymm8 = %%ymm8
+#! %ymm9 = %%ymm9
+#! %ymm10 = %%ymm10
+#! %ymm11 = %%ymm11
+#! %ymm12 = %%ymm12
+#! %ymm13 = %%ymm13
+#! %ymm14 = %%ymm14
+#! %ymm15 = %%ymm15
+#! (%rdi) = %%EA
+#! 0x20(%rdi) = %%EA
+#! 0x40(%rdi) = %%EA
+#! 0x60(%rdi) = %%EA
+#! 0x80(%rdi) = %%EA
+#! 0xa0(%rdi) = %%EA
+#! 0xc0(%rdi) = %%EA
+#! 0xe0(%rdi) = %%EA
+#! 0x100(%rdi) = %%EA
+#! 0x120(%rdi) = %%EA
+#! 0x140(%rdi) = %%EA
+#! 0x160(%rdi) = %%EA
+#! 0x180(%rdi) = %%EA
+#! 0x1a0(%rdi) = %%EA
+#! 0x1c0(%rdi) = %%EA
+#! 0x1e0(%rdi) = %%EA
+# (%rsi) = %%EA
+# 0x20(%rsi) = %%EA
+# 0x40(%rsi) = %%EA
+# 0x60(%rsi) = %%EA
+# 0x80(%rsi) = %%EA
+# 0xa0(%rsi) = %%EA
+# 0xc0(%rsi) = %%EA
+# 0xe0(%rsi) = %%EA
+# 0x100(%rsi) = %%EA
+# 0x120(%rsi) = %%EA
+# 0x140(%rsi) = %%EA
+# 0x160(%rsi) = %%EA
+# 0x180(%rsi) = %%EA
+# 0x1a0(%rsi) = %%EA
+# 0x1c0(%rsi) = %%EA
+# 0x1e0(%rsi) = %%EA
+# 0x200(%rsi) = %%EA
+# 0x220(%rsi) = %%EA
+# 0x240(%rsi) = %%EA
+# 0x260(%rsi) = %%EA
+# 0x280(%rsi) = %%EA
+# 0x2a0(%rsi) = %%EA
+# 0x2c0(%rsi) = %%EA
+# 0x2e0(%rsi) = %%EA
+# 0x300(%rsi) = %%EA
+# 0x320(%rsi) = %%EA
+# 0x340(%rsi) = %%EA
+# 0x360(%rsi) = %%EA
+# 0x380(%rsi) = %%EA
+# 0x3a0(%rsi) = %%EA
+# 0x3c0(%rsi) = %%EA
+# 0x3e0(%rsi) = %%EA
+# 0x400(%rsi) = %%EA
+# 0x420(%rsi) = %%EA
+# 0x440(%rsi) = %%EA
+# 0x460(%rsi) = %%EA
+# 0x480(%rsi) = %%EA
+# 0x4a0(%rsi) = %%EA
+# 0x4c0(%rsi) = %%EA
+# 0x4e0(%rsi) = %%EA
+# 0x500(%rsi) = %%EA
+# 0x520(%rsi) = %%EA
+# 0x540(%rsi) = %%EA
+# 0x560(%rsi) = %%EA
+# 0x580(%rsi) = %%EA
+# 0x5a0(%rsi) = %%EA
+# 0x5c0(%rsi) = %%EA
+#! 0x3744(%rip) = %%EA
+#! 0x371c(%rip) = %%EA
+
+#! vmovdqa $1v, $2v -> bvAssign $2v_LLLL (bvVar $1v_LLLL);\nbvAssign $2v_LLLH (bvVar $1v_LLLH);\nbvAssign $2v_LLHL (bvVar $1v_LLHL);\nbvAssign $2v_LLHH (bvVar $1v_LLHH);\nbvAssign $2v_LHLL (bvVar $1v_LHLL);\nbvAssign $2v_LHLH (bvVar $1v_LHLH);\nbvAssign $2v_LHHL (bvVar $1v_LHHL);\nbvAssign $2v_LHHH (bvVar $1v_LHHH);\nbvAssign $2v_HLLL (bvVar $1v_HLLL);\nbvAssign $2v_HLLH (bvVar $1v_HLLH);\nbvAssign $2v_HLHL (bvVar $1v_HLHL);\nbvAssign $2v_HLHH (bvVar $1v_HLHH);\nbvAssign $2v_HHLL (bvVar $1v_HHLL);\nbvAssign $2v_HHLH (bvVar $1v_HHLH);\nbvAssign $2v_HHHL (bvVar $1v_HHHL);\nbvAssign $2v_HHHH (bvVar $1v_HHHH)
+#! vpmullw $1v, $2v, $3v -> bvSmulf $2v_LLLL $3v_LLLL (bvVar $1v_LLLL) (bvVar $2v_LLLL);\nbvSmulf $2v_LLLH $3v_LLLH (bvVar $1v_LLLH) (bvVar $2v_LLLH);\nbvSmulf $2v_LLHL $3v_LLHL (bvVar $1v_LLHL) (bvVar $2v_LLHL);\nbvSmulf $2v_LLHH $3v_LLHH (bvVar $1v_LLHH) (bvVar $2v_LLHH);\nbvSmulf $2v_LHLL $3v_LHLL (bvVar $1v_LHLL) (bvVar $2v_LHLL);\nbvSmulf $2v_LHLH $3v_LHLH (bvVar $1v_LHLH) (bvVar $2v_LHLH);\nbvSmulf $2v_LHHL $3v_LHHL (bvVar $1v_LHHL) (bvVar $2v_LHHL);\nbvSmulf $2v_LHHH $3v_LHHH (bvVar $1v_LHHH) (bvVar $2v_LHHH);\nbvSmulf $2v_HLLL $3v_HLLL (bvVar $1v_HLLL) (bvVar $2v_HLLL);\nbvSmulf $2v_HLLH $3v_HLLH (bvVar $1v_HLLH) (bvVar $2v_HLLH);\nbvSmulf $2v_HLHL $3v_HLHL (bvVar $1v_HLHL) (bvVar $2v_HLHL);\nbvSmulf $2v_HLHH $3v_HLHH (bvVar $1v_HLHH) (bvVar $2v_HLHH);\nbvSmulf $2v_HHLL $3v_HHLL (bvVar $1v_HHLL) (bvVar $2v_HHLL);\nbvSmulf $2v_HHLH $3v_HHLH (bvVar $1v_HHLH) (bvVar $2v_HHLH);\nbvSmulf $2v_HHHL $3v_HHHL (bvVar $1v_HHHL) (bvVar $2v_HHHL);\nbvSmulf $2v_HHHH $3v_HHHH (bvVar $1v_HHHH) (bvVar $2v_HHHH)
+#! vpmullw %ymm0, $1v, $1v -> bvAssign $1v_LLLL0 (bvVar $1v_LLLL);\nbvSmulf tmp $1v_LLLL (bvVar qinv) (bvVar $1v_LLLL);\nbvAssign $1v_LLLH0 (bvVar $1v_LLLH);\nbvSmulf tmp $1v_LLLH (bvVar qinv) (bvVar $1v_LLLH);\nbvAssign $1v_LLHL0 (bvVar $1v_LLHL);\nbvSmulf tmp $1v_LLHL (bvVar qinv) (bvVar $1v_LLHL);\nbvAssign $1v_LLHH0 (bvVar $1v_LLHH);\nbvSmulf tmp $1v_LLHH (bvVar qinv) (bvVar $1v_LLHH);\nbvAssign $1v_LHLL0 (bvVar $1v_LHLL);\nbvSmulf tmp $1v_LHLL (bvVar qinv) (bvVar $1v_LHLL);\nbvAssign $1v_LHLH0 (bvVar $1v_LHLH);\nbvSmulf tmp $1v_LHLH (bvVar qinv) (bvVar $1v_LHLH);\nbvAssign $1v_LHHL0 (bvVar $1v_LHHL);\nbvSmulf tmp $1v_LHHL (bvVar qinv) (bvVar $1v_LHHL);\nbvAssign $1v_LHHH0 (bvVar $1v_LHHH);\nbvSmulf tmp $1v_LHHH (bvVar qinv) (bvVar $1v_LHHH);\nbvAssign $1v_HLLL0 (bvVar $1v_HLLL);\nbvSmulf tmp $1v_HLLL (bvVar qinv) (bvVar $1v_HLLL);\nbvAssign $1v_HLLH0 (bvVar $1v_HLLH);\nbvSmulf tmp $1v_HLLH (bvVar qinv) (bvVar $1v_HLLH);\nbvAssign $1v_HLHL0 (bvVar $1v_HLHL);\nbvSmulf tmp $1v_HLHL (bvVar qinv) (bvVar $1v_HLHL);\nbvAssign $1v_HLHH0 (bvVar $1v_HLHH);\nbvSmulf tmp $1v_HLHH (bvVar qinv) (bvVar $1v_HLHH);\nbvAssign $1v_HHLL0 (bvVar $1v_HHLL);\nbvSmulf tmp $1v_HHLL (bvVar qinv) (bvVar $1v_HHLL);\nbvAssign $1v_HHLH0 (bvVar $1v_HHLH);\nbvSmulf tmp $1v_HHLH (bvVar qinv) (bvVar $1v_HHLH);\nbvAssign $1v_HHHL0 (bvVar $1v_HHHL);\nbvSmulf tmp $1v_HHHL (bvVar qinv) (bvVar $1v_HHHL);\nbvAssign $1v_HHHH0 (bvVar $1v_HHHH);\nbvSmulf tmp $1v_HHHH (bvVar qinv) (bvVar $1v_HHHH)
+#! vpmulhw $1v, $2v, $3v -> (* merged with previous vpmullw $1v, $2v, ymmX *)
+# vpmulhw $1v, $2v, $3v -> bvSmulf $3v_LLLL tmp (bvVar $1v_LLLL) (bvVar $2v_LLLL);\nbvSmulf $3v_LLLH tmp (bvVar $1v_LLLH) (bvVar $2v_LLLH);\nbvSmulf $3v_LLHL tmp (bvVar $1v_LLHL) (bvVar $2v_LLHL);\nbvSmulf $3v_LLHH tmp (bvVar $1v_LLHH) (bvVar $2v_LLHH);\nbvSmulf $3v_LHLL tmp (bvVar $1v_LHLL) (bvVar $2v_LHLL);\nbvSmulf $3v_LHLH tmp (bvVar $1v_LHLH) (bvVar $2v_LHLH);\nbvSmulf $3v_LHHL tmp (bvVar $1v_LHHL) (bvVar $2v_LHHL);\nbvSmulf $3v_LHHH tmp (bvVar $1v_LHHH) (bvVar $2v_LHHH);\nbvSmulf $3v_HLLL tmp (bvVar $1v_HLLL) (bvVar $2v_HLLL);\nbvSmulf $3v_HLLH tmp (bvVar $1v_HLLH) (bvVar $2v_HLLH);\nbvSmulf $3v_HLHL tmp (bvVar $1v_HLHL) (bvVar $2v_HLHL);\nbvSmulf $3v_HLHH tmp (bvVar $1v_HLHH) (bvVar $2v_HLHH);\nbvSmulf $3v_HHLL tmp (bvVar $1v_HHLL) (bvVar $2v_HHLL);\nbvSmulf $3v_HHLH tmp (bvVar $1v_HHLH) (bvVar $2v_HHLH);\nbvSmulf $3v_HHHL tmp (bvVar $1v_HHHL) (bvVar $2v_HHHL);\nbvSmulf $3v_HHHH tmp (bvVar $1v_HHHH) (bvVar $2v_HHHH)
+#! vpmulhw %ymm1, $1v, $1v -> bvSmulf $1v_LLLL tmp (bvVar q) (bvVar $1v_LLLL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LLLL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LLLL0) | bvTrue;\nbvSmulf $1v_LLLH tmp (bvVar q) (bvVar $1v_LLLH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LLLH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LLLH0) | bvTrue;\nbvSmulf $1v_LLHL tmp (bvVar q) (bvVar $1v_LLHL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LLHL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LLHL0) | bvTrue;\nbvSmulf $1v_LLHH tmp (bvVar q) (bvVar $1v_LLHH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LLHH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LLHH0) | bvTrue;\nbvSmulf $1v_LHLL tmp (bvVar q) (bvVar $1v_LHLL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LHLL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LHLL0) | bvTrue;\nbvSmulf $1v_LHLH tmp (bvVar q) (bvVar $1v_LHLH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LHLH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LHLH0) | bvTrue;\nbvSmulf $1v_LHHL tmp (bvVar q) (bvVar $1v_LHHL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LHHL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LHHL0) | bvTrue;\nbvSmulf $1v_LHHH tmp (bvVar q) (bvVar $1v_LHHH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_LHHH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_LHHH0) | bvTrue;\nbvSmulf $1v_HLLL tmp (bvVar q) (bvVar $1v_HLLL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HLLL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HLLL0) | bvTrue;\nbvSmulf $1v_HLLH tmp (bvVar q) (bvVar $1v_HLLH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HLLH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HLLH0) | bvTrue;\nbvSmulf $1v_HLHL tmp (bvVar q) (bvVar $1v_HLHL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HLHL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HLHL0) | bvTrue;\nbvSmulf $1v_HLHH tmp (bvVar q) (bvVar $1v_HLHH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HLHH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HLHH0) | bvTrue;\nbvSmulf $1v_HHLL tmp (bvVar q) (bvVar $1v_HHLL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HHLL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HHLL0) | bvTrue;\nbvSmulf $1v_HHLH tmp (bvVar q) (bvVar $1v_HHLH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HHLH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HHLH0) | bvTrue;\nbvSmulf $1v_HHHL tmp (bvVar q) (bvVar $1v_HHHL);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HHHL0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HHHL0) | bvTrue;\nbvSmulf $1v_HHHH tmp (bvVar q) (bvVar $1v_HHHH);\nbvAssert bveEqMod (bvvar tmp) (bvvar $1v_HHHH0) (bvconst 2^16) | bvTrue;\nbvAssume bveEq (bvvar tmp) (bvvar $1v_HHHH0) | bvTrue
+#! vpsubw $1v, $2v, $3v -> bvSsub $3v_LLLL (bvVar $2v_LLLL) (bvVar $1v_LLLL);\nbvSsub $3v_LLLH (bvVar $2v_LLLH) (bvVar $1v_LLLH);\nbvSsub $3v_LLHL (bvVar $2v_LLHL) (bvVar $1v_LLHL);\nbvSsub $3v_LLHH (bvVar $2v_LLHH) (bvVar $1v_LLHH);\nbvSsub $3v_LHLL (bvVar $2v_LHLL) (bvVar $1v_LHLL);\nbvSsub $3v_LHLH (bvVar $2v_LHLH) (bvVar $1v_LHLH);\nbvSsub $3v_LHHL (bvVar $2v_LHHL) (bvVar $1v_LHHL);\nbvSsub $3v_LHHH (bvVar $2v_LHHH) (bvVar $1v_LHHH);\nbvSsub $3v_HLLL (bvVar $2v_HLLL) (bvVar $1v_HLLL);\nbvSsub $3v_HLLH (bvVar $2v_HLLH) (bvVar $1v_HLLH);\nbvSsub $3v_HLHL (bvVar $2v_HLHL) (bvVar $1v_HLHL);\nbvSsub $3v_HLHH (bvVar $2v_HLHH) (bvVar $1v_HLHH);\nbvSsub $3v_HHLL (bvVar $2v_HHLL) (bvVar $1v_HHLL);\nbvSsub $3v_HHLH (bvVar $2v_HHLH) (bvVar $1v_HHLH);\nbvSsub $3v_HHHL (bvVar $2v_HHHL) (bvVar $1v_HHHL);\nbvSsub $3v_HHHH (bvVar $2v_HHHH) (bvVar $1v_HHHH)
+#! vpaddw $1v, $2v, $3v -> bvSadd $3v_LLLL (bvVar $1v_LLLL) (bvVar $2v_LLLL);\nbvSadd $3v_LLLH (bvVar $1v_LLLH) (bvVar $2v_LLLH);\nbvSadd $3v_LLHL (bvVar $1v_LLHL) (bvVar $2v_LLHL);\nbvSadd $3v_LLHH (bvVar $1v_LLHH) (bvVar $2v_LLHH);\nbvSadd $3v_LHLL (bvVar $1v_LHLL) (bvVar $2v_LHLL);\nbvSadd $3v_LHLH (bvVar $1v_LHLH) (bvVar $2v_LHLH);\nbvSadd $3v_LHHL (bvVar $1v_LHHL) (bvVar $2v_LHHL);\nbvSadd $3v_LHHH (bvVar $1v_LHHH) (bvVar $2v_LHHH);\nbvSadd $3v_HLLL (bvVar $1v_HLLL) (bvVar $2v_HLLL);\nbvSadd $3v_HLLH (bvVar $1v_HLLH) (bvVar $2v_HLLH);\nbvSadd $3v_HLHL (bvVar $1v_HLHL) (bvVar $2v_HLHL);\nbvSadd $3v_HLHH (bvVar $1v_HLHH) (bvVar $2v_HLHH);\nbvSadd $3v_HHLL (bvVar $1v_HHLL) (bvVar $2v_HHLL);\nbvSadd $3v_HHLH (bvVar $1v_HHLH) (bvVar $2v_HHLH);\nbvSadd $3v_HHHL (bvVar $1v_HHHL) (bvVar $2v_HHHL);\nbvSadd $3v_HHHH (bvVar $1v_HHHH) (bvVar $2v_HHHH)
+#! vpaddw %ymm1, $1v, $2v -> bvSadd $2v_LLLL (bvVar $1v_LLLL) (bvVar q);\nbvSadd $2v_LLLH (bvVar $1v_LLLH) (bvVar q);\nbvSadd $2v_LLHL (bvVar $1v_LLHL) (bvVar q);\nbvSadd $2v_LLHH (bvVar $1v_LLHH) (bvVar q);\nbvSadd $2v_LHLL (bvVar $1v_LHLL) (bvVar q);\nbvSadd $2v_LHLH (bvVar $1v_LHLH) (bvVar q);\nbvSadd $2v_LHHL (bvVar $1v_LHHL) (bvVar q);\nbvSadd $2v_LHHH (bvVar $1v_LHHH) (bvVar q);\nbvSadd $2v_HLLL (bvVar $1v_HLLL) (bvVar q);\nbvSadd $2v_HLLH (bvVar $1v_HLLH) (bvVar q);\nbvSadd $2v_HLHL (bvVar $1v_HLHL) (bvVar q);\nbvSadd $2v_HLHH (bvVar $1v_HLHH) (bvVar q);\nbvSadd $2v_HHLL (bvVar $1v_HHLL) (bvVar q);\nbvSadd $2v_HHLH (bvVar $1v_HHLH) (bvVar q);\nbvSadd $2v_HHHL (bvVar $1v_HHHL) (bvVar q);\nbvSadd $2v_HHHH (bvVar $1v_HHHH) (bvVar q)
+#! vpand $1v, $2v, $3v -> (* merged with previous vpsraw imm, $3v, ymmX *)
+#! vpsraw \$0xd, $1v, $2v -> bvSplit $2v_LLLL $1v_LLLL (bvVar $1v_LLLL) 13;\nbvSplit $2v_LLLH $1v_LLLH (bvVar $1v_LLLH) 13;\nbvSplit $2v_LLHL $1v_LLHL (bvVar $1v_LLHL) 13;\nbvSplit $2v_LLHH $1v_LLHH (bvVar $1v_LLHH) 13;\nbvSplit $2v_LHLL $1v_LHLL (bvVar $1v_LHLL) 13;\nbvSplit $2v_LHLH $1v_LHLH (bvVar $1v_LHLH) 13;\nbvSplit $2v_LHHL $1v_LHHL (bvVar $1v_LHHL) 13;\nbvSplit $2v_LHHH $1v_LHHH (bvVar $1v_LHHH) 13;\nbvSplit $2v_HLLL $1v_HLLL (bvVar $1v_HLLL) 13;\nbvSplit $2v_HLLH $1v_HLLH (bvVar $1v_HLLH) 13;\nbvSplit $2v_HLHL $1v_HLHL (bvVar $1v_HLHL) 13;\nbvSplit $2v_HLHH $1v_HLHH (bvVar $1v_HLHH) 13;\nbvSplit $2v_HHLL $1v_HHLL (bvVar $1v_HHLL) 13;\nbvSplit $2v_HHLH $1v_HHLH (bvVar $1v_HHLH) 13;\nbvSplit $2v_HHHL $1v_HHHL (bvVar $1v_HHHL) 13;\nbvSplit $2v_HHHH $1v_HHHH (bvVar $1v_HHHH) 13
+#! vpsraw \$0xf, $1v, $2v -> bvAddC c_LLLL tmp (bvVar $1v_LLLL) (bvConst 2^15);\nbvAddC c_LLLH tmp (bvVar $1v_LLLH) (bvConst 2^15);\nbvAddC c_LLHL tmp (bvVar $1v_LLHL) (bvConst 2^15);\nbvAddC c_LLHH tmp (bvVar $1v_LLHH) (bvConst 2^15);\nbvAddC c_LHLL tmp (bvVar $1v_LHLL) (bvConst 2^15);\nbvAddC c_LHLH tmp (bvVar $1v_LHLH) (bvConst 2^15);\nbvAddC c_LHHL tmp (bvVar $1v_LHHL) (bvConst 2^15);\nbvAddC c_LHHH tmp (bvVar $1v_LHHH) (bvConst 2^15);\nbvAddC c_HLLL tmp (bvVar $1v_HLLL) (bvConst 2^15);\nbvAddC c_HLLH tmp (bvVar $1v_HLLH) (bvConst 2^15);\nbvAddC c_HLHL tmp (bvVar $1v_HLHL) (bvConst 2^15);\nbvAddC c_HLHH tmp (bvVar $1v_HLHH) (bvConst 2^15);\nbvAddC c_HHLL tmp (bvVar $1v_HHLL) (bvConst 2^15);\nbvAddC c_HHLH tmp (bvVar $1v_HHLH) (bvConst 2^15);\nbvAddC c_HHHL tmp (bvVar $1v_HHHL) (bvConst 2^15);\nbvAddC c_HHHH tmp (bvVar $1v_HHHH) (bvConst 2^15);\nbvCmove $2v_LLLL c_LLLL (bvVar twoq) (bvConst 0);\nbvCmove $2v_LLLH c_LLLH (bvVar twoq) (bvConst 0);\nbvCmove $2v_LLHL c_LLHL (bvVar twoq) (bvConst 0);\nbvCmove $2v_LLHH c_LLHH (bvVar twoq) (bvConst 0);\nbvCmove $2v_LHLL c_LHLL (bvVar twoq) (bvConst 0);\nbvCmove $2v_LHLH c_LHLH (bvVar twoq) (bvConst 0);\nbvCmove $2v_LHHL c_LHHL (bvVar twoq) (bvConst 0);\nbvCmove $2v_LHHH c_LHHH (bvVar twoq) (bvConst 0);\nbvCmove $2v_HLLL c_HLLL (bvVar twoq) (bvConst 0);\nbvCmove $2v_HLLH c_HLLH (bvVar twoq) (bvConst 0);\nbvCmove $2v_HLHL c_HLHL (bvVar twoq) (bvConst 0);\nbvCmove $2v_HLHH c_HLHH (bvVar twoq) (bvConst 0);\nbvCmove $2v_HHLL c_HHLL (bvVar twoq) (bvConst 0);\nbvCmove $2v_HHLH c_HHLH (bvVar twoq) (bvConst 0);\nbvCmove $2v_HHHL c_HHHL (bvVar twoq) (bvConst 0);\nbvCmove $2v_HHHH c_HHHH (bvVar twoq) (bvConst 0)
+#! vpsllw \$0x9, $1v, $2v -> bvSmul $2v_LLLL (bvVar $1v_LLLL) (bvConst 512);\nbvSmul $2v_LLLH (bvVar $1v_LLLH) (bvConst 512);\nbvSmul $2v_LLHL (bvVar $1v_LLHL) (bvConst 512);\nbvSmul $2v_LLHH (bvVar $1v_LLHH) (bvConst 512);\nbvSmul $2v_LHLL (bvVar $1v_LHLL) (bvConst 512);\nbvSmul $2v_LHLH (bvVar $1v_LHLH) (bvConst 512);\nbvSmul $2v_LHHL (bvVar $1v_LHHL) (bvConst 512);\nbvSmul $2v_LHHH (bvVar $1v_LHHH) (bvConst 512);\nbvSmul $2v_HLLL (bvVar $1v_HLLL) (bvConst 512);\nbvSmul $2v_HLLH (bvVar $1v_HLLH) (bvConst 512);\nbvSmul $2v_HLHL (bvVar $1v_HLHL) (bvConst 512);\nbvSmul $2v_HLHH (bvVar $1v_HLHH) (bvConst 512);\nbvSmul $2v_HHLL (bvVar $1v_HHLL) (bvConst 512);\nbvSmul $2v_HHLH (bvVar $1v_HHLH) (bvConst 512);\nbvSmul $2v_HHHL (bvVar $1v_HHHL) (bvConst 512);\nbvSmul $2v_HHHH (bvVar $1v_HHHH) (bvConst 512)
+#! vperm2i128 \$0x2, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $1v_LLLL);\nbvAssign $3v_LLLH (bvVar $1v_LLLH);\nbvAssign $3v_LLHL (bvVar $1v_LLHL);\nbvAssign $3v_LLHH (bvVar $1v_LLHH);\nbvAssign $3v_LHLL (bvVar $1v_LHLL);\nbvAssign $3v_LHLH (bvVar $1v_LHLH);\nbvAssign $3v_LHHL (bvVar $1v_LHHL);\nbvAssign $3v_LHHH (bvVar $1v_LHHH);\nbvAssign $3v_HLLL (bvVar $2v_LLLL);\nbvAssign $3v_HLLH (bvVar $2v_LLLH);\nbvAssign $3v_HLHL (bvVar $2v_LLHL);\nbvAssign $3v_HLHH (bvVar $2v_LLHH);\nbvAssign $3v_HHLL (bvVar $2v_LHLL);\nbvAssign $3v_HHLH (bvVar $2v_LHLH);\nbvAssign $3v_HHHL (bvVar $2v_LHHL);\nbvAssign $3v_HHHH (bvVar $2v_LHHH)
+#! vperm2i128 \$0x20, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LLLL);\nbvAssign $3v_LLLH (bvVar $2v_LLLH);\nbvAssign $3v_LLHL (bvVar $2v_LLHL);\nbvAssign $3v_LLHH (bvVar $2v_LLHH);\nbvAssign $3v_LHLL (bvVar $2v_LHLL);\nbvAssign $3v_LHLH (bvVar $2v_LHLH);\nbvAssign $3v_LHHL (bvVar $2v_LHHL);\nbvAssign $3v_LHHH (bvVar $2v_LHHH);\nbvAssign $3v_HLLL (bvVar $1v_LLLL);\nbvAssign $3v_HLLH (bvVar $1v_LLLH);\nbvAssign $3v_HLHL (bvVar $1v_LLHL);\nbvAssign $3v_HLHH (bvVar $1v_LLHH);\nbvAssign $3v_HHLL (bvVar $1v_LHLL);\nbvAssign $3v_HHLH (bvVar $1v_LHLH);\nbvAssign $3v_HHHL (bvVar $1v_LHHL);\nbvAssign $3v_HHHH (bvVar $1v_LHHH)
+#! vperm2i128 \$0x13, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $1v_HLLL);\nbvAssign $3v_LLLH (bvVar $1v_HLLH);\nbvAssign $3v_LLHL (bvVar $1v_HLHL);\nbvAssign $3v_LLHH (bvVar $1v_HLHH);\nbvAssign $3v_LHLL (bvVar $1v_HHLL);\nbvAssign $3v_LHLH (bvVar $1v_HHLH);\nbvAssign $3v_LHHL (bvVar $1v_HHHL);\nbvAssign $3v_LHHH (bvVar $1v_HHHH);\nbvAssign $3v_HLLL (bvVar $2v_HLLL);\nbvAssign $3v_HLLH (bvVar $2v_HLLH);\nbvAssign $3v_HLHL (bvVar $2v_HLHL);\nbvAssign $3v_HLHH (bvVar $2v_HLHH);\nbvAssign $3v_HHLL (bvVar $2v_HHLL);\nbvAssign $3v_HHLH (bvVar $2v_HHLH);\nbvAssign $3v_HHHL (bvVar $2v_HHHL);\nbvAssign $3v_HHHH (bvVar $2v_HHHH)
+#! vperm2i128 \$0x31, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_HLLL);\nbvAssign $3v_LLLH (bvVar $2v_HLLH);\nbvAssign $3v_LLHL (bvVar $2v_HLHL);\nbvAssign $3v_LLHH (bvVar $2v_HLHH);\nbvAssign $3v_LHLL (bvVar $2v_HHLL);\nbvAssign $3v_LHLH (bvVar $2v_HHLH);\nbvAssign $3v_LHHL (bvVar $2v_HHHL);\nbvAssign $3v_LHHH (bvVar $2v_HHHH);\nbvAssign $3v_HLLL (bvVar $1v_HLLL);\nbvAssign $3v_HLLH (bvVar $1v_HLLH);\nbvAssign $3v_HLHL (bvVar $1v_HLHL);\nbvAssign $3v_HLHH (bvVar $1v_HLHH);\nbvAssign $3v_HHLL (bvVar $1v_HHLL);\nbvAssign $3v_HHLH (bvVar $1v_HHLH);\nbvAssign $3v_HHHL (bvVar $1v_HHHL);\nbvAssign $3v_HHHH (bvVar $1v_HHHH)
+#! vshufpd \$0x0, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LLLL);\nbvAssign $3v_LLLH (bvVar $2v_LLLH);\nbvAssign $3v_LLHL (bvVar $2v_LLHL);\nbvAssign $3v_LLHH (bvVar $2v_LLHH);\nbvAssign $3v_LHLL (bvVar $1v_LLLL);\nbvAssign $3v_LHLH (bvVar $1v_LLLH);\nbvAssign $3v_LHHL (bvVar $1v_LLHL);\nbvAssign $3v_LHHH (bvVar $1v_LLHH);\nbvAssign $3v_HLLL (bvVar $2v_HLLL);\nbvAssign $3v_HLLH (bvVar $2v_HLLH);\nbvAssign $3v_HLHL (bvVar $2v_HLHL);\nbvAssign $3v_HLHH (bvVar $2v_HLHH);\nbvAssign $3v_HHLL (bvVar $1v_HLLL);\nbvAssign $3v_HHLH (bvVar $1v_HLLH);\nbvAssign $3v_HHHL (bvVar $1v_HLHL);\nbvAssign $3v_HHHH (bvVar $1v_HLHH)
+#! vshufpd \$0xf, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LHLL);\nbvAssign $3v_LLLH (bvVar $2v_LHLH);\nbvAssign $3v_LLHL (bvVar $2v_LHHL);\nbvAssign $3v_LLHH (bvVar $2v_LHHH);\nbvAssign $3v_LHLL (bvVar $1v_LHLL);\nbvAssign $3v_LHLH (bvVar $1v_LHLH);\nbvAssign $3v_LHHL (bvVar $1v_LHHL);\nbvAssign $3v_LHHH (bvVar $1v_LHHH);\nbvAssign $3v_HLLL (bvVar $2v_HHLL);\nbvAssign $3v_HLLH (bvVar $2v_HHLH);\nbvAssign $3v_HLHL (bvVar $2v_HHHL);\nbvAssign $3v_HLHH (bvVar $2v_HHHH);\nbvAssign $3v_HHLL (bvVar $1v_HHLL);\nbvAssign $3v_HHLH (bvVar $1v_HHLH);\nbvAssign $3v_HHHL (bvVar $1v_HHHL);\nbvAssign $3v_HHHH (bvVar $1v_HHHH)
+#! vpshufd \$0xb1, $1v, $2v -> bvAssign $2v_LLLL (bvVar $1v_LLHL);\nbvAssign $2v_LLLH (bvVar $1v_LLHH);\nbvAssign $2v_LLHL (bvVar $1v_LLLL);\nbvAssign $2v_LLHH (bvVar $1v_LLLH);\nbvAssign $2v_LHLL (bvVar $1v_LHHL);\nbvAssign $2v_LHLH (bvVar $1v_LHHH);\nbvAssign $2v_LHHL (bvVar $1v_LHLL);\nbvAssign $2v_LHHH (bvVar $1v_LHLH);\nbvAssign $2v_HLLL (bvVar $1v_HLHL);\nbvAssign $2v_HLLH (bvVar $1v_HLHH);\nbvAssign $2v_HLHL (bvVar $1v_HLLL);\nbvAssign $2v_HLHH (bvVar $1v_HLLH);\nbvAssign $2v_HHLL (bvVar $1v_HHHL);\nbvAssign $2v_HHLH (bvVar $1v_HHHH);\nbvAssign $2v_HHHL (bvVar $1v_HHLL);\nbvAssign $2v_HHHH (bvVar $1v_HHLH)
+#! vpshufb %%ymm15, $1v, $2v -> bvAssign $2v_LLLL (bvVar $1v_LLLH);\nbvAssign $2v_LLLH (bvVar $1v_LLLL);\nbvAssign $2v_LLHL (bvVar $1v_LLHH);\nbvAssign $2v_LLHH (bvVar $1v_LLHL);\nbvAssign $2v_LHLL (bvVar $1v_LHLH);\nbvAssign $2v_LHLH (bvVar $1v_LHLL);\nbvAssign $2v_LHHL (bvVar $1v_LHHH);\nbvAssign $2v_LHHH (bvVar $1v_LHHL);\nbvAssign $2v_HLLL (bvVar $1v_HLLH);\nbvAssign $2v_HLLH (bvVar $1v_HLLL);\nbvAssign $2v_HLHL (bvVar $1v_HLHH);\nbvAssign $2v_HLHH (bvVar $1v_HLHL);\nbvAssign $2v_HHLL (bvVar $1v_HHLH);\nbvAssign $2v_HHLH (bvVar $1v_HHLL);\nbvAssign $2v_HHHL (bvVar $1v_HHHH);\nbvAssign $2v_HHHH (bvVar $1v_HHHL)
+#! vpblendd \$0x55, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $1v_LLLL);\nbvAssign $3v_LLLH (bvVar $1v_LLLH);\nbvAssign $3v_LLHL (bvVar $2v_LLHL);\nbvAssign $3v_LLHH (bvVar $2v_LLHH);\nbvAssign $3v_LHLL (bvVar $1v_LHLL);\nbvAssign $3v_LHLH (bvVar $1v_LHLH);\nbvAssign $3v_LHHL (bvVar $2v_LHHL);\nbvAssign $3v_LHHH (bvVar $2v_LHHH);\nbvAssign $3v_HLLL (bvVar $1v_HLLL);\nbvAssign $3v_HLLH (bvVar $1v_HLLH);\nbvAssign $3v_HLHL (bvVar $2v_HLHL);\nbvAssign $3v_HLHH (bvVar $2v_HLHH);\nbvAssign $3v_HHLL (bvVar $1v_HHLL);\nbvAssign $3v_HHLH (bvVar $1v_HHLH);\nbvAssign $3v_HHHL (bvVar $2v_HHHL);\nbvAssign $3v_HHHH (bvVar $2v_HHHH)
+#! vpblendd \$0xaa, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LLLL);\nbvAssign $3v_LLLH (bvVar $2v_LLLH);\nbvAssign $3v_LLHL (bvVar $1v_LLHL);\nbvAssign $3v_LLHH (bvVar $1v_LLHH);\nbvAssign $3v_LHLL (bvVar $2v_LHLL);\nbvAssign $3v_LHLH (bvVar $2v_LHLH);\nbvAssign $3v_LHHL (bvVar $1v_LHHL);\nbvAssign $3v_LHHH (bvVar $1v_LHHH);\nbvAssign $3v_HLLL (bvVar $2v_HLLL);\nbvAssign $3v_HLLH (bvVar $2v_HLLH);\nbvAssign $3v_HLHL (bvVar $1v_HLHL);\nbvAssign $3v_HLHH (bvVar $1v_HLHH);\nbvAssign $3v_HHLL (bvVar $2v_HHLL);\nbvAssign $3v_HHLH (bvVar $2v_HHLH);\nbvAssign $3v_HHHL (bvVar $1v_HHHL);\nbvAssign $3v_HHHH (bvVar $1v_HHHH)
+#! vpblendw \$0x55, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $1v_LLLL);\nbvAssign $3v_LLLH (bvVar $2v_LLLH);\nbvAssign $3v_LLHL (bvVar $1v_LLHL);\nbvAssign $3v_LLHH (bvVar $2v_LLHH);\nbvAssign $3v_LHLL (bvVar $1v_LHLL);\nbvAssign $3v_LHLH (bvVar $2v_LHLH);\nbvAssign $3v_LHHL (bvVar $1v_LHHL);\nbvAssign $3v_LHHH (bvVar $2v_LHHH);\nbvAssign $3v_HLLL (bvVar $1v_HLLL);\nbvAssign $3v_HLLH (bvVar $2v_HLLH);\nbvAssign $3v_HLHL (bvVar $1v_HLHL);\nbvAssign $3v_HLHH (bvVar $2v_HLHH);\nbvAssign $3v_HHLL (bvVar $1v_HHLL);\nbvAssign $3v_HHLH (bvVar $2v_HHLH);\nbvAssign $3v_HHHL (bvVar $1v_HHHL);\nbvAssign $3v_HHHH (bvVar $2v_HHHH)
+#! vpblendw \$0xaa, $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LLLL);\nbvAssign $3v_LLLH (bvVar $1v_LLLH);\nbvAssign $3v_LLHL (bvVar $2v_LLHL);\nbvAssign $3v_LLHH (bvVar $1v_LLHH);\nbvAssign $3v_LHLL (bvVar $2v_LHLL);\nbvAssign $3v_LHLH (bvVar $1v_LHLH);\nbvAssign $3v_LHHL (bvVar $2v_LHHL);\nbvAssign $3v_LHHH (bvVar $1v_LHHH);\nbvAssign $3v_HLLL (bvVar $2v_HLLL);\nbvAssign $3v_HLLH (bvVar $1v_HLLH);\nbvAssign $3v_HLHL (bvVar $2v_HLHL);\nbvAssign $3v_HLHH (bvVar $1v_HLHH);\nbvAssign $3v_HHLL (bvVar $2v_HHLL);\nbvAssign $3v_HHLH (bvVar $1v_HHLH);\nbvAssign $3v_HHHL (bvVar $2v_HHHL);\nbvAssign $3v_HHHH (bvVar $1v_HHHH)
+#! vpunpcklwd $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LLLL);\nbvAssign $3v_LLLH (bvVar $1v_LLLL);\nbvAssign $3v_LLHL (bvVar $2v_LLLH);\nbvAssign $3v_LLHH (bvVar $1v_LLLH);\nbvAssign $3v_LHLL (bvVar $2v_LLHL);\nbvAssign $3v_LHLH (bvVar $1v_LLHL);\nbvAssign $3v_LHHL (bvVar $2v_LLHH);\nbvAssign $3v_LHHH (bvVar $1v_LLHH);\nbvAssign $3v_HLLL (bvVar $2v_HLLL);\nbvAssign $3v_HLLH (bvVar $1v_HLLL);\nbvAssign $3v_HLHL (bvVar $2v_HLLH);\nbvAssign $3v_HLHH (bvVar $1v_HLLH);\nbvAssign $3v_HHLL (bvVar $2v_HLHL);\nbvAssign $3v_HHLH (bvVar $1v_HLHL);\nbvAssign $3v_HHHL (bvVar $2v_HLHH);\nbvAssign $3v_HHHH (bvVar $1v_HLHH)
+#! vpunpckhwd $1v, $2v, $3v -> bvAssign $3v_LLLL (bvVar $2v_LHLL);\nbvAssign $3v_LLLH (bvVar $1v_LHLL);\nbvAssign $3v_LLHL (bvVar $2v_LHLH);\nbvAssign $3v_LLHH (bvVar $1v_LHLH);\nbvAssign $3v_LHLL (bvVar $2v_LHHL);\nbvAssign $3v_LHLH (bvVar $1v_LHHL);\nbvAssign $3v_LHHL (bvVar $2v_LHHH);\nbvAssign $3v_LHHH (bvVar $1v_LHHH);\nbvAssign $3v_HLLL (bvVar $2v_HHLL);\nbvAssign $3v_HLLH (bvVar $1v_HHLL);\nbvAssign $3v_HLHL (bvVar $2v_HHLH);\nbvAssign $3v_HLHH (bvVar $1v_HHLH);\nbvAssign $3v_HHLL (bvVar $2v_HHHL);\nbvAssign $3v_HHLH (bvVar $1v_HHHL);\nbvAssign $3v_HHHL (bvVar $2v_HHHH);\nbvAssign $3v_HHHH (bvVar $1v_HHHH)
+#! vmovdqa \(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta000);\nbvAssign $1v_LLLH (bvVar zeta000);\nbvAssign $1v_LLHL (bvVar zeta000);\nbvAssign $1v_LLHH (bvVar zeta000);\nbvAssign $1v_LHLL (bvVar zeta000);\nbvAssign $1v_LHLH (bvVar zeta000);\nbvAssign $1v_LHHL (bvVar zeta000);\nbvAssign $1v_LHHH (bvVar zeta000);\nbvAssign $1v_HLLL (bvVar zeta000);\nbvAssign $1v_HLLH (bvVar zeta000);\nbvAssign $1v_HLHL (bvVar zeta000);\nbvAssign $1v_HLHH (bvVar zeta000);\nbvAssign $1v_HHLL (bvVar zeta000);\nbvAssign $1v_HHLH (bvVar zeta000);\nbvAssign $1v_HHHL (bvVar zeta000);\nbvAssign $1v_HHHH (bvVar zeta000)
+#! vmovdqa 0x20\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta020);\nbvAssign $1v_LLLH (bvVar zeta020);\nbvAssign $1v_LLHL (bvVar zeta020);\nbvAssign $1v_LLHH (bvVar zeta020);\nbvAssign $1v_LHLL (bvVar zeta020);\nbvAssign $1v_LHLH (bvVar zeta020);\nbvAssign $1v_LHHL (bvVar zeta020);\nbvAssign $1v_LHHH (bvVar zeta020);\nbvAssign $1v_HLLL (bvVar zeta020);\nbvAssign $1v_HLLH (bvVar zeta020);\nbvAssign $1v_HLHL (bvVar zeta020);\nbvAssign $1v_HLHH (bvVar zeta020);\nbvAssign $1v_HHLL (bvVar zeta020);\nbvAssign $1v_HHLH (bvVar zeta020);\nbvAssign $1v_HHHL (bvVar zeta020);\nbvAssign $1v_HHHH (bvVar zeta020)
+#! vmovdqa 0x60\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta060);\nbvAssign $1v_LLLH (bvVar zeta060);\nbvAssign $1v_LLHL (bvVar zeta060);\nbvAssign $1v_LLHH (bvVar zeta060);\nbvAssign $1v_LHLL (bvVar zeta060);\nbvAssign $1v_LHLH (bvVar zeta060);\nbvAssign $1v_LHHL (bvVar zeta060);\nbvAssign $1v_LHHH (bvVar zeta060);\nbvAssign $1v_HLLL (bvVar zeta060);\nbvAssign $1v_HLLH (bvVar zeta060);\nbvAssign $1v_HLHL (bvVar zeta060);\nbvAssign $1v_HLHH (bvVar zeta060);\nbvAssign $1v_HHLL (bvVar zeta060);\nbvAssign $1v_HHLH (bvVar zeta060);\nbvAssign $1v_HHHL (bvVar zeta060);\nbvAssign $1v_HHHH (bvVar zeta060)
+#! vmovdqa 0x80\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta080);\nbvAssign $1v_LLLH (bvVar zeta080);\nbvAssign $1v_LLHL (bvVar zeta080);\nbvAssign $1v_LLHH (bvVar zeta080);\nbvAssign $1v_LHLL (bvVar zeta080);\nbvAssign $1v_LHLH (bvVar zeta080);\nbvAssign $1v_LHHL (bvVar zeta080);\nbvAssign $1v_LHHH (bvVar zeta080);\nbvAssign $1v_HLLL (bvVar zeta080);\nbvAssign $1v_HLLH (bvVar zeta080);\nbvAssign $1v_HLHL (bvVar zeta080);\nbvAssign $1v_HLHH (bvVar zeta080);\nbvAssign $1v_HHLL (bvVar zeta080);\nbvAssign $1v_HHLH (bvVar zeta080);\nbvAssign $1v_HHHL (bvVar zeta080);\nbvAssign $1v_HHHH (bvVar zeta080)
+#! vmovdqa 0xe0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta0e0);\nbvAssign $1v_LLLH (bvVar zeta0e0);\nbvAssign $1v_LLHL (bvVar zeta0e0);\nbvAssign $1v_LLHH (bvVar zeta0e0);\nbvAssign $1v_LHLL (bvVar zeta0e0);\nbvAssign $1v_LHLH (bvVar zeta0e0);\nbvAssign $1v_LHHL (bvVar zeta0e0);\nbvAssign $1v_LHHH (bvVar zeta0e0);\nbvAssign $1v_HLLL (bvVar zeta0e0);\nbvAssign $1v_HLLH (bvVar zeta0e0);\nbvAssign $1v_HLHL (bvVar zeta0e0);\nbvAssign $1v_HLHH (bvVar zeta0e0);\nbvAssign $1v_HHLL (bvVar zeta0e0);\nbvAssign $1v_HHLH (bvVar zeta0e0);\nbvAssign $1v_HHHL (bvVar zeta0e0);\nbvAssign $1v_HHHH (bvVar zeta0e0)
+#! vmovdqa 0x100\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta100);\nbvAssign $1v_LLLH (bvVar zeta100);\nbvAssign $1v_LLHL (bvVar zeta100);\nbvAssign $1v_LLHH (bvVar zeta100);\nbvAssign $1v_LHLL (bvVar zeta100);\nbvAssign $1v_LHLH (bvVar zeta100);\nbvAssign $1v_LHHL (bvVar zeta100);\nbvAssign $1v_LHHH (bvVar zeta100);\nbvAssign $1v_HLLL (bvVar zeta100);\nbvAssign $1v_HLLH (bvVar zeta100);\nbvAssign $1v_HLHL (bvVar zeta100);\nbvAssign $1v_HLHH (bvVar zeta100);\nbvAssign $1v_HHLL (bvVar zeta100);\nbvAssign $1v_HHLH (bvVar zeta100);\nbvAssign $1v_HHHL (bvVar zeta100);\nbvAssign $1v_HHHH (bvVar zeta100)
+#! vmovdqa 0x120\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta120);\nbvAssign $1v_LLLH (bvVar zeta120);\nbvAssign $1v_LLHL (bvVar zeta120);\nbvAssign $1v_LLHH (bvVar zeta120);\nbvAssign $1v_LHLL (bvVar zeta120);\nbvAssign $1v_LHLH (bvVar zeta120);\nbvAssign $1v_LHHL (bvVar zeta120);\nbvAssign $1v_LHHH (bvVar zeta120);\nbvAssign $1v_HLLL (bvVar zeta120);\nbvAssign $1v_HLLH (bvVar zeta120);\nbvAssign $1v_HLHL (bvVar zeta120);\nbvAssign $1v_HLHH (bvVar zeta120);\nbvAssign $1v_HHLL (bvVar zeta120);\nbvAssign $1v_HHLH (bvVar zeta120);\nbvAssign $1v_HHHL (bvVar zeta120);\nbvAssign $1v_HHHH (bvVar zeta120)
+#! vmovdqa 0x140\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta140);\nbvAssign $1v_LLLH (bvVar zeta140);\nbvAssign $1v_LLHL (bvVar zeta140);\nbvAssign $1v_LLHH (bvVar zeta140);\nbvAssign $1v_LHLL (bvVar zeta140);\nbvAssign $1v_LHLH (bvVar zeta140);\nbvAssign $1v_LHHL (bvVar zeta140);\nbvAssign $1v_LHHH (bvVar zeta140);\nbvAssign $1v_HLLL (bvVar zeta140);\nbvAssign $1v_HLLH (bvVar zeta140);\nbvAssign $1v_HLHL (bvVar zeta140);\nbvAssign $1v_HLHH (bvVar zeta140);\nbvAssign $1v_HHLL (bvVar zeta140);\nbvAssign $1v_HHLH (bvVar zeta140);\nbvAssign $1v_HHHL (bvVar zeta140);\nbvAssign $1v_HHHH (bvVar zeta140)
+#! vmovdqa 0x1e0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta1e0);\nbvAssign $1v_LLLH (bvVar zeta1e0);\nbvAssign $1v_LLHL (bvVar zeta1e0);\nbvAssign $1v_LLHH (bvVar zeta1e0);\nbvAssign $1v_LHLL (bvVar zeta1e0);\nbvAssign $1v_LHLH (bvVar zeta1e0);\nbvAssign $1v_LHHL (bvVar zeta1e0);\nbvAssign $1v_LHHH (bvVar zeta1e0);\nbvAssign $1v_HLLL (bvVar zeta1f0);\nbvAssign $1v_HLLH (bvVar zeta1f0);\nbvAssign $1v_HLHL (bvVar zeta1f0);\nbvAssign $1v_HLHH (bvVar zeta1f0);\nbvAssign $1v_HHLL (bvVar zeta1f0);\nbvAssign $1v_HHLH (bvVar zeta1f0);\nbvAssign $1v_HHHL (bvVar zeta1f0);\nbvAssign $1v_HHHH (bvVar zeta1f0)
+#! vmovdqa 0x200\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta200);\nbvAssign $1v_LLLH (bvVar zeta200);\nbvAssign $1v_LLHL (bvVar zeta200);\nbvAssign $1v_LLHH (bvVar zeta200);\nbvAssign $1v_LHLL (bvVar zeta200);\nbvAssign $1v_LHLH (bvVar zeta200);\nbvAssign $1v_LHHL (bvVar zeta200);\nbvAssign $1v_LHHH (bvVar zeta200);\nbvAssign $1v_HLLL (bvVar zeta210);\nbvAssign $1v_HLLH (bvVar zeta210);\nbvAssign $1v_HLHL (bvVar zeta210);\nbvAssign $1v_HLHH (bvVar zeta210);\nbvAssign $1v_HHLL (bvVar zeta210);\nbvAssign $1v_HHLH (bvVar zeta210);\nbvAssign $1v_HHHL (bvVar zeta210);\nbvAssign $1v_HHHH (bvVar zeta210)
+#! vmovdqa 0x220\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta220);\nbvAssign $1v_LLLH (bvVar zeta220);\nbvAssign $1v_LLHL (bvVar zeta220);\nbvAssign $1v_LLHH (bvVar zeta220);\nbvAssign $1v_LHLL (bvVar zeta220);\nbvAssign $1v_LHLH (bvVar zeta220);\nbvAssign $1v_LHHL (bvVar zeta220);\nbvAssign $1v_LHHH (bvVar zeta220);\nbvAssign $1v_HLLL (bvVar zeta230);\nbvAssign $1v_HLLH (bvVar zeta230);\nbvAssign $1v_HLHL (bvVar zeta230);\nbvAssign $1v_HLHH (bvVar zeta230);\nbvAssign $1v_HHLL (bvVar zeta230);\nbvAssign $1v_HHLH (bvVar zeta230);\nbvAssign $1v_HHHL (bvVar zeta230);\nbvAssign $1v_HHHH (bvVar zeta230)
+#! vmovdqa 0x240\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta240);\nbvAssign $1v_LLLH (bvVar zeta240);\nbvAssign $1v_LLHL (bvVar zeta240);\nbvAssign $1v_LLHH (bvVar zeta240);\nbvAssign $1v_LHLL (bvVar zeta240);\nbvAssign $1v_LHLH (bvVar zeta240);\nbvAssign $1v_LHHL (bvVar zeta240);\nbvAssign $1v_LHHH (bvVar zeta240);\nbvAssign $1v_HLLL (bvVar zeta250);\nbvAssign $1v_HLLH (bvVar zeta250);\nbvAssign $1v_HLHL (bvVar zeta250);\nbvAssign $1v_HLHH (bvVar zeta250);\nbvAssign $1v_HHLL (bvVar zeta250);\nbvAssign $1v_HHLH (bvVar zeta250);\nbvAssign $1v_HHHL (bvVar zeta250);\nbvAssign $1v_HHHH (bvVar zeta250)
+#! vmovdqa 0x2e0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta2e0);\nbvAssign $1v_LLLH (bvVar zeta2e0);\nbvAssign $1v_LLHL (bvVar zeta2e0);\nbvAssign $1v_LLHH (bvVar zeta2e0);\nbvAssign $1v_LHLL (bvVar zeta2e8);\nbvAssign $1v_LHLH (bvVar zeta2e8);\nbvAssign $1v_LHHL (bvVar zeta2e8);\nbvAssign $1v_LHHH (bvVar zeta2e8);\nbvAssign $1v_HLLL (bvVar zeta2f0);\nbvAssign $1v_HLLH (bvVar zeta2f0);\nbvAssign $1v_HLHL (bvVar zeta2f0);\nbvAssign $1v_HLHH (bvVar zeta2f0);\nbvAssign $1v_HHLL (bvVar zeta2f8);\nbvAssign $1v_HHLH (bvVar zeta2f8);\nbvAssign $1v_HHHL (bvVar zeta2f8);\nbvAssign $1v_HHHH (bvVar zeta2f8)
+#! vmovdqa 0x300\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta300);\nbvAssign $1v_LLLH (bvVar zeta300);\nbvAssign $1v_LLHL (bvVar zeta300);\nbvAssign $1v_LLHH (bvVar zeta300);\nbvAssign $1v_LHLL (bvVar zeta308);\nbvAssign $1v_LHLH (bvVar zeta308);\nbvAssign $1v_LHHL (bvVar zeta308);\nbvAssign $1v_LHHH (bvVar zeta308);\nbvAssign $1v_HLLL (bvVar zeta310);\nbvAssign $1v_HLLH (bvVar zeta310);\nbvAssign $1v_HLHL (bvVar zeta310);\nbvAssign $1v_HLHH (bvVar zeta310);\nbvAssign $1v_HHLL (bvVar zeta318);\nbvAssign $1v_HHLH (bvVar zeta318);\nbvAssign $1v_HHHL (bvVar zeta318);\nbvAssign $1v_HHHH (bvVar zeta318)
+#! vmovdqa 0x320\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta320);\nbvAssign $1v_LLLH (bvVar zeta320);\nbvAssign $1v_LLHL (bvVar zeta320);\nbvAssign $1v_LLHH (bvVar zeta320);\nbvAssign $1v_LHLL (bvVar zeta328);\nbvAssign $1v_LHLH (bvVar zeta328);\nbvAssign $1v_LHHL (bvVar zeta328);\nbvAssign $1v_LHHH (bvVar zeta328);\nbvAssign $1v_HLLL (bvVar zeta330);\nbvAssign $1v_HLLH (bvVar zeta330);\nbvAssign $1v_HLHL (bvVar zeta330);\nbvAssign $1v_HLHH (bvVar zeta330);\nbvAssign $1v_HHLL (bvVar zeta338);\nbvAssign $1v_HHLH (bvVar zeta338);\nbvAssign $1v_HHHL (bvVar zeta338);\nbvAssign $1v_HHHH (bvVar zeta338)
+#! vmovdqa 0x340\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta340);\nbvAssign $1v_LLLH (bvVar zeta340);\nbvAssign $1v_LLHL (bvVar zeta340);\nbvAssign $1v_LLHH (bvVar zeta340);\nbvAssign $1v_LHLL (bvVar zeta348);\nbvAssign $1v_LHLH (bvVar zeta348);\nbvAssign $1v_LHHL (bvVar zeta348);\nbvAssign $1v_LHHH (bvVar zeta348);\nbvAssign $1v_HLLL (bvVar zeta350);\nbvAssign $1v_HLLH (bvVar zeta350);\nbvAssign $1v_HLHL (bvVar zeta350);\nbvAssign $1v_HLHH (bvVar zeta350);\nbvAssign $1v_HHLL (bvVar zeta358);\nbvAssign $1v_HHLH (bvVar zeta358);\nbvAssign $1v_HHHL (bvVar zeta358);\nbvAssign $1v_HHHH (bvVar zeta358)
+#! vmovdqa 0x3e0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta3e0);\nbvAssign $1v_LLLH (bvVar zeta3e0);\nbvAssign $1v_LLHL (bvVar zeta3e4);\nbvAssign $1v_LLHH (bvVar zeta3e4);\nbvAssign $1v_LHLL (bvVar zeta3e8);\nbvAssign $1v_LHLH (bvVar zeta3e8);\nbvAssign $1v_LHHL (bvVar zeta3ec);\nbvAssign $1v_LHHH (bvVar zeta3ec);\nbvAssign $1v_HLLL (bvVar zeta3f0);\nbvAssign $1v_HLLH (bvVar zeta3f0);\nbvAssign $1v_HLHL (bvVar zeta3f4);\nbvAssign $1v_HLHH (bvVar zeta3f4);\nbvAssign $1v_HHLL (bvVar zeta3f8);\nbvAssign $1v_HHLH (bvVar zeta3f8);\nbvAssign $1v_HHHL (bvVar zeta3fc);\nbvAssign $1v_HHHH (bvVar zeta3fc)
+#! vmovdqa 0x400\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta400);\nbvAssign $1v_LLLH (bvVar zeta400);\nbvAssign $1v_LLHL (bvVar zeta404);\nbvAssign $1v_LLHH (bvVar zeta404);\nbvAssign $1v_LHLL (bvVar zeta408);\nbvAssign $1v_LHLH (bvVar zeta408);\nbvAssign $1v_LHHL (bvVar zeta40c);\nbvAssign $1v_LHHH (bvVar zeta40c);\nbvAssign $1v_HLLL (bvVar zeta410);\nbvAssign $1v_HLLH (bvVar zeta410);\nbvAssign $1v_HLHL (bvVar zeta414);\nbvAssign $1v_HLHH (bvVar zeta414);\nbvAssign $1v_HHLL (bvVar zeta418);\nbvAssign $1v_HHLH (bvVar zeta418);\nbvAssign $1v_HHHL (bvVar zeta41c);\nbvAssign $1v_HHHH (bvVar zeta41c)
+#! vmovdqa 0x420\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta420);\nbvAssign $1v_LLLH (bvVar zeta420);\nbvAssign $1v_LLHL (bvVar zeta424);\nbvAssign $1v_LLHH (bvVar zeta424);\nbvAssign $1v_LHLL (bvVar zeta428);\nbvAssign $1v_LHLH (bvVar zeta428);\nbvAssign $1v_LHHL (bvVar zeta42c);\nbvAssign $1v_LHHH (bvVar zeta42c);\nbvAssign $1v_HLLL (bvVar zeta430);\nbvAssign $1v_HLLH (bvVar zeta430);\nbvAssign $1v_HLHL (bvVar zeta434);\nbvAssign $1v_HLHH (bvVar zeta434);\nbvAssign $1v_HHLL (bvVar zeta438);\nbvAssign $1v_HHLH (bvVar zeta438);\nbvAssign $1v_HHHL (bvVar zeta43c);\nbvAssign $1v_HHHH (bvVar zeta43c)
+#! vmovdqa 0x440\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta440);\nbvAssign $1v_LLLH (bvVar zeta440);\nbvAssign $1v_LLHL (bvVar zeta444);\nbvAssign $1v_LLHH (bvVar zeta444);\nbvAssign $1v_LHLL (bvVar zeta448);\nbvAssign $1v_LHLH (bvVar zeta448);\nbvAssign $1v_LHHL (bvVar zeta44c);\nbvAssign $1v_LHHH (bvVar zeta44c);\nbvAssign $1v_HLLL (bvVar zeta450);\nbvAssign $1v_HLLH (bvVar zeta450);\nbvAssign $1v_HLHL (bvVar zeta454);\nbvAssign $1v_HLHH (bvVar zeta454);\nbvAssign $1v_HHLL (bvVar zeta458);\nbvAssign $1v_HHLH (bvVar zeta458);\nbvAssign $1v_HHHL (bvVar zeta45c);\nbvAssign $1v_HHHH (bvVar zeta45c)
+#! vmovdqa 0x4e0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta4e0);\nbvAssign $1v_LLLH (bvVar zeta4e2);\nbvAssign $1v_LLHL (bvVar zeta4e4);\nbvAssign $1v_LLHH (bvVar zeta4e6);\nbvAssign $1v_LHLL (bvVar zeta4e8);\nbvAssign $1v_LHLH (bvVar zeta4ea);\nbvAssign $1v_LHHL (bvVar zeta4ec);\nbvAssign $1v_LHHH (bvVar zeta4ee);\nbvAssign $1v_HLLL (bvVar zeta4f0);\nbvAssign $1v_HLLH (bvVar zeta4f2);\nbvAssign $1v_HLHL (bvVar zeta4f4);\nbvAssign $1v_HLHH (bvVar zeta4f6);\nbvAssign $1v_HHLL (bvVar zeta4f8);\nbvAssign $1v_HHLH (bvVar zeta4fa);\nbvAssign $1v_HHHL (bvVar zeta4fc);\nbvAssign $1v_HHHH (bvVar zeta4fe)
+#! vmovdqa 0x500\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta500);\nbvAssign $1v_LLLH (bvVar zeta502);\nbvAssign $1v_LLHL (bvVar zeta504);\nbvAssign $1v_LLHH (bvVar zeta506);\nbvAssign $1v_LHLL (bvVar zeta508);\nbvAssign $1v_LHLH (bvVar zeta50a);\nbvAssign $1v_LHHL (bvVar zeta50c);\nbvAssign $1v_LHHH (bvVar zeta50e);\nbvAssign $1v_HLLL (bvVar zeta510);\nbvAssign $1v_HLLH (bvVar zeta512);\nbvAssign $1v_HLHL (bvVar zeta514);\nbvAssign $1v_HLHH (bvVar zeta516);\nbvAssign $1v_HHLL (bvVar zeta518);\nbvAssign $1v_HHLH (bvVar zeta51a);\nbvAssign $1v_HHHL (bvVar zeta51c);\nbvAssign $1v_HHHH (bvVar zeta51e)
+#! vmovdqa 0x520\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta520);\nbvAssign $1v_LLLH (bvVar zeta522);\nbvAssign $1v_LLHL (bvVar zeta524);\nbvAssign $1v_LLHH (bvVar zeta526);\nbvAssign $1v_LHLL (bvVar zeta528);\nbvAssign $1v_LHLH (bvVar zeta52a);\nbvAssign $1v_LHHL (bvVar zeta52c);\nbvAssign $1v_LHHH (bvVar zeta52e);\nbvAssign $1v_HLLL (bvVar zeta530);\nbvAssign $1v_HLLH (bvVar zeta532);\nbvAssign $1v_HLHL (bvVar zeta534);\nbvAssign $1v_HLHH (bvVar zeta536);\nbvAssign $1v_HHLL (bvVar zeta538);\nbvAssign $1v_HHLH (bvVar zeta53a);\nbvAssign $1v_HHHL (bvVar zeta53c);\nbvAssign $1v_HHHH (bvVar zeta53e)
+#! vmovdqa 0x540\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta540);\nbvAssign $1v_LLLH (bvVar zeta542);\nbvAssign $1v_LLHL (bvVar zeta544);\nbvAssign $1v_LLHH (bvVar zeta546);\nbvAssign $1v_LHLL (bvVar zeta548);\nbvAssign $1v_LHLH (bvVar zeta54a);\nbvAssign $1v_LHHL (bvVar zeta54c);\nbvAssign $1v_LHHH (bvVar zeta54e);\nbvAssign $1v_HLLL (bvVar zeta550);\nbvAssign $1v_HLLH (bvVar zeta552);\nbvAssign $1v_HLHL (bvVar zeta554);\nbvAssign $1v_HLHH (bvVar zeta556);\nbvAssign $1v_HHLL (bvVar zeta558);\nbvAssign $1v_HHLH (bvVar zeta55a);\nbvAssign $1v_HHHL (bvVar zeta55c);\nbvAssign $1v_HHHH (bvVar zeta55e)
+#! vmovdqa 0x40\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta040);\nbvAssign $1v_LLLH (bvVar zeta040);\nbvAssign $1v_LLHL (bvVar zeta040);\nbvAssign $1v_LLHH (bvVar zeta040);\nbvAssign $1v_LHLL (bvVar zeta040);\nbvAssign $1v_LHLH (bvVar zeta040);\nbvAssign $1v_LHHL (bvVar zeta040);\nbvAssign $1v_LHHH (bvVar zeta040);\nbvAssign $1v_HLLL (bvVar zeta040);\nbvAssign $1v_HLLH (bvVar zeta040);\nbvAssign $1v_HLHL (bvVar zeta040);\nbvAssign $1v_HLHH (bvVar zeta040);\nbvAssign $1v_HHLL (bvVar zeta040);\nbvAssign $1v_HHLH (bvVar zeta040);\nbvAssign $1v_HHHL (bvVar zeta040);\nbvAssign $1v_HHHH (bvVar zeta040)
+#! vmovdqa 0xa0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta0a0);\nbvAssign $1v_LLLH (bvVar zeta0a0);\nbvAssign $1v_LLHL (bvVar zeta0a0);\nbvAssign $1v_LLHH (bvVar zeta0a0);\nbvAssign $1v_LHLL (bvVar zeta0a0);\nbvAssign $1v_LHLH (bvVar zeta0a0);\nbvAssign $1v_LHHL (bvVar zeta0a0);\nbvAssign $1v_LHHH (bvVar zeta0a0);\nbvAssign $1v_HLLL (bvVar zeta0a0);\nbvAssign $1v_HLLH (bvVar zeta0a0);\nbvAssign $1v_HLHL (bvVar zeta0a0);\nbvAssign $1v_HLHH (bvVar zeta0a0);\nbvAssign $1v_HHLL (bvVar zeta0a0);\nbvAssign $1v_HHLH (bvVar zeta0a0);\nbvAssign $1v_HHHL (bvVar zeta0a0);\nbvAssign $1v_HHHH (bvVar zeta0a0)
+#! vmovdqa 0xc0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta0c0);\nbvAssign $1v_LLLH (bvVar zeta0c0);\nbvAssign $1v_LLHL (bvVar zeta0c0);\nbvAssign $1v_LLHH (bvVar zeta0c0);\nbvAssign $1v_LHLL (bvVar zeta0c0);\nbvAssign $1v_LHLH (bvVar zeta0c0);\nbvAssign $1v_LHHL (bvVar zeta0c0);\nbvAssign $1v_LHHH (bvVar zeta0c0);\nbvAssign $1v_HLLL (bvVar zeta0c0);\nbvAssign $1v_HLLH (bvVar zeta0c0);\nbvAssign $1v_HLHL (bvVar zeta0c0);\nbvAssign $1v_HLHH (bvVar zeta0c0);\nbvAssign $1v_HHLL (bvVar zeta0c0);\nbvAssign $1v_HHLH (bvVar zeta0c0);\nbvAssign $1v_HHHL (bvVar zeta0c0);\nbvAssign $1v_HHHH (bvVar zeta0c0)
+#! vmovdqa 0x160\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta160);\nbvAssign $1v_LLLH (bvVar zeta160);\nbvAssign $1v_LLHL (bvVar zeta160);\nbvAssign $1v_LLHH (bvVar zeta160);\nbvAssign $1v_LHLL (bvVar zeta160);\nbvAssign $1v_LHLH (bvVar zeta160);\nbvAssign $1v_LHHL (bvVar zeta160);\nbvAssign $1v_LHHH (bvVar zeta160);\nbvAssign $1v_HLLL (bvVar zeta160);\nbvAssign $1v_HLLH (bvVar zeta160);\nbvAssign $1v_HLHL (bvVar zeta160);\nbvAssign $1v_HLHH (bvVar zeta160);\nbvAssign $1v_HHLL (bvVar zeta160);\nbvAssign $1v_HHLH (bvVar zeta160);\nbvAssign $1v_HHHL (bvVar zeta160);\nbvAssign $1v_HHHH (bvVar zeta160)
+#! vmovdqa 0x180\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta180);\nbvAssign $1v_LLLH (bvVar zeta180);\nbvAssign $1v_LLHL (bvVar zeta180);\nbvAssign $1v_LLHH (bvVar zeta180);\nbvAssign $1v_LHLL (bvVar zeta180);\nbvAssign $1v_LHLH (bvVar zeta180);\nbvAssign $1v_LHHL (bvVar zeta180);\nbvAssign $1v_LHHH (bvVar zeta180);\nbvAssign $1v_HLLL (bvVar zeta180);\nbvAssign $1v_HLLH (bvVar zeta180);\nbvAssign $1v_HLHL (bvVar zeta180);\nbvAssign $1v_HLHH (bvVar zeta180);\nbvAssign $1v_HHLL (bvVar zeta180);\nbvAssign $1v_HHLH (bvVar zeta180);\nbvAssign $1v_HHHL (bvVar zeta180);\nbvAssign $1v_HHHH (bvVar zeta180)
+#! vmovdqa 0x1a0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta1a0);\nbvAssign $1v_LLLH (bvVar zeta1a0);\nbvAssign $1v_LLHL (bvVar zeta1a0);\nbvAssign $1v_LLHH (bvVar zeta1a0);\nbvAssign $1v_LHLL (bvVar zeta1a0);\nbvAssign $1v_LHLH (bvVar zeta1a0);\nbvAssign $1v_LHHL (bvVar zeta1a0);\nbvAssign $1v_LHHH (bvVar zeta1a0);\nbvAssign $1v_HLLL (bvVar zeta1a0);\nbvAssign $1v_HLLH (bvVar zeta1a0);\nbvAssign $1v_HLHL (bvVar zeta1a0);\nbvAssign $1v_HLHH (bvVar zeta1a0);\nbvAssign $1v_HHLL (bvVar zeta1a0);\nbvAssign $1v_HHLH (bvVar zeta1a0);\nbvAssign $1v_HHHL (bvVar zeta1a0);\nbvAssign $1v_HHHH (bvVar zeta1a0)
+#! vmovdqa 0x1c0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta1c0);\nbvAssign $1v_LLLH (bvVar zeta1c0);\nbvAssign $1v_LLHL (bvVar zeta1c0);\nbvAssign $1v_LLHH (bvVar zeta1c0);\nbvAssign $1v_LHLL (bvVar zeta1c0);\nbvAssign $1v_LHLH (bvVar zeta1c0);\nbvAssign $1v_LHHL (bvVar zeta1c0);\nbvAssign $1v_LHHH (bvVar zeta1c0);\nbvAssign $1v_HLLL (bvVar zeta1c0);\nbvAssign $1v_HLLH (bvVar zeta1c0);\nbvAssign $1v_HLHL (bvVar zeta1c0);\nbvAssign $1v_HLHH (bvVar zeta1c0);\nbvAssign $1v_HHLL (bvVar zeta1c0);\nbvAssign $1v_HHLH (bvVar zeta1c0);\nbvAssign $1v_HHHL (bvVar zeta1c0);\nbvAssign $1v_HHHH (bvVar zeta1c0)
+#! vmovdqa 0x260\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta260);\nbvAssign $1v_LLLH (bvVar zeta260);\nbvAssign $1v_LLHL (bvVar zeta260);\nbvAssign $1v_LLHH (bvVar zeta260);\nbvAssign $1v_LHLL (bvVar zeta260);\nbvAssign $1v_LHLH (bvVar zeta260);\nbvAssign $1v_LHHL (bvVar zeta260);\nbvAssign $1v_LHHH (bvVar zeta260);\nbvAssign $1v_HLLL (bvVar zeta270);\nbvAssign $1v_HLLH (bvVar zeta270);\nbvAssign $1v_HLHL (bvVar zeta270);\nbvAssign $1v_HLHH (bvVar zeta270);\nbvAssign $1v_HHLL (bvVar zeta270);\nbvAssign $1v_HHLH (bvVar zeta270);\nbvAssign $1v_HHHL (bvVar zeta270);\nbvAssign $1v_HHHH (bvVar zeta270)
+#! vmovdqa 0x280\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta280);\nbvAssign $1v_LLLH (bvVar zeta280);\nbvAssign $1v_LLHL (bvVar zeta280);\nbvAssign $1v_LLHH (bvVar zeta280);\nbvAssign $1v_LHLL (bvVar zeta280);\nbvAssign $1v_LHLH (bvVar zeta280);\nbvAssign $1v_LHHL (bvVar zeta280);\nbvAssign $1v_LHHH (bvVar zeta280);\nbvAssign $1v_HLLL (bvVar zeta290);\nbvAssign $1v_HLLH (bvVar zeta290);\nbvAssign $1v_HLHL (bvVar zeta290);\nbvAssign $1v_HLHH (bvVar zeta290);\nbvAssign $1v_HHLL (bvVar zeta290);\nbvAssign $1v_HHLH (bvVar zeta290);\nbvAssign $1v_HHHL (bvVar zeta290);\nbvAssign $1v_HHHH (bvVar zeta290)
+#! vmovdqa 0x2a0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta2a0);\nbvAssign $1v_LLLH (bvVar zeta2a0);\nbvAssign $1v_LLHL (bvVar zeta2a0);\nbvAssign $1v_LLHH (bvVar zeta2a0);\nbvAssign $1v_LHLL (bvVar zeta2a0);\nbvAssign $1v_LHLH (bvVar zeta2a0);\nbvAssign $1v_LHHL (bvVar zeta2a0);\nbvAssign $1v_LHHH (bvVar zeta2a0);\nbvAssign $1v_HLLL (bvVar zeta2b0);\nbvAssign $1v_HLLH (bvVar zeta2b0);\nbvAssign $1v_HLHL (bvVar zeta2b0);\nbvAssign $1v_HLHH (bvVar zeta2b0);\nbvAssign $1v_HHLL (bvVar zeta2b0);\nbvAssign $1v_HHLH (bvVar zeta2b0);\nbvAssign $1v_HHHL (bvVar zeta2b0);\nbvAssign $1v_HHHH (bvVar zeta2b0)
+#! vmovdqa 0x2c0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta2c0);\nbvAssign $1v_LLLH (bvVar zeta2c0);\nbvAssign $1v_LLHL (bvVar zeta2c0);\nbvAssign $1v_LLHH (bvVar zeta2c0);\nbvAssign $1v_LHLL (bvVar zeta2c0);\nbvAssign $1v_LHLH (bvVar zeta2c0);\nbvAssign $1v_LHHL (bvVar zeta2c0);\nbvAssign $1v_LHHH (bvVar zeta2c0);\nbvAssign $1v_HLLL (bvVar zeta2d0);\nbvAssign $1v_HLLH (bvVar zeta2d0);\nbvAssign $1v_HLHL (bvVar zeta2d0);\nbvAssign $1v_HLHH (bvVar zeta2d0);\nbvAssign $1v_HHLL (bvVar zeta2d0);\nbvAssign $1v_HHLH (bvVar zeta2d0);\nbvAssign $1v_HHHL (bvVar zeta2d0);\nbvAssign $1v_HHHH (bvVar zeta2d0)
+#! vmovdqa 0x360\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta360);\nbvAssign $1v_LLLH (bvVar zeta360);\nbvAssign $1v_LLHL (bvVar zeta360);\nbvAssign $1v_LLHH (bvVar zeta360);\nbvAssign $1v_LHLL (bvVar zeta368);\nbvAssign $1v_LHLH (bvVar zeta368);\nbvAssign $1v_LHHL (bvVar zeta368);\nbvAssign $1v_LHHH (bvVar zeta368);\nbvAssign $1v_HLLL (bvVar zeta370);\nbvAssign $1v_HLLH (bvVar zeta370);\nbvAssign $1v_HLHL (bvVar zeta370);\nbvAssign $1v_HLHH (bvVar zeta370);\nbvAssign $1v_HHLL (bvVar zeta378);\nbvAssign $1v_HHLH (bvVar zeta378);\nbvAssign $1v_HHHL (bvVar zeta378);\nbvAssign $1v_HHHH (bvVar zeta378)
+#! vmovdqa 0x380\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta380);\nbvAssign $1v_LLLH (bvVar zeta380);\nbvAssign $1v_LLHL (bvVar zeta380);\nbvAssign $1v_LLHH (bvVar zeta380);\nbvAssign $1v_LHLL (bvVar zeta388);\nbvAssign $1v_LHLH (bvVar zeta388);\nbvAssign $1v_LHHL (bvVar zeta388);\nbvAssign $1v_LHHH (bvVar zeta388);\nbvAssign $1v_HLLL (bvVar zeta390);\nbvAssign $1v_HLLH (bvVar zeta390);\nbvAssign $1v_HLHL (bvVar zeta390);\nbvAssign $1v_HLHH (bvVar zeta390);\nbvAssign $1v_HHLL (bvVar zeta398);\nbvAssign $1v_HHLH (bvVar zeta398);\nbvAssign $1v_HHHL (bvVar zeta398);\nbvAssign $1v_HHHH (bvVar zeta398)
+#! vmovdqa 0x3a0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta3a0);\nbvAssign $1v_LLLH (bvVar zeta3a0);\nbvAssign $1v_LLHL (bvVar zeta3a0);\nbvAssign $1v_LLHH (bvVar zeta3a0);\nbvAssign $1v_LHLL (bvVar zeta3a8);\nbvAssign $1v_LHLH (bvVar zeta3a8);\nbvAssign $1v_LHHL (bvVar zeta3a8);\nbvAssign $1v_LHHH (bvVar zeta3a8);\nbvAssign $1v_HLLL (bvVar zeta3b0);\nbvAssign $1v_HLLH (bvVar zeta3b0);\nbvAssign $1v_HLHL (bvVar zeta3b0);\nbvAssign $1v_HLHH (bvVar zeta3b0);\nbvAssign $1v_HHLL (bvVar zeta3b8);\nbvAssign $1v_HHLH (bvVar zeta3b8);\nbvAssign $1v_HHHL (bvVar zeta3b8);\nbvAssign $1v_HHHH (bvVar zeta3b8)
+#! vmovdqa 0x3c0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta3c0);\nbvAssign $1v_LLLH (bvVar zeta3c0);\nbvAssign $1v_LLHL (bvVar zeta3c0);\nbvAssign $1v_LLHH (bvVar zeta3c0);\nbvAssign $1v_LHLL (bvVar zeta3c8);\nbvAssign $1v_LHLH (bvVar zeta3c8);\nbvAssign $1v_LHHL (bvVar zeta3c8);\nbvAssign $1v_LHHH (bvVar zeta3c8);\nbvAssign $1v_HLLL (bvVar zeta3d0);\nbvAssign $1v_HLLH (bvVar zeta3d0);\nbvAssign $1v_HLHL (bvVar zeta3d0);\nbvAssign $1v_HLHH (bvVar zeta3d0);\nbvAssign $1v_HHLL (bvVar zeta3d8);\nbvAssign $1v_HHLH (bvVar zeta3d8);\nbvAssign $1v_HHHL (bvVar zeta3d8);\nbvAssign $1v_HHHH (bvVar zeta3d8)
+#! vmovdqa 0x460\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta460);\nbvAssign $1v_LLLH (bvVar zeta460);\nbvAssign $1v_LLHL (bvVar zeta464);\nbvAssign $1v_LLHH (bvVar zeta464);\nbvAssign $1v_LHLL (bvVar zeta468);\nbvAssign $1v_LHLH (bvVar zeta468);\nbvAssign $1v_LHHL (bvVar zeta46c);\nbvAssign $1v_LHHH (bvVar zeta46c);\nbvAssign $1v_HLLL (bvVar zeta470);\nbvAssign $1v_HLLH (bvVar zeta470);\nbvAssign $1v_HLHL (bvVar zeta474);\nbvAssign $1v_HLHH (bvVar zeta474);\nbvAssign $1v_HHLL (bvVar zeta478);\nbvAssign $1v_HHLH (bvVar zeta478);\nbvAssign $1v_HHHL (bvVar zeta47c);\nbvAssign $1v_HHHH (bvVar zeta47c)
+#! vmovdqa 0x480\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta480);\nbvAssign $1v_LLLH (bvVar zeta480);\nbvAssign $1v_LLHL (bvVar zeta484);\nbvAssign $1v_LLHH (bvVar zeta484);\nbvAssign $1v_LHLL (bvVar zeta488);\nbvAssign $1v_LHLH (bvVar zeta488);\nbvAssign $1v_LHHL (bvVar zeta48c);\nbvAssign $1v_LHHH (bvVar zeta48c);\nbvAssign $1v_HLLL (bvVar zeta490);\nbvAssign $1v_HLLH (bvVar zeta490);\nbvAssign $1v_HLHL (bvVar zeta494);\nbvAssign $1v_HLHH (bvVar zeta494);\nbvAssign $1v_HHLL (bvVar zeta498);\nbvAssign $1v_HHLH (bvVar zeta498);\nbvAssign $1v_HHHL (bvVar zeta49c);\nbvAssign $1v_HHHH (bvVar zeta49c)
+#! vmovdqa 0x4a0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta4a0);\nbvAssign $1v_LLLH (bvVar zeta4a0);\nbvAssign $1v_LLHL (bvVar zeta4a4);\nbvAssign $1v_LLHH (bvVar zeta4a4);\nbvAssign $1v_LHLL (bvVar zeta4a8);\nbvAssign $1v_LHLH (bvVar zeta4a8);\nbvAssign $1v_LHHL (bvVar zeta4ac);\nbvAssign $1v_LHHH (bvVar zeta4ac);\nbvAssign $1v_HLLL (bvVar zeta4b0);\nbvAssign $1v_HLLH (bvVar zeta4b0);\nbvAssign $1v_HLHL (bvVar zeta4b4);\nbvAssign $1v_HLHH (bvVar zeta4b4);\nbvAssign $1v_HHLL (bvVar zeta4b8);\nbvAssign $1v_HHLH (bvVar zeta4b8);\nbvAssign $1v_HHHL (bvVar zeta4bc);\nbvAssign $1v_HHHH (bvVar zeta4bc)
+#! vmovdqa 0x4c0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta4c0);\nbvAssign $1v_LLLH (bvVar zeta4c0);\nbvAssign $1v_LLHL (bvVar zeta4c4);\nbvAssign $1v_LLHH (bvVar zeta4c4);\nbvAssign $1v_LHLL (bvVar zeta4c8);\nbvAssign $1v_LHLH (bvVar zeta4c8);\nbvAssign $1v_LHHL (bvVar zeta4cc);\nbvAssign $1v_LHHH (bvVar zeta4cc);\nbvAssign $1v_HLLL (bvVar zeta4d0);\nbvAssign $1v_HLLH (bvVar zeta4d0);\nbvAssign $1v_HLHL (bvVar zeta4d4);\nbvAssign $1v_HLHH (bvVar zeta4d4);\nbvAssign $1v_HHLL (bvVar zeta4d8);\nbvAssign $1v_HHLH (bvVar zeta4d8);\nbvAssign $1v_HHHL (bvVar zeta4dc);\nbvAssign $1v_HHHH (bvVar zeta4dc)
+#! vmovdqa 0x560\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta560);\nbvAssign $1v_LLLH (bvVar zeta562);\nbvAssign $1v_LLHL (bvVar zeta564);\nbvAssign $1v_LLHH (bvVar zeta566);\nbvAssign $1v_LHLL (bvVar zeta568);\nbvAssign $1v_LHLH (bvVar zeta56a);\nbvAssign $1v_LHHL (bvVar zeta56c);\nbvAssign $1v_LHHH (bvVar zeta56e);\nbvAssign $1v_HLLL (bvVar zeta570);\nbvAssign $1v_HLLH (bvVar zeta572);\nbvAssign $1v_HLHL (bvVar zeta574);\nbvAssign $1v_HLHH (bvVar zeta576);\nbvAssign $1v_HHLL (bvVar zeta578);\nbvAssign $1v_HHLH (bvVar zeta57a);\nbvAssign $1v_HHHL (bvVar zeta57c);\nbvAssign $1v_HHHH (bvVar zeta57e)
+#! vmovdqa 0x580\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta580);\nbvAssign $1v_LLLH (bvVar zeta582);\nbvAssign $1v_LLHL (bvVar zeta584);\nbvAssign $1v_LLHH (bvVar zeta586);\nbvAssign $1v_LHLL (bvVar zeta588);\nbvAssign $1v_LHLH (bvVar zeta58a);\nbvAssign $1v_LHHL (bvVar zeta58c);\nbvAssign $1v_LHHH (bvVar zeta58e);\nbvAssign $1v_HLLL (bvVar zeta590);\nbvAssign $1v_HLLH (bvVar zeta592);\nbvAssign $1v_HLHL (bvVar zeta594);\nbvAssign $1v_HLHH (bvVar zeta596);\nbvAssign $1v_HHLL (bvVar zeta598);\nbvAssign $1v_HHLH (bvVar zeta59a);\nbvAssign $1v_HHHL (bvVar zeta59c);\nbvAssign $1v_HHHH (bvVar zeta59e)
+#! vmovdqa 0x5a0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta5a0);\nbvAssign $1v_LLLH (bvVar zeta5a2);\nbvAssign $1v_LLHL (bvVar zeta5a4);\nbvAssign $1v_LLHH (bvVar zeta5a6);\nbvAssign $1v_LHLL (bvVar zeta5a8);\nbvAssign $1v_LHLH (bvVar zeta5aa);\nbvAssign $1v_LHHL (bvVar zeta5ac);\nbvAssign $1v_LHHH (bvVar zeta5ae);\nbvAssign $1v_HLLL (bvVar zeta5b0);\nbvAssign $1v_HLLH (bvVar zeta5b2);\nbvAssign $1v_HLHL (bvVar zeta5b4);\nbvAssign $1v_HLHH (bvVar zeta5b6);\nbvAssign $1v_HHLL (bvVar zeta5b8);\nbvAssign $1v_HHLH (bvVar zeta5ba);\nbvAssign $1v_HHHL (bvVar zeta5bc);\nbvAssign $1v_HHHH (bvVar zeta5be)
+#! vmovdqa 0x5c0\(%rsi\), $1v -> bvAssign $1v_LLLL (bvVar zeta5c0);\nbvAssign $1v_LLLH (bvVar zeta5c2);\nbvAssign $1v_LLHL (bvVar zeta5c4);\nbvAssign $1v_LLHH (bvVar zeta5c6);\nbvAssign $1v_LHLL (bvVar zeta5c8);\nbvAssign $1v_LHLH (bvVar zeta5ca);\nbvAssign $1v_LHHL (bvVar zeta5cc);\nbvAssign $1v_LHHH (bvVar zeta5ce);\nbvAssign $1v_HLLL (bvVar zeta5d0);\nbvAssign $1v_HLLH (bvVar zeta5d2);\nbvAssign $1v_HLHL (bvVar zeta5d4);\nbvAssign $1v_HLHH (bvVar zeta5d6);\nbvAssign $1v_HHLL (bvVar zeta5d8);\nbvAssign $1v_HHLH (bvVar zeta5da);\nbvAssign $1v_HHHL (bvVar zeta5dc);\nbvAssign $1v_HHHH (bvVar zeta5de)
+
+
+#ntt:
+# %rdi = 0x7fffffffb040
+# %rsi = 0x435b20
+# %rdx = 0x0
+# %rcx = 0x7fffffffa268
+# %r8  = 0x-679decc50cb6e834
+# %r9  = 0x554669ba3348558c
+#	mov    %rsp,%r11
+#	and    $0x1f,%r11
+#	sub    %r11,%rsp
+#	vmovdqa 0x3744(%rip),%ymm0        # 0x4362e0 <_16xqinv>#! EA = L0x4362e0
+#	vmovdqa 0x371c(%rip),%ymm1        # 0x4362c0 <_16xq>#! EA = L0x4362c0
+#	vmovdqa 0x36b4(%rip),%ymm2        # 0x436260 <_low_mask>#! EA = L0x436260
+	vmovdqa (%rsi),%ymm3                            #! EA = L0x435b20
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffb040
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffb060
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffb080
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffb0a0
+	vmovdqa 0x100(%rdi),%ymm8                       #! EA = L0x7fffffffb140
+	vmovdqa 0x120(%rdi),%ymm9                       #! EA = L0x7fffffffb160
+	vmovdqa 0x140(%rdi),%ymm10                      #! EA = L0x7fffffffb180
+	vmovdqa 0x160(%rdi),%ymm11                      #! EA = L0x7fffffffb1a0
+	vpmullw %ymm3,%ymm8,%ymm12 # multiply by precomputed zeta (low)
+	vpmulhw %ymm3,%ymm8,%ymm8 # multiply by precomputed zeta (high)
+	vpmullw %ymm3,%ymm9,%ymm13 # multiply by precomputed zeta (low)
+	vpmulhw %ymm3,%ymm9,%ymm9 # multiply by precomputed zeta (high)
+	vpmullw %ymm3,%ymm10,%ymm14 # multiply by precomputed zeta (low)
+	vpmulhw %ymm3,%ymm10,%ymm10 # multiply by precomputed zeta (high)
+	vpmullw %ymm3,%ymm11,%ymm15 # multiply by precomputed zeta (low)
+	vpmulhw %ymm3,%ymm11,%ymm11 # multiply by precomputed zeta (high)
+
+	# BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm12
+	vpsubw %ymm13,%ymm9,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+	# END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm8
+	vpsubw %ymm13,%ymm5,%ymm9
+	vpsubw %ymm14,%ymm6,%ymm10
+	vpsubw %ymm15,%ymm7,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm6,%ymm6
+	vpaddw %ymm15,%ymm7,%ymm7
+	vmovdqa %ymm4,(%rdi)                            #! EA = L0x7fffffffb040
+	vmovdqa %ymm5,0x20(%rdi)                        #! EA = L0x7fffffffb060
+	vmovdqa %ymm6,0x40(%rdi)                        #! EA = L0x7fffffffb080
+	vmovdqa %ymm7,0x60(%rdi)                        #! EA = L0x7fffffffb0a0
+	vmovdqa %ymm8,0x100(%rdi)                       #! EA = L0x7fffffffb140
+	vmovdqa %ymm9,0x120(%rdi)                       #! EA = L0x7fffffffb160
+	vmovdqa %ymm10,0x140(%rdi)                      #! EA = L0x7fffffffb180
+	vmovdqa %ymm11,0x160(%rdi)                      #! EA = L0x7fffffffb1a0
+#	add    $0x80,%rdi
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffb0c0
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffb0e0
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffb100
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffb120
+	vmovdqa 0x100(%rdi),%ymm8                       #! EA = L0x7fffffffb1c0
+	vmovdqa 0x120(%rdi),%ymm9                       #! EA = L0x7fffffffb1e0
+	vmovdqa 0x140(%rdi),%ymm10                      #! EA = L0x7fffffffb200
+	vmovdqa 0x160(%rdi),%ymm11                      #! EA = L0x7fffffffb220
+	vpmullw %ymm3,%ymm8,%ymm12
+	vpmulhw %ymm3,%ymm8,%ymm8
+	vpmullw %ymm3,%ymm9,%ymm13
+	vpmulhw %ymm3,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm12
+	vpsubw %ymm13,%ymm9,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm8
+	vpsubw %ymm13,%ymm5,%ymm9
+	vpsubw %ymm14,%ymm6,%ymm10
+	vpsubw %ymm15,%ymm7,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm6,%ymm6
+	vpaddw %ymm15,%ymm7,%ymm7
+	vmovdqa %ymm4,(%rdi)                            #! EA = L0x7fffffffb0c0
+	vmovdqa %ymm5,0x20(%rdi)                        #! EA = L0x7fffffffb0e0
+	vmovdqa %ymm6,0x40(%rdi)                        #! EA = L0x7fffffffb100
+	vmovdqa %ymm7,0x60(%rdi)                        #! EA = L0x7fffffffb120
+	vmovdqa %ymm8,0x100(%rdi)                       #! EA = L0x7fffffffb1c0
+	vmovdqa %ymm9,0x120(%rdi)                       #! EA = L0x7fffffffb1e0
+	vmovdqa %ymm10,0x140(%rdi)                      #! EA = L0x7fffffffb200
+	vmovdqa %ymm11,0x160(%rdi)                      #! EA = L0x7fffffffb220
+        # save old-0
+        # cuts-0
+#	sub    $0x80,%rdi
+	vmovdqa 0x20(%rsi),%ymm3                        #! EA = L0x435b40
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffb040
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffb060
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffb080
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffb0a0
+	vmovdqa 0x80(%rdi),%ymm8                        #! EA = L0x7fffffffb0c0
+	vmovdqa 0xa0(%rdi),%ymm9                        #! EA = L0x7fffffffb0e0
+	vmovdqa 0xc0(%rdi),%ymm10                       #! EA = L0x7fffffffb100
+	vmovdqa 0xe0(%rdi),%ymm11                       #! EA = L0x7fffffffb120
+	vpmullw %ymm3,%ymm8,%ymm12
+	vpmulhw %ymm3,%ymm8,%ymm8
+	vpmullw %ymm3,%ymm9,%ymm13
+	vpmulhw %ymm3,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm12
+	vpsubw %ymm13,%ymm9,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm8
+	vpsubw %ymm13,%ymm5,%ymm9
+	vpsubw %ymm14,%ymm6,%ymm10
+	vpsubw %ymm15,%ymm7,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm6,%ymm6
+	vpaddw %ymm15,%ymm7,%ymm7
+        # save old-1
+        # cuts-1
+	vmovdqa 0x60(%rsi),%ymm15                       #! EA = L0x435b80
+	vmovdqa 0x80(%rsi),%ymm3                        #! EA = L0x435ba0
+	vpmullw %ymm15,%ymm6,%ymm12
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmullw %ymm15,%ymm7,%ymm13
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BGEIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm6,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm6
+	vpsubw %ymm13,%ymm5,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm10
+	vpsubw %ymm15,%ymm9,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpaddw %ymm15,%ymm9,%ymm9
+        # save old-2
+        # cuts-2
+	vmovdqa 0xe0(%rsi),%ymm13                       #! EA = L0x435c00
+	vmovdqa 0x100(%rsi),%ymm14                      #! EA = L0x435c20
+	vmovdqa 0x120(%rsi),%ymm15                      #! EA = L0x435c40
+	vmovdqa 0x140(%rsi),%ymm3                       #! EA = L0x435c60
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsraw $0xd,%ymm4,%ymm5
+	vpsraw $0xd,%ymm6,%ymm7
+	vpsraw $0xd,%ymm8,%ymm9
+	vpsraw $0xd,%ymm10,%ymm11
+	vpand  %ymm2,%ymm4,%ymm4
+	vpand  %ymm2,%ymm6,%ymm6
+	vpand  %ymm2,%ymm8,%ymm8
+	vpand  %ymm2,%ymm10,%ymm10
+	vpsubw %ymm5,%ymm4,%ymm4
+	vpsubw %ymm7,%ymm6,%ymm6
+	vpsubw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm10
+	vpsllw $0x9,%ymm5,%ymm5
+	vpsllw $0x9,%ymm7,%ymm7
+	vpsllw $0x9,%ymm9,%ymm9
+	vpsllw $0x9,%ymm11,%ymm11
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpsubw %ymm15,%ymm10,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpaddw %ymm15,%ymm10,%ymm10
+        # save old-3
+        # cuts-3
+	vmovdqa 0x1e0(%rsi),%ymm12                      #! EA = L0x435d00
+	vmovdqa 0x200(%rsi),%ymm13                      #! EA = L0x435d20
+	vmovdqa 0x220(%rsi),%ymm14                      #! EA = L0x435d40
+	vmovdqa 0x240(%rsi),%ymm15                      #! EA = L0x435d60
+	vperm2i128 $0x2,%ymm4,%ymm5,%ymm3
+	vperm2i128 $0x13,%ymm4,%ymm5,%ymm4
+	vperm2i128 $0x2,%ymm6,%ymm7,%ymm5
+	vperm2i128 $0x13,%ymm6,%ymm7,%ymm6
+	vperm2i128 $0x2,%ymm8,%ymm9,%ymm7
+	vperm2i128 $0x13,%ymm8,%ymm9,%ymm8
+	vperm2i128 $0x2,%ymm10,%ymm11,%ymm9
+	vperm2i128 $0x13,%ymm10,%ymm11,%ymm10
+	vpmullw %ymm12,%ymm4,%ymm11
+	vpmulhw %ymm12,%ymm4,%ymm4
+	vpmullw %ymm13,%ymm6,%ymm12
+	vpmulhw %ymm13,%ymm6,%ymm6
+	vpmullw %ymm14,%ymm8,%ymm13
+	vpmulhw %ymm14,%ymm8,%ymm8
+	vpmullw %ymm15,%ymm10,%ymm14
+	vpmulhw %ymm15,%ymm10,%ymm10
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm4,%ymm11
+	vpsubw %ymm12,%ymm6,%ymm12
+	vpsubw %ymm13,%ymm8,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+        # END Montgomery reduction
+	vpsubw %ymm11,%ymm3,%ymm4
+	vpsubw %ymm12,%ymm5,%ymm6
+	vpsubw %ymm13,%ymm7,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm10
+	vpaddw %ymm11,%ymm3,%ymm3
+	vpaddw %ymm12,%ymm5,%ymm5
+	vpaddw %ymm13,%ymm7,%ymm7
+	vpaddw %ymm14,%ymm9,%ymm9
+        # save old-4
+        # cuts-4
+	vmovdqa 0x2e0(%rsi),%ymm12                      #! EA = L0x435e00
+	vmovdqa 0x300(%rsi),%ymm13                      #! EA = L0x435e20
+	vmovdqa 0x320(%rsi),%ymm14                      #! EA = L0x435e40
+	vmovdqa 0x340(%rsi),%ymm15                      #! EA = L0x435e60
+	vshufpd $0x0,%ymm4,%ymm3,%ymm11
+	vshufpd $0xf,%ymm4,%ymm3,%ymm3
+	vshufpd $0x0,%ymm6,%ymm5,%ymm4
+	vshufpd $0xf,%ymm6,%ymm5,%ymm5
+	vshufpd $0x0,%ymm8,%ymm7,%ymm6
+	vshufpd $0xf,%ymm8,%ymm7,%ymm7
+	vshufpd $0x0,%ymm10,%ymm9,%ymm8
+	vshufpd $0xf,%ymm10,%ymm9,%ymm9
+	vpmullw %ymm12,%ymm3,%ymm10
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm10,%ymm10
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm10,%ymm10
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm10,%ymm3,%ymm10
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+	vpsubw %ymm10,%ymm11,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm10,%ymm11,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpshufd $0xb1,%ymm10,%ymm12
+	vpshufd $0xb1,%ymm3,%ymm13
+	vpshufd $0xb1,%ymm4,%ymm14
+	vpshufd $0xb1,%ymm5,%ymm15
+	vpblendd $0x55,%ymm10,%ymm13,%ymm10
+	vpblendd $0xaa,%ymm3,%ymm12,%ymm3
+	vpblendd $0x55,%ymm4,%ymm15,%ymm4
+	vpblendd $0xaa,%ymm5,%ymm14,%ymm5
+	vpshufd $0xb1,%ymm6,%ymm12
+	vpshufd $0xb1,%ymm7,%ymm13
+	vpshufd $0xb1,%ymm8,%ymm14
+	vpshufd $0xb1,%ymm9,%ymm15
+	vpblendd $0x55,%ymm6,%ymm13,%ymm6
+	vpblendd $0xaa,%ymm7,%ymm12,%ymm7
+	vpblendd $0x55,%ymm8,%ymm15,%ymm8
+	vpblendd $0xaa,%ymm9,%ymm14,%ymm9
+        # save old-5
+        # cuts-5
+	vmovdqa 0x3e0(%rsi),%ymm12                      #! EA = L0x435f00
+	vmovdqa 0x400(%rsi),%ymm13                      #! EA = L0x435f20
+	vmovdqa 0x420(%rsi),%ymm14                      #! EA = L0x435f40
+	vmovdqa 0x440(%rsi),%ymm15                      #! EA = L0x435f60
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm11
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+	vpsraw $0xd,%ymm10,%ymm3
+	vpsraw $0xd,%ymm4,%ymm5
+	vpsraw $0xd,%ymm6,%ymm7
+	vpsraw $0xd,%ymm8,%ymm9
+	vpand  %ymm2,%ymm10,%ymm10
+	vpand  %ymm2,%ymm4,%ymm4
+	vpand  %ymm2,%ymm6,%ymm6
+	vpand  %ymm2,%ymm8,%ymm8
+	vpsubw %ymm3,%ymm10,%ymm10
+	vpsubw %ymm5,%ymm4,%ymm4
+	vpsubw %ymm7,%ymm6,%ymm6
+	vpsubw %ymm9,%ymm8,%ymm8
+	vpsllw $0x9,%ymm3,%ymm3
+	vpsllw $0x9,%ymm5,%ymm5
+	vpsllw $0x9,%ymm7,%ymm7
+	vpsllw $0x9,%ymm9,%ymm9
+	vpaddw %ymm3,%ymm10,%ymm10
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+#	vmovdqa 0x2f53(%rip),%ymm15        # 0x436220 <_vpshufb_idx>#! EA = L0x436220
+	vpshufb %ymm15,%ymm10,%ymm11
+	vpshufb %ymm15,%ymm3,%ymm12
+	vpshufb %ymm15,%ymm4,%ymm13
+	vpshufb %ymm15,%ymm5,%ymm14
+	vpblendw $0x55,%ymm10,%ymm12,%ymm10
+	vpblendw $0xaa,%ymm3,%ymm11,%ymm3
+	vpblendw $0x55,%ymm4,%ymm14,%ymm4
+	vpblendw $0xaa,%ymm5,%ymm13,%ymm5
+	vpshufb %ymm15,%ymm6,%ymm11
+	vpshufb %ymm15,%ymm7,%ymm12
+	vpshufb %ymm15,%ymm8,%ymm13
+	vpshufb %ymm15,%ymm9,%ymm14
+	vpblendw $0x55,%ymm6,%ymm12,%ymm6
+	vpblendw $0xaa,%ymm7,%ymm11,%ymm7
+	vpblendw $0x55,%ymm8,%ymm14,%ymm8
+	vpblendw $0xaa,%ymm9,%ymm13,%ymm9
+        # save old-6
+        # cuts-6
+	vmovdqa 0x4e0(%rsi),%ymm12                      #! EA = L0x436000
+	vmovdqa 0x500(%rsi),%ymm13                      #! EA = L0x436020
+	vmovdqa 0x520(%rsi),%ymm14                      #! EA = L0x436040
+	vmovdqa 0x540(%rsi),%ymm15                      #! EA = L0x436060
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm11
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+#	vmovdqa 0x2ed7(%rip),%ymm15        # 0x436280 <_16x2q>#! EA = L0x436280
+	vpsraw $0xf,%ymm10,%ymm3
+	vpsraw $0xf,%ymm4,%ymm5
+	vpsraw $0xf,%ymm6,%ymm7
+	vpsraw $0xf,%ymm8,%ymm9
+	vpand  %ymm15,%ymm3,%ymm3
+	vpand  %ymm15,%ymm5,%ymm5
+	vpand  %ymm15,%ymm7,%ymm7
+	vpand  %ymm15,%ymm9,%ymm9
+	vpaddw %ymm1,%ymm10,%ymm10
+	vpaddw %ymm1,%ymm4,%ymm4
+	vpaddw %ymm1,%ymm6,%ymm6
+	vpaddw %ymm1,%ymm8,%ymm8
+	vpaddw %ymm3,%ymm10,%ymm10
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+        # save old-7
+        # cuts-7
+	vpunpcklwd %ymm3,%ymm10,%ymm12
+	vpunpckhwd %ymm3,%ymm10,%ymm13
+	vpunpcklwd %ymm5,%ymm4,%ymm14
+	vpunpckhwd %ymm5,%ymm4,%ymm15
+	vpunpcklwd %ymm7,%ymm6,%ymm3
+	vpunpckhwd %ymm7,%ymm6,%ymm4
+	vpunpcklwd %ymm9,%ymm8,%ymm5
+	vpunpckhwd %ymm9,%ymm8,%ymm6
+	vperm2i128 $0x20,%ymm13,%ymm12,%ymm11
+	vperm2i128 $0x31,%ymm13,%ymm12,%ymm12
+	vperm2i128 $0x20,%ymm15,%ymm14,%ymm13
+	vperm2i128 $0x31,%ymm15,%ymm14,%ymm14
+	vperm2i128 $0x20,%ymm4,%ymm3,%ymm15
+	vperm2i128 $0x31,%ymm4,%ymm3,%ymm3
+	vperm2i128 $0x20,%ymm6,%ymm5,%ymm4
+	vperm2i128 $0x31,%ymm6,%ymm5,%ymm5
+	vmovdqa %ymm11,(%rdi)                           #! EA = L0x7fffffffb040
+	vmovdqa %ymm12,0x20(%rdi)                       #! EA = L0x7fffffffb060
+	vmovdqa %ymm13,0x40(%rdi)                       #! EA = L0x7fffffffb080
+	vmovdqa %ymm14,0x60(%rdi)                       #! EA = L0x7fffffffb0a0
+	vmovdqa %ymm15,0x80(%rdi)                       #! EA = L0x7fffffffb0c0
+	vmovdqa %ymm3,0xa0(%rdi)                        #! EA = L0x7fffffffb0e0
+	vmovdqa %ymm4,0xc0(%rdi)                        #! EA = L0x7fffffffb100
+	vmovdqa %ymm5,0xe0(%rdi)                        #! EA = L0x7fffffffb120
+#	add    $0x100,%rdi
+	vmovdqa 0x40(%rsi),%ymm3                        #! EA = L0x435b60
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffffb140
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffffb160
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffffb180
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffffb1a0
+	vmovdqa 0x80(%rdi),%ymm8                        #! EA = L0x7fffffffb1c0
+	vmovdqa 0xa0(%rdi),%ymm9                        #! EA = L0x7fffffffb1e0
+	vmovdqa 0xc0(%rdi),%ymm10                       #! EA = L0x7fffffffb200
+	vmovdqa 0xe0(%rdi),%ymm11                       #! EA = L0x7fffffffb220
+	vpmullw %ymm3,%ymm8,%ymm12
+	vpmulhw %ymm3,%ymm8,%ymm8
+	vpmullw %ymm3,%ymm9,%ymm13
+	vpmulhw %ymm3,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm8,%ymm12
+	vpsubw %ymm13,%ymm9,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm8
+	vpsubw %ymm13,%ymm5,%ymm9
+	vpsubw %ymm14,%ymm6,%ymm10
+	vpsubw %ymm15,%ymm7,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm6,%ymm6
+	vpaddw %ymm15,%ymm7,%ymm7
+        # save old-8
+        # cuts-8
+	vmovdqa 0xa0(%rsi),%ymm15                       #! EA = L0x435bc0
+	vmovdqa 0xc0(%rsi),%ymm3                        #! EA = L0x435be0
+	vpmullw %ymm15,%ymm6,%ymm12
+	vpmulhw %ymm15,%ymm6,%ymm6
+	vpmullw %ymm15,%ymm7,%ymm13
+	vpmulhw %ymm15,%ymm7,%ymm7
+	vpmullw %ymm3,%ymm10,%ymm14
+	vpmulhw %ymm3,%ymm10,%ymm10
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm6,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsubw %ymm12,%ymm4,%ymm6
+	vpsubw %ymm13,%ymm5,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm10
+	vpsubw %ymm15,%ymm9,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm5,%ymm5
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpaddw %ymm15,%ymm9,%ymm9
+        # save old-9
+        # cuts-9
+	vmovdqa 0x160(%rsi),%ymm13                      #! EA = L0x435c80
+	vmovdqa 0x180(%rsi),%ymm14                      #! EA = L0x435ca0
+	vmovdqa 0x1a0(%rsi),%ymm15                      #! EA = L0x435cc0
+	vmovdqa 0x1c0(%rsi),%ymm3                       #! EA = L0x435ce0
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+	vpmullw %ymm3,%ymm11,%ymm15
+	vpmulhw %ymm3,%ymm11,%ymm11
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmullw %ymm0,%ymm15,%ymm15
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm15,%ymm15
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+	vpsubw %ymm15,%ymm11,%ymm15
+        # END Montgomery reduction
+	vpsraw $0xd,%ymm4,%ymm5
+	vpsraw $0xd,%ymm6,%ymm7
+	vpsraw $0xd,%ymm8,%ymm9
+	vpsraw $0xd,%ymm10,%ymm11
+	vpand  %ymm2,%ymm4,%ymm4
+	vpand  %ymm2,%ymm6,%ymm6
+	vpand  %ymm2,%ymm8,%ymm8
+	vpand  %ymm2,%ymm10,%ymm10
+	vpsubw %ymm5,%ymm4,%ymm4
+	vpsubw %ymm7,%ymm6,%ymm6
+	vpsubw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm10
+	vpsllw $0x9,%ymm5,%ymm5
+	vpsllw $0x9,%ymm7,%ymm7
+	vpsllw $0x9,%ymm9,%ymm9
+	vpsllw $0x9,%ymm11,%ymm11
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpsubw %ymm15,%ymm10,%ymm11
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpaddw %ymm15,%ymm10,%ymm10
+        # save old-10
+        # cuts-10
+	vmovdqa 0x260(%rsi),%ymm12                      #! EA = L0x435d80
+	vmovdqa 0x280(%rsi),%ymm13                      #! EA = L0x435da0
+	vmovdqa 0x2a0(%rsi),%ymm14                      #! EA = L0x435dc0
+	vmovdqa 0x2c0(%rsi),%ymm15                      #! EA = L0x435de0
+	vperm2i128 $0x2,%ymm4,%ymm5,%ymm3
+	vperm2i128 $0x13,%ymm4,%ymm5,%ymm4
+	vperm2i128 $0x2,%ymm6,%ymm7,%ymm5
+	vperm2i128 $0x13,%ymm6,%ymm7,%ymm6
+	vperm2i128 $0x2,%ymm8,%ymm9,%ymm7
+	vperm2i128 $0x13,%ymm8,%ymm9,%ymm8
+	vperm2i128 $0x2,%ymm10,%ymm11,%ymm9
+	vperm2i128 $0x13,%ymm10,%ymm11,%ymm10
+	vpmullw %ymm12,%ymm4,%ymm11
+	vpmulhw %ymm12,%ymm4,%ymm4
+	vpmullw %ymm13,%ymm6,%ymm12
+	vpmulhw %ymm13,%ymm6,%ymm6
+	vpmullw %ymm14,%ymm8,%ymm13
+	vpmulhw %ymm14,%ymm8,%ymm8
+	vpmullw %ymm15,%ymm10,%ymm14
+	vpmulhw %ymm15,%ymm10,%ymm10
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm4,%ymm11
+	vpsubw %ymm12,%ymm6,%ymm12
+	vpsubw %ymm13,%ymm8,%ymm13
+	vpsubw %ymm14,%ymm10,%ymm14
+        # END Montgomery reduction
+	vpsubw %ymm11,%ymm3,%ymm4
+	vpsubw %ymm12,%ymm5,%ymm6
+	vpsubw %ymm13,%ymm7,%ymm8
+	vpsubw %ymm14,%ymm9,%ymm10
+	vpaddw %ymm11,%ymm3,%ymm3
+	vpaddw %ymm12,%ymm5,%ymm5
+	vpaddw %ymm13,%ymm7,%ymm7
+	vpaddw %ymm14,%ymm9,%ymm9
+        # save old-11
+        # cuts-11
+	vmovdqa 0x360(%rsi),%ymm12                      #! EA = L0x435e80
+	vmovdqa 0x380(%rsi),%ymm13                      #! EA = L0x435ea0
+	vmovdqa 0x3a0(%rsi),%ymm14                      #! EA = L0x435ec0
+	vmovdqa 0x3c0(%rsi),%ymm15                      #! EA = L0x435ee0
+	vshufpd $0x0,%ymm4,%ymm3,%ymm11
+	vshufpd $0xf,%ymm4,%ymm3,%ymm3
+	vshufpd $0x0,%ymm6,%ymm5,%ymm4
+	vshufpd $0xf,%ymm6,%ymm5,%ymm5
+	vshufpd $0x0,%ymm8,%ymm7,%ymm6
+	vshufpd $0xf,%ymm8,%ymm7,%ymm7
+	vshufpd $0x0,%ymm10,%ymm9,%ymm8
+	vshufpd $0xf,%ymm10,%ymm9,%ymm9
+	vpmullw %ymm12,%ymm3,%ymm10
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm10,%ymm10
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm10,%ymm10
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm10,%ymm3,%ymm10
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+	vpsubw %ymm10,%ymm11,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm10,%ymm11,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpshufd $0xb1,%ymm10,%ymm12
+	vpshufd $0xb1,%ymm3,%ymm13
+	vpshufd $0xb1,%ymm4,%ymm14
+	vpshufd $0xb1,%ymm5,%ymm15
+	vpblendd $0x55,%ymm10,%ymm13,%ymm10
+	vpblendd $0xaa,%ymm3,%ymm12,%ymm3
+	vpblendd $0x55,%ymm4,%ymm15,%ymm4
+	vpblendd $0xaa,%ymm5,%ymm14,%ymm5
+	vpshufd $0xb1,%ymm6,%ymm12
+	vpshufd $0xb1,%ymm7,%ymm13
+	vpshufd $0xb1,%ymm8,%ymm14
+	vpshufd $0xb1,%ymm9,%ymm15
+	vpblendd $0x55,%ymm6,%ymm13,%ymm6
+	vpblendd $0xaa,%ymm7,%ymm12,%ymm7
+	vpblendd $0x55,%ymm8,%ymm15,%ymm8
+	vpblendd $0xaa,%ymm9,%ymm14,%ymm9
+        # save old-12
+        # cuts-12
+	vmovdqa 0x460(%rsi),%ymm12                      #! EA = L0x435f80
+	vmovdqa 0x480(%rsi),%ymm13                      #! EA = L0x435fa0
+	vmovdqa 0x4a0(%rsi),%ymm14                      #! EA = L0x435fc0
+	vmovdqa 0x4c0(%rsi),%ymm15                      #! EA = L0x435fe0
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm11
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+	vpsraw $0xd,%ymm10,%ymm3
+	vpsraw $0xd,%ymm4,%ymm5
+	vpsraw $0xd,%ymm6,%ymm7
+	vpsraw $0xd,%ymm8,%ymm9
+	vpand  %ymm2,%ymm10,%ymm10
+	vpand  %ymm2,%ymm4,%ymm4
+	vpand  %ymm2,%ymm6,%ymm6
+	vpand  %ymm2,%ymm8,%ymm8
+	vpsubw %ymm3,%ymm10,%ymm10
+	vpsubw %ymm5,%ymm4,%ymm4
+	vpsubw %ymm7,%ymm6,%ymm6
+	vpsubw %ymm9,%ymm8,%ymm8
+	vpsllw $0x9,%ymm3,%ymm3
+	vpsllw $0x9,%ymm5,%ymm5
+	vpsllw $0x9,%ymm7,%ymm7
+	vpsllw $0x9,%ymm9,%ymm9
+	vpaddw %ymm3,%ymm10,%ymm10
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+#	vmovdqa 0x282a(%rip),%ymm15        # 0x436220 <_vpshufb_idx>#! EA = L0x436220
+	vpshufb %ymm15,%ymm10,%ymm11
+	vpshufb %ymm15,%ymm3,%ymm12
+	vpshufb %ymm15,%ymm4,%ymm13
+	vpshufb %ymm15,%ymm5,%ymm14
+	vpblendw $0x55,%ymm10,%ymm12,%ymm10
+	vpblendw $0xaa,%ymm3,%ymm11,%ymm3
+	vpblendw $0x55,%ymm4,%ymm14,%ymm4
+	vpblendw $0xaa,%ymm5,%ymm13,%ymm5
+	vpshufb %ymm15,%ymm6,%ymm11
+	vpshufb %ymm15,%ymm7,%ymm12
+	vpshufb %ymm15,%ymm8,%ymm13
+	vpshufb %ymm15,%ymm9,%ymm14
+	vpblendw $0x55,%ymm6,%ymm12,%ymm6
+	vpblendw $0xaa,%ymm7,%ymm11,%ymm7
+	vpblendw $0x55,%ymm8,%ymm14,%ymm8
+	vpblendw $0xaa,%ymm9,%ymm13,%ymm9
+        # save old-13
+        # cuts-13
+	vmovdqa 0x560(%rsi),%ymm12                      #! EA = L0x436080
+	vmovdqa 0x580(%rsi),%ymm13                      #! EA = L0x4360a0
+	vmovdqa 0x5a0(%rsi),%ymm14                      #! EA = L0x4360c0
+	vmovdqa 0x5c0(%rsi),%ymm15                      #! EA = L0x4360e0
+	vpmullw %ymm12,%ymm3,%ymm11
+	vpmulhw %ymm12,%ymm3,%ymm3
+	vpmullw %ymm13,%ymm5,%ymm12
+	vpmulhw %ymm13,%ymm5,%ymm5
+	vpmullw %ymm14,%ymm7,%ymm13
+	vpmulhw %ymm14,%ymm7,%ymm7
+	vpmullw %ymm15,%ymm9,%ymm14
+	vpmulhw %ymm15,%ymm9,%ymm9
+        # BEGIN Montgomery reduction
+	vpmullw %ymm0,%ymm11,%ymm11
+	vpmullw %ymm0,%ymm12,%ymm12
+	vpmullw %ymm0,%ymm13,%ymm13
+	vpmullw %ymm0,%ymm14,%ymm14
+	vpmulhw %ymm1,%ymm11,%ymm11
+	vpmulhw %ymm1,%ymm12,%ymm12
+	vpmulhw %ymm1,%ymm13,%ymm13
+	vpmulhw %ymm1,%ymm14,%ymm14
+	vpsubw %ymm11,%ymm3,%ymm11
+	vpsubw %ymm12,%ymm5,%ymm12
+	vpsubw %ymm13,%ymm7,%ymm13
+	vpsubw %ymm14,%ymm9,%ymm14
+        # END Montgomery reduction
+#	vmovdqa 0x27ae(%rip),%ymm15        # 0x436280 <_16x2q>#! EA = L0x436280
+	vpsraw $0xf,%ymm10,%ymm3
+	vpsraw $0xf,%ymm4,%ymm5
+	vpsraw $0xf,%ymm6,%ymm7
+	vpsraw $0xf,%ymm8,%ymm9
+	vpand  %ymm15,%ymm3,%ymm3
+	vpand  %ymm15,%ymm5,%ymm5
+	vpand  %ymm15,%ymm7,%ymm7
+	vpand  %ymm15,%ymm9,%ymm9
+	vpaddw %ymm1,%ymm10,%ymm10
+	vpaddw %ymm1,%ymm4,%ymm4
+	vpaddw %ymm1,%ymm6,%ymm6
+	vpaddw %ymm1,%ymm8,%ymm8
+	vpaddw %ymm3,%ymm10,%ymm10
+	vpaddw %ymm5,%ymm4,%ymm4
+	vpaddw %ymm7,%ymm6,%ymm6
+	vpaddw %ymm9,%ymm8,%ymm8
+	vpsubw %ymm11,%ymm10,%ymm3
+	vpsubw %ymm12,%ymm4,%ymm5
+	vpsubw %ymm13,%ymm6,%ymm7
+	vpsubw %ymm14,%ymm8,%ymm9
+	vpaddw %ymm11,%ymm10,%ymm10
+	vpaddw %ymm12,%ymm4,%ymm4
+	vpaddw %ymm13,%ymm6,%ymm6
+	vpaddw %ymm14,%ymm8,%ymm8
+	vpunpcklwd %ymm3,%ymm10,%ymm12
+	vpunpckhwd %ymm3,%ymm10,%ymm13
+	vpunpcklwd %ymm5,%ymm4,%ymm14
+	vpunpckhwd %ymm5,%ymm4,%ymm15
+	vpunpcklwd %ymm7,%ymm6,%ymm3
+	vpunpckhwd %ymm7,%ymm6,%ymm4
+	vpunpcklwd %ymm9,%ymm8,%ymm5
+	vpunpckhwd %ymm9,%ymm8,%ymm6
+	vperm2i128 $0x20,%ymm13,%ymm12,%ymm11
+	vperm2i128 $0x31,%ymm13,%ymm12,%ymm12
+	vperm2i128 $0x20,%ymm15,%ymm14,%ymm13
+	vperm2i128 $0x31,%ymm15,%ymm14,%ymm14
+	vperm2i128 $0x20,%ymm4,%ymm3,%ymm15
+	vperm2i128 $0x31,%ymm4,%ymm3,%ymm3
+	vperm2i128 $0x20,%ymm6,%ymm5,%ymm4
+	vperm2i128 $0x31,%ymm6,%ymm5,%ymm5
+	vmovdqa %ymm11,(%rdi)                           #! EA = L0x7fffffffb140
+	vmovdqa %ymm12,0x20(%rdi)                       #! EA = L0x7fffffffb160
+	vmovdqa %ymm13,0x40(%rdi)                       #! EA = L0x7fffffffb180
+	vmovdqa %ymm14,0x60(%rdi)                       #! EA = L0x7fffffffb1a0
+	vmovdqa %ymm15,0x80(%rdi)                       #! EA = L0x7fffffffb1c0
+	vmovdqa %ymm3,0xa0(%rdi)                        #! EA = L0x7fffffffb1e0
+	vmovdqa %ymm4,0xc0(%rdi)                        #! EA = L0x7fffffffb200
+	vmovdqa %ymm5,0xe0(%rdi)                        #! EA = L0x7fffffffb220
+#	add    %r11,%rsp
+#	#retq   

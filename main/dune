@@ -1,0 +1,4 @@
+(library
+  (name        main)
+  (libraries   ast parsers options verify)
+)

@@ -1,0 +1,128 @@
+#! [x$1c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! x$1c = %%x$1c
+
+#! ldr $1v, $2v -> mov $1v $2v
+#! ldp $1v, $2v, $3v -> mov $1v $3v_1;\nmov $2v $3v_2
+#! stp $1v, $2v, $3v -> mov $3v_1 $1v;\nmov $3v_2 $2v
+#! ldr $1v, 0x555557c008 -> mov $1v L0x555557c008
+#! ldr $1v, 0x555557c018 -> mov $1v L0x555557c018
+#! mov $1v, xzr -> mov $1v 0@uint64
+#! mul $1v, $2v, $3v -> mul $1v $2v $3v
+#! umulh $1v, $2v, $3v -> mull $1v dontcare $2v $3v
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adds $1v, $2v, #0x1 -> adds carry $1v $2v 1@uint64
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! adc $1v, $2v, xzr -> adc $1v $2v 0@uint64 carry
+#! adc $1v, xzr, $2v -> adc $1v 0@uint64 $2v carry
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! sbc $1v, $2v, $3v -> sbc $1v $2v $3v carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs $1v, $2v, xzr -> sbcs carry $1v $2v 0@uint64 carry
+#! sbcs xzr, $1v, xzr -> sbcs carry dontcare $1v 0@uint64 carry
+#! lsl $1v, $2v, #32 -> mul $1v $2v (2**32)
+#! lsr $1v, $2v, #32 -> split $1v dontcare $2v 32
+#! csel $1v, $2v, $3v, cc  // cc = lo, ul, last -> cmov $1v carry $3v $2v
+
+#Breakpoint 1, 0x000000555557c1bc in ecp_nistz256_sqr_mont ()
+	ldp	x4, x5, [x1]                                #! EA = L0x555558e040
+	ldp	x6, x7, [x1, #16]                           #! EA = L0x555558e050
+	ldr	x12, 0x555557c008
+	ldr	x13, 0x555557c018
+	#bl	0x555557c520 <__ecp_nistz256_sqr_mont>
+	mul	x15, x5, x4
+	umulh	x9, x5, x4
+	mul	x16, x6, x4
+	umulh	x10, x6, x4
+	mul	x17, x7, x4
+	umulh	x19, x7, x4
+	adds	x16, x16, x9
+	mul	x8, x6, x5
+	umulh	x9, x6, x5
+	adcs	x17, x17, x10
+	mul	x10, x7, x5
+	umulh	x11, x7, x5
+	adc	x19, x19, xzr
+	mul	x20, x7, x6
+	umulh	x1, x7, x6
+	adds	x9, x9, x10
+	mul	x14, x4, x4
+	adc	x10, x11, xzr
+	adds	x17, x17, x8
+	umulh	x4, x4, x4
+	adcs	x19, x19, x9
+	mul	x9, x5, x5
+	adcs	x20, x20, x10
+	umulh	x5, x5, x5
+	adc	x1, x1, xzr
+	adds	x15, x15, x15
+	mul	x10, x6, x6
+	adcs	x16, x16, x16
+	umulh	x6, x6, x6
+	adcs	x17, x17, x17
+	mul	x11, x7, x7
+	adcs	x19, x19, x19
+	umulh	x7, x7, x7
+	adcs	x20, x20, x20
+	adcs	x1, x1, x1
+	adc	x2, xzr, xzr
+	adds	x15, x15, x4
+	adcs	x16, x16, x9
+	adcs	x17, x17, x5
+	adcs	x19, x19, x10
+	adcs	x20, x20, x6
+	lsl	x8, x14, #32
+	adcs	x1, x1, x11
+	lsr	x9, x14, #32
+	adc	x2, x2, x7
+	subs	x10, x14, x8
+	sbc	x11, x14, x9
+	adds	x14, x15, x8
+	adcs	x15, x16, x9
+	lsl	x8, x14, #32
+	adcs	x16, x17, x10
+	lsr	x9, x14, #32
+	adc	x17, x11, xzr
+	subs	x10, x14, x8
+	sbc	x11, x14, x9
+	adds	x14, x15, x8
+	adcs	x15, x16, x9
+	lsl	x8, x14, #32
+	adcs	x16, x17, x10
+	lsr	x9, x14, #32
+	adc	x17, x11, xzr
+	subs	x10, x14, x8
+	sbc	x11, x14, x9
+	adds	x14, x15, x8
+	adcs	x15, x16, x9
+	lsl	x8, x14, #32
+	adcs	x16, x17, x10
+	lsr	x9, x14, #32
+	adc	x17, x11, xzr
+	subs	x10, x14, x8
+	sbc	x11, x14, x9
+	adds	x14, x15, x8
+	adcs	x15, x16, x9
+	adcs	x16, x17, x10
+	adc	x17, x11, xzr
+	adds	x14, x14, x19
+	adcs	x15, x15, x20
+	adcs	x16, x16, x1
+	adcs	x17, x17, x2
+	adc	x19, xzr, xzr
+	adds	x8, x14, #0x1
+	sbcs	x9, x15, x12
+	sbcs	x10, x16, xzr
+	sbcs	x11, x17, x13
+	sbcs	xzr, x19, xzr
+	csel	x14, x14, x8, cc  // cc = lo, ul, last
+	csel	x15, x15, x9, cc  // cc = lo, ul, last
+	csel	x16, x16, x10, cc  // cc = lo, ul, last
+	stp	x14, x15, [x0]                              #! EA = L0x7fffffeb18
+	csel	x17, x17, x11, cc  // cc = lo, ul, last
+	stp	x16, x17, [x0, #16]                         #! EA = L0x7fffffeb28
+	#ret
+#	ldp	x19, x20, [sp, #16]                         #! EA = L0x7fffffeaf0
+#	ldp	x29, x30, [sp], #32                         #! EA = L0x7fffffeae0
