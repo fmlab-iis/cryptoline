@@ -66,6 +66,18 @@ pdflatex cryptoline.tex
 
 Read doc/cryptoline.pdf for the details of the Cryptoline language.
 
+Cryptoline Language in Emacs
+===================
+cryptoline-mode.el in the project root
+
+only support syntax highlighting now
+
+```elisp
+(add-to-list 'load-path "cryptoline/cryptoline-mode.el") ; need to change to the right location
+(autoload 'cryptoline-mode "cryptoline-mode" "Major mode for CryptoLine files." t)
+(add-to-list 'auto-mode-alist '("\\.cl\\'" . cryptoline-mode))
+```
+
 Reference
 =========
 
