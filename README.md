@@ -80,7 +80,7 @@ only support syntax highlighting now
 
 Reference
 =========
-
+- Yu-Fu Fu, Jiaxiang Liu, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang. 2019. Signed Cryptographic Program Verification with Typed CryptoLine. In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security (CCS '19). ACM, New York, NY, USA, 1591-1606. DOI: https://doi.org/10.1145/3319535.3354199
 - Andy Polyakov, Ming-Hsien Tsai, Bow-Yaw Wang, Bo-Yin Yang:
   Verifying Arithmetic Assembly Programs in Cryptographic Primitives (Invited Talk).
   International Conference on Concurrency Theory (CONCUR),
