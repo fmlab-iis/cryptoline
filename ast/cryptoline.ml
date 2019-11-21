@@ -857,6 +857,9 @@ type instr =
 
 type program = instr list
 
+let mkatomic_var v = Avar v
+let mkatomic_const ty n = Aconst (ty, n)
+
 let typ_of_atomic a =
   match a with
   | Avar v -> v.vtyp
@@ -869,10 +872,22 @@ let atomic_is_var a =
   | Avar _ -> true
   | _ -> false
 
+let var_of_atomic a =
+  let _ = assert (atomic_is_var a) in
+  match a with
+  | Avar v -> v
+  | _ -> assert false
+
 let atomic_is_const a =
   match a with
   | Aconst _ -> true
   | _ -> false
+
+let const_of_atomic a =
+  let _ = assert (atomic_is_const a) in
+  match a with
+  | Aconst (_, n) -> n
+  | _ -> assert false
 
 let atomic_is_signed a = typ_is_signed (typ_of_atomic a)
 

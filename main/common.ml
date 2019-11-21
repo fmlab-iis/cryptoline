@@ -69,6 +69,7 @@ let args =
     ("-stp", String (fun str -> stp_path := str; smt_solver := STP),
      "PATH  Use STP at the specified path\n");
     ("-untyped", Set use_untyped_parser, "  Use the untyped parser\n");
+    ("-vector", Set use_vector_parser, "   Use the vectorized parser\n");
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],
                     (fun str ->
                       try

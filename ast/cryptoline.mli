@@ -323,8 +323,12 @@ type instr =
 
 type program = instr list
 
+val mkatomic_var : var -> atomic
+val mkatomic_const : typ -> Z.t -> atomic
 val size_of_atomic : atomic -> size
 val typ_of_atomic : atomic -> typ
+val var_of_atomic : atomic -> var
+val const_of_atomic : atomic -> Z.t
 val atomic_is_var : atomic -> bool
 val atomic_is_const : atomic -> bool
 val atomic_is_signed : atomic -> bool

@@ -87,6 +87,7 @@ val rename_local : bool ref
 
 val use_legacy_parser : bool ref
 val use_untyped_parser : bool ref
+val use_vector_parser : bool ref
 
 val auto_cast : bool ref
 val auto_cast_preserve_value : bool ref

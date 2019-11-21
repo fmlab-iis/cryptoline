@@ -29,6 +29,7 @@ let args = [
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
     ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
     ("-v", Set verbose, "\t     Display verbose messages\n");
+    ("-vector", Set use_vector_parser, "   Use the vectorized parser\n");
     ("-vecuts", String (fun str -> verify_ecuts := Some (List.map
                                                            (fun str ->
                                                              try
@@ -56,7 +57,7 @@ let parse_spec file =
   let t1 = Unix.gettimeofday() in
   let _ = vprint ("Parsing Cryptoline file:\t\t") in
   try
-    let spec = spec_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser file in
+    let spec = spec_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser ~vector:!use_vector_parser file in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     spec
