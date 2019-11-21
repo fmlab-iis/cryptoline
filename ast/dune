@@ -1,4 +1,5 @@
 (library
   (name        ast)
   (libraries   options zarith)
+  (flags       (:standard -w -3))
 )
