@@ -150,8 +150,7 @@
 let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
-let sqparens = ['[' ']']
-let identity = letter (letter | number | sqparens)*
+let identity = letter (letter | number)*('<' number+ '>')?
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse

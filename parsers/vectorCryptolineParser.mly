@@ -54,6 +54,30 @@
     | Tuint w -> Tuint (w * 2)
     | Tsint w -> Tsint (w * 2)
 
+  let look_up_maps lno var_name _cm vm _ym gm =
+    try SM.find var_name vm
+    with Not_found ->
+      begin
+        try
+          SM.find var_name gm
+        with Not_found ->
+          raise_at lno ("Variable " ^ var_name ^ " is undefined.")
+      end
+
+  let update_maps lno var_name _cm vm ym gm ty_opt =
+    if SM.mem var_name gm then
+      raise_at lno ("The program variable " ^ var_name ^ " has been defined as a ghost variable.")
+    else
+      match ty_opt with
+      | None -> raise_at lno ("Failed to determine the type of " ^ var_name)
+      | Some ty ->
+         let v = mkvar var_name ty in
+         (* It is possible that the lval is actually a bit variable *)
+         if var_is_bit v then
+           (SM.add var_name v vm, SM.add var_name v ym, gm, v)
+         else
+           (SM.add var_name v vm, SM.remove var_name ym, gm, v)
+
   (* for vector instructions *)
 
   let byte_size = 8
@@ -67,16 +91,19 @@
     else
       res
 
-  let add_var_index suffix_len v i elt_size =
-    let indexed_name =
-      (string_of_var v) ^ "[" ^ (to_bit_string suffix_len i "") ^ "]" in
+  let indexed_var_name suffix_len v i =
+    (string_of_var v) ^ "<" ^ (to_bit_string suffix_len i "") ^ ">"
+
+  let add_var_index lno suffix_len v i elt_size cm vm ym gm =
+    let indexed_name = indexed_var_name suffix_len v i in
     let indexed_typ =
       if var_is_signed v then int_t elt_size else uint_t elt_size in
-    mkvar indexed_name indexed_typ
+    update_maps lno indexed_name cm vm ym gm (Some indexed_typ)
 
-  let add_atomic_index suffix_len a i elt_size =
+  let add_atomic_index lno suffix_len a i elt_size cm vm ym gm =
     if atomic_is_var a then
-      mkatomic_var (add_var_index suffix_len (var_of_atomic a) i elt_size)
+      let indexed_name = indexed_var_name suffix_len (var_of_atomic a) i in
+      mkatomic_var (look_up_maps lno indexed_name cm vm ym gm)
     else
       let n = const_of_atomic a in
       if atomic_is_signed a then
@@ -86,82 +113,94 @@
         mkatomic_const (uint_t elt_size)
                        (Z.extract n (i * elt_size) elt_size)
 
-  let vectorize10 elt_size len v mk_instr =
+  let vectorize10 lno elt_size len v mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper i res =
+    let rec helper i (vm, ym, gm, res) =
       if i >= 0 then
+        let (vm', ym', gm', vv) =
+          add_var_index lno suffix_len v i elt_size cm vm ym gm in
         helper (pred i)
-               ((mk_instr (add_var_index suffix_len v i elt_size))::res)
+               (vm', ym', gm', (mk_instr vv)::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len) []
+    helper (pred len) (vm, ym, gm, [])
 
-  let vectorize1n elt_size len v alist mk_instr =
+  let vectorize1n lno elt_size len v alist mk_instr cm vm ym gm =
     let _ = assert (len = List.length alist) in
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper (i, alist) res =
+    let rec helper (i, alist) (vm, ym, gm, res) =
       if i >= 0 then
+        let (vm', ym', gm', vv) =
+          add_var_index lno suffix_len v i elt_size cm vm ym gm in
         helper (pred i, (List.tl alist))
-               ((mk_instr (add_var_index suffix_len v i elt_size)
-                          (List.hd alist))::res)
+               (vm', ym', gm', (mk_instr vv (List.hd alist))::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len, List.rev alist) []
-
+    helper (pred len, List.rev alist) (vm, ym, gm, [])
     
-  let vectorize11 elt_size len v a mk_instr =
+  let vectorize11 lno elt_size len v a mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper i res =
+    let rec helper i (vm, ym, gm, res) =
       if i >= 0 then
+        let va = add_atomic_index lno suffix_len a i elt_size cm vm ym gm in
+        let (vm', ym', gm', vv) =
+          add_var_index lno suffix_len v i elt_size cm vm ym gm in
         helper (pred i)
-               ((mk_instr (add_var_index suffix_len v i elt_size)
-                          (add_atomic_index suffix_len a i elt_size))::res)
+               (vm', ym', gm', (mk_instr vv va)::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len) []
+    helper (pred len) (vm, ym, gm, [])
 
-  let vectorize12 elt_size len v a1 a2 mk_instr =
+  let vectorize12 lno elt_size len v a1 a2 mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper i res =
+    let rec helper i (vm, ym, gm, res) =
       if i >= 0 then
+        let va1 = add_atomic_index lno suffix_len a1 i elt_size cm vm ym gm in
+        let va2 = add_atomic_index lno suffix_len a2 i elt_size cm vm ym gm in
+        let (vm', ym', gm', vv) =
+          add_var_index lno suffix_len v i elt_size cm vm ym gm in
         helper (pred i)
-               ((mk_instr (add_var_index suffix_len v i elt_size)
-                          (add_atomic_index suffix_len a1 i elt_size)
-                          (add_atomic_index suffix_len a2 i elt_size))::res)
+               (vm', ym', gm', (mk_instr vv va1 va2)::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len) []
+    helper (pred len) (vm, ym, gm, [])
 
-  let vectorize21 elt_size len v1 v2 a mk_instr =
+  let vectorize21 lno elt_size len v1 v2 a mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper i res =
+    let rec helper i (vm, ym, gm, res) =
       if i >= 0 then
+        let va = add_atomic_index lno suffix_len a i elt_size cm vm ym gm in
+        let (vm'', ym'', gm'', vv1) =
+          add_var_index lno suffix_len v1 i elt_size cm vm ym gm in
+        let (vm', ym', gm', vv2) =
+          add_var_index lno suffix_len v2 i elt_size cm vm'' ym'' gm'' in
         helper (pred i)
-               ((mk_instr (add_var_index suffix_len v1 i elt_size)
-                          (add_var_index suffix_len v2 i elt_size)
-                          (add_atomic_index suffix_len a i elt_size))::res)
+               (vm', ym', gm', (mk_instr vv1 vv2 va)::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len) []
+    helper (pred len) (vm, ym, gm, [])
 
-  let vectorize22 elt_size len v1 v2 a1 a2 mk_instr =
+  let vectorize22 lno elt_size len v1 v2 a1 a2 mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
-    let rec helper i res =
+    let rec helper i (vm, ym, gm, res) =
       if i >= 0 then
+        let va1 = add_atomic_index lno suffix_len a1 i elt_size cm vm ym gm in
+        let va2 = add_atomic_index lno suffix_len a2 i elt_size cm vm ym gm in
+        let (vm'', ym'', gm'', vv1) =
+          add_var_index lno suffix_len v1 i elt_size cm vm ym gm in
+        let (vm', ym', gm', vv2) =
+          add_var_index lno suffix_len v2 i elt_size cm vm'' ym'' gm'' in
         helper (pred i)
-               ((mk_instr (add_var_index suffix_len v1 i elt_size)
-                          (add_var_index suffix_len v2 i elt_size)
-                          (add_atomic_index suffix_len a1 i elt_size)
-                          (add_atomic_index suffix_len a2 i elt_size))::res)
+               (vm', ym', gm', (mk_instr vv1 vv2 va1 va2)::res)
       else
-        res
+        (vm, ym, gm, res)
     in
-    helper (pred len) []
+    helper (pred len) (vm, ym, gm, [])
 
   let check_at lno reasons =
     match chain_reasons reasons with
@@ -184,14 +223,12 @@
       let ty = typ_of_atomic a in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_same_typ [a; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imov (v, a)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize11 wi (w / wi) v a (fun vv va -> Imov (vv, va))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imov (v, a)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize11 lno wi (w / wi) v a (fun vv va -> Imov (vv, va))
+                     cm vm ym gm
 
   let parse_imovs_at lno kind (lv_token : lv_token_t) a_tokens =
     fun _fm cm vm ym gm ->
@@ -208,9 +245,8 @@
         let vsize = a_typ_size * len in
         if typ_is_signed a_typ then int_t vsize else uint_t vsize in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let asts = vectorize1n elt_size len v atoms (fun vv a -> Imov (vv, a))
-      in
-      (vm, ym, gm, asts)
+      vectorize1n lno elt_size len v atoms (fun vv a -> Imov (vv, a))
+                  cm vm ym gm
 
   let parse_ishl_at lno kind (lv_token : lv_token_t) a_token n_token =
     fun _fm cm vm ym gm ->
@@ -224,13 +260,11 @@
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                         ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".") in
-      let asts =
-        match kind with
-        | Scalar -> [Ishl (v, a, n)]
+      match kind with
+        | Scalar -> (vm, ym, gm, [Ishl (v, a, n)])
         | Vector wi ->
-           vectorize11 wi (w / wi) v a (fun vv va -> Ishl (vv, va, n))
-      in
-      (vm, ym, gm, asts)
+           vectorize11 lno wi (w / wi) v a (fun vv va -> Ishl (vv, va, n))
+                       cm vm ym gm
 
   let parse_cshl_at lno kind (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token n_token =
     fun _fm cm vm ym gm ->
@@ -241,15 +275,13 @@
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
       let _ = check_at lno [check_diff_lvs vh vl; check_same_size [a1; a2]; check_same_typ [a1; Avar vh]; check_unsigned_same_typ [a2; Avar vl]] in
-      let asts =
-        match kind with
-        | Scalar -> [Icshl (vh, vl, a1, a2, n)]
-        | Vector wi ->
-           let w = size_of_var vh in
-           vectorize22 wi (w / wi) vh vl a1 a2
-                       (fun vvh vvl va1 va2 -> Icshl (vvh, vvl, va1, va2, n))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Icshl (vh, vl, a1, a2, n)])
+      | Vector wi ->
+         let w = size_of_var vh in
+         vectorize22 lno wi (w / wi) vh vl a1 a2
+                     (fun vvh vvl va1 va2 -> Icshl (vvh, vvl, va1, va2, n))
+                     cm vm ym gm
 
   let parse_set_at _lno c_token =
     fun _fm cm vm ym gm ->
@@ -261,17 +293,14 @@
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       (vm, ym, gm, [Imov (c, Aconst (bit_t, Z.zero))])
 
-  let parse_nondet_at _lno kind (lv_token : lv_token_t) =
+  let parse_nondet_at lno kind (lv_token : lv_token_t) =
     fun _fm cm vm ym gm ->
     let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-    let asts = 
-      match kind with
-      | Scalar -> [Inondet v]
-      | Vector wi ->
-         let w = size_of_var v in
-         vectorize10 wi (w / wi) v (fun vv -> Inondet vv)
-    in
-    (vm, ym, gm, asts)
+    match kind with
+    | Scalar -> (vm, ym, gm, [Inondet v])
+    | Vector wi ->
+       let w = size_of_var v in
+       vectorize10 lno wi (w / wi) v (fun vv -> Inondet vv) cm vm ym gm
     
   let parse_cmov_at lno kind (lv_token : lv_token_t) c_token a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -281,15 +310,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Icmov (v, c, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Icmov (vv, c, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Icmov (v, c, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Icmov (vv, c, va1, va2))
+                     cm vm ym gm
 
   let parse_add_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -298,15 +325,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Iadd (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Iadd (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Iadd (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Iadd (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_adds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -367,15 +392,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Isub (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Isub (vv, va1 ,va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Isub (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Isub (vv, va1 ,va2))
+                     cm vm ym gm
 
   let parse_subc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -478,15 +501,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imul (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Imul (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imul (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Imul (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_muls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -516,15 +537,13 @@
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
       let _ = check_at lno [check_diff_lvs vh vl; check_mull_lvs vh vl; check_same_typ [Avar vh; a1; a2]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imull (vh, vl, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var vh in
-           vectorize22 wi (w / wi) vh vl a1 a2
-                       (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var vh in
+         vectorize22 lno wi (w / wi) vh vl a1 a2
+                     (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
+                     cm vm ym gm
 
   let parse_mulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -544,21 +563,19 @@
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
       let _ = check_at lno [check_diff_lvs vh vl; check_split_lvs vh vl; check_same_typ [Avar vh; a]] in
       let w = size_of_var vl in
-      let asts =
-        match kind with
-        | Scalar ->
-           let _ =
-             if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-               raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)") in
-           [Isplit (vh, vl, a, n)]
-        | Vector wi ->
-           let _ =
-             if Z.leq n Z.zero || Z.geq n (Z.of_int wi) then
-               raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int wi ^ " (both excluded)") in
-           vectorize21 wi (w / wi) vh vl a
-                       (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar ->
+         let _ =
+           if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+             raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)") in
+         (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      | Vector wi ->
+         let _ =
+           if Z.leq n Z.zero || Z.geq n (Z.of_int wi) then
+             raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int wi ^ " (both excluded)") in
+         vectorize21 lno wi (w / wi) vh vl a
+                     (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
+                     cm vm ym gm
 
   let parse_uadd_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -567,15 +584,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Iadd (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Iadd (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Iadd (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Iadd (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_uadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -636,15 +651,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Isub (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Isub (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Isub (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Isub (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_usubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -747,15 +760,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imul (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Imul (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imul (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Imul (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_umuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -785,15 +796,13 @@
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_diff_lvs vh vl; check_unsigned_same_typ [a1; a2; Avar vh; Avar vl]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imull (vh, vl, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var vh in
-           vectorize22 wi (w / wi) vh vl a1 a2
-                       (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var vh in
+         vectorize22 lno wi (w / wi) vh vl a1 a2
+                     (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
+                     cm vm ym gm
 
   let parse_umulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -816,14 +825,12 @@
       let _ =
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)") in
-      let asts =
-        match kind with
-        | Scalar -> [Isplit (vh, vl, a, n)]
-        | Vector wi ->
-           vectorize21 wi (w / wi) vh vl a
-                       (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      | Vector wi ->
+         vectorize21 lno wi (w / wi) vh vl a
+                     (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
+                     cm vm ym gm
 
   let parse_sadd_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -832,15 +839,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Iadd (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Iadd (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Iadd (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Iadd (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_sadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -901,15 +906,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Isub (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Isub (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Isub (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Isub (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_ssubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1012,15 +1015,13 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
       let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      let asts =
-        match kind with
-        | Scalar -> [Imul (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Imul (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imul (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Imul (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_smuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1050,15 +1051,13 @@
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
       let _ = check_at lno [check_diff_lvs vh vl; check_mull_lvs vh vl; check_signed_same_typ [a1; a2; Avar vh]; check_unsigned_var vl] in
-      let asts =
-        match kind with
-        | Scalar -> [Imull (vh, vl, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var vh in
-           vectorize22 wi (w / wi) vh vl a1 a2
-                       (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var vh in
+         vectorize22 lno wi (w / wi) vh vl a1 a2
+                     (fun vvh vvl va1 va2 -> Imull (vvh, vvl, va1, va2))
+                     cm vm ym gm
 
   let parse_smulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1081,14 +1080,12 @@
       let _ =
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)") in
-      let asts =
-        match kind with
-        | Scalar -> [Isplit (vh, vl, a, n)]
-        | Vector wi ->
-           vectorize21 wi (w / wi) vh vl a
-                       (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      | Vector wi ->
+         vectorize21 lno wi (w / wi) vh vl a
+                     (fun vvh vvl va -> Isplit (vvh, vvl, va, n))
+                     cm vm ym gm
 
   let parse_and_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1096,15 +1093,13 @@
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
       let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      let asts =
-        match kind with
-        | Scalar -> [Iand (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Iand (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Iand (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Iand (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_or_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1112,15 +1107,13 @@
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
       let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      let asts =
-        match kind with
-        | Scalar -> [Ior (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Ior (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Ior (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Ior (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_xor_at lno kind (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -1128,55 +1121,47 @@
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
       let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      let asts =
-        match kind with
-        | Scalar -> [Ixor (v, a1, a2)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize12 wi (w / wi) v a1 a2
-                       (fun vv va1 va2 -> Ixor (vv, va1, va2))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Ixor (v, a1, a2)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize12 lno wi (w / wi) v a1 a2
+                     (fun vv va1 va2 -> Ixor (vv, va1, va2))
+                     cm vm ym gm
 
   let parse_not_at lno kind (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
       let _ = check_at lno [check_same_size [Avar v; a]] in
-      let asts =
-        match kind with
-        | Scalar -> [Inot (v, a)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize11 wi (w / wi) v a (fun vv va -> Inot (vv, va))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Inot (v, a)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize11 lno wi (w / wi) v a (fun vv va -> Inot (vv, va))
+                     cm vm ym gm
 
-  let parse_cast_at _lno kind (lv_token : lv_token_t) a_token =
+  let parse_cast_at lno kind (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let asts =
-        match kind with
-        | Scalar -> [Icast (v, a)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize11 wi (w / wi) v a (fun vv va -> Icast (vv, va))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Icast (v, a)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize11 lno wi (w / wi) v a (fun vv va -> Icast (vv, va))
+                     cm vm ym gm
 
-  let parse_vpc_at _lno kind (lv_token : lv_token_t) a_token =
+  let parse_vpc_at lno kind (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let asts =
-        match kind with
-        | Scalar -> [Ivpc (v, a)]
-        | Vector wi ->
-           let w = size_of_var v in
-           vectorize11 wi (w / wi) v a (fun vv va -> Ivpc (vv, va))
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Ivpc (v, a)])
+      | Vector wi ->
+         let w = size_of_var v in
+         vectorize11 lno wi (w / wi) v a (fun vv va -> Ivpc (vv, va))
+                     cm vm ym gm
 
   let parse_join_at lno kind (lv_token : lv_token_t) ah_token al_token =
     fun _fm cm vm ym gm ->
@@ -1185,14 +1170,11 @@
       let ty = typ_of_atomic ah in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some (to_double_size ty)) in
       let _ = check_at lno [check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size v ah al] in
-      let asts =
-        match kind with
-        | Scalar -> [Ijoin (v, ah, al)]
-        | Vector _wi ->
-           (* TODO *)
-           assert false
-      in
-      (vm, ym, gm, asts)
+      match kind with
+      | Scalar -> (vm, ym, gm, [Ijoin (v, ah, al)])
+      | Vector _wi ->
+         (* TODO *)
+         assert false
 
   let parse_assert_at _lno bexp_token =
     fun _fm cm vm ym gm ->
@@ -3069,18 +3051,9 @@ rexps:
 ;
 
 lval:
-    ID                                            {
+ID                                                {
                                                     let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        match ty_opt with
-                                                        | None -> raise_at lno ("Failed to determine the type of " ^ $1)
-                                                        | Some ty ->
-                                                           let v = mkvar $1 ty in
-                                                           (* It is possible that the lval is actually a bit variable *)
-                                                           if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                           else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
+                                                    update_maps lno $1
                                                   }
   | ID AT typ                                     {
                                                     let lno = !lnum in
@@ -3327,16 +3300,7 @@ defined_var:
   ID
   {
     let lno = !lnum in
-    fun _cm vm _ym gm ->
-      try
-        SM.find $1 vm
-      with Not_found ->
-        begin
-          try
-           SM.find $1 gm
-         with Not_found ->
-           raise_at lno ("Variable " ^ $1 ^ " is undefined.")
-        end
+    look_up_maps lno $1
   }
   | ID AT typ
   {

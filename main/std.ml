@@ -70,7 +70,7 @@ let parse_program file =
   let t1 = Unix.gettimeofday() in
   let _ = vprint ("Parsing Cryptoline file: ") in
   try
-    let p = program_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser file in
+    let p = program_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser ~vector:!use_vector_parser file in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     p
