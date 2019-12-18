@@ -1561,6 +1561,9 @@ let illformed_instr_reason vs cs gs i =
     if not (vs_disjoint gvs gs) then Some ("Redefined ghost variables: " ^ string_of_vs (VS.inter gvs gs))
     else if not (VS.subset (vars_bexp e) (VS.union gvs (VS.union vs gs))) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_bexp e) (VS.union gvs (VS.union vs gs))))
     else None in
+  let ghost_disjoint gvs =
+    if not (vs_disjoint gvs vs) then Some ("Ghost variables cannot be program variables: " ^ string_of_vs (VS.inter gvs vs))
+    else None in
   let const_in_range atomics =
     let in_range a =
       match a with
@@ -1618,7 +1621,7 @@ let illformed_instr_reason vs cs gs i =
       | Iassume e -> [defined_bexp e]
     | Iecut (e, _) -> [defined_ebexp e]
     | Ircut (e, _) -> [defined_rbexp e]
-    | Ighost (gvs, e) -> [defined_ghost gvs e]
+    | Ighost (gvs, e) -> [defined_ghost gvs e; ghost_disjoint gvs]
   in
   chain_reasons reasons
 
