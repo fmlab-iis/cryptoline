@@ -1,0 +1,42 @@
+
+Breakpoint 1, 0x0000555555554b60 in bn_sub_words ()
+bn_sub_words:
+# %rdi = 0x55555575c0e0
+# %rsi = 0x55555575c120
+# %rdx = 0x55555575c060
+# %rcx = 0x4
+# %r8  = 0x0
+# %r9  = 0x7ffef3ff00000000
+	xor    %eax,%eax                                #! PC = 0x93824992234336
+	test   %ecx,%ecx                                #! PC = 0x93824992234338
+	#jle    0x555555554b8d <bn_sub_words+45>        #! PC = 0x93824992234340
+	sub    %r8,%r8                                  #! PC = 0x93824992234342
+	#jmp    0x555555554b70 <bn_sub_words+16>        #! PC = 0x93824992234345
+	mov    (%rsi,%rax,8),%r8                        #! EA = L0x55555575c120; Value = 0x0000000000000000; PC = 0x93824992234352
+	sbb    (%rdx,%rax,8),%r8                        #! EA = L0x55555575c060; Value = 0x0000000000000000; PC = 0x93824992234356
+	mov    %r8,(%rdi,%rax,8)                        #! EA = L0x55555575c0e0; PC = 0x93824992234360
+	lea    0x1(%rax),%rax                           #! PC = 0x93824992234364
+	dec    %ecx                                     #! PC = 0x93824992234368
+	#jne    0x555555554b70 <bn_sub_words+16>        #! PC = 0x93824992234370
+	mov    (%rsi,%rax,8),%r8                        #! EA = L0x55555575c128; Value = 0x0000000000000000; PC = 0x93824992234352
+	sbb    (%rdx,%rax,8),%r8                        #! EA = L0x55555575c068; Value = 0x0000000000000000; PC = 0x93824992234356
+	mov    %r8,(%rdi,%rax,8)                        #! EA = L0x55555575c0e8; PC = 0x93824992234360
+	lea    0x1(%rax),%rax                           #! PC = 0x93824992234364
+	dec    %ecx                                     #! PC = 0x93824992234368
+	#jne    0x555555554b70 <bn_sub_words+16>        #! PC = 0x93824992234370
+	mov    (%rsi,%rax,8),%r8                        #! EA = L0x55555575c130; Value = 0x0000000000000000; PC = 0x93824992234352
+	sbb    (%rdx,%rax,8),%r8                        #! EA = L0x55555575c070; Value = 0x0000000000000000; PC = 0x93824992234356
+	mov    %r8,(%rdi,%rax,8)                        #! EA = L0x55555575c0f0; PC = 0x93824992234360
+	lea    0x1(%rax),%rax                           #! PC = 0x93824992234364
+	dec    %ecx                                     #! PC = 0x93824992234368
+	#jne    0x555555554b70 <bn_sub_words+16>        #! PC = 0x93824992234370
+	mov    (%rsi,%rax,8),%r8                        #! EA = L0x55555575c138; Value = 0x0000000000000000; PC = 0x93824992234352
+	sbb    (%rdx,%rax,8),%r8                        #! EA = L0x55555575c078; Value = 0x0000000000000000; PC = 0x93824992234356
+	mov    %r8,(%rdi,%rax,8)                        #! EA = L0x55555575c0f8; PC = 0x93824992234360
+	lea    0x1(%rax),%rax                           #! PC = 0x93824992234364
+	dec    %ecx                                     #! PC = 0x93824992234368
+	#jne    0x555555554b70 <bn_sub_words+16>        #! PC = 0x93824992234370
+	sbb    %r8,%r8                                  #! PC = 0x93824992234372
+	mov    %r8,%rax                                 #! PC = 0x93824992234375
+	and    $0x1,%eax                                #! PC = 0x93824992234378
+	#repz retq                                      #! PC = 0x93824992234381

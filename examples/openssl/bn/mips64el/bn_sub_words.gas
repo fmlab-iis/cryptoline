@@ -1,0 +1,59 @@
+
+Breakpoint 1, 0x00000001200013e0 in bn_sub_words ()
+bn_sub_words:
+# r4 = 0x1200141a0
+# r5 = 0x1200141e0
+# r6 = 0x120014160
+# r7 = 0x4
+# r8 = 0x0
+# r9 = 0x0
+# r10 = 0x0
+# r11 = 0x0
+	move	v0,zero                                    #! PC = 0x4831843300
+	#bgtz	a3,0x120001400 <bn_sub_words_internal>    #! PC = 0x4831843296
+	li	v1,-4                                        #! PC = 0x4831843328
+	and	at,a3,v1                                    #! PC = 0x4831843332
+	nop                                             #! PC = 0x4831843340
+	#beqz	at,0x1200014b0 <bn_sub_words_internal+176>#! PC = 0x4831843336
+	ld	t0,0(a1)                                     #! EA = L0x1200141e0; Value = 0x0000000000000000; PC = 0x4831843344
+	ld	a4,0(a2)                                     #! EA = L0x120014160; Value = 0x0000000000000000; PC = 0x4831843348
+	addiu	a3,a3,-4                                  #! PC = 0x4831843352
+	ld	t1,8(a1)                                     #! EA = L0x1200141e8; Value = 0x0000000000000000; PC = 0x4831843356
+	and	at,a3,v1                                    #! PC = 0x4831843360
+	ld	t2,16(a1)                                    #! EA = L0x1200141f0; Value = 0x0000000000000000; PC = 0x4831843364
+	daddiu	a2,a2,32                                 #! PC = 0x4831843368
+	ld	t3,24(a1)                                    #! EA = L0x1200141f8; Value = 0x0000000000000000; PC = 0x4831843372
+	daddiu	a0,a0,32                                 #! PC = 0x4831843376
+	ld	a5,-24(a2)                                   #! EA = L0x120014168; Value = 0x0000000000000000; PC = 0x4831843380
+	daddiu	a1,a1,32                                 #! PC = 0x4831843384
+	ld	a6,-16(a2)                                   #! EA = L0x120014170; Value = 0x0000000000000000; PC = 0x4831843388
+	ld	a7,-8(a2)                                    #! EA = L0x120014178; Value = 0x0000000000000000; PC = 0x4831843392
+	sltu	t8,t0,a4                                   #! PC = 0x4831843396
+	dsubu	a4,t0,a4                                  #! PC = 0x4831843400
+	dsubu	t0,a4,v0                                  #! PC = 0x4831843404
+	sltu	v0,a4,t0                                   #! PC = 0x4831843408
+	sd	t0,-32(a0)                                   #! EA = L0x1200141a0; PC = 0x4831843412
+	daddu	v0,v0,t8                                  #! PC = 0x4831843416
+	sltu	t9,t1,a5                                   #! PC = 0x4831843420
+	dsubu	a5,t1,a5                                  #! PC = 0x4831843424
+	dsubu	t1,a5,v0                                  #! PC = 0x4831843428
+	sltu	v0,a5,t1                                   #! PC = 0x4831843432
+	sd	t1,-24(a0)                                   #! EA = L0x1200141a8; PC = 0x4831843436
+	daddu	v0,v0,t9                                  #! PC = 0x4831843440
+	sltu	t8,t2,a6                                   #! PC = 0x4831843444
+	dsubu	a6,t2,a6                                  #! PC = 0x4831843448
+	dsubu	t2,a6,v0                                  #! PC = 0x4831843452
+	sltu	v0,a6,t2                                   #! PC = 0x4831843456
+	sd	t2,-16(a0)                                   #! EA = L0x1200141b0; PC = 0x4831843460
+	daddu	v0,v0,t8                                  #! PC = 0x4831843464
+	sltu	t9,t3,a7                                   #! PC = 0x4831843468
+	dsubu	a7,t3,a7                                  #! PC = 0x4831843472
+	dsubu	t3,a7,v0                                  #! PC = 0x4831843476
+	sltu	v0,a7,t3                                   #! PC = 0x4831843480
+	sd	t3,-8(a0)                                    #! EA = L0x1200141b8; PC = 0x4831843484
+	daddu	v0,v0,t9                                  #! PC = 0x4831843492
+	#bgtz	at,0x120001410 <bn_sub_words_internal+16> #! PC = 0x4831843488
+	nop                                             #! PC = 0x4831843500
+	#beqz	a3,0x120001520 <bn_sub_words_internal+288>#! PC = 0x4831843496
+	move	a0,v0                                      #! PC = 0x4831843620
+	#jr	ra                                          #! PC = 0x4831843616

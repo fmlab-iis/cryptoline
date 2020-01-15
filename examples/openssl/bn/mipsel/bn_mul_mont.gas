@@ -1,0 +1,588 @@
+0x7f7cae30 in ?? ()
+
+Breakpoint 1, 0x004027e0 in bn_mul_mont ()
+bn_mul_mont:
+# r4 = 0x4130d0
+# r5 = 0x4130f0
+# r6 = 0x4130b0
+# r7 = 0x4130c0
+# r8 = 0x0
+# r9 = 0x0
+# r10 = 0x0
+# r11 = 0x0
+	lw	t0,16(sp)                                    #! EA = L0x7fffec98; Value = 0x0041308c; PC = 0x4204512
+	lw	t1,20(sp)                                    #! EA = L0x7fffec9c; Value = 0x00000004; PC = 0x4204516
+	slti	at,t1,4                                    #! PC = 0x4204520
+	li	v0,0                                         #! PC = 0x4204528
+	#bnez	at,0x402800 <bn_mul_mont+32>              #! PC = 0x4204524
+	slti	at,t1,17                                   #! PC = 0x4204532
+	nop                                             #! PC = 0x4204540
+	#bnez	at,0x402820 <bn_mul_mont_internal>        #! PC = 0x4204536
+	addiu	sp,sp,-56                                 #! PC = 0x4204576
+	sw	s8,52(sp)                                    #! EA = L0x7fffec84; PC = 0x4204580
+	sw	s7,48(sp)                                    #! EA = L0x7fffec80; PC = 0x4204584
+	sw	s6,44(sp)                                    #! EA = L0x7fffec7c; PC = 0x4204588
+	sw	s5,40(sp)                                    #! EA = L0x7fffec78; PC = 0x4204592
+	sw	s4,36(sp)                                    #! EA = L0x7fffec74; PC = 0x4204596
+	sw	s3,32(sp)                                    #! EA = L0x7fffec70; PC = 0x4204600
+	sw	s2,28(sp)                                    #! EA = L0x7fffec6c; PC = 0x4204604
+	sw	s1,24(sp)                                    #! EA = L0x7fffec68; PC = 0x4204608
+	sw	s0,20(sp)                                    #! EA = L0x7fffec64; PC = 0x4204612
+	move	s8,sp                                      #! PC = 0x4204616
+	lw	t0,0(t0)                                     #! EA = L0x41308c; Value = 0x00000000; PC = 0x4204620
+	lw	t5,0(a2)                                     #! EA = L0x4130b0; Value = 0x00000000; PC = 0x4204624
+	lw	t4,0(a1)                                     #! EA = L0x4130f0; Value = 0x00000000; PC = 0x4204628
+	lw	t6,0(a3)                                     #! EA = L0x4130c0; Value = 0x00000000; PC = 0x4204632
+	addiu	sp,sp,-8                                  #! PC = 0x4204636
+	sll	t1,t1,0x2                                   #! PC = 0x4204640
+	li	at,-4096                                     #! PC = 0x4204644
+	subu	sp,sp,t1                                   #! PC = 0x4204648
+	and	sp,sp,at                                    #! PC = 0x4204652
+	multu	t4,t5                                     #! PC = 0x4204656
+	lw	s1,4(a1)                                     #! EA = L0x4130f4; Value = 0x00000000; PC = 0x4204660
+	lw	s3,4(a3)                                     #! EA = L0x4130c4; Value = 0x00000000; PC = 0x4204664
+	mflo	t2                                         #! PC = 0x4204668
+	mfhi	t3                                         #! PC = 0x4204672
+	multu	t2,t0                                     #! PC = 0x4204676
+	mflo	s7                                         #! PC = 0x4204680
+	multu	s1,t5                                     #! PC = 0x4204684
+	mflo	s0                                         #! PC = 0x4204688
+	mfhi	s1                                         #! PC = 0x4204692
+	multu	t6,s7                                     #! PC = 0x4204696
+	mflo	t8                                         #! PC = 0x4204700
+	mfhi	t9                                         #! PC = 0x4204704
+	multu	s3,s7                                     #! PC = 0x4204708
+	addu	t8,t8,t2                                   #! PC = 0x4204712
+	sltu	at,t8,t2                                   #! PC = 0x4204716
+	addu	t9,t9,at                                   #! PC = 0x4204720
+	mflo	s2                                         #! PC = 0x4204724
+	mfhi	s3                                         #! PC = 0x4204728
+	move	t7,sp                                      #! PC = 0x4204732
+	li	s6,8                                         #! PC = 0x4204736
+	nop                                             #! PC = 0x4204740
+	nop                                             #! PC = 0x4204744
+	nop                                             #! PC = 0x4204748
+	addu	t4,a1,s6                                   #! PC = 0x4204752
+	addu	t6,a3,s6                                   #! PC = 0x4204756
+	lw	t4,0(t4)                                     #! EA = L0x4130f8; Value = 0x00000000; PC = 0x4204760
+	lw	t6,0(t6)                                     #! EA = L0x4130c8; Value = 0x00000000; PC = 0x4204764
+	multu	t4,t5                                     #! PC = 0x4204768
+	addu	t2,s0,t3                                   #! PC = 0x4204772
+	addu	t8,s2,t9                                   #! PC = 0x4204776
+	sltu	at,t2,t3                                   #! PC = 0x4204780
+	sltu	v0,t8,t9                                   #! PC = 0x4204784
+	addu	t3,s1,at                                   #! PC = 0x4204788
+	addu	t9,s3,v0                                   #! PC = 0x4204792
+	mflo	s0                                         #! PC = 0x4204796
+	mfhi	s1                                         #! PC = 0x4204800
+	addu	t8,t8,t2                                   #! PC = 0x4204804
+	sltu	at,t8,t2                                   #! PC = 0x4204808
+	multu	t6,s7                                     #! PC = 0x4204812
+	addu	t9,t9,at                                   #! PC = 0x4204816
+	addiu	s6,s6,4                                   #! PC = 0x4204820
+	sw	t8,0(t7)                                     #! EA = L0x7fffe000; PC = 0x4204824
+	sltu	v0,s6,t1                                   #! PC = 0x4204828
+	mflo	s2                                         #! PC = 0x4204832
+	mfhi	s3                                         #! PC = 0x4204836
+	addiu	t7,t7,4                                   #! PC = 0x4204844
+	#bnez	v0,0x4028d0 <bn_mul_mont_internal+176>    #! PC = 0x4204840
+	addu	t4,a1,s6                                   #! PC = 0x4204752
+	addu	t6,a3,s6                                   #! PC = 0x4204756
+	lw	t4,0(t4)                                     #! EA = L0x4130fc; Value = 0x00000000; PC = 0x4204760
+	lw	t6,0(t6)                                     #! EA = L0x4130cc; Value = 0x00000000; PC = 0x4204764
+	multu	t4,t5                                     #! PC = 0x4204768
+	addu	t2,s0,t3                                   #! PC = 0x4204772
+	addu	t8,s2,t9                                   #! PC = 0x4204776
+	sltu	at,t2,t3                                   #! PC = 0x4204780
+	sltu	v0,t8,t9                                   #! PC = 0x4204784
+	addu	t3,s1,at                                   #! PC = 0x4204788
+	addu	t9,s3,v0                                   #! PC = 0x4204792
+	mflo	s0                                         #! PC = 0x4204796
+	mfhi	s1                                         #! PC = 0x4204800
+	addu	t8,t8,t2                                   #! PC = 0x4204804
+	sltu	at,t8,t2                                   #! PC = 0x4204808
+	multu	t6,s7                                     #! PC = 0x4204812
+	addu	t9,t9,at                                   #! PC = 0x4204816
+	addiu	s6,s6,4                                   #! PC = 0x4204820
+	sw	t8,0(t7)                                     #! EA = L0x7fffe004; PC = 0x4204824
+	sltu	v0,s6,t1                                   #! PC = 0x4204828
+	mflo	s2                                         #! PC = 0x4204832
+	mfhi	s3                                         #! PC = 0x4204836
+	addiu	t7,t7,4                                   #! PC = 0x4204844
+	#bnez	v0,0x4028d0 <bn_mul_mont_internal+176>    #! PC = 0x4204840
+	addu	t2,s0,t3                                   #! PC = 0x4204848
+	sltu	at,t2,t3                                   #! PC = 0x4204852
+	addu	t3,s1,at                                   #! PC = 0x4204856
+	addu	t8,s2,t9                                   #! PC = 0x4204860
+	sltu	v0,t8,t9                                   #! PC = 0x4204864
+	addu	t9,s3,v0                                   #! PC = 0x4204868
+	addu	t8,t8,t2                                   #! PC = 0x4204872
+	sltu	at,t8,t2                                   #! PC = 0x4204876
+	addu	t9,t9,at                                   #! PC = 0x4204880
+	sw	t8,0(t7)                                     #! EA = L0x7fffe008; PC = 0x4204884
+	addu	t9,t9,t3                                   #! PC = 0x4204888
+	sltu	at,t9,t3                                   #! PC = 0x4204892
+	sw	t9,4(t7)                                     #! EA = L0x7fffe00c; PC = 0x4204896
+	sw	at,8(t7)                                     #! EA = L0x7fffe010; PC = 0x4204900
+	li	s5,4                                         #! PC = 0x4204904
+	nop                                             #! PC = 0x4204908
+	addu	t5,a2,s5                                   #! PC = 0x4204912
+	lw	t5,0(t5)                                     #! EA = L0x4130b4; Value = 0x00000000; PC = 0x4204916
+	lw	t4,0(a1)                                     #! EA = L0x4130f0; Value = 0x00000000; PC = 0x4204920
+	lw	s1,4(a1)                                     #! EA = L0x4130f4; Value = 0x00000000; PC = 0x4204924
+	lw	s4,0(sp)                                     #! EA = L0x7fffe000; Value = 0x00000000; PC = 0x4204928
+	multu	t4,t5                                     #! PC = 0x4204932
+	lw	t6,0(a3)                                     #! EA = L0x4130c0; Value = 0x00000000; PC = 0x4204936
+	lw	s3,4(a3)                                     #! EA = L0x4130c4; Value = 0x00000000; PC = 0x4204940
+	mflo	t2                                         #! PC = 0x4204944
+	mfhi	t3                                         #! PC = 0x4204948
+	addu	t2,t2,s4                                   #! PC = 0x4204952
+	multu	t2,t0                                     #! PC = 0x4204956
+	sltu	at,t2,s4                                   #! PC = 0x4204960
+	addu	t3,t3,at                                   #! PC = 0x4204964
+	mflo	s7                                         #! PC = 0x4204968
+	multu	s1,t5                                     #! PC = 0x4204972
+	mflo	s0                                         #! PC = 0x4204976
+	mfhi	s1                                         #! PC = 0x4204980
+	multu	t6,s7                                     #! PC = 0x4204984
+	mflo	t8                                         #! PC = 0x4204988
+	mfhi	t9                                         #! PC = 0x4204992
+	multu	s3,s7                                     #! PC = 0x4204996
+	addu	t8,t8,t2                                   #! PC = 0x4205000
+	sltu	at,t8,t2                                   #! PC = 0x4205004
+	addu	t9,t9,at                                   #! PC = 0x4205008
+	mflo	s2                                         #! PC = 0x4205012
+	mfhi	s3                                         #! PC = 0x4205016
+	move	t7,sp                                      #! PC = 0x4205020
+	li	s6,8                                         #! PC = 0x4205024
+	lw	s4,4(t7)                                     #! EA = L0x7fffe004; Value = 0x00000000; PC = 0x4205028
+	nop                                             #! PC = 0x4205032
+	nop                                             #! PC = 0x4205036
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130f8; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130c8; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe008; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe000; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130fc; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130cc; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe00c; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe004; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t2,s0,t3                                   #! PC = 0x4205152
+	sltu	at,t2,t3                                   #! PC = 0x4205156
+	addu	t3,s1,at                                   #! PC = 0x4205160
+	addu	t2,t2,s4                                   #! PC = 0x4205164
+	sltu	v0,t2,s4                                   #! PC = 0x4205168
+	addu	t3,t3,v0                                   #! PC = 0x4205172
+	lw	s4,8(t7)                                     #! EA = L0x7fffe010; Value = 0x00000000; PC = 0x4205176
+	addu	t8,s2,t9                                   #! PC = 0x4205180
+	sltu	at,t8,t9                                   #! PC = 0x4205184
+	addu	t9,s3,at                                   #! PC = 0x4205188
+	addu	t8,t8,t2                                   #! PC = 0x4205192
+	sltu	v0,t8,t2                                   #! PC = 0x4205196
+	addu	t9,t9,v0                                   #! PC = 0x4205200
+	sw	t8,0(t7)                                     #! EA = L0x7fffe008; PC = 0x4205204
+	addu	t8,t9,t3                                   #! PC = 0x4205208
+	sltu	t9,t8,t3                                   #! PC = 0x4205212
+	addu	t8,t8,s4                                   #! PC = 0x4205216
+	sltu	at,t8,s4                                   #! PC = 0x4205220
+	addu	t9,t9,at                                   #! PC = 0x4205224
+	sw	t8,4(t7)                                     #! EA = L0x7fffe00c; PC = 0x4205228
+	sw	t9,8(t7)                                     #! EA = L0x7fffe010; PC = 0x4205232
+	addiu	s5,s5,4                                   #! PC = 0x4205236
+	sltu	v0,s5,t1                                   #! PC = 0x4205240
+	nop                                             #! PC = 0x4205248
+	#bnez	v0,0x402970 <bn_mul_mont_internal+336>    #! PC = 0x4205244
+	addu	t5,a2,s5                                   #! PC = 0x4204912
+	lw	t5,0(t5)                                     #! EA = L0x4130b8; Value = 0x00000000; PC = 0x4204916
+	lw	t4,0(a1)                                     #! EA = L0x4130f0; Value = 0x00000000; PC = 0x4204920
+	lw	s1,4(a1)                                     #! EA = L0x4130f4; Value = 0x00000000; PC = 0x4204924
+	lw	s4,0(sp)                                     #! EA = L0x7fffe000; Value = 0x00000000; PC = 0x4204928
+	multu	t4,t5                                     #! PC = 0x4204932
+	lw	t6,0(a3)                                     #! EA = L0x4130c0; Value = 0x00000000; PC = 0x4204936
+	lw	s3,4(a3)                                     #! EA = L0x4130c4; Value = 0x00000000; PC = 0x4204940
+	mflo	t2                                         #! PC = 0x4204944
+	mfhi	t3                                         #! PC = 0x4204948
+	addu	t2,t2,s4                                   #! PC = 0x4204952
+	multu	t2,t0                                     #! PC = 0x4204956
+	sltu	at,t2,s4                                   #! PC = 0x4204960
+	addu	t3,t3,at                                   #! PC = 0x4204964
+	mflo	s7                                         #! PC = 0x4204968
+	multu	s1,t5                                     #! PC = 0x4204972
+	mflo	s0                                         #! PC = 0x4204976
+	mfhi	s1                                         #! PC = 0x4204980
+	multu	t6,s7                                     #! PC = 0x4204984
+	mflo	t8                                         #! PC = 0x4204988
+	mfhi	t9                                         #! PC = 0x4204992
+	multu	s3,s7                                     #! PC = 0x4204996
+	addu	t8,t8,t2                                   #! PC = 0x4205000
+	sltu	at,t8,t2                                   #! PC = 0x4205004
+	addu	t9,t9,at                                   #! PC = 0x4205008
+	mflo	s2                                         #! PC = 0x4205012
+	mfhi	s3                                         #! PC = 0x4205016
+	move	t7,sp                                      #! PC = 0x4205020
+	li	s6,8                                         #! PC = 0x4205024
+	lw	s4,4(t7)                                     #! EA = L0x7fffe004; Value = 0x00000000; PC = 0x4205028
+	nop                                             #! PC = 0x4205032
+	nop                                             #! PC = 0x4205036
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130f8; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130c8; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe008; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe000; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130fc; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130cc; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe00c; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe004; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t2,s0,t3                                   #! PC = 0x4205152
+	sltu	at,t2,t3                                   #! PC = 0x4205156
+	addu	t3,s1,at                                   #! PC = 0x4205160
+	addu	t2,t2,s4                                   #! PC = 0x4205164
+	sltu	v0,t2,s4                                   #! PC = 0x4205168
+	addu	t3,t3,v0                                   #! PC = 0x4205172
+	lw	s4,8(t7)                                     #! EA = L0x7fffe010; Value = 0x00000000; PC = 0x4205176
+	addu	t8,s2,t9                                   #! PC = 0x4205180
+	sltu	at,t8,t9                                   #! PC = 0x4205184
+	addu	t9,s3,at                                   #! PC = 0x4205188
+	addu	t8,t8,t2                                   #! PC = 0x4205192
+	sltu	v0,t8,t2                                   #! PC = 0x4205196
+	addu	t9,t9,v0                                   #! PC = 0x4205200
+	sw	t8,0(t7)                                     #! EA = L0x7fffe008; PC = 0x4205204
+	addu	t8,t9,t3                                   #! PC = 0x4205208
+	sltu	t9,t8,t3                                   #! PC = 0x4205212
+	addu	t8,t8,s4                                   #! PC = 0x4205216
+	sltu	at,t8,s4                                   #! PC = 0x4205220
+	addu	t9,t9,at                                   #! PC = 0x4205224
+	sw	t8,4(t7)                                     #! EA = L0x7fffe00c; PC = 0x4205228
+	sw	t9,8(t7)                                     #! EA = L0x7fffe010; PC = 0x4205232
+	addiu	s5,s5,4                                   #! PC = 0x4205236
+	sltu	v0,s5,t1                                   #! PC = 0x4205240
+	nop                                             #! PC = 0x4205248
+	#bnez	v0,0x402970 <bn_mul_mont_internal+336>    #! PC = 0x4205244
+	addu	t5,a2,s5                                   #! PC = 0x4204912
+	lw	t5,0(t5)                                     #! EA = L0x4130bc; Value = 0x00000000; PC = 0x4204916
+	lw	t4,0(a1)                                     #! EA = L0x4130f0; Value = 0x00000000; PC = 0x4204920
+	lw	s1,4(a1)                                     #! EA = L0x4130f4; Value = 0x00000000; PC = 0x4204924
+	lw	s4,0(sp)                                     #! EA = L0x7fffe000; Value = 0x00000000; PC = 0x4204928
+	multu	t4,t5                                     #! PC = 0x4204932
+	lw	t6,0(a3)                                     #! EA = L0x4130c0; Value = 0x00000000; PC = 0x4204936
+	lw	s3,4(a3)                                     #! EA = L0x4130c4; Value = 0x00000000; PC = 0x4204940
+	mflo	t2                                         #! PC = 0x4204944
+	mfhi	t3                                         #! PC = 0x4204948
+	addu	t2,t2,s4                                   #! PC = 0x4204952
+	multu	t2,t0                                     #! PC = 0x4204956
+	sltu	at,t2,s4                                   #! PC = 0x4204960
+	addu	t3,t3,at                                   #! PC = 0x4204964
+	mflo	s7                                         #! PC = 0x4204968
+	multu	s1,t5                                     #! PC = 0x4204972
+	mflo	s0                                         #! PC = 0x4204976
+	mfhi	s1                                         #! PC = 0x4204980
+	multu	t6,s7                                     #! PC = 0x4204984
+	mflo	t8                                         #! PC = 0x4204988
+	mfhi	t9                                         #! PC = 0x4204992
+	multu	s3,s7                                     #! PC = 0x4204996
+	addu	t8,t8,t2                                   #! PC = 0x4205000
+	sltu	at,t8,t2                                   #! PC = 0x4205004
+	addu	t9,t9,at                                   #! PC = 0x4205008
+	mflo	s2                                         #! PC = 0x4205012
+	mfhi	s3                                         #! PC = 0x4205016
+	move	t7,sp                                      #! PC = 0x4205020
+	li	s6,8                                         #! PC = 0x4205024
+	lw	s4,4(t7)                                     #! EA = L0x7fffe004; Value = 0x00000000; PC = 0x4205028
+	nop                                             #! PC = 0x4205032
+	nop                                             #! PC = 0x4205036
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130f8; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130c8; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe008; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe000; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t4,a1,s6                                   #! PC = 0x4205040
+	addu	t6,a3,s6                                   #! PC = 0x4205044
+	lw	t4,0(t4)                                     #! EA = L0x4130fc; Value = 0x00000000; PC = 0x4205048
+	lw	t6,0(t6)                                     #! EA = L0x4130cc; Value = 0x00000000; PC = 0x4205052
+	multu	t4,t5                                     #! PC = 0x4205056
+	addu	t2,s0,t3                                   #! PC = 0x4205060
+	addu	t8,s2,t9                                   #! PC = 0x4205064
+	sltu	at,t2,t3                                   #! PC = 0x4205068
+	sltu	v0,t8,t9                                   #! PC = 0x4205072
+	addu	t3,s1,at                                   #! PC = 0x4205076
+	addu	t9,s3,v0                                   #! PC = 0x4205080
+	mflo	s0                                         #! PC = 0x4205084
+	mfhi	s1                                         #! PC = 0x4205088
+	addu	t2,t2,s4                                   #! PC = 0x4205092
+	addiu	s6,s6,4                                   #! PC = 0x4205096
+	multu	t6,s7                                     #! PC = 0x4205100
+	sltu	at,t2,s4                                   #! PC = 0x4205104
+	addu	t8,t8,t2                                   #! PC = 0x4205108
+	addu	t3,t3,at                                   #! PC = 0x4205112
+	sltu	v0,t8,t2                                   #! PC = 0x4205116
+	lw	s4,8(t7)                                     #! EA = L0x7fffe00c; Value = 0x00000000; PC = 0x4205120
+	addu	t9,t9,v0                                   #! PC = 0x4205124
+	sltu	at,s6,t1                                   #! PC = 0x4205128
+	mflo	s2                                         #! PC = 0x4205132
+	mfhi	s3                                         #! PC = 0x4205136
+	sw	t8,0(t7)                                     #! EA = L0x7fffe004; PC = 0x4205140
+	addiu	t7,t7,4                                   #! PC = 0x4205148
+	#bnez	at,0x4029f0 <bn_mul_mont_internal+464>    #! PC = 0x4205144
+	addu	t2,s0,t3                                   #! PC = 0x4205152
+	sltu	at,t2,t3                                   #! PC = 0x4205156
+	addu	t3,s1,at                                   #! PC = 0x4205160
+	addu	t2,t2,s4                                   #! PC = 0x4205164
+	sltu	v0,t2,s4                                   #! PC = 0x4205168
+	addu	t3,t3,v0                                   #! PC = 0x4205172
+	lw	s4,8(t7)                                     #! EA = L0x7fffe010; Value = 0x00000000; PC = 0x4205176
+	addu	t8,s2,t9                                   #! PC = 0x4205180
+	sltu	at,t8,t9                                   #! PC = 0x4205184
+	addu	t9,s3,at                                   #! PC = 0x4205188
+	addu	t8,t8,t2                                   #! PC = 0x4205192
+	sltu	v0,t8,t2                                   #! PC = 0x4205196
+	addu	t9,t9,v0                                   #! PC = 0x4205200
+	sw	t8,0(t7)                                     #! EA = L0x7fffe008; PC = 0x4205204
+	addu	t8,t9,t3                                   #! PC = 0x4205208
+	sltu	t9,t8,t3                                   #! PC = 0x4205212
+	addu	t8,t8,s4                                   #! PC = 0x4205216
+	sltu	at,t8,s4                                   #! PC = 0x4205220
+	addu	t9,t9,at                                   #! PC = 0x4205224
+	sw	t8,4(t7)                                     #! EA = L0x7fffe00c; PC = 0x4205228
+	sw	t9,8(t7)                                     #! EA = L0x7fffe010; PC = 0x4205232
+	addiu	s5,s5,4                                   #! PC = 0x4205236
+	sltu	v0,s5,t1                                   #! PC = 0x4205240
+	nop                                             #! PC = 0x4205248
+	#bnez	v0,0x402970 <bn_mul_mont_internal+336>    #! PC = 0x4205244
+	addu	s4,sp,t1                                   #! PC = 0x4205252
+	move	t7,sp                                      #! PC = 0x4205256
+	move	a1,sp                                      #! PC = 0x4205260
+	li	t3,0                                         #! PC = 0x4205264
+	nop                                             #! PC = 0x4205268
+	nop                                             #! PC = 0x4205272
+	nop                                             #! PC = 0x4205276
+	lw	t2,0(t7)                                     #! EA = L0x7fffe000; Value = 0x00000000; PC = 0x4205280
+	lw	t8,0(a3)                                     #! EA = L0x4130c0; Value = 0x00000000; PC = 0x4205284
+	addiu	t7,t7,4                                   #! PC = 0x4205288
+	addiu	a3,a3,4                                   #! PC = 0x4205292
+	subu	t8,t2,t8                                   #! PC = 0x4205296
+	sltu	at,t2,t8                                   #! PC = 0x4205300
+	subu	t2,t8,t3                                   #! PC = 0x4205304
+	sltu	t3,t8,t2                                   #! PC = 0x4205308
+	sw	t2,0(a0)                                     #! EA = L0x4130d0; PC = 0x4205312
+	or	t3,t3,at                                     #! PC = 0x4205316
+	sltu	at,t7,s4                                   #! PC = 0x4205320
+	addiu	a0,a0,4                                   #! PC = 0x4205328
+	#bnez	at,0x402ae0 <bn_mul_mont_internal+704>    #! PC = 0x4205324
+	lw	t2,0(t7)                                     #! EA = L0x7fffe004; Value = 0x00000000; PC = 0x4205280
+	lw	t8,0(a3)                                     #! EA = L0x4130c4; Value = 0x00000000; PC = 0x4205284
+	addiu	t7,t7,4                                   #! PC = 0x4205288
+	addiu	a3,a3,4                                   #! PC = 0x4205292
+	subu	t8,t2,t8                                   #! PC = 0x4205296
+	sltu	at,t2,t8                                   #! PC = 0x4205300
+	subu	t2,t8,t3                                   #! PC = 0x4205304
+	sltu	t3,t8,t2                                   #! PC = 0x4205308
+	sw	t2,0(a0)                                     #! EA = L0x4130d4; PC = 0x4205312
+	or	t3,t3,at                                     #! PC = 0x4205316
+	sltu	at,t7,s4                                   #! PC = 0x4205320
+	addiu	a0,a0,4                                   #! PC = 0x4205328
+	#bnez	at,0x402ae0 <bn_mul_mont_internal+704>    #! PC = 0x4205324
+	lw	t2,0(t7)                                     #! EA = L0x7fffe008; Value = 0x00000000; PC = 0x4205280
+	lw	t8,0(a3)                                     #! EA = L0x4130c8; Value = 0x00000000; PC = 0x4205284
+	addiu	t7,t7,4                                   #! PC = 0x4205288
+	addiu	a3,a3,4                                   #! PC = 0x4205292
+	subu	t8,t2,t8                                   #! PC = 0x4205296
+	sltu	at,t2,t8                                   #! PC = 0x4205300
+	subu	t2,t8,t3                                   #! PC = 0x4205304
+	sltu	t3,t8,t2                                   #! PC = 0x4205308
+	sw	t2,0(a0)                                     #! EA = L0x4130d8; PC = 0x4205312
+	or	t3,t3,at                                     #! PC = 0x4205316
+	sltu	at,t7,s4                                   #! PC = 0x4205320
+	addiu	a0,a0,4                                   #! PC = 0x4205328
+	#bnez	at,0x402ae0 <bn_mul_mont_internal+704>    #! PC = 0x4205324
+	lw	t2,0(t7)                                     #! EA = L0x7fffe00c; Value = 0x00000000; PC = 0x4205280
+	lw	t8,0(a3)                                     #! EA = L0x4130cc; Value = 0x00000000; PC = 0x4205284
+	addiu	t7,t7,4                                   #! PC = 0x4205288
+	addiu	a3,a3,4                                   #! PC = 0x4205292
+	subu	t8,t2,t8                                   #! PC = 0x4205296
+	sltu	at,t2,t8                                   #! PC = 0x4205300
+	subu	t2,t8,t3                                   #! PC = 0x4205304
+	sltu	t3,t8,t2                                   #! PC = 0x4205308
+	sw	t2,0(a0)                                     #! EA = L0x4130dc; PC = 0x4205312
+	or	t3,t3,at                                     #! PC = 0x4205316
+	sltu	at,t7,s4                                   #! PC = 0x4205320
+	addiu	a0,a0,4                                   #! PC = 0x4205328
+	#bnez	at,0x402ae0 <bn_mul_mont_internal+704>    #! PC = 0x4205324
+	subu	t3,t9,t3                                   #! PC = 0x4205332
+	move	t7,sp                                      #! PC = 0x4205336
+	subu	a0,a0,t1                                   #! PC = 0x4205340
+	nor	t9,t3,zero                                  #! PC = 0x4205344
+	lw	t6,0(t7)                                     #! EA = L0x7fffe000; Value = 0x00000000; PC = 0x4205348
+	lw	t4,0(a0)                                     #! EA = L0x4130d0; Value = 0x00000000; PC = 0x4205352
+	sw	zero,0(t7)                                   #! EA = L0x7fffe000; PC = 0x4205356
+	addiu	t7,t7,4                                   #! PC = 0x4205360
+	and	t6,t6,t3                                    #! PC = 0x4205364
+	and	t4,t4,t9                                    #! PC = 0x4205368
+	or	t4,t4,t6                                     #! PC = 0x4205372
+	sltu	at,t7,s4                                   #! PC = 0x4205376
+	sw	t4,0(a0)                                     #! EA = L0x4130d0; PC = 0x4205380
+	addiu	a0,a0,4                                   #! PC = 0x4205388
+	#bnez	at,0x402b24 <bn_mul_mont_internal+772>    #! PC = 0x4205384
+	lw	t6,0(t7)                                     #! EA = L0x7fffe004; Value = 0x00000000; PC = 0x4205348
+	lw	t4,0(a0)                                     #! EA = L0x4130d4; Value = 0x00000000; PC = 0x4205352
+	sw	zero,0(t7)                                   #! EA = L0x7fffe004; PC = 0x4205356
+	addiu	t7,t7,4                                   #! PC = 0x4205360
+	and	t6,t6,t3                                    #! PC = 0x4205364
+	and	t4,t4,t9                                    #! PC = 0x4205368
+	or	t4,t4,t6                                     #! PC = 0x4205372
+	sltu	at,t7,s4                                   #! PC = 0x4205376
+	sw	t4,0(a0)                                     #! EA = L0x4130d4; PC = 0x4205380
+	addiu	a0,a0,4                                   #! PC = 0x4205388
+	#bnez	at,0x402b24 <bn_mul_mont_internal+772>    #! PC = 0x4205384
+	lw	t6,0(t7)                                     #! EA = L0x7fffe008; Value = 0x00000000; PC = 0x4205348
+	lw	t4,0(a0)                                     #! EA = L0x4130d8; Value = 0x00000000; PC = 0x4205352
+	sw	zero,0(t7)                                   #! EA = L0x7fffe008; PC = 0x4205356
+	addiu	t7,t7,4                                   #! PC = 0x4205360
+	and	t6,t6,t3                                    #! PC = 0x4205364
+	and	t4,t4,t9                                    #! PC = 0x4205368
+	or	t4,t4,t6                                     #! PC = 0x4205372
+	sltu	at,t7,s4                                   #! PC = 0x4205376
+	sw	t4,0(a0)                                     #! EA = L0x4130d8; PC = 0x4205380
+	addiu	a0,a0,4                                   #! PC = 0x4205388
+	#bnez	at,0x402b24 <bn_mul_mont_internal+772>    #! PC = 0x4205384
+	lw	t6,0(t7)                                     #! EA = L0x7fffe00c; Value = 0x00000000; PC = 0x4205348
+	lw	t4,0(a0)                                     #! EA = L0x4130dc; Value = 0x00000000; PC = 0x4205352
+	sw	zero,0(t7)                                   #! EA = L0x7fffe00c; PC = 0x4205356
+	addiu	t7,t7,4                                   #! PC = 0x4205360
+	and	t6,t6,t3                                    #! PC = 0x4205364
+	and	t4,t4,t9                                    #! PC = 0x4205368
+	or	t4,t4,t6                                     #! PC = 0x4205372
+	sltu	at,t7,s4                                   #! PC = 0x4205376
+	sw	t4,0(a0)                                     #! EA = L0x4130dc; PC = 0x4205380
+	addiu	a0,a0,4                                   #! PC = 0x4205388
+	#bnez	at,0x402b24 <bn_mul_mont_internal+772>    #! PC = 0x4205384
+	li	a0,1                                         #! PC = 0x4205392
+	li	v0,1                                         #! PC = 0x4205396
+	move	sp,s8                                      #! PC = 0x4205400
+	lw	s8,52(sp)                                    #! EA = L0x7fffec84; Value = 0x7fffec88; PC = 0x4205404
+	lw	s7,48(sp)                                    #! EA = L0x7fffec80; Value = 0x00000000; PC = 0x4205408
+	lw	s6,44(sp)                                    #! EA = L0x7fffec7c; Value = 0x00000000; PC = 0x4205412
+	lw	s5,40(sp)                                    #! EA = L0x7fffec78; Value = 0x00000000; PC = 0x4205416
+	lw	s4,36(sp)                                    #! EA = L0x7fffec74; Value = 0x00000000; PC = 0x4205420
+	lw	s3,32(sp)                                    #! EA = L0x7fffec70; Value = 0x00000000; PC = 0x4205424
+	lw	s2,28(sp)                                    #! EA = L0x7fffec6c; Value = 0x00000000; PC = 0x4205428
+	lw	s1,24(sp)                                    #! EA = L0x7fffec68; Value = 0x00402ba0; PC = 0x4205432
+	lw	s0,20(sp)                                    #! EA = L0x7fffec64; Value = 0x00000000; PC = 0x4205436
+	addiu	sp,sp,56                                  #! PC = 0x4205444
+	#jr	ra                                          #! PC = 0x4205440

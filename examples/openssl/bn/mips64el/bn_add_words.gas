@@ -1,0 +1,59 @@
+
+Breakpoint 1, 0x0000000120001280 in bn_add_words ()
+bn_add_words:
+# r4 = 0x1200141a0
+# r5 = 0x1200141e0
+# r6 = 0x120014160
+# r7 = 0x4
+# r8 = 0x4000a1a800
+# r9 = 0x4000a158b0
+# r10 = 0x40007ffc60
+# r11 = 0x2f2f2f2f2f2f2f2f
+	move	v0,zero                                    #! PC = 0x4831842948
+	#bgtz	a3,0x1200012a0 <bn_add_words_internal>    #! PC = 0x4831842944
+	li	v1,-4                                        #! PC = 0x4831842976
+	and	at,a3,v1                                    #! PC = 0x4831842980
+	nop                                             #! PC = 0x4831842988
+	#beqz	at,0x120001350 <bn_add_words_internal+176>#! PC = 0x4831842984
+	ld	t0,0(a1)                                     #! EA = L0x1200141e0; Value = 0x0000000000000000; PC = 0x4831842992
+	ld	a4,0(a2)                                     #! EA = L0x120014160; Value = 0x0000000000000000; PC = 0x4831842996
+	addiu	a3,a3,-4                                  #! PC = 0x4831843000
+	ld	t1,8(a1)                                     #! EA = L0x1200141e8; Value = 0x0000000000000000; PC = 0x4831843004
+	and	at,a3,v1                                    #! PC = 0x4831843008
+	ld	t2,16(a1)                                    #! EA = L0x1200141f0; Value = 0x0000000000000000; PC = 0x4831843012
+	daddiu	a2,a2,32                                 #! PC = 0x4831843016
+	ld	t3,24(a1)                                    #! EA = L0x1200141f8; Value = 0x0000000000000000; PC = 0x4831843020
+	daddiu	a0,a0,32                                 #! PC = 0x4831843024
+	ld	a5,-24(a2)                                   #! EA = L0x120014168; Value = 0x0000000000000000; PC = 0x4831843028
+	daddiu	a1,a1,32                                 #! PC = 0x4831843032
+	ld	a6,-16(a2)                                   #! EA = L0x120014170; Value = 0x0000000000000000; PC = 0x4831843036
+	ld	a7,-8(a2)                                    #! EA = L0x120014178; Value = 0x0000000000000000; PC = 0x4831843040
+	daddu	a4,a4,t0                                  #! PC = 0x4831843044
+	sltu	t8,a4,t0                                   #! PC = 0x4831843048
+	daddu	t0,a4,v0                                  #! PC = 0x4831843052
+	sltu	v0,t0,a4                                   #! PC = 0x4831843056
+	sd	t0,-32(a0)                                   #! EA = L0x1200141a0; PC = 0x4831843060
+	daddu	v0,v0,t8                                  #! PC = 0x4831843064
+	daddu	a5,a5,t1                                  #! PC = 0x4831843068
+	sltu	t9,a5,t1                                   #! PC = 0x4831843072
+	daddu	t1,a5,v0                                  #! PC = 0x4831843076
+	sltu	v0,t1,a5                                   #! PC = 0x4831843080
+	sd	t1,-24(a0)                                   #! EA = L0x1200141a8; PC = 0x4831843084
+	daddu	v0,v0,t9                                  #! PC = 0x4831843088
+	daddu	a6,a6,t2                                  #! PC = 0x4831843092
+	sltu	t8,a6,t2                                   #! PC = 0x4831843096
+	daddu	t2,a6,v0                                  #! PC = 0x4831843100
+	sltu	v0,t2,a6                                   #! PC = 0x4831843104
+	sd	t2,-16(a0)                                   #! EA = L0x1200141b0; PC = 0x4831843108
+	daddu	v0,v0,t8                                  #! PC = 0x4831843112
+	daddu	a7,a7,t3                                  #! PC = 0x4831843116
+	sltu	t9,a7,t3                                   #! PC = 0x4831843120
+	daddu	t3,a7,v0                                  #! PC = 0x4831843124
+	sltu	v0,t3,a7                                   #! PC = 0x4831843128
+	sd	t3,-8(a0)                                    #! EA = L0x1200141b8; PC = 0x4831843132
+	daddu	v0,v0,t9                                  #! PC = 0x4831843140
+	#bgtz	at,0x1200012b0 <bn_add_words_internal+16> #! PC = 0x4831843136
+	nop                                             #! PC = 0x4831843148
+	#beqz	a3,0x1200013c0 <bn_add_words_internal+288>#! PC = 0x4831843144
+	move	a0,v0                                      #! PC = 0x4831843268
+	#jr	ra                                          #! PC = 0x4831843264
