@@ -1,4 +1,3 @@
-(* ALERT: input radix 32 -> 26 appears to have problems *)
 (* padbit is still unspecified *)
 
 proc main (uint64 xmm0_0, uint64 xmm0_1,   (* H0 *)
@@ -131,11 +130,15 @@ mov L0x7fffffffc648 s4_1;
 mov L0x555555558060 0@uint64;
 mov L0x555555558068 0@uint64;
 
+(* .Lmask 24 *)
+mov L0x555555558040 0xffffff@uint64;
+mov L0x555555558048 0xffffff@uint64;
+
 (* .Lmask 26 *)
-mov L0x555555558040 0x3ffffff@uint64;
-mov L0x555555558048 0x3ffffff@uint64;
-mov xmm15_0 L0x555555558040;
-mov xmm15_1 L0x555555558048;
+mov L0x555555558080 0x3ffffff@uint64;
+mov L0x555555558088 0x3ffffff@uint64;
+mov xmm15_0 L0x555555558080;
+mov xmm15_1 L0x555555558088;
 
 
 (* #ja     0x555555555b40 <poly1305_blocks_avx+1088>#! PC = 0x93824992239248 *)
@@ -386,11 +389,9 @@ or xmm4_1@uint64 xmm4_1 L0x555555558068;
 
 (* NOTE: summary of input radix 32 -> 26 *)
 (* H0 = xmm0, H1 = xmm1, H2 = xmm2, H3 = xmm3, H4 = xmm4 *)
-
-(* ALERT: [H4:H0]_26 does not appear to be [inp_001:inp_000]_64 *)
 assert true
-    && limbs 64 [inp_000, inp_001, inp_011] & 0x3ffffffffffffffffffffffffffffffff@192 =
-       (uext (limbs 26 [xmm0_0, xmm1_0, xmm2_0, xmm3_0, xmm4_0]) 24) & 0x3ffffffffffffffffffffffffffffffff@192;
+    && (uext (limbs 64 [inp_000, inp_001]) 40) =
+       (limbs 26 [xmm0_0, xmm1_0, xmm2_0, xmm3_0, xmm4_0]);
 assume (limbs 64 [inp_000, inp_001]) =
        (limbs 26 [xmm0_0, xmm1_0, xmm2_0, xmm3_0, xmm4_0])
     && true;
@@ -674,10 +675,9 @@ or xmm9_0@uint64 xmm9_0 L0x555555558060;
 or xmm9_1@uint64 xmm9_1 L0x555555558068;
 
 (* NOTE: summary of input radix 32 -> 26 *)
-(* ALERT: [T4:T0]_26 does not appear to be [INP_101:INP_100]_64 *)
 assert true
-    && limbs 64 [INP_100, INP_101, INP_111] & 0x3ffffffffffffffffffffffffffffffff@192 =
-       (uext (limbs 26 [xmm5_0, xmm6_0, xmm7_0, xmm8_0, xmm9_0]) 24) & 0x3ffffffffffffffffffffffffffffffff@192;
+    && (uext (limbs 64 [INP_100, INP_101]) 40) =
+       limbs 26 [xmm5_0, xmm6_0, xmm7_0, xmm8_0, xmm9_0];
 assume limbs 64 [INP_100, INP_101] =
        limbs 26 [xmm5_0, xmm6_0, xmm7_0, xmm8_0, xmm9_0]
     && true;
