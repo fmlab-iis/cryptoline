@@ -960,18 +960,28 @@ let get_rewrite_pattern' e others =
 
 (* Rewrite equalities *)
 let rewrite_assignments ideal p modulus_opt =
+  (* There are matching rules for common patterns from program instructions.
+     For general cases, use get_rewrite_pattern. Note that predicates from
+     cut, assume, and ghost may match the common patterns but they are not
+     instructions. Thus in v - e, variable v may occur in e. *)
   let is_assignment e =
     match e, modulus_opt with
     | Econst _, _ -> None
     (* v = e (mod m), e = v (mod m) *)
     | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), (Ebinop (Emul, _, m))), Some modulus
-      | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus when eq_eexp m modulus -> Some (v, e)
+         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+       Some (v, e)
+    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus
+         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+       Some (v, e)
     (* v = e, e = v *)
-    | Ebinop (Esub, Evar v, e), _
-      | Ebinop (Esub, e, Evar v), _ -> Some (v, e)
+    | Ebinop (Esub, Evar v, e), _ when not (VS.mem v (vars_eexp e)) -> Some (v, e)
+    | Ebinop (Esub, e, Evar v), _ when not (VS.mem v (vars_eexp e)) -> Some (v, e)
     (* v + e1 = e2, e2 = v + e1 *)
     | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2), _
-      | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _ -> Some (v, esub e2 e1)
+     when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (v, esub e2 e1)
+    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _
+         when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (v, esub e2 e1)
     | _ -> get_rewrite_pattern e in
   let rec do_rewrite finished ideal p =
     match ideal with
@@ -979,9 +989,10 @@ let rewrite_assignments ideal p modulus_opt =
     | hd::tl ->
        (match is_assignment hd with
         | None -> do_rewrite (hd::finished) tl p
-        | Some (v, e) -> do_rewrite (List.map (subst_eexp [(v, e)]) finished)
-                           (List.map (subst_eexp [(v, e)]) tl)
-                           (subst_eexp [(v, e)] p)) in
+        | Some (v, e) ->
+           do_rewrite (List.map (subst_eexp [(v, e)]) finished)
+             (List.map (subst_eexp [(v, e)]) tl)
+             (subst_eexp [(v, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
@@ -991,13 +1002,19 @@ let rewrite_assignments' ideal p modulus_opt =
     | Econst _, _ -> None
     (* v = e (mod m), e = v (mod m) *)
     | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), (Ebinop (Emul, _, m))), Some modulus
-      | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus when eq_eexp m modulus -> Some (evar v, e)
+         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+       Some (evar v, e)
+    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus
+         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+       Some (evar v, e)
     (* v = e, e = v *)
-    | Ebinop (Esub, Evar v, e), _
-      | Ebinop (Esub, e, Evar v), _ -> Some (Evar v, e)
+    | Ebinop (Esub, Evar v, e), _ when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
+    | Ebinop (Esub, e, Evar v), _ when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
     (* v + e1 = e2, e2 = v + e1 *)
     | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2), _
-      | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _ -> Some (evar v, esub e2 e1)
+     when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
+    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _
+         when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
     | _ -> get_rewrite_pattern' e others in
   let rec do_rewrite finished ideal p =
     match ideal with
