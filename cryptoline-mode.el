@@ -106,11 +106,13 @@
 
 (setq cryptoline-mode-syntax-table
       (let ( (synTable (make-syntax-table)))
-        ;; comment style “/* … */”
+        ;; comment style “/* … */ and (* *)”
         (modify-syntax-entry ?\/ ". 14" synTable)
         (modify-syntax-entry ?\( ". 1c" synTable)
         (modify-syntax-entry ?\) ". 4c" synTable)
-        (modify-syntax-entry ?* ". 23b" synTable)
+        (modify-syntax-entry ?* ". 23" synTable)
+        (modify-syntax-entry ?# "<" synTable)
+        (modify-syntax-entry ?\n ">" synTable)
         synTable))
 
 

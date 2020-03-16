@@ -1,4 +1,35 @@
-fp_subm_low:
+#! %rax = %%rax
+#! %rcx = %%rcx
+#! %r8 = %%r8
+#! %r9 = %%r9
+#! %r10 = %%r10
+#! %r11 = %%r11
+#! %r12 = %%r12
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! %rdx = %%rdx
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! %rsi = %%rsi
+#! $1c(%rip) = %%EA
+#! (%rip) = %%rsi
+
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2ea -> adds carry $2ea $2ea $1v
+#! adc $1v, $2ea -> adcs carry $2ea $2ea $1v carry
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+
+
+# fp_subm_low:
 # %rdi = 0x7fffffffdde0
 # %rsi = 0x7fffffffde40
 # %rdx = 0x7fffffffde10

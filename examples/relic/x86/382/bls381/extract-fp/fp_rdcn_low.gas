@@ -1,4 +1,41 @@
-fp_rdcn_low:
+#! %rax = %%rax
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %r8 = %%r8
+#! %r9 = %%r9
+#! %r10 = %%r10
+#! %r11 = %%r11
+#! %r12 = %%r12
+#! %r13 = %%r13
+#! %r14 = %%r14
+#! %r15 = %%r15
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! %rdx = %%rdx
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rip) = %%EA
+#! (%rip) = %%EA
+
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v -> mov $2v $1v
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! add $1ea, $2v -> adds carry $2v $2v $1ea
+#! adc $1ea, $2v -> adcs carry $2v $2v $1ea carry
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! cmovb $1ea, $2v -> cmov $2v carry $1ea $2v
+#! mul $1v -> mull rdx rax rax $1v
+#! mulq $1ea -> mull rdx rax rax $1ea
+
+# fp_rdcn_low:
 # %rdi = 0x7fffffffdde0
 # %rsi = 0x7fffffffdd80
 # %rdx = 0x7fffffffdd80
