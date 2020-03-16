@@ -1,6 +1,12 @@
+ (env
+  (dev
+   (flags (:standard -w -32 -w -33 -w -39)))
+  (release
+   (flags (:standard -O3)))
+ )
 (executables
  (names cv cv_cli)
- (libraries options ast parsers qfbv verify main lwt.unix)
+ (libraries options ast parsers coqbb qfbv verify main lwt.unix)
  (public_names cv cv_cli)
  (package cryptoline)
 )

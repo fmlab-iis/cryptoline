@@ -1388,3 +1388,559 @@ let cnf_imp_check_sat ch es =
   ()
 
 (* TODO: optimize a<<n and a*n where n is a constant *)
+
+
+
+
+
+
+
+(* ===== Use code extracted from coq-bitblasting ===== *)
+
+open Coqbb
+open Coqbb.ExtrOcamlIntConv
+open Coqbb.TypEnv
+open Coqbb.QFBV
+
+let to_unsigned w (n : Z.t) : Z.t = Z.erem n (Z.pow (Z.of_int 2) w)
+
+let explode s = List.init (String.length s) (String.get s)
+
+let bv_of_z w n = Z.format ("%0" ^ string_of_int w ^ "b") (to_unsigned w n)
+
+let string_of_chars chars = 
+  let buf = Buffer.create (List.length chars) in
+  List.iter (Buffer.add_char buf) chars;
+  Buffer.contents buf
+
+let cbits_of_oz (w : int) (n : Z.t) : NBitsDef.bits =
+  NBitsDef.from_bin (explode (bv_of_z w n))
+
+let rec coq_exp_of_exp m g e =
+  match e with
+  | Var v ->
+     let (m', g', coq_v) =
+       try
+         let coq_v = VM.find v m in
+		 let _ = print_endline ("ocaml " ^ string_of_var v ^ " => coq (" ^ string_of_int g ^ ", " ^ string_of_int v.vsidx ^ ")") in
+         (m, g, coq_v)
+       with Not_found ->
+         let coq_v = Obj.repr (n_of_int g, n_of_int (v.vsidx)) in
+		 let _ = print_endline ("ocaml " ^ string_of_var v ^ " => coq (" ^ string_of_int g ^ ", " ^ string_of_int v.vsidx ^ ")") in
+         let m' = VM.add v coq_v m in
+         let g' = g + 1 in
+         (m', g', coq_v) in
+     (m', g', QFBV.Evar coq_v)
+  | Const (w, n) -> (m, g, QFBV.Econst (cbits_of_oz w n))
+  | Not (_, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Unot, e'))
+  | And (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Band, e1, e2))
+  | Or (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bor, e1, e2))
+  | Xor (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bxor, e1, e2))
+  | Neg (_, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Uneg, e'))
+  | Add (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Badd, e1, e2))
+  | Sub (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bsub, e1, e2))
+  | Mul (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bmul, e1, e2))
+  | Mod (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bmod, e1, e2))
+  | Srem (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bsrem, e1, e2))
+  | Smod (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bsmod, e1, e2))
+  | Shl (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bshl, e1, e2))
+  | Lshr (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Blshr, e1, e2))
+  | Ashr (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bashr, e1, e2))
+  | Concat (_, _, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Ebinop (QFBV.Bconcat, e1, e2))
+  | Extract (_, i, j, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Uextr (nat_of_int i, nat_of_int j), e'))
+  | Slice (w1, w2, _, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Uextr (nat_of_int (w1 + w2 - 1), nat_of_int w2), e'))
+  | High (_, hi, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Uhigh (nat_of_int hi), e'))
+  | Low (lo, _, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Ulow (nat_of_int lo), e'))
+  | ZeroExtend (_, i, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Uzext (nat_of_int i), e'))
+  | SignExtend (_, i, e) ->
+     let (m', g', e') = coq_exp_of_exp m g e in
+     (m', g', QFBV.Eunop (QFBV.Usext (nat_of_int i), e'))
+  | Ite (_, c, e1, e2) ->
+     let (mc, gc, c) = coq_bexp_of_bexp m g c in
+     let (m1, g1, e1) = coq_exp_of_exp mc gc e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Eite (c, e1, e2))
+and coq_bexp_of_bexp m g e =
+  match e with
+  | True -> (m, g, QFBV.Btrue)
+  | Ult (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bult, e1, e2))
+  | Ule (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bule, e1, e2))
+  | Ugt (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bugt, e1, e2))
+  | Uge (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Buge, e1, e2))
+  | Slt (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bslt, e1, e2))
+  | Sle (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bsle, e1, e2))
+  | Sgt (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bsgt, e1, e2))
+  | Sge (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bsge, e1, e2))
+  | Eq (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Beq, e1, e2))
+  | Uaddo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Buaddo, e1, e2))
+  | Usubo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Busubo, e1, e2))
+  | Umulo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bumulo, e1, e2))
+  | Saddo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bsaddo, e1, e2))
+  | Ssubo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bssubo, e1, e2))
+  | Smulo (_, e1, e2) ->
+     let (m1, g1, e1) = coq_exp_of_exp m g e1 in
+     let (m2, g2, e2) = coq_exp_of_exp m1 g1 e2 in
+     (m2, g2, QFBV.Bbinop (QFBV.Bsmulo, e1, e2))
+  | Lneg e ->
+     let (m', g', e') = coq_bexp_of_bexp m g e in
+     (m', g',  QFBV.Blneg e')
+  | Conj (e1, e2) ->
+     let (m1, g1, e1) = coq_bexp_of_bexp m g e1 in
+     let (m2, g2, e2) = coq_bexp_of_bexp m1 g1 e2 in
+     (m2, g2, QFBV.Bconj (e1, e2))
+  | Disj (e1, e2) ->
+     let (m1, g1, e1) = coq_bexp_of_bexp m g e1 in
+     let (m2, g2, e2) = coq_bexp_of_bexp m1 g1 e2 in
+     (m2, g2, QFBV.Bdisj (e1, e2))
+
+let string_of_coq_eunop op =
+  match op with
+  | QFBV.Unot -> "not"
+  | QFBV.Uneg -> "neg"
+  | QFBV.Uextr (i, j) -> "uextr " ^ string_of_int (int_of_nat i) ^ " " ^ string_of_int (int_of_nat j)
+  | QFBV.Uhigh n -> "high " ^ string_of_int (int_of_nat n)
+  | QFBV.Ulow n -> "low " ^ string_of_int (int_of_nat n)
+  | QFBV.Uzext n -> "zext " ^ string_of_int (int_of_nat n)
+  | QFBV.Usext n -> "sext " ^ string_of_int (int_of_nat n)
+
+let string_of_coq_ebinop op =
+  match op with
+  | QFBV.Band -> "and"
+  | QFBV.Bor -> "or"
+  | QFBV.Bxor -> "xor"
+  | QFBV.Badd -> "add"
+  | QFBV.Bsub -> "sub"
+  | QFBV.Bmul -> "mul"
+  | QFBV.Bmod -> "mod"
+  | QFBV.Bsrem -> "srem"
+  | QFBV.Bsmod -> "smod"
+  | QFBV.Bshl -> "shl"
+  | QFBV.Blshr -> "lshr"
+  | QFBV.Bashr -> "ashr"
+  | QFBV.Bconcat -> "cat"
+
+let string_of_coq_bbinop op =
+  match op with
+  | QFBV.Beq -> "eq"
+  | QFBV.Bult -> "ult"
+  | QFBV.Bule -> "ule"
+  | QFBV.Bugt -> "ugt"
+  | QFBV.Buge -> "uge"
+  | QFBV.Bslt -> "slt"
+  | QFBV.Bsle -> "sle"
+  | QFBV.Bsgt -> "sgt"
+  | QFBV.Bsge -> "sge"
+  | QFBV.Buaddo -> "uaddo"
+  | QFBV.Busubo -> "usubo"
+  | QFBV.Bumulo -> "umulo"
+  | QFBV.Bsaddo -> "saddo"
+  | QFBV.Bssubo -> "ssubo"
+  | QFBV.Bsmulo -> "smulo"
+
+let rec string_of_coq_exp e =
+  match e with
+  | QFBV.Evar v ->
+	  let (vn, vi) = Obj.magic v in
+	  "(" ^ string_of_int vn ^ ", " ^ string_of_int vi ^ ")"
+  | QFBV.Econst n -> string_of_chars (NBitsDef.to_hex n)
+  | QFBV.Eunop (op, e) -> string_of_coq_eunop op ^ " (" ^ string_of_coq_exp e ^ ")"
+  | QFBV.Ebinop (op, e1, e2) -> string_of_coq_ebinop op ^ " (" ^ string_of_coq_exp e1 ^ ") (" ^ string_of_coq_exp e2 ^ ")"
+  | QFBV.Eite (c, e1, e2) -> "(" ^ string_of_coq_bexp c ^ ")" ^ " ? (" ^ string_of_coq_exp e1 ^ ") : (" ^ string_of_coq_exp e2 ^ ")"
+and string_of_coq_bexp e =
+  match e with
+  | QFBV.Btrue -> "true"
+  | QFBV.Bfalse -> "false"
+  | QFBV.Bbinop (op, e1, e2) -> string_of_coq_bbinop op ^ " (" ^ string_of_coq_exp e1 ^ ") (" ^ string_of_coq_exp e2 ^ ")"
+  | QFBV.Blneg e -> "~(" ^ string_of_coq_bexp e ^ ")"
+  | QFBV.Bconj (e1, e2) -> "(" ^ string_of_coq_bexp e1 ^ ") /\\ (" ^ string_of_coq_bexp e2 ^ ")"
+  | QFBV.Bdisj (e1, e2) -> "(" ^ string_of_coq_bexp e1 ^ ") \\/ (" ^ string_of_coq_bexp e2 ^ ")"
+
+let mk_conj es =
+  let rec helper left es =
+    match es with
+    | [] -> left
+    | hd::tl -> helper (Conj (left, hd)) tl in
+  match es with
+  | [] -> True
+  | [hd] -> hd
+  | hd::tl -> helper hd tl
+
+let mk_disj es =
+  let rec helper left es =
+    match es with
+    | [] -> left
+    | hd::tl -> helper (Disj (left, hd)) tl in
+  match es with
+  | [] -> Lneg True
+  | [hd] -> hd
+  | hd::tl -> helper hd tl
+
+let join_imp_list es =
+  let (premises, goal) =
+    match List.rev es with
+    | goal::premises_rev -> (List.rev premises_rev, goal)
+    | _ -> failwith "" in
+  Disj (Lneg (mk_conj premises), goal)
+
+let coq_string_of_literal l =
+  match l with
+  | CNF.Pos v -> string_of_int v
+  | CNF.Neg v -> "-" ^ string_of_int v
+
+let coq_output_clause ch c = output_string ch (String.concat " " (List.map coq_string_of_literal c) ^ " 0")
+
+let coq_output_cnf ch cs = List.iter (fun c -> coq_output_clause ch c; output_string ch "\n") cs
+
+let coq_output_dimacs ch cs =
+  let nvars = CNF.max_var_of_cnf cs in
+  let nclauses = CNF.num_clauses cs in
+  let _ = output_string ch ("p cnf " ^ string_of_int nvars ^ " " ^ string_of_int nclauses ^ "\n") in
+  let _ = coq_output_cnf ch cs in
+  let _ = flush ch in
+  ()
+
+let coq_typ_of_typ t =
+  match t with
+  | Tuint w -> Typ.Tuint (nat_of_int w)
+  | Tsint w -> Typ.Tsint (nat_of_int w)
+
+let rec te_of_exp te m e =
+  match e with
+  | Var v ->
+     begin
+       try
+         let coq_v = VM.find v m in
+         let coq_ty = coq_typ_of_typ (v.vtyp) in
+         SSATE.add coq_v coq_ty te
+       with Not_found ->
+         failwith ("Variable " ^ v.vname ^ " is not found in the Coq conversion map")
+     end
+  | Const _ -> te
+  | Not (_, e)
+  | Neg (_, e)
+  | Extract (_, _, _, e)
+  | Slice (_, _, _, e)
+  | High (_, _, e)
+  | Low (_, _, e)
+  | ZeroExtend (_, _, e)
+  | SignExtend (_, _, e) -> te_of_exp te m e
+  | And (_, e1, e2)
+  | Or (_, e1, e2)
+  | Xor (_, e1, e2)
+  | Add (_, e1, e2)
+  | Sub (_, e1, e2)
+  | Mul (_, e1, e2)
+  | Mod (_, e1, e2)
+  | Srem (_, e1, e2)
+  | Smod (_, e1, e2)
+  | Shl (_, e1, e2)
+  | Lshr (_, e1, e2)
+  | Ashr (_, e1, e2)
+  | Concat (_, _, e1, e2) ->
+     let te1 = te_of_exp te m e1 in
+     let te2 = te_of_exp te1 m e2 in
+     te2
+  | Ite (_, c, e1, e2) ->
+     let tec = te_of_bexp te m c in
+     let te1 = te_of_exp tec m e1 in
+     let te2 = te_of_exp te1 m e2 in
+     te2
+and te_of_bexp te m e =
+  match e with
+  | True -> te
+  | Ult (_, e1, e2)
+  | Ule (_, e1, e2)
+  | Ugt (_, e1, e2)
+  | Uge (_, e1, e2)
+  | Slt (_, e1, e2)
+  | Sle (_, e1, e2)
+  | Sgt (_, e1, e2)
+  | Sge (_, e1, e2)
+  | Eq (_, e1, e2)
+  | Uaddo (_, e1, e2)
+  | Usubo (_, e1, e2)
+  | Umulo (_, e1, e2)
+  | Saddo (_, e1, e2)
+  | Ssubo (_, e1, e2)
+  | Smulo (_, e1, e2) ->
+     let te1 = te_of_exp te m e1 in
+     let te2 = te_of_exp te1 m e2 in
+     te2
+  | Lneg e -> te_of_bexp te m e
+  | Conj (e1, e2)
+  | Disj (e1, e2) ->
+     let te1 = te_of_bexp te m e1 in
+     let te2 = te_of_bexp te1 m e2 in
+     te2
+
+
+(* Option:
+   true to bit-blast a huge conjunction of expressions;
+   false to bit-blast the expressions separately *)
+let bb_alltogether = ref false
+
+(* Option: true to use the cache version *)
+let coqbb_cache_version = ref true
+
+
+(* This function is not thread safe. *)
+(* Use the extracted code from coq-bitblasting to do bit-blasting. *)
+let coq_cnf_imp_check_sat ch es =
+  (* -- Bit-blasting a single huge expression : slower *)
+  let bb_together () =
+    let e = join_imp_list es in
+    (* Convert to Coq expressions *)
+    let (m, _, coq_e) = coq_bexp_of_bexp VM.empty 0 e in
+    let te = te_of_bexp SSATE.empty m e in
+    (* Bit-blasting *)
+    let cs =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting" in
+      let cs = BitBlasting.bexp_to_cnf te coq_e in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      cs in
+    let _ = trace "Finished making clauses" in
+    let _ = coq_output_dimacs ch cs in
+    () in
+  (* -- Bit-blasting expressions separately : faster *)
+  let bb_separately () =
+    let (m, _, coq_es_rev) =
+      List.fold_left (fun (m, g, res) e ->
+          let (m', g', e') = coq_bexp_of_bexp m g e in
+          (m', g', e'::res)) (VM.empty, 1, []) es in
+    let te = te_of_bexp SSATE.empty m (join_imp_list es) in
+    let (premises, goal) =
+      match coq_es_rev with
+      | goal::premises_rev -> (List.rev premises_rev, goal)
+      | _ -> failwith "" in
+    let coq_m = BitBlasting.init_vm in
+    let coq_g = BitBlasting.init_gen in
+    let (coq_m, coq_g, cs_premises, lr_premises) =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting premises" in
+      let (coq_m, coq_g, cs_premises, lr_premises) =
+        List.fold_left (
+            fun (coq_m, coq_g, res_cs, res_lrs) p ->
+            (*let _ = trace ("Bit-blasting: " ^ coq_string_of_bexp p) in*)
+            let (((coq_m, coq_g), cs), lr) = BitBlastingDef.bit_blast_bexp te coq_m coq_g p in
+            (coq_m, coq_g, cs@@res_cs, lr::res_lrs)) (coq_m, coq_g, [], []) premises in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_g, cs_premises, lr_premises) in
+    let (_, _, cs_g, lr_g) =
+      let t1 = Unix.gettimeofday() in
+      (*let _ = trace ("Bit-blasting goal: " ^ coq_string_of_bexp goal) in*)
+      let (((coq_m, coq_g), cs_g), lr_g) = BitBlastingDef.bit_blast_bexp te coq_m coq_g goal in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_g, cs_g, lr_g) in
+    let clauses =
+      let cs = (CNF.add_prelude cs_premises) in
+      let cs = cs@@(List.rev_map (fun p -> [p]) lr_premises) in
+      let cs = cs@@cs_g in
+      let cs = cs@@[[CNF.neg_lit lr_g]] in
+      cs in
+    let _ = coq_output_dimacs ch clauses in
+    () in
+  let _ =
+	if !bb_alltogether then bb_together()
+	else bb_separately() in
+  let _ = flush ch in
+  ()
+
+let oc_map = ref VM.empty (* a map from ocaml variables to Coq variables *)
+let oc_gen = ref 0        (* a generator of Coq variable names *)
+let vm_ref = ref BitBlastingInit.init_vm
+let cache_ref = ref BitBlastingInit.init_cache
+let gen_ref = ref BitBlastingInit.init_gen
+
+let coq_cnf_imp_check_sat_reset () =
+  let _ = oc_map := VM.empty in
+  let _ = oc_gen := 0 in
+  let _ = vm_ref := BitBlastingInit.init_vm in
+  let _ = cache_ref := BitBlastingInit.init_cache in
+  let _ = gen_ref := BitBlastingInit.init_gen in
+  ()
+  
+(* This function is not thread safe. *)
+(* Use the cache version in coq-bitblasting to do bit-blasting. *)
+let coq_cnf_imp_check_sat_cache ch es =
+  (* -- Bit-blasting a single huge expression : slower *)
+  let bb_together () =
+    let e = join_imp_list es in
+    (* Convert to Coq expressions *)
+    let (m', g', coq_e) = coq_bexp_of_bexp !oc_map !oc_gen e in
+	let _ = oc_map := m' in
+	let _ = oc_gen := g' in
+    let te = te_of_bexp SSATE.empty m' e in
+    (* Bit-blasting *)
+    let cs =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting" in
+      let (((vm', cache'), gen'), cs) = BitBlastingCache.bexp_to_cnf_cache te !vm_ref !cache_ref !gen_ref coq_e in
+	  let _ =
+		let _ = vm_ref := vm' in
+		let _ = cache_ref := cache' in
+		let _ = gen_ref := gen' in
+		() in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      cs in
+    let _ = trace "Finished making clauses" in
+    let _ = coq_output_dimacs ch cs in
+    () in
+  (* -- Bit-blasting expressions separately : faster *)
+  let bb_separately () =
+    let (m', g', coq_es_rev) =
+      List.fold_left (fun (m, g, res) e ->
+          let (m', g', e') = coq_bexp_of_bexp m g e in
+          (m', g', e'::res)) (!oc_map, !oc_gen, []) es in
+	let _ = oc_map := m' in
+	let _ = oc_gen := g' in	
+    let te = te_of_bexp SSATE.empty m' (join_imp_list es) in
+    let (premises, goal) =
+      match coq_es_rev with
+      | goal::premises_rev -> (List.rev premises_rev, goal)
+      | _ -> failwith "" in
+	(* Bit-blast premises *)
+    let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting premises" in
+      let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
+        List.fold_left (
+            fun (coq_m, coq_c, coq_g, res_cs, res_lrs) p ->
+            let ((((coq_m, coq_c), coq_g), cs), lr) = BitBlastingCacheDef.bit_blast_bexp_cache te coq_m coq_c coq_g p in
+            (coq_m, coq_c, coq_g, cs@@res_cs, lr::res_lrs)) (!vm_ref, !cache_ref, !gen_ref, [], []) premises in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_c, coq_g, cs_premises, lr_premises) in
+	(* Bit-blast goal *)
+    let (coq_m, coq_c, coq_g, cs_g, lr_g) =
+      let t1 = Unix.gettimeofday() in
+      let ((((coq_m, coq_c), coq_g), cs_g), lr_g) = BitBlastingCacheDef.bit_blast_bexp_cache te coq_m coq_c coq_g goal in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_c, coq_g, cs_g, lr_g) in
+	(* Update cache *)
+	let _ =
+	  let _ = vm_ref := coq_m in
+	  let _ = cache_ref := coq_c in
+	  let _ = gen_ref := coq_g in
+	  () in
+	(* Output clauses *)
+    let _ =
+      let clauses =
+		let cs = (CNF.add_prelude cs_premises) in
+		let cs = cs@@(List.rev_map (fun p -> [p]) lr_premises) in
+		let cs = cs@@cs_g in
+		let cs = cs@@[[CNF.neg_lit lr_g]] in
+		cs in
+	  coq_output_dimacs ch clauses in
+    () in
+  let _ =
+	if !bb_alltogether then bb_together()
+    else bb_separately() in
+  let _ = flush ch in
+  ()
+
+let cnf_imp_check_sat ch es =
+  if !certified_procedures then
+	if !coqbb_cache_version then coq_cnf_imp_check_sat_cache ch es
+	else coq_cnf_imp_check_sat ch es
+  else cnf_imp_check_sat ch es

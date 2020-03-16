@@ -126,3 +126,6 @@ let auto_cast = ref false
 let auto_cast_preserve_value = ref false
 let typing_file = ref None
 let use_binary_repr = ref false
+
+(* Use certified procedures. *)
+let certified_procedures = ref false

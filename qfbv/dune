@@ -1,5 +1,5 @@
 (library
   (name        qfbv)
   (preprocess  (pps lwt_ppx))
-  (libraries   options ast)
+  (libraries   options ast coqbb)
 )

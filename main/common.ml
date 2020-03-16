@@ -25,6 +25,9 @@ let args =
     ("-boolector", String (fun str -> boolector_path := str; smt_solver := Boolector),
      "PATH\n\t     Use Boolector at the specified path\n");
     ("-btor", Set use_btor, "     Output btor format to Boolector\n");
+    ("-certified", Set certified_procedures, "Use certified procedures if available. Available certified\n\t"
+	 ^ "     procedures include: bit-blasting procedure (enabled with minisat\n\t"
+	 ^ "     or cryptominisat)\n");
     ("-cryptominisat", String (fun str -> cryptominisat_path := str; smt_solver := Cryptominisat), "PATH\n\t     Use Cryptominisat at the specified path\n");
     ("-disable_rewriting", Clear apply_rewriting, "\n\t     Disable rewriting of assignments (at program level) and equalities\n\t     (at polynomial level)\n");
     ("-isafety", Set incremental_safety, "  Verify program safety incrementally\n");

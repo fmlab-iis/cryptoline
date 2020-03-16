@@ -94,3 +94,5 @@ val auto_cast_preserve_value : bool ref
 val typing_file : (string option) ref
 val use_binary_repr : bool ref
 
+(* Use certified procedures. *)
+val certified_procedures : bool ref
