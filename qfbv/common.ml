@@ -1777,6 +1777,9 @@ let bb_alltogether = ref false
 (* Option: true to use the cache version *)
 let coqbb_cache_version = ref true
 
+let coq_bexp_wf_check name te e =
+  if not (QFBV.well_formed_bexp e te) then
+	failwith (name ^ " is not well-formed: " ^ string_of_coq_bexp e)
 
 (* This function is not thread safe. *)
 (* Use the extracted code from coq-bitblasting to do bit-blasting. *)
@@ -1787,6 +1790,8 @@ let coq_cnf_imp_check_sat ch es =
     (* Convert to Coq expressions *)
     let (m, _, coq_e) = coq_bexp_of_bexp VM.empty 0 e in
     let te = te_of_bexp SSATE.empty m e in
+	(* Check well-formedness *)
+	let _ = coq_bexp_wf_check "Coq bexp" te coq_e in
     (* Bit-blasting *)
     let cs =
       let t1 = Unix.gettimeofday() in
@@ -1809,6 +1814,12 @@ let coq_cnf_imp_check_sat ch es =
       match coq_es_rev with
       | goal::premises_rev -> (List.rev premises_rev, goal)
       | _ -> failwith "" in
+	(* Check well-formedness *)
+	let _ =
+	  let _ = List.iter (coq_bexp_wf_check "Premise" te) premises in
+	  let _ = coq_bexp_wf_check "Goal" te goal in
+	  () in
+	(* Bit-blast premises *)
     let coq_m = BitBlasting.init_vm in
     let coq_g = BitBlasting.init_gen in
     let (coq_m, coq_g, cs_premises, lr_premises) =
@@ -1823,6 +1834,7 @@ let coq_cnf_imp_check_sat ch es =
       let t2 = Unix.gettimeofday() in
       let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
       (coq_m, coq_g, cs_premises, lr_premises) in
+	(* Bit-blast goal *)
     let (_, _, cs_g, lr_g) =
       let t1 = Unix.gettimeofday() in
       (*let _ = trace ("Bit-blasting goal: " ^ coq_string_of_bexp goal) in*)
@@ -1830,6 +1842,7 @@ let coq_cnf_imp_check_sat ch es =
       let t2 = Unix.gettimeofday() in
       let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
       (coq_m, coq_g, cs_g, lr_g) in
+	(* Output clauses *)
     let clauses =
       let cs = (CNF.add_prelude cs_premises) in
       let cs = cs@@(List.rev_map (fun p -> [p]) lr_premises) in
@@ -1869,6 +1882,8 @@ let coq_cnf_imp_check_sat_cache ch es =
 	let _ = oc_map := m' in
 	let _ = oc_gen := g' in
     let te = te_of_bexp SSATE.empty m' e in
+	(* Check well-formedness *)
+	let _ = coq_bexp_wf_check "Coq bexp" te coq_e in
     (* Bit-blasting *)
     let cs =
       let t1 = Unix.gettimeofday() in
@@ -1898,6 +1913,11 @@ let coq_cnf_imp_check_sat_cache ch es =
       match coq_es_rev with
       | goal::premises_rev -> (List.rev premises_rev, goal)
       | _ -> failwith "" in
+	(* Check well-formedness *)
+	let _ =
+	  let _ = List.iter (coq_bexp_wf_check "Premise" te) premises in
+	  let _ = coq_bexp_wf_check "Goal" te goal in
+	  () in
 	(* Bit-blast premises *)
     let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
       let t1 = Unix.gettimeofday() in
