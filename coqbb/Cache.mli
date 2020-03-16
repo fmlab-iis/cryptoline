@@ -25,3 +25,5 @@ val add_hbt : BexpMap.key -> cnf -> literal -> cache -> cache
 val add_cet : ExpMap.key -> word -> cache -> cache
 
 val add_cbt : BexpMap.key -> literal -> cache -> cache
+
+val reset_ct : cache -> cache

@@ -56,3 +56,8 @@ let add_cet e ls c =
 
 let add_cbt e l c =
   { ht = c.ht; ct = (add_bt e l c.ct) }
+
+(** val reset_ct : cache -> cache **)
+
+let reset_ct c =
+  { ht = c.ht; ct = SimpTable.empty }

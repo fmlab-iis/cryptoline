@@ -3,9 +3,14 @@ open BBAnd
 open BBAshr
 open BBCommon
 open BBConcat
+open BBConj
+open BBConst
+open BBDisj
 open BBEq
 open BBExtract
 open BBHigh
+open BBIte
+open BBLneg
 open BBLow
 open BBLshr
 open BBMul
@@ -29,9 +34,13 @@ open BBUle
 open BBUlt
 open BBUmulo
 open BBUsubo
+open BBVar
 open BBXor
 open BBZeroExtend
 open CNF
+open CompCache
+open Var
+open Seq
 
 val bit_blast_eunop :
   QFBV.QFBV.eunop -> generator -> literal list -> (generator * cnf) * word
@@ -43,3 +52,11 @@ val bit_blast_ebinop :
 val bit_blast_bbinop :
   QFBV.QFBV.bbinop -> generator -> literal list -> literal list ->
   (generator * cnf) * literal
+
+val bit_blast_exp_ccache :
+  TypEnv.SSATE.env -> vm -> compcache -> generator -> QFBV.QFBV.exp ->
+  (((vm * compcache) * generator) * cnf) * word
+
+val bit_blast_bexp_ccache :
+  TypEnv.SSATE.env -> vm -> compcache -> generator -> QFBV.QFBV.bexp ->
+  (((vm * compcache) * generator) * cnf) * literal

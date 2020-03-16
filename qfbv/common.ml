@@ -1422,11 +1422,9 @@ let rec coq_exp_of_exp m g e =
      let (m', g', coq_v) =
        try
          let coq_v = VM.find v m in
-		 let _ = print_endline ("ocaml " ^ string_of_var v ^ " => coq (" ^ string_of_int g ^ ", " ^ string_of_int v.vsidx ^ ")") in
          (m, g, coq_v)
        with Not_found ->
          let coq_v = Obj.repr (n_of_int g, n_of_int (v.vsidx)) in
-		 let _ = print_endline ("ocaml " ^ string_of_var v ^ " => coq (" ^ string_of_int g ^ ", " ^ string_of_int v.vsidx ^ ")") in
          let m' = VM.add v coq_v m in
          let g' = g + 1 in
          (m', g', coq_v) in
@@ -1777,6 +1775,9 @@ let bb_alltogether = ref false
 (* Option: true to use the cache version *)
 let coqbb_cache_version = ref true
 
+(* Option: true to use CCache version *)
+let use_ccache = ref false
+
 let coq_bexp_wf_check name te e =
   if not (QFBV.well_formed_bexp e te) then
 	failwith (name ^ " is not well-formed: " ^ string_of_coq_bexp e)
@@ -1861,19 +1862,27 @@ let oc_map = ref VM.empty (* a map from ocaml variables to Coq variables *)
 let oc_gen = ref 0        (* a generator of Coq variable names *)
 let vm_ref = ref BitBlastingInit.init_vm
 let cache_ref = ref BitBlastingInit.init_cache
+let ccache_ref = ref BitBlastingInit.init_ccache
 let gen_ref = ref BitBlastingInit.init_gen
 
-let coq_cnf_imp_check_sat_reset () =
+let coq_reset_ct () =
+  let _ = cache_ref := Cache.reset_ct !cache_ref in
+  let _ = ccache_ref := CompCache.reset_ct !ccache_ref in
+  ()
+
+let coq_reset_all () =
   let _ = oc_map := VM.empty in
   let _ = oc_gen := 0 in
   let _ = vm_ref := BitBlastingInit.init_vm in
   let _ = cache_ref := BitBlastingInit.init_cache in
+  let _ = ccache_ref := BitBlastingInit.init_ccache in
   let _ = gen_ref := BitBlastingInit.init_gen in
   ()
-  
+
 (* This function is not thread safe. *)
 (* Use the cache version in coq-bitblasting to do bit-blasting. *)
 let coq_cnf_imp_check_sat_cache ch es =
+  let _ = coq_reset_ct () in
   (* -- Bit-blasting a single huge expression : slower *)
   let bb_together () =
     let e = join_imp_list es in
@@ -1925,7 +1934,7 @@ let coq_cnf_imp_check_sat_cache ch es =
       let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
         List.fold_left (
             fun (coq_m, coq_c, coq_g, res_cs, res_lrs) p ->
-            let ((((coq_m, coq_c), coq_g), cs), lr) = BitBlastingCacheDef.bit_blast_bexp_cache te coq_m coq_c coq_g p in
+              let ((((coq_m, coq_c), coq_g), cs), lr) = BitBlastingCacheDef.bit_blast_bexp_cache te coq_m coq_c coq_g p in
             (coq_m, coq_c, coq_g, cs@@res_cs, lr::res_lrs)) (!vm_ref, !cache_ref, !gen_ref, [], []) premises in
       let t2 = Unix.gettimeofday() in
       let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
@@ -1959,8 +1968,99 @@ let coq_cnf_imp_check_sat_cache ch es =
   let _ = flush ch in
   ()
 
+(* This function is not thread safe. *)
+(* Use the cache version in coq-bitblasting to do bit-blasting. *)
+let coq_cnf_imp_check_sat_ccache ch es =
+  let _ = coq_reset_ct () in
+  (* -- Bit-blasting a single huge expression : slower *)
+  let bb_together () =
+    let e = join_imp_list es in
+    (* Convert to Coq expressions *)
+    let (m', g', coq_e) = coq_bexp_of_bexp !oc_map !oc_gen e in
+	let _ = oc_map := m' in
+	let _ = oc_gen := g' in
+    let te = te_of_bexp SSATE.empty m' e in
+	(* Check well-formedness *)
+	let _ = coq_bexp_wf_check "Coq bexp" te coq_e in
+    (* Bit-blasting *)
+    let cs =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting" in
+      let (((vm', cache'), gen'), cs) = BitBlastingCCache.bexp_to_cnf_ccache te !vm_ref !ccache_ref !gen_ref coq_e in
+	  let _ =
+		let _ = vm_ref := vm' in
+		let _ = ccache_ref := cache' in
+		let _ = gen_ref := gen' in
+		() in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      cs in
+    let _ = trace "Finished making clauses" in
+    let _ = coq_output_dimacs ch cs in
+    () in
+  (* -- Bit-blasting expressions separately : faster *)
+  let bb_separately () =
+    let (m', g', coq_es_rev) =
+      List.fold_left (fun (m, g, res) e ->
+          let (m', g', e') = coq_bexp_of_bexp m g e in
+          (m', g', e'::res)) (!oc_map, !oc_gen, []) es in
+	let _ = oc_map := m' in
+	let _ = oc_gen := g' in	
+    let te = te_of_bexp SSATE.empty m' (join_imp_list es) in
+    let (premises, goal) =
+      match coq_es_rev with
+      | goal::premises_rev -> (List.rev premises_rev, goal)
+      | _ -> failwith "" in
+	(* Check well-formedness *)
+	let _ =
+	  let _ = List.iter (coq_bexp_wf_check "Premise" te) premises in
+	  let _ = coq_bexp_wf_check "Goal" te goal in
+	  () in
+	(* Bit-blast premises *)
+    let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
+      let t1 = Unix.gettimeofday() in
+      let _ = trace "Bit-blasting premises" in
+      let (coq_m, coq_c, coq_g, cs_premises, lr_premises) =
+        List.fold_left (
+            fun (coq_m, coq_c, coq_g, res_cs, res_lrs) p ->
+              let ((((coq_m, coq_c), coq_g), cs), lr) = BitBlastingCCacheDef.bit_blast_bexp_ccache te coq_m coq_c coq_g p in
+            (coq_m, coq_c, coq_g, cs@@res_cs, lr::res_lrs)) (!vm_ref, !ccache_ref, !gen_ref, [], []) premises in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_c, coq_g, cs_premises, lr_premises) in
+	(* Bit-blast goal *)
+    let (coq_m, coq_c, coq_g, cs_g, lr_g) =
+      let t1 = Unix.gettimeofday() in
+      let ((((coq_m, coq_c), coq_g), cs_g), lr_g) = BitBlastingCCacheDef.bit_blast_bexp_ccache te coq_m coq_c coq_g goal in
+      let t2 = Unix.gettimeofday() in
+      let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      (coq_m, coq_c, coq_g, cs_g, lr_g) in
+	(* Update cache *)
+	let _ =
+	  let _ = vm_ref := coq_m in
+	  let _ = ccache_ref := coq_c in
+	  let _ = gen_ref := coq_g in
+	  () in
+	(* Output clauses *)
+    let _ =
+      let clauses =
+		let cs = (CNF.add_prelude cs_premises) in
+		let cs = cs@@(List.rev_map (fun p -> [p]) lr_premises) in
+		let cs = cs@@cs_g in
+		let cs = cs@@[[CNF.neg_lit lr_g]] in
+		cs in
+	  coq_output_dimacs ch clauses in
+    () in
+  let _ =
+	if !bb_alltogether then bb_together()
+    else bb_separately() in
+  let _ = flush ch in
+  ()
+
 let cnf_imp_check_sat ch es =
   if !certified_procedures then
-	if !coqbb_cache_version then coq_cnf_imp_check_sat_cache ch es
+	if !coqbb_cache_version then
+	  if !use_ccache then coq_cnf_imp_check_sat_ccache ch es
+	  else coq_cnf_imp_check_sat_cache ch es
 	else coq_cnf_imp_check_sat ch es
   else cnf_imp_check_sat ch es
