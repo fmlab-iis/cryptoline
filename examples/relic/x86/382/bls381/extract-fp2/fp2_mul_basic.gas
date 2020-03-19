@@ -1,4 +1,4 @@
-fp2_mul_basic:
+# fp2_mul_basic:
 # %rdi = 0x7fffffffdd50
 # %rsi = 0x7fffffffde10
 # %rdx = 0x7fffffffddb0

@@ -26,33 +26,35 @@ proc main (uint64 a1_0, uint64 a1_1, uint64 a1_2, uint64 a1_3, uint64 a1_4, uint
   ]
 }
 
-mov L0x7fffffffddb0 a1_0;
-mov L0x7fffffffddb8 a1_1;
-mov L0x7fffffffddc0 a1_2;
-mov L0x7fffffffddc8 a1_3;
-mov L0x7fffffffddd0 a1_4;
-mov L0x7fffffffddd8 a1_5;
+mov L0x7fffffffde40 a1_0;
+mov L0x7fffffffde48 a1_1;
+mov L0x7fffffffde50 a1_2;
+mov L0x7fffffffde58 a1_3;
+mov L0x7fffffffde60 a1_4;
+mov L0x7fffffffde68 a1_5;
 
-mov L0x7fffffffdde0 a2_0;
-mov L0x7fffffffdde8 a2_1;
-mov L0x7fffffffddf0 a2_2;
-mov L0x7fffffffddf8 a2_3;
-mov L0x7fffffffde00 a2_4;
-mov L0x7fffffffde08 a2_5;
+mov L0x7fffffffde10 a2_0;
+mov L0x7fffffffde18 a2_1;
+mov L0x7fffffffde20 a2_2;
+mov L0x7fffffffde28 a2_3;
+mov L0x7fffffffde30 a2_4;
+mov L0x7fffffffde38 a2_5;
 
-mov L0x7fffffffde10 b1_0;
-mov L0x7fffffffde18 b1_1;
-mov L0x7fffffffde20 b1_2;
-mov L0x7fffffffde28 b1_3;
-mov L0x7fffffffde30 b1_4;
-mov L0x7fffffffde38 b1_5;
 
-mov L0x7fffffffde40 b2_0;
-mov L0x7fffffffde48 b2_1;
-mov L0x7fffffffde50 b2_2;
-mov L0x7fffffffde58 b2_3;
-mov L0x7fffffffde60 b2_4;
-mov L0x7fffffffde68 b2_5;
+mov L0x7fffffffdde0 b1_0;
+mov L0x7fffffffdde8 b1_1;
+mov L0x7fffffffddf0 b1_2;
+mov L0x7fffffffddf8 b1_3;
+mov L0x7fffffffde00 b1_4;
+mov L0x7fffffffde08 b1_5;
+
+mov L0x7fffffffddb0 b2_0;
+mov L0x7fffffffddb8 b2_1;
+mov L0x7fffffffddc0 b2_2;
+mov L0x7fffffffddc8 b2_3;
+mov L0x7fffffffddd0 b2_4;
+mov L0x7fffffffddd8 b2_5;
+
 
 mov L0x46c0d0 0xb9feffffffffaaab@uint64;
 mov L0x46c0d8 0x1eabfffeb153ffff@uint64;
@@ -276,19 +278,20 @@ mov L0x7fffffffdda8 r13;
 (* #retq                                           #! PC = 0x4292716 *)
 /* #retq                                           #! 0x4292716 = 0x4292716; */
 
-mov r1_0 L0x7fffffffdd50;
-mov r1_1 L0x7fffffffdd58;
-mov r1_2 L0x7fffffffdd60;
-mov r1_3 L0x7fffffffdd68;
-mov r1_4 L0x7fffffffdd70;
-mov r1_5 L0x7fffffffdd78;
+mov r1_0 L0x7fffffffdd80;
+mov r1_1 L0x7fffffffdd88;
+mov r1_2 L0x7fffffffdd90;
+mov r1_3 L0x7fffffffdd98;
+mov r1_4 L0x7fffffffdda0;
+mov r1_5 L0x7fffffffdda8;
 
-mov r2_0 L0x7fffffffdd80;
-mov r2_1 L0x7fffffffdd88;
-mov r2_2 L0x7fffffffdd90;
-mov r2_3 L0x7fffffffdd98;
-mov r2_4 L0x7fffffffdda0;
-mov r2_5 L0x7fffffffdda8;
+mov r2_0 L0x7fffffffdd50;
+mov r2_1 L0x7fffffffdd58;
+mov r2_2 L0x7fffffffdd60;
+mov r2_3 L0x7fffffffdd68;
+mov r2_4 L0x7fffffffdd70;
+mov r2_5 L0x7fffffffdd78;
+
 
 
 {
