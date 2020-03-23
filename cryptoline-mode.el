@@ -117,7 +117,7 @@
 
 
 ;;;###autoload
-(define-derived-mode cryptoline-mode prog-mode "cryptoline mode"
+(define-derived-mode cryptoline-mode prog-mode "Cryptoline"
   "Major mode for editing Cryptoline"
 
   ;; code for syntax highlighting
