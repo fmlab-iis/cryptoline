@@ -36,4 +36,5 @@ int main (void)
   ep_sub_basic(r, p, q);
   ep_sub_projc(r, p, q);
 
+  ep_dbl_projc(r, p);
 }
