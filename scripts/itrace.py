@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This script utilizes python-enabled gdb on your $PATH to collect
 # per-instruction execution trace for first invocation of named
@@ -22,7 +22,7 @@ import sys
 import re
 
 debug_flag = False
-#debug_flag = True
+# debug_flag = True
 
 ##############################################################################
 # detect if already in gdb context, and if not, run gdb
@@ -46,14 +46,14 @@ except NameError:
             os.environ["TRACE_OUTFILE"] = sys.argv[4]
 
     try:
-        os.execlpe("gdb-multiarch", "gdb", "--batch",
+        os.execlpe("gdb-multiarch", "gdb", "-nx", "--batch",
                                     "--command=" + sys.argv[0],
                                     sys.argv[1],
                    os.environ)
     except OSError as e :
         if e.errno == 2 :    # no such file or directory, retry just gdb
             try:
-                os.execlpe("gdb", "gdb", "--batch",
+                os.execlpe("gdb", "gdb", "-nx", "--batch",
                                   "--command=" + sys.argv[0],
                                   sys.argv[1],
                            os.environ)
@@ -62,6 +62,7 @@ except NameError:
         sys.exit(e.errno)
     sys.exit(-1)
 
+assert sys.version_info >= (3, 0)
 ##############################################################################
 # this part is executed in gdb context and that's where it all happens...
 
@@ -209,7 +210,7 @@ class ARM32(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
- 
+
 
 class MIPS(Extractor):
     branchpattern = re.compile(r'^(b|j\w*)\s*(.*)')
@@ -263,7 +264,7 @@ class MIPS(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
- 
+
 # figure out if platform is 32- or 64-bit and instantiate extractor,
 # all based on 'info target'...
 
@@ -291,6 +292,24 @@ else:
 def debug(msg):
     if debug_flag:
         print("DEBUG: {}".format(msg))
+
+
+def find_frame(caller=None):
+    frame = gdb.newest_frame()
+    if caller:
+        while True:
+            if not frame.older():
+                print("caller frame doesn't exist",file=sys.stderr)
+                exit(1)
+            callerframe = frame.older()
+            debug(callerframe.name())
+            if callerframe and callerframe.name() == caller:
+                break
+            else:
+                gdb.execute('continue', to_string=True)
+                frame = gdb.newest_frame()
+    return frame
+
 
 def trace():
     frame = gdb.newest_frame()
@@ -370,6 +389,18 @@ else :
 
 debug("After run")
 
+caller = None
+
+if "TRACE_CALLER" in os.environ:
+    caller = os.environ['TRACE_CALLER']
+
+target_frame = find_frame(caller=caller)
+
+if not target_frame:
+    print("frame not found", file=sys.stderr)
+    sys.exit(-1)
+
+# right frame now
 extr.printHeader(function)
 trace()
 
