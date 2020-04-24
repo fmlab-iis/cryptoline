@@ -7525,7 +7525,7 @@ and [
     A1_0 = T01_0, A1_1 = T01_1, A1_2 = T01_2, A1_3 = T01_3, A1_4 = T01_4, A1_5 = T01_5
 ];
 
-
+/* ecut 0 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, A0_0, A0_1, A0_2, A0_3, A0_4, A0_5])
@@ -7598,6 +7598,7 @@ and [
 ];
 
 
+/* ecut 1 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, B0_0, B0_1, B0_2, B0_3, B0_4, B0_5])
@@ -7656,6 +7657,7 @@ and [
 ];
 
 
+/* ecut 2 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, C0_0, C0_1, C0_2, C0_3, C0_4, C0_5])
@@ -7908,6 +7910,7 @@ and [
 ];
 
 
+/* ecut 3 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, D0_0, D0_1, D0_2, D0_3, D0_4, D0_5])
@@ -8003,6 +8006,7 @@ and [
 ];
 
 
+/* ecut 4 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, E0_0, E0_1, E0_2, E0_3, E0_4, E0_5])
@@ -8091,6 +8095,7 @@ and [
 ];
 
 
+/* ecut 5 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, F0_0, F0_1, F0_2, F0_3, F0_4, F0_5])
@@ -8156,6 +8161,7 @@ and [
     G1_0 = T61_0, G1_1 = T61_1, G1_2 = T61_2, G1_3 = T61_3, G1_4 = T61_4, G1_5 = T61_5
 ];
 
+/* ecut 6 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, G0_0, G0_1, G0_2, G0_3, G0_4, G0_5])
@@ -8183,6 +8189,8 @@ call fp2_sub(T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_
              RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_3, RX1_4, RX1_5);
 (* #retq                                           #! PC = 0x4308496 *)
 #retq                                           #! 0x4308496 = 0x4308496;
+
+/* ecut 7 */
 ecut
   and [
   (limbs 64 [RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5])
@@ -8210,6 +8218,7 @@ call fp2_mul(RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_
 (* #retq                                           #! PC = 0x4313227 *)
 #retq                                           #! 0x4313227 = 0x4313227;
 
+/* ecut 8 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5])
@@ -8241,6 +8250,46 @@ ecut
 
 /* y3 = (B + G)^2 -12D^2. */
 /* NOTE: fp2_add(t6, t6, t1); */
+
+mov VB0_0 T10_0;
+mov VB0_1 T10_1;
+mov VB0_2 T10_2;
+mov VB0_3 T10_3;
+mov VB0_4 T10_4;
+mov VB0_5 T10_5;
+mov VB1_0 T11_0;
+mov VB1_1 T11_1;
+mov VB1_2 T11_2;
+mov VB1_3 T11_3;
+mov VB1_4 T11_4;
+mov VB1_5 T11_5;
+
+mov VG0_0 T60_0;
+mov VG0_1 T60_1;
+mov VG0_2 T60_2;
+mov VG0_3 T60_3;
+mov VG0_4 T60_4;
+mov VG0_5 T60_5;
+mov VG1_0 T61_0;
+mov VG1_1 T61_1;
+mov VG1_2 T61_2;
+mov VG1_3 T61_3;
+mov VG1_4 T61_4;
+mov VG1_5 T61_5;
+
+mov VD0_0 T30_0;
+mov VD0_1 T30_1;
+mov VD0_2 T30_2;
+mov VD0_3 T30_3;
+mov VD0_4 T30_4;
+mov VD0_5 T30_5;
+mov VD1_0 T31_0;
+mov VD1_1 T31_1;
+mov VD1_2 T31_2;
+mov VD1_3 T31_3;
+mov VD1_4 T31_4;
+mov VD1_5 T31_5;
+
 
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4293153 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4293153 = 0x4293153;
@@ -8301,31 +8350,80 @@ call fp2_sub(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_
 (* #retq                                           #! PC = 0x4308496 *)
 #retq                                           #! 0x4308496 = 0x4308496;
 
+/* ecut 9 */
+/* ecut */
+/*   and [ */
+/*   (limbs 64 [0, 0, 0, 0, 0, 0, RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5]) */
+/*   = ( */
+/*     ((limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) + (limbs 64 [G0_0, G0_1, G0_2, G0_3, G0_4, G0_5])) ** 2 */
+/*     - */
+/*     ((limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) + (limbs 64 [G1_0, G1_1, G1_2, G1_3, G1_4, G1_5])) ** 2 */
+/*     - 12 * ((limbs 64 [D0_0, D0_1, D0_2, D0_3, D0_4, D0_5]) ** 2 */
+/*           - (limbs 64 [D1_0, D1_1, D1_2, D1_3, D1_4, D1_5]) ** 2 ) */
+/*   ) */
+/*   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff, */
+/*          0x6730d2a0f6b0f624, 0x64774b84f38512bf, */
+/*          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])), */
+/*   (limbs 64 [0, 0, 0, 0, 0, 0, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5]) */
+/*   = ( */
+/*      2 * ((limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) + (limbs 64 [G0_0, G0_1, G0_2, G0_3, G0_4, G0_5])) */
+/*      * ((limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) + (limbs 64 [G1_0, G1_1, G1_2, G1_3, G1_4, G1_5])) */
+/*      - 12 * 2 * ((limbs 64 [D0_0, D0_1, D0_2, D0_3, D0_4, D0_5]) */
+/*           * (limbs 64 [D1_0, D1_1, D1_2, D1_3, D1_4, D1_5]))) */
+/*   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff, */
+/*          0x6730d2a0f6b0f624, 0x64774b84f38512bf, */
+/*          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])) */
+ /* ] prove with all ghosts, all cuts; */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5])
   = (
-    ((limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) + (limbs 64 [G0_0, G0_1, G0_2, G0_3, G0_4, G0_5])) ** 2
+    ((limbs 64 [VB0_0, VB0_1, VB0_2, VB0_3, VB0_4, VB0_5]) + (limbs 64 [VG0_0, VG0_1, VG0_2, VG0_3, VG0_4, VG0_5])) ** 2
     -
-    ((limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) + (limbs 64 [G1_0, G1_1, G1_2, G1_3, G1_4, G1_5])) ** 2
-    - 12 * ((limbs 64 [D0_0, D0_1, D0_2, D0_3, D0_4, D0_5]) ** 2
-          - (limbs 64 [D1_0, D1_1, D1_2, D1_3, D1_4, D1_5]) ** 2 )
+    ((limbs 64 [VB1_0, VB1_1, VB1_2, VB1_3, VB1_4, VB1_5]) + (limbs 64 [VG1_0, VG1_1, VG1_2, VG1_3, VG1_4, VG1_5])) ** 2
+    - 12 * ((limbs 64 [VD0_0, VD0_1, VD0_2, VD0_3, VD0_4, VD0_5]) ** 2
+          - (limbs 64 [VD1_0, VD1_1, VD1_2, VD1_3, VD1_4, VD1_5]) ** 2 )
   )
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])),
   (limbs 64 [0, 0, 0, 0, 0, 0, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5])
   = (
-     2 * ((limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) + (limbs 64 [G0_0, G0_1, G0_2, G0_3, G0_4, G0_5]))
-     * ((limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) + (limbs 64 [G1_0, G1_1, G1_2, G1_3, G1_4, G1_5]))
-     - 12 * 2 * ((limbs 64 [D0_0, D0_1, D0_2, D0_3, D0_4, D0_5])
-          * (limbs 64 [D1_0, D1_1, D1_2, D1_3, D1_4, D1_5])))
+     2 * ((limbs 64 [VB0_0, VB0_1, VB0_2, VB0_3, VB0_4, VB0_5]) + (limbs 64 [VG0_0, VG0_1, VG0_2, VG0_3, VG0_4, VG0_5]))
+     * ((limbs 64 [VB1_0, VB1_1, VB1_2, VB1_3, VB1_4, VB1_5]) + (limbs 64 [VG1_0, VG1_1, VG1_2, VG1_3, VG1_4, VG1_5]))
+     - 12 * 2 * ((limbs 64 [VD0_0, VD0_1, VD0_2, VD0_3, VD0_4, VD0_5])
+          * (limbs 64 [VD1_0, VD1_1, VD1_2, VD1_3, VD1_4, VD1_5])))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a]))
- ] prove with all ghosts, all cuts;
+ ];
 
 
+mov VB0_0 T10_0;
+mov VB0_1 T10_1;
+mov VB0_2 T10_2;
+mov VB0_3 T10_3;
+mov VB0_4 T10_4;
+mov VB0_5 T10_5;
+mov VB1_0 T11_0;
+mov VB1_1 T11_1;
+mov VB1_2 T11_2;
+mov VB1_3 T11_3;
+mov VB1_4 T11_4;
+mov VB1_5 T11_5;
+
+mov VF0_0 T50_0;
+mov VF0_1 T50_1;
+mov VF0_2 T50_2;
+mov VF0_3 T50_3;
+mov VF0_4 T50_4;
+mov VF0_5 T50_5;
+mov VF1_0 T51_0;
+mov VF1_1 T51_1;
+mov VF1_2 T51_2;
+mov VF1_3 T51_3;
+mov VF1_4 T51_4;
+mov VF1_5 T51_5;
 
 /* NOTE: z3 = 4B * F. */
 /* NOTE: fp2_dbl(r->z, t1); */
@@ -8352,25 +8450,26 @@ call fp2_mul(RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_
 #retq                                           #! 0x4313227 = 0x4313227;
 
 
+/* ecut 10 */
 ecut
   and [
   (limbs 64 [0, 0, 0, 0, 0, 0, RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5])
-  = (4 * ((limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) *
-          (limbs 64 [F0_0, F0_1, F0_2, F0_3, F0_4, F0_5]) -
-          (limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) *
-          (limbs 64 [F1_0, F1_1, F1_2, F1_3, F1_4, F1_5])))
+  = (4 * ((limbs 64 [VB0_0, VB0_1, VB0_2, VB0_3, VB0_4, VB0_5]) *
+          (limbs 64 [VF0_0, VF0_1, VF0_2, VF0_3, VF0_4, VF0_5]) -
+          (limbs 64 [VB1_0, VB1_1, VB1_2, VB1_3, VB1_4, VB1_5]) *
+          (limbs 64 [VF1_0, VF1_1, VF1_2, VF1_3, VF1_4, VF1_5])))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])),
   (limbs 64 [0, 0, 0, 0, 0, 0, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5])
-  = (4 * ((limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]) *
-          (limbs 64 [F0_0, F0_1, F0_2, F0_3, F0_4, F0_5]) +
-          (limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]) *
-          (limbs 64 [F1_0, F1_1, F1_2, F1_3, F1_4, F1_5])))
+  = (4 * ((limbs 64 [VB1_0, VB1_1, VB1_2, VB1_3, VB1_4, VB1_5]) *
+          (limbs 64 [VF0_0, VF0_1, VF0_2, VF0_3, VF0_4, VF0_5]) +
+          (limbs 64 [VB0_0, VB0_1, VB0_2, VB0_3, VB0_4, VB0_5]) *
+          (limbs 64 [VF1_0, VF1_1, VF1_2, VF1_3, VF1_4, VF1_5])))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a]))
- ] prove with all ghosts, all cuts;
+ ];
 
 
 (* movslq 0x18(%rsp),%r11                          #! EA = L0x7fffffffd138; Value = 0x1e517d0900000000; PC = 0x4293327 *)
@@ -8403,6 +8502,32 @@ ecut
 /* mov L001_4 L0x7fffffffdbc0; */
 /* mov L001_5 L0x7fffffffdbc8; */
 
+mov VB0_0 T10_0;
+mov VB0_1 T10_1;
+mov VB0_2 T10_2;
+mov VB0_3 T10_3;
+mov VB0_4 T10_4;
+mov VB0_5 T10_5;
+mov VB1_0 T11_0;
+mov VB1_1 T11_1;
+mov VB1_2 T11_2;
+mov VB1_3 T11_3;
+mov VB1_4 T11_4;
+mov VB1_5 T11_5;
+
+mov VD0_0 T30_0;
+mov VD0_1 T30_1;
+mov VD0_2 T30_2;
+mov VD0_3 T30_3;
+mov VD0_4 T30_4;
+mov VD0_5 T30_5;
+mov VD1_0 T31_0;
+mov VD1_1 T31_1;
+mov VD1_2 T31_2;
+mov VD1_3 T31_3;
+mov VD1_4 T31_4;
+mov VD1_5 T31_5;
+
 /* l00 = D - B. */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293362 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293362 = 0x4293362;
@@ -8412,21 +8537,22 @@ call fp2_sub(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_
 (* #retq                                           #! PC = 0x4308496 *)
 #retq                                           #! 0x4308496 = 0x4308496;
 
+/* ecut 11 */
 ecut
   and [
   (limbs 64 [L000_0, L000_1, L000_2, L000_3, L000_4, L000_5])
-  = ((limbs 64 [D0_0, D0_1, D0_2, D0_3, D0_4, D0_5]) -
-    (limbs 64 [B0_0, B0_1, B0_2, B0_3, B0_4, B0_5]))
+  = ((limbs 64 [VD0_0, VD0_1, VD0_2, VD0_3, VD0_4, VD0_5]) -
+    (limbs 64 [VB0_0, VB0_1, VB0_2, VB0_3, VB0_4, VB0_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])),
   (limbs 64 [L001_0, L001_1, L001_2, L001_3, L001_4, L001_5])
-  = ((limbs 64 [D1_0, D1_1, D1_2, D1_3, D1_4, D1_5]) -
-    (limbs 64 [B1_0, B1_1, B1_2, B1_3, B1_4, B1_5]))
+  = ((limbs 64 [VD1_0, VD1_1, VD1_2, VD1_3, VD1_4, VD1_5]) -
+    (limbs 64 [VB1_0, VB1_1, VB1_2, VB1_3, VB1_4, VB1_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a]))
- ] prove with all ghosts, all cuts;
+ ];
 
 
 
@@ -8445,6 +8571,19 @@ ecut
 /* mov L101_3 L0x7fffffffdc18; */
 /* mov L101_4 L0x7fffffffdc20; */
 /* mov L101_5 L0x7fffffffdc28; */
+mov VA0_0 T00_0;
+mov VA0_1 T00_1;
+mov VA0_2 T00_2;
+mov VA0_3 T00_3;
+mov VA0_4 T00_4;
+mov VA0_5 T00_5;
+mov VA1_0 T01_0;
+mov VA1_1 T01_1;
+mov VA1_2 T01_2;
+mov VA1_3 T01_3;
+mov VA1_4 T01_4;
+mov VA1_5 T01_5;
+
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293399 *)
 #callq  0x42ba80 <fp_mul_integ>                 #! 0x4293399 = 0x4293399;
 call fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
@@ -8458,21 +8597,23 @@ call fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
              L101_0, L101_1, L101_2, L101_3, L101_4, L101_5);
 (* #retq                                           #! PC = 0x4312212 *)
 #retq                                           #! 0x4312212 = 0x4312212;
+
+/* ecut 12 */
 ecut
   and [
-  (limbs 64 [L100_0, L100_1, L100_2, L100_3, L100_4, L100_5])
+  (limbs 64 [0, 0, 0, 0, 0, 0, L100_0, L100_1, L100_2, L100_3, L100_4, L100_5])
    = ((limbs 64 [PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5]) *
-      (limbs 64 [A0_0, A0_1, A0_2, A0_3, A0_4, A0_5]))
+      (limbs 64 [VA0_0, VA0_1, VA0_2, VA0_3, VA0_4, VA0_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])),
-  (limbs 64 [L101_0, L101_1, L101_2, L101_3, L101_4, L101_5])
+  (limbs 64 [0, 0, 0, 0, 0, 0, L101_0, L101_1, L101_2, L101_3, L101_4, L101_5])
    = ((limbs 64 [PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5]) *
-      (limbs 64 [A1_0, A1_1, A1_2, A1_3, A1_4, A1_5]))
+      (limbs 64 [VA1_0, VA1_1, VA1_2, VA1_3, VA1_4, VA1_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a]))
- ] prove with all ghosts, all cuts;
+ ];
 /* l01 = F * (-yp). */
 /* mov L010_0 L0x7fffffffdcf0; */
 /* mov L010_1 L0x7fffffffdcf8; */
@@ -8488,6 +8629,18 @@ ecut
 /* mov L011_4 L0x7fffffffdd40; */
 /* mov L011_5 L0x7fffffffdd48; */
 
+mov VF0_0 T50_0;
+mov VF0_1 T50_1;
+mov VF0_2 T50_2;
+mov VF0_3 T50_3;
+mov VF0_4 T50_4;
+mov VF0_5 T50_5;
+mov VF1_0 T51_0;
+mov VF1_1 T51_1;
+mov VF1_2 T51_2;
+mov VF1_3 T51_3;
+mov VF1_4 T51_4;
+mov VF1_5 T51_5;
 /* NOTE: fp_mul(l[zero][zero][0], t5[0], p->y); */
 (* add    0x10(%rsp),%r14                          #! EA = L0x7fffffffd130; Value = 0x0000000000000120; PC = 0x4293425 *)
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293445 *)
@@ -8506,21 +8659,22 @@ call fp_mul (T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
 (* #retq                                           #! PC = 0x4293497 *)
 #retq                                           #! 0x4293497 = 0x4293497;
 
+/* ecut 13 */
 ecut
   and [
-  (limbs 64 [L010_0, L010_1, L010_2, L010_3, L010_4, L010_5])
-   = ((limbs 64 [F0_0, F0_1, F0_2, F0_3, F0_4, F0_5]) *
+  (limbs 64 [0, 0 ,0 ,0 ,0 ,0, L010_0, L010_1, L010_2, L010_3, L010_4, L010_5])
+   = ((limbs 64 [VF0_0, VF0_1, VF0_2, VF0_3, VF0_4, VF0_5]) *
       (limbs 64 [PY0_0, PY0_1, PY0_2, PY0_3, PY0_4, PY0_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a])),
-  (limbs 64 [L011_0, L011_1, L011_2, L011_3, L011_4, L011_5])
-   = ((limbs 64 [F1_0, F1_1, F1_2, F1_3, F1_4, F1_5]) *
+  (limbs 64 [0, 0, 0, 0, 0, 0, L011_0, L011_1, L011_2, L011_3, L011_4, L011_5])
+   = ((limbs 64 [VF1_0, VF1_1, VF1_2, VF1_3, VF1_4, VF1_5]) *
       (limbs 64 [PY0_0, PY0_1, PY0_2, PY0_3, PY0_4, PY0_5]))
   (mod (limbs 64 [0xb9feffffffffaaab, 0x1eabfffeb153ffff,
          0x6730d2a0f6b0f624, 0x64774b84f38512bf,
          0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a]))
- ] prove with all ghosts, all cuts;
+ ];
 
 
 
