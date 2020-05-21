@@ -15,7 +15,7 @@ To compile and run Cryptoline, the following packages need to be installed.
 
 - [OCaml compiler](https://ocaml.org) (version 4.07.0 up, installed by [opam](http://opam.ocaml.org) is recommended)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num (can be installed by [opam](http://opam.ocaml.org))
+- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num, zarith (can be installed by [opam](http://opam.ocaml.org))
 - One of the following computer algebra systems:
   + [Singular](https://www.singular.uni-kl.de) (recommended)
   + [SageMath](http://www.sagemath.org)
@@ -30,30 +30,26 @@ To compile and run Cryptoline, the following packages need to be installed.
 Compilation
 ===========
 
-Use the following command to compile Cryptoline.
+Use the following command to install Cryptoline to opam.
+
+opam will handle dependencies.
 
 ```
-dune build
-```
-
-Install the executables to opam
-
-```
-dune install
+opam install .
 ```
 
 Run the following command to see the available command-line arguments.
 
+Make sure `$HOME/.opam/$OCAML_VERSION/bin` is in your $PATH.
+
 ```
-_build/default/cv.exe
 cv
 ```
 
-Uninstall & Clean
+Uninstall
 
 ```
-dune uninstall
-dune clean
+opam uninstall .
 ```
 
 Cryptoline Language
