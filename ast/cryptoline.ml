@@ -654,7 +654,7 @@ let rslt w e1 e2 = Rcmp (w, Rslt, e1, e2)
 let rsle w e1 e2 = Rcmp (w, Rsle, e1, e2)
 let rsgt w e1 e2 = Rcmp (w, Rsgt, e1, e2)
 let rsge w e1 e2 = Rcmp (w, Rsge, e1, e2)
-let reqmod w e1 e2 m = req w (rsrem w (rsub w e1 e2) m) (rconst w Z.zero)
+let reqmod w e1 e2 m = req w (rumod w e1 m) (rumod w e2 m)
 
 let rneg e =
   match e with
