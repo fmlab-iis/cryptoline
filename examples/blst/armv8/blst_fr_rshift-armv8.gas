@@ -1,0 +1,42 @@
+#! [x$1c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! x$1c = %%x$1c
+
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! tst $1v, #0x1 -> and odd@uint64 $1v 1@uint64;\ncast odd@uint1 odd
+#! csel $1v, $2v, $3v, ne  // ne = any -> cmov $1v odd $2v $3v
+#! csel $1v, $2v, xzr, ne  // ne = any -> cmov $1v odd $2v 0@uint64
+#! extr $1v, $2v, $3v, #1 -> spl $3v_h dontcare $3v 1;\nspl dontcare $2v_l $2v 1;\nshl $2v_l $2v_l 63;\nadd $1v $2v_l $3v_h
+
+
+cshl $1v dontcare $2v $3v 63
+
+#blst_fr_rshift:
+# x0 = 0x400082ac08
+# x1 = 0x400082abc8
+# x2 = 0x2a
+# x3 = 0x0
+# x4 = 0xffffffff00000001
+# x5 = 0x53bda402fffe5bfe
+# x6 = 0x3339d80809a1d805
+# x7 = 0x73eda753299d7d48
+	adds	x12, x8, x4                                #! PC = 0x274877978928
+	#sub	x2, x2, #0x1                                #! PC = 0x274877978932
+	adcs	x13, x9, x5                                #! PC = 0x274877978936
+	adcs	x14, x10, x6                               #! PC = 0x274877978940
+	adcs	x15, x11, x7                               #! PC = 0x274877978944
+	adc	x3, xzr, xzr                                #! PC = 0x274877978948
+	tst	x8, #0x1                                    #! PC = 0x274877978952
+	csel	x12, x12, x8, ne  // ne = any              #! PC = 0x274877978956
+	csel	x13, x13, x9, ne  // ne = any              #! PC = 0x274877978960
+	csel	x14, x14, x10, ne  // ne = any             #! PC = 0x274877978964
+	csel	x15, x15, x11, ne  // ne = any             #! PC = 0x274877978968
+	csel	x3, x3, xzr, ne  // ne = any               #! PC = 0x274877978972
+	extr	x8, x13, x12, #1                           #! PC = 0x274877978976
+	extr	x9, x14, x13, #1                           #! PC = 0x274877978980
+	extr	x10, x15, x14, #1                          #! PC = 0x274877978984
+	extr	x11, x3, x15, #1                           #! PC = 0x274877978988
+	#cbnz	x2, 0x4000011930 <rshift_mod_256+16>      #! PC = 0x27487797899

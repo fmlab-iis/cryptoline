@@ -1,0 +1,39 @@
+#! [x$1c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! x$1c = %%x$1c
+
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs xzr, $1v, xzr -> sbcs carry dontcare $1v 0@uint64 carry
+#! csel $1v, $2v, $3v, cc  // cc = lo, ul, last -> cmov $1v carry $3v $2v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+
+#blst_fr_lshift:
+# x0 = 0x400082ac08
+# x1 = 0x400082abc8
+# x2 = 0x2a
+# x3 = 0x0
+# x4 = 0xffffffff00000001
+# x5 = 0x53bda402fffe5bfe
+# x6 = 0x3339d80809a1d805
+# x7 = 0x73eda753299d7d48
+	adds	x8, x8, x8                                 #! PC = 0x274877978832
+	sub	x2, x2, #0x1                                #! PC = 0x274877978836
+	adcs	x9, x9, x9                                 #! PC = 0x274877978840
+	adcs	x10, x10, x10                              #! PC = 0x274877978844
+	adcs	x11, x11, x11                              #! PC = 0x274877978848
+	adc	x3, xzr, xzr                                #! PC = 0x274877978852
+	subs	x12, x8, x4                                #! PC = 0x274877978856
+	sbcs	x13, x9, x5                                #! PC = 0x274877978860
+	sbcs	x14, x10, x6                               #! PC = 0x274877978864
+	sbcs	x15, x11, x7                               #! PC = 0x274877978868
+	sbcs	xzr, x3, xzr                               #! PC = 0x274877978872
+	csel	x8, x8, x12, cc  // cc = lo, ul, last      #! PC = 0x274877978876
+	csel	x9, x9, x13, cc  // cc = lo, ul, last      #! PC = 0x274877978880
+	csel	x10, x10, x14, cc  // cc = lo, ul, last    #! PC = 0x274877978884
+	csel	x11, x11, x15, cc  // cc = lo, ul, last    #! PC = 0x274877978888
+	#cbnz	x2, 0x40000118d0 <lshift_mod_256+16>      #! PC = 0x27487797889
