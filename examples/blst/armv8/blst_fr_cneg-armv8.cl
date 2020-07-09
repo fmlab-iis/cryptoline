@@ -1,13 +1,13 @@
-(* quine: -v -isafety -jobs 10 -btor blst_fr_cneg-armv8.cl
-Parsing Cryptoline file:                [OK]            0.001164 seconds
-Checking well-formedness:               [OK]            0.000284 seconds
-Transforming to SSA form:               [OK]            0.000137 seconds
-Rewriting assignments:                  [OK]            0.000328 seconds
-Verifying program safety:               [OK]            0.001334 seconds
-Verifying range specification:          [OK]            2962.265155 seconds
-Rewriting value-preserved casting:      [OK]            0.000008 seconds
-Verifying algebraic specification:      [OK]            0.000158 seconds
-Verification result:                    [OK]            2962.269051 seconds
+(* quine:-v -isafety -slicing -btor blst_fr_cneg-armv8.cl
+Parsing Cryptoline file:                [OK]            0.001200 seconds
+Checking well-formedness:               [OK]            0.000144 seconds
+Transforming to SSA form:               [OK]            0.000075 seconds
+Rewriting assignments:                  [OK]            0.000200 seconds
+Verifying program safety:               [OK]            0.000702 seconds
+Verifying range specification:          [OK]            4.058781 seconds
+Rewriting value-preserved casting:      [OK]            0.000009 seconds
+Verifying algebraic specification:      [OK]            0.000096 seconds
+Verification result:                    [OK]            4.061543 seconds
 *)
 
 proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
@@ -16,9 +16,11 @@ proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
 {
   true
 &&
-  limbs 64 [a0, a1, a2, a3] <u
-  limbs 64 [0xffffffff00000001@64, 0x53bda402fffe5bfe@64,
-            0x3339d80809a1d805@64, 0x73eda753299d7d48@64]
+  and [
+    m0 = 0xffffffff00000001@64, m1 = 0x53bda402fffe5bfe@64,
+    m2 = 0x3339d80809a1d805@64, m3 = 0x73eda753299d7d48@64,
+    limbs 64 [a0, a1, a2, a3] <u limbs 64 [m0, m1, m2, m3]
+  ]
 }
 
 (* inputs *)
