@@ -2458,13 +2458,13 @@ ebexp:
 ebexp_atomic:
     TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
   | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $4 cm vm ym gm) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
   | AND ebexp_atomic_without_eqmod ebexp_atomic   { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
   | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
   | eexp EQOP eexp eq_suffix                      { fun cm vm ym gm ->
                                                       match $4 cm vm ym gm with
                                                       | None -> Eeq ($1 cm vm ym gm, $3 cm vm ym gm)
-                                                      | Some m -> Eeqmod ($1 cm vm ym gm, $3 cm vm ym gm, m)
+                                                      | Some m -> Eeqmod ($1 cm vm ym gm, $3 cm vm ym gm, [ m ])
                                                   }
   | AND LSQUARE ebexps RSQUARE                    { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
   | LANDOP LSQUARE ebexps RSQUARE                 { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
@@ -2475,7 +2475,7 @@ ebexp_atomic:
 ebexp_atomic_without_eqmod:
     TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
   | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $4 cm vm ym gm) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
   | AND ebexp_atomic_without_eqmod ebexp_atomic_without_eqmod
                                                   { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
   | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }

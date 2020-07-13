@@ -2030,7 +2030,7 @@ let rec ebexp_to_typed vm e =
   match e with
   | BveTrue -> Cryptoline.Etrue
   | BveEq (e1, e2) -> Cryptoline.Eeq (eexp_to_typed vm e1, eexp_to_typed vm e2)
-  | BveEqMod (e1, e2, m) -> Cryptoline.Eeqmod (eexp_to_typed vm e1, eexp_to_typed vm e2, eexp_to_typed vm m)
+  | BveEqMod (e1, e2, m) -> Cryptoline.Eeqmod (eexp_to_typed vm e1, eexp_to_typed vm e2, [ eexp_to_typed vm m ])
   | BveAnd (e1, e2) -> Cryptoline.Eand (ebexp_to_typed vm e1, ebexp_to_typed vm e2)
 
 let rec rexp_to_typed vm e =

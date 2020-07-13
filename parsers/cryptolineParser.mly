@@ -1695,13 +1695,15 @@ ebexp:
 ebexp_atomic:
     TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
   | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $4 cm vm ym gm) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
+  | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
+                                                  { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $5 cm vm ym gm) }
   | AND ebexp_atomic_without_eqmod ebexp_atomic   { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
   | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
   | eexp EQOP eexp eq_suffix                      { fun cm vm ym gm ->
                                                       match $4 cm vm ym gm with
                                                       | None -> Eeq ($1 cm vm ym gm, $3 cm vm ym gm)
-                                                      | Some m -> Eeqmod ($1 cm vm ym gm, $3 cm vm ym gm, m)
+                                                      | Some ms -> Eeqmod ($1 cm vm ym gm, $3 cm vm ym gm, ms)
                                                   }
   | AND LSQUARE ebexps RSQUARE                    { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
   | LANDOP LSQUARE ebexps RSQUARE                 { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
@@ -1712,7 +1714,9 @@ ebexp_atomic:
 ebexp_atomic_without_eqmod:
     TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
   | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $4 cm vm ym gm) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
+  | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
+                                                  { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $5 cm vm ym gm) }
   | AND ebexp_atomic_without_eqmod ebexp_atomic_without_eqmod
                                                   { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
   | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
@@ -1725,7 +1729,8 @@ ebexp_atomic_without_eqmod:
 
 eq_suffix:
                                                   { fun _cm _vm _ym _gm -> None }
-  | LPAR MOD eexp RPAR                            { fun cm vm ym gm -> Some ($3 cm vm ym gm) }
+  | LPAR MOD eexp RPAR                            { fun cm vm ym gm -> Some [ $3 cm vm ym gm ] }
+  | LPAR MOD LSQUARE eexps RSQUARE RPAR           { fun cm vm ym gm -> Some ($4 cm vm ym gm) }
 ;
 
 ebexps:
@@ -1778,6 +1783,11 @@ eexp:
                                                         helper i
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
+;
+
+eexp_no_unarys:
+    eexp_no_unary COMMA eexp_no_unarys            { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
+  | eexp_no_unary                                 { fun cm vm ym gm -> [ $1 cm vm ym gm ] }
 ;
 
 eexp_no_unary:

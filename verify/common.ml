@@ -848,10 +848,19 @@ let rec polys_of_ebexp vgen e =
   | Eeq (e1, e2) when eq_eexp e1 e2 -> (vgen, [], [])
   | Eeq (e, Econst n) when Z.equal n Z.zero -> (vgen, [], [e])
   | Eeq (e1, e2) -> (vgen, [], [esub e1 e2])
-  | Eeqmod (e1, e2, m) ->
-     let (tmp, vgen) = gen_var vgen in
-     let tmp = mkvar tmp (Tuint 0) (* The variable type does not matter *) in
-     (vgen, [tmp], [esub (esub e1 e2) (emul (evar tmp) m)])
+  | Eeqmod (e1, e2, ms) ->
+     let mk_tmp vgen =
+       let (tmp, vgen)= gen_var vgen in
+       let tmp = mkvar tmp (Tuint 0) (* The variable type does not matter *) in
+       (vgen, tmp) in
+     let helper (vgen, tmps, res) m =
+       let (vgen, tmp) = mk_tmp vgen in
+       (vgen, tmp::tmps, (eadd (emul (evar tmp) m) res)) in
+     let (vgen, tmps, eadds) =
+       let (vgen, tmp) = mk_tmp vgen in
+       List.fold_left helper (vgen, [tmp], (emul (evar tmp) (List.hd ms)))
+         (List.tl ms) in
+     (vgen, tmps, [esub (esub e1 e2) eadds])
   | Eand (e1, e2) ->
      let (vgen, tmps1, ps1) = polys_of_ebexp vgen e1 in
      let (vgen, tmps2, ps2) = polys_of_ebexp vgen e2 in
@@ -958,29 +967,37 @@ let get_rewrite_pattern' e others =
     | _::tl -> find_separable tl in
   find_separable (sort_by_length (sub_exprs_with_var e))
 
+let rec subsumed_by_moduli e moduli =
+  match e with
+  | Ebinop (Emul, _, m) -> List.exists (eq_eexp m) moduli
+  | Ebinop (Eadd, e0, e1)
+  | Ebinop (Esub, e0, e1) ->
+     subsumed_by_moduli e0 moduli && subsumed_by_moduli e1 moduli
+  | _ -> false
+  
 (* Rewrite equalities *)
-let rewrite_assignments ideal p modulus_opt =
+let rewrite_assignments ideal p moduli =
   (* There are matching rules for common patterns from program instructions.
      For general cases, use get_rewrite_pattern. Note that predicates from
      cut, assume, and ghost may match the common patterns but they are not
      instructions. Thus in v - e, variable v may occur in e. *)
   let is_assignment e =
-    match e, modulus_opt with
-    | Econst _, _ -> None
-    (* v = e (mod m), e = v (mod m) *)
-    | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), (Ebinop (Emul, _, m))), Some modulus
-         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+    match e with
+    | Econst _ -> None
+    (* v = e (mod em), e = v (mod em) *)
+    | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), em)
+         when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
        Some (v, e)
-    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus
-         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), em)
+         when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
        Some (v, e)
     (* v = e, e = v *)
-    | Ebinop (Esub, Evar v, e), _ when not (VS.mem v (vars_eexp e)) -> Some (v, e)
-    | Ebinop (Esub, e, Evar v), _ when not (VS.mem v (vars_eexp e)) -> Some (v, e)
+    | Ebinop (Esub, Evar v, e) when not (VS.mem v (vars_eexp e)) -> Some (v, e)
+    | Ebinop (Esub, e, Evar v) when not (VS.mem v (vars_eexp e)) -> Some (v, e)
     (* v + e1 = e2, e2 = v + e1 *)
-    | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2), _
+    | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2)
      when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (v, esub e2 e1)
-    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _
+    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
          when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (v, esub e2 e1)
     | _ -> get_rewrite_pattern e in
   let rec do_rewrite finished ideal p =
@@ -996,24 +1013,24 @@ let rewrite_assignments ideal p modulus_opt =
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
-let rewrite_assignments' ideal p modulus_opt =
+let rewrite_assignments' ideal p moduli =
   let is_assignment e others =
-    match e, modulus_opt with
-    | Econst _, _ -> None
-    (* v = e (mod m), e = v (mod m) *)
-    | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), (Ebinop (Emul, _, m))), Some modulus
-         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+    match e with
+    | Econst _ -> None
+    (* v = e (mod em), e = v (mod em) *)
+    | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), em)
+         when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
        Some (evar v, e)
-    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), (Ebinop (Emul, _, m))), Some modulus
-         when eq_eexp m modulus && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp m))) ->
+    | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), em)
+         when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
        Some (evar v, e)
     (* v = e, e = v *)
-    | Ebinop (Esub, Evar v, e), _ when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
-    | Ebinop (Esub, e, Evar v), _ when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
+    | Ebinop (Esub, Evar v, e) when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
+    | Ebinop (Esub, e, Evar v) when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
     (* v + e1 = e2, e2 = v + e1 *)
-    | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2), _
+    | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2)
      when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
-    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1)), _
+    | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
          when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
     | _ -> get_rewrite_pattern' e others in
   let rec do_rewrite finished ideal p =
@@ -1095,14 +1112,14 @@ let polys_of_espec vgen s =
     match post with
     | Etrue -> []
     | Eeq (e1, e2) ->
-       let (ideal, p) = do_rewriting generator_ps (esub e1 e2) None in
+       let (ideal, p) = do_rewriting generator_ps (esub e1 e2) [] in
        let vars = vars_in_order
                     (match var_order_calculation with
                      | BeforeRewriting -> generator_ps@[p]
                      | AfterRewriting -> ideal@[p]) in
        [(post, vars, ideal, p)]
-    | Eeqmod (e1, e2, m) ->
-       let (ideal, p) = do_rewriting (m::generator_ps) (esub e1 e2) (Some m) in
+    | Eeqmod (e1, e2, ms) ->
+       let (ideal, p) = do_rewriting (List.rev_append ms generator_ps) (esub e1 e2) ms in
        let vars = vars_in_order
                     (match var_order_calculation with
                      | BeforeRewriting -> generator_ps@[p]

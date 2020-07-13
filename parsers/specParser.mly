@@ -187,7 +187,7 @@ ebexp:
 ebexp_atomic:
     TRUE                                          { etrue }
   | EQ eexp eexp_no_unary                         { Eeq ($2, $3) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, $4) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, [ $4 ]) }
   /*
    * Changing ebexp_atomic_without_eqmod to ebexp_atomic will induce shift/reduce conflicts.
    * Example: bveand bvvar x = bvvar y (bvvar x = bvvar y)
@@ -198,7 +198,7 @@ ebexp_atomic:
   | LPAR ebexp RPAR                               { $2 }
   | eexp EQOP eexp eq_suffix                      { match $4 with
                                                     | None -> Eeq ($1, $3)
-                                                    | Some m -> Eeqmod ($1, $3, m) }
+                                                    | Some m -> Eeqmod ($1, $3, [ m ]) }
   | AND LSQUARE ebexps RSQUARE                    { eands $3 }
   | LANDOP LSQUARE ebexps RSQUARE                 { eands $3 }
 ;
@@ -206,7 +206,7 @@ ebexp_atomic:
 ebexp_atomic_without_eqmod:
     TRUE                                          { etrue }
   | EQ eexp eexp_no_unary                         { Eeq ($2, $3) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, $4) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, [ $4 ]) }
   | AND ebexp_atomic_without_eqmod ebexp_atomic_without_eqmod
                                                   { Eand ($2, $3) }
   | LPAR ebexp RPAR                               { $2 }

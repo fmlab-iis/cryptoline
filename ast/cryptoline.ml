@@ -566,7 +566,7 @@ let rec subst_rexp pats e =
 type ebexp =
   | Etrue
   | Eeq of eexp * eexp
-  | Eeqmod of eexp * eexp * eexp
+  | Eeqmod of eexp * eexp * eexp list
   | Eand of ebexp * ebexp
 
 let _eand e1 e2 =
@@ -577,7 +577,7 @@ let _eand e1 e2 =
 
 let etrue = Etrue
 let eeq e1 e2 = Eeq (e1, e2)
-let eeqmod e1 e2 m = Eeqmod (e1, e2, m)
+let eeqmod e1 e2 m = Eeqmod (e1, e2, [ m ])
 let eand b1 b2 = Eand (b1, b2)
 
 (*let eands es = List.fold_left (fun res e -> eand e res) Etrue es*)
@@ -595,7 +595,7 @@ let rec string_of_ebexp ?typ:(typ=false) e =
   match e with
   | Etrue -> "true"
   | Eeq (e1, e2) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
-  | Eeqmod (e1, e2, m) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2 ^ " (mod " ^ string_of_eexp ~typ:typ m ^ ")"
+  | Eeqmod (e1, e2, ms) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2 ^ " (mod " ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ ")"
   | Eand (e1, e2) ->
      let es = split_eand e in
      match es with
@@ -606,7 +606,7 @@ let rec eq_ebexp e1 e2 =
   match e1, e2 with
   | Etrue, Etrue -> true
   | Eeq (e1a, e1b), Eeq (e2a, e2b) -> eq_eexp e1a e2a && eq_eexp e1b e2b
-  | Eeqmod (e1a, e1b, e1c), Eeqmod (e2a, e2b, e2c) -> eq_eexp e1a e2a && eq_eexp e1b e2b && eq_eexp e1c e2c
+  | Eeqmod (e1a, e1b, e1cs), Eeqmod (e2a, e2b, e2cs) -> eq_eexp e1a e2a && eq_eexp e1b e2b && (List.for_all2 eq_eexp e1cs e2cs)
   | Eand (e1a, e1b), Eand (e2a, e2b) -> eq_ebexp e1a e2a && eq_ebexp e1b e2b
   | _, _ -> false
 
@@ -614,20 +614,20 @@ let rec vars_ebexp e =
   match e with
   | Etrue -> VS.empty
   | Eeq (e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
-  | Eeqmod (e1, e2, p) -> VS.union (vars_eexp e1) (VS.union (vars_eexp e2) (vars_eexp p))
+  | Eeqmod (e1, e2, ps) -> VS.union (vars_eexp e1) (List.fold_left (fun vs p -> VS.union vs (vars_eexp p)) (vars_eexp e2) ps)
   | Eand (e1, e2) -> VS.union (vars_ebexp e1) (vars_ebexp e2)
 
 let rec subst_ebexp pats e =
   match e with
   | Etrue -> e
   | Eeq (e1, e2) -> Eeq (subst_eexp pats e1, subst_eexp pats e2)
-  | Eeqmod (e1, e2, m) -> Eeqmod (subst_eexp pats e1, subst_eexp pats e2, subst_eexp pats m)
+  | Eeqmod (e1, e2, ms) -> Eeqmod (subst_eexp pats e1, subst_eexp pats e2, List.rev (List.rev_map (subst_eexp pats) ms))
   | Eand (e1, e2) -> Eand (subst_ebexp pats e1, subst_ebexp pats e2)
 
 let rec simplify_ebexp e =
   match e with
   | Eeq (e1, e2) -> Eeq (simplify_eexp e1, simplify_eexp e2)
-  | Eeqmod (e1, e2, m) -> Eeqmod (simplify_eexp e1, simplify_eexp e2, simplify_eexp m)
+  | Eeqmod (e1, e2, ms) -> Eeqmod (simplify_eexp e1, simplify_eexp e2, List.rev (List.rev_map simplify_eexp ms))
   | Eand (e, Etrue) | Eand (Etrue, e) -> simplify_ebexp e
   | _ -> e
 
@@ -1744,7 +1744,7 @@ let rec ssa_ebexp m e =
   match e with
   | Etrue -> Etrue
   | Eeq (e1, e2) -> Eeq (ssa_eexp m e1, ssa_eexp m e2)
-  | Eeqmod (e1, e2, p) -> Eeqmod (ssa_eexp m e1, ssa_eexp m e2, ssa_eexp m p)
+  | Eeqmod (e1, e2, ps) -> Eeqmod (ssa_eexp m e1, ssa_eexp m e2, List.rev (List.rev_map (ssa_eexp m) ps))
   | Eand (e1, e2) -> Eand (ssa_ebexp m e1, ssa_ebexp m e2)
 
 let rec ssa_rbexp m e =
@@ -2072,7 +2072,7 @@ let rec slice_ebexp vars e =
   | Etrue -> e
   | Eeq (e1, e2) -> if vs_disjoint vars (vars_eexp e1) && vs_disjoint vars (vars_eexp e2) then Etrue
                       else e
-  | Eeqmod (e1, e2, p) -> if vs_disjoint vars (vars_eexp e1) && vs_disjoint vars (vars_eexp e2) && vs_disjoint vars (vars_eexp p) then Etrue
+  | Eeqmod (e1, e2, ps) -> if vs_disjoint vars (vars_eexp e1) && vs_disjoint vars (vars_eexp e2) && (List.for_all (vs_disjoint vars) (List.rev (List.rev_map vars_eexp ps))) then Etrue
                             else e
   | Eand (e1, e2) ->
      begin
@@ -2533,7 +2533,7 @@ let rec visit_ebexp visitor e =
      f (match e with
         | Etrue -> Etrue
         | Eeq (e1, e2) -> Eeq (visit_eexp visitor e1, visit_eexp visitor e2)
-        | Eeqmod (e1, e2, m) -> Eeqmod (visit_eexp visitor e1, visit_eexp visitor e2, visit_eexp visitor m)
+        | Eeqmod (e1, e2, ms) -> Eeqmod (visit_eexp visitor e1, visit_eexp visitor e2, List.rev (List.rev_map (visit_eexp visitor) ms))
         | Eand (e1, e2) -> Eand (visit_ebexp visitor e1, visit_ebexp visitor e2))
 
 let rec visit_rbexp visitor e =
