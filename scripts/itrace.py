@@ -265,6 +265,47 @@ class MIPS(Extractor):
         else :
             return {'addr':addr}
 
+class RISCV(Extractor):
+    branchpattern = re.compile(r'^(b|j\w*|ret)\s*(.*)')
+    # e.g. 20($2)
+    eapattern = re.compile(r'(-?(?:0x)?[0-9a-fA-F]+)?\((\w+)\)')
+
+    def __init__(self):
+        self.mask = (1<<wordsize) - 1
+
+    def printHeader(self, function):
+        frame = gdb.newest_frame()
+        print(function + ":")
+        for reg in range(10,18) :
+            reg = "x{0}".format(reg)
+            val = int(frame.read_register(reg)) & self.mask
+            print("# {0} = 0x{1:x}".format(reg, val))
+        return
+
+    def isFunctionCall(self, b):
+        return b.group(1).startswith("jal")
+
+    def isFunctionReturn(self, b):
+        return b.group(1) == "ret"
+
+    def getEA(self, insn, frame):
+        ea = self.eapattern.search(insn["asm"])
+        if not ea:
+            return
+        base = ea.group(2)
+        offset = ea.group(1)
+        debug("Effective address: Group 1: %s" % base)
+        debug("Effective address: Group 2: %s" % offset)
+        addr = int(frame.read_register(base)) & self.mask
+        debug("Effective address: Base: 0x%x" % addr)
+        if offset:
+            debug("Effective address: Offset: 0x%x" % int(offset, 0))
+            addr += int(offset, 0)
+        if insn["asm"].startswith("l") :
+            return {'addr':addr, 'load':True}
+        else :
+            return {'addr':addr}
+
 # figure out if platform is 32- or 64-bit and instantiate extractor,
 # all based on 'info target'...
 
@@ -286,6 +327,8 @@ elif re.search(r'arm',mach):
     extr = ARM32()
 elif re.search(r'mips',mach):
     extr = MIPS()
+elif re.search(r'riscv',mach):
+    extr = RISCV()
 else:
     raise Exception("Unsupported machine type: %s" % mach)
 
