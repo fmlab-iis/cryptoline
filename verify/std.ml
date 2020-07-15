@@ -134,8 +134,13 @@ let write_singular_input ifile vars gen p =
     "ring r = integer, (" ^ varseq ^ "), lp;\n"
     ^ "ideal gs = " ^ generator ^ ";\n"
     ^ "poly p = " ^ poly ^ ";\n"
-    ^ "ideal I = groebner(gs);\n"
-    ^ "reduce(p, I);\n"
+    ^ "poly quick = reduce(p, gs);\n"
+    ^ "if (quick == 0) {\n"
+    ^ "  quick;\n"
+    ^ "} else {\n"
+    ^ "  ideal I = groebner(gs);\n"
+    ^ "  reduce(p, I);\n"
+    ^ "}"
     ^ "exit;\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
@@ -284,9 +289,17 @@ let read_singular_output ofile =
   let ch = open_in ofile in
   let _ =
     try
-	  line := input_line ch
+        line := input_line ch
     with _ ->
       failwith "Failed to read the output file" in
+  let _ =
+    if String.sub (!line) 0 (min 2 (String.length !line)) == "//" then
+      try
+        line := input_line ch
+      with _ ->
+        failwith "Failed to read the output file"
+    else
+      () in
   let _ = close_in ch in
   String.trim !line
 

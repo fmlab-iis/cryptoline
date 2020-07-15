@@ -102,8 +102,13 @@ let write_singular_input ifile vars gen p =
     "ring r = integer, (" ^ varseq ^ "), lp;\n"
     ^ "ideal gs = " ^ generator ^ ";\n"
     ^ "poly p = " ^ poly ^ ";\n"
-    ^ "ideal I = groebner(gs);\n"
-    ^ "reduce(p, I);\n"
+    ^ "poly quick = reduce(p, gs);\n"
+    ^ "if (quick == 0) {\n"
+    ^ "  quick;\n"
+    ^ "} else {\n"
+    ^ "  ideal I = groebner(gs);\n"
+    ^ "  reduce(p, I);\n"
+    ^ "}"
     ^ "exit;\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
@@ -298,10 +303,17 @@ let run_macaulay2 header ifile ofile =
 let read_singular_output ofile =
   let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt line =
+  let%lwt first =
     try%lwt
           Lwt_io.read_line ch
     with _ -> failwith "Failed to read the output file" in
+  let%lwt line =
+    if String.sub first 0 (min 2 (String.length first)) = "//" then
+      try%lwt
+            Lwt_io.read_line ch
+      with _ -> failwith "Failed to read the output file"
+    else
+      Lwt.return first in
   let%lwt _ = Lwt_io.close ch in
   Lwt.return (String.trim line)
 
