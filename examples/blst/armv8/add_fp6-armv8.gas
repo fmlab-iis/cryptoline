@@ -1,4 +1,29 @@
-add_fp6:
+#! [x$1c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! [sp, #$1c]! = %%EA
+#! [sp, #$1c] = %%EA
+#! [sp, #-$1c] = %%EA
+#! [sp], #$1c = %%EA
+#! [sp] = %%EA
+#! x$1c = %%x$1c
+#! sp = %%sp
+
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! add $1v, $2v, \#0x30 -> add $1v $2v 0x30@uint64
+#! add $1v, $2v, \#0x60 -> add $1v $2v 0x60@uint64
+#! add $1v, $2v, \#0xc0 -> add $1v $2v 0xc0@uint64
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs xzr, $1v, xzr -> sbcs carry dontcare $1v 0@uint64 carry
+#! csel $1v, $2v, $3v, cc  // cc = lo, ul, last -> cmov $1v carry $3v $2v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! mov $1v, $2v -> mov $1v $2v
+
+#add_fp6:
 # x0 = 0x400082a048
 # x1 = 0x400082a5f8
 # x2 = 0x400082a718
@@ -14,11 +39,11 @@ add_fp6:
 	mov	x20, x0                                     #! PC = 0x274877931204
 	mov	x21, x1                                     #! PC = 0x274877931208
 	mov	x22, x2                                     #! PC = 0x274877931212
-	adrp	x19, 0x4000029000                          #! PC = 0x274877931216
+	#adrp	x19, 0x4000029000                          #! PC = 0x274877931216
 	ldr	x19, [x19, #4056]                           #! EA = L0x4000029fd8; Value = 0x0000004000016928; PC = 0x274877931220
 	mov	x3, x19                                     #! PC = 0x274877931224
 	#bl	0x4000011be0 <add_mod_384x>                 #! PC = 0x274877931228
-	paciasp                                         #! PC = 0x274877979616
+	#paciasp                                         #! PC = 0x274877979616
 	stp	x29, x30, [sp, #-48]!                       #! EA = L0x4000829f80; PC = 0x274877979620
 	mov	x29, sp                                     #! PC = 0x274877979624
 	stp	x19, x20, [sp, #16]                         #! EA = L0x4000829f90; PC = 0x274877979628
@@ -94,14 +119,14 @@ add_fp6:
 	ldp	x19, x20, [x29, #16]                        #! EA = L0x4000829f90; Value = 0x0000004000016928; PC = 0x274877979692
 	ldp	x21, x22, [x29, #32]                        #! EA = L0x4000829fa0; Value = 0x000000400082a5f8; PC = 0x274877979696
 	ldr	x29, [sp], #48                              #! EA = L0x4000829f80; Value = 0x0000004000829fb0; PC = 0x274877979700
-	autiasp                                         #! PC = 0x274877979704
+	#autiasp                                         #! PC = 0x274877979704
 	#ret                                            #! PC = 0x274877979708
 	mov	x3, x19                                     #! PC = 0x274877931232
 	add	x2, x22, #0x60                              #! PC = 0x274877931236
 	add	x1, x21, #0x60                              #! PC = 0x274877931240
 	add	x0, x20, #0x60                              #! PC = 0x274877931244
 	#bl	0x4000011be0 <add_mod_384x>                 #! PC = 0x274877931248
-	paciasp                                         #! PC = 0x274877979616
+	#paciasp                                         #! PC = 0x274877979616
 	stp	x29, x30, [sp, #-48]!                       #! EA = L0x4000829f80; PC = 0x274877979620
 	mov	x29, sp                                     #! PC = 0x274877979624
 	stp	x19, x20, [sp, #16]                         #! EA = L0x4000829f90; PC = 0x274877979628
@@ -177,14 +202,14 @@ add_fp6:
 	ldp	x19, x20, [x29, #16]                        #! EA = L0x4000829f90; Value = 0x0000004000016928; PC = 0x274877979692
 	ldp	x21, x22, [x29, #32]                        #! EA = L0x4000829fa0; Value = 0x000000400082a5f8; PC = 0x274877979696
 	ldr	x29, [sp], #48                              #! EA = L0x4000829f80; Value = 0x0000004000829fb0; PC = 0x274877979700
-	autiasp                                         #! PC = 0x274877979704
+	#autiasp                                         #! PC = 0x274877979704
 	#ret                                            #! PC = 0x274877979708
 	mov	x3, x19                                     #! PC = 0x274877931252
 	add	x2, x22, #0xc0                              #! PC = 0x274877931256
 	add	x1, x21, #0xc0                              #! PC = 0x274877931260
 	add	x0, x20, #0xc0                              #! PC = 0x274877931264
 	#bl	0x4000011be0 <add_mod_384x>                 #! PC = 0x274877931268
-	paciasp                                         #! PC = 0x274877979616
+	#paciasp                                         #! PC = 0x274877979616
 	stp	x29, x30, [sp, #-48]!                       #! EA = L0x4000829f80; PC = 0x274877979620
 	mov	x29, sp                                     #! PC = 0x274877979624
 	stp	x19, x20, [sp, #16]                         #! EA = L0x4000829f90; PC = 0x274877979628
@@ -260,7 +285,7 @@ add_fp6:
 	ldp	x19, x20, [x29, #16]                        #! EA = L0x4000829f90; Value = 0x0000004000016928; PC = 0x274877979692
 	ldp	x21, x22, [x29, #32]                        #! EA = L0x4000829fa0; Value = 0x000000400082a5f8; PC = 0x274877979696
 	ldr	x29, [sp], #48                              #! EA = L0x4000829f80; Value = 0x0000004000829fb0; PC = 0x274877979700
-	autiasp                                         #! PC = 0x274877979704
+	#autiasp                                         #! PC = 0x274877979704
 	#ret                                            #! PC = 0x274877979708
 	ldp	x19, x20, [sp, #16]                         #! EA = L0x4000829fc0; Value = 0x0000004000014ef8; PC = 0x274877931272
 	ldp	x21, x22, [sp, #32]                         #! EA = L0x4000829fd0; Value = 0x000000400082a5f8; PC = 0x274877931276
