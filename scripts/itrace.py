@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # This script utilizes python-enabled gdb on your $PATH to collect
 # per-instruction execution trace for first invocation of named
@@ -22,7 +22,7 @@ import sys
 import re
 
 debug_flag = False
-# debug_flag = True
+#debug_flag = True
 
 ##############################################################################
 # detect if already in gdb context, and if not, run gdb
@@ -46,14 +46,14 @@ except NameError:
             os.environ["TRACE_OUTFILE"] = sys.argv[4]
 
     try:
-        os.execlpe("gdb-multiarch", "gdb", "-nx", "--batch",
+        os.execlpe("gdb-multiarch", "gdb", "--batch",
                                     "--command=" + sys.argv[0],
                                     sys.argv[1],
                    os.environ)
     except OSError as e :
         if e.errno == 2 :    # no such file or directory, retry just gdb
             try:
-                os.execlpe("gdb", "gdb", "-nx", "--batch",
+                os.execlpe("gdb", "gdb", "--batch",
                                   "--command=" + sys.argv[0],
                                   sys.argv[1],
                            os.environ)
@@ -62,7 +62,6 @@ except NameError:
         sys.exit(e.errno)
     sys.exit(-1)
 
-assert sys.version_info >= (3, 0)
 ##############################################################################
 # this part is executed in gdb context and that's where it all happens...
 
@@ -104,7 +103,13 @@ class X86_64(Extractor):
         return b.group(1) == "ret"
 
     def getEA(self, insn, frame):
-        ea = self.eapattern.search(insn["asm"])
+        mnemonic = insn["asm"]
+        if mnemonic.startswith("push") :
+            ea = self.eapattern.search("-8(%rsp)")
+        elif mnemonic.startswith("pop") :
+            ea = self.eapattern.search("(%rsp),%zz")
+        else :
+            ea = self.eapattern.search(mnemonic)
         if not ea or insn["asm"].startswith("lea") :
             return
         addr = 0
@@ -210,7 +215,7 @@ class ARM32(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
-
+ 
 
 class MIPS(Extractor):
     branchpattern = re.compile(r'^(b|j\w*)\s*(.*)')
@@ -236,9 +241,9 @@ class MIPS(Extractor):
             mnemonic = insns[1]["asm"]
             addr = self.getEA(insns[1], frame)
             if addr:
-                print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2}".format(mnemonic, addr, insns[1]["addr"]))
+                print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}".format(mnemonic, addr, insns[1]["addr"]))
             else:
-                print("\t{0:48s}#! PC = 0x{1}".format(mnemonic,insns[1]["addr"]))
+                print("\t{0:48s}#! PC = 0x{1:x}".format(mnemonic,insns[1]["addr"]))
         return b
 
     def isFunctionCall(self, b):
@@ -264,7 +269,7 @@ class MIPS(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
-
+ 
 class RISCV(Extractor):
     branchpattern = re.compile(r'^(b|j\w*|ret)\s*(.*)')
     # e.g. 20($2)
@@ -305,7 +310,7 @@ class RISCV(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
-
+ 
 # figure out if platform is 32- or 64-bit and instantiate extractor,
 # all based on 'info target'...
 
@@ -336,37 +341,22 @@ def debug(msg):
     if debug_flag:
         print("DEBUG: {}".format(msg))
 
-
-def find_frame(caller=None):
-    frame = gdb.newest_frame()
-    if caller:
-        while True:
-            if not frame.older():
-                print("caller frame doesn't exist",file=sys.stderr)
-                exit(1)
-            callerframe = frame.older()
-            debug(callerframe.name())
-            if callerframe and callerframe.name() == caller:
-                break
-            else:
-                gdb.execute('continue', to_string=True)
-                frame = gdb.newest_frame()
-    return frame
-
-
 def trace():
     frame = gdb.newest_frame()
     arch = frame.architecture()
 
+    print("\t#! -> SP = 0x{0:x}".format(int(frame.read_register("sp"))))
     while(frame.is_valid()):
         insns = arch.disassemble(frame.pc(), count=2)	# 2nd for delay slot
         mnemonic = insns[0]["asm"]
         debug("mnemonic = %s" % mnemonic)
         b = extr.isBranch(insns, frame)
         if b:                               # skip over flow control
+            if extr.isFunctionReturn(b):
+                print("\t#! <- SP = 0x{0:x}".format(int(frame.read_register("sp"))))
             gdb.execute("stepi", to_string=True)
             debug("After stepi 1")
-            print("\t#{0:47s}#! PC = 0x{1}".format(mnemonic,insns[0]["addr"]))
+            print("\t#{0:47s}#! PC = 0x{1:x}".format(mnemonic,insns[0]["addr"]))
             if extr.isFunctionCall(b):      # calls are handled recursively
                 debug("Call")
                 trace()
@@ -383,23 +373,26 @@ def trace():
             ea = extr.getEA(insns[0], frame)
             if ea :
                 if ea.get("value") :
-                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3}"
+                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
                           .format(mnemonic, ea["addr"], ea["value"], insns[0]["addr"]))
                 elif ea.get("load") :
                     unit = 'g' if wordsize == 64 else 'w'
-                    value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
-                    value = re.match('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)', value).group(1)
-                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3}"
+                    try :
+                        value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
+                        value = re.match('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)', value).group(1)
+                    except gdb.MemoryError :
+                        value = "'?'"
+                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
                           .format(mnemonic, ea["addr"], value, insns[0]["addr"]))
                 else :
-                    print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2}"
+                    print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}"
                           .format(mnemonic, ea["addr"], insns[0]["addr"]))
             else:
-                print("\t{0:48s}#! PC = 0x{1}".format(mnemonic, insns[0]["addr"]))
+                print("\t{0:48s}#! PC = 0x{1:x}".format(mnemonic, insns[0]["addr"]))
             gdb.execute("stepi", to_string=True)
             debug("After stepi 2")
         if not frame.is_valid():      # inter-procedure branches
-            debug("Unexpected invalid frame!")
+            debug("Unexpected invalid frame! Well, not necessarily...")
             frame = gdb.newest_frame()
             arch = frame.architecture()
 
@@ -432,18 +425,6 @@ else :
 
 debug("After run")
 
-caller = None
-
-if "TRACE_CALLER" in os.environ:
-    caller = os.environ['TRACE_CALLER']
-
-target_frame = find_frame(caller=caller)
-
-if not target_frame:
-    print("frame not found", file=sys.stderr)
-    sys.exit(-1)
-
-# right frame now
 extr.printHeader(function)
 trace()
 
