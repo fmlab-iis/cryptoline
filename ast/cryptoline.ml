@@ -569,16 +569,16 @@ type ebexp =
   | Eeqmod of eexp * eexp * eexp list
   | Eand of ebexp * ebexp
 
-let _eand e1 e2 =
+let etrue = Etrue
+let eeq e1 e2 = Eeq (e1, e2)
+let eeqmod e1 e2 m = Eeqmod (e1, e2, [ m ])
+(*let eand b1 b2 = Eand (b1, b2)*)
+
+let eand e1 e2 =
   match e1, e2 with
   | Etrue, _ -> e2
   | _, Etrue -> e1
   | _, _ -> Eand (e1, e2)
-
-let etrue = Etrue
-let eeq e1 e2 = Eeq (e1, e2)
-let eeqmod e1 e2 m = Eeqmod (e1, e2, [ m ])
-let eand b1 b2 = Eand (b1, b2)
 
 (*let eands es = List.fold_left (fun res e -> eand e res) Etrue es*)
 let eands es =

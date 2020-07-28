@@ -4,7 +4,7 @@ open Options.Std
 open Ast.Cryptoline
 open Parsers.Std
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert
 
 let action = ref Verify
 
@@ -23,6 +23,7 @@ let args = [
     ("-disable_safety", Clear verify_program_safety, "\n\t     Disable verification of program safety\n");
     ("-jobs", Int (fun j -> jobs := j),
      "N    Set number of jobs (default = 4)\n");
+    ("-ma", Unit (fun () -> action := MoveAssert), "\t     Convert to SSA and move assertions to post-condition");
     ("-p", Unit (fun () -> action := Parse), "\t     Print the parsed specification\n");
     ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
     ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
@@ -94,6 +95,23 @@ let check_well_formedness vs s =
     | _ -> () in
   wf
 
+let move_asserts s =
+  let is_assert i =
+    match i with
+    | Iassert _ -> true
+    | _ -> false in
+  let bexp_of_assert i =
+    match i with
+    | Iassert e -> e
+    | _ -> assert false in
+  let (es, is) = List.partition is_assert s.sprog in
+  let post = band (bands (List.map bexp_of_assert es)) s.spost in
+  { spre = s.spre;
+    sprog = is;
+    spost = post;
+    sepwss = s.sepwss;
+    srpwss = s.srpwss }
+
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) (VS.elements vs)) in
   let parse_and_check file =
@@ -128,6 +146,14 @@ let anon file =
   | PrintRSpec ->
      let s = rspec_from_file file in
      print_endline (string_of_rspec s)
+  | MoveAssert ->
+     let (vs, s) = parse_and_check file in
+     let vs = VS.of_list (List.map (ssa_var VM.empty) (VS.elements vs)) in
+     let ssa = ssa_spec s in
+     let moved = move_asserts ssa in
+     print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
+     print_endline (string_of_spec moved)
+
 (*
 let _ =
   parse args anon usage
