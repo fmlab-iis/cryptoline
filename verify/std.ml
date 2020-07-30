@@ -140,7 +140,7 @@ let write_singular_input ifile vars gen p =
     ^ "} else {\n"
     ^ "  ideal I = groebner(gs);\n"
     ^ "  reduce(p, I);\n"
-    ^ "}"
+    ^ "}\n"
     ^ "exit;\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
