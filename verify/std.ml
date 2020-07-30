@@ -293,7 +293,7 @@ let read_singular_output ofile =
     with _ ->
       failwith "Failed to read the output file" in
   let _ =
-    if String.sub (!line) 0 (min 2 (String.length !line)) == "//" then
+    if String.sub (!line) 0 (min 2 (String.length !line)) = "//" then
       try
         line := input_line ch
       with _ ->
