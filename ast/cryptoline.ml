@@ -724,7 +724,7 @@ let rec string_of_rbexp ?typ:(typ=false) e =
   | Ror (e1, e2) ->
      let es = split_ror e in
      match es with
-     | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2 ^ ")"
+     | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2
      | _ -> "or [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
 
 let rec eq_rbexp e1 e2 =
