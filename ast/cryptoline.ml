@@ -705,7 +705,7 @@ let _rbexp_is_rand e =
 
 let rbexp_is_ror e =
   match e with
-  | Rand _ -> true
+  | Ror _ -> true
   | _ -> false
 
 let rec string_of_rbexp ?typ:(typ=false) e =
