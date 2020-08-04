@@ -70,12 +70,12 @@ def process_builtin_variables(pat, rep, indices):
   for i in indices:
     for lhs, rhs in pairs:
       if lhs.find("$" + str(i) + "c") != -1:
-        pc = lhs.replace("$" + str(i) + "c", "\\$?(?P<c" + str(i) + ">\\d+)", 1)
-        pc = pc.replace("$" + str(i) + "c", "\\$?(?P=c" + str(i) + ")")
+        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">0x[0-9a-fA-F]+)", 1)
+        pc = pc.replace("$" + str(i) + "c", "(\\#|\\$)?(?P=c" + str(i) + ")")
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
-        pc = lhs.replace("$" + str(i) + "c", "\\$?(?P<c" + str(i) + ">0x[0-9a-fA-F]+)", 1)
-        pc = pc.replace("$" + str(i) + "c", "\\$?(?P=c" + str(i) + ")")
+        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">\\d+)", 1)
+        pc = pc.replace("$" + str(i) + "c", "(\\#|\\$)?(?P=c" + str(i) + ")")
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
       elif lhs.find("$" + str(i) + "v") != -1:
