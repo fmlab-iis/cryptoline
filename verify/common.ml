@@ -1007,8 +1007,8 @@ let rewrite_assignments ideal p moduli =
        (match is_assignment hd with
         | None -> do_rewrite (hd::finished) tl p
         | Some (v, e) ->
-           do_rewrite (List.map (subst_eexp [(v, e)]) finished)
-             (List.map (subst_eexp [(v, e)]) tl)
+           do_rewrite (List.rev (List.rev_map (subst_eexp [(v, e)]) finished))
+             (List.rev (List.rev_map (subst_eexp [(v, e)]) tl))
              (subst_eexp [(v, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
@@ -1040,8 +1040,8 @@ let rewrite_assignments' ideal p moduli =
        (match is_assignment hd (p::finished@tl) with
         | None -> do_rewrite (hd::finished) tl p
         | Some (sub, e) ->
-           do_rewrite (List.map (replace_eexp [(sub, e)]) finished)
-                      (List.map (replace_eexp [(sub, e)]) tl)
+           do_rewrite (List.rev (List.rev_map (replace_eexp [(sub, e)]) finished))
+                      (List.rev (List.rev_map (replace_eexp [(sub, e)]) tl))
                       (replace_eexp [(sub, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
@@ -1060,8 +1060,8 @@ let rewrite_assignments_ebexp ideal p =
     | hd::tl ->
        (match is_assignment hd with
         | None -> do_rewrite (hd::finished) tl p
-        | Some (v, e) -> do_rewrite (List.map (subst_eexp [(v, e)]) finished)
-                                    (List.map (subst_eexp [(v, e)]) tl)
+        | Some (v, e) -> do_rewrite (List.rev (List.rev_map (subst_eexp [(v, e)]) finished))
+                                    (List.rev (List.rev_map (subst_eexp [(v, e)]) tl))
                                     (subst_ebexp [(v, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
