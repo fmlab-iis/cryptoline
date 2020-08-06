@@ -131,12 +131,18 @@ let write_singular_input ifile vars gen p =
       | _ -> String.concat "," (List.map string_of_var vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map singular_of_eexp gen)) in
     let poly = singular_of_eexp p in
-    "ring r = integer, (" ^ varseq ^ "), lp;\n"
+    "proc is_generator(poly p, ideal I) {\n"
+    ^ "  int idx;\n"
+    ^ "  for (idx=1; idx<=size(I); idx++) {\n"
+    ^ "    if (p == I[idx]) { return (0==0); }\n"
+    ^ "  }\n"
+    ^ "  return (0==1);\n"
+    ^ "}\n\n"
+    ^ "ring r = integer, (" ^ varseq ^ "), lp;\n"
     ^ "ideal gs = " ^ generator ^ ";\n"
     ^ "poly p = " ^ poly ^ ";\n"
-    ^ "poly quick = reduce(p, gs);\n"
-    ^ "if (quick == 0) {\n"
-    ^ "  quick;\n"
+    ^ "if (is_generator(p, gs) || reduce(p, gs) == 0) {\n"
+    ^ "  0;\n"
     ^ "} else {\n"
     ^ "  ideal I = groebner(gs);\n"
     ^ "  reduce(p, I);\n"
