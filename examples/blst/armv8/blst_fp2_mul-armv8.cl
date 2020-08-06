@@ -1,15 +1,14 @@
-(* quine: -v -isafety -jobs 10 -btor -no_carry_constraint blst_fp2_mul-armv8.cl
-Parsing Cryptoline file:                [OK]            0.017242 seconds
-Checking well-formedness:               [OK]            0.003572 seconds
-Transforming to SSA form:               [OK]            0.001806 seconds
-Rewriting assignments:                  [OK]            0.043969 seconds
-Verifying program safety:               [OK]            10.911898 seconds
-Verifying range assertions:             [OK]            56.394494 seconds
-Verifying range specification:          [OK]            12.535624 seconds
-Rewriting value-preserved casting:      [OK]            0.000100 seconds
-Verifying algebraic assertions:         [OK]            1.618101 seconds
-Verifying algebraic specification:      [OK]            2.994951 seconds
-Verification result:                    [OK]            84.523280 seconds
+(* quine: -v -isafety -btor -jobs 10 -no_carry_constraint blst_fp2_mul-armv8.cl
+Parsing Cryptoline file:                [OK]            0.017145 seconds
+Checking well-formedness:               [OK]            0.003711 seconds
+Transforming to SSA form:               [OK]            0.002488 seconds
+Rewriting assignments:                  [OK]            0.045434 seconds
+Verifying program safety:               [OK]            10.724555 seconds
+Verifying range specification:          [OK]            12.909152 seconds
+Rewriting value-preserved casting:      [OK]            0.000092 seconds
+Verifying algebraic assertions:         [OK]            1.794901 seconds
+Verifying algebraic specification:      [OK]            3.425802 seconds
+Verification result:                    [OK]            82.292437 seconds
 *)
 
 proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3, uint64 a4, uint64 a5,
@@ -36,8 +35,7 @@ proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3, uint64 a4, uint64 a5,
     limbs 64 [a0, a1, a2, a3, a4, a5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
     limbs 64 [b0, b1, b2, b3, b4, b5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
     limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
-  ]
+    limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5]]
 }
 
 mov L0x400082ab88 a0;
@@ -2886,17 +2884,17 @@ rcut and [
       m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
     
       x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-      
-      limbs 64 [L0x400082a8c0, L0x400082a8c8, L0x400082a8d0, L0x400082a8d8,
-                L0x400082a8e0, L0x400082a8e8, L0x400082a8f0, L0x400082a8f8,
-                L0x400082a900, L0x400082a908, L0x400082a910, L0x400082a918] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5],
-      limbs 64 [L0x400082a980, L0x400082a988, L0x400082a990, L0x400082a998,
-                L0x400082a9a0, L0x400082a9a8, L0x400082a9b0, L0x400082a9b8,
-                L0x400082a9c0, L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5],
+
+      limbs 64 [L0x400082ac48, L0x400082ac50, L0x400082ac58,
+                L0x400082ac60, L0x400082ac68, L0x400082ac70] <u
+      3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+
+      limbs 64 [L0x400082a8f0, L0x400082a8f8, L0x400082a900,
+                L0x400082a908, L0x400082a910, L0x400082a918] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [L0x400082a9b0, L0x400082a9b8, L0x400082a9c0,
+                L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5],
 
       limbs 64 [x11, x12, x13, x14, x15, x16] <u
       2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])
@@ -3084,5 +3082,8 @@ mov f5 L0x400082aca0;
           (limbs 64 [d0, d1, d2, d3, d4, d5]) * I))
         [ limbs 64 [m0, m1, m2, m3, m4, m5], I * I + 1 ]
 &&
-  true
+  and [limbs 64 [e0, e1, e2, e3, e4, e5] <u
+       3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+       limbs 64 [f0, f1, f2, f3, f4, f5] <u
+       3@384 * limbs 64 [m0, m1, m2, m3, m4, m5]]
 }
