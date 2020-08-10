@@ -1,15 +1,15 @@
-(* quine:  -v -btor -isafety -jobs 20 -slicing -no_carry_constraint mul_fp6-armv8.cl
-Parsing Cryptoline file:                [OK]            0.137167 seconds
-Checking well-formedness:               [OK]            0.027709 seconds
-Transforming to SSA form:               [OK]            0.015475 seconds
-Rewriting assignments:                  [OK]            7.222508 seconds
-Verifying program safety:               [OK]            44.148052 seconds
-Verifying range assertions:             [OK]            153.287726 seconds
-Verifying range specification:          [OK]            95.577033 seconds
-Rewriting value-preserved casting:      [OK]            0.001219 seconds
-Verifying algebraic assertions:         [OK]            379.393002 seconds
-Verifying algebraic specification:      [OK]            2777.757499 seconds
-Verification result:                    [OK]            3457.576260 seconds
+(* quine: -v -btor -isafety -jobs 10 -slicing -no_carry_constraint mul_fp6-armv8.cl
+Parsing Cryptoline file:                [OK]            0.137620 seconds
+Checking well-formedness:               [OK]            0.027596 seconds
+Transforming to SSA form:               [OK]            0.014884 seconds
+Rewriting assignments:                  [OK]            7.258798 seconds
+Verifying program safety:               [OK]            51.885073 seconds
+Verifying range assertions:             [OK]            222.954661 seconds
+Verifying range specification:          [OK]            1402.201317 seconds
+Rewriting value-preserved casting:      [OK]            0.000427 seconds
+Verifying algebraic assertions:         [OK]            396.083546 seconds
+Verifying algebraic specification:      [OK]            3048.219796 seconds
+Verification result:                    [OK]            5128.792501 seconds
 *)
 
 proc mul_fp6x2 (uint64 a00, uint64 a01, uint64 a02,
@@ -17891,13 +17891,15 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0, x11, x12, x13, x14, x15, x16])
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
 
+         1@64 + m0 * x4 = 0@64,
+
          limbs 64 [L0x4000829dc8, L0x4000829dd0, L0x4000829dd8,
                    L0x4000829de0, L0x4000829de8, L0x4000829df0] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
          
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
 
 ghost x11o@uint64, x12o@uint64, x13o@uint64,
       x14o@uint64, x15o@uint64, x16o@uint64 :
@@ -18427,18 +18429,20 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          L0x4000829cf8 = 0x89f3fffcfffcfffd]
  && and [limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                    L0x400082a060, L0x400082a068, L0x400082a070] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
+
+         1@64 + m0 * x4 = 0@64,
 
          limbs 64 [L0x4000829e28, L0x4000829e30, L0x4000829e38,
                    L0x4000829e40, L0x4000829e48, L0x4000829e50] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
 
 ghost x11p@uint64, x12p@uint64, x13p@uint64,
       x14p@uint64, x15p@uint64, x16p@uint64 :
@@ -18970,18 +18974,20 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          L0x4000829cf8 = 0x89f3fffcfffcfffd]
  && and [limbs 64 [L0x400082a078, L0x400082a080, L0x400082a088,
                    L0x400082a090, L0x400082a098, L0x400082a0a0] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
+
+         1@64 + m0 * x4 = 0@64,
 
          limbs 64 [L0x4000829e88, L0x4000829e90, L0x4000829e98,
                    L0x4000829ea0, L0x4000829ea8, L0x4000829eb0] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
     
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
        
 ghost x11q@uint64, x12q@uint64, x13q@uint64,
       x14q@uint64, x15q@uint64, x16q@uint64 :
@@ -19513,18 +19519,20 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          L0x4000829cf8 = 0x89f3fffcfffcfffd]
  && and [limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
                    L0x400082a0c0, L0x400082a0c8, L0x400082a0d0] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
+
+         1@64 + m0 * x4 = 0@64,
     
          limbs 64 [L0x4000829ee8, L0x4000829ef0, L0x4000829ef8,
                    L0x4000829f00, L0x4000829f08, L0x4000829f10] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
     
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
 
 ghost x11r@uint64, x12r@uint64, x13r@uint64,
       x14r@uint64, x15r@uint64, x16r@uint64 :
@@ -20055,18 +20063,20 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          L0x4000829cf8 = 0x89f3fffcfffcfffd]
  && and [limbs 64 [L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
                    L0x400082a0f0, L0x400082a0f8, L0x400082a100] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
-    
+
+         1@64 + m0 * x4 = 0@64,
+
          limbs 64 [L0x4000829f48, L0x4000829f50, L0x4000829f58,
                    L0x4000829f60, L0x4000829f68, L0x4000829f70] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
     
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
 
 ghost x11s@uint64, x12s@uint64, x13s@uint64,
       x14s@uint64, x15s@uint64, x16s@uint64 :
@@ -20597,7 +20607,7 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          L0x4000829cf8 = 0x89f3fffcfffcfffd]
  && and [limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
                    L0x400082a120, L0x400082a128, L0x400082a130] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
@@ -20607,8 +20617,8 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          limbs 64 [m0, m1, m2, m3, m4, m5],
     
          x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
-         limbs 64 [x11, x12, x13, x14, x15, x16] <u
-         2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])] prove with all cuts;
+         limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+         limbs 64 [m0, m1, m2, m3, m4, m5]] prove with all cuts;
 
 ghost x11t@uint64, x12t@uint64, x13t@uint64,
       x14t@uint64, x15t@uint64, x16t@uint64 :
@@ -20707,22 +20717,22 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]
  && and [limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                    L0x400082a060, L0x400082a068, L0x400082a070] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          limbs 64 [L0x400082a078, L0x400082a080, L0x400082a088,
                    L0x400082a090, L0x400082a098, L0x400082a0a0] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
                    L0x400082a0c0, L0x400082a0c8, L0x400082a0d0] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          limbs 64 [L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
                    L0x400082a0f0, L0x400082a0f8, L0x400082a100] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
                    L0x400082a120, L0x400082a128, L0x400082a130] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          limbs 64 [L0x400082a138, L0x400082a140, L0x400082a148,
                    L0x400082a150, L0x400082a158, L0x400082a160] <u
-         3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+         limbs 64 [m0, m1, m2, m3, m4, m5],
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64]
@@ -21017,17 +21027,17 @@ mov x30 L0x4000829d58;
         [limbs 64 [m0, m1, m2, m3, m4, m5],
          U * U + 1, V * V * V - U - 1]
 && and [limbs 64 [c00, c01, c02, c03, c04, c05] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c10, c11, c12, c13, c14, c15] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c20, c21, c22, c23, c24, c25] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c30, c31, c32, c33, c34, c35] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c40, c41, c42, c43, c44, c45] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c50, c51, c52, c53, c54, c55] <u
-        3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [m0, m1, m2, m3, m4, m5],
         m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
         m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
         m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64]

@@ -1,14 +1,15 @@
-(* quine: -v -isafety -btor -jobs 10 -no_carry_constraint blst_fp2_mul-armv8.cl
-Parsing Cryptoline file:                [OK]            0.017145 seconds
-Checking well-formedness:               [OK]            0.003711 seconds
-Transforming to SSA form:               [OK]            0.002488 seconds
-Rewriting assignments:                  [OK]            0.045434 seconds
-Verifying program safety:               [OK]            10.724555 seconds
-Verifying range specification:          [OK]            12.909152 seconds
-Rewriting value-preserved casting:      [OK]            0.000092 seconds
-Verifying algebraic assertions:         [OK]            1.794901 seconds
-Verifying algebraic specification:      [OK]            3.425802 seconds
-Verification result:                    [OK]            82.292437 seconds
+(* quine: -v -btor -isafety -jobs 10 -slicing -no_carry_constraint blst_fp2_mul-armv8.cl
+Parsing Cryptoline file:                [OK]            0.018451 seconds
+Checking well-formedness:               [OK]            0.003758 seconds
+Transforming to SSA form:               [OK]            0.001691 seconds
+Rewriting assignments:                  [OK]            0.047797 seconds
+Verifying program safety:               [OK]            10.745668 seconds
+Verifying range assertions:             [OK]            52.396368 seconds
+Verifying range specification:          [OK]            689.025948 seconds
+Rewriting value-preserved casting:      [OK]            0.000090 seconds
+Verifying algebraic assertions:         [OK]            1.873778 seconds
+Verifying algebraic specification:      [OK]            3.350492 seconds
+Verification result:                    [OK]            757.465607 seconds
 *)
 
 proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3, uint64 a4, uint64 a5,
@@ -1359,21 +1360,15 @@ rcut and [
        L0x40000168e8=m0, L0x40000168f0=m1, L0x40000168f8=m2,
        L0x4000016900=m3, L0x4000016908=m4, L0x4000016910=m5,
 
-       limbs 64 [L0x400082a8c0, L0x400082a8c8, L0x400082a8d0, L0x400082a8d8,
-                 L0x400082a8e0, L0x400082a8e8, L0x400082a8f0, L0x400082a8f8,
-                 L0x400082a900, L0x400082a908, L0x400082a910, L0x400082a918] <u
-       limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                   m0,   m1,   m2,   m3,   m4,   m5],
-       limbs 64 [L0x400082a920, L0x400082a928, L0x400082a930, L0x400082a938,
-                 L0x400082a940, L0x400082a948, L0x400082a950, L0x400082a958,
-                 L0x400082a960, L0x400082a968, L0x400082a970, L0x400082a978] <u
-       limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                   m0,   m1,   m2,   m3,   m4,   m5],
-       limbs 64 [L0x400082a980, L0x400082a988, L0x400082a990, L0x400082a998,
-                 L0x400082a9a0, L0x400082a9a8, L0x400082a9b0, L0x400082a9b8,
-                 L0x400082a9c0, L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
-       limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                   m0,   m1,   m2,   m3,   m4,   m5]
+       limbs 64 [L0x400082a8f0, L0x400082a8f8, L0x400082a900,
+                 L0x400082a908, L0x400082a910, L0x400082a918] <u
+       limbs 64 [m0, m1, m2, m3, m4, m5],
+       limbs 64 [L0x400082a950, L0x400082a958, L0x400082a960,
+                 L0x400082a968, L0x400082a970, L0x400082a978] <u
+       limbs 64 [m0, m1, m2, m3, m4, m5],
+       limbs 64 [L0x400082a9b0, L0x400082a9b8, L0x400082a9c0,
+                 L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
+       limbs 64 [m0, m1, m2, m3, m4, m5]
      ];
 
 (* ldp	x5, x6, [x3]                                #! EA = L0x40000168e8; Value = 0xb9feffffffffaaab; PC = 0x274877985180 *)
@@ -1950,18 +1945,16 @@ cut and [
       m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
     
       x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
+      x4 = n,
+      1@64 + m0 * n = 0@64,
       
-      limbs 64 [L0x400082a8c0, L0x400082a8c8, L0x400082a8d0, L0x400082a8d8,
-                L0x400082a8e0, L0x400082a8e8, L0x400082a8f0, L0x400082a8f8,
-                L0x400082a900, L0x400082a908, L0x400082a910, L0x400082a918] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5],
-      limbs 64 [L0x400082a980, L0x400082a988, L0x400082a990, L0x400082a998,
-                L0x400082a9a0, L0x400082a9a8, L0x400082a9b0, L0x400082a9b8,
-                L0x400082a9c0, L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5]
-    ];
+      limbs 64 [L0x400082a8f0, L0x400082a8f8, L0x400082a900,
+                L0x400082a908, L0x400082a910, L0x400082a918] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [L0x400082a9b0, L0x400082a9b8, L0x400082a9c0,
+                L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5]
+    ] prove with precondition;
 
 (* NOTE: simplify assumptions just for reduction *)
 
@@ -2375,21 +2368,19 @@ rcut and [
       m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64,
     
       x5 = m0, x6 = m1, x7 = m2, x8 = m3, x9 = m4, x10 = m5,
+      x4 = n,
+      1@64 + m0 * n = 0@64,
       
-      limbs 64 [L0x400082a8c0, L0x400082a8c8, L0x400082a8d0, L0x400082a8d8,
-                L0x400082a8e0, L0x400082a8e8, L0x400082a8f0, L0x400082a8f8,
-                L0x400082a900, L0x400082a908, L0x400082a910, L0x400082a918] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5],
-      limbs 64 [L0x400082a980, L0x400082a988, L0x400082a990, L0x400082a998,
-                L0x400082a9a0, L0x400082a9a8, L0x400082a9b0, L0x400082a9b8,
-                L0x400082a9c0, L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
-      limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
-                  m0,   m1,   m2,   m3,   m4,   m5],
+      limbs 64 [L0x400082a8f0, L0x400082a8f8, L0x400082a900,
+                L0x400082a908, L0x400082a910, L0x400082a918] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [L0x400082a9b0, L0x400082a9b8, L0x400082a9c0,
+                L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
+      limbs 64 [m0, m1, m2, m3, m4, m5],
 
-      limbs 64 [x11, x12, x13, x14, x15, x16] <u
-      2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])
-    ];
+      limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+      limbs 64 [m0, m1, m2, m3, m4, m5]
+    ] prove with precondition;
 
 ghost x11o@uint64, x12o@uint64, x13o@uint64,
       x14o@uint64, x15o@uint64, x16o@uint64 :
@@ -2887,7 +2878,7 @@ rcut and [
 
       limbs 64 [L0x400082ac48, L0x400082ac50, L0x400082ac58,
                 L0x400082ac60, L0x400082ac68, L0x400082ac70] <u
-      3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [m0, m1, m2, m3, m4, m5],
 
       limbs 64 [L0x400082a8f0, L0x400082a8f8, L0x400082a900,
                 L0x400082a908, L0x400082a910, L0x400082a918] <u
@@ -2896,8 +2887,8 @@ rcut and [
                 L0x400082a9c8, L0x400082a9d0, L0x400082a9d8] <u
       limbs 64 [m0, m1, m2, m3, m4, m5],
 
-      limbs 64 [x11, x12, x13, x14, x15, x16] <u
-      2@384 * (limbs 64 [m0, m1, m2, m3, m4, m5])
+      limbs 64 [x11, x12, x13, x14, x15, x16] <=u
+      limbs 64 [m0, m1, m2, m3, m4, m5]
     ];
 
 ghost x11p@uint64, x12p@uint64, x13p@uint64,
@@ -3083,7 +3074,7 @@ mov f5 L0x400082aca0;
         [ limbs 64 [m0, m1, m2, m3, m4, m5], I * I + 1 ]
 &&
   and [limbs 64 [e0, e1, e2, e3, e4, e5] <u
-       3@384 * limbs 64 [m0, m1, m2, m3, m4, m5],
+       limbs 64 [m0, m1, m2, m3, m4, m5],
        limbs 64 [f0, f1, f2, f3, f4, f5] <u
-       3@384 * limbs 64 [m0, m1, m2, m3, m4, m5]]
+       limbs 64 [m0, m1, m2, m3, m4, m5]]
 }
