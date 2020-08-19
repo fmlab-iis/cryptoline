@@ -1000,6 +1000,7 @@ let rewrite_assignments ideal p moduli =
     | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
          when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (v, esub e2 e1)
     | _ -> get_rewrite_pattern e in
+  (*
   let rec do_rewrite finished ideal p =
     match ideal with
     | [] -> (finished, p)
@@ -1011,6 +1012,27 @@ let rewrite_assignments ideal p moduli =
              (List.rev (List.rev_map (subst_eexp [(v, e)]) tl))
              (subst_eexp [(v, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
+   *)
+  let add_varsets polys =
+    List.rev (List.rev_map (fun poly -> (poly, vars_eexp poly)) polys) in
+  let subst_poly_vs (v, e) (poly, vs) =
+    if VS.mem v vs then
+      (subst_eexp [(v, e)] poly, VS.union (VS.remove v vs) (vars_eexp e))
+    else
+      (poly, vs) in
+  let subst_poly_vss (v, e) poly_vss =
+    List.rev (List.rev_map (subst_poly_vs (v, e)) poly_vss) in
+  let rec do_rewrite finished_vs ideal_vs p_vs =
+    match ideal_vs with
+    | [] -> (fst (List.split finished_vs), fst p_vs)
+    | (hd_poly, hd_vs)::tl ->
+       (match is_assignment hd_poly with
+        | None -> do_rewrite ((hd_poly, hd_vs)::finished_vs) tl p_vs
+        | Some (v, e) ->
+           do_rewrite (subst_poly_vss (v, e) finished_vs)
+             (subst_poly_vss (v, e) tl) (subst_poly_vs (v, e) p_vs)) in
+  let (finished, p) =
+    do_rewrite [] (add_varsets ideal) (p, vars_eexp p) in
   (List.rev finished, p)
 
 let rewrite_assignments' ideal p moduli =
@@ -1033,6 +1055,34 @@ let rewrite_assignments' ideal p moduli =
     | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
          when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
     | _ -> get_rewrite_pattern' e others in
+  (*
+  let add_varsets polys =
+    let vss = List.rev (List.rev_map vars_eexp polys) in
+    (polys, vss) in
+  let subst_poly_vs (sub, e) (poly, vs) =
+    if VS.subset (vars_eexp sub) vs then
+      let poly' = replace_eexp [(sub, e)] poly in
+      (poly', vars_eexp poly')
+    else
+      (poly, vs) in
+  let subst_poly_vss (sub, e) (polys, vss) =
+    let poly_vss = List.combine polys vss in
+    List.split (List.rev (List.rev_map (subst_poly_vs (sub, e)) poly_vss)) in
+  let rec do_rewrite (finished, finished_vs) (ideal, ideal_vs) (p, p_vs) =
+    match ideal, ideal_vs with
+    | ([], []) -> (finished, p)
+    | (hd::tl, hd_vs::tl_vs) ->
+       (match is_assignment hd (p::finished@tl) with
+        | None ->
+           do_rewrite (hd::finished, hd_vs::finished_vs) (tl, tl_vs) (p, p_vs)
+        | Some (sub, e) ->
+           do_rewrite (subst_poly_vss (sub, e) (finished, finished_vs))
+             (subst_poly_vss (sub, e) (tl, tl_vs))
+             (subst_poly_vs (sub, e) (p, p_vs)))
+    | _ -> assert false (* should not happen *) in
+  let (finished, p) =
+    do_rewrite ([], []) (add_varsets ideal) (p, vars_eexp p) in
+   *)
   let rec do_rewrite finished ideal p =
     match ideal with
     | [] -> (finished, p)
