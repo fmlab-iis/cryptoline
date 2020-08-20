@@ -1,15 +1,15 @@
-(* quine: -v -btor -isafety -jobs 10 -slicing -no_carry_constraint mul_fp6-armv8.cl
-Parsing Cryptoline file:                [OK]            0.137620 seconds
-Checking well-formedness:               [OK]            0.027596 seconds
-Transforming to SSA form:               [OK]            0.014884 seconds
-Rewriting assignments:                  [OK]            7.258798 seconds
-Verifying program safety:               [OK]            51.885073 seconds
-Verifying range assertions:             [OK]            222.954661 seconds
-Verifying range specification:          [OK]            1402.201317 seconds
-Rewriting value-preserved casting:      [OK]            0.000427 seconds
-Verifying algebraic assertions:         [OK]            396.083546 seconds
-Verifying algebraic specification:      [OK]            3048.219796 seconds
-Verification result:                    [OK]            5128.792501 seconds
+(* quine:  -v -isafety -jobs 10 -no_carry_constraint -btor -slicing mul_fp6-armv8.cl
+Parsing Cryptoline file:                [OK]            0.143617 seconds
+Checking well-formedness:               [OK]            0.031226 seconds
+Transforming to SSA form:               [OK]            0.018156 seconds
+Rewriting assignments:                  [OK]            7.740793 seconds
+Verifying program safety:               [OK]            54.234148 seconds
+Verifying range assertions:             [OK]            251.528033 seconds
+Verifying range specification:          [OK]            1656.765110 seconds
+Rewriting value-preserved casting:      [OK]            0.000328 seconds
+Verifying algebraic assertions:         [OK]            119.277323 seconds
+Verifying algebraic specification:      [OK]            610.038620 seconds
+Verification result:                    [OK]            2699.787710 seconds
 *)
 
 proc mul_fp6x2 (uint64 a00, uint64 a01, uint64 a02,
@@ -21037,8 +21037,5 @@ mov x30 L0x4000829d58;
         limbs 64 [c40, c41, c42, c43, c44, c45] <u
         limbs 64 [m0, m1, m2, m3, m4, m5],
         limbs 64 [c50, c51, c52, c53, c54, c55] <u
-        limbs 64 [m0, m1, m2, m3, m4, m5],
-        m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
-        m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
-        m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64]
+        limbs 64 [m0, m1, m2, m3, m4, m5]]
 }
