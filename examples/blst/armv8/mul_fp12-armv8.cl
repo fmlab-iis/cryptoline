@@ -1,3 +1,17 @@
+(* quine: -v -isafety -jobs 10 -no_carry_constraint -btor -slicing -o cryptoline-fp12.log mul_fp12-armv8.cl
+Parsing Cryptoline file:                [OK]            0.289496 seconds
+Checking well-formedness:               [OK]            0.062814 seconds
+Transforming to SSA form:               [OK]            0.066328 seconds
+Rewriting assignments:                  [OK]            160.463947 seconds
+Verifying program safety:               [OK]            151.082927 seconds
+Verifying range assertions:             [OK]            747.586185 seconds
+Verifying range specification:          [OK]            3326.624817 seconds
+Rewriting value-preserved casting:      [OK]            0.001490 seconds
+Verifying algebraic assertions:         [OK]            18.131136 seconds
+Verifying algebraic specification:      [OK]            543.195423 seconds
+Verification result:                    [OK]            4946.715298 seconds
+*)
+
 proc mul_fp6x2 (uint64 ret00, uint64 ret01, uint64 ret02,
                 uint64 ret03, uint64 ret04, uint64 ret05,
                 uint64 ret06, uint64 ret07, uint64 ret08,
@@ -19094,6 +19108,27 @@ mov x25 x0;
 (* #bl	0x400000a8b8 <mul_fp6x2>                    #! PC = 0x274877953452 *)
 #bl	0x400000a8b8 <mul_fp6x2>                    #! 0x274877953452 = 0x274877953452;
 
+(* NOTE: save ret[1] *)
+
+mov L0x400082ab98o L0x400082ab98; mov L0x400082aba0o L0x400082aba0;
+mov L0x400082aba8o L0x400082aba8; mov L0x400082abb0o L0x400082abb0;
+mov L0x400082abb8o L0x400082abb8; mov L0x400082abc0o L0x400082abc0;
+mov L0x400082abc8o L0x400082abc8; mov L0x400082abd0o L0x400082abd0;
+mov L0x400082abd8o L0x400082abd8; mov L0x400082abe0o L0x400082abe0;
+mov L0x400082abe8o L0x400082abe8; mov L0x400082abf0o L0x400082abf0;
+mov L0x400082abf8o L0x400082abf8; mov L0x400082ac00o L0x400082ac00;
+mov L0x400082ac08o L0x400082ac08; mov L0x400082ac10o L0x400082ac10;
+mov L0x400082ac18o L0x400082ac18; mov L0x400082ac20o L0x400082ac20;
+mov L0x400082ac28o L0x400082ac28; mov L0x400082ac30o L0x400082ac30;
+mov L0x400082ac38o L0x400082ac38; mov L0x400082ac40o L0x400082ac40;
+mov L0x400082ac48o L0x400082ac48; mov L0x400082ac50o L0x400082ac50;
+mov L0x400082ac58o L0x400082ac58; mov L0x400082ac60o L0x400082ac60;
+mov L0x400082ac68o L0x400082ac68; mov L0x400082ac70o L0x400082ac70;
+mov L0x400082ac78o L0x400082ac78; mov L0x400082ac80o L0x400082ac80;
+mov L0x400082ac88o L0x400082ac88; mov L0x400082ac90o L0x400082ac90;
+mov L0x400082ac98o L0x400082ac98; mov L0x400082aca0o L0x400082aca0;
+mov L0x400082aca8o L0x400082aca8; mov L0x400082acb0o L0x400082acb0;
+
 cut and [eqmod ((limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U) +
                 (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
@@ -19114,18 +19149,18 @@ cut and [eqmod ((limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                   limbs 64 [ab0, ab1, ab2, ab3, ab4, ab5]) * U) * V**2)
                [limbs 64 [m0, m1, m2, m3, m4, m5],
                 U**2 + 1, V**3 - U - 1],
-         eqmod ((limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) +
-                 (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                            L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                  limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                            L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) * V +
-                 (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                            L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                  limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                            L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) * V**2)
+         eqmod ((limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) +
+                 (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                            L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                  limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                            L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) * V +
+                 (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                            L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                  limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                            L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) * V**2)
                (((limbs 64 [b00, b01, b02, b03, b04, b05] +
                   limbs 64 [b60, b61, b62, b63, b64, b65]) +
                  (limbs 64 [b10, b11, b12, b13, b14, b15] +
@@ -19140,28 +19175,28 @@ cut and [eqmod ((limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                   limbs 64 [bb0, bb1, bb2, bb3, bb4, bb5]) * U) * V**2)
                [limbs 64 [m0, m1, m2, m3, m4, m5],
                 U**2 + 1, V**3 - U - 1]]
- && and [limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                   L0x400082abb0, L0x400082abb8, L0x400082abc0] <u
+ && and [limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                   L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
          
-         limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                   L0x400082abe0, L0x400082abe8, L0x400082abf0] <u
+         limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                   L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                   L0x400082ac10, L0x400082ac18, L0x400082ac20] <u
+         limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                   L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                   L0x400082ac40, L0x400082ac48, L0x400082ac50] <u
+         limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                   L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                   L0x400082ac70, L0x400082ac78, L0x400082ac80] <u
+         limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                   L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                   L0x400082aca0, L0x400082aca8, L0x400082acb0] <u
+         limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                   L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
          limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] <u
@@ -19204,18 +19239,18 @@ call mul_fp6x2 ((* rx *)
                 rx_56, rx_57, rx_58, rx_59, rx_5a, rx_5b,
 
                 (* ret[1] *)
-                L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                L0x400082abb0, L0x400082abb8, L0x400082abc0,
-                L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                L0x400082abe0, L0x400082abe8, L0x400082abf0,
-                L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                L0x400082ac10, L0x400082ac18, L0x400082ac20,
-                L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                L0x400082ac40, L0x400082ac48, L0x400082ac50,
-                L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                L0x400082ac70, L0x400082ac78, L0x400082ac80,
-                L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                L0x400082aca0, L0x400082aca8, L0x400082acb0,
+                L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                L0x400082abb0o, L0x400082abb8o, L0x400082abc0o,
+                L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                L0x400082abe0o, L0x400082abe8o, L0x400082abf0o,
+                L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                L0x400082ac10o, L0x400082ac18o, L0x400082ac20o,
+                L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                L0x400082ac40o, L0x400082ac48o, L0x400082ac50o,
+                L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                L0x400082ac70o, L0x400082ac78o, L0x400082ac80o,
+                L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                L0x400082aca0o, L0x400082aca8o, L0x400082acb0o,
 
                 (* t2 *)
                 t2_00, t2_01, t2_02, t2_03, t2_04, t2_05,
@@ -19316,14 +19351,14 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                           LL0x4000829a60r02, LL0x4000829a68r02, LL0x4000829a70r02] +
                 limbs 64 [LL0x4000829a78r02, LL0x4000829a80r02, LL0x4000829a88r02,
                           LL0x4000829a90r02, LL0x4000829a98r02, LL0x4000829aa0r02] * U)
-               ((limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) +
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U))
+               ((limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) +
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U))
                [limbs 64 [m0, m1, m2, m3, m4, m5], U * U + 1],
          eqmod (limbs 64 [LL0x4000829aa8r02, LL0x4000829ab0r02, LL0x4000829ab8r02,
                           LL0x4000829ac0r02, LL0x4000829ac8r02, LL0x4000829ad0r02] +
@@ -19350,23 +19385,23 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                             LL0x4000829ac0r02, LL0x4000829ac8r02, LL0x4000829ad0r02] +
                   limbs 64 [LL0x4000829ad8r02, LL0x4000829ae0r02, LL0x4000829ae8r02,
                             LL0x4000829af0r02, LL0x4000829af8r02, LL0x4000829b00r02] * U) -
-                 (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                            L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                  limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                            L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                 (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                            L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                  limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                            L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                  (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                   limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U) -
-                 (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                            L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                  limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                            L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                 (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                            L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                  limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                            L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                  (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                   limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U)) *
                 (U + 1) +
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U))
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
@@ -19378,14 +19413,14 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                           LL0x4000829a60r12, LL0x4000829a68r12, LL0x4000829a70r12] +
                 limbs 64 [LL0x4000829a78r12, LL0x4000829a80r12, LL0x4000829a88r12,
                           LL0x4000829a90r12, LL0x4000829a98r12, LL0x4000829aa0r12] * U)
-               (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                          L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                          L0x400082abe0, L0x400082abe8, L0x400082abf0] * U +
-                limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                          L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                          L0x400082ac40, L0x400082ac48, L0x400082ac50] * U)
+               (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                          L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                          L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U +
+                limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                          L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                          L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U**2 + 1],
          eqmod (limbs 64 [LL0x4000829aa8r12, LL0x4000829ab0r12, LL0x4000829ab8r12,
                           LL0x4000829ac0r12, LL0x4000829ac8r12, LL0x4000829ad0r12] +
@@ -19412,22 +19447,22 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                            LL0x4000829ac0r12, LL0x4000829ac8r12, LL0x4000829ad0r12] +
                  limbs 64 [LL0x4000829ad8r12, LL0x4000829ae0r12, LL0x4000829ae8r12,
                            LL0x4000829af0r12, LL0x4000829af8r12, LL0x4000829b00r12] * U) -
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U) -
-                (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                 (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                  limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U) +
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                 (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                  limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U) *
                 (U + 1))
@@ -19440,14 +19475,14 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                           LL0x4000829a60r22, LL0x4000829a68r22, LL0x4000829a70r22] +
                 limbs 64 [LL0x4000829a78r22, LL0x4000829a80r22, LL0x4000829a88r22,
                           LL0x4000829a90r22, LL0x4000829a98r22, LL0x4000829aa0r22] * U)
-               (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                          L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                          L0x400082abe0, L0x400082abe8, L0x400082abf0] * U +
-                limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                          L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                          L0x400082aca0, L0x400082aca8, L0x400082acb0] * U)
+               (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                          L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                          L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U +
+                limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                          L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                          L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U**2 + 1],
          eqmod (limbs 64 [LL0x4000829aa8r22, LL0x4000829ab0r22, LL0x4000829ab8r22,
                           LL0x4000829ac0r22, LL0x4000829ac8r22, LL0x4000829ad0r22] +
@@ -19474,22 +19509,22 @@ cut and [(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
                            LL0x4000829ac0r22, LL0x4000829ac8r22, LL0x4000829ad0r22] +
                  limbs 64 [LL0x4000829ad8r22, LL0x4000829ae0r22, LL0x4000829ae8r22,
                            LL0x4000829af0r22, LL0x4000829af8r22, LL0x4000829b00r22] * U) -
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U) -
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                 (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                  limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U) +
-                (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                 (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                  limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U))
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
@@ -20705,75 +20740,6 @@ assume and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                   (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5])]
     && true;
 
-(*
-ecut and [  eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
-                             L0x400082a060, L0x400082a068, L0x400082a070,
-                             L0x400082a078, L0x400082a080, L0x400082a088,
-                             L0x400082a090, L0x400082a098, L0x400082a0a0] +
-                   limbs 64 [L0x4000829bc8, L0x4000829bd0, L0x4000829bd8,
-                             L0x4000829be0, L0x4000829be8, L0x4000829bf0,
-                             L0x4000829bf8, L0x4000829c00, L0x4000829c08,
-                             L0x4000829c10, L0x4000829c18, L0x4000829c20])
-                  (limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
-                             rx06o, rx07o, rx08o, rx09o, rx0ao, rx0bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
-            eqmod (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
-                             L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
-                             L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                             L0x400082a0f0, L0x400082a0f8, L0x400082a100] +
-                   limbs 64 [L0x4000829c28, L0x4000829c30, L0x4000829c38, 
-                             L0x4000829c40, L0x4000829c48, L0x4000829c50,
-                             L0x4000829c58, L0x4000829c60, L0x4000829c68, 
-                             L0x4000829c70, L0x4000829c78, L0x4000829c80])
-                  (limbs 64 [rx10o, rx11o, rx12o, rx13o, rx14o, rx15o,
-                             rx16o, rx17o, rx18o, rx19o, rx1ao, rx1bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
-            eqmod (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
-                             L0x400082a120, L0x400082a128, L0x400082a130,
-                             L0x400082a138, L0x400082a140, L0x400082a148,
-                             L0x400082a150, L0x400082a158, L0x400082a160] +
-                   limbs 64 [L0x4000829c88, L0x4000829c90, L0x4000829c98, 
-                             L0x4000829ca0, L0x4000829ca8, L0x4000829cb0,
-                             L0x4000829cb8, L0x4000829cc0, L0x4000829cc8, 
-                             L0x4000829cd0, L0x4000829cd8, L0x4000829ce0])
-                  (limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
-                             rx26o, rx27o, rx28o, rx29o, rx2ao, rx2bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
-            eqmod (limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
-                             L0x400082a180, L0x400082a188, L0x400082a190,
-                             L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                             L0x400082a1b0, L0x400082a1b8, L0x400082a1c0] +
-                   limbs 64 [L0x4000829ce8, L0x4000829cf0, L0x4000829cf8, 
-                             L0x4000829d00, L0x4000829d08, L0x4000829d10,
-                             L0x4000829d18, L0x4000829d20, L0x4000829d28, 
-                             L0x4000829d30, L0x4000829d38, L0x4000829d40])
-                  (limbs 64 [rx30o, rx31o, rx32o, rx33o, rx34o, rx35o,
-                             rx36o, rx37o, rx38o, rx39o, rx3ao, rx3bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
-            eqmod (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
-                             L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
-                             L0x400082a1f8, L0x400082a200, L0x400082a208,
-                             L0x400082a210, L0x400082a218, L0x400082a220] +
-                   limbs 64 [L0x4000829d48, L0x4000829d50, L0x4000829d58, 
-                             L0x4000829d60, L0x4000829d68, L0x4000829d70,
-                             L0x4000829d78, L0x4000829d80, L0x4000829d88, 
-                             L0x4000829d90, L0x4000829d98, L0x4000829da0])
-                  (limbs 64 [rx40o, rx41o, rx42o, rx43o, rx44o, rx45o,
-                             rx46o, rx47o, rx48o, rx49o, rx4ao, rx4bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
-            eqmod (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                             L0x400082a240, L0x400082a248, L0x400082a250,
-                             L0x400082a258, L0x400082a260, L0x400082a268,
-                             L0x400082a270, L0x400082a278, L0x400082a280] +
-                   limbs 64 [L0x4000829da8, L0x4000829db0, L0x4000829db8, 
-                             L0x4000829dc0, L0x4000829dc8, L0x4000829dd0,
-                             L0x4000829dd8, L0x4000829de0, L0x4000829de8, 
-                             L0x4000829df0, L0x4000829df8, L0x4000829e00])
-                  (limbs 64 [rx50o, rx51o, rx52o, rx53o, rx54o, rx55o,
-                             rx56o, rx57o, rx58o, rx59o, rx5ao, rx5bo])
-                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5])];
-*)
-
 (* mov	x3, x19                                     #! PC = 0x274877953652 *)
 mov x3 x19;
 (* mov	x2, x26                                     #! PC = 0x274877953656 *)
@@ -21987,30 +21953,43 @@ assume and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                   (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5])]
     && true;
 
-cut and [eqmod ((limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
-                           L0x400082a060, L0x400082a068, L0x400082a070,
-                           L0x400082a078, L0x400082a080, L0x400082a088,
-                           L0x400082a090, L0x400082a098, L0x400082a0a0] +
-                 limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
-                           L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
-                           L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                           L0x400082a0f0, L0x400082a0f8, L0x400082a100] * U) +
-                (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
-                           L0x400082a120, L0x400082a128, L0x400082a130,
-                           L0x400082a138, L0x400082a140, L0x400082a148,
-                           L0x400082a150, L0x400082a158, L0x400082a160] +
-                 limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
-                           L0x400082a180, L0x400082a188, L0x400082a190,
-                           L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                           L0x400082a1b0, L0x400082a1b8, L0x400082a1c0] * U) * V +
-                (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
-                           L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
-                           L0x400082a1f8, L0x400082a200, L0x400082a208,
-                           L0x400082a210, L0x400082a218, L0x400082a220] +
-                 limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                           L0x400082a240, L0x400082a248, L0x400082a250,
-                           L0x400082a258, L0x400082a260, L0x400082a268,
-                           L0x400082a270, L0x400082a278, L0x400082a280] * U) * V**2)
+mov rx00q L0x400082a048; mov rx01q L0x400082a050; mov rx02q L0x400082a058;
+mov rx03q L0x400082a060; mov rx04q L0x400082a068; mov rx05q L0x400082a070;
+mov rx06q L0x400082a078; mov rx07q L0x400082a080; mov rx08q L0x400082a088;
+mov rx09q L0x400082a090; mov rx0aq L0x400082a098; mov rx0bq L0x400082a0a0;
+mov rx10q L0x400082a0a8; mov rx11q L0x400082a0b0; mov rx12q L0x400082a0b8;
+mov rx13q L0x400082a0c0; mov rx14q L0x400082a0c8; mov rx15q L0x400082a0d0;
+mov rx16q L0x400082a0d8; mov rx17q L0x400082a0e0; mov rx18q L0x400082a0e8;
+mov rx19q L0x400082a0f0; mov rx1aq L0x400082a0f8; mov rx1bq L0x400082a100;
+mov rx20q L0x400082a108; mov rx21q L0x400082a110; mov rx22q L0x400082a118;
+mov rx23q L0x400082a120; mov rx24q L0x400082a128; mov rx25q L0x400082a130;
+mov rx26q L0x400082a138; mov rx27q L0x400082a140; mov rx28q L0x400082a148;
+mov rx29q L0x400082a150; mov rx2aq L0x400082a158; mov rx2bq L0x400082a160;
+mov rx30q L0x400082a168; mov rx31q L0x400082a170; mov rx32q L0x400082a178;
+mov rx33q L0x400082a180; mov rx34q L0x400082a188; mov rx35q L0x400082a190;
+mov rx36q L0x400082a198; mov rx37q L0x400082a1a0; mov rx38q L0x400082a1a8;
+mov rx39q L0x400082a1b0; mov rx3aq L0x400082a1b8; mov rx3bq L0x400082a1c0;
+mov rx40q L0x400082a1c8; mov rx41q L0x400082a1d0; mov rx42q L0x400082a1d8;
+mov rx43q L0x400082a1e0; mov rx44q L0x400082a1e8; mov rx45q L0x400082a1f0;
+mov rx46q L0x400082a1f8; mov rx47q L0x400082a200; mov rx48q L0x400082a208;
+mov rx49q L0x400082a210; mov rx4aq L0x400082a218; mov rx4bq L0x400082a220;
+mov rx50q L0x400082a228; mov rx51q L0x400082a230; mov rx52q L0x400082a238;
+mov rx53q L0x400082a240; mov rx54q L0x400082a248; mov rx55q L0x400082a250;
+mov rx56q L0x400082a258; mov rx57q L0x400082a260; mov rx58q L0x400082a268;
+mov rx59q L0x400082a270; mov rx5aq L0x400082a278; mov rx5bq L0x400082a280;
+
+cut and [eqmod ((limbs 64 [rx00q, rx01q, rx02q, rx03q, rx04q, rx05q,
+                           rx06q, rx07q, rx08q, rx09q, rx0aq, rx0bq] +
+                 limbs 64 [rx10q, rx11q, rx12q, rx13q, rx14q, rx15q,
+                           rx16q, rx17q, rx18q, rx19q, rx1aq, rx1bq] * U) +
+                (limbs 64 [rx20q, rx21q, rx22q, rx23q, rx24q, rx25q,
+                           rx26q, rx27q, rx28q, rx29q, rx2aq, rx2bq] +
+                 limbs 64 [rx30q, rx31q, rx32q, rx33q, rx34q, rx35q,
+                           rx36q, rx37q, rx38q, rx39q, rx3aq, rx3bq] * U) * V +
+                (limbs 64 [rx40q, rx41q, rx42q, rx43q, rx44q, rx45q,
+                           rx46q, rx47q, rx48q, rx49q, rx4aq, rx4bq] +
+                 limbs 64 [rx50q, rx51q, rx52q, rx53q, rx54q, rx55q,
+                           rx56q, rx57q, rx58q, rx59q, rx5aq, rx5bq] * U) * V**2)
                (((limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
                             rx06o, rx07o, rx08o, rx09o, rx0ao, rx0bo] +
                   limbs 64 [rx10o, rx11o, rx12o, rx13o, rx14o, rx15o,
@@ -22074,28 +22053,22 @@ cut and [eqmod ((limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1, V**3 - U - 1]]
         prove with all cuts
- && and [limbs 64 [L0x400082a078, L0x400082a080, L0x400082a088,
-                   L0x400082a090, L0x400082a098, L0x400082a0a0] <u
+ && and [limbs 64 [rx06q, rx07q, rx08q, rx09q, rx0aq, rx0bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                   L0x400082a0f0, L0x400082a0f8, L0x400082a100] <u
+         limbs 64 [rx16q, rx17q, rx18q, rx19q, rx1aq, rx1bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082a138, L0x400082a140, L0x400082a148,
-                   L0x400082a150, L0x400082a158, L0x400082a160] <u
+         limbs 64 [rx26q, rx27q, rx28q, rx29q, rx2aq, rx2bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                   L0x400082a1b0, L0x400082a1b8, L0x400082a1c0] <u
+         limbs 64 [rx36q, rx37q, rx38q, rx39q, rx3aq, rx3bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082a1f8, L0x400082a200, L0x400082a208,
-                   L0x400082a210, L0x400082a218, L0x400082a220] <u
+         limbs 64 [rx46q, rx47q, rx48q, rx49q, rx4aq, rx4bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [L0x400082a258, L0x400082a260, L0x400082a268,
-                   L0x400082a270, L0x400082a278, L0x400082a280] <u
+         limbs 64 [rx56q, rx57q, rx58q, rx59q, rx5aq, rx5bq] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
@@ -23207,7 +23180,7 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          eqmod (1 + m0 * x3) 0 (2**64),
          m0 = 0xb9feffffffffaaab, m1 = 0x1eabfffeb153ffff,
          m2 = 0x6730d2a0f6b0f624, m3 = 0x64774b84f38512bf,
-         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]                     
+         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]
  && and [limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
                    L0x400082abe0, L0x400082abe8, L0x400082abf0] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
@@ -23747,7 +23720,8 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          eqmod (1 + m0 * x3) 0 (2**64),
          m0 = 0xb9feffffffffaaab, m1 = 0x1eabfffeb153ffff,
          m2 = 0x6730d2a0f6b0f624, m3 = 0x64774b84f38512bf,
-         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]                      && and [limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
+         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]
+ && and [limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
                    L0x400082ac10, L0x400082ac18, L0x400082ac20] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
          
@@ -25345,19 +25319,19 @@ mov x29 L0x4000829950;
 
 (* redc_fp6x2(ret[1], rx) *)
 
+cut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
+                     L0x400082ac88, L0x400082ac90, L0x400082ac98,
+                     L0x400082aca0, L0x400082aca8, L0x400082acb0])
+          (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
+                     L0x400082a240, L0x400082a248, L0x400082a250,
+                     L0x400082a258, L0x400082a260, L0x400082a268,
+                     L0x400082a270, L0x400082a278, L0x400082a280])
+          (limbs 64 [m0, m1, m2, m3, m4, m5])
+ && and [limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98, 
+                   L0x400082aca0, L0x400082aca8, L0x400082acb0] <u
+         limbs 64 [m0, m1, m2, m3, m4, m5],
 
-(* ret[1] = (a0 + a1)*(b0 + b1) - a0*b0 - a1*b1
-          = a0*b1 + a1*b0 *)
-
-cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                          L0x400082aca0, L0x400082aca8, L0x400082acb0])
-               (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                          L0x400082a240, L0x400082a248, L0x400082a250,
-                          L0x400082a258, L0x400082a260, L0x400082a268,
-                          L0x400082a270, L0x400082a278, L0x400082a280])
-               (limbs 64 [m0, m1, m2, m3, m4, m5])]
- && and [limbs 64 [L0x400082a258, L0x400082a260, L0x400082a268,
+         limbs 64 [L0x400082a258, L0x400082a260, L0x400082a268,
                    L0x400082a270, L0x400082a278, L0x400082a280] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
@@ -25376,7 +25350,15 @@ cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
          limbs 64 [L0x4000829e98, L0x4000829ea0, L0x4000829ea8,
                    L0x4000829eb0, L0x4000829eb8, L0x4000829ec0] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
-          
+
+         limbs 64 [L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                   L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] <u
+         limbs 64 [m0, m1, m2, m3, m4, m5],
+
+         limbs 64 [L0x400082a018, L0x400082a020, L0x400082a028,
+                   L0x400082a030, L0x400082a038, L0x400082a040] <u
+         limbs 64 [m0, m1, m2, m3, m4, m5],
+         
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64]
@@ -25707,6 +25689,62 @@ mov x29 L0x4000829990;
 
 (* mul_by_u_plus_1_fp2x2(rx[0], t1[2]) *)
 
+assert true
+    && and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
+                             L0x400082a060, L0x400082a068, L0x400082a070,
+                             L0x400082a078, L0x400082a080, L0x400082a088,
+                             L0x400082a090, L0x400082a098, L0x400082a0a0] +
+                   limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                             L0x400082a000, L0x400082a008, L0x400082a010,
+                             L0x400082a018, L0x400082a020, L0x400082a028,
+                             L0x400082a030, L0x400082a038, L0x400082a040])
+                  (limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                             L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                             L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                             L0x4000829fd0, L0x4000829fd8, L0x4000829fe0])
+                  (limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
+                             m0, m1, m2, m3, m4, m5]),
+            eqmod (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
+                             L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
+                             L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
+                             L0x400082a0f0, L0x400082a0f8, L0x400082a100])
+                  (limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                             L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                             L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                             L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] +
+                   limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                             L0x400082a000, L0x400082a008, L0x400082a010,
+                             L0x400082a018, L0x400082a020, L0x400082a028,
+                             L0x400082a030, L0x400082a038, L0x400082a040])
+                  (limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
+                             m0, m1, m2, m3, m4, m5])];
+assume and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
+                             L0x400082a060, L0x400082a068, L0x400082a070,
+                             L0x400082a078, L0x400082a080, L0x400082a088,
+                             L0x400082a090, L0x400082a098, L0x400082a0a0] +
+                   limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                             L0x400082a000, L0x400082a008, L0x400082a010,
+                             L0x400082a018, L0x400082a020, L0x400082a028,
+                             L0x400082a030, L0x400082a038, L0x400082a040])
+                  (limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                             L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                             L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                             L0x4000829fd0, L0x4000829fd8, L0x4000829fe0])
+                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
+            eqmod (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
+                             L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
+                             L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
+                             L0x400082a0f0, L0x400082a0f8, L0x400082a100])
+                  (limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                             L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                             L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                             L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] +
+                   limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                             L0x400082a000, L0x400082a008, L0x400082a010,
+                             L0x400082a018, L0x400082a020, L0x400082a028,
+                             L0x400082a030, L0x400082a038, L0x400082a040])
+                  (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5])]
+    && true;
 
 (* mov	x3, x19                                     #! PC = 0x274877954012 *)
 mov x3 x19;
@@ -25746,18 +25784,25 @@ mov x10 L0x4000016950;
 (* #bl	0x4000012e80 <__add_mod_384x384>            #! PC = 0x274877984324 *)
 #bl	0x4000012e80 <__add_mod_384x384>            #! 0x274877984324 = 0x274877984324;
 
-(* NOTE: save old values *)
-
-mov rx00o L0x400082a048; mov rx01o L0x400082a050; mov rx02o L0x400082a058;
-mov rx03o L0x400082a060; mov rx04o L0x400082a068; mov rx05o L0x400082a070;
-mov rx10o L0x400082a078; mov rx11o L0x400082a080; mov rx12o L0x400082a088;
-mov rx13o L0x400082a090; mov rx14o L0x400082a098; mov rx15o L0x400082a0a0;
-mov rx20o L0x400082a0a8; mov rx21o L0x400082a0b0; mov rx22o L0x400082a0b8;
-mov rx23o L0x400082a0c0; mov rx24o L0x400082a0c8; mov rx25o L0x400082a0d0;
-mov rx30o L0x400082a0d8; mov rx31o L0x400082a0e0; mov rx32o L0x400082a0e8;
-mov rx33o L0x400082a0f0; mov rx34o L0x400082a0f8; mov rx35o L0x400082a100;
-
-cut true
+cut eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
+                     L0x400082a060, L0x400082a068, L0x400082a070,
+                     L0x400082a078, L0x400082a080, L0x400082a088,
+                     L0x400082a090, L0x400082a098, L0x400082a0a0] +
+           limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
+                     L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
+                     L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
+                     L0x400082a0f0, L0x400082a0f8, L0x400082a100] * U)
+          ((limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                      L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                      L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                      L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] +
+            limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                      L0x400082a000, L0x400082a008, L0x400082a010,
+                      L0x400082a018, L0x400082a020, L0x400082a028,
+                      L0x400082a030, L0x400082a038, L0x400082a040] * U) *
+           (1 + U))
+          [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5], U**2 + 1]
+    prove with precondition
  && and [limbs 64 [L0x4000829bf8, L0x4000829c00, L0x4000829c08,
                    L0x4000829c10, L0x4000829c18, L0x4000829c20] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
@@ -25766,16 +25811,29 @@ cut true
                    L0x4000829c70, L0x4000829c78, L0x4000829c80] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [rx10o, rx11o, rx12o, rx13o, rx14o, rx15o] <u
+         limbs 64 [L0x400082a078, L0x400082a080, L0x400082a088,
+                   L0x400082a090, L0x400082a098, L0x400082a0a0] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
-         limbs 64 [rx30o, rx31o, rx32o, rx33o, rx34o, rx35o] <u
+         limbs 64 [L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
+                   L0x400082a0f0, L0x400082a0f8, L0x400082a100] <u
          limbs 64 [m0, m1, m2, m3, m4, m5],
 
          m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
          m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
          m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64]
     prove with all cuts;
+
+(* NOTE: save old values *)
+
+mov rx00r L0x400082a048; mov rx01r L0x400082a050; mov rx02r L0x400082a058;
+mov rx03r L0x400082a060; mov rx04r L0x400082a068; mov rx05r L0x400082a070;
+mov rx10r L0x400082a078; mov rx11r L0x400082a080; mov rx12r L0x400082a088;
+mov rx13r L0x400082a090; mov rx14r L0x400082a098; mov rx15r L0x400082a0a0;
+mov rx20r L0x400082a0a8; mov rx21r L0x400082a0b0; mov rx22r L0x400082a0b8;
+mov rx23r L0x400082a0c0; mov rx24r L0x400082a0c8; mov rx25r L0x400082a0d0;
+mov rx30r L0x400082a0d8; mov rx31r L0x400082a0e0; mov rx32r L0x400082a0e8;
+mov rx33r L0x400082a0f0; mov rx34r L0x400082a0f8; mov rx35r L0x400082a100;
 
 (* ldp	x11, x12, [x1]                              #! EA = L0x4000829bc8; Value = 0x9d1ddf3b72ffd900; PC = 0x274877984384 *)
 mov x11 L0x4000829bc8;
@@ -26076,8 +26134,8 @@ assert true
                              L0x4000829be0, L0x4000829be8, L0x4000829bf0,
                              L0x4000829bf8, L0x4000829c00, L0x4000829c08,
                              L0x4000829c10, L0x4000829c18, L0x4000829c20] +
-                   limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
-                             rx10o, rx11o, rx12o, rx13o, rx14o, rx15o])
+                   limbs 64 [rx00r, rx01r, rx02r, rx03r, rx04r, rx05r,
+                             rx10r, rx11r, rx12r, rx13r, rx14r, rx15r])
                   (limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
                              m0, m1, m2, m3, m4, m5]),
             eqmod (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
@@ -26088,8 +26146,8 @@ assert true
                              L0x4000829c40, L0x4000829c48, L0x4000829c50,
                              L0x4000829c58, L0x4000829c60, L0x4000829c68, 
                              L0x4000829c70, L0x4000829c78, L0x4000829c80] +
-                   limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
-                             rx30o, rx31o, rx32o, rx33o, rx34o, rx35o])
+                   limbs 64 [rx20r, rx21r, rx22r, rx23r, rx24r, rx25r,
+                             rx30r, rx31r, rx32r, rx33r, rx34r, rx35r])
                   (limbs 64 [0@64, 0@64, 0@64, 0@64, 0@64, 0@64,
                              m0, m1, m2, m3, m4, m5])];
 
@@ -26101,8 +26159,8 @@ assume and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                              L0x4000829be0, L0x4000829be8, L0x4000829bf0,
                              L0x4000829bf8, L0x4000829c00, L0x4000829c08,
                              L0x4000829c10, L0x4000829c18, L0x4000829c20] +
-                   limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
-                             rx10o, rx11o, rx12o, rx13o, rx14o, rx15o])
+                   limbs 64 [rx00r, rx01r, rx02r, rx03r, rx04r, rx05r,
+                             rx10r, rx11r, rx12r, rx13r, rx14r, rx15r])
                   (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5]),
             eqmod (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
                              L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
@@ -26112,8 +26170,8 @@ assume and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                              L0x4000829c40, L0x4000829c48, L0x4000829c50,
                              L0x4000829c58, L0x4000829c60, L0x4000829c68, 
                              L0x4000829c70, L0x4000829c78, L0x4000829c80] +
-                   limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
-                             rx30o, rx31o, rx32o, rx33o, rx34o, rx35o])
+                   limbs 64 [rx20r, rx21r, rx22r, rx23r, rx24r, rx25r,
+                             rx30r, rx31r, rx32r, rx33r, rx34r, rx35r])
                   (limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5])]
     && true;
 
@@ -26958,7 +27016,21 @@ mov x0 x28;
 (* #paciasp                                         #! PC = 0x274877988032 *)
 #paciasp                                         #! 0x274877988032 = 0x274877988032;
 
-cut and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
+cut and [eqmod (limbs 64 [rx00r, rx01r, rx02r, rx03r,rx04r, rx05r,
+                          rx10r, rx11r, rx12r, rx13r,rx14r, rx15r] +
+                limbs 64 [rx20r, rx21r, rx22r, rx23r,rx24r, rx25r,
+                          rx30r, rx31r, rx32r, rx33r,rx34r, rx35r] * U)
+               ((limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                           L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                           L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                           L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] +
+                 limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                           L0x400082a000, L0x400082a008, L0x400082a010,
+                           L0x400082a018, L0x400082a020, L0x400082a028,
+                           L0x400082a030, L0x400082a038, L0x400082a040] * U) *
+                (1 + U))
+               [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5], U**2 + 1],
+         eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                           L0x400082a060, L0x400082a068, L0x400082a070,
                           L0x400082a078, L0x400082a080, L0x400082a088,
                           L0x400082a090, L0x400082a098, L0x400082a0a0] +
@@ -26974,10 +27046,10 @@ cut and [eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                           L0x4000829c40, L0x4000829c48, L0x4000829c50,
                           L0x4000829c58, L0x4000829c60, L0x4000829c68, 
                           L0x4000829c70, L0x4000829c78, L0x4000829c80] * U +
-                limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
-                          rx10o, rx11o, rx12o, rx13o, rx14o, rx15o] +
-                limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
-                          rx30o, rx31o, rx32o, rx33o, rx34o, rx35o] * U)
+                limbs 64 [rx00r, rx01r, rx02r, rx03r, rx04r, rx05r,
+                          rx10r, rx11r, rx12r, rx13r, rx14r, rx15r] +
+                limbs 64 [rx20r, rx21r, rx22r, rx23r, rx24r, rx25r,
+                          rx30r, rx31r, rx32r, rx33r, rx34r, rx35r] * U)
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
          eqmod (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
@@ -30256,27 +30328,19 @@ mov x29 L0x4000829950;
 (* #ret                                            #! PC = 0x274877988120 *)
 #ret                                            #! 0x274877988120 = 0x274877988120;
 
-cut and [eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ab68, L0x400082ab70, L0x400082ab78,
-                          L0x400082ab80, L0x400082ab88, L0x400082ab90])
-               (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                          L0x400082a240, L0x400082a248, L0x400082a250,
-                          L0x400082a258, L0x400082a260, L0x400082a268,
-                          L0x400082a270, L0x400082a278, L0x400082a280])
-               (limbs 64 [m0, m1, m2, m3, m4, m5]),
-         eqmod (1 + m0 * x3) 0 (2**64),
-         m0 = 0xb9feffffffffaaab, m1 = 0x1eabfffeb153ffff,
-         m2 = 0x6730d2a0f6b0f624, m3 = 0x64774b84f38512bf,
-         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]
- && and [limbs 64 [L0x400082ab68, L0x400082ab70, L0x400082ab78,
-                   L0x400082ab80, L0x400082ab88, L0x400082ab90] <u
-         limbs 64 [m0, m1, m2, m3, m4, m5],
- 
-         m0 = 0xb9feffffffffaaab@64, m1 = 0x1eabfffeb153ffff@64,
-         m2 = 0x6730d2a0f6b0f624@64, m3 = 0x64774b84f38512bf@64,
-         m4 = 0x4b1ba7b6434bacd7@64, m5 = 0x1a0111ea397fe69a@64];
-
 (* redc_fp6x2(ret[0], rx) *)
+
+ecut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
+                      L0x400082ab68, L0x400082ab70, L0x400082ab78,
+                      L0x400082ab80, L0x400082ab88, L0x400082ab90])
+           (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
+                      L0x400082a240, L0x400082a248, L0x400082a250,
+                      L0x400082a258, L0x400082a260, L0x400082a268,
+                      L0x400082a270, L0x400082a278, L0x400082a280])
+           (limbs 64 [m0, m1, m2, m3, m4, m5])
+     prove with precondition;
+
+(* ret[0] = a0*b0 + a1*b1*v *)
 
 (* ldr	x0, [sp, #136]                              #! EA = L0x4000829a58; Value = 0x000000400085d6d0; PC = 0x274877954256 *)
 mov x0 L0x4000829a58;
@@ -30339,8 +30403,7 @@ mov cb3 L0x400082aca0; mov cb4 L0x400082aca8; mov cb5 L0x400082acb0;
 
 (* summary of cuts *)
 
-cut and [123 = 123,
-         (* mul_fp6x2(t0, a[0], b[0]) *)
+cut and [(* mul_fp6x2(t0, a[0], b[0]) *)
          eqmod (limbs 64 [LL0x4000829a48r00, LL0x4000829a50r00, LL0x4000829a58r00,
                           LL0x4000829a60r00, LL0x4000829a68r00, LL0x4000829a70r00] +
                 limbs 64 [LL0x4000829a78r00, LL0x4000829a80r00, LL0x4000829a88r00,
@@ -30663,18 +30726,18 @@ cut and [123 = 123,
                 U**2 + 1, V**3 - U - 1],
 
          (* add_fp6(ret[1], b[0], b[1]) *)
-         eqmod ((limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) +
-                 (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                            L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                  limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                            L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) * V +
-                 (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                            L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                  limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                            L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) * V**2)
+         eqmod ((limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) +
+                 (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                            L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                  limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                            L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) * V +
+                 (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                            L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                  limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                            L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) * V**2)
                (((limbs 64 [b00, b01, b02, b03, b04, b05] +
                   limbs 64 [b60, b61, b62, b63, b64, b65]) +
                  (limbs 64 [b10, b11, b12, b13, b14, b15] +
@@ -30695,14 +30758,14 @@ cut and [123 = 123,
                           LL0x4000829a60r02, LL0x4000829a68r02, LL0x4000829a70r02] +
                 limbs 64 [LL0x4000829a78r02, LL0x4000829a80r02, LL0x4000829a88r02,
                           LL0x4000829a90r02, LL0x4000829a98r02, LL0x4000829aa0r02] * U)
-               ((limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) +
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U))
+               ((limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) +
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U))
                [limbs 64 [m0, m1, m2, m3, m4, m5], U * U + 1],
          eqmod (limbs 64 [LL0x4000829aa8r02, LL0x4000829ab0r02, LL0x4000829ab8r02,
                           LL0x4000829ac0r02, LL0x4000829ac8r02, LL0x4000829ad0r02] +
@@ -30713,14 +30776,10 @@ cut and [123 = 123,
                 (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                  limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U))
                [limbs 64 [m0, m1, m2, m3, m4, m5], U * U + 1],
-         eqmod (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
-                          L0x400082a060, L0x400082a068, L0x400082a070,
-                          L0x400082a078, L0x400082a080, L0x400082a088,
-                          L0x400082a090, L0x400082a098, L0x400082a0a0] +
-                limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
-                          L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
-                          L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                          L0x400082a0f0, L0x400082a0f8, L0x400082a100] * U)
+         eqmod (limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
+                          rx06o, rx07o, rx08o, rx09o, rx0ao, rx0bo] +
+                limbs 64 [rx10o, rx11o, rx12o, rx13o, rx14o, rx15o,
+                          rx16o, rx17o, rx18o, rx19o, rx1ao, rx1bo] * U)
                (((limbs 64 [LL0x4000829a48r02, LL0x4000829a50r02, LL0x4000829a58r02,
                             LL0x4000829a60r02, LL0x4000829a68r02, LL0x4000829a70r02] +
                   limbs 64 [LL0x4000829a78r02, LL0x4000829a80r02, LL0x4000829a88r02,
@@ -30729,40 +30788,39 @@ cut and [123 = 123,
                             LL0x4000829ac0r02, LL0x4000829ac8r02, LL0x4000829ad0r02] +
                   limbs 64 [LL0x4000829ad8r02, LL0x4000829ae0r02, LL0x4000829ae8r02,
                             LL0x4000829af0r02, LL0x4000829af8r02, LL0x4000829b00r02] * U) -
-                 (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                            L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                  limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                            L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                 (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                            L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                  limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                            L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                  (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                   limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U) -
-                 (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                            L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                  limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                            L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                 (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                            L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                  limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                            L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                  (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                   limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U)) *
                 (U + 1) +
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U))
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
-              
          eqmod (limbs 64 [LL0x4000829a48r12, LL0x4000829a50r12, LL0x4000829a58r12,
                           LL0x4000829a60r12, LL0x4000829a68r12, LL0x4000829a70r12] +
                 limbs 64 [LL0x4000829a78r12, LL0x4000829a80r12, LL0x4000829a88r12,
                           LL0x4000829a90r12, LL0x4000829a98r12, LL0x4000829aa0r12] * U)
-               (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                          L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                          L0x400082abe0, L0x400082abe8, L0x400082abf0] * U +
-                limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                          L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                          L0x400082ac40, L0x400082ac48, L0x400082ac50] * U)
+               (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                          L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                          L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U +
+                limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                          L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                          L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U**2 + 1],
          eqmod (limbs 64 [LL0x4000829aa8r12, LL0x4000829ab0r12, LL0x4000829ab8r12,
                           LL0x4000829ac0r12, LL0x4000829ac8r12, LL0x4000829ad0r12] +
@@ -30773,14 +30831,10 @@ cut and [123 = 123,
                 limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                 limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U**2 + 1],
-         eqmod (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
-                          L0x400082a120, L0x400082a128, L0x400082a130,
-                          L0x400082a138, L0x400082a140, L0x400082a148,
-                          L0x400082a150, L0x400082a158, L0x400082a160] +
-                limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
-                          L0x400082a180, L0x400082a188, L0x400082a190,
-                          L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                          L0x400082a1b0, L0x400082a1b8, L0x400082a1c0] * U)
+         eqmod (limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
+                          rx26o, rx27o, rx28o, rx29o, rx2ao, rx2bo] +
+                limbs 64 [rx30o, rx31o, rx32o, rx33o, rx34o, rx35o,
+                          rx36o, rx37o, rx38o, rx39o, rx3ao, rx3bo] * U)
                ((limbs 64 [LL0x4000829a48r12, LL0x4000829a50r12, LL0x4000829a58r12,
                            LL0x4000829a60r12, LL0x4000829a68r12, LL0x4000829a70r12] +
                  limbs 64 [LL0x4000829a78r12, LL0x4000829a80r12, LL0x4000829a88r12,
@@ -30789,40 +30843,39 @@ cut and [123 = 123,
                            LL0x4000829ac0r12, LL0x4000829ac8r12, LL0x4000829ad0r12] +
                  limbs 64 [LL0x4000829ad8r12, LL0x4000829ae0r12, LL0x4000829ae8r12,
                            LL0x4000829af0r12, LL0x4000829af8r12, LL0x4000829b00r12] * U) -
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U) -
-                (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                 (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                  limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U) +
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                 (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                  limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U) *
                 (U + 1))
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
-
          eqmod (limbs 64 [LL0x4000829a48r22, LL0x4000829a50r22, LL0x4000829a58r22,
                           LL0x4000829a60r22, LL0x4000829a68r22, LL0x4000829a70r22] +
                 limbs 64 [LL0x4000829a78r22, LL0x4000829a80r22, LL0x4000829a88r22,
                           LL0x4000829a90r22, LL0x4000829a98r22, LL0x4000829aa0r22] * U)
-               (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                          L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                          L0x400082abe0, L0x400082abe8, L0x400082abf0] * U +
-                limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                          L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                          L0x400082aca0, L0x400082aca8, L0x400082acb0] * U)
+               (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                          L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                          L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U +
+                limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                          L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                          L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U**2 + 1],
          eqmod (limbs 64 [LL0x4000829aa8r22, LL0x4000829ab0r22, LL0x4000829ab8r22,
                           LL0x4000829ac0r22, LL0x4000829ac8r22, LL0x4000829ad0r22] +
@@ -30833,14 +30886,10 @@ cut and [123 = 123,
                 limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                 limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U)
                [limbs 64 [m0, m1, m2, m3, m4, m5], U * U + 1],
-         eqmod (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
-                          L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
-                          L0x400082a1f8, L0x400082a200, L0x400082a208,
-                          L0x400082a210, L0x400082a218, L0x400082a220] +
-                limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                          L0x400082a240, L0x400082a248, L0x400082a250,
-                          L0x400082a258, L0x400082a260, L0x400082a268,
-                          L0x400082a270, L0x400082a278, L0x400082a280] * U)
+         eqmod (limbs 64 [rx40o, rx41o, rx42o, rx43o, rx44o, rx45o,
+                          rx46o, rx47o, rx48o, rx49o, rx4ao, rx4bo] +
+                limbs 64 [rx50o, rx51o, rx52o, rx53o, rx54o, rx55o,
+                          rx56o, rx57o, rx58o, rx59o, rx5ao, rx5bo] * U)
                ((limbs 64 [LL0x4000829a48r22, LL0x4000829a50r22, LL0x4000829a58r22,
                            LL0x4000829a60r22, LL0x4000829a68r22, LL0x4000829a70r22] +
                  limbs 64 [LL0x4000829a78r22, LL0x4000829a80r22, LL0x4000829a88r22,
@@ -30849,52 +30898,41 @@ cut and [123 = 123,
                            LL0x4000829ac0r22, LL0x4000829ac8r22, LL0x4000829ad0r22] +
                  limbs 64 [LL0x4000829ad8r22, LL0x4000829ae0r22, LL0x4000829ae8r22,
                            LL0x4000829af0r22, LL0x4000829af8r22, LL0x4000829b00r22] * U) -
-                (limbs 64 [L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                           L0x400082abb0, L0x400082abb8, L0x400082abc0] +
-                 limbs 64 [L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                           L0x400082abe0, L0x400082abe8, L0x400082abf0] * U) *
+                (limbs 64 [L0x400082ab98o, L0x400082aba0o, L0x400082aba8o,
+                           L0x400082abb0o, L0x400082abb8o, L0x400082abc0o] +
+                 limbs 64 [L0x400082abc8o, L0x400082abd0o, L0x400082abd8o,
+                           L0x400082abe0o, L0x400082abe8o, L0x400082abf0o] * U) *
                 (limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
                  limbs 64 [t2_10, t2_11, t2_12, t2_13, t2_14, t2_15] * U) -
-                (limbs 64 [L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                           L0x400082ac70, L0x400082ac78, L0x400082ac80] +
-                 limbs 64 [L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                           L0x400082aca0, L0x400082aca8, L0x400082acb0] * U) *
+                (limbs 64 [L0x400082ac58o, L0x400082ac60o, L0x400082ac68o,
+                           L0x400082ac70o, L0x400082ac78o, L0x400082ac80o] +
+                 limbs 64 [L0x400082ac88o, L0x400082ac90o, L0x400082ac98o,
+                           L0x400082aca0o, L0x400082aca8o, L0x400082acb0o] * U) *
                 (limbs 64 [t2_40, t2_41, t2_42, t2_43, t2_44, t2_45] +
                  limbs 64 [t2_50, t2_51, t2_52, t2_53, t2_54, t2_55] * U) +
-                (limbs 64 [L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                           L0x400082ac10, L0x400082ac18, L0x400082ac20] +
-                 limbs 64 [L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                           L0x400082ac40, L0x400082ac48, L0x400082ac50] * U) *
+                (limbs 64 [L0x400082abf8o, L0x400082ac00o, L0x400082ac08o,
+                           L0x400082ac10o, L0x400082ac18o, L0x400082ac20o] +
+                 limbs 64 [L0x400082ac28o, L0x400082ac30o, L0x400082ac38o,
+                           L0x400082ac40o, L0x400082ac48o, L0x400082ac50o] * U) *
                 (limbs 64 [t2_20, t2_21, t2_22, t2_23, t2_24, t2_25] +
                  limbs 64 [t2_30, t2_31, t2_32, t2_33, t2_34, t2_35] * U))
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
 
-         (* sub_fp6x2(rx, rx, t1) *)
-         eqmod ((limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
-                           L0x400082a060, L0x400082a068, L0x400082a070,
-                           L0x400082a078, L0x400082a080, L0x400082a088,
-                           L0x400082a090, L0x400082a098, L0x400082a0a0] +
-                 limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
-                           L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
-                           L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                           L0x400082a0f0, L0x400082a0f8, L0x400082a100] * U) +
-                (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
-                           L0x400082a120, L0x400082a128, L0x400082a130,
-                           L0x400082a138, L0x400082a140, L0x400082a148,
-                           L0x400082a150, L0x400082a158, L0x400082a160] +
-                 limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
-                           L0x400082a180, L0x400082a188, L0x400082a190,
-                           L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                           L0x400082a1b0, L0x400082a1b8, L0x400082a1c0] * U) * V +
-                (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
-                           L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
-                           L0x400082a1f8, L0x400082a200, L0x400082a208,
-                           L0x400082a210, L0x400082a218, L0x400082a220] +
-                 limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                           L0x400082a240, L0x400082a248, L0x400082a250,
-                           L0x400082a258, L0x400082a260, L0x400082a268,
-                           L0x400082a270, L0x400082a278, L0x400082a280] * U) * V**2)
+         (* sub_fp6x2(rx, rx, t0);
+            sub_fp6x2(rx, rx, t1); *)
+         eqmod ((limbs 64 [rx00q, rx01q, rx02q, rx03q, rx04q, rx05q,
+                           rx06q, rx07q, rx08q, rx09q, rx0aq, rx0bq] +
+                 limbs 64 [rx10q, rx11q, rx12q, rx13q, rx14q, rx15q,
+                           rx16q, rx17q, rx18q, rx19q, rx1aq, rx1bq] * U) +
+                (limbs 64 [rx20q, rx21q, rx22q, rx23q, rx24q, rx25q,
+                           rx26q, rx27q, rx28q, rx29q, rx2aq, rx2bq] +
+                 limbs 64 [rx30q, rx31q, rx32q, rx33q, rx34q, rx35q,
+                           rx36q, rx37q, rx38q, rx39q, rx3aq, rx3bq] * U) * V +
+                (limbs 64 [rx40q, rx41q, rx42q, rx43q, rx44q, rx45q,
+                           rx46q, rx47q, rx48q, rx49q, rx4aq, rx4bq] +
+                 limbs 64 [rx50q, rx51q, rx52q, rx53q, rx54q, rx55q,
+                           rx56q, rx57q, rx58q, rx59q, rx5aq, rx5bq] * U) * V**2)
                (((limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
                             rx06o, rx07o, rx08o, rx09o, rx0ao, rx0bo] +
                   limbs 64 [rx10o, rx11o, rx12o, rx13o, rx14o, rx15o,
@@ -30960,53 +30998,52 @@ cut and [123 = 123,
 
          (* redc_fp6x2(ret[1], rx) *)
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ab98, L0x400082aba0, L0x400082aba8,
-                          L0x400082abb0, L0x400082abb8, L0x400082abc0])
-               (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
-                          L0x400082a060, L0x400082a068, L0x400082a070,
-                          L0x400082a078, L0x400082a080, L0x400082a088,
-                          L0x400082a090, L0x400082a098, L0x400082a0a0])
+                          c60, c61, c62, c63, c64, c65])
+               (limbs 64 [rx00q, rx01q, rx02q, rx03q, rx04q, rx05q,
+                          rx06q, rx07q, rx08q, rx09q, rx0aq, rx0bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082abc8, L0x400082abd0, L0x400082abd8,
-                          L0x400082abe0, L0x400082abe8, L0x400082abf0])
-               (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
-                          L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
-                          L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
-                          L0x400082a0f0, L0x400082a0f8, L0x400082a100])
+                          c70, c71, c72, c73, c74, c75])
+               (limbs 64 [rx10q, rx11q, rx12q, rx13q, rx14q, rx15q,
+                          rx16q, rx17q, rx18q, rx19q, rx1aq, rx1bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082abf8, L0x400082ac00, L0x400082ac08,
-                          L0x400082ac10, L0x400082ac18, L0x400082ac20])
-               (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
-                          L0x400082a120, L0x400082a128, L0x400082a130,
-                          L0x400082a138, L0x400082a140, L0x400082a148,
-                          L0x400082a150, L0x400082a158, L0x400082a160])
+                          c80, c81, c82, c83, c84, c85])
+               (limbs 64 [rx20q, rx21q, rx22q, rx23q, rx24q, rx25q,
+                          rx26q, rx27q, rx28q, rx29q, rx2aq, rx2bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ac28, L0x400082ac30, L0x400082ac38,
-                          L0x400082ac40, L0x400082ac48, L0x400082ac50])
-               (limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
-                          L0x400082a180, L0x400082a188, L0x400082a190,
-                          L0x400082a198, L0x400082a1a0, L0x400082a1a8,
-                          L0x400082a1b0, L0x400082a1b8, L0x400082a1c0])
+                          c90, c91, c92, c93, c94, c95])
+               (limbs 64 [rx30q, rx31q, rx32q, rx33q, rx34q, rx35q,
+                          rx36q, rx37q, rx38q, rx39q, rx3aq, rx3bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ac58, L0x400082ac60, L0x400082ac68,
-                          L0x400082ac70, L0x400082ac78, L0x400082ac80])
-               (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
-                          L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
-                          L0x400082a1f8, L0x400082a200, L0x400082a208,
-                          L0x400082a210, L0x400082a218, L0x400082a220])
+                          ca0, ca1, ca2, ca3, ca4, ca5])
+               (limbs 64 [rx40q, rx41q, rx42q, rx43q, rx44q, rx45q,
+                          rx46q, rx47q, rx48q, rx49q, rx4aq, rx4bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ac88, L0x400082ac90, L0x400082ac98,
-                          L0x400082aca0, L0x400082aca8, L0x400082acb0])
-               (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
-                          L0x400082a240, L0x400082a248, L0x400082a250,
-                          L0x400082a258, L0x400082a260, L0x400082a268,
-                          L0x400082a270, L0x400082a278, L0x400082a280])
+                          cb0, cb1, cb2, cb3, cb4, cb5])
+               (limbs 64 [rx50q, rx51q, rx52q, rx53q, rx54q, rx55q,
+                          rx56q, rx57q, rx58q, rx59q, rx5aq, rx5bq])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
+
+         (* mul_by_u_plus_1_fp2x2(rx[0], t1[2]) *)
+         eqmod (limbs 64 [rx00r, rx01r, rx02r, rx03r,rx04r, rx05r,
+                          rx10r, rx11r, rx12r, rx13r,rx14r, rx15r] +
+                limbs 64 [rx20r, rx21r, rx22r, rx23r,rx24r, rx25r,
+                          rx30r, rx31r, rx32r, rx33r,rx34r, rx35r] * U)
+               ((limbs 64 [L0x4000829f88, L0x4000829f90, L0x4000829f98,
+                           L0x4000829fa0, L0x4000829fa8, L0x4000829fb0,
+                           L0x4000829fb8, L0x4000829fc0, L0x4000829fc8,
+                           L0x4000829fd0, L0x4000829fd8, L0x4000829fe0] +
+                 limbs 64 [L0x4000829fe8, L0x4000829ff0, L0x4000829ff8,
+                           L0x400082a000, L0x400082a008, L0x400082a010,
+                           L0x400082a018, L0x400082a020, L0x400082a028,
+                           L0x400082a030, L0x400082a038, L0x400082a040] * U) *
+                (1 + U))
+               [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
+                U**2 + 1],
 
          (* add_fp2x2(rx[0], t0[0], rx[0])
             add_fp2x2(rx[1], t0[1], t1[0])
@@ -31027,10 +31064,10 @@ cut and [123 = 123,
                           L0x4000829c40, L0x4000829c48, L0x4000829c50,
                           L0x4000829c58, L0x4000829c60, L0x4000829c68, 
                           L0x4000829c70, L0x4000829c78, L0x4000829c80] * U +
-                limbs 64 [rx00o, rx01o, rx02o, rx03o, rx04o, rx05o,
-                          rx10o, rx11o, rx12o, rx13o, rx14o, rx15o] +
-                limbs 64 [rx20o, rx21o, rx22o, rx23o, rx24o, rx25o,
-                          rx30o, rx31o, rx32o, rx33o, rx34o, rx35o] * U)
+                limbs 64 [rx00r, rx01r, rx02r, rx03r, rx04r, rx05r,
+                          rx10r, rx11r, rx12r, rx13r, rx14r, rx15r] +
+                limbs 64 [rx20r, rx21r, rx22r, rx23r, rx24r, rx25r,
+                          rx30r, rx31r, rx32r, rx33r, rx34r, rx35r] * U)
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
          eqmod (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
@@ -31056,7 +31093,7 @@ cut and [123 = 123,
                 limbs 64 [L0x4000829e68, L0x4000829e70, L0x4000829e78,
                           L0x4000829e80, L0x4000829e88, L0x4000829e90,
                           L0x4000829e98, L0x4000829ea0, L0x4000829ea8,
-                          L0x4000829eb0, L0x4000829eb8, L0x4000829ec0])
+                          L0x4000829eb0, L0x4000829eb8, L0x4000829ec0] * U)
                [limbs 64 [0, 0, 0, 0, 0, 0, m0, m1, m2, m3, m4, m5],
                 U**2 + 1],
          eqmod (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
@@ -31088,54 +31125,51 @@ cut and [123 = 123,
 
          (* redc_fp6x2(ret[0], rx) *)
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082aa78, L0x400082aa80, L0x400082aa88,
-                          L0x400082aa90, L0x400082aa98, L0x400082aaa0])
+                          c00, c01, c02, c03, c04, c05])
                (limbs 64 [L0x400082a048, L0x400082a050, L0x400082a058,
                           L0x400082a060, L0x400082a068, L0x400082a070,
                           L0x400082a078, L0x400082a080, L0x400082a088,
                           L0x400082a090, L0x400082a098, L0x400082a0a0])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082aaa8, L0x400082aab0, L0x400082aab8,
-                          L0x400082aac0, L0x400082aac8, L0x400082aad0])
+                          c10, c11, c12, c13, c14, c15])
                (limbs 64 [L0x400082a0a8, L0x400082a0b0, L0x400082a0b8,
                           L0x400082a0c0, L0x400082a0c8, L0x400082a0d0,
                           L0x400082a0d8, L0x400082a0e0, L0x400082a0e8,
                           L0x400082a0f0, L0x400082a0f8, L0x400082a100])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082aad8, L0x400082aae0, L0x400082aae8,
-                          L0x400082aaf0, L0x400082aaf8, L0x400082ab00])
+                          c20, c21, c22, c23, c24, c25])
                (limbs 64 [L0x400082a108, L0x400082a110, L0x400082a118,
                           L0x400082a120, L0x400082a128, L0x400082a130,
                           L0x400082a138, L0x400082a140, L0x400082a148,
                           L0x400082a150, L0x400082a158, L0x400082a160])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ab08, L0x400082ab10, L0x400082ab18,
-                          L0x400082ab20, L0x400082ab28, L0x400082ab30])
+                          c30, c31, c32, c33, c34, c35])
                (limbs 64 [L0x400082a168, L0x400082a170, L0x400082a178,
                           L0x400082a180, L0x400082a188, L0x400082a190,
                           L0x400082a198, L0x400082a1a0, L0x400082a1a8,
                           L0x400082a1b0, L0x400082a1b8, L0x400082a1c0])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ab38, L0x400082ab40, L0x400082ab48,
-                          L0x400082ab50, L0x400082ab58, L0x400082ab60])
+                          c40, c41, c42, c43, c44, c45])
                (limbs 64 [L0x400082a1c8, L0x400082a1d0, L0x400082a1d8,
                           L0x400082a1e0, L0x400082a1e8, L0x400082a1f0,
                           L0x400082a1f8, L0x400082a200, L0x400082a208,
                           L0x400082a210, L0x400082a218, L0x400082a220])
                (limbs 64 [m0, m1, m2, m3, m4, m5]),
          eqmod (limbs 64 [0, 0, 0, 0, 0, 0,
-                          L0x400082ab68, L0x400082ab70, L0x400082ab78,
-                          L0x400082ab80, L0x400082ab88, L0x400082ab90])
+                          c50, c51, c52, c53, c54, c55])
                (limbs 64 [L0x400082a228, L0x400082a230, L0x400082a238,
                           L0x400082a240, L0x400082a248, L0x400082a250,
                           L0x400082a258, L0x400082a260, L0x400082a268,
                           L0x400082a270, L0x400082a278, L0x400082a280])
-               (limbs 64 [m0, m1, m2, m3, m4, m5])
-         ]
+               (limbs 64 [m0, m1, m2, m3, m4, m5]),
+
+         m0 = 0xb9feffffffffaaab, m1 = 0x1eabfffeb153ffff,
+         m2 = 0x6730d2a0f6b0f624, m3 = 0x64774b84f38512bf,
+         m4 = 0x4b1ba7b6434bacd7, m5 = 0x1a0111ea397fe69a]
     prove with all cuts
  && and [limbs 64 [c00,c01,c02,c03,c04,c05] <u limbs 64 [m0,m1,m2,m3,m4,m5],
          limbs 64 [c10,c11,c12,c13,c14,c15] <u limbs 64 [m0,m1,m2,m3,m4,m5],
@@ -31148,22 +31182,22 @@ cut and [123 = 123,
          limbs 64 [c80,c81,c82,c83,c84,c85] <u limbs 64 [m0,m1,m2,m3,m4,m5],
          limbs 64 [c90,c91,c92,c93,c94,c95] <u limbs 64 [m0,m1,m2,m3,m4,m5],
          limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] <u limbs 64 [m0,m1,m2,m3,m4,m5],
-         limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] <u limbs 64 [m0,m1,m2,m3,m4,m5]]
+         limbs 64 [cb0,cb1,cb2,cb3,cb4,cb5] <u limbs 64 [m0,m1,m2,m3,m4,m5]]
     prove with all cuts;
 
 {
-  eqmod (((limbs 64 [c00,c01,c02,c03,c04,c05] +
-           limbs 64 [c10,c11,c12,c13,c14,c15] * U) +
-          (limbs 64 [c20,c21,c22,c23,c24,c25] +
-           limbs 64 [c30,c31,c32,c33,c34,c35] * U) * V +
-          (limbs 64 [c40,c41,c42,c43,c44,c45] +
-           limbs 64 [c50,c51,c52,c53,c54,c55] * U) * V**2) +
-         ((limbs 64 [c60,c61,c62,c63,c64,c65] +
-           limbs 64 [c70,c71,c72,c73,c74,c75] * U) +
-          (limbs 64 [c80,c81,c82,c83,c84,c85] +
-           limbs 64 [c90,c91,c92,c93,c94,c95] * U) * V +
-          (limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] +
-           limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] * V) * V**2) * W)
+  eqmod (((limbs 64 [0,0,0,0,0,0,c00,c01,c02,c03,c04,c05] +
+           limbs 64 [0,0,0,0,0,0,c10,c11,c12,c13,c14,c15] * U) +
+          (limbs 64 [0,0,0,0,0,0,c20,c21,c22,c23,c24,c25] +
+           limbs 64 [0,0,0,0,0,0,c30,c31,c32,c33,c34,c35] * U) * V +
+          (limbs 64 [0,0,0,0,0,0,c40,c41,c42,c43,c44,c45] +
+           limbs 64 [0,0,0,0,0,0,c50,c51,c52,c53,c54,c55] * U) * V**2) +
+         ((limbs 64 [0,0,0,0,0,0,c60,c61,c62,c63,c64,c65] +
+           limbs 64 [0,0,0,0,0,0,c70,c71,c72,c73,c74,c75] * U) +
+          (limbs 64 [0,0,0,0,0,0,c80,c81,c82,c83,c84,c85] +
+           limbs 64 [0,0,0,0,0,0,c90,c91,c92,c93,c94,c95] * U) * V +
+          (limbs 64 [0,0,0,0,0,0,ca0,ca1,ca2,ca3,ca4,ca5] +
+           limbs 64 [0,0,0,0,0,0,cb0,cb1,cb2,cb3,cb4,cb5] * U) * V**2) * W)
         ((((limbs 64 [a00,a01,a02,a03,a04,a05] +
             limbs 64 [a10,a11,a12,a13,a14,a15] * U) +
            (limbs 64 [a20,a21,a22,a23,a24,a25] +
@@ -31175,7 +31209,7 @@ cut and [123 = 123,
            (limbs 64 [a80,a81,a82,a83,a84,a85] +
             limbs 64 [a90,a91,a92,a93,a94,a95] * U) * V +
            (limbs 64 [aa0,aa1,aa2,aa3,aa4,aa5] +
-            limbs 64 [aa0,aa1,aa2,aa3,aa4,aa5] * V) * V**2) * W) *
+            limbs 64 [ab0,ab1,ab2,ab3,ab4,ab5] * U) * V**2) * W) *
          (((limbs 64 [b00,b01,b02,b03,b04,b05] +
             limbs 64 [b10,b11,b12,b13,b14,b15] * U) +
            (limbs 64 [b20,b21,b22,b23,b24,b25] +
@@ -31187,7 +31221,7 @@ cut and [123 = 123,
            (limbs 64 [b80,b81,b82,b83,b84,b85] +
             limbs 64 [b90,b91,b92,b93,b94,b95] * U) * V +
            (limbs 64 [ba0,ba1,ba2,ba3,ba4,ba5] +
-            limbs 64 [ba0,ba1,ba2,ba3,ba4,ba5] * V) * V**2) * W))
+            limbs 64 [bb0,bb1,bb2,bb3,bb4,bb5] * U) * V**2) * W))
         [limbs 64 [m0, m1, m2, m3, m4, m5],
          U**2 + 1, V**3 - U - 1, W**2 - V]
 &&
@@ -31202,6 +31236,6 @@ cut and [123 = 123,
        limbs 64 [c80,c81,c82,c83,c84,c85] <u limbs 64 [m0,m1,m2,m3,m4,m5],
        limbs 64 [c90,c91,c92,c93,c94,c95] <u limbs 64 [m0,m1,m2,m3,m4,m5],
        limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] <u limbs 64 [m0,m1,m2,m3,m4,m5],
-       limbs 64 [ca0,ca1,ca2,ca3,ca4,ca5] <u limbs 64 [m0,m1,m2,m3,m4,m5]]
+       limbs 64 [cb0,cb1,cb2,cb3,cb4,cb5] <u limbs 64 [m0,m1,m2,m3,m4,m5]]
 }
 
