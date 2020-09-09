@@ -335,6 +335,9 @@ object(self)
 
   method getstmts = List.rev stmts
 
+  method mkcomment c =
+    self#addstmt ("; " ^ c)
+
   method mkvar v =
     try
       VM.find v vmap
@@ -631,6 +634,7 @@ let rec btor_of_exp m e =
   | SignExtend (w, i, e) -> m#mksignextend w i (btor_of_exp m e)
   | Ite (w, c, e1, e2) -> m#mkcond w (btor_of_bexp m c) (btor_of_exp m e1) (btor_of_exp m e2)
 and btor_of_bexp m e =
+  (*let _ = m#mkcomment (string_of_bexp e) in*)
   match e with
   | True -> m#mkconstd 1 Z.one
   | Ult (_w, e1, e2) -> m#mkult (btor_of_exp m e1) (btor_of_exp m e2)

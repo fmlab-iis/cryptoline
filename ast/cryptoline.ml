@@ -28,6 +28,16 @@ let disj_assoc = LeftAssoc
 let _unused_assoc = RightAssoc
 
 
+let apply_to_some f ox =
+  match ox with
+  | None -> None
+  | Some x -> Some (f x)
+
+let apply_to_option f d ox =
+  match ox with
+  | None -> d
+  | Some x -> f x
+
 
 (** Types *)
 
@@ -845,7 +855,9 @@ type instr =
   | Ior of var * atomic * atomic                  (* Ior (v, a1, a2): v = the bitwise OR of a1 and a2 *)
   | Ixor of var * atomic * atomic                 (* Ixor (v, a1, a2): v = the bitwise XOR of a1 and a2 *)
   (* Type conversions *)
-  | Icast of var * atomic                         (* Icast (v, a): v = the value of a represented by the type of v *)
+  | Icast of var option * var * atomic            (* Icast (od, v, a): v = the value of a represented by the type of v,
+                                                     od = a value used to compute the difference between a and v, the meaning depends on
+                                                     the signs of a and v *)
   | Ivpc of var * atomic                          (* Ivpc (v, a): v = a, value preserved casting *)
   | Ijoin of var * atomic * atomic                (* Ijoin (v, ah, al): v = ah * 2^w + al where w is the bit-width of al *)
   (* Specifications *)
@@ -946,7 +958,10 @@ let string_of_instr ?typ:(typ=false) i =
   | Ixor (v, a1, a2) -> "xor " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Inot (v, a) -> "not " ^ string_of_var ~typ:true v ^ " " ^ astr a
   (* Type conversions *)
-  | Icast (v, a) -> "cast " ^ string_of_var ~typ:true v ^ " " ^ astr a
+  | Icast (od, v, a) ->
+     (match od with
+      | None -> "cast " ^ string_of_var ~typ:true v ^ " " ^ astr a
+      | Some d -> "cast [ " ^ string_of_var ~typ:true d ^ " ] " ^ string_of_var ~typ:true v ^ " " ^ astr a)
   | Ivpc (v, a) -> "vpc " ^ string_of_var ~typ:true v ^ " " ^ astr a
   | Ijoin (v, ah, al) -> "join " ^ vstr v ^ " " ^ astr ah ^ " " ^ astr al
   (* Specifications *)
@@ -1008,7 +1023,10 @@ let vars_instr i =
     | Ior (v, a1, a2)
     | Ixor (v, a1, a2) ->  VS.add v (VS.union (vars_atomic a1) (vars_atomic a2))
   | Inot (v, a) -> VS.add v (vars_atomic a)
-  | Icast (v, a) -> VS.add v (vars_atomic a)
+  | Icast (od, v, a) ->
+     (match od with
+      | None -> VS.add v (vars_atomic a)
+      | Some d -> VS.add d (VS.add v (vars_atomic a)))
   | Ivpc (v, a) -> VS.add v (vars_atomic a)
   | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atomic ah) (vars_atomic al))
   | Iassert e
@@ -1053,7 +1071,7 @@ let lvs_instr i =
     | Ior (v, _, _)
     | Ixor (v, _, _)
     | Inot (v, _) -> VS.singleton v
-  | Icast (v, _) -> VS.singleton v
+  | Icast (_, v, _) -> VS.singleton v
   | Ivpc (v, _) -> VS.singleton v
   | Ijoin (v, _, _) -> VS.singleton v
   | Iassert _
@@ -1099,7 +1117,7 @@ let rvs_instr i =
     | Ior (_, a1, a2)
     | Ixor (_, a1, a2) ->  VS.union (vars_atomic a1) (vars_atomic a2)
   | Inot (_, a) -> vars_atomic a
-  | Icast (_, a) -> vars_atomic a
+  | Icast (_, _, a) -> vars_atomic a
   | Ivpc (_, a) -> vars_atomic a
   | Ijoin (_, ah, al) -> VS.union (vars_atomic ah) (vars_atomic al)
   | Iassert e
@@ -1112,6 +1130,7 @@ let rvs_program p = List.fold_left (fun res i -> VS.union (rvs_instr i) res) VS.
 
 let gvs_instr i =
   match i with
+  | Icast (od, _, _) -> apply_to_option VS.singleton VS.empty od
   | Ighost (vs, _) -> vs
   | _ -> VS.empty
 
@@ -1152,7 +1171,7 @@ let lcarries_instr i =
   | Ior (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ixor (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Inot (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Icast (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
+  | Icast (_, v, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ivpc (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ijoin _
   | Iassert _
@@ -1256,7 +1275,7 @@ let subst_instr pats i =
   | Ior (v, a1, a2) -> Ior (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
   | Ixor (v, a1, a2) -> Ixor (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
   | Inot (v, a) -> Inot (subst_lval pats v, subst_atomic pats a)
-  | Icast (v, a) -> Icast (subst_lval pats v, subst_atomic pats a)
+  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval pats) od, subst_lval pats v, subst_atomic pats a)
   | Ivpc (v, a) -> Ivpc (subst_lval pats v, subst_atomic pats a)
   | Ijoin (v, ah, al) -> Ijoin (subst_lval pats v, subst_atomic pats ah, subst_atomic pats al)
   | Iassert e -> Iassert (subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
@@ -1614,7 +1633,10 @@ let illformed_instr_reason vs cs gs i =
       | Ixor (v, a1, a2) ->
        [defined_atomics [a1; a2]; check_same_size [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Inot (v, a) -> [defined_atomic a; check_same_size [Avar v; a]; const_in_range [a]]
-    | Icast (_v, a) -> [defined_atomic a; const_in_range [a]]
+    | Icast (od, _v, a) ->
+       (match od with
+        | None -> [defined_atomic a; const_in_range [a]]
+        | Some d -> [defined_atomic a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
     | Ivpc (_v, a) -> [defined_atomic a; const_in_range [a]]
     | Ijoin (v, ah, al) -> [defined_atomics [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size v ah al]
     | Iassert e
@@ -1936,10 +1958,11 @@ let ssa_instr m i =
      let a = ssa_atomic m a in
      let m = upd_sidx v m in
      (m, Inot (ssa_var m v, a))
-  | Icast (v, a) ->
+  | Icast (od, v, a) ->
      let a = ssa_atomic m a in
-     let m = upd_sidx v m in
-     (m, Icast (ssa_var m v, a))
+     let md = apply_to_option (fun v -> upd_sidx v m) m od in
+     let mv = upd_sidx v md in
+     (mv, Icast (apply_to_some (ssa_var md) od, ssa_var mv v, a))
   | Ivpc (v, a) ->
      let a = ssa_atomic m a in
      let m = upd_sidx v m in
@@ -2246,7 +2269,7 @@ let auto_cast_var ?preserve:(preserve=false) vt ty v =
       let v' = mkvar (v.vname ^ "_" ^ auto_cast_name ^ "_" ^ string_of_typ ty) ty in
       let _ = Hashtbl.add vt (v.vname, ty) v' in
       if preserve then ([Ivpc (v', Avar v)], v')
-      else ([Icast (v', Avar v)], v')
+      else ([Icast (None, v', Avar v)], v')
 
 let auto_cast_const ?preserve:(preserve=false) ct ty (nty, n) =
   if nty = ty then ([], Aconst (ty, n))
@@ -2258,7 +2281,7 @@ let auto_cast_const ?preserve:(preserve=false) ct ty (nty, n) =
     let v = mkvar vn ty in
     let _ = Hashtbl.add ct (n, ty) v in
     if preserve then ([Ivpc (v, Aconst (nty, n))], Avar v)
-    else ([Icast (v, Aconst (nty, n))], Avar v)
+    else ([Icast (None, v, Aconst (nty, n))], Avar v)
 
 let auto_cast_atomic ?preserve:(preserve=false) (vt, ct) ty a =
   match a with
@@ -2371,8 +2394,8 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
   | Inot (v, a) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
                    casts@[Inot (v, a)]
   (* Type conversions *)
-  | Icast (_v, _a) -> [i]
-  | Ivpc (_v, _a) -> [i]
+  | Icast (_, _, _) -> [i]
+  | Ivpc (_, _) -> [i]
   | Ijoin (v, ah, al) -> let (castsh, ah) = auto_cast_atomic ~preserve:preserve t v.vtyp ah in
                          let (castsl, al) = auto_cast_atomic ~preserve:preserve t (typ_to_unsigned v.vtyp) al in
                          castsh@castsl@[Ijoin (v, ah, al)]
@@ -2615,7 +2638,7 @@ let visit_instr visitor i =
         | Ixor (v, a1, a2) -> Ixor (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
         | Inot (v, a) -> Inot (visit_var visitor v, visit_atomic visitor a)
         (* Type conversions *)
-        | Icast (v, a) -> Icast (visit_var visitor v, visit_atomic visitor a)
+        | Icast (od, v, a) -> Icast (apply_to_some (visit_var visitor) od, visit_var visitor v, visit_atomic visitor a)
         | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atomic visitor a)
         | Ijoin (v, ah, al) -> Ijoin (visit_var visitor v, visit_atomic visitor ah, visit_atomic visitor al)
         (* Specifications *)

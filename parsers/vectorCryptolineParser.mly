@@ -84,7 +84,7 @@
   let word_size = 16
   let dword_size = 32
   let qword_size = 64
-               
+
   let rec to_bit_string len i res =
     if len > 0 then
       to_bit_string (pred len) (i / 2) (string_of_int (i mod 2) ^ res)
@@ -139,7 +139,7 @@
         (vm, ym, gm, res)
     in
     helper (pred len, List.rev alist) (vm, ym, gm, [])
-    
+
   let vectorize11 lno elt_size len v a mk_instr cm vm ym gm =
     let suffix_len = truncate (log (float_of_int len) /. log 2.) in
     let rec helper i (vm, ym, gm, res) =
@@ -1141,15 +1141,29 @@
          vectorize11 lno wi (w / wi) v a (fun vv va -> Inot (vv, va))
                      cm vm ym gm
 
-  let parse_cast_at lno kind (lv_token : lv_token_t) a_token =
+  let parse_cast_at lno kind (od_token : lv_token_t option) (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
+	  (* determine the type of the discarded part *)
+      let od_typ =
+		match typ_of_var v, typ_of_atomic a with
+		| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
+		| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1) else Some (Tsint (wa - wv))
+		| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa)) else if wv = wa then Some bit_t else Some (Tuint (wa - wv))
+		| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa)) else Some (Tsint (wa - wv + 1)) in
+      let (vm, ym, gm, od) =
+		match od_token with
+		| None -> (vm, ym, gm, None)
+		| Some token ->
+		   let (vm, ym, gm, d) = token cm vm ym gm od_typ in
+		   (vm, ym, gm, Some d) in
+	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
       match kind with
-      | Scalar -> (vm, ym, gm, [Icast (v, a)])
+      | Scalar -> (vm, ym, gm, [Icast (od, v, a)])
       | Vector wi ->
          let w = size_of_var v in
-         vectorize11 lno wi (w / wi) v a (fun vv va -> Icast (vv, va))
+         vectorize11 lno wi (w / wi) v a (fun vv va -> Icast (None, vv, va))
                      cm vm ym gm
 
   let parse_vpc_at lno kind (lv_token : lv_token_t) a_token =
@@ -2270,25 +2284,31 @@ instr:
   | lhs EQOP QWORD NOT atomic                     { let lno = !lnum in
                                                     parse_not_at lno (Vector qword_size) $1 $5 }
   | CAST lval_or_lcarry atomic                    { let lno = !lnum in
-                                                    parse_cast_at lno Scalar $2 $3 }
+                                                    parse_cast_at lno Scalar None $2 $3 }
+  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
+                                                  { let lno = !lnum in
+                                                    parse_cast_at lno Scalar (Some $3) $5 $6 }
   | CAST BYTE lval_or_lcarry atomic               { let lno = !lnum in
-                                                    parse_cast_at lno (Vector byte_size) $3 $4 }
+                                                    parse_cast_at lno (Vector byte_size) None $3 $4 }
   | CAST WORD lval_or_lcarry atomic               { let lno = !lnum in
-                                                    parse_cast_at lno (Vector word_size) $3 $4 }
+                                                    parse_cast_at lno (Vector word_size) None $3 $4 }
   | CAST DWORD lval_or_lcarry atomic               { let lno = !lnum in
-                                                    parse_cast_at lno (Vector dword_size) $3 $4 }
+                                                    parse_cast_at lno (Vector dword_size) None $3 $4 }
   | CAST QWORD lval_or_lcarry atomic               { let lno = !lnum in
-                                                    parse_cast_at lno (Vector qword_size) $3 $4 }
+                                                    parse_cast_at lno (Vector qword_size) None $3 $4 }
   | lhs EQOP CAST atomic                          { let lno = !lnum in
-                                                    parse_cast_at lno Scalar $1 $4 }
+                                                    parse_cast_at lno Scalar None $1 $4 }
+  | lhs LSQUARE lval_or_lcarry RSQUARE EQOP atomic
+                                                  { let lno = !lnum in
+                                                    parse_cast_at lno Scalar (Some $3) $1 $6 }
   | lhs EQOP BYTE CAST atomic                     { let lno = !lnum in
-                                                    parse_cast_at lno (Vector byte_size) $1 $5 }
+                                                    parse_cast_at lno (Vector byte_size) None $1 $5 }
   | lhs EQOP WORD CAST atomic                     { let lno = !lnum in
-                                                    parse_cast_at lno (Vector word_size) $1 $5 }
+                                                    parse_cast_at lno (Vector word_size) None $1 $5 }
   | lhs EQOP DWORD CAST atomic                    { let lno = !lnum in
-                                                    parse_cast_at lno (Vector dword_size) $1 $5 }
+                                                    parse_cast_at lno (Vector dword_size) None $1 $5 }
   | lhs EQOP QWORD CAST atomic                    { let lno = !lnum in
-                                                    parse_cast_at lno (Vector qword_size) $1 $5 }
+                                                    parse_cast_at lno (Vector qword_size) None $1 $5 }
   | VPC lval_or_lcarry atomic                     { let lno = !lnum in
                                                     parse_vpc_at lno Scalar $2 $3 }
   | VPC BYTE lval_or_lcarry atomic                { let lno = !lnum in

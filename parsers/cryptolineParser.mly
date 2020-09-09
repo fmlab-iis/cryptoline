@@ -838,11 +838,26 @@
       let _ = check_at lno [check_same_size [Avar v; a]] in
       (vm, ym, gm, [Inot (v, a)])
 
-  let parse_cast_at _lno (lv_token : lv_token_t) a_token =
+  let parse_cast_at _lno (od_token : lv_token_t option) (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (vm, ym, gm, [Icast (v, a)])
+	  (* determine the type of the discarded part *)
+      let od_typ =
+		match typ_of_var v, typ_of_atomic a with
+		| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
+		| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1) else Some (Tsint (wa - wv))
+		| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa)) else if wv = wa then Some bit_t else Some (Tuint (wa - wv))
+		| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa)) else Some (Tsint (wa - wv + 1)) in
+      let (vm, ym, gm, od) =
+		match od_token with
+		| None -> (vm, ym, gm, None)
+		| Some token ->
+		   let (vm, ym, gm, d) = token cm vm ym gm od_typ in
+		   (vm, ym, gm, Some d) in
+	  (* the discarded part must be a ghost variable *)
+	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
+      (vm, ym, gm, [Icast (od, v, a)])
 
   let parse_vpc_at _lno (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
@@ -1555,9 +1570,12 @@ instr:
   | lhs EQOP NOT atomic                           { let lno = !lnum in
                                                     parse_not_at lno $1 $4 }
   | CAST lval_or_lcarry atomic                    { let lno = !lnum in
-                                                    parse_cast_at lno $2 $3 }
+                                                    parse_cast_at lno None $2 $3 }
+  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
+                                                  { let lno = !lnum in
+                                                    parse_cast_at lno (Some $3) $5 $6 }
   | lhs EQOP CAST atomic                          { let lno = !lnum in
-                                                    parse_cast_at lno $1 $4 }
+                                                    parse_cast_at lno None $1 $4 }
   | VPC lval_or_lcarry atomic                     { let lno = !lnum in
                                                     parse_vpc_at lno $2 $3 }
   | lhs EQOP VPC atomic                           { let lno = !lnum in
@@ -2313,18 +2331,34 @@ lval:
                                                   }
   | ID AT typ                                     {
                                                     let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
+                                                    fun _cm vm ym gm ty_opt ->
                                                       if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
                                                       else
+														let _ =
+														  match ty_opt with
+														  | None -> ()
+														  | Some determined_ty -> if $3 <> determined_ty then raise_at lno ("The specified type "
+																					  										^ string_of_typ $3
+																									                        ^ " is not equal to the determined type "
+																															^ string_of_typ determined_ty)
+																				  else () in
                                                         let v = mkvar $1 $3 in
                                                         if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
                                                         else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
                                                   }
   | typ ID                                        {
                                                     let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
+                                                    fun _cm vm ym gm ty_opt ->
                                                       if SM.mem $2 gm then raise_at lno ("The program variable " ^ $2 ^ " has been defined as a ghost variable.")
                                                       else
+														let _ =
+														  match ty_opt with
+														  | None -> ()
+														  | Some determined_ty -> if $1 <> determined_ty then raise_at lno ("The specified type "
+																															^ string_of_typ $1
+																									                        ^ " is not equal to the determined type "
+																															^ string_of_typ determined_ty)
+																				  else () in
                                                         let v = mkvar $2 $1 in
                                                         if var_is_bit v then (SM.add $2 v vm, SM.add $2 v ym, gm, v)
                                                         else (SM.add $2 v vm, SM.remove $2 ym, gm, v)

@@ -1,7 +1,8 @@
 
 val z_two : Z.t
 
-
+val apply_to_some : ('a -> 'b) -> 'a option -> 'b option
+val apply_to_option : ('a -> 'b) -> 'b -> 'a option -> 'b
 
 (** Types *)
 
@@ -311,7 +312,9 @@ type instr =
   | Ior of var * atomic * atomic                  (* Ior (v, a1, a2): v = the bitwise OR of a1 and a2 *)
   | Ixor of var * atomic * atomic                 (* Ixor (v, a1, a2): v = the bitwise XOR of a1 and a2 *)
   (* Type conversions *)
-  | Icast of var * atomic                         (* Icast (v, a): v = the value of a represented by the type of v *)
+  | Icast of var option * var * atomic            (* Icast (od, v, a): v = the value of a represented by the type of v,
+                                                     od = a value used to compute the difference between a and v, the meaning depends on
+                                                     the signs of a and v *)
   | Ivpc of var * atomic                          (* Ivpc (v, a): v = a, value preserved casting *)
   | Ijoin of var * atomic * atomic                (* Ijoin (v, ah, al): v = ah * 2^w + al where w is the bit-width of al *)
   (* Specifications *)

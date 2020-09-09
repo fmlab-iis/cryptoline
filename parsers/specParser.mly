@@ -132,7 +132,9 @@ instr:
   | AND lval atomic atomic                        { [Iand ($2, $3, $4)] }
   | OR lval atomic atomic                         { [Ior ($2, $3, $4)] }
   | NOT lval atomic                               { [Inot ($2, $3)] }
-  | CAST lval_or_lcarry atomic                    { [Icast ($2, $3)] }
+  | CAST lval_or_lcarry atomic                    { [Icast (None, $2, $3)] }
+  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
+                                                  { [Icast (Some $3, $5, $6)] }
   | VPC lval_or_lcarry atomic                     { [Ivpc ($2, $3)] }
   | JOIN lval atomic atomic                       { [Ijoin ($2, $3, $4)] }
   | ASSERT bexp                                   { [Iassert ($2)] }

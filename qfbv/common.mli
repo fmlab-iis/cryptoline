@@ -56,6 +56,7 @@ class btor_manager : int ->
   object
     method addstmt : string -> unit
     method getstmts : string list
+    method mkcomment : string -> unit
     method mkadd : size -> int -> int -> int
     method mkand : size -> int -> int -> int
     method mkconcat : size -> int -> int -> int -> int

@@ -363,19 +363,54 @@ let bexp_not v a =
  * - Upcast: do signed or unsigned extension (depending on the source type), and then interpret depending on the destination type
  * - Downcast: discard the most significant bits that are not present in the destination type, and then interpret depending on the destination type
  *)
-let bexp_cast v a =
-  match v.vtyp, typ_of_atomic a with
-  | Tuint wv, Tuint wa
-    | Tsint wv, Tuint wa ->
-     if wv = wa then Eq (wv, exp_var v, exp_atomic a)
-     else if wv < wa then Eq (wv, exp_var v, Extract (wa, wv - 1, 0, exp_atomic a))
-     else Eq (wv, exp_var v, ZeroExtend (wa, wv - wa, exp_atomic a))
-  | Tuint wv, Tsint wa
-    | Tsint wv, Tsint wa ->
-     if wv = wa then Eq (wv, exp_var v, exp_atomic a)
-     else if wv < wa then Eq (wv, exp_var v, Extract (wa, wv - 1, 0, exp_atomic a))
-     else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atomic a))
-let bexp_vpc v a = bexp_cast v a
+let bexp_cast od v a =
+  let bcast =
+    match v.vtyp, typ_of_atomic a with
+    | Tuint wv, Tuint wa
+      | Tsint wv, Tuint wa ->
+       if wv = wa then Eq (wv, exp_var v, exp_atomic a)
+       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atomic a))
+       else Eq (wv, exp_var v, ZeroExtend (wa, wv - wa, exp_atomic a))
+    | Tuint wv, Tsint wa
+      | Tsint wv, Tsint wa ->
+       if wv = wa then Eq (wv, exp_var v, exp_atomic a)
+       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atomic a))
+       else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atomic a)) in
+  let bextra =
+    match od with
+    | None -> None
+    | Some d ->
+       (match v.vtyp, typ_of_atomic a with
+        | Tuint wv, Tuint wa ->
+           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atomic a)))
+        | Tuint wv, Tsint wa ->
+           if wv >= wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atomic a)))
+           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atomic a)))
+        | Tsint wv, Tuint wa ->
+           if wv > wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           else if wv = wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atomic a)))
+           else Some (Eq (wa - wv + 1,
+                          exp_var d,
+                          Add (wa - wv + 1,
+                               ZeroExtend (wa - wv, 1, High (wv, wa - wv, exp_atomic a)), (* ZeroExtend is used to avoid overflow *)
+                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atomic a))) (* the sign bit of v *)
+                  )))
+        | Tsint wv, Tsint wa ->
+           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           else Some (Eq (wa - wv + 1,
+                          exp_var d,
+                          Add (wa - wv + 1,
+                               SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atomic a)), (* SignExtend is used to avoid overflow *)
+                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atomic a))) (* the sign bit of v *)
+                  )))
+       )
+  in
+  match bextra with
+  | None -> bcast
+  | Some e -> Conj (bcast, e)
+
+let bexp_vpc v a = bexp_cast None v a
 let bexp_join v ah al =
   let w = size_of_var v in
   Eq (w,
@@ -416,7 +451,7 @@ let bexp_instr i =
   | Ior (v, a1, a2) -> bexp_or v a1 a2
   | Ixor (v, a1, a2) -> bexp_xor v a1 a2
   | Inot (v, a) -> bexp_not v a
-  | Icast (v, a) -> bexp_cast v a
+  | Icast (t, v, a) -> bexp_cast t v a
   | Ivpc (v, a) -> bexp_vpc v a
   | Ijoin (v, ah, al) -> bexp_join v ah al
   | Iassert _e -> True
@@ -636,7 +671,7 @@ let bexp_instr_safe i =
   | Ior _ -> True
   | Ixor _ -> True
   | Inot _ -> True
-  | Icast (_v, _a) -> True
+  | Icast (_, _v, _a) -> True
   | Ivpc (v, a) -> bexp_vpc_safe v a
   | Ijoin (_v, _ah, _al) -> True
   | Iassert _ -> True
@@ -666,38 +701,63 @@ let bv2z_assign v e = Eeq (evar v, e)
 let bv2z_join e h l p = Eeq (eadd l (emul h (econst (e2pow p))), e)
 let bv2z_split vh vl e p = bv2z_join e (evar vh) (evar vl) p
 
-let bv2z_cast vgen v a =
+let bv2z_cast vgen ot v a =
   match v.vtyp, typ_of_atomic a with
   | Tuint wv, Tuint wa ->
      if wv >= wa then
        (vgen, [Eeq (evar v, bv2z_atomic a)])
      else
-       let (discarded, vgen) = gen_var vgen in
-       let discarded = mkvar discarded (uint_t (wa - wv)) in
+       let (discarded, vgen) =
+         match ot with
+         | None ->
+            let (discarded, vgen) = gen_var vgen in
+            let discarded = mkvar discarded (uint_t (wa - wv)) in
+            (discarded, vgen)
+         | Some t -> (t, vgen) in
        (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
   | Tuint wv, Tsint wa ->
      (* a_sign and discarded have different meanings but the polynomial equation is equivalent. *)
      if wv >= wa then
-       let (a_sign, vgen) = gen_var vgen in
-       let a_sign = mkvar a_sign bit_t in
+       let (a_sign, vgen) =
+         match ot with
+         | None ->
+            let (a_sign, vgen) = gen_var vgen in
+            let a_sign = mkvar a_sign bit_t in
+            (a_sign, vgen)
+         | Some t -> (t, vgen) in
        (vgen, [bv2z_join (evar v) (evar a_sign) (bv2z_atomic a) wv])
      else
-       let (discarded, vgen) = gen_var vgen in
-       let discarded = mkvar discarded (int_t (wa - wv)) in
+       let (discarded, vgen) =
+         match ot with
+         | None ->
+            let (discarded, vgen) = gen_var vgen in
+            let discarded = mkvar discarded (int_t (wa - wv)) in
+            (discarded, vgen)
+         | Some t -> (t, vgen) in
        (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
   | Tsint wv, Tuint wa ->
      if wv > wa then
        (vgen, [Eeq (evar v, bv2z_atomic a)])
      else
-       let (discarded, vgen) = gen_var vgen in
-       let discarded = mkvar discarded (uint_t (wa - wv)) in
+       let (discarded, vgen) =
+         match ot with
+         | None ->
+            let (discarded, vgen) = gen_var vgen in
+            let discarded = mkvar discarded (uint_t (wa - wv + 1)) in
+            (discarded, vgen)
+         | Some t -> (t, vgen) in
        (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
   | Tsint wv, Tsint wa ->
      if wv >= wa then
        (vgen, [Eeq (evar v, bv2z_atomic a)])
      else
-       let (discarded, vgen) = gen_var vgen in
-       let discarded = mkvar discarded (int_t (wa - wv)) in
+       let (discarded, vgen) =
+         match ot with
+         | None	->
+            let (discarded, vgen) = gen_var vgen in
+            let discarded = mkvar discarded (int_t (wa - wv + 1)) in
+            (discarded, vgen)
+         | Some t -> (t, vgen) in
        (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
 
 let bv2z_vpc vgen v a = (vgen, [Eeq (evar v, bv2z_atomic a)])
@@ -808,8 +868,8 @@ let bv2z_instr vgen i =
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atomic a))])
       | Tsint _w -> (vgen, [bv2z_assign v (esub (eneg (bv2z_atomic a)) (econst Z.one))]))
-  | Icast (v, a) ->
-     bv2z_cast vgen v a
+  | Icast (t, v, a) ->
+     bv2z_cast vgen t v a
   | Ivpc (v, a) ->
      bv2z_vpc vgen v a
   | Ijoin (v, ah, al) ->
