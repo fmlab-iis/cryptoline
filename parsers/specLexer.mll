@@ -126,6 +126,9 @@
               "true"                       , TRUE;
               "eq"                         , EQ;
               "eqmod"                      , EQMOD;
+              "equmod"                     , EQUMOD;
+              "eqsmod"                     , EQSMOD;
+              "eqsrem"                     , EQSREM;
               (********** Others **********)
               "proc"                       , PROC;
               "call"                       , CALL;

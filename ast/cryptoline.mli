@@ -228,6 +228,10 @@ val rsle : size -> rexp -> rexp -> rbexp
 val rsgt : size -> rexp -> rexp -> rbexp
 val rsge : size -> rexp -> rexp -> rbexp
 val reqmod : size -> rexp -> rexp -> rexp -> rbexp
+(* Same as reqmod *)
+val requmod : size -> rexp -> rexp -> rexp -> rbexp
+val reqsmod : size -> rexp -> rexp -> rexp -> rbexp
+val reqsrem : size -> rexp -> rexp -> rexp -> rbexp
 val rneg : rbexp -> rbexp
 val rand : rbexp -> rbexp -> rbexp
 val ror : rbexp -> rbexp -> rbexp

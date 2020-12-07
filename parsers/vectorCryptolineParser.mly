@@ -1346,7 +1346,7 @@
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
 /* Predicates */
-%token TRUE EQ EQMOD
+%token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP
 /* Others */
@@ -2642,14 +2642,14 @@ rbexp_atomic:
                                                       else
                                                         match $4 cm vm ym gm with
                                                         | None -> Req (w1, e1, e2)
-                                                        | Some m ->
+                                                        | Some (f, m) ->
                                                           let wm = size_of_rexp m in
                                                           begin
                                                             if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
                                                                                            ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                            ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                             else
-                                                              reqmod w1 e1 e2 m
+                                                              f w1 e1 e2 m
                                                          end
                                                   }
   | rexp cmpop_infix rexp                         { let lno = !lnum in
@@ -2695,6 +2695,57 @@ rbexp_atomic:
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
+                                                  }
+  | EQUMOD rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqmod w1 e1 e2 m
+                                                  }
+  | EQSMOD rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqsmod w1 e1 e2 m
+                                                  }
+  | EQSREM rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqsrem w1 e1 e2 m
                                                   }
 ;
 
@@ -2769,11 +2820,65 @@ rbexp_atomic_without_eqmod:
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
+  | EQUMOD rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqmod w1 e1 e2 m
+                                                  }
+  | EQSMOD rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqsmod w1 e1 e2 m
+                                                  }
+  | EQSREM rexp rexp rexp                         { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let m = $4 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      let wm = size_of_rexp m in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
+                                                      else
+                                                        reqsrem w1 e1 e2 m
+                                                  }
 ;
 
 req_suffix:
                                                   { fun _cm _vm _ym _gm -> None }
-  | LPAR MOD rexp RPAR                            { fun cm vm ym gm -> Some ($3 cm vm ym gm) }
+  | LPAR MOD rexp RPAR                            { fun cm vm ym gm -> Some (reqmod, $3 cm vm ym gm) }
+  | LPAR UMOD rexp RPAR                           { fun cm vm ym gm -> Some (reqmod, $3 cm vm ym gm) }
+  | LPAR SMOD rexp RPAR                           { fun cm vm ym gm -> Some (reqsmod, $3 cm vm ym gm) }
+  | LPAR SREM rexp RPAR                           { fun cm vm ym gm -> Some (reqsrem, $3 cm vm ym gm) }
 ;
 
 cmpop_prefix:

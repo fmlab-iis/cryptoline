@@ -31,7 +31,7 @@
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
 /* Predicates */
-%token TRUE EQ EQMOD
+%token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP
 /* Others */
@@ -349,6 +349,24 @@ rbexp_atomic:
                                                     let w1 = size_of_rexp e1 in
                                                     reqmod w1 e1 e2 m
                                                   }
+  | EQUMOD rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    requmod w1 e1 e2 m
+                                                  }
+  | EQSMOD rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    reqsmod w1 e1 e2 m
+                                                  }
+  | EQSREM rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    reqsrem w1 e1 e2 m
+                                                  }
 ;
 
 rbexp_atomic_without_eqmod:
@@ -386,6 +404,24 @@ rbexp_atomic_without_eqmod:
                                                     let m = $4 in
                                                     let w1 = size_of_rexp e1 in
                                                     reqmod w1 e1 e2 m
+                                                  }
+  | EQUMOD rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    requmod w1 e1 e2 m
+                                                  }
+  | EQSMOD rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    reqsmod w1 e1 e2 m
+                                                  }
+  | EQSREM rexp rexp rexp                         { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let m = $4 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    reqsrem w1 e1 e2 m
                                                   }
 ;
 
