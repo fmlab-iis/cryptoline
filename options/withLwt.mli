@@ -7,3 +7,5 @@ val fail : string -> 'a Lwt.t
 
 val lock_log : unit -> unit Lwt.t
 val unlock_log : unit -> unit
+
+val cleanup_lwt : string list -> unit Lwt.t

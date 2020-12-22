@@ -1,5 +1,6 @@
 
 open Options.Std
+open Options.WithLwt
 open Ast.Cryptoline
 open Qfbv.Common
 open Qfbv.WithLwt
@@ -367,16 +368,15 @@ let read_macaulay2_output ofile =
   Lwt.return (String.trim line)
 
 let is_in_ideal header vars ideal p =
-  let ifile = Filename.temp_file "inputfgb_" "" in
-  let ofile = Filename.temp_file "outputfgb_" "" in
+  let ifile = tmpfile "inputfgb_" "" in
+  let ofile = tmpfile "outputfgb_" "" in
   let res =
     match !algebra_system with
     | Singular ->
        let%lwt _ = write_singular_input ifile vars ideal p in
        let%lwt _ = run_singular header ifile ofile in
        let%lwt res = read_singular_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Sage ->
        (* The input file to Sage must have file extension ".sage". *)
@@ -384,29 +384,25 @@ let is_in_ideal header vars ideal p =
        let%lwt _ = write_sage_input ifile vars ideal p in
        let%lwt _ = run_sage header ifile ofile in
        let%lwt res = read_sage_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | Magma ->
        let%lwt _ = write_magma_input ifile vars ideal p in
        let%lwt _ = run_magma header ifile ofile in
        let%lwt res = read_magma_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | Mathematica ->
        let%lwt _ = write_mathematica_input ifile vars ideal p in
        let%lwt _ = run_mathematica header ifile ofile in
        let%lwt res = read_mathematica_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Macaulay2 ->
        let%lwt _ = write_macaulay2_input ifile vars ideal p in
        let%lwt _ = run_macaulay2 header ifile ofile in
        let%lwt res = read_macaulay2_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
   in
   res
@@ -700,8 +696,8 @@ type cli_round_result =
  * ifile: the range specification containing the program
  *)
 let run_cli_vsafety id timeout idx instr ifile =
-  let ofile = Filename.temp_file "safety_output_" "" in
-  let lfile = Filename.temp_file "safety_log_" "" in
+  let ofile = tmpfile "safety_output_" "" in
+  let lfile = tmpfile "safety_log_" "" in
   (* Run CLI *)
   let cmd = String.concat " "
                           [!cli_path;
@@ -754,8 +750,7 @@ let run_cli_vsafety id timeout idx instr ifile =
   in
   let _ = Options.WithLwt.unlock_log () in
   (* Remove temporary files *)
-  let%lwt _ = Lwt_unix.unlink ofile in
-  let%lwt _ = Lwt_unix.unlink lfile in
+  let%lwt _ = cleanup_lwt [ofile; lfile] in
   (* Return the result *)
   Lwt.return (match line with
               | "sat" -> (id, timeout, idx, instr, "[FAILED]", Solved Sat)
@@ -765,7 +760,7 @@ let run_cli_vsafety id timeout idx instr ifile =
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
 let verify_safety_cli f p =
-  let ifile = Filename.temp_file "safety_input_" "" in
+  let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = Rtrue; rspwss = []}); close_out ch in
   let add_unsolved q res =
@@ -812,7 +807,7 @@ let verify_safety_cli f p =
   let add_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (id, timeout, idx, i)) qs in
   let res = verify_rec (List.rev (add_id (filter_true (add_index p)))) (Solved Unsat, []) in
   let _ = vprint "\t Overall\t\t\t" in
-  let _ = Unix.unlink ifile in
+  let _ = cleanup [ifile] in
   res
 
 (*
@@ -860,9 +855,9 @@ let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cut
 
 (* Run CLI to verify an espec (no conjunction in the postcondition). *)
 let run_cli_vespec header s =
-  let ifile = Filename.temp_file "espec_input_" "" in
-  let ofile = Filename.temp_file "espec_output_" "" in
-  let lfile = Filename.temp_file "espec_log_" "" in
+  let ifile = tmpfile "espec_input_" "" in
+  let ofile = tmpfile "espec_output_" "" in
+  let lfile = tmpfile "espec_log_" "" in
   (* Write the input to CLI *)
   let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
@@ -934,9 +929,7 @@ let run_cli_vespec header s =
   in
   let _ = Options.WithLwt.unlock_log () in
   (* Remove temporary files *)
-  let%lwt _ = Lwt_unix.unlink ifile in
-  let%lwt _ = Lwt_unix.unlink ofile in
-  let%lwt _ = Lwt_unix.unlink lfile in
+  let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
   (* Return the result *)
   Lwt.return (String.trim line = "true")
 
@@ -949,9 +942,9 @@ let verify_espec_cli s =
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition). *)
 let run_cli_vrspec header s =
-  let ifile = Filename.temp_file "rspec_input_" "" in
-  let ofile = Filename.temp_file "rspec_output_" "" in
-  let lfile = Filename.temp_file "rspec_log_" "" in
+  let ifile = tmpfile "rspec_input_" "" in
+  let ofile = tmpfile "rspec_output_" "" in
+  let lfile = tmpfile "rspec_log_" "" in
   (* Write the input to CLI *)
   let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
@@ -1006,9 +999,7 @@ let run_cli_vrspec header s =
   in
   let _ = Options.WithLwt.unlock_log () in
   (* Remove temporary files *)
-  let%lwt _ = Lwt_unix.unlink ifile in
-  let%lwt _ = Lwt_unix.unlink ofile in
-  let%lwt _ = Lwt_unix.unlink lfile in
+  let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
   (* Return the result *)
   Lwt.return (String.trim line = "true")
 
