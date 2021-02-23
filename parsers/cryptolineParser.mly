@@ -7,6 +7,7 @@
 
 
   open Ast.Cryptoline
+  open Typecheck.Std
   open Common
 
   exception ParseError of string
@@ -21,7 +22,7 @@
       fvm : Ast.Cryptoline.var SM.t; (* a map from a name to a variable (including carry variables) *)
       fym : Ast.Cryptoline.var SM.t; (* a map from a name to a carry variable *)
       fgm : Ast.Cryptoline.var SM.t; (* a map from a name to a ghost variable *)
-      fbody : program;
+      fbody : lined_program;
       fpre : bexp;
       fpost : bexp;
       fepwss : prove_with_spec list;
@@ -52,28 +53,35 @@
     | Tuint w -> Tuint (w * 2)
     | Tsint w -> Tsint (w * 2)
 
+  (*
   let check_at lno reasons =
     match chain_reasons reasons with
     | None -> ()
     | Some r -> raise_at lno r
-
+   *)
+               
   type lv_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> typ option -> (var SM.t * var SM.t * var SM.t * var)
 (*   type atomic_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> atomic *)
 
-  let parse_typed_const lno ty n_token =
+  let parse_typed_const _lno ty n_token =
     fun cm _vm _ym _gm ->
-      let n = n_token cm in
-      match check_const_range ty n with
+    let n = n_token cm in
+    Aconst (ty, n)
+    (*
+      match check_const_range lno ty n with
       | None -> Aconst (ty, n)
       | Some r -> raise_at lno r
+     *)
 
   let parse_imov_at lno (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let ty = typ_of_atomic a in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a; Avar v]] in
-      (vm, ym, gm, [Imov (v, a)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imov (v, a)])
 
   let parse_ishl_at lno (lv_token : lv_token_t) a_token n_token =
     fun _fm cm vm ym gm ->
@@ -81,14 +89,16 @@
       let ty = typ_of_atomic a in
       let n = n_token cm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a; Avar v]] in
+      (*
+      let _ = check_at lno [check_same_typ lno [a; Avar v]] in
+      *)
       let _ =
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                         ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
-      (vm, ym, gm, [Ishl (v, a, n)])
+      (vm, ym, gm, [lno, Ishl (v, a, n)])
 
   let parse_cshl_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token n_token =
     fun _fm cm vm ym gm ->
@@ -98,23 +108,25 @@
       let n = n_token cm in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_same_size [a1; a2]; check_same_typ [a1; Avar vh]; check_unsigned_same_typ [a2; Avar vl]] in
-      (vm, ym, gm, [Icshl (vh, vl, a1, a2, n)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_same_size lno [a1; a2]; check_same_typ lno [a1; Avar vh]; check_unsigned_same_typ lno [a2; Avar vl]] in
+       *)
+      (vm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
 
-  let parse_set_at _lno c_token =
+  let parse_set_at lno c_token =
     fun _fm cm vm ym gm ->
       let (vm, ym, gm, c) = c_token cm vm ym gm in
-      (vm, ym, gm, [Imov (c, Aconst (bit_t, Z.one)) ])
+      (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.one)) ])
 
-  let parse_clear_at _lno c_token =
+  let parse_clear_at lno c_token =
     fun _fm cm vm ym gm ->
       let (vm, ym, gm, c) = c_token cm vm ym gm in
-      (vm, ym, gm, [Imov (c, Aconst (bit_t, Z.zero))])
+      (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.zero))])
 
-  let parse_nondet_at _lno (lv_token : lv_token_t) =
+  let parse_nondet_at lno (lv_token : lv_token_t) =
     fun _fm cm vm ym gm ->
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (vm, ym, gm, [Inondet v])
+      (vm, ym, gm, [lno, Inondet v])
 
   let parse_cmov_at lno (lv_token : lv_token_t) c_token a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -123,8 +135,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Icmov (v, c, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Icmov (v, c, a1, a2)])
 
   let parse_add_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -132,8 +146,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadd (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_adds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -142,8 +158,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadds (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_addr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -152,8 +170,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iaddr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_adc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -162,8 +182,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_adcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -173,8 +195,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_adcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -184,8 +208,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_sub_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -193,8 +219,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isub (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_subc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -203,8 +231,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubc (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_subb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -213,8 +243,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubb (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_subr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -223,8 +255,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_sbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -233,8 +267,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_sbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -244,8 +280,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_sbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -255,8 +293,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_sbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -265,8 +305,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbb (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_sbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -276,8 +318,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_sbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -287,8 +331,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_mul_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -296,8 +342,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imul (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_muls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -306,8 +354,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imuls (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_mulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -316,8 +366,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imulr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_mull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -326,8 +378,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_mull_lvs vh vl; check_same_typ [Avar vh; a1; a2]] in
-      (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_same_typ lno [Avar vh; a1; a2]] in
+       *)
+      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_mulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -335,8 +389,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-      let _ = check_at lno [check_mulj_size v a1 a2; check_same_typ [a1; a2]; check_same_sign [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imulj (v, a1, a2)])
+(*
+      let _ = check_at lno [check_mulj_size lno v a1 a2; check_same_typ lno [a1; a2]; check_same_sign [a1; a2; Avar v]] in
+*)
+      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_split_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
     fun _fm cm vm ym gm ->
@@ -345,13 +401,15 @@
       let ty = typ_of_atomic a in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_split_lvs vh vl; check_same_typ [Avar vh; a]] in
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; check_same_typ lno [Avar vh; a]] in
+       *)
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_uadd_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -359,8 +417,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadd (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_uadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -369,8 +429,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadds (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_uaddr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -379,8 +441,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iaddr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_uadc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -389,8 +453,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_uadcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -400,8 +466,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_uadcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -411,8 +479,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_usub_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -420,8 +490,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isub (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_usubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -430,8 +502,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubc (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_usubb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -440,8 +514,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubb (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_usubr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -450,8 +526,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_usbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -460,8 +538,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_usbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -471,8 +551,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_usbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -482,8 +564,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_usbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -492,8 +576,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbb (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_usbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -503,8 +589,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_usbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -514,8 +602,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_umul_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -523,8 +613,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imul (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_umuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -533,8 +625,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imuls (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_umulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -543,8 +637,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_unsigned_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imulr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_umull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -553,8 +649,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_unsigned_same_typ [a1; a2; Avar vh; Avar vl]] in
-      (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_unsigned_same_typ lno [a1; a2; Avar vh; Avar vl]] in
+      *)
+      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_umulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -562,8 +660,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-      let _ = check_at lno [check_mulj_size v a1 a2; check_unsigned_var v; check_unsigned_same_typ [a1; a2]] in
-      (vm, ym, gm, [Imulj (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_mulj_size lno v a1 a2; check_unsigned_var v; check_unsigned_same_typ lno [a1; a2]] in
+       *)
+      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_usplit_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
     fun _fm cm vm ym gm ->
@@ -572,13 +672,15 @@
       let ty = typ_of_atomic a in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_unsigned_same_typ [a; Avar vh; Avar vl]] in
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_unsigned_same_typ lno [a; Avar vh; Avar vl]] in
+       *)
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_sadd_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -586,8 +688,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadd (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_sadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -596,8 +700,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadds (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_saddr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -606,8 +712,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iaddr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_sadc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -616,8 +724,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_sadcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -627,8 +737,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_sadcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -638,8 +750,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Iadcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_ssub_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -647,8 +761,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isub (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_ssubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -657,8 +773,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubc (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_ssubb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -667,8 +785,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubb (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_ssubr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -677,8 +797,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isubr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_ssbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -687,8 +809,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbc (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_ssbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -698,8 +822,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_ssbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -709,8 +835,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbcr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_ssbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -719,8 +847,10 @@
       let y = y_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbb (v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_ssbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -730,8 +860,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbs (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_ssbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
     fun _fm cm vm ym gm ->
@@ -741,8 +873,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Isbbr (c, v, a1, a2, y)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_smul_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -750,8 +884,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imul (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_smuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -760,8 +896,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imuls (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+      *)
+      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_smulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -770,8 +908,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = c_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      let _ = check_at lno [check_diff_lvs c v; check_signed_same_typ [a1; a2; Avar v]] in
-      (vm, ym, gm, [Imulr (c, v, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
+       *)
+      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_smull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -780,8 +920,10 @@
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_mull_lvs vh vl; check_signed_same_typ [a1; a2; Avar vh]; check_unsigned_var vl] in
-      (vm, ym, gm, [Imull (vh, vl, a1, a2)])
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_signed_same_typ lno [a1; a2; Avar vh]; check_unsigned_var vl] in
+       *)
+      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_smulj_at lno (v_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
@@ -789,8 +931,10 @@
       let a2 = a2_token cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-      let _ = check_at lno [check_mulj_size v a1 a2; check_signed_var v; check_signed_same_typ [a1; a2]] in
-      (vm, ym, gm, [Imulj (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_mulj_size lno v a1 a2; check_signed_var v; check_signed_same_typ lno [a1; a2]] in
+       *)
+      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_ssplit_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
     fun _fm cm vm ym gm ->
@@ -799,46 +943,56 @@
       let ty = typ_of_atomic a in
       let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      let _ = check_at lno [check_diff_lvs vh vl; check_mull_lvs vh vl; check_signed_same_typ [a; Avar vh]; check_unsigned_var vl] in
+      (*
+      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_signed_same_typ lno [a; Avar vh]; check_unsigned_var vl] in
+       *)
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [Isplit (vh, vl, a, n)])
+      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_and_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
       let a1 = a1_token cm vm ym gm in
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      (vm, ym, gm, [Iand (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
+       *)
+      (vm, ym, gm, [lno, Iand (v, a1, a2)])
 
   let parse_or_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
       let a1 = a1_token cm vm ym gm in
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      (vm, ym, gm, [Ior (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
+       *)
+      (vm, ym, gm, [lno, Ior (v, a1, a2)])
 
   let parse_xor_at lno (lv_token : lv_token_t) a1_token a2_token =
     fun _fm cm vm ym gm ->
       let a1 = a1_token cm vm ym gm in
       let a2 = a2_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let _ = check_at lno [check_same_size [Avar v; a1; a2]] in
-      (vm, ym, gm, [Ixor (v, a1, a2)])
+      (*
+      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
+      *)
+      (vm, ym, gm, [lno, Ixor (v, a1, a2)])
 
   let parse_not_at lno (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      let _ = check_at lno [check_same_size [Avar v; a]] in
-      (vm, ym, gm, [Inot (v, a)])
+      (*
+      let _ = check_at lno [check_same_size lno [Avar v; a]] in
+       *)
+      (vm, ym, gm, [lno, Inot (v, a)])
 
-  let parse_cast_at _lno (od_token : lv_token_t option) (lv_token : lv_token_t) a_token =
+  let parse_cast_at lno (od_token : lv_token_t option) (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
@@ -857,13 +1011,13 @@
 		   (vm, ym, gm, Some d) in
 	  (* the discarded part must be a ghost variable *)
 	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
-      (vm, ym, gm, [Icast (od, v, a)])
+      (vm, ym, gm, [lno, Icast (od, v, a)])
 
-  let parse_vpc_at _lno (lv_token : lv_token_t) a_token =
+  let parse_vpc_at lno (lv_token : lv_token_t) a_token =
     fun _fm cm vm ym gm ->
       let a = a_token cm vm ym gm in
       let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (vm, ym, gm, [Ivpc (v, a)])
+      (vm, ym, gm, [lno, Ivpc (v, a)])
 
   let parse_join_at lno (lv_token : lv_token_t) ah_token al_token =
     fun _fm cm vm ym gm ->
@@ -871,31 +1025,33 @@
       let al = al_token cm vm ym gm in
       let ty = typ_of_atomic ah in
       let (vm, ym, gm, v) = lv_token cm vm ym gm (Some (to_double_size ty)) in
-      let _ = check_at lno [check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size v ah al] in
-      (vm, ym, gm, [Ijoin (v, ah, al)])
+      (*
+      let _ = check_at lno [check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size lno v ah al] in
+       *)
+      (vm, ym, gm, [lno, Ijoin (v, ah, al)])
 
-  let parse_assert_at _lno bexp_token =
+  let parse_assert_at lno bexp_token =
     fun _fm cm vm ym gm ->
-      (vm, ym, gm, [Iassert (bexp_token cm vm ym gm)])
+      (vm, ym, gm, [lno, Iassert (bexp_token cm vm ym gm)])
 
-  let parse_assume_at _lno bexp_token =
+  let parse_assume_at lno bexp_token =
     fun _fm cm vm ym gm ->
-      (vm, ym, gm, [Iassume (bexp_token cm vm ym gm)])
+      (vm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
 
-  let parse_cut_at _lno bexp_prove_with_token =
+  let parse_cut_at lno bexp_prove_with_token =
     fun _fm cm vm ym gm ->
       let ((e, r), epwss, rpwss) = bexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [Iecut (e, epwss); Ircut (r, rpwss)])
+      (vm, ym, gm, [lno, Iecut (e, epwss); lno, Ircut (r, rpwss)])
 
-  let parse_ecut_at _lno ebexp_prove_with_token =
+  let parse_ecut_at lno ebexp_prove_with_token =
     fun _fm cm vm ym gm ->
     let (e, epwss) = ebexp_prove_with_token cm vm ym gm in
-    (vm, ym, gm, [Iecut (e, epwss)])
+    (vm, ym, gm, [lno, Iecut (e, epwss)])
 
-  let parse_rcut_at _lno rbexp_prove_with_token =
+  let parse_rcut_at lno rbexp_prove_with_token =
     fun _fm cm vm ym gm ->
       let (r, rpwss) = rbexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [Ircut (r, rpwss)])
+      (vm, ym, gm, [lno, Ircut (r, rpwss)])
 
   let parse_ghost_at lno gvars_token bexp_token =
     fun _fm cm vm ym gm ->
@@ -906,7 +1062,7 @@
       let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
       if List.length bad_ebexps > 0 then raise_at lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
       else if List.length bad_rbexps > 0 then raise_at lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
-      else (vm, ym, gm, [Ighost (gvars, e)])
+      else (vm, ym, gm, [lno, Ighost (gvars, e)])
 
   let is_type_compatible formal actual =
     match actual with
@@ -938,7 +1094,7 @@
                                 inherit nop_visitor
                                 method! vvar v = ChangeTo (rename_var v)
                               end in
-          let fbody = visit_program local_renamer f.fbody in
+          let fbody = visit_lined_program local_renamer f.fbody in
           (fbody, fargs, fouts, fvs, fys, fgs)
         else
           (f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
@@ -994,7 +1150,7 @@
         if List.length undefined > 0 then
           raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
       in
-      let p = subst_program pats fbody in
+      let p = subst_lined_program pats fbody in
       (* Update variable types *)
       let subst_varmap vm =
         (*
@@ -1052,8 +1208,8 @@
 
 %start spec
 %start prog
-%type <(Ast.Cryptoline.VS.t * Ast.Cryptoline.spec)> spec
-%type <Ast.Cryptoline.program> prog
+%type <(Ast.Cryptoline.VS.t * Typecheck.Std.spec)> spec
+%type <Ast.Cryptoline.lined_program> prog
 
 %%
 
@@ -2799,14 +2955,16 @@ complex_const:
 ;
 
 carry:
-    atomic                                        { let lno = !lnum in
+    atomic                                        { let _lno = !lnum in
                                                     fun cm vm ym gm ->
                                                       let a = $1 cm vm ym gm in
                                                       match a with
-                                                      | Avar v -> if SM.mem v.vname ym then a
-                                                                  else raise_at lno ("Carry variable " ^ string_of_var v ^ " is not defined.")
-                                                      | Aconst (ty, n) -> if ty = bit_t && check_const_range bit_t n = None then a
-                                                                          else raise_at lno ("A carry must be of type \"bit\" and have value 0 or 1")
+                                                      | Avar v -> (* if SM.mem v.vname ym then a
+                                                                  else raise_at lno ("Carry variable " ^ string_of_var v ^ " is not defined.") *)
+                                                         Avar v
+                                                      | Aconst (_ty, _n) -> (* if ty = bit_t && check_const_range lno bit_t n = None then a
+                                                                          else raise_at lno ("A carry must be of type \"bit\" and have value 0 or 1") *)
+                                                         a
                                                   }
 ;
 

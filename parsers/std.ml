@@ -1,7 +1,10 @@
 
+(*
 open Ast.Cryptoline
+ *)
 open Common
 
+(*
 let read_typing_file file =
   let vt = Hashtbl.create 100 in
   let ch = open_in file in
@@ -25,6 +28,9 @@ let read_typing_file file =
       () in
   let _ = close_in ch in
   vt
+ *)
+   
+(*
 
 let read_typing () =
   match !Options.Std.typing_file with
@@ -39,18 +45,11 @@ let apply_auto_cast_spec s =
   if !Options.Std.auto_cast then { spre = s.spre; sprog = apply_auto_cast_program s.sprog; spost = s.spost; sepwss = s.sepwss; srpwss = s.srpwss }
   else s
 
-let spec_from_lexbuf ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) lexbuf =
+ *)
+  
+let spec_from_lexbuf lexbuf =
   try
-    if legacy then
-      let (vs, s) = Ast.UntypedCryptoline.spec_to_typed ~typing:(read_typing ()) (LegacyCryptolineParser.spec LegacyCryptolineLexer.token lexbuf) in
-      (vs, apply_auto_cast_spec s)
-    else if untyped then
-      let (vs, s) = Ast.UntypedCryptoline.spec_to_typed ~typing:(read_typing ()) (UntypedCryptolineParser.spec UntypedCryptolineLexer.token lexbuf) in
-      (vs, apply_auto_cast_spec s)
-    else if vector then
-      VectorCryptolineParser.spec VectorCryptolineLexer.token lexbuf
-    else
-      CryptolineParser.spec CryptolineLexer.token lexbuf
+    CryptolineParser.spec CryptolineLexer.token lexbuf
   with
   | Failure msg -> raise (Failure ("Error at line " ^ string_of_int !lnum ^ ". " ^ msg))
   | Parsing.Parse_error ->
@@ -59,22 +58,15 @@ let spec_from_lexbuf ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(ve
     let msg = Printf.sprintf "Parser error at line %d char %d." l c in
     raise (Failure msg)
 
-let spec_from_file ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) file =
-  spec_from_lexbuf ~legacy:legacy ~untyped:untyped ~vector:vector (Lexing.from_channel (open_in file))
+let spec_from_file file =
+  spec_from_lexbuf (Lexing.from_channel (open_in file))
 
-let spec_from_string ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) str =
-  spec_from_lexbuf ~legacy:legacy ~untyped:untyped ~vector:vector (Lexing.from_string str)
+let spec_from_string str =
+  spec_from_lexbuf (Lexing.from_string str)
 
-let program_from_lexbuf ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) lexbuf =
+let program_from_lexbuf lexbuf =
   try
-    if legacy then
-      apply_auto_cast_program (snd (Ast.UntypedCryptoline.program_to_typed ~typing:(read_typing ()) Ast.UntypedCryptoline.VM.empty (LegacyCryptolineParser.prog LegacyCryptolineLexer.token lexbuf)))
-    else if untyped then
-      apply_auto_cast_program (snd (Ast.UntypedCryptoline.program_to_typed ~typing:(read_typing ()) Ast.UntypedCryptoline.VM.empty (UntypedCryptolineParser.prog UntypedCryptolineLexer.token lexbuf)))
-    else if vector then
-      VectorCryptolineParser.prog VectorCryptolineLexer.token lexbuf
-    else
-      CryptolineParser.prog CryptolineLexer.token lexbuf
+    CryptolineParser.prog CryptolineLexer.token lexbuf
   with
   | Failure msg -> raise (Failure ("Error at line " ^ string_of_int !lnum ^ ". " ^ msg))
   | Parsing.Parse_error ->
@@ -83,11 +75,11 @@ let program_from_lexbuf ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:
     let msg = Printf.sprintf "Parser error at line %d char %d." l c in
     raise (Failure msg)
 
-let program_from_file ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) file =
-  program_from_lexbuf ~legacy:legacy ~untyped:untyped ~vector:vector (Lexing.from_channel (open_in file))
+let program_from_file file =
+  program_from_lexbuf (Lexing.from_channel (open_in file))
 
-let program_from_string ?legacy:(legacy=false) ?untyped:(untyped=false) ?vector:(vector=false) str =
-  program_from_lexbuf ~legacy:legacy ~untyped:untyped ~vector:vector (Lexing.from_string str)
+let program_from_string str =
+  program_from_lexbuf (Lexing.from_string str)
 
 let espec_from_lexbuf lexbuf =
   try

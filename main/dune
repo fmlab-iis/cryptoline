@@ -1,5 +1,5 @@
 (library
   (name        main)
-  (libraries   ast parsers options verify)
+  (libraries   ast parsers typecheck options verify)
   (flags       (:standard -w -3))
 )

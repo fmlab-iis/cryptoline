@@ -29,7 +29,6 @@ let args =
     ("-disable_rewriting", Clear apply_rewriting, "\n\t     Disable rewriting of assignments (at program level) and equalities\n\t     (at polynomial level)\n");
     ("-isafety", Set incremental_safety, "  Verify program safety incrementally\n");
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), "INT\n\t     Set initial timeout for incremental verification of program safety\n");
-    ("-legacy", Set use_legacy_parser, "   Use the legacy parser\n");
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_system := Macaulay2),
      "PATH\n\t     Use Macaulay2 at the specified path\n");
     ("-magma", String (fun str -> magma_path := str; algebra_system := Magma),
@@ -68,8 +67,6 @@ let args =
     ("-slicing", Set apply_slicing, "  Enable slicing\n");
     ("-stp", String (fun str -> stp_path := str; smt_solver := STP),
      "PATH  Use STP at the specified path\n");
-    ("-untyped", Set use_untyped_parser, "  Use the untyped parser\n");
-    ("-vector", Set use_vector_parser, "   Use the vectorized parser\n");
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],
                     (fun str ->
                       try

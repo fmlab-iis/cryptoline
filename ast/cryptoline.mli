@@ -329,6 +329,7 @@ type instr =
   | Ighost of VS.t * bexp
 
 type program = instr list
+type lined_program = (int * instr) list
 
 val mkatomic_var : var -> atomic
 val mkatomic_const : typ -> Z.t -> atomic
@@ -359,6 +360,8 @@ val subst_lval : (var * atomic) list -> var -> var
 val subst_atomic : (var * atomic) list -> atomic -> atomic
 val subst_instr : (var * atomic) list -> instr -> instr
 val subst_program : (var * atomic) list -> program -> program
+val subst_lined_program :
+  (var * atomic) list -> lined_program -> lined_program
 val pats_to_epats : (var * atomic) list -> (var * eexp) list
 val pats_to_rpats : (var * atomic) list -> (var * rexp) list
 
@@ -399,42 +402,6 @@ val rspec_of_spec : spec -> rspec
 val string_of_spec : ?typ:bool -> spec -> string
 val string_of_espec : ?typ:bool -> espec -> string
 val string_of_rspec : ?typ:bool -> rspec -> string
-
-
-
-(** Well-formedness *)
-
-type ill_formed = IllPrecondition of bexp | IllInstruction of instr | IllPostcondition of bexp
-val chain_reasons : (string option) list -> string option
-val check_const_range : typ -> Z.t -> string option
-val check_unsigned_var : var -> string option
-val check_signed_var : var -> string option
-val check_bit_var : var -> string option
-val check_unsigned_atomic : atomic -> string option
-val check_signed_atomic : atomic -> string option
-val check_unsigned_atomics : atomic list -> string option
-val check_signed_atomics : atomic list -> string option
-val check_same_sign : atomic list -> string option
-val check_same_size : atomic list -> string option
-val check_same_typ : atomic list -> string option
-val check_unsigned_same_typ : atomic list -> string option
-val check_signed_same_typ : atomic list -> string option
-val check_diff_lvs : var -> var -> string option
-val check_mull_lvs : var -> var -> string option
-val check_split_lvs : var -> var -> string option
-val check_mulj_size : var -> atomic -> atomic -> string option
-val check_join_size : var -> atomic -> atomic -> string option
-val illformed_instr_reason : VS.t -> VS.t -> VS.t -> instr -> string option
-val illformed_program_reason : VS.t -> VS.t -> VS.t -> program -> (instr * string) option
-val illformed_eexp_reason : VS.t -> eexp -> string option
-val illformed_ebexp_reason : VS.t -> ebexp -> string option
-val illformed_rexp_reason : VS.t -> rexp -> string option
-val illformed_rbexp_reason : VS.t -> rbexp -> string option
-val illformed_bexp_reason : VS.t -> bexp -> string option
-val illformed_spec_reason : VS.t -> spec -> (ill_formed * string) option
-val well_formed_instr : VS.t -> VS.t -> VS.t -> instr -> bool
-val well_formed_program : VS.t -> VS.t -> VS.t -> program -> bool
-val well_formed_spec : VS.t -> spec -> bool
 
 
 
@@ -544,6 +511,7 @@ class type visitor =
 object
   method vspec : spec -> spec vaction
   method vprogram : program -> program vaction
+  method vlined_program : lined_program -> lined_program vaction
   method vinstr : instr -> instr vaction
   method vbexp : bexp -> bexp vaction
   method vebexp : ebexp -> ebexp vaction
@@ -571,4 +539,5 @@ val visit_rbexp : visitor -> rbexp -> rbexp
 val visit_bexp : visitor -> bexp -> bexp
 val visit_instr : visitor -> instr -> instr
 val visit_program : visitor -> program -> program
+val visit_lined_program : visitor -> lined_program -> lined_program
 val visit_spec : visitor -> spec -> spec

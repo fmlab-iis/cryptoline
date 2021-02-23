@@ -2,6 +2,7 @@
 open Arg
 open Options.Std
 open Ast.Cryptoline
+open Typecheck.Std
 open Parsers.Std
 
 type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert
@@ -30,7 +31,6 @@ let args = [
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
     ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
     ("-v", Set verbose, "\t     Display verbose messages\n");
-    ("-vector", Set use_vector_parser, "   Use the vectorized parser\n");
     ("-vecuts", String (fun str -> verify_ecuts := Some (List.map
                                                            (fun str ->
                                                              try
@@ -58,7 +58,7 @@ let parse_spec file =
   let t1 = Unix.gettimeofday() in
   let _ = vprint ("Parsing Cryptoline file:\t\t") in
   try
-    let spec = spec_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser ~vector:!use_vector_parser file in
+    let spec = spec_from_file file in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     spec
@@ -71,7 +71,7 @@ let parse_program file =
   let t1 = Unix.gettimeofday() in
   let _ = vprint ("Parsing Cryptoline file: ") in
   try
-    let p = program_from_file ~legacy:!use_legacy_parser ~untyped:!use_untyped_parser ~vector:!use_vector_parser file in
+    let p = program_from_file file in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     p
@@ -104,19 +104,19 @@ let move_asserts s =
     match i with
     | Iassert e -> e
     | _ -> assert false in
-  let (es, is) = List.partition is_assert s.sprog in
+  let (es, is) = List.partition is_assert s.Ast.Cryptoline.sprog in
   let post = band (bands (List.map bexp_of_assert es)) s.spost in
-  { spre = s.spre;
-    sprog = is;
-    spost = post;
-    sepwss = s.sepwss;
-    srpwss = s.srpwss }
+  { Ast.Cryptoline.spre = s.spre;
+    Ast.Cryptoline.sprog = is;
+    Ast.Cryptoline.spost = post;
+    Ast.Cryptoline.sepwss = s.sepwss;
+    Ast.Cryptoline.srpwss = s.srpwss }
 
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) (VS.elements vs)) in
   let parse_and_check file =
      let (vs, s) = parse_spec file in
-     if check_well_formedness vs s then (vs, s)
+     if check_well_formedness vs s then (vs, from_typecheck_spec s)
      else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
      else exit 1 in
   let t1 = Unix.gettimeofday() in
@@ -141,10 +141,10 @@ let anon file =
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec s)
   | PrintESpec ->
-     let s = espec_from_file file in
+     let s = from_typecheck_espec (espec_from_file file) in
      print_endline (string_of_espec s)
   | PrintRSpec ->
-     let s = rspec_from_file file in
+     let s = from_typecheck_rspec (rspec_from_file file) in
      print_endline (string_of_rspec s)
   | MoveAssert ->
      let (vs, s) = parse_and_check file in

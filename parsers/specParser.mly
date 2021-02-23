@@ -55,8 +55,8 @@
 
 %start espec
 %start rspec
-%type <Ast.Cryptoline.espec> espec
-%type <Ast.Cryptoline.rspec> rspec
+%type <Typecheck.Std.espec> espec
+%type <Typecheck.Std.rspec> rspec
 
 %%
 
@@ -102,47 +102,47 @@ instrs:
 ;
 
 instr:
-    MOV lval atomic                               { [Imov ($2, $3)] }
-  | SHL lval atomic const                         { [Ishl ($2, $3, $4)] }
-  | CSHL lval lval atomic atomic const            { [Icshl ($2, $3, $4, $5, $6)] }
-  | NONDET lval                                   { [Inondet $2] }
-  | CMOV lval carry atomic atomic                 { [Icmov ($2, $3, $4, $5)] }
-  | ADD lval atomic atomic                        { [Iadd ($2, $3, $4)] }
-  | ADDS lcarry lval atomic atomic                { [Iadds ($2, $3, $4, $5)] }
-  | ADDR lcarry lval atomic atomic                { [Iaddr ($2, $3, $4, $5)] }
-  | ADC lval atomic atomic carry                  { [Iadc ($2, $3, $4, $5)] }
-  | ADCS lcarry lval atomic atomic carry          { [Iadcs ($2, $3, $4, $5, $6)] }
-  | ADCR lcarry lval atomic atomic carry          { [Iadcr ($2, $3, $4, $5, $6)] }
-  | SUB lval atomic atomic                        { [Isub ($2, $3, $4)] }
-  | SUBC lcarry lval atomic atomic                { [Isubc ($2, $3, $4, $5)] }
-  | SUBB lcarry lval atomic atomic                { [Isubb ($2, $3, $4, $5)] }
-  | SUBR lcarry lval atomic atomic                { [Isubr ($2, $3, $4, $5)] }
-  | SBC lval atomic atomic carry                  { [Isbc ($2, $3, $4, $5)] }
-  | SBCS lcarry lval atomic atomic carry          { [Isbcs ($2, $3, $4, $5, $6)] }
-  | SBCR lcarry lval atomic atomic carry          { [Isbcr ($2, $3, $4, $5, $6)] }
-  | SBB lval atomic atomic carry                  { [Isbb ($2, $3, $4, $5)] }
-  | SBBS lcarry lval atomic atomic carry          { [Isbbs ($2, $3, $4, $5, $6)] }
-  | SBBR lcarry lval atomic atomic carry          { [Isbbr ($2, $3, $4, $5, $6)] }
-  | MUL lval atomic atomic                        { [Imul ($2, $3, $4)] }
-  | MULS lcarry lval atomic atomic                { [Imuls ($2, $3, $4, $5)] }
-  | MULR lcarry lval atomic atomic                { [Imulr ($2, $3, $4, $5)] }
-  | MULL lval lval atomic atomic                  { [Imull ($2, $3, $4, $5)] }
-  | MULJ lval atomic atomic                       { [Imulj ($2, $3, $4)] }
-  | SPLIT lval lval atomic const                  { [Isplit ($2, $3, $4, $5)] }
-  | AND lval atomic atomic                        { [Iand ($2, $3, $4)] }
-  | OR lval atomic atomic                         { [Ior ($2, $3, $4)] }
-  | NOT lval atomic                               { [Inot ($2, $3)] }
-  | CAST lval_or_lcarry atomic                    { [Icast (None, $2, $3)] }
+    MOV lval atomic                               { [min_int, Imov ($2, $3)] }
+  | SHL lval atomic const                         { [min_int, Ishl ($2, $3, $4)] }
+  | CSHL lval lval atomic atomic const            { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | NONDET lval                                   { [min_int, Inondet $2] }
+  | CMOV lval carry atomic atomic                 { [min_int, Icmov ($2, $3, $4, $5)] }
+  | ADD lval atomic atomic                        { [min_int, Iadd ($2, $3, $4)] }
+  | ADDS lcarry lval atomic atomic                { [min_int, Iadds ($2, $3, $4, $5)] }
+  | ADDR lcarry lval atomic atomic                { [min_int, Iaddr ($2, $3, $4, $5)] }
+  | ADC lval atomic atomic carry                  { [min_int, Iadc ($2, $3, $4, $5)] }
+  | ADCS lcarry lval atomic atomic carry          { [min_int, Iadcs ($2, $3, $4, $5, $6)] }
+  | ADCR lcarry lval atomic atomic carry          { [min_int, Iadcr ($2, $3, $4, $5, $6)] }
+  | SUB lval atomic atomic                        { [min_int, Isub ($2, $3, $4)] }
+  | SUBC lcarry lval atomic atomic                { [min_int, Isubc ($2, $3, $4, $5)] }
+  | SUBB lcarry lval atomic atomic                { [min_int, Isubb ($2, $3, $4, $5)] }
+  | SUBR lcarry lval atomic atomic                { [min_int, Isubr ($2, $3, $4, $5)] }
+  | SBC lval atomic atomic carry                  { [min_int, Isbc ($2, $3, $4, $5)] }
+  | SBCS lcarry lval atomic atomic carry          { [min_int, Isbcs ($2, $3, $4, $5, $6)] }
+  | SBCR lcarry lval atomic atomic carry          { [min_int, Isbcr ($2, $3, $4, $5, $6)] }
+  | SBB lval atomic atomic carry                  { [min_int, Isbb ($2, $3, $4, $5)] }
+  | SBBS lcarry lval atomic atomic carry          { [min_int, Isbbs ($2, $3, $4, $5, $6)] }
+  | SBBR lcarry lval atomic atomic carry          { [min_int, Isbbr ($2, $3, $4, $5, $6)] }
+  | MUL lval atomic atomic                        { [min_int, Imul ($2, $3, $4)] }
+  | MULS lcarry lval atomic atomic                { [min_int, Imuls ($2, $3, $4, $5)] }
+  | MULR lcarry lval atomic atomic                { [min_int, Imulr ($2, $3, $4, $5)] }
+  | MULL lval lval atomic atomic                  { [min_int, Imull ($2, $3, $4, $5)] }
+  | MULJ lval atomic atomic                       { [min_int, Imulj ($2, $3, $4)] }
+  | SPLIT lval lval atomic const                  { [min_int, Isplit ($2, $3, $4, $5)] }
+  | AND lval atomic atomic                        { [min_int, Iand ($2, $3, $4)] }
+  | OR lval atomic atomic                         { [min_int, Ior ($2, $3, $4)] }
+  | NOT lval atomic                               { [min_int, Inot ($2, $3)] }
+  | CAST lval_or_lcarry atomic                    { [min_int, Icast (None, $2, $3)] }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
-                                                  { [Icast (Some $3, $5, $6)] }
-  | VPC lval_or_lcarry atomic                     { [Ivpc ($2, $3)] }
-  | JOIN lval atomic atomic                       { [Ijoin ($2, $3, $4)] }
-  | ASSERT bexp                                   { [Iassert ($2)] }
-  | ASSUME bexp                                   { [Iassume ($2)] }
-  | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [Iecut (e, epwss); Ircut (r, rpwss)] }
-  | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [Iecut (e, epwss)] }
-  | RCUT rbexp_prove_with                         { let (r, rpwss) = $2 in [Ircut (r, rpwss)] }
-  | GHOST gvars COLON bexp                        { [Ighost ($2, $4)] }
+                                                  { [min_int, Icast (Some $3, $5, $6)] }
+  | VPC lval_or_lcarry atomic                     { [min_int, Ivpc ($2, $3)] }
+  | JOIN lval atomic atomic                       { [min_int, Ijoin ($2, $3, $4)] }
+  | ASSERT bexp                                   { [min_int, Iassert ($2)] }
+  | ASSUME bexp                                   { [min_int, Iassume ($2)] }
+  | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Iecut (e, epwss); min_int, Ircut (r, rpwss)] }
+  | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [min_int, Iecut (e, epwss)] }
+  | RCUT rbexp_prove_with                         { let (r, rpwss) = $2 in [min_int, Ircut (r, rpwss)] }
+  | GHOST gvars COLON bexp                        { [min_int, Ighost ($2, $4)] }
   | NOP                                           { [] }
 ;
 

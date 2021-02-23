@@ -85,10 +85,6 @@ val cli_path : string ref
 (* Rename local variables when inlining a call to a procedure. *)
 val rename_local : bool ref
 
-val use_legacy_parser : bool ref
-val use_untyped_parser : bool ref
-val use_vector_parser : bool ref
-
 val auto_cast : bool ref
 val auto_cast_preserve_value : bool ref
 val typing_file : (string option) ref

@@ -2,6 +2,7 @@
 open Arg
 open Options.Std
 open Ast.Cryptoline
+open Typecheck.Std
 open Parsers.Std
 
 type action = VerifyESpec | VerifyRSpec | VerifySafety
@@ -46,16 +47,16 @@ let anon file =
   let _ = Options.Std.jobs := 1 in
   match !action with
   | VerifyESpec ->
-     let spec = espec_from_file file in
+     let spec = from_typecheck_espec (espec_from_file file) in
      let vgen = Verify.Std.vgen_of_espec spec in
      let res = Verify.Std.verify_espec_single_conjunct vgen spec in
      print_endline (string_of_bool res)
   | VerifyRSpec ->
-     let spec = rspec_from_file file in
+     let spec = from_typecheck_rspec (rspec_from_file file) in
      let res = Verify.Std.verify_rspec_single_conjunct spec in
      print_endline (string_of_bool res)
   | VerifySafety ->
-     let spec = rspec_from_file file in
+     let spec = from_typecheck_rspec (rspec_from_file file) in
      try
        (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout spec.rspre spec.rsprog !instr_index with
        | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
