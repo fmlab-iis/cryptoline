@@ -1454,232 +1454,232 @@ instrs:
 ;
 
 instr:
-    MOV lval atomic                                    { (!lnum, `MOV ($2, $3)) }
-  | lhsval EQOP atomic                                 { (!lnum, `MOV  ($1, $3)) }
-  | SHL lval atomic const                              { (!lnum, `SHL ($2, $3, $4)) }
-  | lhsval EQOP SHL atomic const                       { (!lnum, `SHL ($1, $4, $5)) }
-  | CSHL lval lval atomic atomic const                 { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
-  | lhsval DOT lhsval EQOP CSHL atomic atomic const    { (!lnum, `CSHL ($1, $3, $6, $7, $8)) }
-  | SET lcarry                                         { (!lnum, `SET $2) }
-  | CLEAR lcarry                                       { (!lnum, `CLEAR $2) }
-  | NONDET lval                                        { (!lnum, `NONDET $2) }
-  | CMOV lval carry atomic atomic                      { (!lnum, `CMOV ($2, $3, $4, $5)) }
-  | lhsval EQOP CMOV carry atomic atomic               { (!lnum, `CMOV ($1, $4, $5, $6)) }
-  | ADD lval atomic atomic                             { (!lnum, `ADD ($2, $3, $4)) }
-  | lhsval EQOP ADD atomic atomic                      { (!lnum, `ADD ($1, $4, $5)) }
-  | ADDS lcarry lval atomic atomic                     { (!lnum, `ADDS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP ADDS atomic atomic        { (!lnum, `ADDS ($1, $3, $6, $7)) }
-  | ADDR lcarry lval atomic atomic                     { (!lnum, `ADDR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP ADDR atomic atomic        { (!lnum, `ADDR ($1, $3, $6, $7)) }
-  | ADC lval atomic atomic carry                       { (!lnum, `ADC ($2, $3, $4, $5)) }
-  | lhsval EQOP ADC atomic atomic carry                { (!lnum, `ADC ($1, $4, $5, $6)) }
-  | ADCS lcarry lval atomic atomic carry               { (!lnum, `ADCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP ADCS atomic atomic carry  { (!lnum, `ADCS ($1, $3, $6, $7, $8)) }
-  | ADCR lcarry lval atomic atomic carry               { (!lnum, `ADCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP ADCR atomic atomic carry  { (!lnum, `ADCR ($1, $3, $6, $7, $8)) }
-  | SUB lval atomic atomic                             { (!lnum, `SUB ($2, $3, $4)) }
-  | lhsval EQOP SUB atomic atomic                      { (!lnum, `SUB ($1, $4, $5)) }
-  | SUBC lcarry lval atomic atomic                     { (!lnum, `SUBC ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SUBC atomic atomic        { (!lnum, `SUBC ($1, $3, $6, $7)) }
-  | SUBB lcarry lval atomic atomic                     { (!lnum, `SUBB ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SUBB atomic atomic        { (!lnum, `SUBB ($1, $3, $6, $7)) }
-  | SUBR lcarry lval atomic atomic                     { (!lnum, `SUBR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SUBR atomic atomic        { (!lnum, `SUBR ($1, $3, $6, $7)) }
-  | SBC lval atomic atomic carry                       { (!lnum, `SBC ($2, $3, $4, $5)) }
-  | lhsval EQOP SBC atomic atomic carry                { (!lnum, `SBC ($1, $4, $5, $6)) }
-  | SBCS lcarry lval atomic atomic carry               { (!lnum, `SBCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SBCS atomic atomic carry  { (!lnum, `SBCS ($1, $3, $6, $7, $8)) }
-  | SBCR lcarry lval atomic atomic carry               { (!lnum, `SBCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SBCR atomic atomic carry  { (!lnum, `SBCR ($1, $3, $6, $7, $8)) }
-  | SBB lval atomic atomic carry                       { (!lnum, `SBB ($2, $3, $4, $5)) }
-  | lhsval EQOP SBB atomic atomic carry                { (!lnum, `SBB ($1, $4, $5, $6)) }
-  | SBBS lcarry lval atomic atomic carry               { (!lnum, `SBBS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SBBS atomic atomic carry  { (!lnum, `SBBS ($1, $3, $6, $7, $8)) }
-  | SBBR lcarry lval atomic atomic carry               { (!lnum, `SBBR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SBBR atomic atomic carry  { (!lnum, `SBBR ($1, $3, $6, $7, $8)) }
-  | MUL lval atomic atomic                             { (!lnum, `MUL ($2, $3, $4)) }
-  | lhsval EQOP MUL atomic atomic                      { (!lnum, `MUL ($1, $4, $5)) }
-  | MULS lcarry lval atomic atomic                     { (!lnum, `MULS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP MULS atomic atomic        { (!lnum, `MULS ($1, $3, $6, $7)) }
-  | MULR lcarry lval atomic atomic                     { (!lnum, `MULR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP MULR atomic atomic        { (!lnum, `MULR ($1, $3, $6, $7)) }
-  | MULL lval lval atomic atomic                       { (!lnum, `MULL ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP MULL atomic atomic          { (!lnum, `MULL ($1, $3, $6, $7)) }
-  | MULJ lval atomic atomic                            { (!lnum, `MULJ ($2, $3, $4)) }
-  | lhsval EQOP MULJ atomic atomic                     { (!lnum, `MULJ ($1, $4, $5)) }
-  | SPLIT lval lval atomic const                       { (!lnum, `SPLIT ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP SPLIT atomic const          { (!lnum, `SPLIT ($1, $3, $6, $7)) }
-  | UADD lval atomic atomic                            { (!lnum, `UADD ($2, $3, $4)) }
-  | lhsval EQOP UADD atomic atomic                     { (!lnum, `UADD ($1, $4, $5)) }
-  | UADDS lcarry lval atomic atomic                    { (!lnum, `UADDS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP UADDS atomic atomic       { (!lnum, `UADDS ($1, $3, $6, $7)) }
-  | UADDR lcarry lval atomic atomic                    { (!lnum, `UADDR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP UADDR atomic atomic       { (!lnum, `UADDR ($1, $3, $6, $7)) }
-  | UADC lval atomic atomic carry                      { (!lnum, `UADC ($2, $3, $4, $5)) }
-  | lhsval EQOP UADC atomic atomic carry               { (!lnum, `UADC ($1, $4, $5, $6)) }
-  | UADCS lcarry lval atomic atomic carry              { (!lnum, `UADCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP UADCS atomic atomic carry { (!lnum, `UADCS ($1, $3, $6, $7, $8)) }
-  | UADCR lcarry lval atomic atomic carry              { (!lnum, `UADCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP UADCR atomic atomic carry { (!lnum, `UADCR ($1, $3, $6, $7, $8)) }
-  | USUB lval atomic atomic                            { (!lnum, `USUB ($2, $3, $4)) }
-  | lhsval EQOP USUB atomic atomic                     { (!lnum, `USUB ($1, $4, $5)) }
-  | USUBC lcarry lval atomic atomic                    { (!lnum, `USUBC ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP USUBC atomic atomic       { (!lnum, `USUBC ($1, $3, $6, $7)) }
-  | USUBB lcarry lval atomic atomic                    { (!lnum, `USUBB ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP USUBB atomic atomic       { (!lnum, `USUBB ($1, $3, $6, $7)) }
-  | USUBR lcarry lval atomic atomic                    { (!lnum, `USUBR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP USUBR atomic atomic       { (!lnum, `USUBR ($1, $3, $6, $7)) }
-  | USBC lval atomic atomic carry                      { (!lnum, `USBC ($2, $3, $4, $5)) }
-  | lhsval EQOP USBC atomic atomic carry               { (!lnum, `USBC ($1, $4, $5, $6)) }
-  | USBCS lcarry lval atomic atomic carry              { (!lnum, `USBCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP USBCS atomic atomic carry { (!lnum, `USBCS ($1, $3, $6, $7, $8)) }
-  | USBCR lcarry lval atomic atomic carry              { (!lnum, `USBCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP USBCR atomic atomic carry { (!lnum, `USBCR ($1, $3, $6, $7, $8)) }
-  | USBB lval atomic atomic carry                      { (!lnum, `USBB ($2, $3, $4, $5)) }
-  | lhsval EQOP USBB atomic atomic carry               { (!lnum, `USBB ($1, $4, $5, $6)) }
-  | USBBS lcarry lval atomic atomic carry              { (!lnum, `USBBS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP USBBS atomic atomic carry { (!lnum, `USBBS ($1, $3, $6, $7, $8)) }
-  | USBBR lcarry lval atomic atomic carry              { (!lnum, `USBBR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP USBBR atomic atomic carry { (!lnum, `USBBR ($1, $3, $6, $7, $8)) }
-  | UMUL lval atomic atomic                            { (!lnum, `UMUL ($2, $3, $4)) }
-  | lhsval EQOP UMUL atomic atomic                     { (!lnum, `UMUL ($1, $4, $5)) }
-  | UMULS lcarry lval atomic atomic                    { (!lnum, `UMULS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP UMULS atomic atomic       { (!lnum, `UMULS ($1, $3, $6, $7)) }
-  | UMULR lcarry lval atomic atomic                    { (!lnum, `UMULR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP UMULR atomic atomic       { (!lnum, `UMULR ($1, $3, $6, $7)) }
-  | UMULL lval lval atomic atomic                      { (!lnum, `UMULL ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP UMULL atomic atomic         { (!lnum, `UMULL ($1, $3, $6, $7)) }
-  | UMULJ lval atomic atomic                           { (!lnum, `UMULJ ($2, $3, $4)) }
-  | lhsval EQOP UMULJ atomic atomic                    { (!lnum, `UMULJ ($1, $4, $5)) }
-  | USPLIT lval lval atomic const                      { (!lnum, `USPLIT ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP USPLIT atomic const         { (!lnum, `USPLIT ($1, $3, $6, $7)) }
-  | SADD lval atomic atomic                            { (!lnum, `SADD ($2, $3, $4)) }
-  | lhsval EQOP SADD atomic atomic                     { (!lnum, `SADD ($1, $4, $5)) }
-  | SADDS lcarry lval atomic atomic                    { (!lnum, `SADDS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SADDS atomic atomic       { (!lnum, `SADDS ($1, $3, $6, $7)) }
-  | SADDR lcarry lval atomic atomic                    { (!lnum, `SADDR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SADDR atomic atomic       { (!lnum, `SADDR ($1, $3, $6, $7)) }
-  | SADC lval atomic atomic carry                      { (!lnum, `SADC ($2, $3, $4, $5)) }
-  | lhsval EQOP SADC atomic atomic carry               { (!lnum, `SADC ($1, $4, $5, $6)) }
-  | SADCS lcarry lval atomic atomic carry              { (!lnum, `SADCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SADCS atomic atomic carry { (!lnum, `SADCS ($1, $3, $6, $7, $8)) }
-  | SADCR lcarry lval atomic atomic carry              { (!lnum, `SADCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SADCR atomic atomic carry { (!lnum, `SADCR ($1, $3, $6, $7, $8)) }
-  | SSUB lval atomic atomic                            { (!lnum, `SSUB ($2, $3, $4)) }
-  | lhsval EQOP SSUB atomic atomic                     { (!lnum, `SSUB ($1, $4, $5)) }
-  | SSUBC lcarry lval atomic atomic                    { (!lnum, `SSUBC ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SSUBC atomic atomic       { (!lnum, `SSUBC ($1, $3, $6, $7)) }
-  | SSUBB lcarry lval atomic atomic                    { (!lnum, `SSUBB ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SSUBB atomic atomic       { (!lnum, `SSUBB ($1, $3, $6, $7)) }
-  | SSUBR lcarry lval atomic atomic                    { (!lnum, `SSUBR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SSUBR atomic atomic       { (!lnum, `SSUBR ($1, $3, $6, $7)) }
-  | SSBC lval atomic atomic carry                      { (!lnum, `SSBC ($2, $3, $4, $5)) }
-  | lhsval EQOP SSBC atomic atomic carry               { (!lnum, `SSBC ($1, $4, $5, $6)) }
-  | SSBCS lcarry lval atomic atomic carry              { (!lnum, `SSBCS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SSBCS atomic atomic carry { (!lnum, `SSBCS ($1, $3, $6, $7, $8)) }
-  | SSBCR lcarry lval atomic atomic carry              { (!lnum, `SSBCR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SSBCR atomic atomic carry { (!lnum, `SSBCR ($1, $3, $6, $7, $8)) }
-  | SSBB lval atomic atomic carry                      { (!lnum, `SSBB ($2, $3, $4, $5)) }
-  | lhsval EQOP SSBB atomic atomic carry               { (!lnum, `SSBB ($1, $4, $5, $6)) }
-  | SSBBS lcarry lval atomic atomic carry              { (!lnum, `SSBBS ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SSBBS atomic atomic carry { (!lnum, `SSBBS ($1, $3, $6, $7, $8)) }
-  | SSBBR lcarry lval atomic atomic carry              { (!lnum, `SSBBR ($2, $3, $4, $5, $6)) }
-  | lhscarry DOT lhsval EQOP SSBBR atomic atomic carry { (!lnum, `SSBBR ($1, $3, $6, $7, $8)) }
-  | SMUL lval atomic atomic                            { (!lnum, `SMUL ($2, $3, $4) )}
-  | lhsval EQOP SMUL atomic atomic                     { (!lnum, `SMUL ($1, $4, $5) )}
-  | SMULS lcarry lval atomic atomic                    { (!lnum, `SMULS ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SMULS atomic atomic       { (!lnum, `SMULS ($1, $3, $6, $7)) }
-  | SMULR lcarry lval atomic atomic                    { (!lnum, `SMULR ($2, $3, $4, $5)) }
-  | lhscarry DOT lhsval EQOP SMULR atomic atomic       { (!lnum, `SMULR ($1, $3, $6, $7)) }
-  | SMULL lval lval atomic atomic                      { (!lnum, `SMULL ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP SMULL atomic atomic         { (!lnum, `SMULL ($1, $3, $6, $7)) }
-  | SMULJ lval atomic atomic                           { (!lnum, `SMULJ ($2, $3, $4)) }
-  | lhsval EQOP SMULJ atomic atomic                    { (!lnum, `SMULJ ($1, $4, $5)) }
-  | SSPLIT lval lval atomic const                      { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
-  | lhsval DOT lhsval EQOP SSPLIT atomic const         { (!lnum, `SSPLIT ($1, $3, $6, $7)) }
-  | AND lval atomic atomic                             { (!lnum, `AND ($2, $3, $4)) }
-  | lhsval EQOP AND atomic atomic                      { (!lnum, `AND ($1, $4, $5)) }
-  | OR lval atomic atomic                              { (!lnum, `OR ($2, $3, $4)) }
-  | lhsval EQOP OR atomic atomic                       { (!lnum, `OR ($1, $4, $5)) }
-  | XOR lval atomic atomic                             { (!lnum, `XOR ($2, $3, $4)) }
-  | lhsval EQOP XOR atomic atomic                      { (!lnum, `XOR ($1, $4, $5)) }
-  | NOT lval atomic                                    { (!lnum, `NOT ($2, $3)) }
-  | lhsval EQOP NOT atomic                             { (!lnum, `NOT ($1, $4)) }
-  | CAST lval_or_lcarry atomic                         { (!lnum, `CAST (None, $2, $3)) }
+    MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
+  | lhs EQOP atomic                           { (!lnum, `MOV  (`LVPLAIN $1, $3)) }
+  | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
+  | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
+  | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHL atomic atomic const { (!lnum, `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SET lcarry                                { (!lnum, `SET $2) }
+  | CLEAR lcarry                              { (!lnum, `CLEAR $2) }
+  | NONDET lval                               { (!lnum, `NONDET $2) }
+  | CMOV lval carry atomic atomic             { (!lnum, `CMOV ($2, $3, $4, $5)) }
+  | lhs EQOP CMOV carry atomic atomic         { (!lnum, `CMOV (`LVPLAIN $1, $4, $5, $6)) }
+  | ADD lval atomic atomic                    { (!lnum, `ADD ($2, $3, $4)) }
+  | lhs EQOP ADD atomic atomic                { (!lnum, `ADD (`LVPLAIN $1, $4, $5)) }
+  | ADDS lcarry lval atomic atomic            { (!lnum, `ADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP ADDS atomic atomic       { (!lnum, `ADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | ADDR lcarry lval atomic atomic            { (!lnum, `ADDR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP ADDR atomic atomic       { (!lnum, `ADDR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | ADC lval atomic atomic carry              { (!lnum, `ADC ($2, $3, $4, $5)) }
+  | lhs EQOP ADC atomic atomic carry          { (!lnum, `ADC (`LVPLAIN $1, $4, $5, $6)) }
+  | ADCS lcarry lval atomic atomic carry      { (!lnum, `ADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP ADCS atomic atomic carry { (!lnum, `ADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | ADCR lcarry lval atomic atomic carry      { (!lnum, `ADCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP ADCR atomic atomic carry { (!lnum, `ADCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SUB lval atomic atomic                    { (!lnum, `SUB ($2, $3, $4)) }
+  | lhs EQOP SUB atomic atomic                { (!lnum, `SUB (`LVPLAIN $1, $4, $5)) }
+  | SUBC lcarry lval atomic atomic            { (!lnum, `SUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SUBC atomic atomic       { (!lnum, `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SUBB lcarry lval atomic atomic            { (!lnum, `SUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SUBB atomic atomic       { (!lnum, `SUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SUBR lcarry lval atomic atomic            { (!lnum, `SUBR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SUBR atomic atomic       { (!lnum, `SUBR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SBC lval atomic atomic carry              { (!lnum, `SBC ($2, $3, $4, $5)) }
+  | lhs EQOP SBC atomic atomic carry          { (!lnum, `SBC (`LVPLAIN $1, $4, $5, $6)) }
+  | SBCS lcarry lval atomic atomic carry      { (!lnum, `SBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBCS atomic atomic carry { (!lnum, `SBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SBCR lcarry lval atomic atomic carry      { (!lnum, `SBCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBCR atomic atomic carry { (!lnum, `SBCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SBB lval atomic atomic carry              { (!lnum, `SBB ($2, $3, $4, $5)) }
+  | lhs EQOP SBB atomic atomic carry          { (!lnum, `SBB (`LVPLAIN $1, $4, $5, $6)) }
+  | SBBS lcarry lval atomic atomic carry      { (!lnum, `SBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBBS atomic atomic carry { (!lnum, `SBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SBBR lcarry lval atomic atomic carry      { (!lnum, `SBBR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBBR atomic atomic carry { (!lnum, `SBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | MUL lval atomic atomic                    { (!lnum, `MUL ($2, $3, $4)) }
+  | lhs EQOP MUL atomic atomic                { (!lnum, `MUL (`LVPLAIN $1, $4, $5)) }
+  | MULS lcarry lval atomic atomic            { (!lnum, `MULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP MULS atomic atomic       { (!lnum, `MULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | MULR lcarry lval atomic atomic            { (!lnum, `MULR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP MULR atomic atomic       { (!lnum, `MULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | MULL lval lval atomic atomic              { (!lnum, `MULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP MULL atomic atomic       { (!lnum, `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | MULJ lval atomic atomic                   { (!lnum, `MULJ ($2, $3, $4)) }
+  | lhs EQOP MULJ atomic atomic               { (!lnum, `MULJ (`LVPLAIN $1, $4, $5)) }
+  | SPLIT lval lval atomic const              { (!lnum, `SPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPLIT atomic const       { (!lnum, `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | UADD lval atomic atomic                   { (!lnum, `UADD ($2, $3, $4)) }
+  | lhs EQOP UADD atomic atomic               { (!lnum, `UADD (`LVPLAIN $1, $4, $5)) }
+  | UADDS lcarry lval atomic atomic           { (!lnum, `UADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UADDS atomic atomic      { (!lnum, `UADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UADDR lcarry lval atomic atomic           { (!lnum, `UADDR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UADDR atomic atomic      { (!lnum, `UADDR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UADC lval atomic atomic carry             { (!lnum, `UADC ($2, $3, $4, $5)) }
+  | lhs EQOP UADC atomic atomic carry         { (!lnum, `UADC (`LVPLAIN $1, $4, $5, $6)) }
+  | UADCS lcarry lval atomic atomic carry     { (!lnum, `UADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP UADCS atomic atomic carry{ (!lnum, `UADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | UADCR lcarry lval atomic atomic carry     { (!lnum, `UADCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP UADCR atomic atomic carry{ (!lnum, `UADCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USUB lval atomic atomic                   { (!lnum, `USUB ($2, $3, $4)) }
+  | lhs EQOP USUB atomic atomic               { (!lnum, `USUB (`LVPLAIN $1, $4, $5)) }
+  | USUBC lcarry lval atomic atomic           { (!lnum, `USUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USUBC atomic atomic      { (!lnum, `USUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | USUBB lcarry lval atomic atomic           { (!lnum, `USUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USUBB atomic atomic      { (!lnum, `USUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | USUBR lcarry lval atomic atomic           { (!lnum, `USUBR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USUBR atomic atomic      { (!lnum, `USUBR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | USBC lval atomic atomic carry             { (!lnum, `USBC ($2, $3, $4, $5)) }
+  | lhs EQOP USBC atomic atomic carry         { (!lnum, `USBC (`LVPLAIN $1, $4, $5, $6)) }
+  | USBCS lcarry lval atomic atomic carry     { (!lnum, `USBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBCS atomic atomic carry{ (!lnum, `USBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USBCR lcarry lval atomic atomic carry     { (!lnum, `USBCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBCR atomic atomic carry{ (!lnum, `USBCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USBB lval atomic atomic carry             { (!lnum, `USBB ($2, $3, $4, $5)) }
+  | lhs EQOP USBB atomic atomic carry         { (!lnum, `USBB (`LVPLAIN $1, $4, $5, $6)) }
+  | USBBS lcarry lval atomic atomic carry     { (!lnum, `USBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBBS atomic atomic carry{ (!lnum, `USBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USBBR lcarry lval atomic atomic carry     { (!lnum, `USBBR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBBR atomic atomic carry{ (!lnum, `USBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | UMUL lval atomic atomic                   { (!lnum, `UMUL ($2, $3, $4)) }
+  | lhs EQOP UMUL atomic atomic               { (!lnum, `UMUL (`LVPLAIN $1, $4, $5)) }
+  | UMULS lcarry lval atomic atomic           { (!lnum, `UMULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UMULS atomic atomic      { (!lnum, `UMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UMULR lcarry lval atomic atomic           { (!lnum, `UMULR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UMULR atomic atomic      { (!lnum, `UMULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UMULL lval lval atomic atomic             { (!lnum, `UMULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UMULL atomic atomic      { (!lnum, `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | UMULJ lval atomic atomic                  { (!lnum, `UMULJ ($2, $3, $4)) }
+  | lhs EQOP UMULJ atomic atomic              { (!lnum, `UMULJ (`LVPLAIN $1, $4, $5)) }
+  | USPLIT lval lval atomic const             { (!lnum, `USPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPLIT atomic const      { (!lnum, `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SADD lval atomic atomic                   { (!lnum, `SADD ($2, $3, $4)) }
+  | lhs EQOP SADD atomic atomic               { (!lnum, `SADD (`LVPLAIN $1, $4, $5)) }
+  | SADDS lcarry lval atomic atomic           { (!lnum, `SADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SADDS atomic atomic      { (!lnum, `SADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SADDR lcarry lval atomic atomic           { (!lnum, `SADDR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SADDR atomic atomic      { (!lnum, `SADDR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SADC lval atomic atomic carry             { (!lnum, `SADC ($2, $3, $4, $5)) }
+  | lhs EQOP SADC atomic atomic carry         { (!lnum, `SADC (`LVPLAIN $1, $4, $5, $6)) }
+  | SADCS lcarry lval atomic atomic carry     { (!lnum, `SADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SADCS atomic atomic carry{ (!lnum, `SADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SADCR lcarry lval atomic atomic carry     { (!lnum, `SADCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SADCR atomic atomic carry{ (!lnum, `SADCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSUB lval atomic atomic                   { (!lnum, `SSUB ($2, $3, $4)) }
+  | lhs EQOP SSUB atomic atomic               { (!lnum, `SSUB (`LVPLAIN $1, $4, $5)) }
+  | SSUBC lcarry lval atomic atomic           { (!lnum, `SSUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSUBC atomic atomic      { (!lnum, `SSUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SSUBB lcarry lval atomic atomic           { (!lnum, `SSUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSUBB atomic atomic      { (!lnum, `SSUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SSUBR lcarry lval atomic atomic           { (!lnum, `SSUBR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSUBR atomic atomic      { (!lnum, `SSUBR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SSBC lval atomic atomic carry             { (!lnum, `SSBC ($2, $3, $4, $5)) }
+  | lhs EQOP SSBC atomic atomic carry         { (!lnum, `SSBC (`LVPLAIN $1, $4, $5, $6)) }
+  | SSBCS lcarry lval atomic atomic carry     { (!lnum, `SSBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBCS atomic atomic carry{ (!lnum, `SSBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSBCR lcarry lval atomic atomic carry     { (!lnum, `SSBCR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBCR atomic atomic carry{ (!lnum, `SSBCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSBB lval atomic atomic carry             { (!lnum, `SSBB ($2, $3, $4, $5)) }
+  | lhs EQOP SSBB atomic atomic carry         { (!lnum, `SSBB (`LVPLAIN $1, $4, $5, $6)) }
+  | SSBBS lcarry lval atomic atomic carry     { (!lnum, `SSBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBBS atomic atomic carry{ (!lnum, `SSBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSBBR lcarry lval atomic atomic carry     { (!lnum, `SSBBR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBBR atomic atomic carry{ (!lnum, `SSBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SMUL lval atomic atomic                   { (!lnum, `SMUL ($2, $3, $4) )}
+  | lhs EQOP SMUL atomic atomic               { (!lnum, `SMUL (`LVPLAIN $1, $4, $5) )}
+  | SMULS lcarry lval atomic atomic           { (!lnum, `SMULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SMULS atomic atomic      { (!lnum, `SMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SMULR lcarry lval atomic atomic           { (!lnum, `SMULR ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SMULR atomic atomic      { (!lnum, `SMULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SMULL lval lval atomic atomic             { (!lnum, `SMULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SMULL atomic atomic      { (!lnum, `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SMULJ lval atomic atomic                  { (!lnum, `SMULJ ($2, $3, $4)) }
+  | lhs EQOP SMULJ atomic atomic              { (!lnum, `SMULJ (`LVPLAIN $1, $4, $5)) }
+  | SSPLIT lval lval atomic const             { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPLIT atomic const      { (!lnum, `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | AND lval atomic atomic                    { (!lnum, `AND ($2, $3, $4)) }
+  | lhs EQOP AND atomic atomic                { (!lnum, `AND (`LVPLAIN $1, $4, $5)) }
+  | OR lval atomic atomic                     { (!lnum, `OR ($2, $3, $4)) }
+  | lhs EQOP OR atomic atomic                 { (!lnum, `OR (`LVPLAIN $1, $4, $5)) }
+  | XOR lval atomic atomic                    { (!lnum, `XOR ($2, $3, $4)) }
+  | lhs EQOP XOR atomic atomic                { (!lnum, `XOR (`LVPLAIN $1, $4, $5)) }
+  | NOT lval atomic                           { (!lnum, `NOT ($2, $3)) }
+  | lhs EQOP NOT atomic                       { (!lnum, `NOT (`LVPLAIN $1, $4)) }
+  | CAST lval_or_lcarry atomic                { (!lnum, `CAST (None, $2, $3)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
-                                                       { (!lnum, `CAST (Some $3, $5, $6)) }
-  | lhsval_or_carry EQOP CAST atomic                   { (!lnum, `CAST (None, $1, $4)) }
-  | VPC lval_or_lcarry atomic                          { (!lnum, `VPC ($2, $3)) }
-  | lhsval_or_carry EQOP VPC atomic                    { (!lnum, `VPC ($1, $4)) }
-  | JOIN lval atomic atomic                            { (!lnum, `JOIN ($2, $3, $4)) }
-  | lhsval EQOP JOIN atomic atomic                     { (!lnum, `JOIN ($1, $4, $5)) }
-  | ASSERT bexp                                        { (!lnum, `ASSERT $2) }
-  | ASSUME bexp                                        { (!lnum, `ASSUME $2) }
-  | CUT bexp_prove_with                                { (!lnum, `CUT $2) }
-  | ECUT ebexp_prove_with                              { (!lnum, `ECUT $2) }
-  | RCUT rbexp_prove_with                              { (!lnum, `RCUT $2) }
-  | GHOST gvars COLON bexp                             { (!lnum, `GHOST ($2, $4)) }
+                                              { (!lnum, `CAST (Some $3, $5, $6)) }
+  | lhs EQOP CAST atomic                      { (!lnum, `CAST (None, `LV $1, $4)) }
+  | VPC lval_or_lcarry atomic                 { (!lnum, `VPC ($2, $3)) }
+  | lhs EQOP VPC atomic                       { (!lnum, `VPC (`LV $1, $4)) }
+  | JOIN lval atomic atomic                   { (!lnum, `JOIN ($2, $3, $4)) }
+  | lhs EQOP JOIN atomic atomic               { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
+  | ASSERT bexp                               { (!lnum, `ASSERT $2) }
+  | ASSUME bexp                               { (!lnum, `ASSUME $2) }
+  | CUT bexp_prove_with                       { (!lnum, `CUT $2) }
+  | ECUT ebexp_prove_with                     { (!lnum, `ECUT $2) }
+  | RCUT rbexp_prove_with                     { (!lnum, `RCUT $2) }
+  | GHOST gvars COLON bexp                    { (!lnum, `GHOST ($2, $4)) }
   /* Extensions */
-  | CALL ID LPAR actuals RPAR                          { (!lnum, `CALL ($2, $4)) }
-  | NOP                                                { (!lnum, `NOP) }
+  | CALL ID LPAR actuals RPAR                 { (!lnum, `CALL ($2, $4)) }
+  | NOP                                       { (!lnum, `NOP) }
   /* Errors */
-  | MOV error                                          { raise_at !lnum ("Bad mov instruction") }
-  | ADD error                                          { raise_at !lnum ("Bad add instruction") }
-  | ADDS error                                         { raise_at !lnum ("Bad adds instruction") }
-  | ADC error                                          { raise_at !lnum ("Bad adc instruction") }
-  | ADCS error                                         { raise_at !lnum ("Bad adcs instruction") }
-  | SUB error                                          { raise_at !lnum ("Bad sub instruction") }
-  | SUBC error                                         { raise_at !lnum ("Bad subc instruction") }
-  | SUBB error                                         { raise_at !lnum ("Bad subb instruction") }
-  | SUBR error                                         { raise_at !lnum ("Bad subr instruction") }
-  | SBC error                                          { raise_at !lnum ("Bad sbc instruction") }
-  | SBCS error                                         { raise_at !lnum ("Bad sbcs instruction") }
-  | SBCR error                                         { raise_at !lnum ("Bad sbcr instruction") }
-  | SBB error                                          { raise_at !lnum ("Bad sbb instruction") }
-  | SBBS error                                         { raise_at !lnum ("Bad sbbs instruction") }
-  | SBBR error                                         { raise_at !lnum ("Bad sbbr instruction") }
-  | MUL error                                          { raise_at !lnum ("Bad mul instruction") }
-  | MULL error                                         { raise_at !lnum ("Bad mull instruction") }
-  | SPLIT error                                        { raise_at !lnum ("Bad split instruction") }
-  | UADD error                                         { raise_at !lnum ("Bad uadd instruction") }
-  | UADDS error                                        { raise_at !lnum ("Bad uadds instruction") }
-  | UADC error                                         { raise_at !lnum ("Bad uadc instruction") }
-  | UADCS error                                        { raise_at !lnum ("Bad uadcs instruction") }
-  | USUB error                                         { raise_at !lnum ("Bad usub instruction") }
-  | USUBC error                                        { raise_at !lnum ("Bad usubc instruction") }
-  | USUBB error                                        { raise_at !lnum ("Bad usubb instruction") }
-  | USUBR error                                        { raise_at !lnum ("Bad usubr instruction") }
-  | USBC error                                         { raise_at !lnum ("Bad usbc instruction") }
-  | USBCS error                                        { raise_at !lnum ("Bad usbcs instruction") }
-  | USBCR error                                        { raise_at !lnum ("Bad usbcr instruction") }
-  | USBB error                                         { raise_at !lnum ("Bad usbb instruction") }
-  | USBBS error                                        { raise_at !lnum ("Bad usbbs instruction") }
-  | USBBR error                                        { raise_at !lnum ("Bad usbbr instruction") }
-  | UMUL error                                         { raise_at !lnum ("Bad umul instruction") }
-  | UMULL error                                        { raise_at !lnum ("Bad umull instruction") }
-  | USPLIT error                                       { raise_at !lnum ("Bad usplit instruction") }
-  | SADD error                                         { raise_at !lnum ("Bad sadd instruction") }
-  | SADDS error                                        { raise_at !lnum ("Bad sadds instruction") }
-  | SADC error                                         { raise_at !lnum ("Bad sadc instruction") }
-  | SADCS error                                        { raise_at !lnum ("Bad sadcs instruction") }
-  | SSUB error                                         { raise_at !lnum ("Bad ssub instruction") }
-  | SSUBC error                                        { raise_at !lnum ("Bad ssubc instruction") }
-  | SSUBB error                                        { raise_at !lnum ("Bad ssubb instruction") }
-  | SSUBR error                                        { raise_at !lnum ("Bad ssubr instruction") }
-  | SSBC error                                         { raise_at !lnum ("Bad ssbc instruction") }
-  | SSBCS error                                        { raise_at !lnum ("Bad ssbcs instruction") }
-  | SSBCR error                                        { raise_at !lnum ("Bad ssbcr instruction") }
-  | SSBB error                                         { raise_at !lnum ("Bad ssbb instruction") }
-  | SSBBS error                                        { raise_at !lnum ("Bad ssbbs instruction") }
-  | SSBBR error                                        { raise_at !lnum ("Bad ssbbr instruction") }
-  | SMUL error                                         { raise_at !lnum ("Bad smul instruction") }
-  | SMULL error                                        { raise_at !lnum ("Bad smull instruction") }
-  | SSPLIT error                                       { raise_at !lnum ("Bad ssplit instruction") }
-  | SHL error                                          { raise_at !lnum ("Bad shl instruction") }
-  | CSHL error                                         { raise_at !lnum ("Bad cshl instruction") }
-  | NONDET error                                       { raise_at !lnum ("Bad nondet instruction") }
-  | CALL ID LPAR error                                 { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
-  | CALL error                                         { raise_at !lnum ("Bad call instruction") }
+  | MOV error                                 { raise_at !lnum ("Bad mov instruction") }
+  | ADD error                                 { raise_at !lnum ("Bad add instruction") }
+  | ADDS error                                { raise_at !lnum ("Bad adds instruction") }
+  | ADC error                                 { raise_at !lnum ("Bad adc instruction") }
+  | ADCS error                                { raise_at !lnum ("Bad adcs instruction") }
+  | SUB error                                 { raise_at !lnum ("Bad sub instruction") }
+  | SUBC error                                { raise_at !lnum ("Bad subc instruction") }
+  | SUBB error                                { raise_at !lnum ("Bad subb instruction") }
+  | SUBR error                                { raise_at !lnum ("Bad subr instruction") }
+  | SBC error                                 { raise_at !lnum ("Bad sbc instruction") }
+  | SBCS error                                { raise_at !lnum ("Bad sbcs instruction") }
+  | SBCR error                                { raise_at !lnum ("Bad sbcr instruction") }
+  | SBB error                                 { raise_at !lnum ("Bad sbb instruction") }
+  | SBBS error                                { raise_at !lnum ("Bad sbbs instruction") }
+  | SBBR error                                { raise_at !lnum ("Bad sbbr instruction") }
+  | MUL error                                 { raise_at !lnum ("Bad mul instruction") }
+  | MULL error                                { raise_at !lnum ("Bad mull instruction") }
+  | SPLIT error                               { raise_at !lnum ("Bad split instruction") }
+  | UADD error                                { raise_at !lnum ("Bad uadd instruction") }
+  | UADDS error                               { raise_at !lnum ("Bad uadds instruction") }
+  | UADC error                                { raise_at !lnum ("Bad uadc instruction") }
+  | UADCS error                               { raise_at !lnum ("Bad uadcs instruction") }
+  | USUB error                                { raise_at !lnum ("Bad usub instruction") }
+  | USUBC error                               { raise_at !lnum ("Bad usubc instruction") }
+  | USUBB error                               { raise_at !lnum ("Bad usubb instruction") }
+  | USUBR error                               { raise_at !lnum ("Bad usubr instruction") }
+  | USBC error                                { raise_at !lnum ("Bad usbc instruction") }
+  | USBCS error                               { raise_at !lnum ("Bad usbcs instruction") }
+  | USBCR error                               { raise_at !lnum ("Bad usbcr instruction") }
+  | USBB error                                { raise_at !lnum ("Bad usbb instruction") }
+  | USBBS error                               { raise_at !lnum ("Bad usbbs instruction") }
+  | USBBR error                               { raise_at !lnum ("Bad usbbr instruction") }
+  | UMUL error                                { raise_at !lnum ("Bad umul instruction") }
+  | UMULL error                               { raise_at !lnum ("Bad umull instruction") }
+  | USPLIT error                              { raise_at !lnum ("Bad usplit instruction") }
+  | SADD error                                { raise_at !lnum ("Bad sadd instruction") }
+  | SADDS error                               { raise_at !lnum ("Bad sadds instruction") }
+  | SADC error                                { raise_at !lnum ("Bad sadc instruction") }
+  | SADCS error                               { raise_at !lnum ("Bad sadcs instruction") }
+  | SSUB error                                { raise_at !lnum ("Bad ssub instruction") }
+  | SSUBC error                               { raise_at !lnum ("Bad ssubc instruction") }
+  | SSUBB error                               { raise_at !lnum ("Bad ssubb instruction") }
+  | SSUBR error                               { raise_at !lnum ("Bad ssubr instruction") }
+  | SSBC error                                { raise_at !lnum ("Bad ssbc instruction") }
+  | SSBCS error                               { raise_at !lnum ("Bad ssbcs instruction") }
+  | SSBCR error                               { raise_at !lnum ("Bad ssbcr instruction") }
+  | SSBB error                                { raise_at !lnum ("Bad ssbb instruction") }
+  | SSBBS error                               { raise_at !lnum ("Bad ssbbs instruction") }
+  | SSBBR error                               { raise_at !lnum ("Bad ssbbr instruction") }
+  | SMUL error                                { raise_at !lnum ("Bad smul instruction") }
+  | SMULL error                               { raise_at !lnum ("Bad smull instruction") }
+  | SSPLIT error                              { raise_at !lnum ("Bad ssplit instruction") }
+  | SHL error                                 { raise_at !lnum ("Bad shl instruction") }
+  | CSHL error                                { raise_at !lnum ("Bad cshl instruction") }
+  | NONDET error                              { raise_at !lnum ("Bad nondet instruction") }
+  | CALL ID LPAR error                        { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
+  | CALL error                                { raise_at !lnum ("Bad call instruction") }
 ;
 
 ebexp_prove_with:
@@ -2455,64 +2455,16 @@ lcarry:
   | typ ID                                        { `LVCARRY { lvname = $2; lvtyphint = Some $1; } }
 ;
 
-lhsval:
-    ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
-  | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
-  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
-;
-
-lhscarry:
-    ID                                            { `LVCARRY { lvname = $1; lvtyphint = None; } }
-  | ID AT typ                                     { `LVCARRY { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LVCARRY { lvname = $2; lvtyphint = Some $1; } }
-;
-
 lval_or_lcarry:
     ID                                            { `LV { lvname = $1; lvtyphint = None; } }
   | ID AT typ                                     { `LV { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } }
-  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
-;
-
-lhsval_or_carry:
-    ID                                            { `LV { lvname = $1; lvtyphint = None; } }
-  | ID AT typ                                     { `LV { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } }
-  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } } 
 ;
 
 lhs:
-    ID                                            {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        match ty_opt with
-                                                        | None -> raise_at lno ("Failed to determine the type of " ^ $1)
-                                                        | Some ty ->
-                                                           let v = mkvar $1 ty in
-                                                           if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                           else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | ID AT typ                                     {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        let v = mkvar $1 $3 in
-                                                        if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                        else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | typ ID                                        {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
-                                                      if SM.mem $2 gm then raise_at lno ("The program variable " ^ $2 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        let v = mkvar $2 $1 in
-                                                        if var_is_bit v then (SM.add $2 v vm, SM.add $2 v ym, gm, v)
-                                                        else (SM.add $2 v vm, SM.remove $2 ym, gm, v)
-                                                  }
+    ID                                            { { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { { lvname = $2; lvtyphint = Some $1; } }
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
 ;
 
