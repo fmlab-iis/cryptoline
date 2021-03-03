@@ -59,39 +59,142 @@
     | None -> ()
     | Some r -> raise_at lno r
    *)
-               
+
+  (*
   type lv_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> typ option -> (var SM.t * var SM.t * var SM.t * var)
+   *)
 (*   type atomic_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> atomic *)
+
+  type lv_prim_t = {
+    lvtyphint: typ option;
+    lvname: string;
+  }
+
+  type avar_prim_t = {
+    atmtyphint: typ option;
+    atmname: string;
+  }
+
+  type aconst_prim_t = {
+    atmtyp: typ;
+    (* FIXME *)
+    atmvalue: Z.t SM.t -> Z.t;
+  }
+
+  (*
+  type lv_resolved_t = {
+    lvcxt: var SM.t * var SM.t * var SM.t;
+    lvvar: var;
+  }
+  *)
+
+  (*
+  type lv_token_t = [
+    | `LVPLAIN of lv_prim_t
+    | `LVCARRY of lv_prim_t
+    | `LV of lv_prim_t
+  ]
+   *)
+
+  type atomic_t = [
+    | `AVAR of avar_prim_t
+    | `ACONST of aconst_prim_t
+  ]
 
   let parse_typed_const _lno ty n_token =
     fun cm _vm _ym _gm ->
     let n = n_token cm in
     Aconst (ty, n)
-    (*
-      match check_const_range lno ty n with
-      | None -> Aconst (ty, n)
-      | Some r -> raise_at lno r
-     *)
 
-  let parse_imov_at lno (lv_token : lv_token_t) a_token =
+  let resolve_var_with lno (`AVAR {atmtyphint; atmname}) _cm vm _ym gm =
+    let v =
+      try
+        SM.find atmname vm
+      with Not_found ->
+        begin
+          try
+            SM.find atmname gm
+          with Not_found ->
+            raise_at lno ("Variable " ^ atmname ^ " is undefined.")
+        end in
+    let _ = match atmtyphint with
+    | None -> ()
+    | Some hinted_ty ->
+        if v.vtyp <> hinted_ty then
+          raise_at lno ("The type of variable " ^ atmname ^ " is inconsistent")
+        else () in
+    v
+
+  let resolve_atomic_with lno (a: atomic_t) cm vm ym gm =
+    match a with
+    (* FIXME *)
+    | `ACONST c -> parse_typed_const lno c.atmtyp c.atmvalue cm vm ym gm
+    | `AVAR v -> Avar (resolve_var_with lno (`AVAR v) cm vm ym gm)
+
+  let resolve_lv_with lno {lvname; lvtyphint} _cm vm ym gm ty_opt =
+    if SM.mem lvname gm then
+      raise_at lno ("The program variable " ^ lvname ^
+                    " has been defined as a ghost variable.")
+    else
+      let ty = (match (ty_opt, lvtyphint) with
+      | (None, None) ->
+         raise_at lno ("Failed to determine the type of " ^ lvname)
+      | (None, Some hinted_ty) -> hinted_ty
+      | (Some determined_ty, None) -> determined_ty
+      | (Some determined_ty, Some hinted_ty) ->
+        if determined_ty <> hinted_ty then
+          raise_at lno (Printf.sprintf "The specified type %s is not equal to the determined type %s."
+                          (string_of_typ hinted_ty)
+                          (string_of_typ determined_ty))
+        else determined_ty) in
+      let v = mkvar lvname ty in
+      (* It is possible that the lval is actually a bit variable *)
+      (if var_is_bit v then
+        (SM.add lvname v vm, SM.add lvname v ym, gm, v)
+      else
+        (SM.add lvname v vm, SM.remove lvname ym, gm, v))
+
+  let resolve_lcarry_with lno {lvname; lvtyphint} _cm vm ym gm =
+    if SM.mem lvname gm then
+      raise_at lno ("The carry variable " ^ lvname ^ " has been defined as a ghost variable.")
+    else
+      let _ = (match lvtyphint with
+      | None -> ()
+      | Some hinted_ty ->
+        if hinted_ty <> bit_t then
+          raise_at lno ("The type of a carry variable should be \""
+                        ^ string_of_typ bit_t
+                        ^ "\", specified "
+                        ^ string_of_typ hinted_ty)
+        else ()) in
+      let v = mkvar lvname bit_t in
+      (SM.add lvname v vm, SM.add lvname v ym, gm, v)
+
+  let resolve_lv_or_lcarry_with lno {lvname; lvtyphint} _cm vm ym gm =
+    if SM.mem lvname gm then
+      raise_at lno ("The program variable " ^ lvname ^
+                    " has been defined as a ghost variable.")
+    else
+      match lvtyphint with
+      | None -> raise_at lno ("Failed to determine the type of " ^ lvname)
+      | Some ty ->
+         let v = mkvar lvname ty in
+         if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
+         else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
+      
+  let parse_imov_at lno dest src =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
+      let a = resolve_atomic_with lno src cm vm ym gm in
       let ty = typ_of_atomic a in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imov (v, a)])
 
-  let parse_ishl_at lno (lv_token : lv_token_t) a_token n_token =
+  let parse_ishl_at lno dest src num =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
+      let a = resolve_atomic_with lno src cm vm ym gm in
       let ty = typ_of_atomic a in
-      let n = n_token cm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a; Avar v]] in
-      *)
+      let n = num cm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
@@ -100,310 +203,243 @@
       in
       (vm, ym, gm, [lno, Ishl (v, a, n)])
 
-  let parse_cshl_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token n_token =
+  let parse_cshl_at lno destH destL src1 src2 num =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let n = n_token cm in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_same_size lno [a1; a2]; check_same_typ lno [a1; Avar vh]; check_unsigned_same_typ lno [a2; Avar vl]] in
-       *)
+      let n = num cm in
+      let (vm, ym, gm, vh) =
+        resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) =
+        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       (vm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
 
-  let parse_set_at lno c_token =
+  let parse_set_at lno dest =
     fun _fm cm vm ym gm ->
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
+      let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
       (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.one)) ])
 
-  let parse_clear_at lno c_token =
+  let parse_clear_at lno dest =
     fun _fm cm vm ym gm ->
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
+      let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
       (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.zero))])
 
-  let parse_nondet_at lno (lv_token : lv_token_t) =
+  let parse_nondet_at lno dest =
     fun _fm cm vm ym gm ->
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Inondet v])
 
-  let parse_cmov_at lno (lv_token : lv_token_t) c_token a1_token a2_token =
+  let parse_cmov_at lno dest carry src1 src2 =
     fun _fm cm vm ym gm ->
-      let c = c_token cm vm ym gm in
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let c = resolve_atomic_with lno carry cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Icmov (v, c, a1, a2)])
 
-  let parse_add_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_add_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
-  let parse_adds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_adds_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
-  let parse_addr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_addr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
-  let parse_adc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_adc_at lno dest src1 src2 (carry : atomic_t) =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
-  let parse_adcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_adcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
-  let parse_adcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_adcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
-  let parse_sub_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_sub_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
-  let parse_subc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_subc_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
-  let parse_subb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_subb_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
-  let parse_subr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_subr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
-  let parse_sbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbc_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
-  let parse_sbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
-  let parse_sbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
-  let parse_sbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbb_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
-  let parse_sbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbbs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
-  let parse_sbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sbbr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
-  let parse_mul_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_mul_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
-  let parse_muls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_muls_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
-  let parse_mulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_mulr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
-  let parse_mull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
+  let parse_mull_at lno destH destL src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_same_typ lno [Avar vh; a1; a2]] in
-       *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) =
+        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
-  let parse_mulj_at lno (v_token : lv_token_t) a1_token a2_token =
+  let parse_mulj_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-(*
-      let _ = check_at lno [check_mulj_size lno v a1 a2; check_same_typ lno [a1; a2]; check_same_sign [a1; a2; Avar v]] in
-*)
+      let (vm, ym, gm, v) =
+        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
-  let parse_split_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
+  let parse_split_at lno destH destL src num =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let n = n_token cm in
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
       let ty = typ_of_atomic a in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; check_same_typ lno [Avar vh; a]] in
-       *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) =
+        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
@@ -411,270 +447,205 @@
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
-  let parse_uadd_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_uadd_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
-  let parse_uadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_uadds_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
-  let parse_uaddr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_uaddr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
-  let parse_uadc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_uadc_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
-  let parse_uadcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_uadcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
-  let parse_uadcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_uadcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
-  let parse_usub_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_usub_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
-  let parse_usubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_usubc_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
-  let parse_usubb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_usubb_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
-  let parse_usubr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_usubr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
-  let parse_usbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbc_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
-  let parse_usbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
-  let parse_usbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
-  let parse_usbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbb_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
-  let parse_usbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbbs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
-  let parse_usbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_usbbr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
-  let parse_umul_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_umul_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
-  let parse_umuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_umuls_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
-  let parse_umulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_umulr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_unsigned_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
-  let parse_umull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
+  let parse_umull_at lno destH destL src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_unsigned_same_typ lno [a1; a2; Avar vh; Avar vl]] in
-      *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
-  let parse_umulj_at lno (v_token : lv_token_t) a1_token a2_token =
+  let parse_umulj_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-      (*
-      let _ = check_at lno [check_mulj_size lno v a1 a2; check_unsigned_var v; check_unsigned_same_typ lno [a1; a2]] in
-       *)
+      let (vm, ym, gm, v) =
+        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
-  let parse_usplit_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
+  let parse_usplit_at lno destH destL src num =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let n = n_token cm in
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
       let ty = typ_of_atomic a in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_unsigned_same_typ lno [a; Avar vh; Avar vl]] in
-       *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
@@ -682,270 +653,207 @@
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
-  let parse_sadd_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_sadd_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
-  let parse_sadds_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_sadds_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
-  let parse_saddr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_saddr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
-  let parse_sadc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sadc_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
-  let parse_sadcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sadcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
-  let parse_sadcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_sadcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
-  let parse_ssub_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_ssub_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
-  let parse_ssubc_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_ssubc_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
-  let parse_ssubb_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_ssubb_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
-  let parse_ssubr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_ssubr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
-  let parse_ssbc_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbc_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
-  let parse_ssbcs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbcs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
-  let parse_ssbcr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbcr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
-  let parse_ssbb_at lno (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbb_at lno dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
-  let parse_ssbbs_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbbs_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
-  let parse_ssbbr_at lno c_token (lv_token : lv_token_t) a1_token a2_token y_token =
+  let parse_ssbbr_at lno flag dest src1 src2 carry =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let y = y_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
-  let parse_smul_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_smul_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
-  let parse_smuls_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_smuls_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-      *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
-  let parse_smulr_at lno c_token (lv_token : lv_token_t) a1_token a2_token =
+  let parse_smulr_at lno flag dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, c) = c_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some ty) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno c v; check_signed_same_typ lno [a1; a2; Avar v]] in
-       *)
+      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
-  let parse_smull_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a1_token a2_token =
+  let parse_smull_at lno destH destL src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_signed_same_typ lno [a1; a2; Avar vh]; check_unsigned_var vl] in
-       *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) =
+        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
-  let parse_smulj_at lno (v_token : lv_token_t) a1_token a2_token =
+  let parse_smulj_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
-      let (vm, ym, gm, v) = v_token cm vm ym gm (Some (to_double_size ty)) in
-      (*
-      let _ = check_at lno [check_mulj_size lno v a1 a2; check_signed_var v; check_signed_same_typ lno [a1; a2]] in
-       *)
+      let (vm, ym, gm, v) =
+        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Imulj (v, a1, a2)])
 
-  let parse_ssplit_at lno (vh_token : lv_token_t) (vl_token : lv_token_t) a_token n_token =
+  let parse_ssplit_at lno destH destL src num =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let n = n_token cm in
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
       let ty = typ_of_atomic a in
-      let (vm, ym, gm, vh) = vh_token cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = vl_token cm vm ym gm (Some (to_uint ty)) in
-      (*
-      let _ = check_at lno [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; check_signed_same_typ lno [a; Avar vh]; check_unsigned_var vl] in
-       *)
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) =
+        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       let _ =
         let w = size_of_var vl in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
@@ -953,81 +861,73 @@
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
-  let parse_and_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_and_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (*
-      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
-       *)
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Iand (v, a1, a2)])
 
-  let parse_or_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_or_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (*
-      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
-       *)
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Ior (v, a1, a2)])
 
-  let parse_xor_at lno (lv_token : lv_token_t) a1_token a2_token =
+  let parse_xor_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
-      let a1 = a1_token cm vm ym gm in
-      let a2 = a2_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (*
-      let _ = check_at lno [check_same_size lno [Avar v; a1; a2]] in
-      *)
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Ixor (v, a1, a2)])
 
-  let parse_not_at lno (lv_token : lv_token_t) a_token =
+  let parse_not_at lno dest src =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
-      (*
-      let _ = check_at lno [check_same_size lno [Avar v; a]] in
-       *)
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Inot (v, a)])
 
-  let parse_cast_at lno (od_token : lv_token_t option) (lv_token : lv_token_t) a_token =
+  let parse_cast_at lno optlv dest src =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let (vm, ym, gm, v) =
+        resolve_lv_or_lcarry_with lno dest cm vm ym gm in
 	  (* determine the type of the discarded part *)
       let od_typ =
-		match typ_of_var v, typ_of_atomic a with
-		| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
-		| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1) else Some (Tsint (wa - wv))
-		| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa)) else if wv = wa then Some bit_t else Some (Tuint (wa - wv))
-		| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa)) else Some (Tsint (wa - wv + 1)) in
+	match typ_of_var v, typ_of_atomic a with
+	| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
+	| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1)
+                                else Some (Tsint (wa - wv))
+	| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa))
+                                else if wv = wa then Some bit_t
+                                else Some (Tuint (wa - wv))
+	| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa))
+                                else Some (Tsint (wa - wv + 1)) in
       let (vm, ym, gm, od) =
-		match od_token with
+		match optlv with
 		| None -> (vm, ym, gm, None)
-		| Some token ->
-		   let (vm, ym, gm, d) = token cm vm ym gm od_typ in
+		| Some (`LV od) ->
+		   let (vm, ym, gm, d) =
+                     resolve_lv_with lno od cm vm ym gm od_typ in
 		   (vm, ym, gm, Some d) in
 	  (* the discarded part must be a ghost variable *)
 	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
       (vm, ym, gm, [lno, Icast (od, v, a)])
 
-  let parse_vpc_at lno (lv_token : lv_token_t) a_token =
+  let parse_vpc_at lno dest src =
     fun _fm cm vm ym gm ->
-      let a = a_token cm vm ym gm in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm None in
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_or_lcarry_with lno dest cm vm ym gm in
       (vm, ym, gm, [lno, Ivpc (v, a)])
 
-  let parse_join_at lno (lv_token : lv_token_t) ah_token al_token =
+  let parse_join_at lno dest srcH srcL =
     fun _fm cm vm ym gm ->
-      let ah = ah_token cm vm ym gm in
-      let al = al_token cm vm ym gm in
+      let ah = resolve_atomic_with lno srcH cm vm ym gm in
+      let al = resolve_atomic_with lno srcL cm vm ym gm in
       let ty = typ_of_atomic ah in
-      let (vm, ym, gm, v) = lv_token cm vm ym gm (Some (to_double_size ty)) in
-      (*
-      let _ = check_at lno [check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size lno v ah al] in
-       *)
+      let (vm, ym, gm, v) =
+        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Ijoin (v, ah, al)])
 
   let parse_assert_at lno bexp_token =
@@ -1166,6 +1066,192 @@
       let gsp = subst_varmap fgs in
       (vm_of_vs (update_varset vs vsp), vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
 
+  let recognize_instr_at lno instr fm cm vm ym gm =
+      match instr with
+      | `MOV (`LVPLAIN dest, src) ->
+         parse_imov_at lno dest src fm cm vm ym gm
+      | `SHL (`LVPLAIN dest, src, num) ->
+         parse_ishl_at lno dest src num fm cm vm ym gm
+      | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
+         parse_cshl_at lno destH destL src1 src2 num fm cm vm ym gm
+      | `SET (`LVCARRY dest) ->
+         parse_set_at lno dest fm cm vm ym gm
+      | `CLEAR (`LVCARRY dest) ->
+         parse_clear_at lno dest fm cm vm ym gm
+      | `NONDET (`LVPLAIN dest) ->
+         parse_nondet_at lno dest fm cm vm ym gm
+      | `CMOV (`LVPLAIN dest, carry, src1, src2) ->
+         parse_cmov_at lno dest carry src1 src2 fm cm vm ym gm
+      | `ADD (`LVPLAIN dest, src1, src2) ->
+         parse_add_at lno dest src1 src2 fm cm vm ym gm
+      | `ADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_adds_at lno flag dest src1 src2 fm cm vm ym gm
+      | `ADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_addr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `ADC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_adc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `ADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_adcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `ADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_adcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SUB (`LVPLAIN dest, src1, src2) ->
+         parse_sub_at lno dest src1 src2 fm cm vm ym gm
+      | `SUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_subc_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_subb_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_subr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SBC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_sbc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `SBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SBB (`LVPLAIN dest, src1, src2, carry) ->
+         parse_sbb_at lno dest src1 src2 carry fm cm vm ym gm
+      | `SBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `MUL (`LVPLAIN dest, src1, src2) ->
+         parse_mul_at lno dest src1 src2 fm cm vm ym gm
+      | `MULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_muls_at lno flag dest src1 src2 fm cm vm ym gm
+      | `MULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_mulr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `MULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
+         parse_mull_at lno destH destL src1 src2 fm cm vm ym gm
+      | `MULJ (`LVPLAIN dest, src1, src2) ->
+         parse_mulj_at lno dest src1 src2 fm cm vm ym gm
+      | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_split_at lno destH destL src num fm cm vm ym gm
+      | `UADD (`LVPLAIN dest, src1, src2) ->
+         parse_uadd_at lno dest src1 src2 fm cm vm ym gm
+      | `UADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_uadds_at lno flag dest src1 src2 fm cm vm ym gm
+      | `UADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_uaddr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `UADC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_uadc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `UADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_uadcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `UADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_uadcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `USUB (`LVPLAIN dest, src1, src2) ->
+         parse_usub_at lno dest src1 src2 fm cm vm ym gm
+      | `USUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_usubc_at lno flag dest src1 src2 fm cm vm ym gm
+      | `USUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_usubb_at lno flag dest src1 src2 fm cm vm ym gm
+      | `USUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_usubr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `USBC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_usbc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `USBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_usbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `USBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_usbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `USBB (`LVPLAIN dest, src1, src2, carry) ->
+         parse_usbb_at lno dest src1 src2 carry fm cm vm ym gm
+      | `USBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_usbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `USBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_usbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `UMUL (`LVPLAIN dest, src1, src2) ->
+         parse_umul_at lno dest src1 src2 fm cm vm ym gm
+      | `UMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_umuls_at lno flag dest src1 src2 fm cm vm ym gm
+      | `UMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_umulr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `UMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
+         parse_umull_at lno destH destL src1 src2 fm cm vm ym gm
+      | `UMULJ (`LVPLAIN dest, src1, src2) ->
+         parse_umulj_at lno dest src1 src2 fm cm vm ym gm
+      | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_usplit_at lno destH destL src num fm cm vm ym gm
+      | `SADD (`LVPLAIN dest, src1, src2) ->
+         parse_sadd_at lno dest src1 src2 fm cm vm ym gm
+      | `SADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_sadds_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_saddr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SADC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_sadc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `SADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sadcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_sadcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SSUB (`LVPLAIN dest, src1, src2) ->
+         parse_ssub_at lno dest src1 src2 fm cm vm ym gm
+      | `SSUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_ssubc_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SSUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_ssubb_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SSUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_ssubr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SSBC (`LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbc_at lno dest src1 src2 carry fm cm vm ym gm
+      | `SSBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SSBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SSBB (`LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbb_at lno dest src1 src2 carry fm cm vm ym gm
+      | `SSBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SSBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
+         parse_ssbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+      | `SMUL (`LVPLAIN dest, src1, src2) ->
+         parse_smul_at lno dest src1 src2 fm cm vm ym gm
+      | `SMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_smuls_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
+         parse_smulr_at lno flag dest src1 src2 fm cm vm ym gm
+      | `SMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
+         parse_smull_at lno destH destL src1 src2 fm cm vm ym gm
+      | `SMULJ (`LVPLAIN dest, src1, src2) ->
+         parse_smulj_at lno dest src1 src2 fm cm vm ym gm
+      | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_ssplit_at lno destH destL src num fm cm vm ym gm
+      | `AND (`LVPLAIN dest, src1, src2) ->
+         parse_and_at lno dest src1 src2 fm cm vm ym gm
+      | `OR (`LVPLAIN dest, src1, src2) ->
+         parse_or_at lno dest src1 src2 fm cm vm ym gm
+      | `XOR (`LVPLAIN dest, src1, src2) ->
+         parse_xor_at lno dest src1 src2 fm cm vm ym gm
+      | `NOT (`LVPLAIN dest, src) ->
+         parse_not_at lno dest src fm cm vm ym gm
+      | `CAST (optlv, `LV dest, src) ->
+         parse_cast_at lno optlv dest src fm cm vm ym gm
+      | `VPC (`LV dest, src) ->
+         parse_vpc_at lno dest src fm cm vm ym gm
+      | `JOIN (`LVPLAIN dest, srcH, srcL) ->
+         parse_join_at lno dest srcH srcL fm cm vm ym gm
+      | `ASSERT bexp ->
+         parse_assert_at lno bexp fm cm vm ym gm
+      | `ASSUME bexp ->
+         parse_assume_at lno bexp fm cm vm ym gm
+      | `CUT bexp_prove_with ->
+         parse_cut_at lno bexp_prove_with fm cm vm ym gm
+      | `ECUT ebexp_prove_with ->
+         parse_ecut_at lno ebexp_prove_with fm cm vm ym gm
+      | `RCUT rbexp_prove_with ->
+         parse_rcut_at lno rbexp_prove_with fm cm vm ym gm
+      | `GHOST (gvars, bexp) ->
+         parse_ghost_at lno gvars bexp fm cm vm ym gm
+      | `CALL (id, actuals) ->
+         parse_call_at lno id actuals fm cm vm ym gm
+      | `NOP -> (vm, ym, gm, [])
+
+  let parse_instrs instrs fm cm vm ym gm =
+    let helper (vm0, ym0, gm0, prog_rev) (lno, instr0) =
+      let (vm1, ym1, gm1, prog) =
+        recognize_instr_at lno instr0 fm cm vm0 ym0 gm0 in
+      (vm1, ym1, gm1, List.rev_append prog prog_rev) in
+    let (vm, ym, gm, p') = List.fold_left helper (vm, ym, gm, []) instrs in
+    (vm, ym, gm, List.rev p')
+      
 %}
 
 %token <string> COMMENT
@@ -1259,7 +1345,7 @@ proc:
           match $7 cm vm ym gm with
           | None -> btrue
           | Some e -> e in
-        let (vm, ym, gm, p) = $8 fm cm vm ym gm in
+        let (vm, ym, gm, p) = parse_instrs $8 fm cm vm ym gm in
         let (g, epwss, rpwss) =
           match $9 cm vm ym gm with
           | None -> (btrue, [], [])
@@ -1352,468 +1438,248 @@ prog:
     let ym = SM.empty in
     (* A map of ghost variables *)
     let gm = SM.empty in
-    let (_vm, _ym, _gm, p) = $1 fm cm vm ym gm in
+    let (_vm, _ym, _gm, p) = parse_instrs $1 fm cm vm ym gm in
     p
   }
 ;
 
 program:
-  instrs                                          { fun fm cm vm ym gm -> $1 fm cm vm ym gm }
+  instrs                                          { $1 }
 ;
 
 instrs:
-  instr SEMICOLON instrs
-  {
-    fun fm cm vm ym gm ->
-      let (vm, ym, gm, instr) = $1 fm cm vm ym gm in
-      let (vm, ym, gm, instrs) = $3 fm cm vm ym gm in
-      (vm, ym, gm, instr@instrs)
-  }
-  | instr SEMICOLON
-  {
-    fun fm cm vm ym gm ->
-      let (vm, ym, gm, instr) = $1 fm cm vm ym gm in
-      (vm, ym, gm, instr)
-  }
-  | instr SEMICOLON error
-  {
-    let lno = !lnum in
-    fun _fm _cm _vm _ym _gm ->
-      raise_at lno ("Unrecognized instruction.")
-  }
+    instr SEMICOLON instrs                        { $1 :: $3 }
+  | instr SEMICOLON                               { [$1] }
+  | instr SEMICOLON error                         { raise_at !lnum ("Unrecognized instruction.") }
 ;
 
 instr:
-    MOV lval atomic                               { let lno = !lnum in
-                                                    parse_imov_at lno $2 $3 }
-  | lhs EQOP atomic                               { let lno = !lnum in
-                                                    parse_imov_at lno $1 $3 }
-  | SHL lval atomic const                         { let lno = !lnum in
-                                                    parse_ishl_at lno $2 $3 $4 }
-  | lhs EQOP SHL atomic const                     { let lno = !lnum in
-                                                    parse_ishl_at lno $1 $4 $5 }
-  | CSHL lval lval atomic atomic const            { let lno = !lnum in
-                                                    parse_cshl_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP CSHL atomic atomic const     { let lno = !lnum in
-                                                    parse_cshl_at lno $1 $3 $6 $7 $8 }
-  | SET lcarry                                    { let lno = !lnum in
-                                                    parse_set_at lno $2 }
-  | CLEAR lcarry                                  { let lno = !lnum in
-                                                    parse_clear_at lno $2 }
-  | NONDET lval                                   { let lno = !lnum in
-                                                    parse_nondet_at lno $2 }
-  | CMOV lval carry atomic atomic                 { let lno = !lnum in
-                                                    parse_cmov_at lno $2 $3 $4 $5 }
-  | lhs EQOP CMOV carry atomic atomic             { let lno = !lnum in
-                                                    parse_cmov_at lno $1 $4 $5 $6 }
-  | ADD lval atomic atomic                        { let lno = !lnum in
-                                                    parse_add_at lno $2 $3 $4 }
-  | lhs EQOP ADD atomic atomic                    { let lno = !lnum in
-                                                    parse_add_at lno $1 $4 $5 }
-  | ADDS lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_adds_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP ADDS atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_adds_at lno one $3 $6 $7 }
-  | ADDR lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_addr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP ADDR atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_addr_at lno one $3 $6 $7 }
-  | ADC lval atomic atomic carry                  { let lno = !lnum in
-                                                    parse_adc_at lno $2 $3 $4 $5 }
-  | lhs EQOP ADC atomic atomic carry              { let lno = !lnum in
-                                                    parse_adc_at lno $1 $4 $5 $6 }
-  | ADCS lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_adcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP ADCS atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_adcs_at lno one $3 $6 $7 $8 }
-  | ADCR lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_adcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP ADCR atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_adcr_at lno one $3 $6 $7 $8 }
-  | SUB lval atomic atomic                        { let lno = !lnum in
-                                                    parse_sub_at lno $2 $3 $4 }
-  | lhs EQOP SUB atomic atomic                    { let lno = !lnum in
-                                                    parse_sub_at lno $1 $4 $5 }
-  | SUBC lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_subc_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SUBC atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_subc_at lno one $3 $6 $7 }
-  | SUBB lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_subb_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SUBB atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_subb_at lno one $3 $6 $7 }
-  | SUBR lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_subr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SUBR atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_subr_at lno one $3 $6 $7 }
-  | SBC lval atomic atomic carry                  { let lno = !lnum in
-                                                    parse_sbc_at lno $2 $3 $4 $5 }
-  | lhs EQOP SBC atomic atomic carry              { let lno = !lnum in
-                                                    parse_sbc_at lno $1 $4 $5 $6 }
-  | SBCS lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_sbcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SBCS atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sbcs_at lno one $3 $6 $7 $8 }
-  | SBCR lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_sbcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SBCR atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sbcr_at lno one $3 $6 $7 $8 }
-  | SBB lval atomic atomic carry                  { let lno = !lnum in
-                                                    parse_sbb_at lno $2 $3 $4 $5 }
-  | lhs EQOP SBB atomic atomic carry              { let lno = !lnum in
-                                                    parse_sbb_at lno $1 $4 $5 $6 }
-  | SBBS lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_sbbs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SBBS atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sbbs_at lno one $3 $6 $7 $8 }
-  | SBBR lcarry lval atomic atomic carry          { let lno = !lnum in
-                                                    parse_sbbr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SBBR atomic atomic carry     { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sbbr_at lno one $3 $6 $7 $8 }
-  | MUL lval atomic atomic                        { let lno = !lnum in
-                                                    parse_mul_at lno $2 $3 $4 }
-  | lhs EQOP MUL atomic atomic                    { let lno = !lnum in
-                                                    parse_mul_at lno $1 $4 $5 }
-  | MULS lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_muls_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP MULS atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_muls_at lno one $3 $6 $7 }
-  | MULR lcarry lval atomic atomic                { let lno = !lnum in
-                                                    parse_mulr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP MULR atomic atomic           { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_mulr_at lno one $3 $6 $7 }
-  | MULL lval lval atomic atomic                  { let lno = !lnum in
-                                                    parse_mull_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP MULL atomic atomic           { let lno = !lnum in
-                                                    parse_mull_at lno $1 $3 $6 $7 }
-  | MULJ lval atomic atomic                       { let lno = !lnum in
-                                                    parse_mulj_at lno $2 $3 $4 }
-  | lhs EQOP MULJ atomic atomic                   { let lno = !lnum in
-                                                    parse_mulj_at lno $1 $4 $5 }
-  | SPLIT lval lval atomic const                  { let lno = !lnum in
-                                                    parse_split_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SPLIT atomic const           { let lno = !lnum in
-                                                    parse_split_at lno $1 $3 $6 $7 }
-  | UADD lval atomic atomic                       { let lno = !lnum in
-                                                    parse_uadd_at lno $2 $3 $4 }
-  | lhs EQOP UADD atomic atomic                   { let lno = !lnum in
-                                                    parse_uadd_at lno $1 $4 $5 }
-  | UADDS lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_uadds_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP UADDS atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_uadds_at lno one $3 $6 $7 }
-  | UADDR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_uaddr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP UADDR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_uaddr_at lno one $3 $6 $7 }
-  | UADC lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_uadc_at lno $2 $3 $4 $5 }
-  | lhs EQOP UADC atomic atomic carry             { let lno = !lnum in
-                                                    parse_uadc_at lno $1 $4 $5 $6 }
-  | UADCS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_uadcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP UADCS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_uadcs_at lno one $3 $6 $7 $8 }
-  | UADCR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_uadcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP UADCR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_uadcr_at lno one $3 $6 $7 $8 }
-  | USUB lval atomic atomic                       { let lno = !lnum in
-                                                    parse_usub_at lno $2 $3 $4 }
-  | lhs EQOP USUB atomic atomic                   { let lno = !lnum in
-                                                    parse_usub_at lno $1 $4 $5 }
-  | USUBC lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_usubc_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP USUBC atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usubc_at lno one $3 $6 $7 }
-  | USUBB lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_usubb_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP USUBB atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usubb_at lno one $3 $6 $7 }
-  | USUBR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_usubr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP USUBR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usubr_at lno one $3 $6 $7 }
-  | USBC lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_usbc_at lno $2 $3 $4 $5 }
-  | lhs EQOP USBC atomic atomic carry             { let lno = !lnum in
-                                                    parse_usbc_at lno $1 $4 $5 $6 }
-  | USBCS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_usbcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP USBCS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usbcs_at lno one $3 $6 $7 $8 }
-  | USBCR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_usbcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP USBCR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usbcr_at lno one $3 $6 $7 $8 }
-  | USBB lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_usbb_at lno $2 $3 $4 $5 }
-  | lhs EQOP USBB atomic atomic carry             { let lno = !lnum in
-                                                    parse_usbb_at lno $1 $4 $5 $6 }
-  | USBBS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_usbbs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP USBBS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usbbs_at lno one $3 $6 $7 $8 }
-  | USBBR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_usbbr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP USBBR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_usbbr_at lno one $3 $6 $7 $8 }
-  | UMUL lval atomic atomic                       { let lno = !lnum in
-                                                    parse_umul_at lno $2 $3 $4 }
-  | lhs EQOP UMUL atomic atomic                   { let lno = !lnum in
-                                                    parse_umul_at lno $1 $4 $5 }
-  | UMULS lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_umuls_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP UMULS atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_umuls_at lno one $3 $6 $7 }
-  | UMULR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_umulr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP UMULR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_umulr_at lno one $3 $6 $7 }
-  | UMULL lval lval atomic atomic                 { let lno = !lnum in
-                                                    parse_umull_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP UMULL atomic atomic          { let lno = !lnum in
-                                                    parse_umull_at lno $1 $3 $6 $7 }
-  | UMULJ lval atomic atomic                      { let lno = !lnum in
-                                                    parse_umulj_at lno $2 $3 $4 }
-  | lhs EQOP UMULJ atomic atomic                  { let lno = !lnum in
-                                                    parse_umulj_at lno $1 $4 $5 }
-  | USPLIT lval lval atomic const                 { let lno = !lnum in
-                                                    parse_usplit_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP USPLIT atomic const          { let lno = !lnum in
-                                                    parse_usplit_at lno $1 $3 $6 $7 }
-  | SADD lval atomic atomic                       { let lno = !lnum in
-                                                    parse_sadd_at lno $2 $3 $4 }
-  | lhs EQOP SADD atomic atomic                   { let lno = !lnum in
-                                                    parse_sadd_at lno $1 $4 $5 }
-  | SADDS lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_sadds_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SADDS atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sadds_at lno one $3 $6 $7 }
-  | SADDR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_saddr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SADDR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_saddr_at lno one $3 $6 $7 }
-  | SADC lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_sadc_at lno $2 $3 $4 $5 }
-  | lhs EQOP SADC atomic atomic carry             { let lno = !lnum in
-                                                    parse_sadc_at lno $1 $4 $5 $6 }
-  | SADCS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_sadcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SADCS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sadcs_at lno one $3 $6 $7 $8 }
-  | SADCR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_sadcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SADCR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_sadcr_at lno one $3 $6 $7 $8 }
-  | SSUB lval atomic atomic                       { let lno = !lnum in
-                                                    parse_ssub_at lno $2 $3 $4 }
-  | lhs EQOP SSUB atomic atomic                   { let lno = !lnum in
-                                                    parse_ssub_at lno $1 $4 $5 }
-  | SSUBC lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_ssubc_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SSUBC atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssubc_at lno one $3 $6 $7 }
-  | SSUBB lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_ssubb_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SSUBB atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssubb_at lno one $3 $6 $7 }
-  | SSUBR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_ssubr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SSUBR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssubr_at lno one $3 $6 $7 }
-  | SSBC lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_ssbc_at lno $2 $3 $4 $5 }
-  | lhs EQOP SSBC atomic atomic carry             { let lno = !lnum in
-                                                    parse_ssbc_at lno $1 $4 $5 $6 }
-  | SSBCS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_ssbcs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SSBCS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssbcs_at lno one $3 $6 $7 $8 }
-  | SSBCR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_ssbcr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SSBCR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssbcr_at lno one $3 $6 $7 $8 }
-  | SSBB lval atomic atomic carry                 { let lno = !lnum in
-                                                    parse_ssbb_at lno $2 $3 $4 $5 }
-  | lhs EQOP SSBB atomic atomic carry             { let lno = !lnum in
-                                                    parse_ssbb_at lno $1 $4 $5 $6 }
-  | SSBBS lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_ssbbs_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SSBBS atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssbbs_at lno one $3 $6 $7 $8 }
-  | SSBBR lcarry lval atomic atomic carry         { let lno = !lnum in
-                                                    parse_ssbbr_at lno $2 $3 $4 $5 $6 }
-  | lhs DOT lhs EQOP SSBBR atomic atomic carry    { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_ssbbr_at lno one $3 $6 $7 $8 }
-  | SMUL lval atomic atomic                       { let lno = !lnum in
-                                                    parse_smul_at lno $2 $3 $4 }
-  | lhs EQOP SMUL atomic atomic                   { let lno = !lnum in
-                                                    parse_smul_at lno $1 $4 $5 }
-  | SMULS lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_smuls_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SMULS atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_smuls_at lno one $3 $6 $7 }
-  | SMULR lcarry lval atomic atomic               { let lno = !lnum in
-                                                    parse_smulr_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SMULR atomic atomic          { let lno = !lnum in
-                                                    let one v x y z = $1 v x y z (Some (Tuint 1)) in
-                                                    parse_smulr_at lno one $3 $6 $7 }
-  | SMULL lval lval atomic atomic                 { let lno = !lnum in
-                                                    parse_smull_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SMULL atomic atomic          { let lno = !lnum in
-                                                    parse_smull_at lno $1 $3 $6 $7 }
-  | SMULJ lval atomic atomic                      { let lno = !lnum in
-                                                    parse_smulj_at lno $2 $3 $4 }
-  | lhs EQOP SMULJ atomic atomic                  { let lno = !lnum in
-                                                    parse_smulj_at lno $1 $4 $5 }
-  | SSPLIT lval lval atomic const                 { let lno = !lnum in
-                                                    parse_ssplit_at lno $2 $3 $4 $5 }
-  | lhs DOT lhs EQOP SSPLIT atomic const          { let lno = !lnum in
-                                                    parse_ssplit_at lno $1 $3 $6 $7 }
-  | AND lval atomic atomic                        { let lno = !lnum in
-                                                    parse_and_at lno $2 $3 $4 }
-  | lhs EQOP AND atomic atomic                    { let lno = !lnum in
-                                                    parse_and_at lno $1 $4 $5 }
-  | OR lval atomic atomic                         { let lno = !lnum in
-                                                    parse_or_at lno $2 $3 $4 }
-  | lhs EQOP OR atomic atomic                     { let lno = !lnum in
-                                                    parse_or_at lno $1 $4 $5 }
-  | XOR lval atomic atomic                        { let lno = !lnum in
-                                                    parse_xor_at lno $2 $3 $4 }
-  | lhs EQOP XOR atomic atomic                    { let lno = !lnum in
-                                                    parse_xor_at lno $1 $4 $5 }
-  | NOT lval atomic                               { let lno = !lnum in
-                                                    parse_not_at lno $2 $3 }
-  | lhs EQOP NOT atomic                           { let lno = !lnum in
-                                                    parse_not_at lno $1 $4 }
-  | CAST lval_or_lcarry atomic                    { let lno = !lnum in
-                                                    parse_cast_at lno None $2 $3 }
+    MOV lval atomic                                    { (!lnum, `MOV ($2, $3)) }
+  | lhsval EQOP atomic                                 { (!lnum, `MOV  ($1, $3)) }
+  | SHL lval atomic const                              { (!lnum, `SHL ($2, $3, $4)) }
+  | lhsval EQOP SHL atomic const                       { (!lnum, `SHL ($1, $4, $5)) }
+  | CSHL lval lval atomic atomic const                 { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
+  | lhsval DOT lhsval EQOP CSHL atomic atomic const    { (!lnum, `CSHL ($1, $3, $6, $7, $8)) }
+  | SET lcarry                                         { (!lnum, `SET $2) }
+  | CLEAR lcarry                                       { (!lnum, `CLEAR $2) }
+  | NONDET lval                                        { (!lnum, `NONDET $2) }
+  | CMOV lval carry atomic atomic                      { (!lnum, `CMOV ($2, $3, $4, $5)) }
+  | lhsval EQOP CMOV carry atomic atomic               { (!lnum, `CMOV ($1, $4, $5, $6)) }
+  | ADD lval atomic atomic                             { (!lnum, `ADD ($2, $3, $4)) }
+  | lhsval EQOP ADD atomic atomic                      { (!lnum, `ADD ($1, $4, $5)) }
+  | ADDS lcarry lval atomic atomic                     { (!lnum, `ADDS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP ADDS atomic atomic        { (!lnum, `ADDS ($1, $3, $6, $7)) }
+  | ADDR lcarry lval atomic atomic                     { (!lnum, `ADDR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP ADDR atomic atomic        { (!lnum, `ADDR ($1, $3, $6, $7)) }
+  | ADC lval atomic atomic carry                       { (!lnum, `ADC ($2, $3, $4, $5)) }
+  | lhsval EQOP ADC atomic atomic carry                { (!lnum, `ADC ($1, $4, $5, $6)) }
+  | ADCS lcarry lval atomic atomic carry               { (!lnum, `ADCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP ADCS atomic atomic carry  { (!lnum, `ADCS ($1, $3, $6, $7, $8)) }
+  | ADCR lcarry lval atomic atomic carry               { (!lnum, `ADCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP ADCR atomic atomic carry  { (!lnum, `ADCR ($1, $3, $6, $7, $8)) }
+  | SUB lval atomic atomic                             { (!lnum, `SUB ($2, $3, $4)) }
+  | lhsval EQOP SUB atomic atomic                      { (!lnum, `SUB ($1, $4, $5)) }
+  | SUBC lcarry lval atomic atomic                     { (!lnum, `SUBC ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SUBC atomic atomic        { (!lnum, `SUBC ($1, $3, $6, $7)) }
+  | SUBB lcarry lval atomic atomic                     { (!lnum, `SUBB ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SUBB atomic atomic        { (!lnum, `SUBB ($1, $3, $6, $7)) }
+  | SUBR lcarry lval atomic atomic                     { (!lnum, `SUBR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SUBR atomic atomic        { (!lnum, `SUBR ($1, $3, $6, $7)) }
+  | SBC lval atomic atomic carry                       { (!lnum, `SBC ($2, $3, $4, $5)) }
+  | lhsval EQOP SBC atomic atomic carry                { (!lnum, `SBC ($1, $4, $5, $6)) }
+  | SBCS lcarry lval atomic atomic carry               { (!lnum, `SBCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SBCS atomic atomic carry  { (!lnum, `SBCS ($1, $3, $6, $7, $8)) }
+  | SBCR lcarry lval atomic atomic carry               { (!lnum, `SBCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SBCR atomic atomic carry  { (!lnum, `SBCR ($1, $3, $6, $7, $8)) }
+  | SBB lval atomic atomic carry                       { (!lnum, `SBB ($2, $3, $4, $5)) }
+  | lhsval EQOP SBB atomic atomic carry                { (!lnum, `SBB ($1, $4, $5, $6)) }
+  | SBBS lcarry lval atomic atomic carry               { (!lnum, `SBBS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SBBS atomic atomic carry  { (!lnum, `SBBS ($1, $3, $6, $7, $8)) }
+  | SBBR lcarry lval atomic atomic carry               { (!lnum, `SBBR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SBBR atomic atomic carry  { (!lnum, `SBBR ($1, $3, $6, $7, $8)) }
+  | MUL lval atomic atomic                             { (!lnum, `MUL ($2, $3, $4)) }
+  | lhsval EQOP MUL atomic atomic                      { (!lnum, `MUL ($1, $4, $5)) }
+  | MULS lcarry lval atomic atomic                     { (!lnum, `MULS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP MULS atomic atomic        { (!lnum, `MULS ($1, $3, $6, $7)) }
+  | MULR lcarry lval atomic atomic                     { (!lnum, `MULR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP MULR atomic atomic        { (!lnum, `MULR ($1, $3, $6, $7)) }
+  | MULL lval lval atomic atomic                       { (!lnum, `MULL ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP MULL atomic atomic          { (!lnum, `MULL ($1, $3, $6, $7)) }
+  | MULJ lval atomic atomic                            { (!lnum, `MULJ ($2, $3, $4)) }
+  | lhsval EQOP MULJ atomic atomic                     { (!lnum, `MULJ ($1, $4, $5)) }
+  | SPLIT lval lval atomic const                       { (!lnum, `SPLIT ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP SPLIT atomic const          { (!lnum, `SPLIT ($1, $3, $6, $7)) }
+  | UADD lval atomic atomic                            { (!lnum, `UADD ($2, $3, $4)) }
+  | lhsval EQOP UADD atomic atomic                     { (!lnum, `UADD ($1, $4, $5)) }
+  | UADDS lcarry lval atomic atomic                    { (!lnum, `UADDS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP UADDS atomic atomic       { (!lnum, `UADDS ($1, $3, $6, $7)) }
+  | UADDR lcarry lval atomic atomic                    { (!lnum, `UADDR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP UADDR atomic atomic       { (!lnum, `UADDR ($1, $3, $6, $7)) }
+  | UADC lval atomic atomic carry                      { (!lnum, `UADC ($2, $3, $4, $5)) }
+  | lhsval EQOP UADC atomic atomic carry               { (!lnum, `UADC ($1, $4, $5, $6)) }
+  | UADCS lcarry lval atomic atomic carry              { (!lnum, `UADCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP UADCS atomic atomic carry { (!lnum, `UADCS ($1, $3, $6, $7, $8)) }
+  | UADCR lcarry lval atomic atomic carry              { (!lnum, `UADCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP UADCR atomic atomic carry { (!lnum, `UADCR ($1, $3, $6, $7, $8)) }
+  | USUB lval atomic atomic                            { (!lnum, `USUB ($2, $3, $4)) }
+  | lhsval EQOP USUB atomic atomic                     { (!lnum, `USUB ($1, $4, $5)) }
+  | USUBC lcarry lval atomic atomic                    { (!lnum, `USUBC ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP USUBC atomic atomic       { (!lnum, `USUBC ($1, $3, $6, $7)) }
+  | USUBB lcarry lval atomic atomic                    { (!lnum, `USUBB ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP USUBB atomic atomic       { (!lnum, `USUBB ($1, $3, $6, $7)) }
+  | USUBR lcarry lval atomic atomic                    { (!lnum, `USUBR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP USUBR atomic atomic       { (!lnum, `USUBR ($1, $3, $6, $7)) }
+  | USBC lval atomic atomic carry                      { (!lnum, `USBC ($2, $3, $4, $5)) }
+  | lhsval EQOP USBC atomic atomic carry               { (!lnum, `USBC ($1, $4, $5, $6)) }
+  | USBCS lcarry lval atomic atomic carry              { (!lnum, `USBCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP USBCS atomic atomic carry { (!lnum, `USBCS ($1, $3, $6, $7, $8)) }
+  | USBCR lcarry lval atomic atomic carry              { (!lnum, `USBCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP USBCR atomic atomic carry { (!lnum, `USBCR ($1, $3, $6, $7, $8)) }
+  | USBB lval atomic atomic carry                      { (!lnum, `USBB ($2, $3, $4, $5)) }
+  | lhsval EQOP USBB atomic atomic carry               { (!lnum, `USBB ($1, $4, $5, $6)) }
+  | USBBS lcarry lval atomic atomic carry              { (!lnum, `USBBS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP USBBS atomic atomic carry { (!lnum, `USBBS ($1, $3, $6, $7, $8)) }
+  | USBBR lcarry lval atomic atomic carry              { (!lnum, `USBBR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP USBBR atomic atomic carry { (!lnum, `USBBR ($1, $3, $6, $7, $8)) }
+  | UMUL lval atomic atomic                            { (!lnum, `UMUL ($2, $3, $4)) }
+  | lhsval EQOP UMUL atomic atomic                     { (!lnum, `UMUL ($1, $4, $5)) }
+  | UMULS lcarry lval atomic atomic                    { (!lnum, `UMULS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP UMULS atomic atomic       { (!lnum, `UMULS ($1, $3, $6, $7)) }
+  | UMULR lcarry lval atomic atomic                    { (!lnum, `UMULR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP UMULR atomic atomic       { (!lnum, `UMULR ($1, $3, $6, $7)) }
+  | UMULL lval lval atomic atomic                      { (!lnum, `UMULL ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP UMULL atomic atomic         { (!lnum, `UMULL ($1, $3, $6, $7)) }
+  | UMULJ lval atomic atomic                           { (!lnum, `UMULJ ($2, $3, $4)) }
+  | lhsval EQOP UMULJ atomic atomic                    { (!lnum, `UMULJ ($1, $4, $5)) }
+  | USPLIT lval lval atomic const                      { (!lnum, `USPLIT ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP USPLIT atomic const         { (!lnum, `USPLIT ($1, $3, $6, $7)) }
+  | SADD lval atomic atomic                            { (!lnum, `SADD ($2, $3, $4)) }
+  | lhsval EQOP SADD atomic atomic                     { (!lnum, `SADD ($1, $4, $5)) }
+  | SADDS lcarry lval atomic atomic                    { (!lnum, `SADDS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SADDS atomic atomic       { (!lnum, `SADDS ($1, $3, $6, $7)) }
+  | SADDR lcarry lval atomic atomic                    { (!lnum, `SADDR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SADDR atomic atomic       { (!lnum, `SADDR ($1, $3, $6, $7)) }
+  | SADC lval atomic atomic carry                      { (!lnum, `SADC ($2, $3, $4, $5)) }
+  | lhsval EQOP SADC atomic atomic carry               { (!lnum, `SADC ($1, $4, $5, $6)) }
+  | SADCS lcarry lval atomic atomic carry              { (!lnum, `SADCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SADCS atomic atomic carry { (!lnum, `SADCS ($1, $3, $6, $7, $8)) }
+  | SADCR lcarry lval atomic atomic carry              { (!lnum, `SADCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SADCR atomic atomic carry { (!lnum, `SADCR ($1, $3, $6, $7, $8)) }
+  | SSUB lval atomic atomic                            { (!lnum, `SSUB ($2, $3, $4)) }
+  | lhsval EQOP SSUB atomic atomic                     { (!lnum, `SSUB ($1, $4, $5)) }
+  | SSUBC lcarry lval atomic atomic                    { (!lnum, `SSUBC ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SSUBC atomic atomic       { (!lnum, `SSUBC ($1, $3, $6, $7)) }
+  | SSUBB lcarry lval atomic atomic                    { (!lnum, `SSUBB ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SSUBB atomic atomic       { (!lnum, `SSUBB ($1, $3, $6, $7)) }
+  | SSUBR lcarry lval atomic atomic                    { (!lnum, `SSUBR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SSUBR atomic atomic       { (!lnum, `SSUBR ($1, $3, $6, $7)) }
+  | SSBC lval atomic atomic carry                      { (!lnum, `SSBC ($2, $3, $4, $5)) }
+  | lhsval EQOP SSBC atomic atomic carry               { (!lnum, `SSBC ($1, $4, $5, $6)) }
+  | SSBCS lcarry lval atomic atomic carry              { (!lnum, `SSBCS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SSBCS atomic atomic carry { (!lnum, `SSBCS ($1, $3, $6, $7, $8)) }
+  | SSBCR lcarry lval atomic atomic carry              { (!lnum, `SSBCR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SSBCR atomic atomic carry { (!lnum, `SSBCR ($1, $3, $6, $7, $8)) }
+  | SSBB lval atomic atomic carry                      { (!lnum, `SSBB ($2, $3, $4, $5)) }
+  | lhsval EQOP SSBB atomic atomic carry               { (!lnum, `SSBB ($1, $4, $5, $6)) }
+  | SSBBS lcarry lval atomic atomic carry              { (!lnum, `SSBBS ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SSBBS atomic atomic carry { (!lnum, `SSBBS ($1, $3, $6, $7, $8)) }
+  | SSBBR lcarry lval atomic atomic carry              { (!lnum, `SSBBR ($2, $3, $4, $5, $6)) }
+  | lhscarry DOT lhsval EQOP SSBBR atomic atomic carry { (!lnum, `SSBBR ($1, $3, $6, $7, $8)) }
+  | SMUL lval atomic atomic                            { (!lnum, `SMUL ($2, $3, $4) )}
+  | lhsval EQOP SMUL atomic atomic                     { (!lnum, `SMUL ($1, $4, $5) )}
+  | SMULS lcarry lval atomic atomic                    { (!lnum, `SMULS ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SMULS atomic atomic       { (!lnum, `SMULS ($1, $3, $6, $7)) }
+  | SMULR lcarry lval atomic atomic                    { (!lnum, `SMULR ($2, $3, $4, $5)) }
+  | lhscarry DOT lhsval EQOP SMULR atomic atomic       { (!lnum, `SMULR ($1, $3, $6, $7)) }
+  | SMULL lval lval atomic atomic                      { (!lnum, `SMULL ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP SMULL atomic atomic         { (!lnum, `SMULL ($1, $3, $6, $7)) }
+  | SMULJ lval atomic atomic                           { (!lnum, `SMULJ ($2, $3, $4)) }
+  | lhsval EQOP SMULJ atomic atomic                    { (!lnum, `SMULJ ($1, $4, $5)) }
+  | SSPLIT lval lval atomic const                      { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
+  | lhsval DOT lhsval EQOP SSPLIT atomic const         { (!lnum, `SSPLIT ($1, $3, $6, $7)) }
+  | AND lval atomic atomic                             { (!lnum, `AND ($2, $3, $4)) }
+  | lhsval EQOP AND atomic atomic                      { (!lnum, `AND ($1, $4, $5)) }
+  | OR lval atomic atomic                              { (!lnum, `OR ($2, $3, $4)) }
+  | lhsval EQOP OR atomic atomic                       { (!lnum, `OR ($1, $4, $5)) }
+  | XOR lval atomic atomic                             { (!lnum, `XOR ($2, $3, $4)) }
+  | lhsval EQOP XOR atomic atomic                      { (!lnum, `XOR ($1, $4, $5)) }
+  | NOT lval atomic                                    { (!lnum, `NOT ($2, $3)) }
+  | lhsval EQOP NOT atomic                             { (!lnum, `NOT ($1, $4)) }
+  | CAST lval_or_lcarry atomic                         { (!lnum, `CAST (None, $2, $3)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
-                                                  { let lno = !lnum in
-                                                    parse_cast_at lno (Some $3) $5 $6 }
-  | lhs EQOP CAST atomic                          { let lno = !lnum in
-                                                    parse_cast_at lno None $1 $4 }
-  | VPC lval_or_lcarry atomic                     { let lno = !lnum in
-                                                    parse_vpc_at lno $2 $3 }
-  | lhs EQOP VPC atomic                           { let lno = !lnum in
-                                                    parse_vpc_at lno $1 $4 }
-  | JOIN lval atomic atomic                       { let lno = !lnum in
-                                                    parse_join_at lno $2 $3 $4 }
-  | lhs EQOP JOIN atomic atomic                   { let lno = !lnum in
-                                                    parse_join_at lno $1 $4 $5 }
-  | ASSERT bexp                                   { let lno = !lnum in
-                                                    parse_assert_at lno $2 }
-  | ASSUME bexp                                   { let lno = !lnum in
-                                                    parse_assume_at lno $2 }
-  | CUT bexp_prove_with                           { let lno = !lnum in
-                                                    parse_cut_at lno $2 }
-  | ECUT ebexp_prove_with                         { let lno = !lnum in
-                                                    parse_ecut_at lno $2 }
-  | RCUT rbexp_prove_with                         { let lno = !lnum in
-                                                    parse_rcut_at lno $2 }
-  | GHOST gvars COLON bexp                        { let lno = !lnum in
-                                                    parse_ghost_at lno $2 $4 }
+                                                       { (!lnum, `CAST (Some $3, $5, $6)) }
+  | lhsval_or_carry EQOP CAST atomic                   { (!lnum, `CAST (None, $1, $4)) }
+  | VPC lval_or_lcarry atomic                          { (!lnum, `VPC ($2, $3)) }
+  | lhsval_or_carry EQOP VPC atomic                    { (!lnum, `VPC ($1, $4)) }
+  | JOIN lval atomic atomic                            { (!lnum, `JOIN ($2, $3, $4)) }
+  | lhsval EQOP JOIN atomic atomic                     { (!lnum, `JOIN ($1, $4, $5)) }
+  | ASSERT bexp                                        { (!lnum, `ASSERT $2) }
+  | ASSUME bexp                                        { (!lnum, `ASSUME $2) }
+  | CUT bexp_prove_with                                { (!lnum, `CUT $2) }
+  | ECUT ebexp_prove_with                              { (!lnum, `ECUT $2) }
+  | RCUT rbexp_prove_with                              { (!lnum, `RCUT $2) }
+  | GHOST gvars COLON bexp                             { (!lnum, `GHOST ($2, $4)) }
   /* Extensions */
-  | CALL ID LPAR actuals RPAR                     { let lno = !lnum in
-                                                    parse_call_at lno $2 $4 }
-  | NOP                                           { fun _fm _cm vm ym gm -> (vm, ym, gm, []) }
+  | CALL ID LPAR actuals RPAR                          { (!lnum, `CALL ($2, $4)) }
+  | NOP                                                { (!lnum, `NOP) }
   /* Errors */
-  | MOV error                                     { raise_at !lnum ("Bad mov instruction") }
-  | ADD error                                     { raise_at !lnum ("Bad add instruction") }
-  | ADDS error                                    { raise_at !lnum ("Bad adds instruction") }
-  | ADC error                                     { raise_at !lnum ("Bad adc instruction") }
-  | ADCS error                                    { raise_at !lnum ("Bad adcs instruction") }
-  | SUB error                                     { raise_at !lnum ("Bad sub instruction") }
-  | SUBC error                                    { raise_at !lnum ("Bad subc instruction") }
-  | SUBB error                                    { raise_at !lnum ("Bad subb instruction") }
-  | SUBR error                                    { raise_at !lnum ("Bad subr instruction") }
-  | SBC error                                     { raise_at !lnum ("Bad sbc instruction") }
-  | SBCS error                                    { raise_at !lnum ("Bad sbcs instruction") }
-  | SBCR error                                    { raise_at !lnum ("Bad sbcr instruction") }
-  | SBB error                                     { raise_at !lnum ("Bad sbb instruction") }
-  | SBBS error                                    { raise_at !lnum ("Bad sbbs instruction") }
-  | SBBR error                                    { raise_at !lnum ("Bad sbbr instruction") }
-  | MUL error                                     { raise_at !lnum ("Bad mul instruction") }
-  | MULL error                                    { raise_at !lnum ("Bad mull instruction") }
-  | SPLIT error                                   { raise_at !lnum ("Bad split instruction") }
-  | UADD error                                    { raise_at !lnum ("Bad uadd instruction") }
-  | UADDS error                                   { raise_at !lnum ("Bad uadds instruction") }
-  | UADC error                                    { raise_at !lnum ("Bad uadc instruction") }
-  | UADCS error                                   { raise_at !lnum ("Bad uadcs instruction") }
-  | USUB error                                    { raise_at !lnum ("Bad usub instruction") }
-  | USUBC error                                   { raise_at !lnum ("Bad usubc instruction") }
-  | USUBB error                                   { raise_at !lnum ("Bad usubb instruction") }
-  | USUBR error                                   { raise_at !lnum ("Bad usubr instruction") }
-  | USBC error                                    { raise_at !lnum ("Bad usbc instruction") }
-  | USBCS error                                   { raise_at !lnum ("Bad usbcs instruction") }
-  | USBCR error                                   { raise_at !lnum ("Bad usbcr instruction") }
-  | USBB error                                    { raise_at !lnum ("Bad usbb instruction") }
-  | USBBS error                                   { raise_at !lnum ("Bad usbbs instruction") }
-  | USBBR error                                   { raise_at !lnum ("Bad usbbr instruction") }
-  | UMUL error                                    { raise_at !lnum ("Bad umul instruction") }
-  | UMULL error                                   { raise_at !lnum ("Bad umull instruction") }
-  | USPLIT error                                  { raise_at !lnum ("Bad usplit instruction") }
-  | SADD error                                    { raise_at !lnum ("Bad sadd instruction") }
-  | SADDS error                                   { raise_at !lnum ("Bad sadds instruction") }
-  | SADC error                                    { raise_at !lnum ("Bad sadc instruction") }
-  | SADCS error                                   { raise_at !lnum ("Bad sadcs instruction") }
-  | SSUB error                                    { raise_at !lnum ("Bad ssub instruction") }
-  | SSUBC error                                   { raise_at !lnum ("Bad ssubc instruction") }
-  | SSUBB error                                   { raise_at !lnum ("Bad ssubb instruction") }
-  | SSUBR error                                   { raise_at !lnum ("Bad ssubr instruction") }
-  | SSBC error                                    { raise_at !lnum ("Bad ssbc instruction") }
-  | SSBCS error                                   { raise_at !lnum ("Bad ssbcs instruction") }
-  | SSBCR error                                   { raise_at !lnum ("Bad ssbcr instruction") }
-  | SSBB error                                    { raise_at !lnum ("Bad ssbb instruction") }
-  | SSBBS error                                   { raise_at !lnum ("Bad ssbbs instruction") }
-  | SSBBR error                                   { raise_at !lnum ("Bad ssbbr instruction") }
-  | SMUL error                                    { raise_at !lnum ("Bad smul instruction") }
-  | SMULL error                                   { raise_at !lnum ("Bad smull instruction") }
-  | SSPLIT error                                  { raise_at !lnum ("Bad ssplit instruction") }
-  | SHL error                                     { raise_at !lnum ("Bad shl instruction") }
-  | CSHL error                                    { raise_at !lnum ("Bad cshl instruction") }
-  | NONDET error                                  { raise_at !lnum ("Bad nondet instruction") }
-  | CALL ID LPAR error                            { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
-  | CALL error                                    { raise_at !lnum ("Bad call instruction") }
+  | MOV error                                          { raise_at !lnum ("Bad mov instruction") }
+  | ADD error                                          { raise_at !lnum ("Bad add instruction") }
+  | ADDS error                                         { raise_at !lnum ("Bad adds instruction") }
+  | ADC error                                          { raise_at !lnum ("Bad adc instruction") }
+  | ADCS error                                         { raise_at !lnum ("Bad adcs instruction") }
+  | SUB error                                          { raise_at !lnum ("Bad sub instruction") }
+  | SUBC error                                         { raise_at !lnum ("Bad subc instruction") }
+  | SUBB error                                         { raise_at !lnum ("Bad subb instruction") }
+  | SUBR error                                         { raise_at !lnum ("Bad subr instruction") }
+  | SBC error                                          { raise_at !lnum ("Bad sbc instruction") }
+  | SBCS error                                         { raise_at !lnum ("Bad sbcs instruction") }
+  | SBCR error                                         { raise_at !lnum ("Bad sbcr instruction") }
+  | SBB error                                          { raise_at !lnum ("Bad sbb instruction") }
+  | SBBS error                                         { raise_at !lnum ("Bad sbbs instruction") }
+  | SBBR error                                         { raise_at !lnum ("Bad sbbr instruction") }
+  | MUL error                                          { raise_at !lnum ("Bad mul instruction") }
+  | MULL error                                         { raise_at !lnum ("Bad mull instruction") }
+  | SPLIT error                                        { raise_at !lnum ("Bad split instruction") }
+  | UADD error                                         { raise_at !lnum ("Bad uadd instruction") }
+  | UADDS error                                        { raise_at !lnum ("Bad uadds instruction") }
+  | UADC error                                         { raise_at !lnum ("Bad uadc instruction") }
+  | UADCS error                                        { raise_at !lnum ("Bad uadcs instruction") }
+  | USUB error                                         { raise_at !lnum ("Bad usub instruction") }
+  | USUBC error                                        { raise_at !lnum ("Bad usubc instruction") }
+  | USUBB error                                        { raise_at !lnum ("Bad usubb instruction") }
+  | USUBR error                                        { raise_at !lnum ("Bad usubr instruction") }
+  | USBC error                                         { raise_at !lnum ("Bad usbc instruction") }
+  | USBCS error                                        { raise_at !lnum ("Bad usbcs instruction") }
+  | USBCR error                                        { raise_at !lnum ("Bad usbcr instruction") }
+  | USBB error                                         { raise_at !lnum ("Bad usbb instruction") }
+  | USBBS error                                        { raise_at !lnum ("Bad usbbs instruction") }
+  | USBBR error                                        { raise_at !lnum ("Bad usbbr instruction") }
+  | UMUL error                                         { raise_at !lnum ("Bad umul instruction") }
+  | UMULL error                                        { raise_at !lnum ("Bad umull instruction") }
+  | USPLIT error                                       { raise_at !lnum ("Bad usplit instruction") }
+  | SADD error                                         { raise_at !lnum ("Bad sadd instruction") }
+  | SADDS error                                        { raise_at !lnum ("Bad sadds instruction") }
+  | SADC error                                         { raise_at !lnum ("Bad sadc instruction") }
+  | SADCS error                                        { raise_at !lnum ("Bad sadcs instruction") }
+  | SSUB error                                         { raise_at !lnum ("Bad ssub instruction") }
+  | SSUBC error                                        { raise_at !lnum ("Bad ssubc instruction") }
+  | SSUBB error                                        { raise_at !lnum ("Bad ssubb instruction") }
+  | SSUBR error                                        { raise_at !lnum ("Bad ssubr instruction") }
+  | SSBC error                                         { raise_at !lnum ("Bad ssbc instruction") }
+  | SSBCS error                                        { raise_at !lnum ("Bad ssbcs instruction") }
+  | SSBCR error                                        { raise_at !lnum ("Bad ssbcr instruction") }
+  | SSBB error                                         { raise_at !lnum ("Bad ssbb instruction") }
+  | SSBBS error                                        { raise_at !lnum ("Bad ssbbs instruction") }
+  | SSBBR error                                        { raise_at !lnum ("Bad ssbbr instruction") }
+  | SMUL error                                         { raise_at !lnum ("Bad smul instruction") }
+  | SMULL error                                        { raise_at !lnum ("Bad smull instruction") }
+  | SSPLIT error                                       { raise_at !lnum ("Bad ssplit instruction") }
+  | SHL error                                          { raise_at !lnum ("Bad shl instruction") }
+  | CSHL error                                         { raise_at !lnum ("Bad cshl instruction") }
+  | NONDET error                                       { raise_at !lnum ("Bad nondet instruction") }
+  | CALL ID LPAR error                                 { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
+  | CALL error                                         { raise_at !lnum ("Bad call instruction") }
 ;
 
 ebexp_prove_with:
@@ -1928,7 +1794,7 @@ cmpop_infix:
 ;
 
 eexp:
-    defined_var                                   { fun cm vm ym gm -> Evar ($1 cm vm ym gm) }
+    defined_var                                   { fun cm vm ym gm -> Evar (resolve_var_with !lnum $1 cm vm ym gm) }
   | simple_const                                  { fun cm _vm _ym _gm -> Econst ($1 cm) }
   | LPAR eexp RPAR                                { fun cm vm ym gm -> $2 cm vm ym gm }
   /* Extensions */
@@ -1965,7 +1831,7 @@ eexp_no_unarys:
 ;
 
 eexp_no_unary:
-    defined_var                                   { fun cm vm ym gm -> Evar ($1 cm vm ym gm) }
+    defined_var                                   { fun cm vm ym gm -> Evar (resolve_var_with !lnum $1 cm vm ym gm) }
   | simple_const                                  { fun cm _vm _ym _gm -> Econst ($1 cm) }
   | LPAR eexp RPAR                                { fun cm vm ym gm -> $2 cm vm ym gm }
   /* Extensions */
@@ -2301,7 +2167,7 @@ rbexps:
 ;
 
 rexp:
-    defined_var                                   { fun cm vm ym gm -> Rvar ($1 cm vm ym gm) }
+    defined_var                                   { fun cm vm ym gm -> Rvar (resolve_var_with !lnum $1 cm vm ym gm) }
   | CONST const const                             { fun cm _vm _ym _gm ->
                                                       let w = Z.to_int ($2 cm) in
                                                       let n = $3 cm in
@@ -2577,118 +2443,42 @@ rexps:
 ;
 
 lval:
-    ID                                            {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        match ty_opt with
-                                                        | None -> raise_at lno ("Failed to determine the type of " ^ $1)
-                                                        | Some ty ->
-                                                           let v = mkvar $1 ty in
-                                                           (* It is possible that the lval is actually a bit variable *)
-                                                           if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                           else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | ID AT typ                                     {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-														let _ =
-														  match ty_opt with
-														  | None -> ()
-														  | Some determined_ty -> if $3 <> determined_ty then raise_at lno ("The specified type "
-																					  										^ string_of_typ $3
-																									                        ^ " is not equal to the determined type "
-																															^ string_of_typ determined_ty)
-																				  else () in
-                                                        let v = mkvar $1 $3 in
-                                                        if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                        else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | typ ID                                        {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $2 gm then raise_at lno ("The program variable " ^ $2 ^ " has been defined as a ghost variable.")
-                                                      else
-														let _ =
-														  match ty_opt with
-														  | None -> ()
-														  | Some determined_ty -> if $1 <> determined_ty then raise_at lno ("The specified type "
-																															^ string_of_typ $1
-																									                        ^ " is not equal to the determined type "
-																															^ string_of_typ determined_ty)
-																				  else () in
-                                                        let v = mkvar $2 $1 in
-                                                        if var_is_bit v then (SM.add $2 v vm, SM.add $2 v ym, gm, v)
-                                                        else (SM.add $2 v vm, SM.remove $2 ym, gm, v)
-                                                  }
+    ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
 ;
 
 lcarry:
-    ID                                            {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ->
-                                                      if SM.mem $1 gm then raise_at lno ("The carry variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        let v = mkvar $1 bit_t in
-                                                        (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                  }
-  | ID AT typ                                     {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ->
-                                                      if SM.mem $1 gm then raise_at lno ("The carry variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else if $3 = bit_t then
-                                                        let v = mkvar $1 bit_t in
-                                                        (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                      else
-                                                        raise_at lno ("The type of a carry variable should be \"" ^ string_of_typ bit_t ^ "\"")
-                                                  }
-  | typ ID                                        {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ->
-                                                      if SM.mem $2 gm then raise_at lno ("The carry variable " ^ $2 ^ " has been defined as a ghost variable.")
-                                                      else if $1 = bit_t then
-                                                        let v = mkvar $2 bit_t in
-                                                        (SM.add $2 v vm, SM.add $2 v ym, gm, v)
-                                                      else
-                                                        raise_at lno ("The type of a carry variable should be \"" ^ string_of_typ bit_t ^ "\"")
-                                                  }
+    ID                                            { `LVCARRY { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LVCARRY { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LVCARRY { lvname = $2; lvtyphint = Some $1; } }
+;
+
+lhsval:
+    ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
+  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+;
+
+lhscarry:
+    ID                                            { `LVCARRY { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LVCARRY { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LVCARRY { lvname = $2; lvtyphint = Some $1; } }
 ;
 
 lval_or_lcarry:
-    ID                                            {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        match ty_opt with
-                                                        | None -> raise_at lno ("Failed to determine the type of " ^ $1)
-                                                        | Some ty ->
-                                                           let v = mkvar $1 ty in
-                                                           if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                           else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | ID AT typ                                     {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
-                                                      if SM.mem $1 gm then raise_at lno ("The program variable " ^ $1 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        let v = mkvar $1 $3 in
-                                                        if var_is_bit v then (SM.add $1 v vm, SM.add $1 v ym, gm, v)
-                                                        else (SM.add $1 v vm, SM.remove $1 ym, gm, v)
-                                                  }
-  | typ ID                                        {
-                                                    let lno = !lnum in
-                                                    fun _cm vm ym gm _ty_opt ->
-                                                      if SM.mem $2 gm then raise_at lno ("The program variable " ^ $2 ^ " has been defined as a ghost variable.")
-                                                      else
-                                                        let v = mkvar $2 $1 in
-                                                        if var_is_bit v then (SM.add $2 v vm, SM.add $2 v ym, gm, v)
-                                                        else (SM.add $2 v vm, SM.remove $2 ym, gm, v)
-                                                  }
+    ID                                            { `LV { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LV { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } }
+  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+;
+
+lhsval_or_carry:
+    ID                                            { `LV { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LV { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } }
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
 ;
 
@@ -2815,9 +2605,9 @@ actual_atomic:
 ;
 
 atomic:
-    const AT typ                                  { parse_typed_const !lnum $3 $1 }
-  | typ const                                     { parse_typed_const !lnum $1 $2 }
-  | defined_var                                   { fun cm vm ym gm -> Avar ($1 cm vm ym gm) }
+    const AT typ                                  { `ACONST { atmtyp = $3; atmvalue = $1; } }
+  | typ const                                     { `ACONST { atmtyp = $1; atmvalue = $2; } }
+  | defined_var                                   { ($1 :> atomic_t) }
   /*| LPAR atomic RPAR                              { fun cm vm ym gm -> $2 cm vm ym gm } source of reduce/reduce conflict*/
 ;
 
@@ -2843,54 +2633,9 @@ var_expansion:
 ;
 
 defined_var:
-  ID
-  {
-    let lno = !lnum in
-    fun _cm vm _ym gm ->
-      try
-        SM.find $1 vm
-      with Not_found ->
-        begin
-          try
-           SM.find $1 gm
-         with Not_found ->
-           raise_at lno ("Variable " ^ $1 ^ " is undefined.")
-        end
-  }
-  | ID AT typ
-  {
-    let lno = !lnum in
-    fun _cm vm _ym gm ->
-      let v =
-        try
-          SM.find $1 vm
-        with Not_found ->
-          begin
-            try
-              SM.find $1 gm
-            with Not_found ->
-              raise_at lno ("Variable " ^ $1 ^ " is undefined.")
-          end in
-      if v.vtyp = $3 then v
-      else raise_at lno ("The type of variable " ^ $1 ^ " is inconsistent")
-  }
-  | typ ID
-  {
-    let lno = !lnum in
-    fun _cm vm _ym gm ->
-      let v =
-        try
-          SM.find $2 vm
-        with Not_found ->
-          begin
-            try
-              SM.find $2 gm
-            with Not_found ->
-              raise_at lno ("Variable " ^ $2 ^ " is undefined.")
-          end in
-      if v.vtyp = $1 then v
-      else raise_at lno ("The type of variable " ^ $2 ^ " is inconsistent")
-  }
+    ID                                            { `AVAR { atmtyphint = None;    atmname = $1; } }
+  | ID AT typ                                     { `AVAR { atmtyphint = Some $3; atmname = $1; } }
+  | typ ID                                        { `AVAR { atmtyphint = Some $1; atmname = $2; } }
 ;
 
 gvars:
@@ -2955,17 +2700,7 @@ complex_const:
 ;
 
 carry:
-    atomic                                        { let _lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let a = $1 cm vm ym gm in
-                                                      match a with
-                                                      | Avar v -> (* if SM.mem v.vname ym then a
-                                                                  else raise_at lno ("Carry variable " ^ string_of_var v ^ " is not defined.") *)
-                                                         Avar v
-                                                      | Aconst (_ty, _n) -> (* if ty = bit_t && check_const_range lno bit_t n = None then a
-                                                                          else raise_at lno ("A carry must be of type \"bit\" and have value 0 or 1") *)
-                                                         a
-                                                  }
+    atomic                                        { $1 }
 ;
 
 typ:
