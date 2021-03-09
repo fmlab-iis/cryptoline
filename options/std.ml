@@ -122,3 +122,12 @@ let auto_cast = ref false
 let auto_cast_preserve_value = ref false
 let typing_file = ref None
 let use_binary_repr = ref false
+
+let keep_temp_files = ref false
+let tmpdir = ref None
+let tmpfile prefix suffix =
+  match !tmpdir with
+  | None -> Filename.temp_file prefix suffix
+  | Some dir -> Filename.temp_file ~temp_dir:dir prefix suffix
+let cleanup files =
+  if not !keep_temp_files then List.iter Unix.unlink files

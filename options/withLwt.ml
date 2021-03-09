@@ -12,3 +12,8 @@ let mutex = Lwt_mutex.create ()
 
 let lock_log () = Lwt_mutex.lock mutex
 let unlock_log () = Lwt_mutex.unlock mutex
+
+
+let cleanup_lwt files =
+  if not !keep_temp_files then Lwt_list.iter_p Lwt_unix.unlink files
+  else Lwt.return_unit

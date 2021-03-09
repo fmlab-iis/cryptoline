@@ -29,6 +29,7 @@ let args =
     ("-disable_rewriting", Clear apply_rewriting, "\n\t     Disable rewriting of assignments (at program level) and equalities\n\t     (at polynomial level)\n");
     ("-isafety", Set incremental_safety, "  Verify program safety incrementally\n");
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), "INT\n\t     Set initial timeout for incremental verification of program safety\n");
+    ("-keep", Set keep_temp_files, "     Keep temporary files\n");
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_system := Macaulay2),
      "PATH\n\t     Use Macaulay2 at the specified path\n");
     ("-magma", String (fun str -> magma_path := str; algebra_system := Magma),
@@ -65,6 +66,8 @@ let args =
     ("-singular", String (fun str -> singular_path := str; algebra_system := Singular),
      "PATH\n\t     Use Singular at the specified path\n");
     ("-slicing", Set apply_slicing, "  Enable slicing\n");
+    ("-tmpdir", String (fun str -> tmpdir := Some str),
+     "PATH\n\t     Specify a directory for temporary files\n");
     ("-stp", String (fun str -> stp_path := str; smt_solver := STP),
      "PATH  Use STP at the specified path\n");
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],

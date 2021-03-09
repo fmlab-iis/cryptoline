@@ -1,4 +1,5 @@
 open Options.Std
+open Options.WithLwt
 open Common
 
 let smtlib2_write_input file es =
@@ -239,9 +240,9 @@ let read_cryptominisat_output file =
   else failwith ("Unknown result from Cryptominisat: " ^ String.concat "\n" lines)
 
 let solve_simp ?timeout:timeout ?(header=[]) fs =
-  let ifile = Filename.temp_file "inputqfbv_" "" in
-  let ofile = Filename.temp_file "outputqfbv_" "" in
-  let errfile = Filename.temp_file "errorqfbv_" "" in
+  let ifile = tmpfile "inputqfbv_" "" in
+  let ofile = tmpfile "outputqfbv_" "" in
+  let errfile = tmpfile "errorqfbv_" "" in
   let res =
     match !smt_solver with
     | Z3 ->
@@ -251,9 +252,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_z3 header ifile ofile errfile
          | Some ti -> run_z3 ~timeout:ti header ifile ofile errfile in
        let%lwt z3_ret = read_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return z3_ret
     | Boolector ->
        let _ =
@@ -265,9 +264,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_boolector header ifile ofile errfile
          | Some ti -> run_boolector ~timeout:ti header ifile ofile errfile in
        let%lwt btor_ret = read_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return btor_ret
     | MathSAT ->
        let _ = smtlib2_write_input ifile fs in
@@ -276,9 +273,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_mathsat header ifile ofile errfile
          | Some ti -> run_mathsat ~timeout:ti header ifile ofile errfile in
        let%lwt ret = read_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return ret
     | STP ->
        let _ = smtlib2_write_input ifile fs in
@@ -287,9 +282,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_stp header ifile ofile errfile
          | Some ti -> run_stp ~timeout:ti header ifile ofile errfile in
        let%lwt ret = read_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return ret
     | Minisat ->
        let ch = open_out ifile in
@@ -299,9 +292,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_minisat header ifile ofile errfile
          | Some ti -> run_minisat ~timeout:ti header ifile ofile errfile in
        let%lwt ret = read_minisat_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return ret
     | Cryptominisat ->
        let ch = open_out ifile in
@@ -311,9 +302,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
          | None -> run_cryptominisat header ifile ofile errfile
          | Some ti -> run_cryptominisat ~timeout:ti header ifile ofile errfile in
        let%lwt ret = read_cryptominisat_output ofile in
-       let%lwt _ = Lwt_unix.unlink ifile in
-       let%lwt _ = Lwt_unix.unlink ofile in
-       let%lwt _ = Lwt_unix.unlink errfile in
+       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
        Lwt.return ret
   in
   res

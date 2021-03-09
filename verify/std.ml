@@ -362,8 +362,8 @@ let read_macaulay2_output ofile =
   String.trim !line
 
 let is_in_ideal vars ideal p =
-  let ifile = Filename.temp_file "inputfgb_" "" in
-  let ofile = Filename.temp_file "outputfgb_" "" in
+  let ifile = tmpfile "inputfgb_" "" in
+  let ofile = tmpfile "outputfgb_" "" in
   let res =
     match !algebra_system with
     | Singular ->
@@ -394,8 +394,7 @@ let is_in_ideal vars ideal p =
        let res = read_macaulay2_output ofile in
        res = "0"
   in
-  let _ = Unix.unlink ifile in
-  let _ = Unix.unlink ofile in
+  let _ = cleanup [ifile; ofile] in
   res
 
 let verify_rspec_single_conjunct s =

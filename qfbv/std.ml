@@ -233,9 +233,9 @@ let read_cryptominisat_output file =
  * Throw TimeoutException if timeout.
 *)
 let solve_simp ?timeout:timeout fs =
-  let ifile = Filename.temp_file "inputqfbv_" "" in
-  let ofile = Filename.temp_file "outputqfbv_" "" in
-  let errfile = Filename.temp_file "errorqfbv_" "" in
+  let ifile = tmpfile "inputqfbv_" "" in
+  let ofile = tmpfile "outputqfbv_" "" in
+  let errfile = tmpfile "errorqfbv_" "" in
   let res =
     match !smt_solver with
     | Z3 ->
@@ -286,8 +286,5 @@ let solve_simp ?timeout:timeout fs =
          | Some ti -> run_cryptominisat ~timeout:ti ifile ofile errfile in
        read_cryptominisat_output ofile
   in
-  let _ = Unix.unlink ifile in
-  let _ = Unix.unlink ofile in
-  let _ = Unix.unlink errfile in
+  let _ = cleanup [ifile; ofile; errfile] in
   res
-
