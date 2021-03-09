@@ -121,9 +121,10 @@ def parse_rule(line):
     if idx5 != '': indices_set.add(int(idx5))
     if idx6 != '': indices_set.add(int(idx6))
   indices = list(indices_set)
-  tokens = map(lambda x: x.strip(), line.split("->"))
+  tokens = list(map(lambda x: x.strip(), line.split("->")))
   pairs = process_builtin_variables(tokens[0], tokens[1], indices)
-  pairs = [(re.sub(r"\s+", "\\s*", lhs.replace(",", " , ").replace("\\n", "\\s*\\n\\s*")), rhs) for (lhs, rhs) in pairs]
+#  pairs = [(re.sub(r"\s+", "\\s*", lhs.replace(",", " , ").replace("\\n", "\\s*\\n\\s*")), rhs) for (lhs, rhs) in pairs]
+  pairs = [(re.sub(r'\s+', 'whitespace', lhs.replace(",", " , ").replace("\\n", "\\s*\\n\\s*")).replace('whitespace', '\\s*'), rhs) for (lhs, rhs) in pairs]
   return pairs
 
 # Parse translation specification in a line
@@ -148,7 +149,7 @@ def parse_tspec(fn, line_parser, line_filter):
     lines = map(line_parser, [item for item in f.readlines() if line_filter(item)])
     substs = substs + [x[0] for x in lines]
     rules = rules + [x[1] for x in lines]
-  substs = sorted(flatten(substs), key=lambda (pat, rep): len(pat), reverse=True)
+  substs = sorted(flatten(substs), key=lambda pat, rep: len(pat), reverse=True)
   return (collections.OrderedDict(substs), collections.OrderedDict(flatten(rules)))
 
 # Parse translation specification in an external file
@@ -173,7 +174,7 @@ def parse_subst(line):
   indices = list(indices_set)
   substs = []
   for pattern in line.split(";"):         # use ';' to split patterns in a line
-    tokens = map(lambda x : x.strip(), pattern.split("="))
+    tokens = list(map(lambda x : x.strip(), pattern.split("=")))
     lhs = re.escape(tokens[0])
     lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
     lhs = lhs.replace('\#', '#')          # arm constants start with '#'
@@ -213,7 +214,7 @@ def translate_instrs(tspec, instrs):
   substs, rules = tspec
   for instr in instrs:
     instr.applySubst()
-    for lhs, rhs in substs.iteritems():
+    for lhs, rhs in substs.items():
       instr.dsl = re.sub(lhs, rhs, instr.dsl)
     instr.applySubst()
   # Apply translation rules
@@ -225,7 +226,7 @@ def translate_instrs(tspec, instrs):
       instr.dsl = nop_instr
       skip = skip - 1
       continue
-    for lhs, rhs in rules.iteritems():
+    for lhs, rhs in rules.items():
       res = instr.dsl
       # Check if the lhs of the rule requires more than one instruction
       lhs_num_lines = lhs.count("\\n") + 1
@@ -269,7 +270,7 @@ def parse_gas(fn):
       if local_subst_comment:
         for subst in parse_subst(local_subst_comment.group(1)):
           instr.addSubst(subst)
-  substs = sorted(flatten(substs), key=lambda (pat, rep): len(pat), reverse=True)
+  substs = sorted(flatten(substs), key=lambda rule: len(rule[0]), reverse=True)
   return ((collections.OrderedDict(substs), collections.OrderedDict(flatten(rules))), instrs)
 
 def print_instrs(instrs):
@@ -283,13 +284,13 @@ def main():
       tspec = parse_external_tspec(sys.argv[2])
     instrs = translate_instrs(tspec, instrs)
     inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split("\n") for instr in instrs]))
-    print "proc main (%s) =" % ", ".join(inputs)
-    print "{\n  true\n  &&\n  true\n}\n"
-    print "\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n"
-    print "{\n  true\n  &&\n  true\n}\n"
+    print ("proc main (%s) =" % ", ".join(inputs))
+    print ("{\n  true\n  &&\n  true\n}\n")
+    print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
+    print ("{\n  true\n  &&\n  true\n}\n")
   else:
-    print "Wrong number of arguments."
-    print "Usage: python " + sys.argv[0] + " ASSEMBLY [SPECIFICATION]"
+    print ("Wrong number of arguments.")
+    print ("Usage: python " + sys.argv[0] + " ASSEMBLY [SPECIFICATION]")
 
 if __name__ == "__main__":
   main()
