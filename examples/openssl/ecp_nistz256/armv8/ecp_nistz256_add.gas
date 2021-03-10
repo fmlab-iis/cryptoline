@@ -1,0 +1,43 @@
+ecp_nistz256_add:
+# x0 = 0x4000839958
+# x1 = 0x4000839918
+# x2 = 0x4000839938
+# x3 = 0x400000110c
+# x4 = 0x0
+# x5 = 0x9a32373cd5824e14
+# x6 = 0x40009f1ad8
+# x7 = 0x10000
+	#! -> SP = 0x4000839900
+	paciasp                                         #! PC = 0x4000027200
+	stp	x29, x30, [sp, #-16]!                       #! EA = L0x40008398f0; PC = 0x4000027204
+	mov	x29, sp                                     #! PC = 0x4000027208
+	ldp	x14, x15, [x1]                              #! EA = L0x4000839918; Value = 0x000000400086cf28; PC = 0x400002720c
+	ldp	x8, x9, [x2]                                #! EA = L0x4000839938; Value = 0x000000400086cf48; PC = 0x4000027210
+	ldp	x16, x17, [x1, #16]                         #! EA = L0x4000839928; Value = 0x0000000000000000; PC = 0x4000027214
+	ldp	x10, x11, [x2, #16]                         #! EA = L0x4000839948; Value = 0x0000000000000000; PC = 0x4000027218
+	ldr	x12, 0x4000027008                           #! PC = 0x400002721c
+	ldr	x13, 0x4000027018                           #! PC = 0x4000027220
+	#bl	0x40000276d0 <__ecp_nistz256_add>           #! PC = 0x4000027224
+	#! -> SP = 0x40008398f0
+	adds	x14, x14, x8                               #! PC = 0x40000276d0
+	adcs	x15, x15, x9                               #! PC = 0x40000276d4
+	adcs	x16, x16, x10                              #! PC = 0x40000276d8
+	adcs	x17, x17, x11                              #! PC = 0x40000276dc
+	adc	x1, xzr, xzr                                #! PC = 0x40000276e0
+	adds	x8, x14, #0x1                              #! PC = 0x40000276e4
+	sbcs	x9, x15, x12                               #! PC = 0x40000276e8
+	sbcs	x10, x16, xzr                              #! PC = 0x40000276ec
+	sbcs	x11, x17, x13                              #! PC = 0x40000276f0
+	sbcs	xzr, x1, xzr                               #! PC = 0x40000276f4
+	csel	x14, x14, x8, cc  // cc = lo, ul, last     #! PC = 0x40000276f8
+	csel	x15, x15, x9, cc  // cc = lo, ul, last     #! PC = 0x40000276fc
+	csel	x16, x16, x10, cc  // cc = lo, ul, last    #! PC = 0x4000027700
+	stp	x14, x15, [x0]                              #! EA = L0x4000839958; PC = 0x4000027704
+	csel	x17, x17, x11, cc  // cc = lo, ul, last    #! PC = 0x4000027708
+	stp	x16, x17, [x0, #16]                         #! EA = L0x4000839968; PC = 0x400002770c
+	#! <- SP = 0x40008398f0
+	#ret                                            #! PC = 0x4000027710
+	ldp	x29, x30, [sp], #16                         #! EA = L0x40008398f0; Value = 0x0000004000839900; PC = 0x4000027228
+	autiasp                                         #! PC = 0x400002722c
+	#! <- SP = 0x4000839900
+	#ret                                            #! PC = 0x4000027230

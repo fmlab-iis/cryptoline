@@ -1,0 +1,46 @@
+ecp_nistz256_div_by_2:
+# x0 = 0x4000839958
+# x1 = 0x4000839918
+# x2 = 0x4000839938
+# x3 = 0x400000110c
+# x4 = 0x400086cf28
+# x5 = 0x400086cf18
+# x6 = 0x0
+# x7 = 0x0
+	#! -> SP = 0x4000839900
+	paciasp                                         #! PC = 0x4000027240
+	stp	x29, x30, [sp, #-16]!                       #! EA = L0x40008398f0; PC = 0x4000027244
+	mov	x29, sp                                     #! PC = 0x4000027248
+	ldp	x14, x15, [x1]                              #! EA = L0x4000839918; Value = 0x000000400086cf28; PC = 0x400002724c
+	ldp	x16, x17, [x1, #16]                         #! EA = L0x4000839928; Value = 0x0000000000000000; PC = 0x4000027250
+	ldr	x12, 0x4000027008                           #! PC = 0x4000027254
+	ldr	x13, 0x4000027018                           #! PC = 0x4000027258
+	#bl	0x40000277c0 <__ecp_nistz256_div_by_2>      #! PC = 0x400002725c
+	#! -> SP = 0x40008398f0
+	subs	x8, x14, #0x1                              #! PC = 0x40000277c0
+	adcs	x9, x15, x12                               #! PC = 0x40000277c4
+	adcs	x10, x16, xzr                              #! PC = 0x40000277c8
+	adcs	x11, x17, x13                              #! PC = 0x40000277cc
+	adc	x1, xzr, xzr                                #! PC = 0x40000277d0
+	tst	x14, #0x1                                   #! PC = 0x40000277d4
+	csel	x14, x14, x8, eq  // eq = none             #! PC = 0x40000277d8
+	csel	x15, x15, x9, eq  // eq = none             #! PC = 0x40000277dc
+	csel	x16, x16, x10, eq  // eq = none            #! PC = 0x40000277e0
+	csel	x17, x17, x11, eq  // eq = none            #! PC = 0x40000277e4
+	csel	x1, xzr, x1, eq  // eq = none              #! PC = 0x40000277e8
+	lsr	x14, x14, #1                                #! PC = 0x40000277ec
+	orr	x14, x14, x15, lsl #63                      #! PC = 0x40000277f0
+	lsr	x15, x15, #1                                #! PC = 0x40000277f4
+	orr	x15, x15, x16, lsl #63                      #! PC = 0x40000277f8
+	lsr	x16, x16, #1                                #! PC = 0x40000277fc
+	orr	x16, x16, x17, lsl #63                      #! PC = 0x4000027800
+	lsr	x17, x17, #1                                #! PC = 0x4000027804
+	stp	x14, x15, [x0]                              #! EA = L0x4000839958; PC = 0x4000027808
+	orr	x17, x17, x1, lsl #63                       #! PC = 0x400002780c
+	stp	x16, x17, [x0, #16]                         #! EA = L0x4000839968; PC = 0x4000027810
+	#! <- SP = 0x40008398f0
+	#ret                                            #! PC = 0x4000027814
+	ldp	x29, x30, [sp], #16                         #! EA = L0x40008398f0; Value = 0x0000004000839900; PC = 0x4000027260
+	autiasp                                         #! PC = 0x4000027264
+	#! <- SP = 0x4000839900
+	#ret                                            #! PC = 0x4000027268
