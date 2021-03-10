@@ -1,4 +1,21 @@
-ecp_nistz256_add:
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+#! x$1c = %%x$1c
+
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adds $1v, $2v, \#$3c -> adds carry $1v $2v $3c@uint64
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! csel $1v, $2v, $3v, cc  // cc = lo, ul, last -> cmov $1v carry $3v $2v
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, 0x4000027008 -> mov $1v L0x4000027008
+#! ldr $1v, 0x4000027018 -> mov $1v L0x4000027018
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs $1v, $2v, xzr -> sbcs carry $1v $2v 0@uint64 carry
+#! sbcs xzr, $1v, xzr -> sbcs carry dontcare $1v 0@uint64 carry
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+
+#ecp_nistz256_add:
 # x0 = 0x4000839958
 # x1 = 0x4000839918
 # x2 = 0x4000839938
@@ -8,9 +25,9 @@ ecp_nistz256_add:
 # x6 = 0x40009f1ad8
 # x7 = 0x10000
 	#! -> SP = 0x4000839900
-	paciasp                                         #! PC = 0x4000027200
-	stp	x29, x30, [sp, #-16]!                       #! EA = L0x40008398f0; PC = 0x4000027204
-	mov	x29, sp                                     #! PC = 0x4000027208
+	#paciasp                                         #! PC = 0x4000027200
+	#stp	x29, x30, [sp, #-16]!                       #! EA = L0x40008398f0; PC = 0x4000027204
+	#mov	x29, sp                                     #! PC = 0x4000027208
 	ldp	x14, x15, [x1]                              #! EA = L0x4000839918; Value = 0x000000400086cf28; PC = 0x400002720c
 	ldp	x8, x9, [x2]                                #! EA = L0x4000839938; Value = 0x000000400086cf48; PC = 0x4000027210
 	ldp	x16, x17, [x1, #16]                         #! EA = L0x4000839928; Value = 0x0000000000000000; PC = 0x4000027214
@@ -37,7 +54,7 @@ ecp_nistz256_add:
 	stp	x16, x17, [x0, #16]                         #! EA = L0x4000839968; PC = 0x400002770c
 	#! <- SP = 0x40008398f0
 	#ret                                            #! PC = 0x4000027710
-	ldp	x29, x30, [sp], #16                         #! EA = L0x40008398f0; Value = 0x0000004000839900; PC = 0x4000027228
-	autiasp                                         #! PC = 0x400002722c
+	#ldp	x29, x30, [sp], #16                         #! EA = L0x40008398f0; Value = 0x0000004000839900; PC = 0x4000027228
+	#autiasp                                         #! PC = 0x400002722c
 	#! <- SP = 0x4000839900
 	#ret                                            #! PC = 0x4000027230
