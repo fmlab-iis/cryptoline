@@ -704,13 +704,7 @@ let run_cli_vsafety id timeout idx instr ifile =
                            "-c vsafety";
                            "-instr " ^ string_of_int idx;
                            "-w " ^ string_of_int !wordsize;
-                           ("-qfbv_solver " ^ Options.Std.string_of_smt_solver !Options.Std.smt_solver);
-                           (if !Options.Std.smt_solver = Options.Std.Boolector then "-boolector " ^ !Options.Std.boolector_path
-                            else if !Options.Std.smt_solver = Options.Std.Z3 then "-z3 " ^ !Options.Std.z3_path
-                            else if !Options.Std.smt_solver = Options.Std.MathSAT then "-mathsat " ^ !Options.Std.mathsat_path
-                            else if !Options.Std.smt_solver = Options.Std.Minisat then "-minisat " ^ !Options.Std.minisat_path
-                            else if !Options.Std.smt_solver = Options.Std.Cryptominisat then "-cryptominisat " ^ !Options.Std.cryptominisat_path
-                            else "");
+                           ("-qfbv_solver " ^ !Options.Std.smt_solver);
                            (if !Options.Std.smt_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.smt_args ^ "\"");
                            (if !Options.Std.use_btor then "-btor"
@@ -806,7 +800,6 @@ let verify_safety_cli f p =
   let filter_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
   let add_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (id, timeout, idx, i)) qs in
   let res = verify_rec (List.rev (add_id (filter_true (add_index p)))) (Solved Unsat, []) in
-  let _ = vprint "\t Overall\t\t\t" in
   let _ = cleanup [ifile] in
   res
 
@@ -868,13 +861,7 @@ let run_cli_vespec header s =
                           [!cli_path;
                            "-c vespec";
                            "-w " ^ string_of_int !wordsize;
-                           ("-qfbv_solver " ^ Options.Std.string_of_smt_solver !Options.Std.smt_solver);
-                           (if !Options.Std.smt_solver = Options.Std.Boolector then "-boolector " ^ !Options.Std.boolector_path
-                            else if !Options.Std.smt_solver = Options.Std.Z3 then "-z3 " ^ !Options.Std.z3_path
-                            else if !Options.Std.smt_solver = Options.Std.MathSAT then "-mathsat " ^ !Options.Std.mathsat_path
-                            else if !Options.Std.smt_solver = Options.Std.Minisat then "-minisat " ^ !Options.Std.minisat_path
-                            else if !Options.Std.smt_solver = Options.Std.Cryptominisat then "-cryptominisat " ^ !Options.Std.cryptominisat_path
-                            else "");
+                           ("-qfbv_solver " ^ !Options.Std.smt_solver);
                            (if !Options.Std.smt_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.smt_args ^ "\"");
                            (if !Options.Std.use_btor then "-btor"
@@ -955,13 +942,7 @@ let run_cli_vrspec header s =
                           [!cli_path;
                            "-c vrspec";
                            "-w " ^ string_of_int !wordsize;
-                           ("-qfbv_solver " ^ Options.Std.string_of_smt_solver !Options.Std.smt_solver);
-                           (if !Options.Std.smt_solver = Options.Std.Boolector then "-boolector " ^ !Options.Std.boolector_path
-                            else if !Options.Std.smt_solver = Options.Std.Z3 then "-z3 " ^ !Options.Std.z3_path
-                            else if !Options.Std.smt_solver = Options.Std.MathSAT then "-mathsat " ^ !Options.Std.mathsat_path
-                            else if !Options.Std.smt_solver = Options.Std.Minisat then "-minisat " ^ !Options.Std.minisat_path
-                            else if !Options.Std.smt_solver = Options.Std.Cryptominisat then "-cryptominisat " ^ !Options.Std.cryptominisat_path
-                            else "");
+                           ("-qfbv_solver " ^ !Options.Std.smt_solver);
                            (if !Options.Std.smt_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.smt_args ^ "\"");
                            (if !Options.Std.use_btor then "-btor"

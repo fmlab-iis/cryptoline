@@ -73,23 +73,23 @@ let verify_safety_inc timeout f p qs =
 
 let verify_safety s =
   let _ = trace "===== Verifying program safety =====" in
-  let verify_one (f, p) =
+  let _ = if !incremental_safety then vprintln "" in
+  let verify_one (i, f, p) =
+    let _ = trace ("=== Verifying program safety incrementally: cut #" ^ string_of_int i ^ " ===") in
+    let _ = if !incremental_safety then vprintln ("\t Cut " ^ string_of_int i) in
     if !incremental_safety && !Options.Std.use_cli then
-      let _ = vprintln "" in
       WithLwt.verify_safety_cli f p
     else if !incremental_safety then
       let round = ref 1 in
       let timeout = ref !incremental_safety_timeout in
       let safety = ref None in
       let qs = ref (bexp_program_safe_conds p) in
-      let _ = vprintln "" in
       let _ =
         while !safety = None do
-          let _ = trace ("=== Verifying program safety incrementally ===") in
           let _ = trace ("Round: " ^ string_of_int !round ^ "\n"
                          ^ "Timeout: " ^ string_of_int !timeout ^ "\n"
                          ^ "Number of safety conditions to be verified: " ^ string_of_int (List.length !qs)) in
-          let _ = vprintln ("\t Round " ^ string_of_int !round ^ " ("
+          let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                                  ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
                                  ^ string_of_int !timeout ^ " seconds)") in
           let res =
@@ -105,7 +105,6 @@ let verify_safety s =
           let _ = timeout := !timeout * 2 in
           ()
         done in
-      let _ = vprint "\t Overall\t\t\t" in
       let res =
         match !safety with
         | Some r -> r
@@ -115,13 +114,15 @@ let verify_safety s =
       let g = bexp_program_safe p in
       let fp = safety_assumptions f p g in
       solve_simp (fp@[g]) = Unsat in
-  let rec cut f visited_rev p =
+  let rec cut i f visited_rev p =
     match p with
-    | [] -> [(f, List.rev visited_rev)]
-    | Ircut (e, _)::tl -> (f, List.rev visited_rev)::cut e [] tl
-    | Iecut _::tl -> cut f visited_rev tl (* Drop Iecut *)
-    | hd::tl -> cut f (hd::visited_rev) tl in
-  List.for_all verify_one (cut (rng_bexp s.spre) [] s.sprog)
+    | [] -> [(i, f, List.rev visited_rev)]
+    | Ircut (e, _)::tl -> (i, f, List.rev visited_rev)::cut (i+1) e [] tl
+    | Iecut _::tl -> cut i f visited_rev tl (* Drop Iecut *)
+    | hd::tl -> cut i f (hd::visited_rev) tl in
+  let res = List.for_all verify_one (cut 0 (rng_bexp s.spre) [] s.sprog) in
+  let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
+  res
 
 let write_singular_input ifile vars gen p =
   let input_text =

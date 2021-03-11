@@ -1,5 +1,4 @@
 
-type smt_solver = Z3 | Boolector | MathSAT | STP | Minisat | Cryptominisat
 
 type algebra_system =
   | Singular
@@ -14,7 +13,7 @@ type variable_order =
   | RevLexOrder
   | RevAppearingOrder
 
-val default_solver : smt_solver
+val default_solver : string
 val default_algebra : algebra_system
 
 val wordsize : int ref
@@ -26,9 +25,8 @@ val stp_path : string ref
 val minisat_path : string ref
 val cryptominisat_path : string ref
 
-val smt_solver : smt_solver ref
+val smt_solver : string ref
 val smt_args : string ref
-val string_of_smt_solver : smt_solver -> string
 
 val use_btor : bool ref
 

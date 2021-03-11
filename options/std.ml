@@ -1,6 +1,4 @@
 
-type smt_solver = Z3 | Boolector | MathSAT | STP | Minisat | Cryptominisat
-
 type algebra_system =
   | Singular
   | Sage
@@ -14,7 +12,7 @@ type variable_order =
   | RevLexOrder
   | RevAppearingOrder
 
-let default_solver = Boolector
+let default_solver = "boolector"
 
 let default_algebra = Singular
 
@@ -29,14 +27,6 @@ let cryptominisat_path = ref "cryptominisat5"
 
 let smt_solver = ref default_solver
 let smt_args = ref ""
-let string_of_smt_solver s =
-  match s with
-  | Boolector -> "boolector"
-  | Z3 -> "z3"
-  | MathSAT -> "mathsat"
-  | STP -> "stp"
-  | Minisat -> "minisat"
-  | Cryptominisat -> "cryptominisat"
 
 let use_btor = ref false
 
