@@ -665,11 +665,24 @@ let rsle w e1 e2 = Rcmp (w, Rsle, e1, e2)
 let rsgt w e1 e2 = Rcmp (w, Rsgt, e1, e2)
 let rsge w e1 e2 = Rcmp (w, Rsge, e1, e2)
 (* unsigned version of eqmod *)
-let reqmod w e1 e2 m = req w (rumod w e1 m) (rumod w e2 m)
-let requmod w e1 e2 m = req w (rumod w e1 m) (rumod w e2 m)
+(* `reqmod w e1 e2 m` holds iff `((to_int e1) - (to_int e2)) mod (to_int m) = 0` *)
+let reqmod w e1 e2 m =
+  req (w+1) (rsmod (w+1)
+               (rsub (w+1) (Ruext (w, e1, 1)) (Ruext (w, e2, 1)))
+               (Ruext (w, m, 1)))
+            (rconst (w+1) Z.zero)
+let requmod w e1 e2 m = reqmod w e1 e2 m
 (* signed version of eqmod *)
-let reqsmod w e1 e2 m = req w (rsmod w (rsub w e1 e2) m) (rconst w Z.zero)
-let reqsrem w e1 e2 m = req w (rsrem w (rsub w e1 e2) m) (rconst w Z.zero)
+let reqsmod w e1 e2 m =
+  req (w+1) (rsmod (w+1)
+               (rsub (w+1) (Rsext (w, e1, 1)) (Rsext (w, e2, 1)))
+               (Rsext (w, m, 1)))
+            (rconst (w+1) Z.zero)
+let reqsrem w e1 e2 m =
+  req (w+1) (rsrem (w+1)
+               (rsub (w+1) (Rsext (w, e1, 1)) (Rsext (w, e2, 1)))
+               (Rsext (w, m, 1)))
+            (rconst (w+1) Z.zero)
 
 let rneg e =
   match e with
