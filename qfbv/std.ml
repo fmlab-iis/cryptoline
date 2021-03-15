@@ -62,7 +62,7 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
   Lwt_main.run task'
 
 let read_smt_output ofile errfile =
-  let cmd = "grep timeout " ^ errfile ^ " &> /dev/null" in
+  let cmd = "grep timeout " ^ errfile ^ " 2>&1 1>/dev/null" in (* `&>/dev/null` works on Mac but not on Linux *)
   match Unix.system cmd with
   | Unix.WEXITED 0 -> raise TimeoutException (* grep found *)
   | _ ->
