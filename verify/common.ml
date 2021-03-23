@@ -1244,7 +1244,7 @@ let polys_of_espec vgen s =
 let rec singular_of_eexp e =
   match e with
   | Evar v -> string_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
   | Ebinop (op, e1, e2) ->
