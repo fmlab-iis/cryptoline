@@ -53,7 +53,10 @@ let rec exp_rexp e =
       | Rsmod -> Smod (w, exp_rexp e1, exp_rexp e2)
       | Randb -> And (w, exp_rexp e1, exp_rexp e2)
       | Rorb -> Or (w, exp_rexp e1, exp_rexp e2)
-      | Rxorb -> Xor (w, exp_rexp e1, exp_rexp e2))
+      | Rxorb -> Xor (w, exp_rexp e1, exp_rexp e2)
+      | Rshl -> Shl (w, exp_rexp e1, exp_rexp e2)
+      | Rlshr -> Lshr (w, exp_rexp e1, exp_rexp e2)
+      | Rashr -> Ashr (w, exp_rexp e1, exp_rexp e2))
   | Ruext (w, e, i) -> ZeroExtend (w, i, exp_rexp e)
   | Rsext (w, e, i) -> SignExtend (w, i, exp_rexp e)
 

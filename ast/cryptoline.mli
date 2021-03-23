@@ -79,6 +79,9 @@ type rbinop =
   | Randb
   | Rorb
   | Rxorb
+  | Rshl
+  | Rlshr
+  | Rashr
 
 type rcmpop =
   | Rult
@@ -172,6 +175,9 @@ val rsmod : size -> rexp -> rexp -> rexp
 val randb : size -> rexp -> rexp -> rexp
 val rorb : size -> rexp -> rexp -> rexp
 val rxorb : size -> rexp -> rexp -> rexp
+val rshl : size -> rexp -> rexp -> rexp
+val rlshr : size -> rexp -> rexp -> rexp
+val rashr : size -> rexp -> rexp -> rexp
 val rsq : size -> rexp -> rexp
 val radds : size -> rexp list -> rexp
 val rmuls : size -> rexp list -> rexp

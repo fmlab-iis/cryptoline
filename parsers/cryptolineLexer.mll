@@ -127,6 +127,10 @@
               "sle"                        , SLE;
               "sgt"                        , SGT;
               "sge"                        , SGE;
+              "shr"                        , SHR;
+              "lsr"                        , SHR;
+              "sar"                        , SAR;
+              "asr"                        , SAR;
               (********** Predicates **********)
               "true"                       , TRUE;
               "eq"                         , EQ;
@@ -217,6 +221,9 @@ token = parse
   | ">s"                           { upd_cnum lexbuf; SGTOP }
   | "<="                           { upd_cnum lexbuf; ULEOP }
   | ">="                           { upd_cnum lexbuf; UGEOP }
+  | "<<"                           { upd_cnum lexbuf; SHLOP }
+  | ">>a"                          { upd_cnum lexbuf; SAROP }
+  | ">>"                           { upd_cnum lexbuf; SHROP }
   | "<"                            { upd_cnum lexbuf; ULTOP }
   | ">"                            { upd_cnum lexbuf; UGTOP }
   | '='                            { upd_cnum lexbuf; EQOP }

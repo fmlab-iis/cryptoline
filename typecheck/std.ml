@@ -19,7 +19,7 @@ type rspec =
     rsprog : lined_program;
     rspost : rbexp;
     rspwss : prove_with_spec list }
-  
+
 (** Well-formedness *)
 
 let gvs_instr i =

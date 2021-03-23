@@ -181,7 +181,7 @@
          let v = mkvar lvname ty in
          if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
          else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
-      
+
   let parse_imov_at lno dest src =
     fun _fm cm vm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
@@ -1251,7 +1251,7 @@
       (vm1, ym1, gm1, List.rev_append prog prog_rev) in
     let (vm, ym, gm, p') = List.fold_left helper (vm, ym, gm, []) instrs in
     (vm, ym, gm, List.rev p')
-      
+
 %}
 
 %token <string> COMMENT
@@ -1268,11 +1268,11 @@
 %token SHL CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
-%token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
+%token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP
+%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
 %token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP
 %token EOF
@@ -1283,12 +1283,13 @@
 %left OROP
 %left XOROP
 %left ANDOP
+%left SHLOP SHROP SAROP
 %left ADDOP SUBOP
 %left MULOP
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
-%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE
+%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHR SAR
 %nonassoc EQ EQMOD
 %nonassoc UMINUS
 
@@ -2306,6 +2307,40 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
+
+  | SHL rexp rexp                                 { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rshl, e1, e2) }
+  | SHR rexp rexp                                 { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rlshr, e1, e2) }
+  | SAR rexp rexp                                 { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rashr, e1, e2) }
   | ADD LSQUARE rexps RSQUARE                     { let lno = !lnum in
                                                     fun cm vm ym gm ->
                                                       let es = $3 cm vm ym gm in
@@ -2418,6 +2453,39 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
+  | rexp SHLOP rexp                               { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $1 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rshl, e1, e2) }
+  | rexp SHROP rexp                               { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $1 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rlshr, e1, e2) }
+  | rexp SAROP rexp                               { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $1 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rashr, e1, e2) }
   /* Errors */
   | CONST const error                             { raise_at !lnum "Please specify the bit-width of a constant in range predicates" }
   | const error                                   { raise_at !lnum "Please specify the bit-width of a constant in range predicates" }

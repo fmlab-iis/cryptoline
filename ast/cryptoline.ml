@@ -165,6 +165,9 @@ type rbinop =
   | Randb
   | Rorb
   | Rxorb
+  | Rshl
+  | Rlshr
+  | Rashr
 
 type rcmpop =
   | Rult
@@ -234,6 +237,9 @@ let string_of_rbinop op =
   | Randb -> "and"
   | Rorb -> "or"
   | Rxorb -> "xor"
+  | Rshl -> "shl"
+  | Rlshr -> "lshr"
+  | Rashr -> "ashr"
 
 
 
@@ -503,6 +509,9 @@ let rsmod w e1 e2 = Rbinop (w, Rsmod, e1, e2)
 let randb w e1 e2 = Rbinop (w, Randb, e1, e2)
 let rorb w e1 e2 = Rbinop (w, Rorb, e1, e2)
 let rxorb w e1 e2 = Rbinop (w, Rxorb, e1, e2)
+let rshl w e1 e2 = Rbinop (w, Rshl, e1, e2)
+let rlshr w e1 e2 = Rbinop (w, Rlshr, e1, e2)
+let rashr w e1 e2 = Rbinop (w, Rashr, e1, e2)
 let rsq w e = Rbinop (w, Rmul, e, e)
 (*let radds w es = List.fold_left (fun res e -> radd w e res) (rconst w Z.zero) es
 let rmuls w es = List.fold_left (fun res e -> rmul w e res) (rconst w Z.one) es*)
