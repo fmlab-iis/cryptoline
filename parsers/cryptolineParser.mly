@@ -101,9 +101,56 @@
     | `ACONST of aconst_prim_t
   ]
 
-  let parse_typed_const _lno ty n_token =
+  let num_two = Z.of_int 2
+
+  let num_of_bit b =
+    if b = '0'
+    then Z.zero
+    else if b = '1'
+         then Z.one
+         else failwith ("Unrecognized bit " ^ Char.escaped b)
+
+  let num_of_bits bits =
+    let rec helper res bits =
+      match bits with
+      | [] -> res
+      | hd::tl -> helper (Z.add (Z.mul res num_two) (num_of_bit hd)) tl in
+    helper Z.zero bits
+
+  let parse_typed_const lno ty n_token =
     fun cm _vm _ym _gm ->
     let n = n_token cm in
+    let size = size_of_typ ty in
+    (* Normalize the number: convert to non-negative integer *)
+    let n =
+      match ty with
+      | Tuint _ -> if Z.lt n Z.zero
+                   then raise_at lno ("The number " ^ Z.to_string n ^ " is expected to be non-negative")
+                   else n
+      | Tsint w -> if Z.lt n Z.zero
+                   then let n = Z.add n (Z.pow num_two w) in
+                        if Z.lt n Z.zero
+                        then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty)
+                        else n
+                   else n in
+    (* Normalize the number: convert to bit vector *)
+    let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
+    let _ = if List.length bits > size then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
+    (* Normalize the number: convert back to integer *)
+    let n =
+      match ty with
+      | Tuint _ -> num_of_bits bits
+      | Tsint w ->
+         if w = 0 then Z.zero
+         else
+           begin
+             match bits with
+             | [] -> Z.zero
+             | sign::rest -> let n = num_of_bits rest in
+                             if sign = '1' then Z.sub n (Z.pow num_two (w - 1))
+                             else n
+           end
+    in
     Aconst (ty, n)
 
   let resolve_var_with lno (`AVAR {atmtyphint; atmname}) _cm vm _ym gm =

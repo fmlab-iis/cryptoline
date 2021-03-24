@@ -10,7 +10,7 @@ exception TimeoutException
 
 type exp =
   | Var of var
-  | Const of size * Z.t
+  | Const of size * Z.t                 (* Const (w, n) is a bit-vector with width w and unsigned value |n| *)
   | Not of size * exp
   | And of size * exp * exp
   | Or of size * exp * exp
