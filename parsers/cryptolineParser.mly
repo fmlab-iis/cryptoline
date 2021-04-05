@@ -92,6 +92,7 @@
   type lv_token_t = [
     | `LVPLAIN of lv_prim_t
     | `LVCARRY of lv_prim_t
+    | `LVVECT of (lv_prim_t list)
     | `LV of lv_prim_t
   ]
    *)
@@ -229,12 +230,15 @@
          if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
          else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
 
-  let parse_imov_at lno dest src =
-    fun _fm cm vm ym gm ->
-      let a = resolve_atomic_with lno src cm vm ym gm in
-      let ty = typ_of_atomic a in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imov (v, a)])
+  let parse_imov_at lno dest_tok src =
+    match dest_tok with
+    | `LVPLAIN dest ->
+      fun _fm cm vm ym gm ->
+        let a = resolve_atomic_with lno src cm vm ym gm in
+        let ty = typ_of_atomic a in
+        let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
+        (vm, ym, gm, [lno, Imov (v, a)])
+    | `LVVECT _ -> raise_at lno ("Vector literal is WIP.")
 
   let parse_ishl_at lno dest src num =
     fun _fm cm vm ym gm ->
@@ -1115,7 +1119,7 @@
 
   let recognize_instr_at lno instr fm cm vm ym gm =
       match instr with
-      | `MOV (`LVPLAIN dest, src) ->
+      | `MOV (dest, src) ->
          parse_imov_at lno dest src fm cm vm ym gm
       | `SHL (`LVPLAIN dest, src, num) ->
          parse_ishl_at lno dest src num fm cm vm ym gm
@@ -1290,6 +1294,7 @@
       | `CALL (id, actuals) ->
          parse_call_at lno id actuals fm cm vm ym gm
       | `NOP -> (vm, ym, gm, [])
+      | _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")
 
   let parse_instrs instrs fm cm vm ym gm =
     let helper (vm0, ym0, gm0, prog_rev) (lno, instr0) =
@@ -1503,7 +1508,7 @@ instrs:
 
 instr:
     MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
-  | lhs EQOP atomic                           { (!lnum, `MOV  (`LVPLAIN $1, $3)) }
+  | lhs EQOP atomic                           { (!lnum, `MOV (`LVPLAIN $1, $3)) }
   | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
@@ -2558,10 +2563,19 @@ rexps:
 ;
 
 lval:
-    ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
-  | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
+    lval_single                                   { `LVPLAIN $1 }
+  | LSQUARE lval_list RSQUARE                     { `LVVECT $2 }
+;
+
+lval_single:
+    ID                                            { { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { { lvname = $2; lvtyphint = Some $1; } }
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+
+lval_list:
+    lval_single                                   { [$1] }
+  | lval_single COMMA lval_list                   { $1::$3 }
 ;
 
 lcarry:
@@ -2573,7 +2587,7 @@ lcarry:
 lval_or_lcarry:
     ID                                            { `LV { lvname = $1; lvtyphint = None; } }
   | ID AT typ                                     { `LV { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } } 
+  | typ ID                                        { `LV { lvname = $2; lvtyphint = Some $1; } }
 ;
 
 lhs:
