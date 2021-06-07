@@ -459,8 +459,8 @@ let bexp_instr i =
   | Ijoin (v, ah, al) -> bexp_join v ah al
   | Iassert _e -> True
   | Iassume e -> bexp_rbexp (rng_bexp e)
-  | Iecut (_e, _) -> True (* Ignore the algebraic part when verifying the range part. *)
-  | Ircut (_e, _) -> failwith "Internal error: rcut cannot appear in a program when verifying the range part."
+  | Icut (_, _hd::_tl) -> failwith "Internal error: Icut with range properties cannot appear in a program when verifying the range part."
+  | Icut _ -> True (* Ignore other cases of Icut. *)
   | Ighost (_vs, e) -> bexp_rbexp (rng_bexp e)
 
 let bexp_program p = List.map bexp_instr p
@@ -679,8 +679,7 @@ let bexp_instr_safe i =
   | Ijoin (_v, _ah, _al) -> True
   | Iassert _ -> True
   | Iassume _ -> True
-  | Iecut _ -> True
-  | Ircut _ -> True
+  | Icut _ -> True
   | Ighost _ -> True
 
 (* A safety condition to be verified is a tuple (id, instr, cond) *)
@@ -880,8 +879,8 @@ let bv2z_instr vgen i =
       [bv2z_join (evar v) (bv2z_atomic ah) (bv2z_atomic al) (size_of_atomic al)])
   | Iassert _e -> (vgen, [])
   | Iassume e -> (vgen, split_eand (eqn_bexp e))
-  | Iecut (_e, _) -> failwith "Internal error: ecut cannot appear in a program when verifying the algebraic part."
-  | Ircut (_e, _) -> (vgen, []) (* Ignore the range part when verifying the algebraic part. *)
+  | Icut (_hd::_tl, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
+  | Icut _ -> (vgen, []) (* Ignore other cases of Icut. *)
   | Ighost (_, e) -> (vgen, split_eand (eqn_bexp e))
 
 let rec bv2z_program vgen p =

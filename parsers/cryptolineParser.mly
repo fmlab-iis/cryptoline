@@ -985,20 +985,20 @@
     fun _fm cm vm ym gm ->
       (vm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
 
-  let parse_cut_at lno bexp_prove_with_token =
+  let parse_cut_at lno bexp_prove_with_list_token =
     fun _fm cm vm ym gm ->
-      let ((e, r), epwss, rpwss) = bexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [lno, Iecut (e, epwss); lno, Ircut (r, rpwss)])
+      let (ecuts, rcuts) = bexp_prove_with_list_token cm vm ym gm in
+      (vm, ym, gm, [lno, Icut (ecuts, rcuts)])
 
-  let parse_ecut_at lno ebexp_prove_with_token =
+  let parse_ecut_at lno ebexp_prove_with_list_token =
     fun _fm cm vm ym gm ->
-    let (e, epwss) = ebexp_prove_with_token cm vm ym gm in
-    (vm, ym, gm, [lno, Iecut (e, epwss)])
+    let ecuts = ebexp_prove_with_list_token cm vm ym gm in
+    (vm, ym, gm, [lno, Icut (ecuts, [])])
 
-  let parse_rcut_at lno rbexp_prove_with_token =
+  let parse_rcut_at lno rbexp_prove_with_list_token =
     fun _fm cm vm ym gm ->
-      let (r, rpwss) = rbexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [lno, Ircut (r, rpwss)])
+      let rcuts = rbexp_prove_with_list_token cm vm ym gm in
+      (vm, ym, gm, [lno, Icut ([], rcuts)])
 
   let parse_ghost_at lno gvars_token bexp_token =
     fun _fm cm vm ym gm ->
@@ -1279,12 +1279,12 @@
          parse_assert_at lno bexp fm cm vm ym gm
       | `ASSUME bexp ->
          parse_assume_at lno bexp fm cm vm ym gm
-      | `CUT bexp_prove_with ->
-         parse_cut_at lno bexp_prove_with fm cm vm ym gm
-      | `ECUT ebexp_prove_with ->
-         parse_ecut_at lno ebexp_prove_with fm cm vm ym gm
-      | `RCUT rbexp_prove_with ->
-         parse_rcut_at lno rbexp_prove_with fm cm vm ym gm
+      | `CUT bexp_prove_with_list ->
+         parse_cut_at lno bexp_prove_with_list fm cm vm ym gm
+      | `ECUT ebexp_prove_with_list ->
+         parse_ecut_at lno ebexp_prove_with_list fm cm vm ym gm
+      | `RCUT rbexp_prove_with_list ->
+         parse_rcut_at lno rbexp_prove_with_list fm cm vm ym gm
       | `GHOST (gvars, bexp) ->
          parse_ghost_at lno gvars bexp fm cm vm ym gm
       | `CALL (id, actuals) ->
@@ -1663,9 +1663,9 @@ instr:
   | lhs EQOP JOIN atomic atomic               { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
   | ASSERT bexp                               { (!lnum, `ASSERT $2) }
   | ASSUME bexp                               { (!lnum, `ASSUME $2) }
-  | CUT bexp_prove_with                       { (!lnum, `CUT $2) }
-  | ECUT ebexp_prove_with                     { (!lnum, `ECUT $2) }
-  | RCUT rbexp_prove_with                     { (!lnum, `RCUT $2) }
+  | CUT bexp_prove_with_list                  { (!lnum, `CUT $2) }
+  | ECUT ebexp_prove_with_list                { (!lnum, `ECUT $2) }
+  | RCUT rbexp_prove_with_list                { (!lnum, `RCUT $2) }
   | GHOST gvars COLON bexp                    { (!lnum, `GHOST ($2, $4)) }
   /* Extensions */
   | CALL ID LPAR actuals RPAR                 { (!lnum, `CALL ($2, $4)) }
@@ -1730,14 +1730,38 @@ instr:
   | CALL error                                { raise_at !lnum ("Bad call instruction") }
 ;
 
+ebexp_prove_with_list:
+  ebexp_prove_with                                { fun cm vm ym gm -> [($1 cm vm ym gm)] }
+| ebexp_prove_with COMMA ebexp_prove_with_list    { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
+;
+
+rbexp_prove_with_list:
+  rbexp_prove_with                                { fun cm vm ym gm -> [($1 cm vm ym gm)] }
+| rbexp_prove_with COMMA rbexp_prove_with_list    { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
+;
+
+bexp_prove_with_list:
+  TRUE                                            { fun _cm _vm _ym _gm -> ([(etrue, [])], [(rtrue, [])]) }
+| ebexp_prove_with_list VBAR rbexp_prove_with_list
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $3 cm vm ym gm) }
+;
+
 ebexp_prove_with:
   ebexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
-| ebexp PROVE WITH prove_with_specs               { fun cm vm ym gm -> ($1 cm vm ym gm, $4) }
+| ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+| ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
+| ebexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
+| ebexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
 ;
 
 rbexp_prove_with:
   rbexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
-| rbexp PROVE WITH prove_with_specs               { fun cm vm ym gm -> ($1 cm vm ym gm, $4) }
+| rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+| rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
+| rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
+| rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
 ;
 
 bexp_prove_with:

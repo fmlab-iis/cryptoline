@@ -38,6 +38,12 @@ let apply_to_option f d ox =
   | None -> d
   | Some x -> f x
 
+let map_fst f pairs =
+  List.map (fun (e1, e2) -> (f e1, e2)) pairs
+
+let map_snd f pairs =
+  List.map (fun (e1, e2) -> (e1, f e2)) pairs
+
 
 (** Types *)
 
@@ -890,8 +896,9 @@ type instr =
   (* Specifications *)
   | Iassert of bexp
   | Iassume of bexp
-  | Iecut of ebexp * prove_with_spec list
-  | Ircut of rbexp * prove_with_spec list
+  | Icut of (ebexp * prove_with_spec list) list * (rbexp * prove_with_spec list) list (* Icut (ecuts, rcuts): cuts both algebra and range.
+                                                                                         Icut ([], rcuts): cuts only range.
+                                                                                         Icut (ecuts, []): cuts only algebra *)
   | Ighost of VS.t * bexp
 
 type program = instr list
@@ -996,8 +1003,14 @@ let string_of_instr ?typ:(typ=false) i =
   (* Specifications *)
   | Iassert e -> "assert " ^ string_of_bexp ~typ:typ e
   | Iassume e -> "assume " ^ string_of_bexp ~typ:typ e
-  | Iecut (e, pwss) -> "ecut " ^ string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss))
-  | Ircut (e, pwss) -> "rcut " ^ string_of_rbexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss))
+  | Icut (ecuts, rcuts) ->
+     let string_of_ecut (e, pwss) = string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss)) in
+     let string_of_rcut (e, pwss) = string_of_rbexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss)) in
+     (match ecuts, rcuts with
+      | [], [] -> "skip"
+      | [], _ -> "rcut " ^ String.concat ", " (List.map string_of_rcut rcuts)
+      | _, [] -> "ecut " ^ String.concat ", " (List.map string_of_ecut ecuts)
+      | _, _ -> "cut " ^ String.concat ", " (List.map string_of_ecut ecuts) ^ " && " ^ String.concat ", " (List.map string_of_rcut rcuts))
   | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
 let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"
@@ -1060,8 +1073,10 @@ let vars_instr i =
   | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atomic ah) (vars_atomic al))
   | Iassert e
   | Iassume e -> vars_bexp e
-  | Iecut (e, _) -> vars_ebexp e
-  | Ircut (e, _) -> vars_rbexp e
+  | Icut (ecuts, rcuts) ->
+     let evars = List.map vars_ebexp (fst (List.split ecuts)) in
+     let rvars = List.map vars_rbexp (fst (List.split rcuts)) in
+     VS.union (List.fold_left VS.union VS.empty evars) (List.fold_left VS.union VS.empty rvars)
   | Ighost (vs, e) -> VS.union vs (vars_bexp e)
 
 let vars_program p = List.fold_left (fun res i -> VS.union (vars_instr i) res) VS.empty p
@@ -1105,8 +1120,7 @@ let lvs_instr i =
   | Ijoin (v, _, _) -> VS.singleton v
   | Iassert _
   | Iassume _
-  | Iecut _
-  | Ircut _
+  | Icut _
   | Ighost _ -> VS.empty
 
 let lvs_program p = List.fold_left (fun res i -> VS.union (lvs_instr i) res) VS.empty p
@@ -1151,8 +1165,10 @@ let rvs_instr i =
   | Ijoin (_, ah, al) -> VS.union (vars_atomic ah) (vars_atomic al)
   | Iassert e
   | Iassume e -> vars_bexp e
-  | Iecut (e, _) -> vars_ebexp e
-  | Ircut (e, _) -> vars_rbexp e
+  | Icut (ecuts, rcuts) ->
+     let evars = List.map vars_ebexp (fst (List.split ecuts)) in
+     let rvars = List.map vars_rbexp (fst (List.split rcuts)) in
+     VS.union (List.fold_left VS.union VS.empty evars) (List.fold_left VS.union VS.empty rvars)
   | Ighost (_, e) -> vars_bexp e
 
 let rvs_program p = List.fold_left (fun res i -> VS.union (rvs_instr i) res) VS.empty p
@@ -1197,8 +1213,7 @@ let lcarries_instr i =
   | Ijoin _
   | Iassert _
   | Iassume _
-  | Iecut _
-  | Ircut _
+  | Icut _
   | Ighost _ -> VS.empty
 
 let lcarries_program p = List.fold_left (fun res i -> VS.union (lcarries_instr i) res) VS.empty p
@@ -1301,8 +1316,7 @@ let subst_instr pats i =
   | Ijoin (v, ah, al) -> Ijoin (subst_lval pats v, subst_atomic pats ah, subst_atomic pats al)
   | Iassert e -> Iassert (subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
   | Iassume e -> Iassume (subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
-  | Iecut (e, pwss) -> Iecut (subst_ebexp (pats_to_epats pats) e, pwss)
-  | Ircut (e, pwss) -> Ircut (subst_rbexp (pats_to_rpats pats) e, pwss)
+  | Icut (ecuts, rcuts) -> Icut (map_fst (fun e -> subst_ebexp (pats_to_epats pats) e) ecuts, map_fst (fun e -> subst_rbexp (pats_to_rpats pats) e) rcuts)
   | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval pats) (VS.elements vs)), subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
 
 let subst_program pats p = List.map (subst_instr pats) p
@@ -1314,7 +1328,7 @@ let eprove_with_filter pwss (pre, instrs) =
   let extract_ebexps instrs =
     let extractor i =
       match i with
-        Iecut (e, _) -> [e]
+        Icut (ecuts, _) -> fst (List.split ecuts)
       | Iassume e -> [eqn_bexp e]
       | Ighost (_, e) -> [eqn_bexp e]
       | _ -> [] in
@@ -1322,7 +1336,7 @@ let eprove_with_filter pwss (pre, instrs) =
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
-    | AllCuts -> (fun i -> match i with Iecut _ -> true | _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
   let filter =
@@ -1337,7 +1351,7 @@ let rprove_with_filter pwss (pre, instrs) =
   let extract_rbexps instrs =
     let extractor i =
       match i with
-        Ircut (e, _) -> [e]
+        Icut (_, rcuts) -> fst (List.split rcuts)
       | Iassume e -> [rng_bexp e]
       | Ighost (_, e) -> [rng_bexp e]
       | _ -> [] in
@@ -1345,7 +1359,7 @@ let rprove_with_filter pwss (pre, instrs) =
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
-    | AllCuts -> (fun i -> match i with Ircut _ -> true | _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
   let filter =
@@ -1691,8 +1705,7 @@ let ssa_instr m i =
      (m, Ijoin (ssa_var m v, ah, al))
   | Iassert e -> (m, Iassert (ssa_bexp m e))
   | Iassume e -> (m, Iassume (ssa_bexp m e))
-  | Iecut (e, pwss) -> (m, Iecut (ssa_ebexp m e, pwss))
-  | Ircut (e, pwss) -> (m, Ircut (ssa_rbexp m e, pwss))
+  | Icut (ecuts, rcuts) -> (m, Icut (map_fst (fun e -> ssa_ebexp m e) ecuts, map_fst (fun e -> ssa_rbexp m e) rcuts))
   | Ighost (vs, e) -> (m, Ighost (VS.of_list (List.map (ssa_var m) (VS.elements vs)), ssa_bexp m e))
 
 let ssa_program m p =
@@ -1718,7 +1731,7 @@ let ssa_spec s =
 
 (*
  * Cut algebra specifications in SSA.
- * Note that this function removes all Ircut instructions.
+ * Note that this function removes all range properties in Icut instructions.
  *)
 let cut_espec es =
   let rec helper res (precond, before_rev, after_rev) (pre, visited_rev, prog, post) =
@@ -1727,13 +1740,17 @@ let cut_espec es =
        let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, List.rev before_rev)) in
        let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = post; espwss = [] } in
        spec::res
-    | (Iecut (e, pwss) as hd)::tl ->
-       let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, List.rev before_rev)) in
-       let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = e; espwss = [] } in
-       helper (spec::res) (precond, after_rev@before_rev, [hd]) (e, [], tl, post)
+    | (Icut ([], _))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
+    | (Icut (ecuts, _) as hd)::tl ->
+       let specs = List.fold_left (
+                       fun res (e, pwss) ->
+                       let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, List.rev before_rev)) in
+                       let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = e; espwss = [] } in
+                       spec::res
+                     ) [] ecuts in
+       helper (specs @ res) (precond, after_rev@before_rev, [hd]) (eands (fst (List.split ecuts)), [], tl, post)
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | Ircut _::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
   List.rev (helper [] (es.espre, [], []) (es.espre, [], es.esprog, es.espost))
 
@@ -1748,13 +1765,17 @@ let cut_rspec rs =
        let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, List.rev before_rev)) in
        let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = post; rspwss = [] } in
        spec::res
-    | (Ircut (e, pwss) as hd)::tl ->
-       let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, List.rev before_rev)) in
-       let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = e; rspwss = [] } in
-       helper (spec::res) (precond, after_rev@before_rev, [hd]) (e, [], tl, post)
+    | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
+    | (Icut (_, rcuts) as hd)::tl ->
+       let specs = List.fold_left (
+                       fun res (e, pwss) ->
+                       let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, List.rev before_rev)) in
+                       let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = e; rspwss = [] } in
+                       spec::res
+                     ) [] rcuts in
+       helper (specs @ res) (precond, after_rev@before_rev, [hd]) (rands (fst (List.split rcuts)), [], tl, post)
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | Iecut _::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
   List.rev (helper [] (rs.rspre, [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
 
@@ -1848,7 +1869,7 @@ let slice_bexp vars e = (slice_ebexp vars (eqn_bexp e), slice_rbexp vars (rng_be
 (*
  * Slice a program according to a specified initial set of variables.
  * The set of variables will be increased during slicing.
- * The program should not contain any Iecut or Ircut.
+ * The program should not contain any Icut.
  * Assertions will be removed by this function.
  * This function may remove some necessary assumptions.
  * For example, vars = {x, y}.
@@ -1871,8 +1892,7 @@ let slice_program vars p =
          | Iassert _e -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
                          helper (VS.union vars (vars_bexp e')) (if e' = btrue then res else Iassume e'::res) tl
-         | Iecut (_e, _pwss) -> failwith ("A program with Iecut cannot be sliced.")
-         | Ircut (_e, _pwss) -> failwith ("A program with Ircut cannot be sliced.")
+         | Icut _ -> failwith ("A program with Icut cannot be sliced.")
          | Ighost (vs, e) -> if vs_disjoint vars vs then helper vars res tl
                               else helper (VS.union vars (vars_bexp e)) (hd::res) tl
          | _ ->
@@ -1913,8 +1933,7 @@ let slice_program_ssa vars p =
          | Iassert _e -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
                          helper vars (if e' = btrue then res else Iassume e'::res) tl
-         | Iecut _ -> failwith ("A program with Iecut cannot be sliced.")
-         | Ircut _ -> failwith ("A program with Ircut cannot be sliced.")
+         | Icut _ -> failwith ("A program with Icut cannot be sliced.")
          | Ighost (vs, e) -> let e' = slice_bexp vars e in
                               helper vars (if e' = btrue then res else Ighost (vs, e')::res) tl
          | _ ->
@@ -1927,15 +1946,13 @@ let program_vars_sat vars p_rev =
   vars_sat (fun vars i -> match i with
                           | Iassert _ -> true
                           | Iassume _ -> false
-                          | Iecut _ -> failwith ("A program with Iecut cannot be sliced.")
-                          | Ircut _ -> failwith ("A program with Ircut cannot be sliced.")
+                          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
                           | Ighost _ -> false
                           | _ -> vs_disjoint vars (lvs_instr i))
            (fun vars i -> match i with
                           | Iassert _ -> failwith "Iassert should not appear in program_vars_sat"
                           | Iassume e -> bexp_vars_sat vars e
-                          | Iecut _ -> failwith "Iecut should not appear in program_vars_sat"
-                          | Ircut _ -> failwith "Ircut should not appear in program_vars_sat"
+                          | Icut _ -> failwith "Icut should not appear in program_vars_sat"
                           | Ighost (_vs, e) -> bexp_vars_sat vars e
                           | _ -> VS.union vars (vars_instr i))
            vars p_rev
@@ -2119,8 +2136,7 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
   (* Specifications *)
   | Iassert _e -> [i]
   | Iassume _e -> [i]
-  | Iecut (_e, _pwss) -> [i]
-  | Ircut (_e, _pwss) -> [i]
+  | Icut _ -> [i]
   | Ighost (_vs, _e) -> [i]
 
 let auto_cast_instr ?preserve:(preserve=false) (vt, ct) i =
@@ -2363,8 +2379,7 @@ let visit_instr visitor i =
         (* Specifications *)
         | Iassert e -> Iassert (visit_bexp visitor e)
         | Iassume e -> Iassume (visit_bexp visitor e)
-        | Iecut (e, pwss) -> Iecut (visit_ebexp visitor e, pwss)
-        | Ircut (e, pwss) -> Ircut (visit_rbexp visitor e, pwss)
+        | Icut (ecuts, rcuts) -> Icut (map_fst (visit_ebexp visitor) ecuts, map_fst (visit_rbexp visitor) rcuts)
         | Ighost (vs, e) -> Ighost (VS.map (visit_var visitor) vs, visit_bexp visitor e))
 
 let visit_program visitor p =

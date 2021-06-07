@@ -139,9 +139,9 @@ instr:
   | JOIN lval atomic atomic                       { [min_int, Ijoin ($2, $3, $4)] }
   | ASSERT bexp                                   { [min_int, Iassert ($2)] }
   | ASSUME bexp                                   { [min_int, Iassume ($2)] }
-  | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Iecut (e, epwss); min_int, Ircut (r, rpwss)] }
-  | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [min_int, Iecut (e, epwss)] }
-  | RCUT rbexp_prove_with                         { let (r, rpwss) = $2 in [min_int, Ircut (r, rpwss)] }
+  | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Icut ([(e, epwss)], [(r, rpwss)])] }
+  | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [min_int, Icut ([(e, epwss)], [])] }
+  | RCUT rbexp_prove_with                         { let (r, rpwss) = $2 in [min_int, Icut ([], [(r, rpwss)])] }
   | GHOST gvars COLON bexp                        { [min_int, Ighost ($2, $4)] }
   | NOP                                           { [] }
 ;
@@ -182,7 +182,7 @@ bexp:
 ;
 
 ebexp:
-    ebexp_atomic AND ebexp                        { Eand ($1, $3) }
+    ebexp_atomic LANDOP ebexp                     { Eand ($1, $3) }
   | ebexp_atomic                                  { $1 }
 ;
 

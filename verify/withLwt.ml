@@ -505,7 +505,8 @@ let verify_eassert vgen s =
         | Iassert e::tl ->
            let promise = mk_promise epre evisited e in
            verify res (promise::pending) epre evisited tl
-        | Iecut (e, _)::tl -> verify res pending e [] tl
+        | Icut ([], _)::tl -> verify res pending epre evisited tl
+        | Icut (ecuts, _)::tl -> verify res pending (eands (fst (List.split ecuts))) [] tl
         | hd::tl ->
            verify res pending epre (hd::evisited) tl
       else
@@ -534,7 +535,8 @@ let verify_rassert _vgen s =
         | Iassert e::tl ->
            let promise = mk_promise rpre rvisited e in
            verify res (promise::pending) rpre rvisited tl
-        | Ircut (e, _)::tl -> verify res pending e [] tl
+        | Icut (_, [])::tl -> verify res pending rpre rvisited tl
+        | Icut (_, rcuts)::tl -> verify res pending (rands (fst (List.split rcuts))) [] tl
         | hd::tl ->
            verify res pending rpre (hd::rvisited) tl
       else
@@ -570,8 +572,9 @@ let verify_assert vgen s =
         | Iassert e::tl ->
            let promise = mk_promise (epre, rpre) (evisited, rvisited) e in
            verify res (promise::pending) (epre, rpre) (evisited, rvisited) tl
-        | Iecut (e, _)::tl -> verify res pending (e, rpre) ([], rvisited) tl
-        | Ircut (e, _)::tl -> verify res pending (epre, e) (evisited, []) tl
+        | Icut (ecuts, [])::tl -> verify res pending (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
+        | Icut ([], rcuts)::tl -> verify res pending (epre, rands (fst (List.split rcuts))) (evisited, []) tl
+        | Icut (ecuts, rcuts)::tl -> verify res pending (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
         | hd::tl ->
            verify res pending (epre, rpre) (hd::evisited, hd::rvisited) tl
       else
@@ -1007,7 +1010,8 @@ let verify_eassert_cli s =
                            [fun () -> verify (i+1) epre evisited tl]
                          ] in
        List.for_all (fun f -> f()) verifiers
-    | Iecut (e, _)::tl -> verify i e [] tl
+    | Icut ([], _)::tl -> verify i epre evisited tl
+    | Icut (ecuts, _)::tl -> verify i (eands (fst (List.split ecuts))) [] tl
     | hd::tl -> verify i epre (hd::evisited) tl in
   verify 0 (eqn_bexp s.spre) [] s.sprog
 
@@ -1027,7 +1031,8 @@ let verify_rassert_cli s =
                            [fun () -> verify (i+1) rpre rvisited tl]
                          ] in
        List.for_all (fun f -> f()) verifiers
-    | Ircut (e, _)::tl -> verify i e [] tl
+    | Icut (_, [])::tl -> verify i rpre rvisited tl
+    | Icut (_, rcuts)::tl -> verify i (rands (fst (List.split rcuts))) [] tl
     | hd::tl -> verify i rpre (hd::rvisited) tl in
   verify 0 (rng_bexp s.spre) [] s.sprog
 
@@ -1053,7 +1058,8 @@ let verify_assert_cli s =
                            [fun () -> verify (i+1) (epre, rpre) (evisited, rvisited) tl]
                          ] in
        List.for_all (fun f -> f()) verifiers
-    | Iecut (e, _)::tl -> verify i (e, rpre) ([], rvisited) tl
-    | Ircut (e, _)::tl -> verify i (epre, e) (evisited, []) tl
+    | Icut (ecuts, [])::tl -> verify i (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
+    | Icut ([], rcuts)::tl -> verify i (epre, rands (fst (List.split rcuts))) (evisited, []) tl
+    | Icut (ecuts, rcuts)::tl -> verify i (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
     | hd::tl -> verify i (epre, rpre) (hd::evisited, hd::rvisited) tl in
   verify 0 (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog

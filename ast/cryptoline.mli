@@ -4,6 +4,10 @@ val z_two : Z.t
 val apply_to_some : ('a -> 'b) -> 'a option -> 'b option
 val apply_to_option : ('a -> 'b) -> 'b -> 'a option -> 'b
 
+val map_fst : ('a -> 'c) -> ('a * 'b) list -> ('c * 'b) list
+val map_snd : ('b -> 'c) -> ('a * 'b) list -> ('a * 'c) list
+
+
 (** Types *)
 
 type size = int
@@ -330,8 +334,7 @@ type instr =
   (* Specifications *)
   | Iassert of bexp
   | Iassume of bexp
-  | Iecut of ebexp * prove_with_spec list
-  | Ircut of rbexp * prove_with_spec list
+  | Icut of (ebexp * prove_with_spec list) list * (rbexp * prove_with_spec list) list
   | Ighost of VS.t * bexp
 
 type program = instr list

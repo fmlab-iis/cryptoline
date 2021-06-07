@@ -263,8 +263,9 @@ let illformed_instr_reason vs cs gs lno i =
     | Ijoin (v, ah, al) -> [defined_atomics [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size lno v ah al]
     | Iassert e
       | Iassume e -> [defined_bexp e]
-    | Iecut (e, _) -> [defined_ebexp e]
-    | Ircut (e, _) -> [defined_rbexp e]
+    | Icut (ecuts, rcuts) ->
+       (List.map defined_ebexp (fst (List.split ecuts)))
+       @ (List.map defined_rbexp (fst (List.split rcuts)))
     | Ighost (gvs, e) -> [defined_ghost gvs e; ghost_disjoint gvs]
   in
   chain_reasons reasons

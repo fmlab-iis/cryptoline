@@ -117,8 +117,10 @@ let verify_safety s =
   let rec cut i f visited_rev p =
     match p with
     | [] -> [(i, f, List.rev visited_rev)]
-    | Ircut (e, _)::tl -> (i, f, List.rev visited_rev)::cut (i+1) e [] tl
-    | Iecut _::tl -> cut i f visited_rev tl (* Drop Iecut *)
+    | Icut (_, [])::tl -> cut i f visited_rev tl (* Drop Icut without range properties *)
+    | Icut (_, rcuts)::tl ->
+       let e = rands (fst (List.split rcuts)) in
+       (i, f, List.rev visited_rev)::cut (i+1) e [] tl
     | hd::tl -> cut i f (hd::visited_rev) tl in
   let res = List.for_all verify_one (cut 0 (rng_bexp s.spre) [] s.sprog) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
@@ -489,7 +491,8 @@ let verify_eassert vgen s =
        List.for_all (fun f -> f())
          [ (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
            (fun () -> verify epre evisited tl) ]
-    | Iecut (e, _)::tl -> verify e [] tl
+    | Icut ([], _)::tl -> verify epre evisited tl
+    | Icut (ecuts, _)::tl -> verify (eands (fst (List.split ecuts))) [] tl
     | hd::tl -> verify epre (hd::evisited) tl in
   verify (eqn_bexp s.spre) [] s.sprog
 
@@ -504,7 +507,8 @@ let verify_rassert _vgen s =
        List.for_all (fun f -> f())
          [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
            (fun () -> verify rpre rvisited tl) ]
-    | Ircut (e, _)::tl -> verify e [] tl
+    | Icut (_, [])::tl -> verify rpre rvisited tl
+    | Icut (_, rcuts)::tl -> verify (rands (fst (List.split rcuts))) [] tl
     | hd::tl -> verify rpre (hd::rvisited) tl in
   verify (rng_bexp s.spre) [] s.sprog
 
@@ -521,8 +525,9 @@ let verify_assert vgen s =
          [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
            (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
            (fun () -> verify (epre, rpre) (evisited, rvisited) tl) ]
-    | Iecut (e, _)::tl -> verify (e, rpre) ([], rvisited) tl
-    | Ircut (e, _)::tl -> verify (epre, e) (evisited, []) tl
+    | Icut (ecuts, [])::tl -> verify (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
+    | Icut ([], rcuts)::tl -> verify (epre, rands (fst (List.split rcuts))) (evisited, []) tl
+    | Icut (ecuts, rcuts)::tl -> verify (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
     | hd::tl -> verify (epre, rpre) (hd::evisited, hd::rvisited) tl in
   verify (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
 
