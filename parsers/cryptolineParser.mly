@@ -65,9 +65,16 @@
    *)
 (*   type atomic_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> atomic *)
 
+  type typ_vec = typ * int
+
   type lv_prim_t = {
     lvtyphint: typ option;
     lvname: string;
+  }
+
+  type vec_prim_t = {
+    vectyphint: typ_vec option;
+    vecname: string;
   }
 
   type avar_prim_t = {
@@ -100,6 +107,11 @@
   type atomic_t = [
     | `AVAR of avar_prim_t
     | `ACONST of aconst_prim_t
+  ]
+
+  type vec_atomic_t = [
+    | `AVPAT of (string list)
+    | `AVECT of vec_prim_t
   ]
 
   let num_two = Z.of_int 2
@@ -230,18 +242,22 @@
          if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
          else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
 
-  let parse_imov_at lno dest_tok src =
-    match dest_tok with
-    | `LVPLAIN dest ->
-      fun _fm cm vm ym gm ->
+  let parse_imov_at lno dest_tok (src_tok: [atomic_t | vec_atomic_t]) =
+    match src_tok with
+    | `AVAR _
+    | `ACONST _ as src -> (
+      fun _fm cm vm vxm ym gm ->
         let a = resolve_atomic_with lno src cm vm ym gm in
         let ty = typ_of_atomic a in
-        let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-        (vm, ym, gm, [lno, Imov (v, a)])
-    | `LVVECT _ -> raise_at lno ("Vector literal is WIP.")
+        match dest_tok with
+        | `LVPLAIN dest -> (
+          let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
+          (vm, vxm, ym, gm, [lno, Imov (v, a)]))
+        | _ -> raise_at lno (Printf.sprintf "A scalar lvalue expected."))
+    | _ -> raise_at lno ("Vector literal in RHS is WIP.")
 
   let parse_ishl_at lno dest src num =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let ty = typ_of_atomic a in
       let n = num cm in
@@ -252,10 +268,10 @@
           raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                         ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
-      (vm, ym, gm, [lno, Ishl (v, a, n)])
+      (vm, vxm, ym, gm, [lno, Ishl (v, a, n)])
 
   let parse_cshl_at lno destH destL src1 src2 num =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
@@ -264,227 +280,227 @@
         resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) =
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
+      (vm, vxm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
 
   let parse_set_at lno dest =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
-      (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.one)) ])
+      (vm, vxm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.one)) ])
 
   let parse_clear_at lno dest =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
-      (vm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.zero))])
+      (vm, vxm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.zero))])
 
   let parse_nondet_at lno dest =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, ym, gm, [lno, Inondet v])
+      (vm, vxm, ym, gm, [lno, Inondet v])
 
   let parse_cmov_at lno dest carry src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let c = resolve_atomic_with lno carry cm vm ym gm in
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Icmov (v, c, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Icmov (v, c, a1, a2)])
 
   let parse_add_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_adds_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_addr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_adc_at lno dest src1 src2 (carry : atomic_t) =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_adcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_adcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_sub_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isub (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_subc_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_subb_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_subr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_sbc_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_sbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_sbcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_sbb_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_sbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_sbbr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_mul_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imul (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_muls_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_mulr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_mull_at lno destH destL src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) =
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_mulj_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_split_at lno destH destL src num =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let n = num cm in
       let ty = typ_of_atomic a in
@@ -496,202 +512,202 @@
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_uadd_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_uadds_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_uaddr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_uadc_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_uadcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_uadcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_usub_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isub (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_usubc_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_usubb_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_usubr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_usbc_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_usbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_usbcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_usbb_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_usbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_usbbr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_umul_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imul (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_umuls_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_umulr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_umull_at lno destH destL src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_umulj_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_usplit_at lno destH destL src num =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let n = num cm in
       let ty = typ_of_atomic a in
@@ -702,203 +718,203 @@
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_sadd_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadd (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
 
   let parse_sadds_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
 
   let parse_saddr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
 
   let parse_sadc_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
   let parse_sadcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
 
   let parse_sadcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
 
   let parse_ssub_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isub (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
 
   let parse_ssubc_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
 
   let parse_ssubb_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
 
   let parse_ssubr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Isubr (c, v, a1, a2)])
 
   let parse_ssbc_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
   let parse_ssbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
 
   let parse_ssbcr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
 
   let parse_ssbb_at lno dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
   let parse_ssbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
 
   let parse_ssbbr_at lno flag dest src1 src2 carry =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
+      (vm, vxm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
 
   let parse_smul_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imul (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
 
   let parse_smuls_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
 
   let parse_smulr_at lno flag dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulr (c, v, a1, a2)])
 
   let parse_smull_at lno destH destL src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) =
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
 
   let parse_smulj_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let ty = typ_of_atomic a1 in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, ym, gm, [lno, Imulj (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
 
   let parse_ssplit_at lno destH destL src num =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let n = num cm in
       let ty = typ_of_atomic a in
@@ -910,37 +926,37 @@
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
-      (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
   let parse_and_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, ym, gm, [lno, Iand (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Iand (v, a1, a2)])
 
   let parse_or_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, ym, gm, [lno, Ior (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Ior (v, a1, a2)])
 
   let parse_xor_at lno dest src1 src2 =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, ym, gm, [lno, Ixor (v, a1, a2)])
+      (vm, vxm, ym, gm, [lno, Ixor (v, a1, a2)])
 
   let parse_not_at lno dest src =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, ym, gm, [lno, Inot (v, a)])
+      (vm, vxm, ym, gm, [lno, Inot (v, a)])
 
   let parse_cast_at lno optlv dest src =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let (vm, ym, gm, v) =
         resolve_lv_or_lcarry_with lno dest cm vm ym gm in
@@ -964,48 +980,48 @@
 		   (vm, ym, gm, Some d) in
 	  (* the discarded part must be a ghost variable *)
 	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
-      (vm, ym, gm, [lno, Icast (od, v, a)])
+      (vm, vxm, ym, gm, [lno, Icast (od, v, a)])
 
   let parse_vpc_at lno dest src =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_or_lcarry_with lno dest cm vm ym gm in
-      (vm, ym, gm, [lno, Ivpc (v, a)])
+      (vm, vxm, ym, gm, [lno, Ivpc (v, a)])
 
   let parse_join_at lno dest srcH srcL =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let ah = resolve_atomic_with lno srcH cm vm ym gm in
       let al = resolve_atomic_with lno srcL cm vm ym gm in
       let ty = typ_of_atomic ah in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, ym, gm, [lno, Ijoin (v, ah, al)])
+      (vm, vxm, ym, gm, [lno, Ijoin (v, ah, al)])
 
   let parse_assert_at lno bexp_token =
-    fun _fm cm vm ym gm ->
-      (vm, ym, gm, [lno, Iassert (bexp_token cm vm ym gm)])
+    fun _fm cm vm vxm ym gm ->
+      (vm, vxm, ym, gm, [lno, Iassert (bexp_token cm vm ym gm)])
 
   let parse_assume_at lno bexp_token =
-    fun _fm cm vm ym gm ->
-      (vm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
+    fun _fm cm vm vxm ym gm ->
+      (vm, vxm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
 
   let parse_cut_at lno bexp_prove_with_token =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let ((e, r), epwss, rpwss) = bexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [lno, Iecut (e, epwss); lno, Ircut (r, rpwss)])
+      (vm, vxm, ym, gm, [lno, Iecut (e, epwss); lno, Ircut (r, rpwss)])
 
   let parse_ecut_at lno ebexp_prove_with_token =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
     let (e, epwss) = ebexp_prove_with_token cm vm ym gm in
-    (vm, ym, gm, [lno, Iecut (e, epwss)])
+    (vm, vxm, ym, gm, [lno, Iecut (e, epwss)])
 
   let parse_rcut_at lno rbexp_prove_with_token =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let (r, rpwss) = rbexp_prove_with_token cm vm ym gm in
-      (vm, ym, gm, [lno, Ircut (r, rpwss)])
+      (vm, vxm, ym, gm, [lno, Ircut (r, rpwss)])
 
   let parse_ghost_at lno gvars_token bexp_token =
-    fun _fm cm vm ym gm ->
+    fun _fm cm vm vxm ym gm ->
       let gvars = gvars_token cm vm ym gm in
       let gm = vm_of_vs (VS.union gvars (vs_of_vm gm)) in
       let e = bexp_token cm vm ym gm in
@@ -1013,7 +1029,7 @@
       let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
       if List.length bad_ebexps > 0 then raise_at lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
       else if List.length bad_rbexps > 0 then raise_at lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
-      else (vm, ym, gm, [lno, Ighost (gvars, e)])
+      else (vm, vxm, ym, gm, [lno, Ighost (gvars, e)])
 
   let is_type_compatible formal actual =
     match actual with
@@ -1021,7 +1037,7 @@
     | Aconst (ty, _n) -> formal.vtyp = ty
 
   let parse_call_at lno fname_token actuals_token =
-    fun fm cm vm ym gm ->
+    fun fm cm vm vxm ym gm ->
       (* The function name *)
       let fname = fname_token in
       (* The function definition *)
@@ -1115,200 +1131,204 @@
       let vsp = subst_varmap fvs in
       let ysp = subst_varmap fys in
       let gsp = subst_varmap fgs in
-      (vm_of_vs (update_varset vs vsp), vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
+      (* FIXME: update vxm *)
+      (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
 
-  let recognize_instr_at lno instr fm cm vm ym gm =
+  let recognize_instr_at lno instr fm cm vm vxm ym gm =
       match instr with
       | `MOV (dest, src) ->
-         parse_imov_at lno dest src fm cm vm ym gm
+        parse_imov_at lno dest (src :> [vec_atomic_t | atomic_t]) fm cm vm vxm ym gm
+      | `VMOV (dest, src) ->
+         parse_imov_at lno dest (src :> [vec_atomic_t | atomic_t]) fm cm vm vxm ym gm
       | `SHL (`LVPLAIN dest, src, num) ->
-         parse_ishl_at lno dest src num fm cm vm ym gm
+         parse_ishl_at lno dest src num fm cm vm vxm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
-         parse_cshl_at lno destH destL src1 src2 num fm cm vm ym gm
+         parse_cshl_at lno destH destL src1 src2 num fm cm vm vxm ym gm
       | `SET (`LVCARRY dest) ->
-         parse_set_at lno dest fm cm vm ym gm
+         parse_set_at lno dest fm cm vm vxm ym gm
       | `CLEAR (`LVCARRY dest) ->
-         parse_clear_at lno dest fm cm vm ym gm
+         parse_clear_at lno dest fm cm vm vxm ym gm
       | `NONDET (`LVPLAIN dest) ->
-         parse_nondet_at lno dest fm cm vm ym gm
+         parse_nondet_at lno dest fm cm vm vxm ym gm
       | `CMOV (`LVPLAIN dest, carry, src1, src2) ->
-         parse_cmov_at lno dest carry src1 src2 fm cm vm ym gm
+         parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
       | `ADD (`LVPLAIN dest, src1, src2) ->
-         parse_add_at lno dest src1 src2 fm cm vm ym gm
+         parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
       | `ADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_adds_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_adds_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `ADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_addr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_addr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `ADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_adc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_adc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `ADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_adcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_adcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `ADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_adcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_adcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SUB (`LVPLAIN dest, src1, src2) ->
-         parse_sub_at lno dest src1 src2 fm cm vm ym gm
+         parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_subc_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_subb_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_subb_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_subr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_subr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sbc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_sbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sbcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sbb_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_sbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `MUL (`LVPLAIN dest, src1, src2) ->
-         parse_mul_at lno dest src1 src2 fm cm vm ym gm
+         parse_mul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `MULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_muls_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_muls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `MULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_mulr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_mulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `MULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_mull_at lno destH destL src1 src2 fm cm vm ym gm
+         parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `MULJ (`LVPLAIN dest, src1, src2) ->
-         parse_mulj_at lno dest src1 src2 fm cm vm ym gm
+         parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_split_at lno destH destL src num fm cm vm ym gm
+         parse_split_at lno destH destL src num fm cm vm vxm ym gm
       | `UADD (`LVPLAIN dest, src1, src2) ->
-         parse_uadd_at lno dest src1 src2 fm cm vm ym gm
+         parse_uadd_at lno dest src1 src2 fm cm vm vxm ym gm
       | `UADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_uadds_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_uadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_uaddr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_uaddr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_uadc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_uadc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `UADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_uadcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_uadcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `UADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_uadcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_uadcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `USUB (`LVPLAIN dest, src1, src2) ->
-         parse_usub_at lno dest src1 src2 fm cm vm ym gm
+         parse_usub_at lno dest src1 src2 fm cm vm vxm ym gm
       | `USUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_usubc_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_usubc_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `USUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_usubb_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_usubb_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `USUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_usubr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_usubr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `USBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_usbc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_usbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `USBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_usbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `USBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_usbcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `USBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_usbb_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_usbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `USBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_usbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `USBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_usbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `UMUL (`LVPLAIN dest, src1, src2) ->
-         parse_umul_at lno dest src1 src2 fm cm vm ym gm
+         parse_umul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `UMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_umuls_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_umuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_umulr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_umulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_umull_at lno destH destL src1 src2 fm cm vm ym gm
+         parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `UMULJ (`LVPLAIN dest, src1, src2) ->
-         parse_umulj_at lno dest src1 src2 fm cm vm ym gm
+         parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_usplit_at lno destH destL src num fm cm vm ym gm
+         parse_usplit_at lno destH destL src num fm cm vm vxm ym gm
       | `SADD (`LVPLAIN dest, src1, src2) ->
-         parse_sadd_at lno dest src1 src2 fm cm vm ym gm
+         parse_sadd_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_sadds_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_sadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_saddr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_saddr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sadc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_sadc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sadcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sadcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SADCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sadcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_sadcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SSUB (`LVPLAIN dest, src1, src2) ->
-         parse_ssub_at lno dest src1 src2 fm cm vm ym gm
+         parse_ssub_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SSUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_ssubc_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_ssubc_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SSUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_ssubb_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_ssubb_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SSUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_ssubr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_ssubr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SSBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbc_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_ssbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SSBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbcs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_ssbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SSBCR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbcr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_ssbcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SSBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbb_at lno dest src1 src2 carry fm cm vm ym gm
+         parse_ssbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SSBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbbs_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_ssbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SSBBR (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbbr_at lno flag dest src1 src2 carry fm cm vm ym gm
+         parse_ssbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SMUL (`LVPLAIN dest, src1, src2) ->
-         parse_smul_at lno dest src1 src2 fm cm vm ym gm
+         parse_smul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_smuls_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_smuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_smulr_at lno flag dest src1 src2 fm cm vm ym gm
+         parse_smulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_smull_at lno destH destL src1 src2 fm cm vm ym gm
+         parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `SMULJ (`LVPLAIN dest, src1, src2) ->
-         parse_smulj_at lno dest src1 src2 fm cm vm ym gm
+         parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_ssplit_at lno destH destL src num fm cm vm ym gm
+         parse_ssplit_at lno destH destL src num fm cm vm vxm ym gm
       | `AND (`LVPLAIN dest, src1, src2) ->
-         parse_and_at lno dest src1 src2 fm cm vm ym gm
+         parse_and_at lno dest src1 src2 fm cm vm vxm ym gm
       | `OR (`LVPLAIN dest, src1, src2) ->
-         parse_or_at lno dest src1 src2 fm cm vm ym gm
+         parse_or_at lno dest src1 src2 fm cm vm vxm ym gm
       | `XOR (`LVPLAIN dest, src1, src2) ->
-         parse_xor_at lno dest src1 src2 fm cm vm ym gm
+         parse_xor_at lno dest src1 src2 fm cm vm vxm ym gm
       | `NOT (`LVPLAIN dest, src) ->
-         parse_not_at lno dest src fm cm vm ym gm
+         parse_not_at lno dest src fm cm vm vxm ym gm
       | `CAST (optlv, `LV dest, src) ->
-         parse_cast_at lno optlv dest src fm cm vm ym gm
+         parse_cast_at lno optlv dest src fm cm vm vxm ym gm
       | `VPC (`LV dest, src) ->
-         parse_vpc_at lno dest src fm cm vm ym gm
+         parse_vpc_at lno dest src fm cm vm vxm ym gm
       | `JOIN (`LVPLAIN dest, srcH, srcL) ->
-         parse_join_at lno dest srcH srcL fm cm vm ym gm
+         parse_join_at lno dest srcH srcL fm cm vm vxm ym gm
       | `ASSERT bexp ->
-         parse_assert_at lno bexp fm cm vm ym gm
+         parse_assert_at lno bexp fm cm vm vxm ym gm
       | `ASSUME bexp ->
-         parse_assume_at lno bexp fm cm vm ym gm
+         parse_assume_at lno bexp fm cm vm vxm ym gm
       | `CUT bexp_prove_with ->
-         parse_cut_at lno bexp_prove_with fm cm vm ym gm
+         parse_cut_at lno bexp_prove_with fm cm vm vxm ym gm
       | `ECUT ebexp_prove_with ->
-         parse_ecut_at lno ebexp_prove_with fm cm vm ym gm
+         parse_ecut_at lno ebexp_prove_with fm cm vm vxm ym gm
       | `RCUT rbexp_prove_with ->
-         parse_rcut_at lno rbexp_prove_with fm cm vm ym gm
+         parse_rcut_at lno rbexp_prove_with fm cm vm vxm ym gm
       | `GHOST (gvars, bexp) ->
-         parse_ghost_at lno gvars bexp fm cm vm ym gm
+         parse_ghost_at lno gvars bexp fm cm vm vxm ym gm
       | `CALL (id, actuals) ->
-         parse_call_at lno id actuals fm cm vm ym gm
-      | `NOP -> (vm, ym, gm, [])
-      | _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")
+         parse_call_at lno id actuals fm cm vm vxm ym gm
+      | `NOP -> (vm, vxm, ym, gm, [])
+      (*| _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")*)
 
   let parse_instrs instrs fm cm vm ym gm =
-    let helper (vm0, ym0, gm0, prog_rev) (lno, instr0) =
-      let (vm1, ym1, gm1, prog) =
-        recognize_instr_at lno instr0 fm cm vm0 ym0 gm0 in
-      (vm1, ym1, gm1, List.rev_append prog prog_rev) in
-    let (vm, ym, gm, p') = List.fold_left helper (vm, ym, gm, []) instrs in
-    (vm, ym, gm, List.rev p')
+    let reducer (vm0, vxm0, ym0, gm0, prog_rev) (lno, instr0) =
+      let (vm, vxm, ym, gm, prog) =
+        recognize_instr_at lno instr0 fm cm vm0 vxm0 ym0 gm0 in
+      (vm, vxm, ym, gm, List.rev_append prog prog_rev) in
+    let vxm = SM.empty in
+    let (vm, _vxm, ym, gm, prog_rev) = List.fold_left reducer (vm, vxm, ym, gm, []) instrs in
+    (vm, ym, gm, List.rev prog_rev)
 
 %}
 
 %token <string> COMMENT
 %token <Z.t> NUM
-%token <string> ID
+%token <string> ID VEC_ID
 %token <int> UINT SINT
 %token BIT
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
@@ -1349,6 +1369,7 @@
 %start prog
 %type <(Ast.Cryptoline.VS.t * Typecheck.Std.spec)> spec
 %type <Ast.Cryptoline.lined_program> prog
+%type <vec_atomic_t> atomic_vector
 
 %%
 
@@ -1508,6 +1529,7 @@ instrs:
 
 instr:
     MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
+  | MOV lval_vector atomic_vector             { (!lnum, `VMOV ($2, $3)) }
   | lhs EQOP atomic                           { (!lnum, `MOV (`LVPLAIN $1, $3)) }
   | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
@@ -2563,20 +2585,20 @@ rexps:
 ;
 
 lval:
-    lval_single                                   { `LVPLAIN $1 }
-  | LSQUARE lval_list RSQUARE                     { `LVVECT $2 }
-;
-
-lval_single:
-    ID                                            { { lvname = $1; lvtyphint = None; } }
-  | ID AT typ                                     { { lvname = $1; lvtyphint = Some $3; } }
-  | typ ID                                        { { lvname = $2; lvtyphint = Some $1; } }
+    ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
+  | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
+  | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
-
-lval_list:
-    lval_single                                   { [$1] }
-  | lval_single COMMA lval_list                   { $1::$3 }
 ;
+
+lval_vector:
+    VEC_ID                                        { `LVVLIT { vecname = $1; vectyphint = None; } }
+  | VEC_ID AT typ_vec                             { `LVVLIT { vecname = $1; vectyphint = Some $3; } }
+  | lval_scalars                                  { `LVVPAT $1 }
+
+lval_scalars:
+                                                  { [] }
+  | lval COMMA lval_scalars                       { $1::$3 }
 
 lcarry:
     ID                                            { `LVCARRY { lvname = $1; lvtyphint = None; } }
@@ -2692,6 +2714,15 @@ atomic:
   /*| LPAR atomic RPAR                              { fun cm vm ym gm -> $2 cm vm ym gm } source of reduce/reduce conflict*/
 ;
 
+atomic_vector:
+    VEC_ID                                        { `AVECT { vecname = $1; vectyphint = None; } }
+  | VEC_ID AT typ_vec                             { `AVECT { vecname = $1; vectyphint = Some $3; } }
+  | LBRAC atomic_scalars RBRAC                    { `AVPAT $2 }
+
+atomic_scalars:
+                                                  { [] }
+  | ID COMMA atomic_scalars                       { $1::$3 }
+
 var_expansion:
   ID OROP NUM DOTDOT NUM
   {
@@ -2790,4 +2821,9 @@ typ:
   | SINT                                          { if $1 > 0 then int_t $1
                                                     else raise_at !lnum ("The big-with must be positive") }
   | BIT                                           { bit_t }
+;
+
+typ_vec:
+  typ LSQUARE UINT RSQUARE                        { if $3 > 0 then ($1, $3)
+                                                    else raise_at !lnum ("Vector length must be positive") }
 ;
