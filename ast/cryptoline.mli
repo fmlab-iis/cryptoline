@@ -351,7 +351,7 @@ val atomic_is_const : atomic -> bool
 val atomic_is_signed : atomic -> bool
 val string_of_atomic : ?typ:bool -> atomic -> string
 val string_of_instr : ?typ:bool -> instr -> string
-val string_of_program : ?typ:bool -> program -> string
+val string_of_program : ?insert_nop:bool -> ?typ:bool -> program -> string
 
 val vars_atomic : atomic -> VS.t
 val vars_instr : instr -> VS.t
@@ -550,3 +550,8 @@ val visit_instr : visitor -> instr -> instr
 val visit_program : visitor -> program -> program
 val visit_lined_program : visitor -> lined_program -> lined_program
 val visit_spec : visitor -> spec -> spec
+
+val separate_assertions : spec -> spec list
+val move_asserts : spec -> spec
+val spec_to_coq_cryptoline : spec -> spec list
+val infer_input_variables : spec -> VS.t

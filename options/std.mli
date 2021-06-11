@@ -92,3 +92,5 @@ val keep_temp_files : bool ref
 val tmpdir : string option ref
 val tmpfile : string -> string -> string
 val cleanup : string list -> unit
+
+val cryptoline_filename_extension : string

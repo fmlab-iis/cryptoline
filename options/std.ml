@@ -121,3 +121,5 @@ let tmpfile prefix suffix =
   | Some dir -> Filename.temp_file ~temp_dir:dir prefix suffix
 let cleanup files =
   if not !keep_temp_files then List.iter Unix.unlink files
+
+let cryptoline_filename_extension = ".cl"

@@ -1015,7 +1015,13 @@ let string_of_instr ?typ:(typ=false) i =
 
 let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"
 
-let string_of_program ?typ:(typ=false) p = String.concat "\n" (List.map (fun i -> string_of_instr ~typ:typ i) p)
+let string_of_program ?insert_nop:(insert=true) ?typ:(typ=false) p =
+  let p =
+    match p with
+    | [] -> if insert then [Inop]
+            else p
+    | _ -> p in
+  String.concat "\n" (List.map (fun i -> string_of_instr ~typ:typ i) p)
 
 let eq_atomic a1 a2 =
   match a1, a2 with
@@ -1742,12 +1748,15 @@ let cut_espec es =
        spec::res
     | (Icut ([], _))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl ->
-       let specs = List.fold_left (
-                       fun res (e, pwss) ->
-                       let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, List.rev before_rev)) in
-                       let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = e; espwss = [] } in
-                       spec::res
-                     ) [] ecuts in
+       let specs =
+         let visited = List.rev visited_rev in
+         let before = List.rev before_rev in
+         List.fold_left (
+             fun res (e, pwss) ->
+             let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, before)) in
+             let spec = { espre = pre; esprog = prove_with@visited; espost = e; espwss = [] } in
+             spec::res
+           ) [] ecuts in
        helper (specs @ res) (precond, after_rev@before_rev, [hd]) (eands (fst (List.split ecuts)), [], tl, post)
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
@@ -1767,12 +1776,15 @@ let cut_rspec rs =
        spec::res
     | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
-       let specs = List.fold_left (
-                       fun res (e, pwss) ->
-                       let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, List.rev before_rev)) in
-                       let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = e; rspwss = [] } in
-                       spec::res
-                     ) [] rcuts in
+       let specs =
+         let visited = List.rev visited_rev in
+         let before = List.rev before_rev in
+         List.fold_left (
+             fun res (e, pwss) ->
+             let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, before)) in
+             let spec = { rspre = pre; rsprog = prove_with@visited; rspost = e; rspwss = [] } in
+             spec::res
+           ) [] rcuts in
        helper (specs @ res) (precond, after_rev@before_rev, [hd]) (rands (fst (List.split rcuts)), [], tl, post)
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
@@ -2425,3 +2437,78 @@ let visit_spec visitor s =
           sepwss = s.sepwss;
           srpwss = s.srpwss })
 
+
+(** Convert specifications to format that can be accepted by coq-cryptoline *)
+
+(*
+ * Cut specifications in SSA. After cutting, prove-with clauses will disappear.
+ * Note that cutting only algebra or range side is not supported by this function.
+ *)
+let cut_spec s =
+  let rec helper res (precond, before_rev, after_rev) (pre, visited_rev, prog, post) =
+    match prog with
+    | [] ->
+       let (eprove_with, rprove_with) =
+         let before = List.rev before_rev in
+         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter s.sepwss (eqn_bexp precond, before)),
+          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter s.srpwss (rng_bexp precond, before))) in
+       let spec = { spre = pre; sprog = eprove_with@rprove_with@(List.rev visited_rev); spost = post; sepwss = []; srpwss = [] } in
+       spec::res
+    | (Icut ([], _))::_
+      | (Icut (_, []))::_ -> failwith("The function cut_spec cannot cut single algebra or range side")
+    | (Icut (ecuts, rcuts) as hd)::tl ->
+       let (eposts, epwsss) = List.split ecuts in
+       let (rposts, rpwsss) = List.split rcuts in
+       let cut_post = (eands eposts, rands rposts) in
+       let (eprove_with, rprove_with) =
+         let before = List.rev before_rev in
+         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (List.flatten epwsss) (eqn_bexp precond, before)),
+          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter (List.flatten rpwsss) (rng_bexp precond, before))) in
+       let spec = { spre = pre; sprog = eprove_with@rprove_with@(List.rev visited_rev); spost = cut_post; sepwss = []; srpwss = [] } in
+       helper (spec::res) (precond, after_rev@before_rev, [hd]) (cut_post, [], tl, post)
+    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
+    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
+    | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
+  List.rev (helper [] (s.spre, [], []) (s.spre, [], s.sprog, s.spost))
+
+(*
+ * Make an assertion a single specification and remove assertions.
+ * Assume the input specification is in SSA form.
+ * Note that this function does not handle cut instructions.
+ *)
+let separate_assertions s =
+  let rec helper res visited_rev instrs =
+    match instrs with
+    | [] ->
+       (* add the input spec with assertion removed *)
+       { spre = s.spre; sprog = List.rev visited_rev; spost = s.spost; sepwss = s.sepwss; srpwss = s.srpwss }::res
+    | (Iassert e)::tl ->
+       helper ({ spre = s.spre; sprog = List.rev visited_rev; spost = e; sepwss = []; srpwss = [] }::res)
+         visited_rev tl
+    | hd::tl -> helper res (hd::visited_rev) tl in
+  helper [] [] s.sprog
+
+(* Move assertions to postcondition. Assume the input specification is in SSA form. *)
+let move_asserts s =
+  let is_assert i =
+    match i with
+    | Iassert _ -> true
+    | _ -> false in
+  let bexp_of_assert i =
+    match i with
+    | Iassert e -> e
+    | _ -> assert false in
+  let (es, is) = List.partition is_assert s.sprog in
+  let post = band (bands (List.map bexp_of_assert es)) s.spost in
+  { spre = s.spre;
+    sprog = is;
+    spost = post;
+    sepwss = s.sepwss;
+    srpwss = s.srpwss }
+
+let infer_input_variables s =
+  VS.union (vars_bexp s.spre) (VS.diff (VS.union (vars_program s.sprog) (vars_bexp s.spost)) (lvs_program s.sprog))
+
+let spec_to_coq_cryptoline s =
+  let ssa = ssa_spec s in
+  List.map move_asserts (cut_spec (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec ssa else ssa))

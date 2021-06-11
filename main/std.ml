@@ -5,9 +5,11 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert | SaveCoqCryptoline
 
 let action = ref Verify
+
+let save_coq_cryptoline_filename = ref ""
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast, " Automatically cast variables when parsing untyped programs\n");
@@ -29,6 +31,8 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
     ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
+    ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
+     "FILENAME\n\t     Save the specification in the format acceptable by coq-cryptoline\n");
     ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
     ("-v", Set verbose, "\t     Display verbose messages\n");
     ("-vecuts", String (fun str -> verify_ecuts := Some (List.map
@@ -95,23 +99,6 @@ let check_well_formedness vs s =
     | _ -> () in
   wf
 
-let move_asserts s =
-  let is_assert i =
-    match i with
-    | Iassert _ -> true
-    | _ -> false in
-  let bexp_of_assert i =
-    match i with
-    | Iassert e -> e
-    | _ -> assert false in
-  let (es, is) = List.partition is_assert s.Ast.Cryptoline.sprog in
-  let post = band (bands (List.map bexp_of_assert es)) s.spost in
-  { Ast.Cryptoline.spre = s.spre;
-    Ast.Cryptoline.sprog = is;
-    Ast.Cryptoline.spost = post;
-    Ast.Cryptoline.sepwss = s.sepwss;
-    Ast.Cryptoline.srpwss = s.srpwss }
-
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) (VS.elements vs)) in
   let parse_and_check file =
@@ -153,6 +140,28 @@ let anon file =
      let moved = move_asserts ssa in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec moved)
+  | SaveCoqCryptoline ->
+     let str_of_spec s =
+       "proc main(" ^ string_of_inputs (infer_input_variables s) ^ ") =\n"
+       ^ string_of_spec s in
+     let nth_name id = !save_coq_cryptoline_filename ^ "_" ^ string_of_int id in
+     let suggest_name sid =
+       let rec helper i =
+         let fn = nth_name sid ^ "_" ^ string_of_int i ^ cryptoline_filename_extension in
+         if Sys.file_exists fn then helper (i + 1)
+         else fn in
+       let fn = nth_name sid ^ cryptoline_filename_extension in
+       if Sys.file_exists fn then helper 0
+       else fn in
+     let output sid s =
+       let ch = open_out (suggest_name sid) in
+       let _ = output_string ch (str_of_spec s) in
+       let _ = close_out ch in
+       () in
+     let (_, s) = parse_and_check file in
+     let coq_specs = spec_to_coq_cryptoline s in
+     List.iteri output coq_specs
+
 
 (*
 let _ =
