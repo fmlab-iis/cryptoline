@@ -158,6 +158,7 @@ let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
+let identity_vec = '%' identity
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
@@ -250,4 +251,5 @@ token = parse
                                      with Not_found ->
                                        ID id
                                    }
+  | identity_vec as id             { upd_cnum lexbuf; VEC_ID id }
   | eof                            { EOF }

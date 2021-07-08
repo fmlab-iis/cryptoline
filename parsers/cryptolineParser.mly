@@ -95,14 +95,14 @@
   }
   *)
 
-  (*
-  type lv_token_t = [
+  type lval_t = [
     | `LVPLAIN of lv_prim_t
-    | `LVCARRY of lv_prim_t
-    | `LVVECT of (lv_prim_t list)
-    | `LV of lv_prim_t
   ]
-   *)
+
+  type vec_lval_t = [
+    | `LVVLIT of (lval_t list)
+    | `LVVECT of vec_prim_t
+  ]
 
   type atomic_t = [
     | `AVAR of avar_prim_t
@@ -110,7 +110,7 @@
   ]
 
   type vec_atomic_t = [
-    | `AVPAT of (string list)
+    | `AVLIT of (atomic_t list)
     | `AVECT of vec_prim_t
   ]
 
@@ -242,19 +242,12 @@
          if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
          else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
 
-  let parse_imov_at lno dest_tok (src_tok: [atomic_t | vec_atomic_t]) =
-    match src_tok with
-    | `AVAR _
-    | `ACONST _ as src -> (
+  let parse_imov_at lno dest src =
       fun _fm cm vm vxm ym gm ->
         let a = resolve_atomic_with lno src cm vm ym gm in
         let ty = typ_of_atomic a in
-        match dest_tok with
-        | `LVPLAIN dest -> (
-          let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-          (vm, vxm, ym, gm, [lno, Imov (v, a)]))
-        | _ -> raise_at lno (Printf.sprintf "A scalar lvalue expected."))
-    | _ -> raise_at lno ("Vector literal in RHS is WIP.")
+        let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
+        (vm, vxm, ym, gm, [lno, Imov (v, a)])
 
   let parse_ishl_at lno dest src num =
     fun _fm cm vm vxm ym gm ->
@@ -1134,12 +1127,60 @@
       (* FIXME: update vxm *)
       (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
 
+  let vec_name_fn vname =
+    let n = String.length vname in
+    let name = String.sub vname 1 (n - 1) in
+    Printf.sprintf "_vec_%s#%d" name
+
+  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
+    let (relmtyp, src) = match src_tok with
+    | `AVECT {vecname; _} -> (
+      (*fun _fm cm vm vxm ym gm ->*)
+      raise_at lno (Printf.sprintf "AVECT is not ready, passed '" ^ vecname ^ "'."))
+    | `AVLIT rvs -> (
+      match rvs with
+      | [] -> raise_at lno "A vector literal cannot be empty."
+      | _ -> (
+        let relmtyps = List.map (fun a -> typ_of_atomic (resolve_atomic_with lno a cm vm ym gm)) rvs in
+        let rtyphint = List.hd relmtyps in
+        let _ = List.iteri (fun i t ->
+          if t <> rtyphint then
+            raise_at lno (
+              Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
+                             (string_of_typ rtyphint)
+                             (string_of_typ t)
+                             i)
+          else ()) relmtyps
+        in (rtyphint, rvs)
+      )) in
+    let src_vtyp = (relmtyp, List.length src) in
+    let dest_names = match dest_tok with
+    | `LVVECT {vecname; vectyphint} ->
+      let _ = match vectyphint with
+        | None -> ()
+        | Some hinted_ty -> if src_vtyp <> hinted_ty then
+            raise_at lno (Printf.sprintf "Vector type mismatch (LVVECT %s)." vecname)
+          else () in
+      List.map (vec_name_fn vecname) (1 -- (snd src_vtyp))
+    | `LVVLIT _lvs -> raise_at lno "(LVVLIT, AVLIT) is WIP." in
+
+    let map_single (vm, ym, gm) (lvname, rv) = (
+      let lvtoken = {lvname; lvtyphint=Some relmtyp} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_single (vm, ym, gm) (List.combine dest_names src)) in
+    (* TODO: update vxm *)
+    (vm', vxm, ym', gm', List.concat iss)
+
+
   let recognize_instr_at lno instr fm cm vm vxm ym gm =
       match instr with
-      | `MOV (dest, src) ->
-        parse_imov_at lno dest (src :> [vec_atomic_t | atomic_t]) fm cm vm vxm ym gm
+      | `MOV (`LVPLAIN dest, src) ->
+        parse_imov_at lno dest src fm cm vm vxm ym gm
       | `VMOV (dest, src) ->
-         parse_imov_at lno dest (src :> [vec_atomic_t | atomic_t]) fm cm vm vxm ym gm
+        unpack_vinstr_11 parse_imov_at lno dest src fm cm vm vxm ym gm
       | `SHL (`LVPLAIN dest, src, num) ->
          parse_ishl_at lno dest src num fm cm vm vxm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
@@ -1369,6 +1410,10 @@
 %start prog
 %type <(Ast.Cryptoline.VS.t * Typecheck.Std.spec)> spec
 %type <Ast.Cryptoline.lined_program> prog
+
+%type <lval_t> lval
+%type <vec_lval_t> lval_vector
+%type <atomic_t> atomic
 %type <vec_atomic_t> atomic_vector
 
 %%
@@ -2592,12 +2637,12 @@ lval:
 ;
 
 lval_vector:
-    VEC_ID                                        { `LVVLIT { vecname = $1; vectyphint = None; } }
-  | VEC_ID AT typ_vec                             { `LVVLIT { vecname = $1; vectyphint = Some $3; } }
-  | lval_scalars                                  { `LVVPAT $1 }
+    VEC_ID                                        { `LVVECT { vecname = $1; vectyphint = None; } }
+  | VEC_ID AT typ_vec                             { `LVVECT { vecname = $1; vectyphint = Some $3; } }
+  | LSQUARE lval_scalars RSQUARE                  { `LVVLIT $2 }
 
 lval_scalars:
-                                                  { [] }
+    lval                                          { [$1] }
   | lval COMMA lval_scalars                       { $1::$3 }
 
 lcarry:
@@ -2717,11 +2762,11 @@ atomic:
 atomic_vector:
     VEC_ID                                        { `AVECT { vecname = $1; vectyphint = None; } }
   | VEC_ID AT typ_vec                             { `AVECT { vecname = $1; vectyphint = Some $3; } }
-  | LBRAC atomic_scalars RBRAC                    { `AVPAT $2 }
+  | LSQUARE atomic_scalars RSQUARE                { `AVLIT $2 }
 
 atomic_scalars:
-                                                  { [] }
-  | ID COMMA atomic_scalars                       { $1::$3 }
+    atomic                                        { [$1] }
+  | atomic COMMA atomic_scalars                   { $1::$3 }
 
 var_expansion:
   ID OROP NUM DOTDOT NUM
