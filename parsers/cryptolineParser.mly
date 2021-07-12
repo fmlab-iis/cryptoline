@@ -1132,15 +1132,32 @@
     let name = String.sub vname 1 (n - 1) in
     Printf.sprintf "_vec_%s#%d" name
 
+  let string_of_typ_vec (tv:typ_vec) =
+    let (t, n) = tv in
+      Printf.sprintf "%s[%d]" (string_of_typ t) n
+
   let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = match src_tok with
-    | `AVECT {vecname; _} -> (
-      (*fun _fm cm vm vxm ym gm ->*)
-      raise_at lno (Printf.sprintf "AVECT is not ready, passed '" ^ vecname ^ "'."))
-    | `AVLIT rvs -> (
+    | `AVECT {vecname; vectyphint} ->
+      let tv = try
+        SM.find vecname vxm
+      with Not_found ->
+        raise_at lno ("Vector variable " ^ vecname ^ " is undefined.")
+      in
+      let _ = match vectyphint with
+      | None -> ()
+      | Some hinted_ty ->
+          if tv <> hinted_ty then
+            raise_at lno ("The type of variable " ^ vecname ^ " is inconsistent.")
+          else () in
+        let (rtyphint, rlen) = tv in
+        let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
+        let rvs = List.map gen_avar (1 -- rlen) in
+        (rtyphint, rvs)
+    | `AVLIT rvs ->
       match rvs with
       | [] -> raise_at lno "A vector literal cannot be empty."
-      | _ -> (
+      | _ ->
         let relmtyps = List.map (fun a -> typ_of_atomic (resolve_atomic_with lno a cm vm ym gm)) rvs in
         let rtyphint = List.hd relmtyps in
         let _ = List.iteri (fun i t ->
@@ -1152,27 +1169,41 @@
                              i)
           else ()) relmtyps
         in (rtyphint, rvs)
-      )) in
-    let src_vtyp = (relmtyp, List.length src) in
-    let dest_names = match dest_tok with
+    in
+    let src_typ_vec = (relmtyp, List.length src) in
+    let (vxm', dest_names) = match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
       let _ = match vectyphint with
         | None -> ()
-        | Some hinted_ty -> if src_vtyp <> hinted_ty then
-            raise_at lno (Printf.sprintf "Vector type mismatch (LVVECT %s)." vecname)
+        | Some hinted_ty -> if src_typ_vec <> hinted_ty then
+            raise_at lno (Printf.sprintf "The specified vector type %s is inconsistent with the determined vector type %s."
+                                         (string_of_typ_vec hinted_ty)
+                                         (string_of_typ_vec src_typ_vec))
           else () in
-      List.map (vec_name_fn vecname) (1 -- (snd src_vtyp))
-    | `LVVLIT _lvs -> raise_at lno "(LVVLIT, AVLIT) is WIP." in
+      let names = List.map (vec_name_fn vecname) (1 -- (snd src_typ_vec)) in
+      (SM.add vecname src_typ_vec vxm, names)
+    | `LVVLIT lvs ->
+      let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
+        let _ = match lvtyphint with
+        | None -> ()
+        | Some hinted_ty -> if relmtyp <> hinted_ty then
+          raise_at lno (Printf.sprintf "The specified type %s of an element is inconsistent with the determined type %s."
+                                       (string_of_typ hinted_ty)
+                                       (string_of_typ relmtyp))
+          else () in
+        lvname) lvs in
+      (vxm, names)
+    in
 
-    let map_single (vm, ym, gm) (lvname, rv) = (
+    let map_step (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some relmtyp} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
     let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_single (vm, ym, gm) (List.combine dest_names src)) in
-    (* TODO: update vxm *)
-    (vm', vxm, ym', gm', List.concat iss)
+      List.fold_left_map map_step (vm, ym, gm) (List.combine dest_names src)) in
+    (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
+    (vm', vxm', ym', gm', List.concat iss)
 
 
   let recognize_instr_at lno instr fm cm vm vxm ym gm =
