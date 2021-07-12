@@ -1195,6 +1195,10 @@
       (vxm, names)
     in
 
+    let _ = if (List.length dest_names) <> (List.length src) then
+      raise_at lno "Vector operands should have the same length."
+    else () in
+
     let map_step (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some relmtyp} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
