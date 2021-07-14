@@ -498,7 +498,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
@@ -506,7 +506,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
@@ -515,7 +515,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
@@ -525,7 +525,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
@@ -534,7 +534,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
@@ -544,7 +544,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
@@ -553,7 +553,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
@@ -561,7 +561,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
@@ -570,7 +570,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
@@ -579,7 +579,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
@@ -589,7 +589,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
@@ -598,7 +598,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
@@ -608,7 +608,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
@@ -618,7 +618,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
@@ -627,7 +627,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
@@ -637,7 +637,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
@@ -646,7 +646,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
@@ -654,7 +654,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
@@ -663,7 +663,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
@@ -672,7 +672,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
@@ -681,7 +681,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_unsigned (typ_of_atomic a1) in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Imulj (v, a1, a2)])
@@ -690,7 +690,7 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let n = num cm in
-      let ty = typ_of_atomic a in
+      let ty = typ_to_unsigned (typ_of_atomic a) in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
       let _ =
@@ -704,7 +704,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadd (v, a1, a2)])
 
@@ -712,7 +712,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadds (c, v, a1, a2)])
@@ -721,7 +721,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iaddr (c, v, a1, a2)])
@@ -731,7 +731,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadc (v, a1, a2, y)])
 
@@ -740,7 +740,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
@@ -750,7 +750,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Iadcr (c, v, a1, a2, y)])
@@ -759,7 +759,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isub (v, a1, a2)])
 
@@ -767,7 +767,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubc (c, v, a1, a2)])
@@ -776,7 +776,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubb (c, v, a1, a2)])
@@ -785,7 +785,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isubr (c, v, a1, a2)])
@@ -795,7 +795,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbc (v, a1, a2, y)])
 
@@ -804,7 +804,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
@@ -814,7 +814,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbcr (c, v, a1, a2, y)])
@@ -824,7 +824,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbb (v, a1, a2, y)])
 
@@ -833,7 +833,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
@@ -843,7 +843,7 @@
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
       let y = resolve_atomic_with lno carry cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Isbbr (c, v, a1, a2, y)])
@@ -852,7 +852,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imul (v, a1, a2)])
 
@@ -860,7 +860,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imuls (c, v, a1, a2)])
@@ -869,7 +869,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Imulr (c, v, a1, a2)])
@@ -878,7 +878,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) =
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
@@ -888,7 +888,7 @@
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
       let a2 = resolve_atomic_with lno src2 cm vm ym gm in
-      let ty = typ_of_atomic a1 in
+      let ty = typ_to_signed (typ_of_atomic a1) in
       let (vm, ym, gm, v) =
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Imulj (v, a1, a2)])
@@ -897,7 +897,7 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atomic_with lno src cm vm ym gm in
       let n = num cm in
-      let ty = typ_of_atomic a in
+      let ty = typ_to_signed (typ_of_atomic a) in
       let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
       let (vm, ym, gm, vl) =
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
