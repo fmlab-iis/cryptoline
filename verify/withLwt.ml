@@ -88,9 +88,8 @@ let verify_safety_inc timeout f p qs =
   finish_pending delivered_helper res pending
 
 let write_header_to_log header =
-  Lwt_list.iter_s (fun h ->
-      let%lwt _ = Options.WithLwt.trace h in
-      Lwt.return_unit) header
+   Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
+                             Lwt.return_unit) header
 
 let write_singular_input ifile vars gen p =
   let input_text =
@@ -229,16 +228,17 @@ let run_singular header ifile ofile =
   let%lwt _ =
     Options.WithLwt.unix (!singular_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO SINGULAR:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SINGULAR:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
 let run_sage header ifile ofile =
@@ -246,48 +246,52 @@ let run_sage header ifile ofile =
   let%lwt _ =
     Options.WithLwt.unix (!sage_path ^ " " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO SAGE:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ifile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SAGE:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
 let run_magma header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ !Options.Std.algebra_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MAGMA:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAGMA:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
 let run_mathematica header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ !Options.Std.algebra_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MATHEMATICA:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MATHEMATICA:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
 let run_macaulay2 header ifile ofile =
@@ -295,16 +299,17 @@ let run_macaulay2 header ifile ofile =
   let%lwt _ =
     Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ !Options.Std.algebra_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MACAULAY2:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MACAULAY2:" in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.unix
+                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
 let read_singular_output ofile =
@@ -408,82 +413,91 @@ let is_in_ideal header vars ideal p =
   res
 
 let verify_rspec_assert header s =
-  let verify_one s =
+  let verify_one cut_header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp s.rspost in
     let gs = split_bexp g in
-    Lwt_list.for_all_s
+    Lwt_list.for_all_p
       (fun g ->
         let rheader = ["range condition: " ^ string_of_bexp g] in
         let%lwt r =
-          solve_simp ~header:(header@rheader) (f::p@[g]) in
+          solve_simp ~header:(cut_header@rheader) (f::p@[g]) in
         Lwt.return (r = Unsat))
       gs in
-  let rec verify_ands s =
+  let rec verify_ands cut_header s =
     match s.rspost with
     | Rand (e1, e2) ->
-       let%lwt r =
-         verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e1;
-                       rspwss = s.rspwss } in
-       if r then
-         verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e2;
-                       rspwss = s.rspwss }
+       let%lwt r1 =
+         verify_ands cut_header
+           { rspre = s.rspre; rsprog = s.rsprog; rspost = e1;
+             rspwss = s.rspwss } in
+       if r1 then
+         let%lwt r2 = 
+           verify_ands cut_header
+             { rspre = s.rspre; rsprog = s.rsprog; rspost = e2;
+               rspwss = s.rspwss } in
+         Lwt.return r2
        else
-         Lwt.return false
+         Lwt.return_false
     | _ ->
-       if !apply_slicing then verify_one (slice_rspec_ssa s)
-       else verify_one s in
+       let%lwt r = if !apply_slicing
+                   then verify_one cut_header (slice_rspec_ssa s)
+                   else verify_one cut_header s in
+       Lwt.return r in
   let rec verify_rec i ss =
     match ss with
-    | [] -> Lwt.return true
+    | [] -> Lwt.return_true
     | hd::tl ->
-       let%lwt _ = Options.WithLwt.trace ("== Cut #" ^ string_of_int i ^ " ==") in
-       let%lwt r = verify_ands hd in
+       let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
+       let%lwt r = verify_ands (cut_header::header) hd in
        if r then
          verify_rec (i+1) tl
        else
-         Lwt.return false in
+         Lwt.return_false in
   verify_rec 0 (cut_rspec s)
 
 let verify_espec_assert header vgen s =
-  let verify_one vgen s =
+  let verify_one cut_header vgen s =
     let (_, entailments) = polys_of_espec vgen s in
-    Lwt_list.fold_left_s
-      (fun res (post, vars, ideal, p) ->
-        if res then
-          let eheader = ["algebraic condition: " ^ string_of_ebexp post;
-                         "Try #0"] in
-          let%lwt r = is_in_ideal (header@eheader) vars [] p in
-          if r then
-            Lwt.return_true
-          else
-            let eheader = ["algebraic condition: " ^ string_of_ebexp post;
-                           "Try #1"] in
-            let%lwt r = is_in_ideal (header@eheader) vars ideal p in
-            Lwt.return r
+    Lwt_list.for_all_p
+      (fun (post, vars, ideal, p) ->
+        let eheader = ["algebraic condition: " ^ string_of_ebexp post;
+                       "Try #0"] in
+        let%lwt r = is_in_ideal (cut_header@eheader) vars [] p in
+        if r then
+          Lwt.return_true
         else
-          Lwt.return false) true entailments in
-  let rec verify_ands vgen s =
+          let eheader = ["algebraic condition: " ^ string_of_ebexp post;
+                         "Try #1"] in
+          let%lwt r = is_in_ideal (cut_header@eheader) vars ideal p in
+          Lwt.return r) entailments in
+  let rec verify_ands cut_header vgen s =
     match s.espost with
     | Eand (e1, e2) ->
-       let%lwt r = verify_ands vgen { espre = s.espre; esprog = s.esprog;
-                                      espost = e1; espwss = s.espwss } in
-       if r then
-         verify_ands vgen { espre = s.espre; esprog = s.esprog;
-                            espost = e2; espwss = s.espwss }
+       let%lwt r1 = verify_ands cut_header vgen
+                      { espre = s.espre; esprog = s.esprog;
+                        espost = e1; espwss = s.espwss } in
+       if r1 then
+         let%lwt r2 = verify_ands cut_header vgen
+                        { espre = s.espre; esprog = s.esprog;
+                          espost = e2; espwss = s.espwss } in
+         Lwt.return r2
        else
-         Lwt.return false
+         Lwt.return_false
     | _ ->
-       if !apply_slicing then verify_one vgen (slice_espec_ssa s)
-       else verify_one vgen s in
+       let%lwt r = 
+         if !apply_slicing
+         then verify_one cut_header vgen (slice_espec_ssa s)
+         else verify_one cut_header vgen s in
+       Lwt.return r in
   let rec verify_rec i vgen ss =
     match ss with
-    | [] -> Lwt.return true
+    | [] -> Lwt.return_true
     | hd::tl ->
-       let%lwt _ = Options.WithLwt.trace ("== Cut #" ^ string_of_int i ^ " ==") in
-       let%lwt r = verify_ands vgen hd in
-       if r then verify_rec (i+1) vgen tl else Lwt.return false in
+       let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
+       let%lwt r = verify_ands (cut_header::header) vgen hd in
+       if r then verify_rec (i+1) vgen tl else Lwt.return_false in
   verify_rec 0 vgen (cut_espec s)
 
 let verify_eassert vgen s =
@@ -501,7 +515,8 @@ let verify_eassert vgen s =
     if res then
       if List.length pending < !jobs then
         match p with
-        | [] -> finish_pending delivered_helper res pending
+        | [] ->
+           finish_pending delivered_helper res pending
         | Iassert e::tl ->
            let promise = mk_promise epre evisited e in
            verify res (promise::pending) epre evisited tl
@@ -510,7 +525,8 @@ let verify_eassert vgen s =
         | hd::tl ->
            verify res pending epre (hd::evisited) tl
       else
-        let (res', promised) = work_on_pending delivered_helper res pending in
+        let (res', promised) =
+          work_on_pending delivered_helper res pending in
         verify res' promised epre evisited p
     else
       finish_pending delivered_helper res pending in
@@ -562,7 +578,7 @@ let verify_assert vgen s =
         verify_espec_assert header vgen
           (mkespec epre (List.rev evisited) (eqn_bexp e))
       else
-        Lwt.return false in
+        Lwt.return_false in
     Lwt.return (e_res, e) in
   let rec verify res pending (epre, rpre) (evisited, rvisited) p =
     if res then
@@ -586,28 +602,28 @@ let verify_assert vgen s =
 
 let verify_rspec s =
   let _ = trace "===== Verifying range specification =====" in
-  let verify_one s =
+  let verify_one cut_header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp s.rspost in
     let gs = split_bexp g in
-    Lwt_list.for_all_s
+    Lwt_list.for_all_p
       (fun g ->
         let header = ["range condition: " ^ string_of_bexp g] in
-        let%lwt r = solve_simp ~header:header (f::p@[g]) in
+        let%lwt r = solve_simp ~header:(cut_header::header) (f::p@[g]) in
         Lwt.return (r = Unsat))
       gs in
-  let mk_promise s =
-    if !apply_slicing then verify_one (slice_rspec_ssa s)
-    else verify_one s in
+  let mk_promise cut_header s =
+    if !apply_slicing then verify_one cut_header (slice_rspec_ssa s)
+    else verify_one cut_header s in
   let delivered_helper res r = res && r in
-  let verify_ands s =
+  let verify_ands cut_header s =
     let rec verify_ands_helper ss res pending =
       if res then
         if List.length pending < !jobs then
           match ss with
           | [] -> finish_pending delivered_helper res pending
-          | hd::tl -> let promise = mk_promise hd in
+          | hd::tl -> let promise = mk_promise cut_header hd in
                       verify_ands_helper tl res (promise::pending)
         else
           let (res', pending') =
@@ -627,42 +643,37 @@ let verify_rspec s =
             let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
             verify_rec (i+1) tl
          | _ ->
-            let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-            verify_ands hd && verify_rec (i+1) tl
+            let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
+            verify_ands cut_header hd && verify_rec (i+1) tl
        end in
   verify_rec 0 (cut_rspec s)
 
 let verify_espec vgen s =
   let _ = trace "===== Verifying algebraic specification =====" in
-  let verify_one vgen s =
+  let verify_one cut_header vgen s =
     let (_, entailments) = polys_of_espec vgen s in
-    Lwt_list.fold_left_s
-      (fun res (post, vars, ideal, p) ->
-        if res then
-          let header = ["algebraic condition: " ^ string_of_ebexp post;
-                        "Try #0"] in
-          let%lwt r = is_in_ideal header vars [] p in
-          if r then
-            Lwt.return true
-          else
-            let header = ["algebraic condition: " ^ string_of_ebexp post;
-                          "Try #1"] in
-            let%lwt r = is_in_ideal header vars ideal p in
-            Lwt.return r
-        else
-          Lwt.return false) true entailments in
-  let mk_promise s =
-    if !apply_slicing then verify_one vgen (slice_espec_ssa s)
-    else verify_one vgen s in
+    Lwt_list.for_all_p
+      (fun (post, vars, ideal, p) ->
+        let header = ["algebraic condition: " ^ string_of_ebexp post;
+                      "Try #0"] in
+        let%lwt r = is_in_ideal (cut_header::header) vars [] p in
+        if r then Lwt.return_true
+        else let header = ["algebraic condition: " ^ string_of_ebexp post;
+                           "Try #1"] in
+             let%lwt r = is_in_ideal (cut_header::header) vars ideal p in
+             Lwt.return r) entailments in
+  let mk_promise cut_header s =
+    if !apply_slicing then verify_one cut_header vgen (slice_espec_ssa s)
+    else verify_one cut_header vgen s in
   let delivered_helper res r = res && r in
-  let verify_ands vgen s =
+  let verify_ands cut_header vgen s =
     let rec verify_and_helper vgen ss res pending =
       if res then
         if List.length pending < !jobs then
           match ss with
           | [] -> finish_pending delivered_helper res pending
           | hd::tl ->
-             let promise = mk_promise hd in
+             let promise = mk_promise cut_header hd in
              verify_and_helper vgen tl res (promise::pending)
         else
           let (res', pending') =
@@ -682,8 +693,8 @@ let verify_espec vgen s =
             let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
             verify_rec (i+1) vgen tl
          | _ ->
-            let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-            verify_ands vgen hd && verify_rec (i+1) vgen tl
+            let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
+            verify_ands cut_header vgen hd && verify_rec (i+1) vgen tl
        end in
   verify_rec 0 vgen (cut_espec s)
 
@@ -733,7 +744,7 @@ let run_cli_vsafety id timeout idx instr ifile =
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
   (* Write to the log file *)
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
   let _ =
     (* Log abnormal outputs *)
@@ -745,7 +756,7 @@ let run_cli_vsafety id timeout idx instr ifile =
       let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
       ()
   in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   (* Remove temporary files *)
   let%lwt _ = cleanup_lwt [ofile; lfile] in
   (* Return the result *)
@@ -905,7 +916,7 @@ let run_cli_vespec header s =
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
   (* Write to the log file *)
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
   let _ =
@@ -917,7 +928,7 @@ let run_cli_vespec header s =
       let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
       ()
   in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   (* Remove temporary files *)
   let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
   (* Return the result *)
@@ -969,7 +980,7 @@ let run_cli_vrspec header s =
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
   (* Write to the log file *)
-  let%lwt _ = Options.WithLwt.lock_log () in
+  let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
   let _ =
@@ -981,7 +992,7 @@ let run_cli_vrspec header s =
       let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
       ()
   in
-  let _ = Options.WithLwt.unlock_log () in
+  let%lwt _ = Options.WithLwt.log_unlock () in
   (* Remove temporary files *)
   let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
   (* Return the result *)

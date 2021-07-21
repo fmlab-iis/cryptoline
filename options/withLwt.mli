@@ -5,7 +5,7 @@ val trace : string -> Lwt_unix.process_status Lwt.t
 val tracen : string -> Lwt_unix.process_status Lwt.t
 val fail : string -> 'a Lwt.t
 
-val lock_log : unit -> unit Lwt.t
-val unlock_log : unit -> unit
+val log_lock : unit -> unit Lwt.t
+val log_unlock : unit -> unit Lwt.t
 
 val cleanup_lwt : string list -> unit Lwt.t

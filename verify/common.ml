@@ -463,7 +463,7 @@ let bexp_instr i =
   | Icut _ -> True (* Ignore other cases of Icut. *)
   | Ighost (_vs, e) -> bexp_rbexp (rng_bexp e)
 
-let bexp_program p = List.map bexp_instr p
+let bexp_program p = List.rev (List.rev_map bexp_instr p)
 
 
 
@@ -883,6 +883,7 @@ let bv2z_instr vgen i =
   | Icut _ -> (vgen, []) (* Ignore other cases of Icut. *)
   | Ighost (_, e) -> (vgen, split_eand (eqn_bexp e))
 
+(*
 let rec bv2z_program vgen p =
   match p with
   | [] -> (vgen, [])
@@ -890,7 +891,17 @@ let rec bv2z_program vgen p =
     let (vgen, hd) = (bv2z_instr vgen hd) in
     let (vgen, tl) = (bv2z_program vgen tl) in
     (vgen, hd@tl)
+ *)
 
+let bv2z_program vgen p =
+  let rec bv2z_program_helper vgen p rev_res =
+    match p with
+    | [] -> (vgen, List.rev rev_res)
+    | hd::tl ->
+       let (vgen, zhd) = bv2z_instr vgen hd in
+       bv2z_program_helper vgen tl (List.rev_append zhd rev_res) in
+  bv2z_program_helper vgen p []
+  
 type poly_spec =
   { ppre : ebexp;
     pprog : ebexp list;
@@ -1089,7 +1100,8 @@ let rewrite_assignments ideal p moduli =
     | [] -> (fst (List.split finished_vs), fst p_vs)
     | (hd_poly, hd_vs)::tl ->
        (match is_assignment hd_poly with
-        | None -> do_rewrite ((hd_poly, hd_vs)::finished_vs) tl p_vs
+        | None ->
+           do_rewrite ((hd_poly, hd_vs)::finished_vs) tl p_vs
         | Some (v, e) ->
            do_rewrite (subst_poly_vss (v, e) finished_vs)
              (subst_poly_vss (v, e) tl) (subst_poly_vs (v, e) p_vs)) in
@@ -1237,7 +1249,8 @@ let polys_of_espec vgen s =
                      | BeforeRewriting -> generator_ps@[p]
                      | AfterRewriting -> ideal@[p]) in
        [(post, vars, ideal, p)]
-    | Eand (e1, e2) -> convert generator_ps e1 @ convert generator_ps e2 in
+    | Eand (e1, e2) ->
+       convert generator_ps e1 @ convert generator_ps e2 in
   (vgen, convert generator_ps pspec.ppost)
 
 

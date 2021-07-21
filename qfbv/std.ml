@@ -47,15 +47,18 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
                      let _ = Lwt.cancel task in
                      Lwt.return (Unix.WSIGNALED Sys.sigalrm) in
     let t2 = Unix.gettimeofday() in
-    let%lwt _ = Options.WithLwt.lock_log () in
+    let%lwt _ = Options.WithLwt.log_lock () in
     let%lwt _ = Options.WithLwt.trace ("Run " ^ !smt_solver ^ " with command: " ^ cmd) in
     let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !smt_solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
-    let%lwt _ = Options.WithLwt.trace ("OUTPUT FROM " ^ !smt_solver ^ ":") in
-    let%lwt _ = Options.WithLwt.unix ("cat " ^ ofile ^ " >>  " ^ !logfile) in
-    let%lwt _ = Options.WithLwt.unix ("cat " ^ errfile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.trace
+                  ("OUTPUT FROM " ^ !smt_solver ^ ":") in
+    let%lwt _ = Options.WithLwt.unix
+                  ("cat " ^ ofile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.unix
+                  ("cat " ^ errfile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.trace "" in
-    let _ = Options.WithLwt.unlock_log () in
-    Lwt.return () in
+    let%lwt _ = Options.WithLwt.log_unlock () in
+    Lwt.return_unit in
   let task, r = Lwt.task () in
   let task' = Lwt.bind task (fun _ -> mk_task task) in
   let _ = Lwt.wakeup r () in
