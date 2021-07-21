@@ -454,6 +454,37 @@ let rec subst_eexp pats e =
   | Eunop (op, e) -> Eunop (op, subst_eexp pats e)
   | Ebinop (op, e1, e2) -> Ebinop (op, subst_eexp pats e1, subst_eexp pats e2)
 
+(* hash cons substitution *)
+(*
+let subst_eexp pats e =
+  let tbl = Hashtbl.create 23 in
+  let _ = List.iter (fun (v, r) -> Hashtbl.add tbl (Evar v) r) pats in
+  let rec subst_eexp_helper todo =
+    match todo with
+    | [] -> Hashtbl.find tbl e
+    | hd::tl ->
+       match hd with
+       | Eunop (op, e) ->
+          (try
+             let _ = Hashtbl.add tbl hd (Eunop (op, Hashtbl.find tbl e)) in
+             subst_eexp_helper tl
+           with Not_found -> subst_eexp_helper (e::todo))
+       | Ebinop (op, e1, e2) ->
+          (try
+             let e1_new = Hashtbl.find tbl e1 in
+             (try
+                let e2_new = Hashtbl.find tbl e2 in
+                let _ = Hashtbl.add tbl hd (Ebinop (op, e1_new, e2_new)) in
+                subst_eexp_helper tl
+              with Not_found -> subst_eexp_helper (e2::todo))
+           with Not_found -> subst_eexp_helper (e1::todo))
+       | _ ->
+          let _ = if Hashtbl.mem tbl hd then ()
+                  else Hashtbl.add tbl hd hd in
+          subst_eexp_helper tl in
+  subst_eexp_helper [e]
+ *)
+                         
 let rec replace_eexp pats e =
   try
     snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats)
