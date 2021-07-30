@@ -60,11 +60,6 @@
     | Some r -> raise_at lno r
    *)
 
-  (*
-  type lv_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> typ option -> (var SM.t * var SM.t * var SM.t * var)
-   *)
-(*   type atomic_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> atomic *)
-
   type typ_vec = typ * int
 
   type lv_prim_t = {
@@ -87,13 +82,6 @@
     (* FIXME *)
     atmvalue: Z.t SM.t -> Z.t;
   }
-
-  (*
-  type lv_resolved_t = {
-    lvcxt: var SM.t * var SM.t * var SM.t;
-    lvvar: var;
-  }
-  *)
 
   type lval_t = [
     | `LVPLAIN of lv_prim_t
@@ -1136,8 +1124,33 @@
     let (t, n) = tv in
       Printf.sprintf "%s[%d]" (string_of_typ t) n
 
-  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
-    let (relmtyp, src) = match src_tok with
+  let resolve_lv_vec_with lno dest_tok _fm _cm _vm vxm _ym _gm src_typ_vec =
+    let (relmtyp, _) = src_typ_vec in
+    match dest_tok with
+    | `LVVECT {vecname; vectyphint} ->
+      let _ = match vectyphint with
+        | None -> ()
+        | Some hinted_ty -> if src_typ_vec <> hinted_ty then
+            raise_at lno (Printf.sprintf "The specified vector type %s is inconsistent with the determined vector type %s."
+                                         (string_of_typ_vec hinted_ty)
+                                         (string_of_typ_vec src_typ_vec))
+          else () in
+      let names = List.map (vec_name_fn vecname) (1 -- (snd src_typ_vec)) in
+      (SM.add vecname src_typ_vec vxm, names)
+    | `LVVLIT lvs ->
+      let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
+        let _ = match lvtyphint with
+        | None -> ()
+        | Some hinted_ty -> if relmtyp <> hinted_ty then
+          raise_at lno (Printf.sprintf "The specified type %s of an element is inconsistent with the determined type %s."
+                                       (string_of_typ hinted_ty)
+                                       (string_of_typ relmtyp))
+          else () in
+        lvname) lvs in
+      (vxm, names)
+
+  let resolve_atomic_vec_with lno src_tok _fm cm vm vxm ym gm =
+    match src_tok with
     | `AVECT {vecname; vectyphint} ->
       let tv = try
         SM.find vecname vxm
@@ -1169,31 +1182,11 @@
                              i)
           else ()) relmtyps
         in (rtyphint, rvs)
-    in
+
+  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
+    let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm', dest_names) = match dest_tok with
-    | `LVVECT {vecname; vectyphint} ->
-      let _ = match vectyphint with
-        | None -> ()
-        | Some hinted_ty -> if src_typ_vec <> hinted_ty then
-            raise_at lno (Printf.sprintf "The specified vector type %s is inconsistent with the determined vector type %s."
-                                         (string_of_typ_vec hinted_ty)
-                                         (string_of_typ_vec src_typ_vec))
-          else () in
-      let names = List.map (vec_name_fn vecname) (1 -- (snd src_typ_vec)) in
-      (SM.add vecname src_typ_vec vxm, names)
-    | `LVVLIT lvs ->
-      let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
-        let _ = match lvtyphint with
-        | None -> ()
-        | Some hinted_ty -> if relmtyp <> hinted_ty then
-          raise_at lno (Printf.sprintf "The specified type %s of an element is inconsistent with the determined type %s."
-                                       (string_of_typ hinted_ty)
-                                       (string_of_typ relmtyp))
-          else () in
-        lvname) lvs in
-      (vxm, names)
-    in
+    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
 
     let _ = if (List.length dest_names) <> (List.length src) then
       raise_at lno "Vector operands should have the same length."
