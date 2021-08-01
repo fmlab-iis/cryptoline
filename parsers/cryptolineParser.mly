@@ -1124,7 +1124,7 @@
     let (t, n) = tv in
       Printf.sprintf "%s[%d]" (string_of_typ t) n
 
-  let resolve_lv_vec_with lno dest_tok _fm _cm _vm vxm _ym _gm src_typ_vec =
+  let resolve_lv_vec_with lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_typ_vec : 't * string list =
     let (relmtyp, _) = src_typ_vec in
     match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
@@ -1149,7 +1149,7 @@
         lvname) lvs in
       (vxm, names)
 
-  let resolve_atomic_vec_with lno src_tok _fm cm vm vxm ym gm =
+  let resolve_atomic_vec_with lno src_tok _fm cm vm vxm ym gm : typ * atomic_t list =
     match src_tok with
     | `AVECT {vecname; vectyphint} ->
       let tv = try
@@ -1192,15 +1192,46 @@
       raise_at lno "Vector operands should have the same length."
     else () in
 
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
+
+    (* If dest and src have colliding name, alias them first *)
+    let rewrite_src map a = match a with
+    | `AVAR ({atmname; _} as var) when SS.mem atmname dest_names_set -> (
+      let tmp_name = "_tmp_" ^ atmname in
+      let _ = if SM.mem tmp_name vm then
+        raise_at lno (
+          Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
+                         tmp_name)
+        else () in
+      let new_var = {var with atmname=tmp_name} in
+      (SM.add tmp_name var map, `AVAR new_var))
+    | `AVAR _
+    | `ACONST _ -> (map, a) in
+
+    let (tmp_to_orig, src_safe) = List.fold_left_map rewrite_src SM.empty src in
+
+    let tmp_names = SM.fold (fun k _ names -> k::names) tmp_to_orig [] in
+    (* Add introduced temp. variables into variable map *)
+    let vm_safe = SM.fold (fun k _ map -> SM.add k (mkvar k relmtyp) map) tmp_to_orig vm in
+    (* Save into temp. variables with mov instructions *)
+    let instrs_aliasing = List.rev (
+      SM.fold (fun tmp_name orig instrs ->
+        let instr = (lno, Imov (SM.find tmp_name vm_safe, Avar (mkvar orig.atmname relmtyp))) in
+        instr::instrs
+    ) tmp_to_orig []) in
+
+    let remove_keys names vm = List.fold_left (fun map k -> SM.remove k map) vm names in
+
     let map_step (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some relmtyp} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
     let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_step (vm, ym, gm) (List.combine dest_names src)) in
+      List.fold_left_map map_step (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
-    (vm', vxm', ym', gm', List.concat iss)
+    (* Clean up temp. names so that they are invisible to latter parts of the source *)
+    (remove_keys tmp_names vm', vxm', ym', gm', List.concat (instrs_aliasing::iss))
 
 
   let recognize_instr_at lno instr fm cm vm vxm ym gm =
