@@ -484,7 +484,7 @@ let subst_eexp pats e =
           subst_eexp_helper tl in
   subst_eexp_helper [e]
  *)
-                         
+  
 let rec replace_eexp pats e =
   try
     snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats)
@@ -1360,6 +1360,262 @@ let subst_program pats p = List.map (subst_instr pats) p
 let subst_lined_program pats p =
   List.map (fun (lno, i) -> lno, subst_instr pats i) p
 
+module AtomicHashType =
+  struct
+    type t = atomic
+    let equal = eq_atomic
+    let hash = Hashtbl.hash
+  end
+
+module AtomicHashtbl = Hashtbl.Make (AtomicHashType)
+                     
+(* substitution with hash table *)
+
+let rec subst_eexp_hash esubst_hash e =
+  match e with
+  | Evar v -> if AtomicHashtbl.mem esubst_hash (Avar v) then
+                AtomicHashtbl.find esubst_hash (Avar v)
+              else e
+  | Econst _n -> e
+  | Eunop (op, e) -> Eunop (op, subst_eexp_hash esubst_hash e)
+  | Ebinop (op, e1, e2) ->
+     Ebinop (op,
+             subst_eexp_hash esubst_hash e1,
+             subst_eexp_hash esubst_hash e2)
+
+let rec subst_ebexp_hash esubst_hash e =
+  match e with
+  | Etrue -> e
+  | Eeq (e1, e2) ->
+     Eeq (subst_eexp_hash esubst_hash e1,
+          subst_eexp_hash esubst_hash e2)
+  | Eeqmod (e1, e2, ms) ->
+     Eeqmod (subst_eexp_hash esubst_hash e1,
+             subst_eexp_hash esubst_hash e2,
+             List.rev (List.rev_map (subst_eexp_hash esubst_hash) ms))
+  | Eand (e1, e2) ->
+     Eand (subst_ebexp_hash esubst_hash e1,
+           subst_ebexp_hash esubst_hash e2)
+
+let rec subst_rexp_hash rsubst_hash e =
+  match e with
+  | Rvar v -> if AtomicHashtbl.mem rsubst_hash (Avar v) then
+                AtomicHashtbl.find rsubst_hash (Avar v)
+              else e
+  | Rconst (_w, _n) -> e
+  | Runop (w, op, e) -> Runop (w, op, subst_rexp_hash rsubst_hash e)
+  | Rbinop (w, op, e1, e2) ->
+     Rbinop (w, op, subst_rexp_hash rsubst_hash e1,
+                    subst_rexp_hash rsubst_hash e2)
+  | Ruext (w, e, i) -> Ruext (w, subst_rexp_hash rsubst_hash e, i)
+  | Rsext (w, e, i) -> Rsext (w, subst_rexp_hash rsubst_hash e, i)
+
+let rec subst_rbexp_hash rsubst_hash e =
+  match e with
+  | Rtrue -> e
+  | Req (w, e1, e2) ->
+     Req (w, subst_rexp_hash rsubst_hash e1,
+             subst_rexp_hash rsubst_hash e2)
+  | Rcmp (w, op, e1, e2) ->
+     Rcmp (w, op, subst_rexp_hash rsubst_hash e1,
+                  subst_rexp_hash rsubst_hash e2)
+  | Rneg e -> Rneg (subst_rbexp_hash rsubst_hash e)
+  | Rand (e1, e2) ->
+     Rand (subst_rbexp_hash rsubst_hash e1,
+           subst_rbexp_hash rsubst_hash e2)
+  | Ror (e1, e2) ->
+     Ror (subst_rbexp_hash rsubst_hash e1,
+          subst_rbexp_hash rsubst_hash e2)
+                     
+let subst_bexp_hash esubst_hash rsubst_hash e =
+  (subst_ebexp_hash esubst_hash (eqn_bexp e),
+   subst_rbexp_hash rsubst_hash (rng_bexp e))
+
+let subst_lval_hash subst_hash lv =
+  if AtomicHashtbl.mem subst_hash (Avar lv) then
+    match AtomicHashtbl.find subst_hash (Avar lv) with
+    | Avar v -> v
+    | Aconst (_ty, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
+  else lv                           
+
+let subst_atomic_hash subst_hash a =
+  match a with
+  | Aconst _ -> a
+  | Avar _ -> if AtomicHashtbl.mem subst_hash a then
+                AtomicHashtbl.find subst_hash a
+              else a
+
+let subst_instr_hash psubst_hash esubst_hash rsubst_hash i =
+  match i with
+  | Imov (v, a) ->
+     Imov (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a)
+  | Ishl (v, a, n) ->
+     Ishl (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a, n)
+  | Icshl (vh, vl, a1, a2, n) ->
+     Icshl (subst_lval_hash psubst_hash vh,
+            subst_lval_hash psubst_hash vl,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2, n)
+  | Inondet v -> Inondet (subst_lval_hash psubst_hash v)
+  | Icmov (v, c, a1, a2) ->
+     Icmov (subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash c,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Inop -> Inop
+  | Iadd (v, a1, a2) ->
+     Iadd (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2)
+  | Iadds (c, v, a1, a2) ->
+     Iadds (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Iaddr (c, v, a1, a2) ->
+     Iaddr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Iadc (v, a1, a2, y) ->
+     Iadc (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2,
+           subst_atomic_hash psubst_hash y)
+  | Iadcs (c, v, a1, a2, y) ->
+     Iadcs (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Iadcr (c, v, a1, a2, y) ->
+     Iadcr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Isub (v, a1, a2) ->
+     Isub (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2)
+  | Isubc (c, v, a1, a2) ->
+     Isubc (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Isubb (c, v, a1, a2) ->
+     Isubb (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Isubr (c, v, a1, a2) ->
+     Isubr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Isbc (v, a1, a2, y) ->
+     Isbc (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2,
+           subst_atomic_hash psubst_hash y)
+  | Isbcs (c, v, a1, a2, y) ->
+     Isbcs (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Isbcr (c, v, a1, a2, y) ->
+     Isbcr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Isbb (v, a1, a2, y) ->
+     Isbb (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2,
+           subst_atomic_hash psubst_hash y)
+  | Isbbs (c, v, a1, a2, y) ->
+     Isbbs (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Isbbr (c, v, a1, a2, y) ->
+     Isbbr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2,
+            subst_atomic_hash psubst_hash y)
+  | Imul (v, a1, a2) ->
+     Imul (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2)
+  | Imuls (c, v, a1, a2) ->
+     Imuls (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Imulr (c, v, a1, a2) ->
+     Imulr (subst_lval_hash psubst_hash c,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Imull (vh, vl, a1, a2) ->
+     Imull (subst_lval_hash psubst_hash vh,
+            subst_lval_hash psubst_hash vl,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Imulj (v, a1, a2) ->
+     Imulj (subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a1,
+            subst_atomic_hash psubst_hash a2)
+  | Isplit (vh, vl, a, n) ->
+     Isplit (subst_lval_hash psubst_hash vh,
+             subst_lval_hash psubst_hash vl,
+             subst_atomic_hash psubst_hash a, n)
+  | Iand (v, a1, a2) ->
+     Iand (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2)
+  | Ior (v, a1, a2) ->
+     Ior (subst_lval_hash psubst_hash v,
+          subst_atomic_hash psubst_hash a1,
+          subst_atomic_hash psubst_hash a2)
+  | Ixor (v, a1, a2) ->
+     Ixor (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a1,
+           subst_atomic_hash psubst_hash a2)
+  | Inot (v, a) ->
+     Inot (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a)
+  | Icast (od, v, a) ->
+     Icast (apply_to_some (subst_lval_hash psubst_hash) od,
+            subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash a)
+  | Ivpc (v, a) ->
+     Ivpc (subst_lval_hash psubst_hash v,
+           subst_atomic_hash psubst_hash a)
+  | Ijoin (v, ah, al) ->
+     Ijoin (subst_lval_hash psubst_hash v,
+            subst_atomic_hash psubst_hash ah,
+            subst_atomic_hash psubst_hash al)
+  | Iassert e ->
+     Iassert (subst_bexp_hash esubst_hash rsubst_hash e)
+  | Iassume e ->
+     Iassume (subst_bexp_hash esubst_hash rsubst_hash e)
+  | Icut (ecuts, rcuts) ->
+     Icut (map_fst (fun e -> subst_ebexp_hash esubst_hash e) ecuts,
+           map_fst (fun e -> subst_rbexp_hash rsubst_hash e) rcuts)
+  | Ighost (vs, e) ->
+     Ighost (VS.of_list (List.map (subst_lval_hash psubst_hash) (VS.elements vs)), subst_bexp_hash esubst_hash rsubst_hash e)
+
+let subst_program_hash psubst_hash esubst_hash rsubst_hash p =
+  List.rev_map (subst_instr_hash psubst_hash esubst_hash rsubst_hash)
+    (List.rev p)
+
 (* Find all required algebraic predicates in instrs according to pwss. *)
 let eprove_with_filter pwss (pre, instrs) =
   let extract_ebexps instrs =
@@ -1826,7 +2082,7 @@ let cut_rspec rs =
 
 (** Assignment rewriting for SSA programs *)
 
-let rewrite_mov_ssa_spec spec =
+let _rewrite_mov_ssa_spec_orig spec =
   let rewrite_mov (prog, post) instr =
     match instr with
     | Imov (v, Avar v') -> (subst_program [(v, Avar v')] prog, subst_bexp [(v, Evar v')] [(v, Rvar v')] post)
@@ -1835,6 +2091,83 @@ let rewrite_mov_ssa_spec spec =
   let (prog', post') = List.fold_left rewrite_mov ([], spec.spost) (List.rev spec.sprog) in
   { spre = spec.spre; sprog = prog'; spost = post'; sepwss = spec.sepwss; srpwss = spec.srpwss }
 
+(* The following function uses AtomicHashtbl for substitution
+ * patterns. It consists of two phases. In phase 1, each "mov v a"
+ * instruction is stored in subst_revhash with key a mapping to v. In
+ * phase 2, substitution hashes (psubsts, esubsts, rsubsts) are built
+ * from sub_revhash and apply to program.
+ * Auxiliary substituion functions (subst_program_hash,
+ * subst_bexp_hash, subst_ebexp_hash, subst_eexp_hash,
+ * subst_rbexp_hash, subst_rexp_hash) are also added.
+ *)
+  
+let rewrite_mov_ssa_spec spec =
+  let find_and_remove_old_substs subst_revhash v =
+    let old_substs = 
+      if AtomicHashtbl.mem subst_revhash (Avar v) then
+        AtomicHashtbl.find_all subst_revhash (Avar v)
+      else [] in
+    let _ = List.iter
+              (fun _ -> AtomicHashtbl.remove subst_revhash (Avar v))
+              old_substs in
+    old_substs in
+  let rec collect_revhash rev_prog (subst_revhash, prog') =
+    match rev_prog with
+    | [] -> (subst_revhash, prog')
+    | inst::rev_prog' ->
+       (match inst with
+        | Imov (v, Avar v') ->
+           let old_substs =
+             find_and_remove_old_substs subst_revhash v in
+           let _ = List.iter (AtomicHashtbl.add subst_revhash (Avar v'))
+                     (v::old_substs) in
+           collect_revhash rev_prog' (subst_revhash, prog')
+        | Imov (v, Aconst (ty, n)) ->
+           let old_substs =
+             find_and_remove_old_substs subst_revhash v in
+           let _ =
+             List.iter (AtomicHashtbl.add subst_revhash (Aconst (ty, n)))
+                          (v::old_substs) in
+           collect_revhash rev_prog' (subst_revhash, prog')
+        | _ -> collect_revhash rev_prog' (subst_revhash, inst::prog')) in
+  let (psubst_revhash, prog') =
+    collect_revhash (List.rev spec.sprog) (AtomicHashtbl.create 103, []) in
+  let psubsts =
+    let hash = AtomicHashtbl.create 103 in
+    let _ = AtomicHashtbl.iter
+              (fun k v -> AtomicHashtbl.add hash (Avar v) k)
+              psubst_revhash in
+    hash in
+  let (esubsts, rsubsts) =
+    let ehash = AtomicHashtbl.create 103 in
+    let rhash = AtomicHashtbl.create 103 in
+    let _ = AtomicHashtbl.iter (fun k v ->
+                match k with
+                | Avar v' ->
+                   (AtomicHashtbl.add ehash (Avar v) (Evar v');
+                    AtomicHashtbl.add rhash (Avar v) (Rvar v'))
+                | Aconst (ty, n) ->
+                   (AtomicHashtbl.add ehash (Avar v) (Econst n);
+                    AtomicHashtbl.add rhash (Avar v)
+                      (Rconst ((size_of_typ ty), n))))
+              psubst_revhash in
+    (ehash, rhash) in
+  (*
+  let psubsts =
+    AtomicHashtbl.fold (fun k v ret -> (v, k)::ret) psubst_hash [] in
+  let (esubsts, rsubsts) =
+    AtomicHashtbl.fold (fun k v (eret, rret) ->
+        match k with
+        | Avar v' -> ((v, Evar v')::eret, (v, Rvar v')::rret)
+        | Aconst (ty, n) -> ((v, Econst n)::eret,
+                             (v, Rconst (size_of_typ ty, n))::rret))
+        psubst_hash ([], []) in
+   *)
+  { spre = spec.spre;
+    sprog = subst_program_hash psubsts esubsts rsubsts prog';
+    spost = subst_bexp_hash esubsts rsubsts spec.spost;
+    sepwss = spec.sepwss; srpwss = spec.srpwss }
+        
 let rewrite_vpc_ssa_spec spec =
   let rewrite_vpc (prog, post) instr =
     match instr with
