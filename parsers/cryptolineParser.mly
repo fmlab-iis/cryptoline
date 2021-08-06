@@ -1233,6 +1233,10 @@
     (* Clean up temp. names so that they are invisible to latter parts of the source *)
     (remove_keys tmp_names vm', vxm', ym', gm', List.concat (instrs_aliasing::iss))
 
+  let parse_vbroadcast_at lno dest_tok num src_scl fm cm vm vxm ym gm =
+    let n = num cm in
+    let src_tok = `AVLIT (List.init (Z.to_int n) (fun _ -> src_scl)) in
+    unpack_vinstr_11 parse_imov_at lno dest_tok src_tok fm cm vm vxm ym gm
 
   let recognize_instr_at lno instr fm cm vm vxm ym gm =
       match instr with
@@ -1240,6 +1244,8 @@
         parse_imov_at lno dest src fm cm vm vxm ym gm
       | `VMOV (dest, src) ->
         unpack_vinstr_11 parse_imov_at lno dest src fm cm vm vxm ym gm
+      | `VBROADCAST (dest, num, src_scl) ->
+        parse_vbroadcast_at lno dest num src_scl fm cm vm vxm ym gm
       | `SHL (`LVPLAIN dest, src, num) ->
          parse_ishl_at lno dest src num fm cm vm vxm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
@@ -1434,6 +1440,7 @@
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
+%token BROADCAST
 %token ADD ADDS ADDR ADC ADCS ADCR SUB SUBC SUBB SUBR SBC SBCS SBCR SBB SBBS SBBR MUL MULS MULR MULL MULJ SPLIT
 %token UADD UADDS UADDR UADC UADCS UADCR USUB USUBC USUBB USUBR USBC USBCS USBCR USBB USBBS USBBR UMUL UMULS UMULR UMULL UMULJ USPLIT
 %token SADD SADDS SADDR SADC SADCS SADCR SSUB SSUBC SSUBB SSUBR SSBC SSBCS SSBCR SSBB SSBBS SSBBR SMUL SMULS SMULR SMULL SMULJ SSPLIT
@@ -1635,6 +1642,7 @@ instr:
     MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
   | MOV lval_vector atomic_vector             { (!lnum, `VMOV ($2, $3)) }
   | lhs EQOP atomic                           { (!lnum, `MOV (`LVPLAIN $1, $3)) }
+  | BROADCAST lval_vector const atomic        { (!lnum, `VBROADCAST ($2, $3, $4)) }
   | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
@@ -1803,6 +1811,7 @@ instr:
   | NOP                                       { (!lnum, `NOP) }
   /* Errors */
   | MOV error                                 { raise_at !lnum ("Bad mov instruction") }
+  | BROADCAST error                           { raise_at !lnum ("Bad broadcast instruction") }
   | ADD error                                 { raise_at !lnum ("Bad add instruction") }
   | ADDS error                                { raise_at !lnum ("Bad adds instruction") }
   | ADC error                                 { raise_at !lnum ("Bad adc instruction") }

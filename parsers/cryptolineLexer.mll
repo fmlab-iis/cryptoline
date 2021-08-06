@@ -13,6 +13,7 @@
               "const"                      , CONST;
               "assign"                     , MOV;
               "mov"                        , MOV;
+              "broadcast"                  , BROADCAST;
               "add"                        , ADD;
               "adds"                       , ADDS;
               "addr"                       , ADDR;
