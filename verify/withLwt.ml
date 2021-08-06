@@ -38,7 +38,7 @@ let rec finish_pending delivered_helper res pending =
   | _ -> let (res', pending') = work_on_pending delivered_helper res pending in
          finish_pending delivered_helper res' pending'
 
-let verify_safety_inc timeout f p qs hashopt =
+let verify_safety_inc timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
     let header = ["= Verifying safety condition =";
                   "ID: " ^ string_of_int id ^ "\n"
@@ -93,7 +93,7 @@ let verify_safety_inc timeout f p qs hashopt =
          let promise = mk_promise (id, i, q, List.rev revp') in
          (res', revp', p', promise::pending') in
   let (res, _, _, pending) =
-    List.fold_left fold_fun ((Solved Unsat), [], p, []) qs in
+    List.fold_left fold_fun (Solved Unsat, [], prog, []) qs in
   finish_pending delivered_helper res pending
 
 let write_header_to_log header =

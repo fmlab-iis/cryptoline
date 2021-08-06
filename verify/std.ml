@@ -106,7 +106,10 @@ let verify_safety s hashopt =
           let _ =
             match res with
               Solved r -> safety := if r = Unsat then Some true else Some false
-            | Unfinished rest -> qs := rest in
+            | Unfinished rest ->
+               qs := List.sort
+                       (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
+                       rest in
           let _ = round := !round + 1 in
           let _ = timeout := !timeout * 2 in
           ()
@@ -614,7 +617,7 @@ let verify_spec s =
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     (true, s, hashopt) in
-  let build_var_dep_hash (s, _) =
+  let _build_var_dep_hash (s, _) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Computing Variable Dependency:\t\t" in
     let hash = Ast.Cryptoline.mk_var_dep_hash s.sprog in
@@ -684,7 +687,7 @@ let verify_spec s =
                    -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list=
     [spec_to_ssa]
     @(if !apply_rewriting then [rewrite_assignments] else [])
-    @(if !apply_slicing then [build_var_dep_hash] else [])
+    (* @(if !apply_slicing then [build_var_dep_hash] else []) *)
     @(if !verify_program_safety then [program_safe] else [])
     @(if !verify_rassertion && has_assert s.sprog then [valid_rassert] else [])
     @(if !verify_rpost then [valid_rspec] else [])
