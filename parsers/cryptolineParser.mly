@@ -1120,7 +1120,7 @@
   let vec_name_fn vname =
     let n = String.length vname in
     let name = String.sub vname 1 (n - 1) in
-    Printf.sprintf "_vec_%s#%d" name
+    Printf.sprintf "_vec_%s!%d" name
 
   let string_of_typ_vec (tv:typ_vec) =
     let (t, n) = tv in
@@ -1227,7 +1227,7 @@
     let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
-      let lvtoken = {lvname; lvtyphint=Some relmtyp} in
+      let lvtoken = {lvname; lvtyphint=None} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
@@ -1235,6 +1235,41 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
     (* Clean up temp. names so that they are invisible to latter parts of the source *)
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+
+  let unpack_vinstr_12 mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
+    let (relmtyp, src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+
+    let srclen = List.length src1 in
+    let _ = if (List.length src2) <> srclen then
+      raise_at lno "Two sources should have the same length."
+    else if relmtyp <> relmtyp' then
+      raise_at lno "Two sources should have the same element type."
+    else () in
+
+    let src_typ_vec = (relmtyp, srclen) in
+    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
+
+    let _ = if (List.length dest_names) <> srclen then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
+    let src_joined = src1 @ src2 in
+    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_aliasing_instrs lno dest_names_set src_joined vm relmtyp in
+    let (src1_safe_rev, src2_safe_rev) = List.fold_left (fun (a, b) (i, x) ->
+      if i < srclen then (x::a,    b)
+                    else (   a, x::b)) ([], []) (List.combine (0 -- (srclen * 2 - 1)) src_safe_joined) in
+    let src_safe = List.rev (List.combine src1_safe_rev src2_safe_rev) in
+
+    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
+      let lvtoken = {lvname; lvtyphint=None} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let parse_vbroadcast_at lno dest_tok num src_scl fm cm vm vxm ym gm =
@@ -1264,6 +1299,8 @@
          parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
       | `ADD (`LVPLAIN dest, src1, src2) ->
          parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VADD (dest, src1, src2) ->
+         unpack_vinstr_12 parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
       | `ADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_adds_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `ADDR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1276,6 +1313,8 @@
          parse_adcr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SUB (`LVPLAIN dest, src1, src2) ->
          parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VSUB (dest, src1, src2) ->
+         unpack_vinstr_12 parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1657,6 +1696,7 @@ instr:
   | CMOV lval carry atomic atomic             { (!lnum, `CMOV ($2, $3, $4, $5)) }
   | lhs EQOP CMOV carry atomic atomic         { (!lnum, `CMOV (`LVPLAIN $1, $4, $5, $6)) }
   | ADD lval atomic atomic                    { (!lnum, `ADD ($2, $3, $4)) }
+  | ADD lval_v atomic_v atomic_v              { (!lnum, `VADD ($2, $3, $4)) }
   | lhs EQOP ADD atomic atomic                { (!lnum, `ADD (`LVPLAIN $1, $4, $5)) }
   | ADDS lcarry lval atomic atomic            { (!lnum, `ADDS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP ADDS atomic atomic       { (!lnum, `ADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
@@ -1669,6 +1709,7 @@ instr:
   | ADCR lcarry lval atomic atomic carry      { (!lnum, `ADCR ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP ADCR atomic atomic carry { (!lnum, `ADCR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | SUB lval atomic atomic                    { (!lnum, `SUB ($2, $3, $4)) }
+  | SUB lval_v atomic_v atomic_v              { (!lnum, `VSUB ($2, $3, $4)) }
   | lhs EQOP SUB atomic atomic                { (!lnum, `SUB (`LVPLAIN $1, $4, $5)) }
   | SUBC lcarry lval atomic atomic            { (!lnum, `SUBC ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBC atomic atomic       { (!lnum, `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
