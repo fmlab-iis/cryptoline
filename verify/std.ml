@@ -50,25 +50,31 @@ let verify_safety_inc timeout f p qs hashopt =
     | Solved Unsat -> Unfinished [q]
     | Unfinished unsolved -> Unfinished (q::unsolved)
     | _ -> assert false in
-  let fold_fun res (id, i, q) =
+  let rec find_program_prefix i revp p =
+    match p with
+    | [] -> failwith "find_program_prefix fails"
+    | hd::tl -> if i = hd then (hd::revp, tl)
+                else find_program_prefix i (hd::revp) tl in
+  let fold_fun (res, revp, p) (id, i, q) =
     match res with
       Solved Sat
-    | Solved Unknown -> res
+    | Solved Unknown -> (res, revp, p)
     | _ ->
        try
          let _ = trace ("= Verifying safety condition =") in
          let _ = trace ("ID: " ^ string_of_int id ^ "\n"
                         ^ "Instruction: " ^ string_of_instr i) in
          let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
-         let fp = safety_assumptions f p q hashopt in
+         let (revp', p') = find_program_prefix i revp p in
+         let fp = safety_assumptions f (List.rev revp') q hashopt in
          match solve_simp ~timeout:timeout (fp@[q]) with
-         | Sat -> let _ = vprintln "[FAILED]" in Solved Sat
-         | Unknown -> let _ = vprintln "[FAILED]" in Solved Unknown
-         | Unsat -> let _ = vprintln "[OK]" in res
+         | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
+         | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
+         | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
        with TimeoutException ->
          let _ = vprintln "[TIMEOUT]" in
-         add_unsolved (id, i, q) res in
-  let res = List.fold_left fold_fun (Solved Unsat) qs in
+         (add_unsolved (id, i, q) res, revp, p) in
+  let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
 
 let verify_safety s hashopt =

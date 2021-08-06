@@ -39,7 +39,7 @@ let rec finish_pending delivered_helper res pending =
          finish_pending delivered_helper res' pending'
 
 let verify_safety_inc timeout f p qs hashopt =
-  let mk_promise (id, i, q) =
+  let mk_promise (id, i, q, p) =
     let header = ["= Verifying safety condition =";
                   "ID: " ^ string_of_int id ^ "\n"
                   ^ "Instruction: " ^ string_of_instr i] in
@@ -71,20 +71,29 @@ let verify_safety_inc timeout f p qs hashopt =
        | Unfinished qs ->
           let _ = assert (List.length qs = 1) in
           add_unsolved (id, i, q) r in
-  let fold_fun (res, pending) (id, i, q) =
+  let rec find_program_prefix i revp p =
+    match p with
+    | [] -> failwith "find_program_prefix fails"
+    | hd::tl -> if i = hd then (hd::revp, tl)
+                else find_program_prefix i (hd::revp) tl in
+  let fold_fun (res, revp, p, pending) (id, i, q) =
     match res with
       Solved Sat
     | Solved Unknown ->
-       (finish_pending delivered_helper res pending, [])
+       (finish_pending delivered_helper res pending, revp, p, [])
     | _ ->
        if List.length pending < !jobs then
-         let promise = mk_promise (id, i, q) in
-         (res, promise::pending)
+         let (revp', p') = find_program_prefix i revp p in
+         let promise = mk_promise (id, i, q, List.rev revp') in
+         (res, revp', p', promise::pending)
        else
-         let (res', pending') = work_on_pending delivered_helper res pending in
-         let promise = mk_promise (id, i, q) in
-         (res', promise::pending') in
-  let (res, pending) = List.fold_left fold_fun ((Solved Unsat), []) qs in
+         let (res', pending') =
+           work_on_pending delivered_helper res pending in
+         let (revp', p') = find_program_prefix i revp p in
+         let promise = mk_promise (id, i, q, List.rev revp') in
+         (res', revp', p', promise::pending') in
+  let (res, _, _, pending) =
+    List.fold_left fold_fun ((Solved Unsat), [], p, []) qs in
   finish_pending delivered_helper res pending
 
 let write_header_to_log header =
