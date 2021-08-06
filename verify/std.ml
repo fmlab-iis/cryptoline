@@ -22,12 +22,12 @@ let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_
  * Verify the safety of the n-th instruction in a program in SSA.
  * Raise TimeoutException if the SMT solver timed out.
  *)
-let verify_instruction_safety timeout f p n =
+let verify_instruction_safety timeout f p n hashopt =
   let do_verify f p q =
     match q with
     | True -> Solved Unsat
     | _ ->
-       let fp = safety_assumptions f p q in
+       let fp = safety_assumptions f p q hashopt in
        Solved (solve_simp ~timeout:timeout (fp@[q]))
   in
   let i =
@@ -44,7 +44,7 @@ let verify_instruction_safety timeout f p n =
    p: program
    qs: safety conditions
  *)
-let verify_safety_inc timeout f p qs =
+let verify_safety_inc timeout f p qs hashopt =
   let add_unsolved q res =
     match res with
     | Solved Unsat -> Unfinished [q]
@@ -60,7 +60,7 @@ let verify_safety_inc timeout f p qs =
          let _ = trace ("ID: " ^ string_of_int id ^ "\n"
                         ^ "Instruction: " ^ string_of_instr i) in
          let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
-         let fp = safety_assumptions f p q in
+         let fp = safety_assumptions f p q hashopt in
          match solve_simp ~timeout:timeout (fp@[q]) with
          | Sat -> let _ = vprintln "[FAILED]" in Solved Sat
          | Unknown -> let _ = vprintln "[FAILED]" in Solved Unknown
@@ -71,7 +71,7 @@ let verify_safety_inc timeout f p qs =
   let res = List.fold_left fold_fun (Solved Unsat) qs in
   res
 
-let verify_safety s =
+let verify_safety s hashopt =
   let _ = trace "===== Verifying program safety =====" in
   let _ = if !incremental_safety then vprintln "" in
   let verify_one (i, f, p) =
@@ -94,9 +94,9 @@ let verify_safety s =
                                  ^ string_of_int !timeout ^ " seconds)") in
           let res =
             if !jobs > 1 then
-              WithLwt.verify_safety_inc !timeout f p !qs
+              WithLwt.verify_safety_inc !timeout f p !qs hashopt
             else
-              verify_safety_inc !timeout f p !qs in
+              verify_safety_inc !timeout f p !qs hashopt in
           let _ =
             match res with
               Solved r -> safety := if r = Unsat then Some true else Some false
@@ -112,7 +112,7 @@ let verify_safety s =
       res
     else
       let g = bexp_program_safe p in
-      let fp = safety_assumptions f p g in
+      let fp = safety_assumptions f p g hashopt in
       solve_simp (fp@[g]) = Unsat in
   let rec cut i f visited_rev p =
     match p with
@@ -400,7 +400,7 @@ let is_in_ideal vars ideal p =
   let _ = cleanup [ifile; ofile] in
   res
 
-let verify_rspec_single_conjunct s =
+let verify_rspec_single_conjunct s hashopt =
   let verify_one s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
@@ -412,16 +412,16 @@ let verify_rspec_single_conjunct s =
         solve_simp (f::p@[g]) = Unsat)
       gs in
   s.rspost = Rtrue ||
-    (if !apply_slicing then verify_one (slice_rspec_ssa s)
+    (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
-let verify_rspec' s =
+let verify_rspec' s hashopt =
   let rec verify_ands s =
     match s.rspost with
     | Rand (e1, e2) ->
        verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
          verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
-    | _ -> verify_rspec_single_conjunct s in
+    | _ -> verify_rspec_single_conjunct s hashopt in
   let rec verify_rec i ss =
     match ss with
     | [] -> true
@@ -437,11 +437,11 @@ let verify_rspec' s =
        end in
   verify_rec 0 (cut_rspec s)
 
-let verify_rspec s =
+let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
-  verify_rspec' s
+  verify_rspec' s hashopt
 
-let verify_espec_single_conjunct vgen s =
+let verify_espec_single_conjunct vgen s hashopt =
   let verify_one vgen s =
     let (_, entailments) = polys_of_espec vgen s in
     List.fold_left
@@ -453,16 +453,16 @@ let verify_espec_single_conjunct vgen s =
         )
         else res) true entailments in
   s.espost = Etrue ||
-    (if !apply_slicing then verify_one vgen (slice_espec_ssa s)
+    (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let verify_espec' vgen s =
+let verify_espec' vgen s hashopt =
   let rec verify_ands vgen s =
     match s.espost with
     | Eand (e1, e2) ->
        verify_ands vgen { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
          verify_ands vgen { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-    | _ -> verify_espec_single_conjunct vgen s in
+    | _ -> verify_espec_single_conjunct vgen s hashopt in
   let rec verify_rec i vgen ss =
     match ss with
     | [] -> true
@@ -482,7 +482,7 @@ let verify_espec vgen s =
   let _ = trace "===== Verifying algebraic specification =====" in
   verify_espec' vgen s
 
-let verify_eassert vgen s =
+let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
   let rec verify epre evisited p =
@@ -491,14 +491,14 @@ let verify_eassert vgen s =
     | Iassert e::tl ->
        let _ = trace ("=== Checking algebraic assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
+         [ (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt);
            (fun () -> verify epre evisited tl) ]
     | Icut ([], _)::tl -> verify epre evisited tl
     | Icut (ecuts, _)::tl -> verify (eands (fst (List.split ecuts))) [] tl
     | hd::tl -> verify epre (hd::evisited) tl in
   verify (eqn_bexp s.spre) [] s.sprog
 
-let verify_rassert _vgen s =
+let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let rec verify rpre rvisited p =
@@ -507,14 +507,14 @@ let verify_rassert _vgen s =
     | Iassert e::tl ->
        let _ = trace ("=== Checking range assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
+         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt);
            (fun () -> verify rpre rvisited tl) ]
     | Icut (_, [])::tl -> verify rpre rvisited tl
     | Icut (_, rcuts)::tl -> verify (rands (fst (List.split rcuts))) [] tl
     | hd::tl -> verify rpre (hd::rvisited) tl in
   verify (rng_bexp s.spre) [] s.sprog
 
-let verify_assert vgen s =
+let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
@@ -524,8 +524,8 @@ let verify_assert vgen s =
     | Iassert e::tl ->
        let _ = trace ("=== Checking assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
-           (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
+         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt);
+           (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt);
            (fun () -> verify (epre, rpre) (evisited, rvisited) tl) ]
     | Icut (ecuts, [])::tl -> verify (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
     | Icut ([], rcuts)::tl -> verify (epre, rands (fst (List.split rcuts))) (evisited, []) tl
@@ -594,80 +594,91 @@ let verify_spec s =
                          match i with
                          | Iassert _ -> true
                          | _ -> false) p in
-  let spec_to_ssa s =
+  let spec_to_ssa (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Transforming to SSA form:\t\t") in
     let ssa = ssa_spec s in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
-    (true, ssa) in
-  let rewrite_assignments s =
+    (true, ssa, hashopt) in
+  let rewrite_assignments (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Rewriting assignments:\t\t\t") in
     let s = rewrite_mov_ssa_spec s in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
-    (true, s) in
-  let program_safe s =
+    (true, s, hashopt) in
+  let build_var_dep_hash (s, _) =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint "Computing Variable Dependency:\t\t" in
+    let hash = Ast.Cryptoline.mk_var_dep_hash s.sprog in
+    let t2 = Unix.gettimeofday() in
+    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    (true, s, Some hash) in
+  let program_safe (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Verifying program safety:\t\t" in
-    let b = verify_safety s in
+    let b = verify_safety s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
-    (b, s) in
-  let rewrite_vpc s =
+    (b, s, hashopt) in
+  let rewrite_vpc (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Rewriting value-preserved casting:\t") in
     let s = rewrite_vpc_ssa_spec s in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
-    (true, s) in
-  let valid_eassert s =
+    (true, s, hashopt) in
+  let valid_eassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Verifying algebraic assertions:\t\t" in
     let b = if !jobs > 1 then
               (if !Options.Std.use_cli then WithLwt.verify_eassert_cli s
-               else WithLwt.verify_eassert vgen s)
+               else WithLwt.verify_eassert vgen s hashopt)
             else
-              verify_eassert vgen s in
+              verify_eassert vgen s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
-    (b, s) in
-  let valid_rassert s =
+    (b, s, hashopt) in
+  let valid_rassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Verifying range assertions:\t\t" in
     let b = if !jobs > 1 then
               (if !Options.Std.use_cli then WithLwt.verify_rassert_cli s
-               else WithLwt.verify_rassert vgen s)
+               else WithLwt.verify_rassert vgen s hashopt)
             else
-              verify_rassert vgen s in
+              verify_rassert vgen s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
-    (b, s) in
-  let valid_rspec s =
+    (b, s, hashopt) in
+  let valid_rspec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Verifying range specification:\t\t" in
     let b = if !jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_rspec_cli else WithLwt.verify_rspec) (rspec_of_spec s)
+              (if !Options.Std.use_cli
+               then WithLwt.verify_rspec_cli else WithLwt.verify_rspec)
+                (rspec_of_spec s) hashopt
             else
-              verify_rspec (rspec_of_spec s) in
+              verify_rspec (rspec_of_spec s) hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
-    (b, s) in
-  let valid_espec s =
+    (b, s, hashopt) in
+  let valid_espec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint "Verifying algebraic specification:\t" in
     let b = if !jobs > 1 then
               (if !Options.Std.use_cli then WithLwt.verify_espec_cli (espec_of_spec s)
-               else WithLwt.verify_espec vgen (espec_of_spec s))
+               else WithLwt.verify_espec vgen (espec_of_spec s) hashopt)
             else
-              verify_espec vgen (espec_of_spec s) in
+              verify_espec vgen (espec_of_spec s) hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
-    (b, s) in
-  let verifiers : (Ast.Cryptoline.spec -> bool * Ast.Cryptoline.spec) list=
+    (b, s, hashopt) in
+  let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option
+                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list=
     [spec_to_ssa]
     @(if !apply_rewriting then [rewrite_assignments] else [])
+    @(if !apply_slicing then [build_var_dep_hash] else [])
     @(if !verify_program_safety then [program_safe] else [])
     @(if !verify_rassertion && has_assert s.sprog then [valid_rassert] else [])
     @(if !verify_rpost then [valid_rspec] else [])
@@ -675,7 +686,10 @@ let verify_spec s =
     @(if !apply_rewriting then [rewrite_vpc] else [])
     @(if !verify_eassertion && has_assert s.sprog then [valid_eassert] else [])
     @(if !verify_epost then [valid_espec] else []) in
-  fst (List.fold_left
-         (fun (res, s) verifier -> if res then verifier s else (res, s))
-         (true, s)
-         verifiers)
+  let (result, _, _) = List.fold_left
+                         (fun (res, s, hashopt) verifier ->
+                           if res then verifier (s, hashopt)
+                           else (res, s, hashopt))
+                         (true, s, None)
+                         verifiers in
+  result

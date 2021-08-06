@@ -1327,16 +1327,26 @@ let _slice_polys ideal p =
   helper [] (List.rev ideal)
 
 (* Slice a precondition and a program according to a safety condition. *)
-let slice_for_safety f p safety_cond =
-  let vars = program_pre_vars_sat (vars_bexp safety_cond) rbexp_vars_sat f p in
+let slice_for_safety f p safety_cond hashopt =
+  let vars =
+    match hashopt with
+    | Some dep_hash ->
+       let root_vars = vars_bexp safety_cond in
+       let program_vars =
+         VS.fold (fun v ret -> VS.union ret (find_dep_vars dep_hash v))
+           root_vars root_vars in
+       rbexp_vars_sat program_vars f
+    | None ->
+       program_pre_vars_sat (vars_bexp safety_cond) rbexp_vars_sat f p in
   (slice_rbexp vars f, slice_program_ssa vars p)
 
 (*
  * Convert a precondition and a program to QFBV bexps according to a safety condition.
  * The precondition and the program may be sliced.
  *)
-let safety_assumptions f p safety_cond =
+let safety_assumptions f p safety_cond hashopt =
   let (f, p) =
-    if !apply_slicing then slice_for_safety f p safety_cond
+    if !apply_slicing then
+      slice_for_safety f p safety_cond hashopt
     else (f, p) in
   (bexp_rbexp f)::(bexp_program p)

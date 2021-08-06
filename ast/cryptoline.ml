@@ -1368,7 +1368,9 @@ module AtomicHashType =
   end
 
 module AtomicHashtbl = Hashtbl.Make (AtomicHashType)
-                     
+
+type 'a atomichash_t = 'a AtomicHashtbl.t
+                  
 (* substitution with hash table *)
 
 let rec subst_eexp_hash esubst_hash e =
@@ -2152,17 +2154,6 @@ let rewrite_mov_ssa_spec spec =
                       (Rconst ((size_of_typ ty), n))))
               psubst_revhash in
     (ehash, rhash) in
-  (*
-  let psubsts =
-    AtomicHashtbl.fold (fun k v ret -> (v, k)::ret) psubst_hash [] in
-  let (esubsts, rsubsts) =
-    AtomicHashtbl.fold (fun k v (eret, rret) ->
-        match k with
-        | Avar v' -> ((v, Evar v')::eret, (v, Rvar v')::rret)
-        | Aconst (ty, n) -> ((v, Econst n)::eret,
-                             (v, Rconst (size_of_typ ty, n))::rret))
-        psubst_hash ([], []) in
-   *)
   { spre = spec.spre;
     sprog = subst_program_hash psubsts esubsts rsubsts prog';
     spost = subst_bexp_hash esubsts rsubsts spec.spost;
@@ -2242,6 +2233,28 @@ let rec slice_rbexp vars e =
 
 let slice_bexp vars e = (slice_ebexp vars (eqn_bexp e), slice_rbexp vars (rng_bexp e))
 
+let find_dep_vars dep_hash v =
+  if AtomicHashtbl.mem dep_hash (Avar v) then
+    AtomicHashtbl.find dep_hash (Avar v)
+  else
+    VS.empty
+                      
+let mk_var_dep_hash p =
+  let dep_hash = AtomicHashtbl.create 103 in
+  let update_dep_hash lvs rvs v =
+    let _ = assert (not (AtomicHashtbl.mem dep_hash (Avar v))) in
+    let deps = VS.fold (fun rv ret ->
+                   if AtomicHashtbl.mem dep_hash (Avar rv) then
+                     VS.union ret (AtomicHashtbl.find dep_hash (Avar rv))
+                   else ret) rvs (VS.union lvs rvs) in
+    AtomicHashtbl.add dep_hash (Avar v) deps in
+  let helper instr =
+    let lvs = lvs_instr instr in
+    let rvs = rvs_instr instr in
+    VS.iter (update_dep_hash lvs rvs) lvs in
+  let _ = List.iter helper p in
+  dep_hash
+  
 (*
  * Slice a program according to a specified initial set of variables.
  * The set of variables will be increased during slicing.
@@ -2346,20 +2359,48 @@ let rec program_pre_vars_sat vars pre_vars_sat pre p_rev =
  * because there may be some assumption about the value of carry_i and
  * x_j depends whether carry_i is zero or one.
  *)
-let slice_spec_ssa s =
-  let vars = program_pre_vars_sat (vars_bexp s.spost) bexp_vars_sat s.spre (List.rev s.sprog) in
+let slice_spec_ssa s hashopt =
+  let vars =
+    match hashopt with
+    | Some dep_hash ->
+       let root_vars = vars_bexp s.spost in
+       let program_vars =
+         VS.fold (fun v ret -> VS.union ret (find_dep_vars dep_hash v))
+           root_vars root_vars in
+       bexp_vars_sat program_vars s.spre
+    | None -> program_pre_vars_sat (vars_bexp s.spost)
+                bexp_vars_sat s.spre (List.rev s.sprog) in
   let p = slice_program_ssa vars s.sprog in
   let pre = slice_bexp vars s.spre in
   { spre = pre; sprog = p; spost = s.spost; srpwss = s.srpwss; sepwss = s.sepwss }
 
-let slice_espec_ssa s =
-  let vars = program_pre_vars_sat (vars_ebexp s.espost) ebexp_vars_sat s.espre (List.rev s.esprog) in
+let slice_espec_ssa s hashopt =
+  let vars =
+    match hashopt with
+    | Some dep_hash ->
+       let root_vars = vars_ebexp s.espost in
+       let program_vars =
+         VS.fold (fun v ret -> VS.union ret (find_dep_vars dep_hash v))
+           root_vars root_vars in
+       ebexp_vars_sat program_vars s.espre
+    | None -> program_pre_vars_sat (vars_ebexp s.espost)
+                ebexp_vars_sat s.espre (List.rev s.esprog) in
   let p = slice_program_ssa vars s.esprog in
   let pre = slice_ebexp vars s.espre in
   { espre = pre; esprog = p; espost = s.espost; espwss = s.espwss }
 
-let slice_rspec_ssa s =
-  let vars = program_pre_vars_sat (vars_rbexp s.rspost) rbexp_vars_sat s.rspre (List.rev s.rsprog) in
+let slice_rspec_ssa s hashopt =
+  let vars =
+    match hashopt with
+    | Some dep_hash ->
+       let root_vars = vars_rbexp s.rspost in
+       let program_vars =
+         VS.fold (fun v ret -> VS.union ret (find_dep_vars dep_hash v))
+           root_vars root_vars in
+       rbexp_vars_sat program_vars s.rspre
+    | None ->
+       program_pre_vars_sat (vars_rbexp s.rspost)
+         rbexp_vars_sat s.rspre (List.rev s.rsprog) in
   let p = slice_program_ssa vars s.rsprog in
   let pre = slice_rbexp vars s.rspre in
   { rspre = pre; rsprog = p; rspost = s.rspost; rspwss = s.rspwss }

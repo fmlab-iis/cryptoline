@@ -27,7 +27,7 @@ val typ_is_signed : typ -> bool
 val typ_to_signed : typ -> typ
 val typ_to_unsigned : typ -> typ
 
-
+type 'a atomichash_t
 
 (** Variables with SSA index taken into consideration *)
 
@@ -501,9 +501,11 @@ val slice_program_ssa : VS.t -> program -> program
  * because there may be some assumption about the value of carry_i and
  * x_j depends whether carry_i is zero or one.
  *)
-val slice_spec_ssa : spec -> spec
-val slice_espec_ssa : espec -> espec
-val slice_rspec_ssa : rspec -> rspec
+val find_dep_vars : VS.t atomichash_t -> var -> VS.t
+val mk_var_dep_hash : program -> VS.t atomichash_t
+val slice_spec_ssa : spec -> VS.t atomichash_t option -> spec
+val slice_espec_ssa : espec -> VS.t atomichash_t option -> espec
+val slice_rspec_ssa : rspec -> VS.t atomichash_t option -> rspec
 
 val auto_cast_program : ?preserve:bool -> program -> program
 

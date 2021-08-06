@@ -47,9 +47,9 @@ val macaulay2_of_var : Ast.Cryptoline.var -> string
 val macaulay2_of_eexp : Ast.Cryptoline.eexp -> string
 
 (* Slice a precondition and a program according to a safety condition. *)
-val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> (Ast.Cryptoline.rbexp * Ast.Cryptoline.program)
+val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> (Ast.Cryptoline.rbexp * Ast.Cryptoline.program)
 (*
  * Convert a precondition and a program to QFBV bexps according to a safety condition.
  * The precondition and the program may be sliced.
  *)
-val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> Qfbv.Std.bexp list
+val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> Qfbv.Std.bexp list

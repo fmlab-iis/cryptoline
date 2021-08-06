@@ -38,12 +38,12 @@ let rec finish_pending delivered_helper res pending =
   | _ -> let (res', pending') = work_on_pending delivered_helper res pending in
          finish_pending delivered_helper res' pending'
 
-let verify_safety_inc timeout f p qs =
+let verify_safety_inc timeout f p qs hashopt =
   let mk_promise (id, i, q) =
     let header = ["= Verifying safety condition =";
                   "ID: " ^ string_of_int id ^ "\n"
                   ^ "Instruction: " ^ string_of_instr i] in
-    let fp = safety_assumptions f p q in
+    let fp = safety_assumptions f p q hashopt in
     let solve = solve_simp ~timeout:timeout ~header:header (fp@[q]) in
     try%lwt
       let%lwt solve_res = solve in
@@ -412,7 +412,7 @@ let is_in_ideal header vars ideal p =
   in
   res
 
-let verify_rspec_assert header s =
+let verify_rspec_assert header s hashopt =
   let verify_one cut_header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
@@ -443,7 +443,7 @@ let verify_rspec_assert header s =
     | _ ->
        let%lwt r = if s.rspost = Rtrue then Lwt.return_true
                    else (if !apply_slicing
-                         then verify_one cut_header (slice_rspec_ssa s)
+                         then verify_one cut_header (slice_rspec_ssa s hashopt)
                          else verify_one cut_header s) in
        Lwt.return r in
   let rec verify_rec i ss =
@@ -458,7 +458,7 @@ let verify_rspec_assert header s =
          Lwt.return_false in
   verify_rec 0 (cut_rspec s)
 
-let verify_espec_assert header vgen s =
+let verify_espec_assert header vgen s hashopt =
   let verify_one cut_header vgen s =
     let (_, entailments) = polys_of_espec vgen s in
     Lwt_list.for_all_p
@@ -473,23 +473,23 @@ let verify_espec_assert header vgen s =
                          "Try #1"] in
           let%lwt r = is_in_ideal (cut_header@eheader) vars ideal p in
           Lwt.return r) entailments in
-  let rec verify_ands cut_header vgen s =
+  let rec verify_ands cut_header vgen s hashopt =
     match s.espost with
     | Eand (e1, e2) ->
        let%lwt r1 = verify_ands cut_header vgen
                       { espre = s.espre; esprog = s.esprog;
-                        espost = e1; espwss = s.espwss } in
+                        espost = e1; espwss = s.espwss } hashopt in
        if r1 then
          let%lwt r2 = verify_ands cut_header vgen
                         { espre = s.espre; esprog = s.esprog;
-                          espost = e2; espwss = s.espwss } in
+                          espost = e2; espwss = s.espwss } hashopt in
          Lwt.return r2
        else
          Lwt.return_false
     | _ ->
        let%lwt r = if s.espost = Etrue then Lwt.return_true
                    else (if !apply_slicing
-                         then verify_one cut_header vgen (slice_espec_ssa s)
+                         then verify_one cut_header vgen (slice_espec_ssa s hashopt)
                          else verify_one cut_header vgen s) in
        Lwt.return r in
   let rec verify_rec i vgen ss =
@@ -497,11 +497,11 @@ let verify_espec_assert header vgen s =
     | [] -> Lwt.return_true
     | hd::tl ->
        let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
-       let%lwt r = verify_ands (cut_header::header) vgen hd in
+       let%lwt r = verify_ands (cut_header::header) vgen hd hashopt in
        if r then verify_rec (i+1) vgen tl else Lwt.return_false in
   verify_rec 0 vgen (cut_espec s)
 
-let verify_eassert vgen s =
+let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
   let delivered_helper res (r, _e) = res && r in
@@ -510,7 +510,7 @@ let verify_eassert vgen s =
                     Ast.Cryptoline.string_of_bexp e ^ " ==="] in
     let%lwt e_res =
       verify_espec_assert header vgen
-        (mkespec epre (List.rev evisited) (eqn_bexp e)) in
+        (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt in
     Lwt.return (e_res, e) in
   let rec verify res pending epre evisited p =
     if res then
@@ -533,7 +533,7 @@ let verify_eassert vgen s =
       finish_pending delivered_helper res pending in
   verify true [] (eqn_bexp s.spre) [] s.sprog
 
-let verify_rassert _vgen s =
+let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let delivered_helper res (r, _e) = res && r in
@@ -542,7 +542,7 @@ let verify_rassert _vgen s =
                     Ast.Cryptoline.string_of_bexp e ^ " ==="] in
     let%lwt r_res =
       verify_rspec_assert header
-        (mkrspec rpre (List.rev rvisited) (rng_bexp e)) in
+        (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     Lwt.return (r_res, e) in
   let rec verify res pending rpre rvisited p =
     if res then
@@ -563,7 +563,7 @@ let verify_rassert _vgen s =
       finish_pending delivered_helper res pending in
   verify true [] (rng_bexp s.spre) [] s.sprog
 
-let verify_assert vgen s =
+let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
@@ -573,11 +573,11 @@ let verify_assert vgen s =
                     Ast.Cryptoline.string_of_bexp e ^ " ==="] in
     let%lwt r_res =
       verify_rspec_assert header
-        (mkrspec rpre (List.rev rvisited) (rng_bexp e)) in
+        (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     let%lwt e_res =
       if r_res then
         verify_espec_assert header vgen
-          (mkespec epre (List.rev evisited) (eqn_bexp e))
+          (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt
       else
         Lwt.return_false in
     Lwt.return (e_res, e) in
@@ -601,7 +601,7 @@ let verify_assert vgen s =
       finish_pending delivered_helper res pending in
   verify true [] (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
 
-let verify_rspec s =
+let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   let verify_one cut_header s =
     let f = bexp_rbexp s.rspre in
@@ -615,7 +615,7 @@ let verify_rspec s =
         Lwt.return (r = Unsat))
       gs in
   let mk_promise cut_header s =
-    if !apply_slicing then verify_one cut_header (slice_rspec_ssa s)
+    if !apply_slicing then verify_one cut_header (slice_rspec_ssa s hashopt)
     else verify_one cut_header s in
   let delivered_helper res r = res && r in
   let verify_ands cut_header s =
@@ -649,7 +649,7 @@ let verify_rspec s =
        end in
   verify_rec 0 (cut_rspec s)
 
-let verify_espec vgen s =
+let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specification =====" in
   let verify_one cut_header vgen s =
     let (_, entailments) = polys_of_espec vgen s in
@@ -664,7 +664,8 @@ let verify_espec vgen s =
              let%lwt r = is_in_ideal (cut_header::header) vars ideal p in
              Lwt.return r) entailments in
   let mk_promise cut_header s =
-    if !apply_slicing then verify_one cut_header vgen (slice_espec_ssa s)
+    if !apply_slicing
+    then verify_one cut_header vgen (slice_espec_ssa s hashopt)
     else verify_one cut_header vgen s in
   let delivered_helper res r = res && r in
   let verify_ands cut_header vgen s =
@@ -1000,7 +1001,7 @@ let run_cli_vrspec header s =
   Lwt.return (String.trim line = "true")
 
 (* Verify a rspec using CLI to run verification tasks *)
-let verify_rspec_cli s =
+let verify_rspec_cli s _ =
   let _ = trace "===== Verifying range specification =====" in
   verify_spec_cli s
                   run_cli_vrspec (fun cutno -> "== Range Specification at Cut #" ^ string_of_int cutno ^ " ==")
