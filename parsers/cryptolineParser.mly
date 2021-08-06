@@ -118,6 +118,8 @@
       | hd::tl -> helper (Z.add (Z.mul res num_two) (num_of_bit hd)) tl in
     helper Z.zero bits
 
+  let remove_keys_from_map (names: string list) (vm: 'b SM.t) = List.fold_left (fun map k -> SM.remove k map) vm names
+
   let parse_typed_const lno ty n_token =
     fun cm _vm _ym _gm ->
     let n = n_token cm in
@@ -1183,18 +1185,8 @@
           else ()) relmtyps
         in (rtyphint, rvs)
 
-  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
-    let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
-    let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
-
-    let _ = if (List.length dest_names) <> (List.length src) then
-      raise_at lno "Vector operands should have the same length."
-    else () in
-
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-
-    (* If dest and src have colliding name, alias them first *)
+  (* Alias colliding names in dest and src *)
+  let gen_aliasing_instrs lno dest_names_set src vm relmtyp =
     let rewrite_src map a = match a with
     | `AVAR ({atmname; _} as var) when SS.mem atmname dest_names_set -> (
       let tmp_name = "_tmp_" ^ atmname in
@@ -1214,24 +1206,36 @@
     (* Add introduced temp. variables into variable map *)
     let vm_safe = SM.fold (fun k _ map -> SM.add k (mkvar k relmtyp) map) tmp_to_orig vm in
     (* Save into temp. variables with mov instructions *)
-    let instrs_aliasing = List.rev (
+    let aliasing_instrs = List.rev (
       SM.fold (fun tmp_name orig instrs ->
         let instr = (lno, Imov (SM.find tmp_name vm_safe, Avar (mkvar orig.atmname relmtyp))) in
         instr::instrs
     ) tmp_to_orig []) in
 
-    let remove_keys names vm = List.fold_left (fun map k -> SM.remove k map) vm names in
+    (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
-    let map_step (vm, ym, gm) (lvname, rv) = (
+  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
+    let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
+    let src_typ_vec = (relmtyp, List.length src) in
+    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
+
+    let _ = if (List.length dest_names) <> (List.length src) then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
+
+    let map_func (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some relmtyp} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
     let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_step (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
     (* Clean up temp. names so that they are invisible to latter parts of the source *)
-    (remove_keys tmp_names vm', vxm', ym', gm', List.concat (instrs_aliasing::iss))
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let parse_vbroadcast_at lno dest_tok num src_scl fm cm vm vxm ym gm =
     let n = num cm in
