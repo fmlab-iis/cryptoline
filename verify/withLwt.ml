@@ -441,9 +441,10 @@ let verify_rspec_assert header s =
        else
          Lwt.return_false
     | _ ->
-       let%lwt r = if !apply_slicing
-                   then verify_one cut_header (slice_rspec_ssa s)
-                   else verify_one cut_header s in
+       let%lwt r = if s.rspost = Rtrue then Lwt.return_true
+                   else (if !apply_slicing
+                         then verify_one cut_header (slice_rspec_ssa s)
+                         else verify_one cut_header s) in
        Lwt.return r in
   let rec verify_rec i ss =
     match ss with
@@ -486,10 +487,10 @@ let verify_espec_assert header vgen s =
        else
          Lwt.return_false
     | _ ->
-       let%lwt r = 
-         if !apply_slicing
-         then verify_one cut_header vgen (slice_espec_ssa s)
-         else verify_one cut_header vgen s in
+       let%lwt r = if s.espost = Etrue then Lwt.return_true
+                   else (if !apply_slicing
+                         then verify_one cut_header vgen (slice_espec_ssa s)
+                         else verify_one cut_header vgen s) in
        Lwt.return r in
   let rec verify_rec i vgen ss =
     match ss with

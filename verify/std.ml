@@ -411,8 +411,9 @@ let verify_rspec_single_conjunct s =
         let _ = trace ("range condition: " ^ string_of_bexp g) in
         solve_simp (f::p@[g]) = Unsat)
       gs in
-  if !apply_slicing then verify_one (slice_rspec_ssa s)
-  else verify_one s
+  s.rspost = Rtrue ||
+    (if !apply_slicing then verify_one (slice_rspec_ssa s)
+     else verify_one s)
 
 let verify_rspec' s =
   let rec verify_ands s =
@@ -451,8 +452,9 @@ let verify_espec_single_conjunct vgen s =
           else let _ = trace ("Try #1") in is_in_ideal vars ideal p
         )
         else res) true entailments in
-  if !apply_slicing then verify_one vgen (slice_espec_ssa s)
-  else verify_one vgen s
+  s.espost = Etrue ||
+    (if !apply_slicing then verify_one vgen (slice_espec_ssa s)
+     else verify_one vgen s)
 
 let verify_espec' vgen s =
   let rec verify_ands vgen s =
