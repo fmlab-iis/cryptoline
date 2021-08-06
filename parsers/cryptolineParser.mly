@@ -87,7 +87,7 @@
     | `LVPLAIN of lv_prim_t
   ]
 
-  type vec_lval_t = [
+  type lval_vec_t = [
     | `LVVLIT of (lval_t list)
     | `LVVECT of vec_prim_t
   ]
@@ -97,7 +97,7 @@
     | `ACONST of aconst_prim_t
   ]
 
-  type vec_atomic_t = [
+  type atomic_vec_t = [
     | `AVLIT of (atomic_t list)
     | `AVECT of vec_prim_t
   ]
@@ -1478,9 +1478,9 @@
 %type <Ast.Cryptoline.lined_program> prog
 
 %type <lval_t> lval
-%type <vec_lval_t> lval_vector
+%type <lval_vec_t> lval_v
 %type <atomic_t> atomic
-%type <vec_atomic_t> atomic_vector
+%type <atomic_vec_t> atomic_v
 
 %%
 
@@ -1640,9 +1640,9 @@ instrs:
 
 instr:
     MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
-  | MOV lval_vector atomic_vector             { (!lnum, `VMOV ($2, $3)) }
+  | MOV lval_v atomic_v                       { (!lnum, `VMOV ($2, $3)) }
   | lhs EQOP atomic                           { (!lnum, `MOV (`LVPLAIN $1, $3)) }
-  | BROADCAST lval_vector const atomic        { (!lnum, `VBROADCAST ($2, $3, $4)) }
+  | BROADCAST lval_v const atomic             { (!lnum, `VBROADCAST ($2, $3, $4)) }
   | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
@@ -2704,7 +2704,7 @@ lval:
   | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
 ;
 
-lval_vector:
+lval_v:
     VEC_ID                                        { `LVVECT { vecname = $1; vectyphint = None; } }
   | VEC_ID AT typ_vec                             { `LVVECT { vecname = $1; vectyphint = Some $3; } }
   | LSQUARE lval_scalars RSQUARE                  { `LVVLIT $2 }
@@ -2827,7 +2827,7 @@ atomic:
   /*| LPAR atomic RPAR                              { fun cm vm ym gm -> $2 cm vm ym gm } source of reduce/reduce conflict*/
 ;
 
-atomic_vector:
+atomic_v:
     VEC_ID                                        { `AVECT { vecname = $1; vectyphint = None; } }
   | VEC_ID AT typ_vec                             { `AVECT { vecname = $1; vectyphint = Some $3; } }
   | LSQUARE atomic_scalars RSQUARE                { `AVLIT $2 }
