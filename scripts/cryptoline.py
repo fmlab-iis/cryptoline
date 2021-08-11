@@ -5,18 +5,43 @@ import string
 
 default_ea_pattern = r"L(0x\w+)"
 
-reserved_words = set([
-  "const", "assign", "mov",
-  "add", "adds", "adc", "adcs", "sub", "subs", "sbb", "sbbs", "mul", "mull", "split",
-  "uadd", "uadds", "uadc", "uadcs", "usub", "usubs", "usbb", "usbbs", "umul", "umull", "usplit",
-  "sadd", "sadds", "sadc", "sadcs", "ssub", "ssubs", "ssbb", "ssbbs", "smul", "smull", "ssplit",
-  "shl", "cshl", "set", "clear", "nondet", "cmove", "cmov", "and", "or", "not",
-  "assert", "assume", "cut", "ecut", "rcut", "ghost", "nop",
+reserved_instrs_lvs = [
+  ("const", 0), ("assign", 1), ("mov", 1),
+  ("add", 1), ("adds", 2), ("addr", 2), ("adc", 1), ("adcs", 2), ("adcr", 2),
+  ("sub", 1), ("subs", 2), ("subc", 2), ("subb", 2), ("subr", 2),
+  ("sbc", 1), ("sbcs", 2), ("sbcr", 2),
+  ("sbb", 1), ("sbbs", 2), ("sbbr", 2),
+  ("mul", 1), ("muls", 2), ("mulr", 2), ("mull", 2), ("mulj", 1),
+  ("spl", 2), ("split", 2),
+  ("uadd", 1), ("uadds", 2), ("uaddr", 2), ("uadc", 1), ("uadcs", 2), ("uadcr", 2),
+  ("usub", 1), ("usubs", 2), ("usubc", 2), ("usubb", 2), ("usubr", 2),
+  ("usbc", 1), ("usbcs", 2), ("usbcr", 2),
+  ("usbb", 1), ("usbbs", 2), ("usbbr", 2),
+  ("umul", 1), ("umuls", 2), ("umulr", 2), ("umull", 2), ("umulj", 1),
+  ("uspl", 2), ("usplit", 2),
+  ("sadd", 1), ("sadds", 2), ("saddr", 2), ("sadc", 1), ("sadcs", 2), ("sadcr", 2),
+  ("ssub", 1), ("ssubs", 2), ("ssubc", 2), ("ssubb", 2), ("ssubr", 2),
+  ("ssbc", 1), ("ssbcs", 2), ("ssbcr", 2),
+  ("ssbb", 1), ("ssbbs", 2), ("ssbbr", 2),
+  ("smul", 1), ("smuls", 2), ("smulr", 2), ("smull", 2), ("smulj", 1),
+  ("sspl", 2), ("ssplit", 2),
+  ("shl", 1), ("lsl", 1), ("cshl", 2), ("clsl", 2),
+  ("set", 1), ("clear", 1), ("nondet", 1), ("cmove", 1), ("cmov", 1),
+  ("and", 1), ("or", 1), ("not", 1),
+  ("cast", 1), ("vpc", 1), ("join", 1),
+  ("assert", 0), ("assume", 0), ("cut", 0), ("ecut", 0), ("rcut", 0), ("ghost", 0), ("nop", 0)
+]
+
+reserved_instrs = set([i[0] for i in reserved_instrs_lvs])
+
+reserved_logics = set([
   "vars", "neg", "sq", "ext", "uext", "sext", "mod", "umod", "srem", "smod", "xor",
   "ult", "ule", "ugt", "uge", "slt", "sle", "sgt", "sge",
   "true", "eq", "eqmod",
   "proc", "call", "ulimbs", "slimbs", "limbs", "prove", "with", "all", "cuts", "assumes", "ghosts", "precondition"
 ])
+
+reserved_words = reserved_instrs.union(reserved_logics)
 
 # Generate a random ID.
 def random_id(length):
@@ -40,7 +65,7 @@ def break_at(strs, indent, split, delimit = ","):
 # Find variables in an instruction. The instruction is represented by a one line string.
 def vars_of_instr(instr):
   vars = set()
-  pattern = r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"
+  pattern = r"(?<!@)\b[a-zA-Z_][a-zA-Z0-9_]*\b"
   ms = re.findall(pattern, instr)
   for m in ms:
     if isinstance(m, tuple):
@@ -53,53 +78,11 @@ def vars_of_instr(instr):
 # Find the lv's of an instruction. The instruction is represented by a one line string.
 def lvs_of_instr(instr):
   lvs = set()
-  patterns = [
-    r"assign\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"mov\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"add\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"adc\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"adds\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"adcs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sub\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sbb\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"subs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sbbs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"mul\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"mull\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"split\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"uadd\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"uadc\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"uadds\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"uadcs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"usub\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"usbb\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"usubs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"usbbs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"umul\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"umull\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"usplit\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sadd\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sadc\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sadds\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"sadcs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"ssub\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"ssbb\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"ssubs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"ssbbs\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"smul\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"smull\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"ssplit\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"shl\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"set\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"clear\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"nondet\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"cmove\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"cmov\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"and\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"or\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"not\s+([a-zA-Z_][a-zA-Z0-9_]*)",
-    r"cshl\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+([a-zA-Z_][a-zA-Z0-9_]*)"
-  ]
+  patterns = []
+  for instr_num_lv in reserved_instrs_lvs:
+    instr = instr_num_lv[0]
+    num_lv = instr_num_lv[1]
+    patterns.append(re.compile(instr + "".join(["\s+([a-zA-Z_][a-zA-Z0-9_]*)" for i in range(num_lv)])))
   for pattern in patterns:
     ms = re.findall(pattern, instr)
     for m in ms:

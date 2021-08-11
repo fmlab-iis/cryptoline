@@ -5,6 +5,7 @@ import re
 import collections
 import string
 import random
+from argparse import ArgumentParser
 import cryptoline
 
 length_random_string = 5
@@ -278,19 +279,23 @@ def print_instrs(instrs):
     print(instr.to_string())
 
 def main():
-  if (len(sys.argv) == 3 or len(sys.argv) == 2):
-    (tspec, instrs) = parse_gas(sys.argv[1])
-    if (len(sys.argv) == 3):
-      tspec = parse_external_tspec(sys.argv[2])
-    instrs = translate_instrs(tspec, instrs)
-    inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split("\n") for instr in instrs]))
-    print ("proc main (%s) =" % ", ".join(inputs))
-    print ("{\n  true\n  &&\n  true\n}\n")
-    print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
-    print ("{\n  true\n  &&\n  true\n}\n")
-  else:
-    print ("Wrong number of arguments.")
-    print ("Usage: python " + sys.argv[0] + " ASSEMBLY [SPECIFICATION]")
+  parser = ArgumentParser()
+  parser.add_argument("gas_file", help="the gas file to be translated")
+  parser.add_argument("-r", "--trans-rules", help="a file containing translation rules", dest="rules", default="")
+  parser.add_argument("-t", "--input-type", help="the default type of program inputs", dest="type", default="")
+  args = parser.parse_args()
+
+  (tspec, instrs) = parse_gas(args.gas_file)
+  if (args.rules != ""):
+    tspec = parse_external_tspec(args.rules)
+  type_suffix = "" if args.type == "" else ("@" + args.type)
+
+  instrs = translate_instrs(tspec, instrs)
+  inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split("\n") for instr in instrs]))
+  print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
+  print ("{\n  true\n  &&\n  true\n}\n")
+  print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
+  print ("{\n  true\n  &&\n  true\n}\n")
 
 if __name__ == "__main__":
   main()
