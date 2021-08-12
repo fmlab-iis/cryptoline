@@ -35,13 +35,23 @@ reserved_instrs_lvs = [
 reserved_instrs = set([i[0] for i in reserved_instrs_lvs])
 
 reserved_logics = set([
-  "vars", "neg", "sq", "ext", "uext", "sext", "mod", "umod", "srem", "smod", "xor",
+  "vars", "neg", "sq", "ext", "uext", "sext",
+  "mod", "umod", "srem", "smod", "xor",
   "ult", "ule", "ugt", "uge", "slt", "sle", "sgt", "sge",
-  "true", "eq", "eqmod",
+  "shr", "lsr", "sar", "asr",
+  "true", "eq", "eqmod", "equmod", "eqsmod", "eqsrem",
   "proc", "call", "ulimbs", "slimbs", "limbs", "prove", "with", "all", "cuts", "assumes", "ghosts", "precondition"
 ])
 
 reserved_words = reserved_instrs.union(reserved_logics)
+
+lvs_patterns = []
+var_pattern = r"(?<!@)\b[a-zA-Z_][a-zA-Z0-9_]*\b"
+
+for instr_num_lv in reserved_instrs_lvs:
+  instr = instr_num_lv[0]
+  num_lv = instr_num_lv[1]
+  lvs_patterns.append((re.compile("^" + instr + "".join(["\s*([a-zA-Z0-9_][a-zA-Z0-9_]*)" for i in range(num_lv)]) + "(.*)$"), num_lv))
 
 # Generate a random ID.
 def random_id(length):
@@ -64,58 +74,47 @@ def break_at(strs, indent, split, delimit = ","):
 
 # Find variables in an instruction. The instruction is represented by a one line string.
 def vars_of_instr(instr):
-  vars = set()
-  pattern = r"(?<!@)\b[a-zA-Z_][a-zA-Z0-9_]*\b"
-  ms = re.findall(pattern, instr)
-  for m in ms:
-    if isinstance(m, tuple):
-      vars |= set(m)
-    else:
-      vars.add(m)
-  vars = vars - reserved_words
-  return vars
-
-# Find the lv's of an instruction. The instruction is represented by a one line string.
-def lvs_of_instr(instr):
+  # Find all variables defined in an instruction.
+  def vars_in_line(instr):
+    vars = set()
+    ms = re.findall(var_pattern, instr)
+    vars |= set([x for x in ms if not x.isnumeric()])
+    vars = vars - reserved_words
+    return vars
+  # Find ghost variables defined in an instruction.
+  def gvs_of_instr(instr):
+    gvs = set()
+    if instr.startswith("ghost"):
+      line = instr[7:instr.index(":")].rstrip('\n')
+      gvs |= set([token.strip() for token in line.split(",")])
+    return gvs
   lvs = set()
-  patterns = []
-  for instr_num_lv in reserved_instrs_lvs:
-    instr = instr_num_lv[0]
-    num_lv = instr_num_lv[1]
-    patterns.append(re.compile(instr + "".join(["\s+([a-zA-Z_][a-zA-Z0-9_]*)" for i in range(num_lv)])))
-  for pattern in patterns:
-    ms = re.findall(pattern, instr)
-    for m in ms:
-      if isinstance(m, tuple):
-        lvs |= set(m)
-      else:
-        lvs.add(m)
-  return lvs
-
-# Find the rv's of an instruction. The instruction is represented by a one line string.
-def rvs_of_instr(instr):
-  return vars_of_instr(instr) - lvs_of_instr(instr)
-
-# Find the new ghost variables defined in an instruction. The instruction is represented by a one line string.
-def gvs_of_instr(instr):
-  gvs = set()
-  if instr.startswith("ghost"):
-    line = instr[7:instr.index(":")].rstrip('\n')
-    gvs |= set([token.strip() for token in line.split(",")])
-  return gvs
+  rvs = set()
+  gvs = gvs_of_instr(instr)
+  for (pattern, num_lv) in lvs_patterns:
+    m = re.match(pattern, instr)
+    if m:
+      for i in range(num_lv):
+        var = m.group(i + 1)
+        if not var.isnumeric():
+          lvs |= set([var])
+      try:
+        rest = m.group(num_lv + 1)
+        rvs |= set(vars_in_line(rest))
+      except IndexError:
+        nop
+  rvs = rvs - gvs;
+  return (lvs, rvs, gvs)
 
 # Find input variables of a program. The program is represented by a list of strings.
 # It is assumed that one instruction corresponds to one string (no newline included).
 def inputs_of_program(instrs):
   inputs = set()
-  vars = set()
-  gvs = set()
+  defined = set()
   for instr in instrs:
-    lvs = lvs_of_instr(instr)
-    rvs = rvs_of_instr(instr)
-    gvs |= gvs_of_instr(instr)
-    inputs |= (rvs - vars - gvs)
-    vars |= lvs
+    (lvs, rvs, gvs) = vars_of_instr(instr)
+    inputs |= (rvs - defined)
+    defined |= (lvs | gvs)
   inputs = sorted(list(inputs))
   return inputs
 

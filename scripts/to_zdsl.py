@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import re
@@ -6,9 +6,12 @@ import collections
 import string
 import random
 from argparse import ArgumentParser
+from time import process_time
 import cryptoline
 
 length_random_string = 5
+
+verbose = False
 
 ea_pattern = "L0x[a-fA-f0-9]+"
 address_offset_group_pattern = r"(L0x\w+)\[\s*([\+|-])\s*(\d+)\s*\]"
@@ -75,7 +78,7 @@ def process_builtin_variables(pat, rep, indices):
         pc = pc.replace("$" + str(i) + "c", "(\\#|\\$)?(?P=c" + str(i) + ")")
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
-        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">\\d+)", 1)
+        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">[-]?\\d+)", 1)
         pc = pc.replace("$" + str(i) + "c", "(\\#|\\$)?(?P=c" + str(i) + ")")
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
@@ -279,23 +282,56 @@ def print_instrs(instrs):
     print(instr.to_string())
 
 def main():
+  global verbose
+
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
-  parser.add_argument("-r", "--trans-rules", help="a file containing translation rules", dest="rules", default="")
-  parser.add_argument("-t", "--input-type", help="the default type of program inputs", dest="type", default="")
+  parser.add_argument("-r", help="a file containing translation rules", dest="rules", default="")
+  parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
+  parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
+  parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
   args = parser.parse_args()
 
-  (tspec, instrs) = parse_gas(args.gas_file)
-  if (args.rules != ""):
-    tspec = parse_external_tspec(args.rules)
-  type_suffix = "" if args.type == "" else ("@" + args.type)
+  if args.verbose: verbose = True
 
+  # Read gas file
+  if verbose: t1 = process_time()
+  (tspec, instrs) = parse_gas(args.gas_file)
+  if verbose: t2 = process_time()
+  if verbose: sys.stderr.write("Time in reading gas file: {}\n".format(t2 - t1))
+
+  # Parse external translation rules
+  if (args.rules != ""): tspec = parse_external_tspec(args.rules)
+  if verbose:
+    print("Translation rules in regex:")
+    for i in tspec[0]:
+      print("  {} -> {}".format(i, tspec[0][i]))
+    for i in tspec[1]:
+      print("  {} -> {}".format(i, tspec[1][i]))
+
+  # Redirect output to a file
+  type_suffix = "" if args.type == "" else ("@" + args.type)
+  if (args.output != ""): sys.stdout = open(args.output, 'w')
+
+  # Translate instructions
+  if verbose: t1 = process_time()
   instrs = translate_instrs(tspec, instrs)
+  if verbose: t2 = process_time()
+  if verbose: sys.stderr.write("Time in translation: {}\n".format(t2 - t1))
+
+  # Calculate program inputs
+  if verbose: t1 = process_time()
   inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split("\n") for instr in instrs]))
+  if verbose: t2 = process_time()
+  if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
+
+  # Output translation result
   print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
   print ("{\n  true\n  &&\n  true\n}\n")
   print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
   print ("{\n  true\n  &&\n  true\n}\n")
+
+  sys.stdout.close()
 
 if __name__ == "__main__":
   main()
