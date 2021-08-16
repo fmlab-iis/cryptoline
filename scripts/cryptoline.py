@@ -51,7 +51,7 @@ var_pattern = r"(?<!@)\b[a-zA-Z_][a-zA-Z0-9_]*\b"
 for instr_num_lv in reserved_instrs_lvs:
   instr = instr_num_lv[0]
   num_lv = instr_num_lv[1]
-  lvs_patterns.append((re.compile("^" + instr + "".join(["\s*([a-zA-Z0-9_][a-zA-Z0-9_]*)" for i in range(num_lv)]) + "(.*)$"), num_lv))
+  lvs_patterns.append((re.compile("^" + instr + "".join(["\s+([a-zA-Z0-9_][a-zA-Z0-9_]*)" for i in range(num_lv)]) + "(.*)$"), num_lv))
 
 # Generate a random ID.
 def random_id(length):
@@ -103,6 +103,7 @@ def vars_of_instr(instr):
         rvs |= set(vars_in_line(rest))
       except IndexError:
         nop
+      break
   rvs = rvs - gvs;
   return (lvs, rvs, gvs)
 
