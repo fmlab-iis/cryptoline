@@ -1120,7 +1120,8 @@
   let vec_name_fn vname =
     let n = String.length vname in
     let name = String.sub vname 1 (n - 1) in
-    Printf.sprintf "_vec_%s!%d" name
+    (* XXX: Find a suitable delimiter for name and index that don't choke Boolector and Singular *)
+    Printf.sprintf "VEC_%s_%d" name
 
   let string_of_typ_vec (tv:typ_vec) =
     let (t, n) = tv in
