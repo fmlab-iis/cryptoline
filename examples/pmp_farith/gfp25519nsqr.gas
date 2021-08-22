@@ -37,7 +37,6 @@
 #! shld $1c, $2v, $3v -> cshl $3v dontcare $3v $2v $1c
 #! and 0x405070, $1v -> split dontcare $1v $1v 63
 
-
 gfp25519nsqr:
 # %rdi = 0x7fffffffdee0
 # %rsi = 0x7fffffffe050

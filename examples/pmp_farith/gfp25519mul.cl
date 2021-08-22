@@ -230,6 +230,6 @@ mov z_3 L0x7fffffffdf18;
       (limbs 64 [vars z|0..3]) 
       (((2**255 )- 19))
   &&
-  true
+  limbs 64 [vars z|0..3] < (2**255+2**64)@256
 }
 
