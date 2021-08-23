@@ -281,6 +281,12 @@ mov L0x7fffffffdef8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
+
+# gfp25519sqr(&z2,e);
+
+
 (* mov    %rbx,%rsi                                #! PC = 0x401d83 *)
 mov rsi rbx;
 (* mov    $0x1,%edx                                #! PC = 0x401d86 *)
@@ -514,6 +520,12 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
+
+#        /* 4  */ gfp25519sqr(&t,&z2);
+
+
 (* lea    0x40(%rsp),%r13                          #! PC = 0x401d93 *)
 adds dontcare r13 rsp 0x40@uint64;
 (* mov    $0x1,%edx                                #! PC = 0x401d98 *)
@@ -749,6 +761,11 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
+
+#         /* 8  */ gfp25519sqr(&t,&t);
+
 (* lea    0x60(%rsp),%r15                          #! PC = 0x401da8 *)
 adds dontcare r15 rsp 0x60@uint64;
 (* mov    %r12,%rdx                                #! PC = 0x401dad *)
@@ -971,6 +988,12 @@ mov L0x7fffffffdf18 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
+
+#  /* 9  */ gfp25519mul(&z9,&t,e);
+
+
 (* mov    %rbx,%rdx                                #! PC = 0x401dbb *)
 mov rdx rbx;
 (* mov    %r13,%rsi                                #! PC = 0x401dbe *)
@@ -1191,6 +1214,11 @@ mov L0x7fffffffdf38 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
+
+#       /* 11 */ gfp25519mul(&z11,&z9,&z2);
+ 
 (* lea    0x80(%rsp),%r12                          #! PC = 0x401dc9 *)
 adds dontcare r12 rsp 0x80@uint64;
 (* mov    $0x1,%edx                                #! PC = 0x401dd1 *)
@@ -1426,6 +1454,12 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
+
+#       /* 22 */ gfp25519sqr(&t,&z11);
+
+
 (* mov    %r13,%rdx                                #! PC = 0x401de1 *)
 mov rdx r13;
 (* mov    %r12,%rdi                                #! PC = 0x401de4 *)
@@ -1646,6 +1680,8 @@ mov L0x7fffffffdf58 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* lea    0xa0(%rsp),%rbx                          #! PC = 0x401def *)
 adds dontcare rbx rsp 0xa0@uint64;
 (* mov    %r12,%rsi                                #! PC = 0x401df7 *)
@@ -2573,6 +2609,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %r12,%rdx                                #! PC = 0x401e07 *)
 mov rdx r12;
 (* mov    %rbx,%rdi                                #! PC = 0x401e0a *)
@@ -2793,6 +2831,8 @@ mov L0x7fffffffdf78 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* lea    0xc0(%rsp),%r13                          #! PC = 0x401e15 *)
 adds dontcare r13 rsp 0xc0@uint64;
 (* mov    %rbx,%rsi                                #! PC = 0x401e1d *)
@@ -4585,6 +4625,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %rbx,%rdx                                #! PC = 0x401e2d *)
 mov rdx rbx;
 (* mov    %rbp,%rsi                                #! PC = 0x401e30 *)
@@ -4805,6 +4847,8 @@ mov L0x7fffffffdf98 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* mov    $0x14,%edx                               #! PC = 0x401e3b *)
 mov rdx 0x14@uint64;
 (* mov    %r13,%rsi                                #! PC = 0x401e40 *)
@@ -8325,6 +8369,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %r13,%rdx                                #! PC = 0x401e4b *)
 mov rdx r13;
 (* mov    %rbp,%rsi                                #! PC = 0x401e4e *)
@@ -8545,6 +8591,8 @@ mov L0x7fffffffded8 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* lea    0xe0(%rsp),%r12                          #! PC = 0x401e59 *)
 adds dontcare r12 rsp 0xe0@uint64;
 (* mov    $0xa,%edx                                #! PC = 0x401e61 *)
@@ -10337,6 +10385,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %rbx,%rdx                                #! PC = 0x401e71 *)
 mov rdx rbx;
 (* mov    %rbp,%rsi                                #! PC = 0x401e74 *)
@@ -10557,6 +10607,8 @@ mov L0x7fffffffdfb8 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* lea    0x100(%rsp),%rbx                         #! PC = 0x401e7f *)
 adds dontcare rbx rsp 0x100@uint64;
 (* mov    $0x32,%edx                               #! PC = 0x401e87 *)
@@ -19269,6 +19321,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %r12,%rdx                                #! PC = 0x401e97 *)
 mov rdx r12;
 (* mov    %rbp,%rsi                                #! PC = 0x401e9a *)
@@ -19489,6 +19543,8 @@ mov L0x7fffffffdfd8 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* mov    $0x64,%edx                               #! PC = 0x401ea5 *)
 mov rdx 0x64@uint64;
 (* mov    %rbx,%rsi                                #! PC = 0x401eaa *)
@@ -36849,6 +36905,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %rbx,%rdx                                #! PC = 0x401eb5 *)
 mov rdx rbx;
 (* mov    %rbp,%rsi                                #! PC = 0x401eb8 *)
@@ -37069,6 +37127,8 @@ mov L0x7fffffffded8 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* mov    $0x32,%edx                               #! PC = 0x401ec3 *)
 mov rdx 0x32@uint64;
 (* mov    %rbp,%rsi                                #! PC = 0x401ec8 *)
@@ -45779,6 +45839,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %r12,%rdx                                #! PC = 0x401ed3 *)
 mov rdx r12;
 (* mov    %rbp,%rsi                                #! PC = 0x401ed6 *)
@@ -45999,6 +46061,8 @@ mov L0x7fffffffded8 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* mov    $0x5,%edx                                #! PC = 0x401ee1 *)
 mov rdx 0x5@uint64;
 (* mov    %rbp,%rsi                                #! PC = 0x401ee6 *)
@@ -46924,6 +46988,8 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+
 (* mov    %r15,%rdx                                #! PC = 0x401ef1 *)
 mov rdx r15;
 (* mov    %rbp,%rsi                                #! PC = 0x401ef4 *)
@@ -47144,6 +47210,8 @@ mov L0x7fffffffe088 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+
 (* mov    0x128(%rsp),%rax                         #! EA = L0x7fffffffdfe8; Value = 0x64e11aee4710d300; PC = 0x401eff *)
 (* mov    0x128(%%rsp),%%rax                         #! L0x7fffffffdfe8 = L0x7fffffffdfe8; 0x64e11aee4710d300 = 0x64e11aee4710d300; 0x401eff = 0x401eff; *)
 (* xor    %fs:0x28,%rax                            #! PC = 0x401f07 *)
@@ -47168,6 +47236,8 @@ adds dontcare rsp rsp 0x138@uint64;
 #! 0x7fffffffe028 = 0x7fffffffe028;
 (* #retq                                           #! PC = 0x401f23 *)
 #retq                                           #! 0x401f23 = 0x401f23;
+
+
 (* mov    %rbp,%rdi                                #! PC = 0x401f3d *)
 mov rdi rbp;
 (* #callq  0x401ae0 <gfp25519reduce>               #! PC = 0x401f40 *)
@@ -47205,6 +47275,8 @@ mov L0x7fffffffe088 r10;
 #! 0x7fffffffe028 = 0x7fffffffe028;
 (* #retq                                           #! PC = 0x401b10 *)
 #retq                                           #! 0x401b10 = 0x401b10;
+
+
 (* mov    %rbp,%rdi                                #! PC = 0x401f45 *)
 mov rdi rbp;
 (* pop    %rbp                                     #! EA = L0x7fffffffe030; Value = 0x00007fffffffe070; PC = 0x401f48 *)
@@ -47271,6 +47343,8 @@ mov r12  L0x7fffffffe030;
 #! 0x7fffffffe038 = 0x7fffffffe038;
 (* #retq                                           #! PC = 0x401d39 *)
 #retq                                           #! 0x401d39 = 0x401d39;
+
+
 
 {
   true
