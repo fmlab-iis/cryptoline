@@ -162,13 +162,25 @@ let write_magma_input ifile vars gen p =
     let varlen = max 1 (List.length vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
-    "R := IntegerRing();\n"
+    "function is_generator(p, I)\n"
+    ^ "  for q in I do\n"
+    ^ "    if p eq q then\n"
+    ^ "      return true;\n"
+    ^ "    end if;\n"
+    ^ "  end for;\n"
+    ^ "  return false;\n"
+    ^ "end function;\n\n"
+    ^ "R := IntegerRing();\n"
     ^ "S<" ^ varseq ^ "> := PolynomialRing(R, " ^ string_of_int varlen ^ ");\n"
-      ^ "I := [\n"
-      ^ generator ^ "\n];\n"
-      ^ "J := GroebnerBasis(I);\n"
+    ^ "B := [" ^ generator ^ "];\n"
+    ^ "I := ideal<S|B>;\n"
     ^ "g := " ^ poly ^ ";\n"
-    ^ "g in J;\n"
+    ^ "if is_generator(g, B) or g in I then\n"
+    ^ "  true;\n"
+    ^ "else\n"
+    ^ "  J := GroebnerBasis(I);\n"
+    ^ "  g in J;\n"
+    ^ "end if;\n"
     ^ "exit;\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
