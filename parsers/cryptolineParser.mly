@@ -1887,12 +1887,10 @@ eexp:
                                                       match e with
                                                       | Econst n -> Econst (Z.pow n i)
                                                       | _ ->
-                                                        let rec helper j =
-                                                          if j = 0 then Econst Z.one
-                                                          else if j = 1 then e
-                                                          else if j = 2 then esq e
-                                                          else emul (helper (j - 1)) e in
-                                                        helper i
+                                                         (match i with
+                                                          | 0 -> Econst Z.one
+                                                          | 1 -> e
+                                                          | _ -> epow e (Econst (Z.of_int i)))
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
 ;

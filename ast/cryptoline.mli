@@ -68,6 +68,7 @@ type ebinop =
   | Eadd
   | Esub
   | Emul
+  | Epow
 
 type runop =
   | Rnegb
@@ -121,6 +122,7 @@ val eneg : eexp -> eexp
 val eadd : eexp -> eexp -> eexp
 val esub : eexp -> eexp -> eexp
 val emul : eexp -> eexp -> eexp
+val epow : eexp -> eexp -> eexp
 val esq : eexp -> eexp
 val eadds : eexp list -> eexp
 val emuls : eexp list -> eexp

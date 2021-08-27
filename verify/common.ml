@@ -1262,6 +1262,8 @@ let rec singular_of_eexp e =
   | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     "(" ^ singular_of_eexp e ^ ")" ^ symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then singular_of_eexp e1 else "(" ^ singular_of_eexp e1 ^ ")")
      ^ " " ^ symbol_of_ebinop op ^ " "

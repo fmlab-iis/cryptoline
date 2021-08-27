@@ -563,7 +563,8 @@ let redlog_of_espec es =
       match op with
       | Eadd -> "+"
       | Esub -> "-"
-      | Emul -> "*" in
+      | Emul -> "*"
+      | Epow -> "^" in
     let rec redlog_string_of_eexp e =
       match e with
       | Evar v -> string_of_var v
