@@ -1300,10 +1300,13 @@
     (* Clean up temp. names so that they are invisible to latter parts of the source *)
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
-  let parse_vbroadcast_at lno dest_tok num src_scl fm cm vm vxm ym gm =
+  let parse_vbroadcast_at lno dest_tok num src_tok fm cm vm vxm ym gm =
     let n = num cm in
-    let src_tok = `AVLIT (List.init (Z.to_int n) (fun _ -> src_scl)) in
-    unpack_vinstr_11 parse_imov_at lno dest_tok src_tok fm cm vm vxm ym gm
+    (* type check is done when unpacking, so relmtyp is not needed here *)
+    let (_, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
+    let len = List.length src in
+    let src_padded = `AVLIT (List.init (Z.to_int n) (fun i -> List.nth src (i mod len))) in
+    unpack_vinstr_11 parse_imov_at lno dest_tok src_padded fm cm vm vxm ym gm
 
   let recognize_instr_at lno instr fm cm vm vxm ym gm =
       match instr with
@@ -1311,8 +1314,8 @@
         parse_imov_at lno dest src fm cm vm vxm ym gm
       | `VMOV (dest, src) ->
         unpack_vinstr_11 parse_imov_at lno dest src fm cm vm vxm ym gm
-      | `VBROADCAST (dest, num, src_scl) ->
-        parse_vbroadcast_at lno dest num src_scl fm cm vm vxm ym gm
+      | `VBROADCAST (dest, num, src) ->
+        parse_vbroadcast_at lno dest num src fm cm vm vxm ym gm
       | `SHL (`LVPLAIN dest, src, num) ->
          parse_ishl_at lno dest src num fm cm vm vxm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
@@ -1719,7 +1722,7 @@ instr:
     MOV lval atomic                           { (!lnum, `MOV ($2, $3)) }
   | MOV lval_v atomic_v                       { (!lnum, `VMOV ($2, $3)) }
   | lhs EQOP atomic                           { (!lnum, `MOV (`LVPLAIN $1, $3)) }
-  | BROADCAST lval_v const atomic             { (!lnum, `VBROADCAST ($2, $3, $4)) }
+  | BROADCAST lval_v const atomic_v           { (!lnum, `VBROADCAST ($2, $3, $4)) }
   | SHL lval atomic const                     { (!lnum, `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
