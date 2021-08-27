@@ -1239,7 +1239,7 @@
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let unpack_vinstr_12 mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let (relmtyp, src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let (relmtyp , src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
     let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
 
     let srclen = List.length src1 in
@@ -1296,8 +1296,45 @@
     let dest_names = List.combine dest1_names dest2_names in
     let ((vm', ym', gm'), iss) = (
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
-    (* Clean up temp. names so that they are invisible to latter parts of the source *)
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+
+  let unpack_vinstr_22 mapper lno dest1_tok dest2_tok src1_tok src2_tok fm cm vm vxm ym gm =
+    let (relmtyp , src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+
+    let srclen = List.length src1 in
+    let _ = if (List.length src2) <> srclen then
+      raise_at lno "Two sources should have the same length."
+    else if relmtyp <> relmtyp' then
+      raise_at lno "Two sources should have the same element type."
+    else () in
+
+    let src_typ_vec = (relmtyp, List.length src1) in
+    let (vxm_tmp, dest1_names) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm src_typ_vec in
+    let (vxm',    dest2_names) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm src_typ_vec in
+
+    let _ = if ((List.length dest1_names) <> srclen ||
+                (List.length dest2_names) <> srclen) then
+      raise_at lno "Destination vectors should be as long as the source vectors."
+    else () in
+
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (dest1_names @ dest2_names) in
+    let src_joined = src1 @ src2 in
+    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_aliasing_instrs lno dest_names_set src_joined vm relmtyp in
+    let (src1_safe_rev, src2_safe_rev) = List.fold_left (fun (a, b) (i, x) ->
+      if i < srclen then (x::a,    b)
+                    else (   a, x::b)) ([], []) (List.combine (0 -- (srclen * 2 - 1)) src_safe_joined) in
+    let src_safe = List.rev (List.combine src1_safe_rev src2_safe_rev) in
+
+    let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
+      let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
+      let lvtoken2 = {lvname=lvname2; lvtyphint=None} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv1 rv2 fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let dest_names = List.combine dest1_names dest2_names in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let parse_vbroadcast_at lno dest_tok num src_tok fm cm vm vxm ym gm =
@@ -1372,6 +1409,8 @@
          parse_mulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `MULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+      | `VMULL (destH, destL, src1, src2) ->
+         unpack_vinstr_22 parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `MULJ (`LVPLAIN dest, src1, src2) ->
          parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
@@ -1418,6 +1457,8 @@
          parse_umulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+      | `VUMULL (destH, destL, src1, src2) ->
+         unpack_vinstr_22 parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `UMULJ (`LVPLAIN dest, src1, src2) ->
          parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
@@ -1464,6 +1505,8 @@
          parse_smulr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+      | `VSMULL (destH, destL, src1, src2) ->
+         unpack_vinstr_22 parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `SMULJ (`LVPLAIN dest, src1, src2) ->
          parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
@@ -1773,6 +1816,7 @@ instr:
   | MULR lcarry lval atomic atomic            { (!lnum, `MULR ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULR atomic atomic       { (!lnum, `MULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | MULL lval lval atomic atomic              { (!lnum, `MULL ($2, $3, $4, $5)) }
+  | MULL lval_v lval_v atomic_v atomic_v      { (!lnum, `VMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULL atomic atomic       { (!lnum, `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | MULJ lval atomic atomic                   { (!lnum, `MULJ ($2, $3, $4)) }
   | lhs EQOP MULJ atomic atomic               { (!lnum, `MULJ (`LVPLAIN $1, $4, $5)) }
@@ -1818,6 +1862,7 @@ instr:
   | UMULR lcarry lval atomic atomic           { (!lnum, `UMULR ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULR atomic atomic      { (!lnum, `UMULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | UMULL lval lval atomic atomic             { (!lnum, `UMULL ($2, $3, $4, $5)) }
+  | UMULL lval_v lval_v atomic_v atomic_v     { (!lnum, `VUMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULL atomic atomic      { (!lnum, `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | UMULJ lval atomic atomic                  { (!lnum, `UMULJ ($2, $3, $4)) }
   | lhs EQOP UMULJ atomic atomic              { (!lnum, `UMULJ (`LVPLAIN $1, $4, $5)) }
@@ -1863,6 +1908,7 @@ instr:
   | SMULR lcarry lval atomic atomic           { (!lnum, `SMULR ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULR atomic atomic      { (!lnum, `SMULR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SMULL lval lval atomic atomic             { (!lnum, `SMULL ($2, $3, $4, $5)) }
+  | SMULL lval_v lval_v atomic_v atomic_v     { (!lnum, `VSMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULL atomic atomic      { (!lnum, `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SMULJ lval atomic atomic                  { (!lnum, `SMULJ ($2, $3, $4)) }
   | lhs EQOP SMULJ atomic atomic              { (!lnum, `SMULJ (`LVPLAIN $1, $4, $5)) }
