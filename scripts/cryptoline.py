@@ -85,8 +85,8 @@ def vars_of_instr(instr):
   def gvs_of_instr(instr):
     gvs = set()
     if instr.startswith("ghost"):
-      line = instr[7:instr.index(":")].rstrip('\n')
-      gvs |= set([token.strip() for token in line.split(",")])
+      line = instr[6:instr.index(":")].rstrip('\n')
+      gvs |= set([token.strip().split('@')[0] for token in line.split(",")])
     return gvs
   lvs = set()
   rvs = set()
