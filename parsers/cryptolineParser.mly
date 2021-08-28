@@ -1127,13 +1127,13 @@
     let (t, n) = tv in
       Printf.sprintf "%s[%d]" (string_of_typ t) n
 
-  let resolve_lv_vec_with lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_typ_vec : 't * string list =
+  let resolve_lv_vec_with ?(check_dest=true) lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_typ_vec : 't * string list =
     let (relmtyp, _) = src_typ_vec in
     match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
       let _ = match vectyphint with
         | None -> ()
-        | Some hinted_ty -> if src_typ_vec <> hinted_ty then
+        | Some hinted_ty -> if src_typ_vec <> hinted_ty && check_dest then
             raise_at lno (Printf.sprintf "The specified vector type %s is inconsistent with the determined vector type %s."
                                          (string_of_typ_vec hinted_ty)
                                          (string_of_typ_vec src_typ_vec))
@@ -1144,7 +1144,7 @@
       let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
         let _ = match lvtyphint with
         | None -> ()
-        | Some hinted_ty -> if relmtyp <> hinted_ty then
+        | Some hinted_ty -> if relmtyp <> hinted_ty && check_dest  then
           raise_at lno (Printf.sprintf "The specified type %s of an element is inconsistent with the determined type %s."
                                        (string_of_typ hinted_ty)
                                        (string_of_typ relmtyp))
@@ -1337,6 +1337,27 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
+  let parse_vcast_at lno dest_tok src_tok fm cm vm vxm ym gm =
+    let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
+    let src_typ_vec = (relmtyp, List.length src) in
+    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec ~check_dest:false in
+
+    let _ = if (List.length dest_names) <> (List.length src) then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
+
+    let map_func (vm, ym, gm) (lvname, rv) = (
+      let lvtoken = {lvname; lvtyphint=None} in
+      let (vm, _, ym, gm, instrs) = parse_cast_at lno None lvtoken rv fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+
   let parse_vbroadcast_at lno dest_tok num src_tok fm cm vm vxm ym gm =
     let n = num cm in
     (* type check is done when unpacking, so relmtyp is not needed here *)
@@ -1523,6 +1544,10 @@
          parse_not_at lno dest src fm cm vm vxm ym gm
       | `CAST (optlv, `LV dest, src) ->
          parse_cast_at lno optlv dest src fm cm vm vxm ym gm
+      | `VCAST (optlv, dest, src) -> (
+        match optlv with
+        | Some _ -> raise_at lno "(Internal error) optlv should be in vcast."
+        | None -> parse_vcast_at lno dest src fm cm vm vxm ym gm)
       | `VPC (`LV dest, src) ->
          parse_vpc_at lno dest src fm cm vm vxm ym gm
       | `JOIN (`LVPLAIN dest, srcH, srcL) ->
@@ -1924,6 +1949,8 @@ instr:
   | NOT lval atomic                           { (!lnum, `NOT ($2, $3)) }
   | lhs EQOP NOT atomic                       { (!lnum, `NOT (`LVPLAIN $1, $4)) }
   | CAST lval_or_lcarry atomic                { (!lnum, `CAST (None, $2, $3)) }
+  // XXX: the "[]" is to workaround a r/r conflict
+  | CAST LSQUARE RSQUARE lval_v atomic_v      { (!lnum, `VCAST (None, $4, $5)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
                                               { (!lnum, `CAST (Some $3, $5, $6)) }
   | lhs EQOP CAST atomic                      { (!lnum, `CAST (None, `LV $1, $4)) }
@@ -3068,6 +3095,7 @@ typ:
 ;
 
 typ_vec:
-  typ LSQUARE UINT RSQUARE                        { if $3 > 0 then ($1, $3)
+  typ LSQUARE NUM RSQUARE                         { let dim = Z.to_int $3 in
+                                                    if dim > 0 then ($1, dim)
                                                     else raise_at !lnum ("Vector length must be positive") }
 ;
