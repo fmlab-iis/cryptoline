@@ -1127,30 +1127,37 @@
     let (t, n) = tv in
       Printf.sprintf "%s[%d]" (string_of_typ t) n
 
-  let resolve_lv_vec_with ?(check_dest=true) lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_typ_vec : 't * string list =
-    let (relmtyp, _) = src_typ_vec in
+  let resolve_lv_vec_with lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_vtyp_opt : 't * string list * typ =
     match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
-      let _ = match vectyphint with
-        | None -> ()
-        | Some hinted_ty -> if src_typ_vec <> hinted_ty && check_dest then
-            raise_at lno (Printf.sprintf "The specified vector type %s is inconsistent with the determined vector type %s."
-                                         (string_of_typ_vec hinted_ty)
-                                         (string_of_typ_vec src_typ_vec))
-          else () in
-      let names = List.map (vec_name_fn vecname) (1 -- (snd src_typ_vec)) in
-      (SM.add vecname src_typ_vec vxm, names)
+      let vtyp = match (src_vtyp_opt, vectyphint) with
+        | (None, None) -> raise_at lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
+        | (None, Some hinted_vtyp) -> hinted_vtyp
+        | (Some src_vtyp, None) -> src_vtyp
+        | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
+            raise_at lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
+                                         (string_of_typ_vec hinted_vtyp)
+                                         vecname
+                                         (string_of_typ_vec src_vtyp))
+          else hinted_vtyp) in
+      let (elmtyp, srclen) = vtyp in
+      let names = List.map (vec_name_fn vecname) (1 -- srclen) in
+      (SM.add vecname vtyp vxm, names, elmtyp)
     | `LVVLIT lvs ->
+      let relmtyp = match src_vtyp_opt with
+      | None -> raise_at lno "Internal error: Missing type information to resolve a vector lval."
+      | Some (tp, _) -> tp in
       let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
         let _ = match lvtyphint with
         | None -> ()
-        | Some hinted_ty -> if relmtyp <> hinted_ty && check_dest  then
-          raise_at lno (Printf.sprintf "The specified type %s of an element is inconsistent with the determined type %s."
+        | Some hinted_ty -> if relmtyp <> hinted_ty then
+          raise_at lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
                                        (string_of_typ hinted_ty)
+                                       lvname
                                        (string_of_typ relmtyp))
           else () in
         lvname) lvs in
-      (vxm, names)
+      (vxm, names, relmtyp)
 
   let resolve_atomic_vec_with lno src_tok _fm cm vm vxm ym gm : typ * atomic_t list =
     match src_tok with
@@ -1218,7 +1225,7 @@
   let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
+    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> (List.length src) then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1250,7 +1257,7 @@
     else () in
 
     let src_typ_vec = (relmtyp, srclen) in
-    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec in
+    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1276,8 +1283,8 @@
   let unpack_vinstr_21n mapper lno dest1_tok dest2_tok src_tok num fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm_tmp, dest1_names) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm src_typ_vec in
-    let (vxm',    dest2_names) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm src_typ_vec in
+    let (vxm_tmp, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
+    let (vxm',    dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm (Some src_typ_vec) in
 
     let _ = if ((List.length dest1_names) <> (List.length src) ||
                 (List.length dest2_names) <> (List.length src)) then
@@ -1310,8 +1317,8 @@
     else () in
 
     let src_typ_vec = (relmtyp, List.length src1) in
-    let (vxm_tmp, dest1_names) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm src_typ_vec in
-    let (vxm',    dest2_names) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm src_typ_vec in
+    let (vxm_tmp, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
+    let (vxm',    dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm (Some src_typ_vec) in
 
     let _ = if ((List.length dest1_names) <> srclen ||
                 (List.length dest2_names) <> srclen) then
@@ -1339,8 +1346,7 @@
 
   let parse_vcast_at lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
-    let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm', dest_names) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm src_typ_vec ~check_dest:false in
+    let (vxm', dest_names, tar_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm None in
 
     let _ = if (List.length dest_names) <> (List.length src) then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1350,7 +1356,7 @@
     let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
-      let lvtoken = {lvname; lvtyphint=None} in
+      let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
       let (vm, _, ym, gm, instrs) = parse_cast_at lno None lvtoken rv fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
@@ -1546,7 +1552,7 @@
          parse_cast_at lno optlv dest src fm cm vm vxm ym gm
       | `VCAST (optlv, dest, src) -> (
         match optlv with
-        | Some _ -> raise_at lno "(Internal error) optlv should be in vcast."
+        | Some _ -> raise_at lno "Internal error: optlv should be None in vcast."
         | None -> parse_vcast_at lno dest src fm cm vm vxm ym gm)
       | `VPC (`LV dest, src) ->
          parse_vpc_at lno dest src fm cm vm vxm ym gm
