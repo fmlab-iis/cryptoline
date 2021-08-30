@@ -1305,7 +1305,7 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
-  let unpack_vinstr_22 mapper lno dest1_tok dest2_tok src1_tok src2_tok fm cm vm vxm ym gm =
+  let unpack_vmull mapper lno destH_tok destL_tok src1_tok src2_tok fm cm vm vxm ym gm =
     let (relmtyp , src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
     let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
 
@@ -1316,16 +1316,18 @@
       raise_at lno "Two sources should have the same element type."
     else () in
 
+    (* XXX: is destL always unsigned? *)
     let src_typ_vec = (relmtyp, List.length src1) in
-    let (vxm_tmp, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
-    let (vxm',    dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm (Some src_typ_vec) in
+    let destL_typ = (to_uint relmtyp, snd src_typ_vec) in
+    let (vxm_tmp, destH_names, _) = resolve_lv_vec_with lno destH_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
+    let (vxm',    destL_names, _) = resolve_lv_vec_with lno destL_tok fm cm vm vxm_tmp ym gm (Some destL_typ) in
 
-    let _ = if ((List.length dest1_names) <> srclen ||
-                (List.length dest2_names) <> srclen) then
+    let _ = if ((List.length destH_names) <> srclen ||
+                (List.length destL_names) <> srclen) then
       raise_at lno "Destination vectors should be as long as the source vectors."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (dest1_names @ dest2_names) in
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (destH_names @ destL_names) in
     let src_joined = src1 @ src2 in
     let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_aliasing_instrs lno dest_names_set src_joined vm relmtyp in
     let (src1_safe_rev, src2_safe_rev) = List.fold_left (fun (a, b) (i, x) ->
@@ -1339,7 +1341,7 @@
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv1 rv2 fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
-    let dest_names = List.combine dest1_names dest2_names in
+    let dest_names = List.combine destH_names destL_names in
     let ((vm', ym', gm'), iss) = (
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
@@ -1437,7 +1439,7 @@
       | `MULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `VMULL (destH, destL, src1, src2) ->
-         unpack_vinstr_22 parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `MULJ (`LVPLAIN dest, src1, src2) ->
          parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
@@ -1485,7 +1487,7 @@
       | `UMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `VUMULL (destH, destL, src1, src2) ->
-         unpack_vinstr_22 parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `UMULJ (`LVPLAIN dest, src1, src2) ->
          parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
@@ -1533,7 +1535,7 @@
       | `SMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
          parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `VSMULL (destH, destL, src1, src2) ->
-         unpack_vinstr_22 parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `SMULJ (`LVPLAIN dest, src1, src2) ->
          parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
