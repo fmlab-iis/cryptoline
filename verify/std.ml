@@ -131,7 +131,17 @@ let verify_safety s hashopt =
        let e = rands (fst (List.split rcuts)) in
        (i, f, List.rev visited_rev)::cut (i+1) e [] tl
     | hd::tl -> cut i f (hd::visited_rev) tl in
-  let res = List.for_all verify_one (cut 0 (rng_bexp s.spre) [] s.sprog) in
+  let rec verify_rec ss =
+    match ss with
+    | [] -> true
+    | ((i, _, _) as hd)::tl ->
+       match !verify_scuts with
+       | Some cuts when not (List.mem i cuts) ->
+          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+          verify_rec tl
+       | _ ->
+          (verify_one hd) && verify_rec tl in
+  let res = verify_rec (cut 0 (rng_bexp s.spre) [] s.sprog) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
