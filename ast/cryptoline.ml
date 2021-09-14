@@ -7,7 +7,7 @@ let _eq_symbol = "="
 let add_symbol = "+"
 let sub_symbol = "-"
 let mul_symbol = "*"
-let pow_symbol = "^"
+let pow_symbol = "**"
 let ult_symbol = "<u"
 let ule_symbol = "<=u"
 let ugt_symbol = ">u"
@@ -1046,8 +1046,8 @@ let string_of_instr ?typ:(typ=false) i =
   | Iassert e -> "assert " ^ string_of_bexp ~typ:typ e
   | Iassume e -> "assume " ^ string_of_bexp ~typ:typ e
   | Icut (ecuts, rcuts) ->
-     let string_of_ecut (e, pwss) = string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss)) in
-     let string_of_rcut (e, pwss) = string_of_rbexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with " ^ string_of_prove_with_specs pwss)) in
+     let string_of_ecut (e, pwss) = string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]")) in
+     let string_of_rcut (e, pwss) = string_of_rbexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]")) in
      (match ecuts, rcuts with
       | [], [] -> "skip"
       | [], _ -> "rcut " ^ String.concat ", " (List.map string_of_rcut rcuts)
@@ -1724,10 +1724,10 @@ let string_of_spec ?typ:(typ=false) s =
     ^ string_of_program ~typ:typ (s.sprog) ^ "\n"
     ^ "{ "
     ^ string_of_ebexp ~typ:typ (eqn_bexp s.spost)
-    ^ (if s.sepwss = [] then "" else " prove with " ^ string_of_prove_with_specs s.sepwss)
+    ^ (if s.sepwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.sepwss ^ "]")
     ^ " " ^ bexp_separator ^ " "
     ^ string_of_rbexp ~typ:typ (rng_bexp s.spost)
-    ^ (if s.srpwss = [] then "" else " prove with " ^ string_of_prove_with_specs s.srpwss)
+    ^ (if s.srpwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.srpwss ^ "]")
     ^ " }"
 
 let string_of_espec ?typ:(typ=false) s =
@@ -1740,7 +1740,7 @@ let string_of_espec ?typ:(typ=false) s =
     ^ string_of_program ~typ:typ (s.esprog) ^ "\n"
     ^ "{ "
     ^ string_of_ebexp ~typ:typ (s.espost)
-    ^ (if s.espwss = [] then "" else " prove with " ^ string_of_prove_with_specs s.espwss)
+    ^ (if s.espwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.espwss ^ "]")
     ^ " }"
 
 let string_of_rspec ?typ:(typ=false) s =
@@ -1753,7 +1753,7 @@ let string_of_rspec ?typ:(typ=false) s =
     ^ string_of_program ~typ:typ (s.rsprog) ^ "\n"
     ^ "{ "
     ^ string_of_rbexp ~typ:typ (s.rspost)
-    ^ (if s.rspwss = [] then "" else " prove with " ^ string_of_prove_with_specs s.rspwss)
+    ^ (if s.rspwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.rspwss ^ "]")
     ^ " }"
 
 

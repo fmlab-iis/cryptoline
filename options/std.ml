@@ -71,6 +71,7 @@ let verify_eassertion = ref true
 let verify_rassertion = ref true
 let verify_ecuts = ref None
 let verify_rcuts = ref None
+let verify_scuts = ref None
 let incremental_safety = ref false
 let incremental_safety_timeout = ref 300
 

@@ -52,7 +52,16 @@ let args = [
                                                                failwith ("Failed to convert the index of cuts to integer: " ^ str)
                                                            )
                                                            (Str.split (Str.regexp ",") str))),
-     "INDICES\n\t     Verify the specified range cuts (comma separated). The indices\n\t     start with 0. The range postcondition is the last cut.\n")
+     "INDICES\n\t     Verify the specified range cuts (comma separated). The indices\n\t     start with 0. The range postcondition is the last cut.\n");
+    ("-vscuts", String (fun str -> verify_scuts := Some (List.map
+                                                           (fun str ->
+                                                             try
+                                                               int_of_string str
+                                                             with Failure _ ->
+                                                               failwith ("Failed to convert the index of cuts to integer: " ^ str)
+                                                           )
+                                                           (Str.split (Str.regexp ",") str))),
+     "INDICES\n\t     Verify safety of instructions before the specified cuts (comma\n\t     separated). The indices start with 0. For each i in the specified\n\t     indices, the safety of instructions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n")
   ]@Common.args
 let args = List.sort Pervasives.compare args
 
