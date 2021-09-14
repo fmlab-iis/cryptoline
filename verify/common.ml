@@ -20,7 +20,6 @@ let gen_var gen =
   | More (v, cont) -> (v, cont)
 
 
-
 (** Conversion from range specifications to QFBV. *)
 
 let exp_var v = Var v
