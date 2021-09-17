@@ -55,6 +55,9 @@ val verify_eassertion : bool ref
 val verify_rassertion : bool ref
 val verify_ecuts : (int list) option ref
 val verify_rcuts : (int list) option ref
+val verify_eacuts : (int list) option ref
+val verify_racuts : (int list) option ref
+val verify_scuts : (int list) option ref
 val incremental_safety : bool ref
 val incremental_safety_timeout : int ref
 

@@ -290,6 +290,9 @@ def main():
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
   parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
   parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
+  parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
+  parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
+  parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
   args = parser.parse_args()
 
   if args.verbose: verbose = True
@@ -326,10 +329,10 @@ def main():
   if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
 
   # Output translation result
-  print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
-  print ("{\n  true\n  &&\n  true\n}\n")
+  if not args.nomain: print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
+  if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
   print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
-  print ("{\n  true\n  &&\n  true\n}\n")
+  if not args.nopost: print ("{\n  true\n  &&\n  true\n}\n")
 
   sys.stdout.close()
 

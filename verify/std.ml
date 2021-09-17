@@ -16,6 +16,24 @@ let vgen_of_spec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_o
 let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_rspec s) SS.empty)) 0
 let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
 
+(*
+ * `apply_to_cuts idx_ref vf def combine cuts` applies verifiction function vf to cuts specified in idx_ref.
+ * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
+ *)
+let apply_to_cuts cuts_ref f def combine ss =
+  let rec helper i ss =
+    match ss with
+    | [] -> def
+    | hd::tl ->
+       match !cuts_ref with
+       | Some cuts when not (List.mem i cuts) ->
+          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+          helper (i+1) tl
+       | _ ->
+          let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
+          combine (f hd) (fun () -> helper (i+1) tl) in
+  helper 0 ss
+
 (** Verification *)
 
 (*
@@ -131,7 +149,17 @@ let verify_safety s hashopt =
        let e = rands (fst (List.split rcuts)) in
        (i, f, List.rev visited_rev)::cut (i+1) e [] tl
     | hd::tl -> cut i f (hd::visited_rev) tl in
-  let res = List.for_all verify_one (cut 0 (rng_bexp s.spre) [] s.sprog) in
+  let rec verify_rec ss =
+    match ss with
+    | [] -> true
+    | ((i, _, _) as hd)::tl ->
+       match !verify_scuts with
+       | Some cuts when not (List.mem i cuts) ->
+          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+          verify_rec tl
+       | _ ->
+          (verify_one hd) && verify_rec tl in
+  let res = verify_rec (cut 0 (rng_bexp s.spre) [] s.sprog) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
@@ -436,31 +464,19 @@ let verify_rspec_single_conjunct s hashopt =
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
-let verify_rspec' s hashopt =
-  let rec verify_ands s =
-    match s.rspost with
-    | Rand (e1, e2) ->
-       verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
-         verify_ands { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
-    | _ -> verify_rspec_single_conjunct s hashopt in
-  let rec verify_rec i ss =
-    match ss with
-    | [] -> true
-    | hd::tl ->
-       begin
-         match !verify_rcuts with
-         | Some cuts when not (List.mem i cuts) ->
-            let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-            verify_rec (i+1) tl
-         | _ ->
-            let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-            verify_ands hd && verify_rec (i+1) tl
-       end in
-  verify_rec 0 (cut_rspec s)
+let rec verify_rspec_without_cuts hashopt s =
+  match s.rspost with
+  | Rand (e1, e2) ->
+     verify_rspec_without_cuts hashopt { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
+       verify_rspec_without_cuts hashopt { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
+  | _ -> verify_rspec_single_conjunct s hashopt
+
+let verify_rspec_with_cuts hashopt s =
+  apply_to_cuts verify_rcuts (verify_rspec_without_cuts hashopt) true (fun res cont -> if res then cont() else res) (cut_rspec s)
 
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
-  verify_rspec' s hashopt
+  verify_rspec_with_cuts hashopt s
 
 let verify_espec_single_conjunct vgen s hashopt =
   let verify_one vgen s =
@@ -477,31 +493,19 @@ let verify_espec_single_conjunct vgen s hashopt =
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let verify_espec' vgen s hashopt =
-  let rec verify_ands vgen s =
-    match s.espost with
-    | Eand (e1, e2) ->
-       verify_ands vgen { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-         verify_ands vgen { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-    | _ -> verify_espec_single_conjunct vgen s hashopt in
-  let rec verify_rec i vgen ss =
-    match ss with
-    | [] -> true
-    | hd::tl ->
-       begin
-         match !verify_ecuts with
-         | Some cuts when not (List.mem i cuts) ->
-            let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-            verify_rec (i+1) vgen tl
-         | _ ->
-            let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-            verify_ands vgen hd && verify_rec (i+1) vgen tl
-       end in
-  verify_rec 0 vgen (cut_espec s)
+let rec verify_espec_without_cuts hashopt vgen s =
+  match s.espost with
+  | Eand (e1, e2) ->
+     verify_espec_without_cuts hashopt vgen { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
+       verify_espec_without_cuts hashopt vgen { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
+  | _ -> verify_espec_single_conjunct vgen s hashopt
 
-let verify_espec vgen s =
+let verify_espec_with_cuts hashopt vgen s =
+  apply_to_cuts verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
+
+let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specification =====" in
-  verify_espec' vgen s
+  verify_espec_with_cuts hashopt vgen s
 
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
@@ -512,12 +516,12 @@ let verify_eassert vgen s hashopt =
     | Iassert e::tl ->
        let _ = trace ("=== Checking algebraic assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt);
+         [ (fun () -> verify_espec_without_cuts hashopt vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
            (fun () -> verify epre evisited tl) ]
-    | Icut ([], _)::tl -> verify epre evisited tl
-    | Icut (ecuts, _)::tl -> verify (eands (fst (List.split ecuts))) [] tl
+    | (Icut _)::_ -> assert false
     | hd::tl -> verify epre (hd::evisited) tl in
-  verify (eqn_bexp s.spre) [] s.sprog
+  let verify s = verify s.espre [] s.esprog in
+  apply_to_cuts verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
 
 let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
@@ -528,12 +532,13 @@ let verify_rassert _vgen s hashopt =
     | Iassert e::tl ->
        let _ = trace ("=== Checking range assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt);
+         [ (fun () -> verify_rspec_without_cuts hashopt (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
            (fun () -> verify rpre rvisited tl) ]
     | Icut (_, [])::tl -> verify rpre rvisited tl
     | Icut (_, rcuts)::tl -> verify (rands (fst (List.split rcuts))) [] tl
     | hd::tl -> verify rpre (hd::rvisited) tl in
-  verify (rng_bexp s.spre) [] s.sprog
+  let verify s = verify s.rspre [] s.rsprog in
+  apply_to_cuts verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s))
 
 let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
@@ -545,8 +550,8 @@ let verify_assert vgen s hashopt =
     | Iassert e::tl ->
        let _ = trace ("=== Checking assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec' (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt);
-           (fun () -> verify_espec' vgen (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt);
+         [ (fun () -> verify_rspec_without_cuts hashopt (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
+           (fun () -> verify_espec_without_cuts hashopt vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
            (fun () -> verify (epre, rpre) (evisited, rvisited) tl) ]
     | Icut (ecuts, [])::tl -> verify (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
     | Icut ([], rcuts)::tl -> verify (epre, rands (fst (List.split rcuts))) (evisited, []) tl
