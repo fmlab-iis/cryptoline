@@ -2,15 +2,25 @@ open Options.Std
 open Options.WithLwt
 open Common
 
-let smtlib2_write_input file es =
+let smtlib2_write_input ifile es =
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
   let input_text = smtlib2_imp_check_sat es in
-  let ch = open_out file in
-  output_string ch input_text; close_out ch
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
 
-let btor_write_input m file es =
+let btor_write_input m ifile es =
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
   let input_text = btor_imp_check_sat m es in
-  let ch = open_out file in
-  output_string ch input_text; close_out ch
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
 
 let run_smt_solver ?timeout:timeout header ifile ofile errfile =
   let mk_task task =
@@ -80,7 +90,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
   let errfile = tmpfile "errorqfbv_" ".log" in
   let res =
     try
-      let _ =
+      let%lwt _ =
         if !use_btor
         then btor_write_input (new btor_manager !wordsize) ifile fs
         else smtlib2_write_input ifile fs in

@@ -7,6 +7,20 @@ open Qfbv.WithLwt
 open Common
 (* open Lwt.Infix *)
 
+let apply_to_cuts_lwt cuts_ref f def combine ss =
+  let rec helper i ss =
+    match ss with
+    | [] -> def
+    | hd::tl ->
+       match !cuts_ref with
+       | Some cuts when not (List.mem i cuts) ->
+          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+          helper (i+1) tl
+       | _ ->
+          let cut_header = ("== Cut #" ^ string_of_int i ^ " ==") in
+          combine (f cut_header hd) (fun () -> helper (i+1) tl) in
+  helper 0 ss
+
 let rec flatten_espec s =
   match s.espost with
   | Eand (e1, e2) ->
@@ -533,26 +547,33 @@ let verify_eassert vgen s hashopt =
       verify_espec_assert header vgen
         (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt in
     Lwt.return (e_res, e) in
-  let rec verify res pending epre evisited p =
+  let rec verify i res pending epre evisited p =
     if res then
       if List.length pending < !jobs then
         match p with
         | [] ->
            finish_pending delivered_helper res pending
         | Iassert e::tl ->
-           let promise = mk_promise epre evisited e in
-           verify res (promise::pending) epre evisited tl
-        | Icut ([], _)::tl -> verify res pending epre evisited tl
-        | Icut (ecuts, _)::tl -> verify res pending (eands (fst (List.split ecuts))) [] tl
+           begin
+             match !verify_eacuts with
+             | Some cuts when not (List.mem i cuts) ->
+                let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+                verify i res pending epre evisited tl
+             | _ ->
+                let promise = mk_promise epre evisited e in
+                verify i res (promise::pending) epre evisited tl
+           end
+        | Icut ([], _)::tl -> verify i res pending epre evisited tl
+        | Icut (ecuts, _)::tl -> verify (i+1) res pending (eands (fst (List.split ecuts))) [] tl
         | hd::tl ->
-           verify res pending epre (hd::evisited) tl
+           verify i res pending epre (hd::evisited) tl
       else
         let (res', promised) =
           work_on_pending delivered_helper res pending in
-        verify res' promised epre evisited p
+        verify i res' promised epre evisited p
     else
       finish_pending delivered_helper res pending in
-  verify true [] (eqn_bexp s.spre) [] s.sprog
+  verify 0 true [] (eqn_bexp s.spre) [] s.sprog
 
 let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
@@ -565,24 +586,31 @@ let verify_rassert _vgen s hashopt =
       verify_rspec_assert header
         (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     Lwt.return (r_res, e) in
-  let rec verify res pending rpre rvisited p =
+  let rec verify i res pending rpre rvisited p =
     if res then
       if List.length pending < !jobs then
         match p with
         | [] -> finish_pending delivered_helper res pending
         | Iassert e::tl ->
-           let promise = mk_promise rpre rvisited e in
-           verify res (promise::pending) rpre rvisited tl
-        | Icut (_, [])::tl -> verify res pending rpre rvisited tl
-        | Icut (_, rcuts)::tl -> verify res pending (rands (fst (List.split rcuts))) [] tl
+           begin
+             match !verify_racuts with
+             | Some cuts when not (List.mem i cuts) ->
+                let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+                verify i res pending rpre rvisited tl
+             | _ ->
+                let promise = mk_promise rpre rvisited e in
+                verify i res (promise::pending) rpre rvisited tl
+           end
+        | Icut (_, [])::tl -> verify i res pending rpre rvisited tl
+        | Icut (_, rcuts)::tl -> verify (i+1) res pending (rands (fst (List.split rcuts))) [] tl
         | hd::tl ->
-           verify res pending rpre (hd::rvisited) tl
+           verify i res pending rpre (hd::rvisited) tl
       else
         let (res', promised) = work_on_pending delivered_helper res pending in
-        verify res' promised rpre rvisited p
+        verify i res' promised rpre rvisited p
     else
       finish_pending delivered_helper res pending in
-  verify true [] (rng_bexp s.spre) [] s.sprog
+  verify 0 true [] (rng_bexp s.spre) [] s.sprog
 
 let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
@@ -655,20 +683,7 @@ let verify_rspec s hashopt =
         finish_pending delivered_helper res pending in
     let ss = flatten_rspec s in
     verify_ands_helper ss true [] in
-  let rec verify_rec i ss =
-    match ss with
-    | [] -> true
-    | hd::tl ->
-       begin
-         match !verify_rcuts with
-         | Some cuts when not (List.mem i cuts) ->
-            let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-            verify_rec (i+1) tl
-         | _ ->
-            let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
-            verify_ands cut_header hd && verify_rec (i+1) tl
-       end in
-  verify_rec 0 (cut_rspec s)
+  apply_to_cuts_lwt verify_rcuts verify_ands true (fun res cont -> if res then cont() else res) (cut_rspec s)
 
 let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specification =====" in
@@ -689,7 +704,7 @@ let verify_espec vgen s hashopt =
     then verify_one cut_header vgen (slice_espec_ssa s hashopt)
     else verify_one cut_header vgen s in
   let delivered_helper res r = res && r in
-  let verify_ands cut_header vgen s =
+  let verify_ands vgen cut_header s =
     let rec verify_and_helper vgen ss res pending =
       if res then
         if List.length pending < !jobs then
@@ -706,20 +721,7 @@ let verify_espec vgen s hashopt =
         finish_pending delivered_helper res pending in
     let ss = flatten_espec s in
     verify_and_helper vgen ss true [] in
-  let rec verify_rec i vgen ss =
-    match ss with
-    | [] -> true
-    | hd::tl ->
-       begin
-         match !verify_ecuts with
-         | Some cuts when not (List.mem i cuts) ->
-            let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-            verify_rec (i+1) vgen tl
-         | _ ->
-            let cut_header = "== Cut #" ^ string_of_int i ^ " ==" in
-            verify_ands cut_header vgen hd && verify_rec (i+1) vgen tl
-       end in
-  verify_rec 0 vgen (cut_espec s)
+  apply_to_cuts_lwt verify_ecuts (verify_ands vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
 
 type cli_round_result =
   Solved of result
@@ -1035,17 +1037,23 @@ let verify_eassert_cli s =
     match p with
     | [] -> true
     | Iassert e::tl ->
-       let verifiers = List.flatten [
-                           (match eqn_bexp e with
-                            | Etrue -> []
-                            | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
-                                                              run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion #" ^ string_of_int i ^ " ==")
-                                                              flatten_espec cut_espec None]);
-                           [fun () -> verify (i+1) epre evisited tl]
-                         ] in
-       List.for_all (fun f -> f()) verifiers
+       begin
+         match !verify_eacuts with
+         | Some cuts when not (List.mem i cuts) ->
+            verify i epre evisited tl
+         | _ ->
+            let verifiers = List.flatten [
+                                (match eqn_bexp e with
+                                 | Etrue -> []
+                                 | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
+                                                     run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                     flatten_espec cut_espec None]);
+                                [fun () -> verify i epre evisited tl]
+                              ] in
+            List.for_all (fun f -> f()) verifiers
+       end
     | Icut ([], _)::tl -> verify i epre evisited tl
-    | Icut (ecuts, _)::tl -> verify i (eands (fst (List.split ecuts))) [] tl
+    | Icut (ecuts, _)::tl -> verify (i+1) (eands (fst (List.split ecuts))) [] tl
     | hd::tl -> verify i epre (hd::evisited) tl in
   verify 0 (eqn_bexp s.spre) [] s.sprog
 
@@ -1056,17 +1064,23 @@ let verify_rassert_cli s =
     match p with
     | [] -> true
     | Iassert e::tl ->
-       let verifiers = List.flatten [
-                           (match rng_bexp e with
-                            | Rtrue -> []
-                            | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
-                                                              run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion #" ^ string_of_int i ^ " ==")
-                                                              flatten_rspec cut_rspec None]);
-                           [fun () -> verify (i+1) rpre rvisited tl]
-                         ] in
-       List.for_all (fun f -> f()) verifiers
+       begin
+         match !verify_racuts with
+         | Some cuts when not (List.mem i cuts) ->
+            verify i rpre rvisited tl
+         | _ ->
+            let verifiers = List.flatten [
+                                (match rng_bexp e with
+                                 | Rtrue -> []
+                                 | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
+                                                     run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                     flatten_rspec cut_rspec None]);
+                                [fun () -> verify i rpre rvisited tl]
+                              ] in
+            List.for_all (fun f -> f()) verifiers
+       end
     | Icut (_, [])::tl -> verify i rpre rvisited tl
-    | Icut (_, rcuts)::tl -> verify i (rands (fst (List.split rcuts))) [] tl
+    | Icut (_, rcuts)::tl -> verify (i+1) (rands (fst (List.split rcuts))) [] tl
     | hd::tl -> verify i rpre (hd::rvisited) tl in
   verify 0 (rng_bexp s.spre) [] s.sprog
 
@@ -1074,26 +1088,36 @@ let verify_assert_cli s =
   let _ = trace "===== Verifying assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify i (epre, rpre) (evisited, rvisited) p =
+  let rec verify (ei, ri) (epre, rpre) (evisited, rvisited) p =
     match p with
     | [] -> true
     | Iassert e::tl ->
        let verifiers = List.flatten [
-                           (match rng_bexp e with
-                            | Rtrue -> []
-                            | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
-                                                              run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion #" ^ string_of_int i ^ " ==")
-                                                              flatten_rspec cut_rspec None]);
-                           (match eqn_bexp e with
-                            | Etrue -> []
-                            | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
-                                                              run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion #" ^ string_of_int i ^ " ==")
-                                                              flatten_espec cut_espec None]);
-                           [fun () -> verify (i+1) (epre, rpre) (evisited, rvisited) tl]
+                           begin
+                             match !verify_racuts with
+                             | Some cuts when not (List.mem ri cuts) -> []
+                             | _ ->
+                                (match rng_bexp e with
+                                 | Rtrue -> []
+                                 | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
+                                                     run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                     flatten_rspec cut_rspec None])
+                           end;
+                           begin
+                             match !verify_eacuts with
+                             | Some cuts when not (List.mem ei cuts) -> []
+                             | _ ->
+                                (match eqn_bexp e with
+                                 | Etrue -> []
+                                 | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
+                                                     run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                     flatten_espec cut_espec None])
+                           end;
+                           [fun () -> verify (ei, ri) (epre, rpre) (evisited, rvisited) tl]
                          ] in
        List.for_all (fun f -> f()) verifiers
-    | Icut (ecuts, [])::tl -> verify i (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
-    | Icut ([], rcuts)::tl -> verify i (epre, rands (fst (List.split rcuts))) (evisited, []) tl
-    | Icut (ecuts, rcuts)::tl -> verify i (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
-    | hd::tl -> verify i (epre, rpre) (hd::evisited, hd::rvisited) tl in
-  verify 0 (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
+    | Icut (ecuts, [])::tl -> verify (ei+1, ri) (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
+    | Icut ([], rcuts)::tl -> verify (ei, ri+1) (epre, rands (fst (List.split rcuts))) (evisited, []) tl
+    | Icut (ecuts, rcuts)::tl -> verify (ei+1, ri+1) (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
+    | hd::tl -> verify (ei, ri) (epre, rpre) (hd::evisited, hd::rvisited) tl in
+  verify (0, 0) (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog

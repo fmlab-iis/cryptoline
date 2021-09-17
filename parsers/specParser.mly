@@ -148,12 +148,14 @@ instr:
 
 ebexp_prove_with:
   ebexp                                           { ($1, []) }
-| ebexp PROVE WITH prove_with_specs               { ($1, $4) }
+| ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
+                                                  { ($1, $5) }
 ;
 
 rbexp_prove_with:
   rbexp                                           { ($1, []) }
-| rbexp PROVE WITH prove_with_specs               { ($1, $4) }
+| rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
+                                                  { ($1, $5) }
 ;
 
 bexp_prove_with:
