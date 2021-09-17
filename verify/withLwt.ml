@@ -53,15 +53,15 @@ let verify_safety_inc timeout f prog qs hashopt =
       | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
     with TimeoutException ->
       Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
-  let add_unsolved q res =
-    match res with
-    | Solved Unsat -> Unfinished [q]
-    | Unfinished unsolved -> Unfinished (q::unsolved)
-    | _ -> assert false in
   let delivered_helper r (id, i, q, ret_str, ret) =
     let _ = vprint ("\t\t Safety condition #" ^
                       string_of_int id ^ "\t") in
     let _ = vprintln ret_str in
+    let add_unsolved q res =
+      match res with
+      | Solved Unsat -> Unfinished [q]
+      | Unfinished unsolved -> Unfinished (q::unsolved)
+      | _ -> assert false in
     match r with
     | Solved Sat | Solved Unknown -> r
     | _ ->

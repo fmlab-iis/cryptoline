@@ -1190,7 +1190,7 @@ let rewrite_assignments_ebexp ideal p =
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
-let vars_in_appearing_order es =
+let _vars_in_appearing_order es =
   let add_var (vlist, vset) v =
     if VS.mem v vset then (vlist, vset)
     else (v::vlist, VS.add v vset) in
@@ -1203,15 +1203,43 @@ let vars_in_appearing_order es =
   let (vlist_rev, _vset) = List.fold_left (fun vpair e -> add_vars vpair e) ([], VS.empty) es in
   List.rev vlist_rev
 
+let vars_in_appearing_order cmp es =
+  let freq_hash = Hashtbl.create 101 in
+  let add_var vs v =
+    if Hashtbl.mem freq_hash v
+    then let cur_freq = Hashtbl.find freq_hash v in
+         let _ = Hashtbl.replace freq_hash v (succ cur_freq) in
+         vs
+    else let _ = Hashtbl.add freq_hash v 0 in
+         v::vs in
+  let rec add_vars vs e =
+    match e with
+    | Evar v -> add_var vs v
+    | Econst _ -> vs
+    | Eunop (_, e) -> add_vars vs e
+    | Ebinop (_, e1, e2) -> add_vars (add_vars vs e1) e2 in
+  let rev_vss =
+    List.fold_left (fun vss e -> (add_vars [] e)::vss) [] es in
+  let freq_vss =
+    List.rev_map (List.rev_map (fun v -> (v, Hashtbl.find freq_hash v)))
+      rev_vss in
+  let rev_sorted_vss =
+    let mycmp (_, u) (_, v) = cmp u v in
+    List.rev_map
+      (fun freq_vs -> List.map fst (List.sort mycmp freq_vs)) freq_vss in
+  List.flatten (List.rev rev_sorted_vss)
+  
 let vars_in_lex_order es =
   VS.elements (List.fold_left (fun res e -> VS.union res (vars_eexp e)) VS.empty es)
 
 let vars_in_order es =
   match !variable_ordering with
   | LexOrder -> vars_in_lex_order es
-  | AppearingOrder -> vars_in_appearing_order es
+  | AppearingOrder ->
+     List.rev (vars_in_appearing_order (fun u v -> v - u) (List.rev es))
   | RevLexOrder -> List.rev (vars_in_lex_order es)
-  | RevAppearingOrder -> List.rev (vars_in_appearing_order es)
+  | RevAppearingOrder ->
+     List.rev (vars_in_appearing_order (fun u v -> v - u) es)
 
 let polys_of_espec vgen s =
   (* Convert to polynomial equations. *)
