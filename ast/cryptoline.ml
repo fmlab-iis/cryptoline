@@ -883,6 +883,7 @@ let subst_bexp epats rpats e = (subst_ebexp epats (eqn_bexp e), subst_rbexp rpat
 
 type prove_with_spec =
   | Precondition
+  | Cuts of int list
   | AllCuts
   | AllAssumes
   | AllGhosts
@@ -984,6 +985,10 @@ let atomic_is_signed a = typ_is_signed (typ_of_atomic a)
 let string_of_prove_with_spec ps =
   match ps with
     Precondition -> "precondition"
+  | Cuts idxs ->
+            "cuts [" ^
+              (String.concat ", "
+                 (List.rev_map string_of_int (List.rev idxs))) ^ "]"
   | AllCuts -> "all cuts"
   | AllAssumes -> "all assumes"
   | AllGhosts -> "all ghosts"
@@ -1630,7 +1635,7 @@ let subst_program_hash psubst_hash esubst_hash rsubst_hash p =
     (List.rev p)
 
 (* Find all required algebraic predicates in instrs according to pwss. *)
-let eprove_with_filter pwss (pre, instrs) =
+let eprove_with_filter pwss (pre, cuts_rev, instrs) =
   let extract_ebexps instrs =
     let extractor i =
       match i with
@@ -1642,6 +1647,7 @@ let eprove_with_filter pwss (pre, instrs) =
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
@@ -1649,11 +1655,21 @@ let eprove_with_filter pwss (pre, instrs) =
     let filters = List.map filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
   let ebexps = extract_ebexps (List.filter filter instrs) in
-  if List.mem Precondition pwss then pre::ebexps
-  else ebexps
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_bexps = extract_ebexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss then
+    pre::(List.rev_append cuts_bexps ebexps)
+  else List.rev_append cuts_bexps ebexps
 
 (* Find all required range predicates in instrs according to pwss. *)
-let rprove_with_filter pwss (pre, instrs) =
+let rprove_with_filter pwss (pre, cuts_rev, instrs) =
   let extract_rbexps instrs =
     let extractor i =
       match i with
@@ -1665,6 +1681,7 @@ let rprove_with_filter pwss (pre, instrs) =
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
@@ -1672,8 +1689,18 @@ let rprove_with_filter pwss (pre, instrs) =
     let filters = List.map filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
   let rbexps = extract_rbexps (List.filter filter instrs) in
-  if List.mem Precondition pwss then pre::rbexps
-  else rbexps
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_rbexps = extract_rbexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss
+  then pre::(List.rev_append cuts_rbexps rbexps)
+  else List.rev_append cuts_rbexps rbexps
 
 
 
@@ -2040,56 +2067,56 @@ let ssa_spec s =
  * Note that this function removes all range properties in Icut instructions.
  *)
 let cut_espec es =
-  let rec helper res (precond, before_rev, after_rev) (pre, visited_rev, prog, post) =
+  let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
     match prog with
     | [] ->
-       let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, List.rev before_rev)) in
+       let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = post; espwss = [] } in
        spec::res
-    | (Icut ([], _))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
+    | (Icut ([], _) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          List.fold_left (
              fun res (e, pwss) ->
-             let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, before)) in
+             let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
              let spec = { espre = pre; esprog = prove_with@visited; espost = e; espwss = [] } in
              spec::res
            ) [] ecuts in
-       helper (specs @ res) (precond, after_rev@before_rev, [hd]) (eands (fst (List.split ecuts)), [], tl, post)
-    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (es.espre, [], []) (es.espre, [], es.esprog, es.espost))
+       helper (specs @ res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
+    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
+  List.rev (helper [] (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost))
 
 (*
  * Cut range specifications in SSA.
  * Note that this function removes all Iecut instructions.
  *)
 let cut_rspec rs =
-  let rec helper res (precond, before_rev, after_rev) (pre, visited_rev, prog, post) =
+  let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
     match prog with
     | [] ->
-       let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, List.rev before_rev)) in
+       let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = post; rspwss = [] } in
        spec::res
-    | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev) (pre, visited_rev, tl, post)
+    | (Icut (_, []) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          List.fold_left (
              fun res (e, pwss) ->
-             let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, before)) in
+             let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
              let spec = { rspre = pre; rsprog = prove_with@visited; rspost = e; rspwss = [] } in
              spec::res
            ) [] rcuts in
-       helper (specs @ res) (precond, after_rev@before_rev, [hd]) (rands (fst (List.split rcuts)), [], tl, post)
-    | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (rs.rspre, [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
+       helper (specs @ res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
+    | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
+  List.rev (helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
 
 
 
@@ -2861,13 +2888,13 @@ let visit_spec visitor s =
  * Note that cutting only algebra or range side is not supported by this function.
  *)
 let cut_spec s =
-  let rec helper res (precond, before_rev, after_rev) (pre, visited_rev, prog, post) =
+  let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
     match prog with
     | [] ->
        let (eprove_with, rprove_with) =
          let before = List.rev before_rev in
-         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter s.sepwss (eqn_bexp precond, before)),
-          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter s.srpwss (rng_bexp precond, before))) in
+         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter s.sepwss (eqn_bexp precond, cuts_rev, before)),
+          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter s.srpwss (rng_bexp precond, cuts_rev, before))) in
        let spec = { spre = pre; sprog = eprove_with@rprove_with@(List.rev visited_rev); spost = post; sepwss = []; srpwss = [] } in
        spec::res
     | (Icut ([], _))::_
@@ -2878,14 +2905,14 @@ let cut_spec s =
        let cut_post = (eands eposts, rands rposts) in
        let (eprove_with, rprove_with) =
          let before = List.rev before_rev in
-         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (List.flatten epwsss) (eqn_bexp precond, before)),
-          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter (List.flatten rpwsss) (rng_bexp precond, before))) in
+         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (List.flatten epwsss) (eqn_bexp precond, cuts_rev, before)),
+          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter (List.flatten rpwsss) (rng_bexp precond, cuts_rev, before))) in
        let spec = { spre = pre; sprog = eprove_with@rprove_with@(List.rev visited_rev); spost = cut_post; sepwss = []; srpwss = [] } in
-       helper (spec::res) (precond, after_rev@before_rev, [hd]) (cut_post, [], tl, post)
-    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev) (pre, hd::visited_rev, tl, post)
-    | hd::tl -> helper res (precond, before_rev, after_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (s.spre, [], []) (s.spre, [], s.sprog, s.spost))
+       helper (spec::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (cut_post, [], tl, post)
+    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
+    | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
+  List.rev (helper [] (s.spre, [], [], []) (s.spre, [], s.sprog, s.spost))
 
 (*
  * Make an assertion a single specification and remove assertions.

@@ -1784,6 +1784,7 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { Precondition }
+  | CUTS LSQUARE num_list RSQUARE                 { Cuts $3 }
   | ALL CUTS                                      { AllCuts }
   | ALL ASSUMES                                   { AllAssumes }
   | ALL GHOSTS                                    { AllGhosts }
@@ -2760,6 +2761,10 @@ gvar:
                                                       else mkvar vname ty
                                                   }
 ;
+
+num_list:
+    NUM                                           { [Z.to_int $1] }
+  | NUM COMMA num_list                            { (Z.to_int $1)::$3 }
 
 const:
     simple_const                                  { fun cm -> $1 cm }

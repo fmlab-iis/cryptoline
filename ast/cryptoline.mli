@@ -281,6 +281,7 @@ val subst_bexp : (var * eexp) list -> (var * rexp) list -> bexp -> bexp
 
 type prove_with_spec =
   Precondition
+| Cuts of int list
 | AllCuts
 | AllAssumes
 | AllGhosts
