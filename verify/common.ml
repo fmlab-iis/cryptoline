@@ -1283,6 +1283,11 @@ let polys_of_espec vgen s =
 
 (** Solve poly_spec with Groebner basis *)
 
+let algebra_symbol_of_ebinop op =
+  match op with
+  | Epow -> "^"
+  | _ -> symbol_of_ebinop op
+
 let rec singular_of_eexp e =
   match e with
   | Evar v -> string_of_var v
@@ -1290,10 +1295,10 @@ let rec singular_of_eexp e =
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
-     "(" ^ singular_of_eexp e ^ ")" ^ symbol_of_ebinop Epow ^ Z.to_string z
+     "(" ^ singular_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then singular_of_eexp e1 else "(" ^ singular_of_eexp e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if ebinop_eexp_open op e2 then singular_of_eexp e2 else "(" ^ singular_of_eexp e2 ^ ")")
 
 let rec sage_of_eexp e =
@@ -1302,9 +1307,11 @@ let rec sage_of_eexp e =
   | Econst n -> Z.to_string n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     "(" ^ sage_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then sage_of_eexp e1 else "(" ^ sage_of_eexp e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if ebinop_eexp_open op e2 then sage_of_eexp e2 else "(" ^ sage_of_eexp e2 ^ ")")
 
 let rec magma_of_eexp e =
@@ -1313,9 +1320,11 @@ let rec magma_of_eexp e =
   | Econst n -> Z.to_string n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     "(" ^ magma_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if is_eexp_atomic e1 then magma_of_eexp e1 else "(" ^ magma_of_eexp e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if is_eexp_atomic e2 then magma_of_eexp e2 else "(" ^ magma_of_eexp e2 ^ ")")
 
 (* Underscore is not allowed in variable names in Mathematica. *)
@@ -1326,9 +1335,11 @@ let rec mathematica_of_eexp e =
   | Econst n -> Z.to_string n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then mathematica_of_eexp e else " (" ^ mathematica_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     "(" ^ mathematica_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then mathematica_of_eexp e1 else "(" ^ mathematica_of_eexp e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if ebinop_eexp_open op e2 then mathematica_of_eexp e2 else "(" ^ mathematica_of_eexp e2 ^ ")")
 
 let macaulay2_of_var v = String.map (fun c -> if c = '_' then '\'' else c) (string_of_var v)
@@ -1338,9 +1349,11 @@ let rec macaulay2_of_eexp e =
   | Econst n -> Z.to_string n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then macaulay2_of_eexp e else " (" ^ macaulay2_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     "(" ^ macaulay2_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then macaulay2_of_eexp e1 else "(" ^ macaulay2_of_eexp e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if ebinop_eexp_open op e2 then macaulay2_of_eexp e2 else "(" ^ macaulay2_of_eexp e2 ^ ")")
 
 (* Slice at the polynomial level. Currently functions with names slice_*_ssa in Cryptoline are used. *)
