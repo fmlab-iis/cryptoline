@@ -1,10 +1,56 @@
-invntt_fast:
+#! sp! = %%EA
+#! r$1c! = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! [lr, $1c] = %%EA
+#! [lr], $1c = %%EA
+#! [lr] = %%EA
+#! [sp], $1c = %%EA
+#! [sp, $1c]! = %%EA
+#! [sp] = %%EA
+#! r$1c = %%r$1c
+#! lr = %%lr
+#! r0, {r2, r3, r4, r5, r6, r7, r8, r9} = %%EA, {r2, r3, r4, r5, r6, r7, r8, r9}
+
+# assignment
+#! movw $1v, $2c ; $3c -> mov $1v_b $2c@sint16;\nmov $1v_t 0@sint16
+#! movt $1v, $2c ; $3c -> mov $1v_t $2c@sint16
+#! movw $1v, $2c -> mov $1v_b $2c@sint16;\nmov $1v_t 0@sint16
+
+# memory
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v_b;\nmov $2ea[+2] $1v_t
+#! str.w $1v, $2ea -> mov $2ea $1v_b;\nmov $2ea[+2] $1v_t
+#! ldmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov $2v_b $1ea;\nmov $2v_t $1ea[+2];\nmov $3v_b $1ea[+4];\nmov $3v_t $1ea[+6];\nmov $4v_b $1ea[+8];\nmov $4v_t $1ea[+10];\nmov $5v_b $1ea[+12];\nmov $5v_t $1ea[+14];\nmov $6v_b $1ea[+16];\nmov $6v_t $1ea[+18];\nmov $7v_b $1ea[+20];\nmov $7v_t $1ea[+22];\nmov $8v_b $1ea[+24];\nmov $8v_t $1ea[+26];\nmov $9v_b $1ea[+28];\nmov $9v_t $1ea[+30]
+#! stmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov $1ea $2v_b;\nmov $1ea[+2] $2v_t;\nmov $1ea[+4] $3v_b;\nmov $1ea[+6] $3v_t;\nmov $1ea[+8] $4v_b;\nmov $1ea[+10] $4v_t;\nmov $1ea[+12] $5v_b;\nmov $1ea[+14] $5v_t;\nmov $1ea[+16] $6v_b;\nmov $1ea[+18] $6v_t;\nmov $1ea[+20] $7v_b;\nmov $1ea[+22] $7v_t;\nmov $1ea[+24] $8v_b;\nmov $1ea[+26] $8v_t;\nmov $1ea[+28] $9v_b;\nmov $1ea[+30] $9v_t
+#! ldr.w $1v, $2ea ; $3c -> mov $1v_b $2ea;\nmov $1v_t $2ea[+2]
+#! ldr.w $1v, $2ea -> mov $1v_b $2ea;\nmov $1v_t $2ea[+2]
+#! ldrh.w $1v, $2ea -> mov $1v_b $2ea;\nmov $1v_t 0@sint16
+
+# montgomery
+#! usub16 $1v, $2v, $3v -> sub $1v_b $2v_b $3v_b;\nsub $1v_t $2v_t $3v_t
+#! uadd16 $1v, $2v, $3v -> add $1v_b $2v_b $3v_b;\nadd $1v_t $2v_t $3v_t
+#! smulbb $1v, $2v, $3v -> mull $1v_t $1v_b $2v_b $3v_b
+#! smultb $1v, $2v, $3v -> mull $1v_t $1v_b $2v_t $3v_b
+#! smulbt $1v, $2v, $3v -> cast $2v_sb@sint16 $2v_b;\nmull $1v_t $1v_b $2v_sb $3v_t
+#! smultt $1v, $2v, $3v -> mull $1v_t $1v_b $2v_t $3v_t
+#! smlabb $1v, $2v, $3v, $4v -> cast $3v_sb@sint16 $3v_b;\nmull tmp_t tmp_b $2v_b $3v_sb;\nuadds carry $1v_b tmp_b $4v_b;\nadc $1v_t tmp_t $4v_t carry;\nassert eqmod $1v_b 0 (2**16) && true;\nassume $1v_b = 0 && true
+#! pkhtb $1v, $2v, $3v, asr \#16 -> mov tmp_t $2v_t;\nmov tmp_b $3v_t;\nmov $1v_t tmp_t;\nmov $1v_b tmp_b
+
+# loop counter
+#! subs.w $1v, $2v, $3c -> subs dontcare $1v_b $2v_b $3c@sint16
+
+# memory address calculation (does not matter for functionality)
+#! sub.w $1v, $2v, $3c ; $4c -> subs discard $1v $2v $3c@uint32
+
+
+#invntt_fast:
 # r0 = 0x2001a530
 # r1 = 0x800e5d4
 # r2 = 0xa8
 # r3 = 0x2001a530
 	#! -> SP = 0x2001a4c0
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}#! EA = L0x2001a4c0; PC = 0x8005160
+#	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}#! EA = L0x2001a4c0; PC = 0x8005160
 	movw	r11, #3329	; 0xd01                         #! PC = 0x8005164
 	movt	r11, #3327	; 0xcff                         #! PC = 0x8005168
 	movw	r12, #16                                   #! PC = 0x800516c
@@ -1176,6 +1222,9 @@ invntt_fast:
 	ldr.w	r12, [sp], #4                             #! EA = L0x2001a498; Value = 0x00000001; PC = 0x8005288
 	subs.w	r12, r12, #1                             #! PC = 0x800528c
 	#bne.w	0x8005170 <invntt_fast+16>               #! PC = 0x8005290
+
+	# END of layer 1
+
 	sub.w	r0, r0, #512	; 0x200                      #! PC = 0x8005294
 	movw	r12, #8                                    #! PC = 0x8005298
 	str.w	r12, [sp, #-4]!                           #! EA = L0x2001a498; PC = 0x800529c
@@ -3722,6 +3771,9 @@ invntt_fast:
 	ldr.w	r12, [sp], #4                             #! EA = L0x2001a498; Value = 0x00000001; PC = 0x8005788
 	subs.w	r12, r12, #1                             #! PC = 0x800578c
 	#bne.w	0x800529c <invntt_fast+316>              #! PC = 0x8005790
+
+	# END of layer 2+3+4
+
 	sub.w	r0, r0, #512	; 0x200                      #! PC = 0x8005794
 	movw	r12, #16                                   #! PC = 0x8005798
 	str.w	r12, [sp, #-4]!                           #! EA = L0x2001a498; PC = 0x800579c
@@ -6284,12 +6336,15 @@ invntt_fast:
 	ldr.w	r12, [sp], #4                             #! EA = L0x2001a498; Value = 0x00000001; PC = 0x8005a10
 	subs.w	r12, r12, #1                             #! PC = 0x8005a14
 	#bne.w	0x800579c <invntt_fast+1596>             #! PC = 0x8005a18
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x2001a49c; Value = 0x0800eaf4; PC = 0x8005a1c
-	nop                                             #! PC = 0x80037e8
-	adds	r7, #8                                     #! PC = 0x80037ea
-	mov	sp, r7                                      #! PC = 0x80037ec
-	pop	{r7, pc}                                    #! PC = 0x80037ee
-	nop                                             #! PC = 0x80042c0
-	adds	r7, #8                                     #! PC = 0x80042c2
-	mov	sp, r7                                      #! PC = 0x80042c4
-	pop	{r7, pc}                                    #! PC = 0x80042c6
+
+	# END of layer 5+6+7
+	
+#	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x2001a49c; Value = 0x0800eaf4; PC = 0x8005a1c
+#	nop                                             #! PC = 0x80037e8
+#	adds	r7, #8                                     #! PC = 0x80037ea
+#	mov	sp, r7                                      #! PC = 0x80037ec
+#	pop	{r7, pc}                                    #! PC = 0x80037ee
+#	nop                                             #! PC = 0x80042c0
+#	adds	r7, #8                                     #! PC = 0x80042c2
+#	mov	sp, r7                                      #! PC = 0x80042c4
+#	pop	{r7, pc}                                    #! PC = 0x80042c6
