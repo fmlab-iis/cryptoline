@@ -1,4 +1,19 @@
-vec256_mul_asm:
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! %ymm$1c = %%ymm$1c
+
+#! vmovupd $1ea, $2ymm -> mov $2ymm $1ea
+#! vmovupd $1ymm, $2ea -> mov $2ea $1ymm
+#! vpand $1ea, $2ymm, $3ymm -> mul $3ymm $2ymm $1ea
+#! vpand $1ymm, $2ymm, $3ymm -> mul $3ymm $2ymm $1ymm
+#! vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm $2ymm $1ymm
+#! vmovapd $1ymm, $2ymm -> mov $2ymm $1ymm
+
+#vec256_mul_asm:
 # %rdi = 0x7ffffff8e9c0
 # %rsi = 0x7ffffffa6700
 # %rdx = 0x7ffffff904c0
@@ -6,10 +21,10 @@ vec256_mul_asm:
 # %r8  = 0xc
 # %r9  = 0x160
 	#! -> SP = 0x7ffffff8e818
-	mov    %rsp,%r11                                #! PC = 0x55555557f100
-	and    $0x1f,%r11                               #! PC = 0x55555557f103
-	add    $0x0,%r11                                #! PC = 0x55555557f107
-	sub    %r11,%rsp                                #! PC = 0x55555557f10b
+	#mov    %rsp,%r11                                #! PC = 0x55555557f100
+	#and    $0x1f,%r11                               #! PC = 0x55555557f103
+	#add    $0x0,%r11                                #! PC = 0x55555557f107
+	#sub    %r11,%rsp                                #! PC = 0x55555557f10b
 	vmovupd (%rdx),%ymm0                            #! EA = L0x7ffffff904c0; Value = 0xf00f0ff0f00f0ff0; PC = 0x55555557f10e
 	vmovupd 0x160(%rsi),%ymm1                       #! EA = L0x7ffffffa6860; Value = 0xffffffffffffffff; PC = 0x55555557f112
 	vpand  %ymm1,%ymm0,%ymm2                        #! PC = 0x55555557f11a
@@ -333,6 +348,6 @@ vec256_mul_asm:
 	vmovupd %ymm5,0x40(%rdi)                        #! EA = L0x7ffffff8ea00; PC = 0x55555557f883
 	vmovupd %ymm4,0x20(%rdi)                        #! EA = L0x7ffffff8e9e0; PC = 0x55555557f888
 	vmovupd %ymm3,(%rdi)                            #! EA = L0x7ffffff8e9c0; PC = 0x55555557f88d
-	add    %r11,%rsp                                #! PC = 0x55555557f891
+	#add    %r11,%rsp                                #! PC = 0x55555557f891
 	#! <- SP = 0x7ffffff8e818
 	#retq                                           #! PC = 0x55555557f894
