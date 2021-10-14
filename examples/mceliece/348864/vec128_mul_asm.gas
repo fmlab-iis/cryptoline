@@ -1,4 +1,29 @@
-vec128_mul_asm:
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! %ymm$1c = %%ymm$1c
+#! %xmm$1c = %%xmm$1c
+
+#! vbroadcasti128 $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea
+#! vinsertf128 \$0x0, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $1ea;\nmov $3ymm_1 $2ymm_1
+#! vinsertf128 \$0x1, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0;\nmov $3ymm_1 $1ea
+#! vmovupd $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+16]
+#! vmovupd $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+16] $1ymm_1
+#! movdqa $1xmm, $2xmm -> mov $2xmm $1xmm
+#! movdqu $1ea, $2xmm -> mov $2xmm $1ea
+#! movdqu $1xmm, $2ea -> mov $2ea $1xmm
+#! vpand $1ymm, $2ymm, $3ymm -> mul $3ymm_0 $2ymm_0 $1ymm_0;\nmul $3ymm_1 $2ymm_1 $1ymm_1
+#! vpxor $1xmm, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1xmm
+#! vpxor $1ea, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1ea
+#! vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ymm_0;\nadds dc $3ymm_1 $2ymm_1 $1ymm_1
+#! vzeroupper -> mov xmm0 ymm0_0;\nmov xmm1 ymm1_0;\nmov xmm2 ymm2_0;\nmov xmm3 ymm3_0;\nmov xmm4 ymm4_0;\nmov xmm5 ymm5_0;\nmov xmm6 ymm6_0;\nmov xmm7 ymm7_0;\nmov xmm8 ymm8_0;\nmov xmm9 ymm9_0;\nmov xmm10 ymm10_0;\nmov xmm11 ymm11_0
+
+#vec128_mul_asm:
 # %rdi = 0x7fffffff6b00
 # %rsi = 0x7fffffff6b00
 # %rdx = 0x7fffffff6930
@@ -6,11 +31,11 @@ vec128_mul_asm:
 # %r8  = 0x9
 # %r9  = 0x5
 	#! -> SP = 0x7fffffff6578
-	mov    %rsp,%r11                                #! PC = 0x55555557ebc0
-	and    $0x1f,%r11                               #! PC = 0x55555557ebc3
-	add    $0x260,%r11                              #! PC = 0x55555557ebc7
-	sub    %r11,%rsp                                #! PC = 0x55555557ebce
-	lea    (%rsp),%rcx                              #! PC = 0x55555557ebd1
+	#mov    %rsp,%r11                                #! PC = 0x55555557ebc0
+	#and    $0x1f,%r11                               #! PC = 0x55555557ebc3
+	#add    $0x260,%r11                              #! PC = 0x55555557ebc7
+	#sub    %r11,%rsp                                #! PC = 0x55555557ebce
+	#lea    (%rsp),%rcx                              #! PC = 0x55555557ebd1
 	vbroadcasti128 0xb0(%rdx),%ymm0                 #! EA = L0x7fffffff69e0; Value = 0x0000000000000000; PC = 0x55555557ebd5
 	vinsertf128 $0x0,0x50(%rsi),%ymm1,%ymm1         #! EA = L0x7fffffff6b50; Value = 0x0f0aa94f8bd0c1ae; PC = 0x55555557ebde
 	vinsertf128 $0x1,0xb0(%rsi),%ymm1,%ymm1         #! EA = L0x7fffffff6bb0; Value = 0x48422151e04fc0b1; PC = 0x55555557ebe5
@@ -248,6 +273,6 @@ vec128_mul_asm:
 	movdqu %xmm0,0x10(%rdi)                         #! EA = L0x7fffffff6b10; PC = 0x55555557f0ea
 	vpxor  (%rcx),%xmm3,%xmm0                       #! EA = L0x7fffffff6300; Value = 0x00000000b95920ce; PC = 0x55555557f0ef
 	movdqu %xmm0,(%rdi)                             #! EA = L0x7fffffff6b00; PC = 0x55555557f0f3
-	add    %r11,%rsp                                #! PC = 0x55555557f0f7
+	#add    %r11,%rsp                                #! PC = 0x55555557f0f7
 	#! <- SP = 0x7fffffff6578
 	#retq                                           #! PC = 0x55555557f0fa
