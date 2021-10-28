@@ -1,10 +1,56 @@
-__asm_negacyclic_ntt_32:
+#! sp! = %%EA
+#! r$1c! = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! [lr, $1c] = %%EA
+#! [lr], $1c = %%EA
+#! [lr] = %%EA
+#! [sp], $1c = %%EA
+#! [sp, $1c]! = %%EA
+#! [sp, $1c] = %%EA
+#! [sp] = %%EA
+#! r$1c = %%r$1c
+#! lr = %%lr
+#! s$1c = %%s$1c
+
+# assignment
+#! vmov	$1v, $2v, $3v, $4v -> mov $1v $3v;\nmov $2v $4v
+#! vmov	$1v, $2v -> mov $1v $2v
+#! mov.w $1v, $2v -> mov $1v $2v
+
+# memory address calculation (does not matter for functionality)
+#! add.w $1v, $2v, $3c ; $4c -> adds discard $1v $2v $3c@uint32
+#! add.w $1v, $2v, $3c -> adds discard $1v $2v $3c@uint32
+#! sub.w $1v, $2v, $3c ; $4c -> subs discard $1v $2v $3c@uint32
+
+# montgomery multiplication
+#! add $1v, $2v -> adds discard $1v $1v $2v
+#! sub.w $1v, $2v, $3v, lsl $4c -> shl tmp $3v $4c;\nsubs discard $1v $2v tmp
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v
+#! smlal $1v, $2v, $3v, $4v -> cast $3v@sint32 $3v;\nsmull tmp_h tmp_l $3v $4v;\nuadds carry $1v tmp_l $1v;\nsadc $2v tmp_h $2v carry;\nassert eqmod $1v 0 (2**32) && true;\nassume eq $1v 0 && true
+#! mul.w $1v, $2v, $3v -> cast $2v_s@sint32 $2v;\nmull discard $1v $2v_s $3v
+
+# memory
+# (ldrsh assumes the numbers stored in memory are 16-bit)
+#! ldrsh.w $1v, $2ea ; $3c -> vpc $1v@sint32 $2ea@sint16
+#! ldrsh.w $1v, $2ea -> vpc $1v@sint32 $2ea@sint16
+#! vldmia $1ea, { $2v - $3v} -> mov s4 $1ea;\nmov s5 $1ea[+4];\nmov s6 $1ea[+8];\nmov s7 $1ea[+12];\nmov s8 $1ea[+16];\nmov s9 $1ea[+20];\nmov s10 $1ea[+24]
+#! vldr	$1v, $2ea -> mov $1v $2ea
+#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr.w $1v, $2ea -> mov $1v $2ea
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v
+#! str.w $1v, $2ea -> mov $2ea $1v
+
+
+
+# __asm_negacyclic_ntt_32:
 # r0 = 0x20019a48
 # r1 = 0x800f620
 # r2 = 0x894d2aff
 # r3 = 0x1862b01
-	#! -> SP = 0x200194f0
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x200194f0; PC = 0x8007384
+#	#! -> SP = 0x200194f0
+#	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x200194f0; PC = 0x8007384
 	vmov	s0, r0                                     #! PC = 0x8007388
 	ldr.w	r0, [sp, #40]	; 0x28                      #! EA = L0x200194f0; Value = 0x20019848; PC = 0x800738c
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f620; PC = 0x8007390
@@ -182,8 +228,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a4c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x2001994c; Value = 0x0001ffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x2001998c; Value = 0x00010001; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199cc; Value = 0x00020001; PC = 0x80073a8
@@ -355,8 +401,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a54; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019950; Value = 0xffffffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x20019990; Value = 0x0000ffff; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199d0; Value = 0xffff0001; PC = 0x80073a8
@@ -528,8 +574,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a5c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019954; Value = 0xffffffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x20019994; Value = 0xfffeffff; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199d4; Value = 0x00010002; PC = 0x80073a8
@@ -701,8 +747,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a64; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019958; Value = 0x00000000; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x20019998; Value = 0x00020000; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199d8; Value = 0xfffd0001; PC = 0x80073a8
@@ -874,8 +920,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a6c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x2001995c; Value = 0x00000001; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x2001999c; Value = 0x00010001; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199dc; Value = 0x0000ffff; PC = 0x80073a8
@@ -1047,8 +1093,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a74; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019960; Value = 0x00000001; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199a0; Value = 0xfffffffe; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199e0; Value = 0x0002ffff; PC = 0x80073a8
@@ -1220,8 +1266,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a7c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019964; Value = 0x0001ffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199a4; Value = 0xfffeffff; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199e4; Value = 0x00030001; PC = 0x80073a8
@@ -1393,8 +1439,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a84; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019968; Value = 0xffff0003; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199a8; Value = 0x00010001; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199e8; Value = 0x00000000; PC = 0x80073a8
@@ -1566,8 +1612,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a8c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x2001996c; Value = 0xffff0002; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199ac; Value = 0xffff0000; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199ec; Value = 0xffff0001; PC = 0x80073a8
@@ -1739,8 +1785,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a94; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019970; Value = 0x00020000; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199b0; Value = 0x00010004; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199f0; Value = 0xfffeffff; PC = 0x80073a8
@@ -1912,8 +1958,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019a9c; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019974; Value = 0x0000ffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199b4; Value = 0x00000001; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199f4; Value = 0x00020001; PC = 0x80073a8
@@ -2085,8 +2131,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019aa4; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019978; Value = 0xffff0002; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199b8; Value = 0xfffeffff; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199f8; Value = 0xfffeffff; PC = 0x80073a8
@@ -2258,8 +2304,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019aac; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x2001997c; Value = 0x00000000; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199bc; Value = 0xfffefffe; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x200199fc; Value = 0xfffe0000; PC = 0x80073a8
@@ -2431,8 +2477,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019ab4; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019980; Value = 0x0002ffff; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199c0; Value = 0x00020000; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x20019a00; Value = 0x00020002; PC = 0x80073a8
@@ -2604,8 +2650,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019abc; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
 	ldrsh.w	r8, [r0, #256]	; 0x100                  #! EA = L0x20019984; Value = 0x00010000; PC = 0x80073a0
 	ldrsh.w	r9, [r0, #320]	; 0x140                  #! EA = L0x200199c4; Value = 0x00010001; PC = 0x80073a4
 	ldrsh.w	r10, [r0, #384]	; 0x180                 #! EA = L0x20019a04; Value = 0x0000ffff; PC = 0x80073a8
@@ -2777,8 +2823,11 @@ __asm_negacyclic_ntt_32:
 	str.w	r4, [lr], #4                              #! EA = L0x20019ac4; PC = 0x8007610
 	vmov	s0, lr                                     #! PC = 0x8007614
 	vmov	r12, s2                                    #! PC = 0x8007618
-	cmp.w	r0, r12                                   #! PC = 0x800761c
-	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+#	cmp.w	r0, r12                                   #! PC = 0x800761c
+#	#bne.w	0x80073a0 <_0_1_2_32>                    #! PC = 0x8007620
+
+	# END of layer 0_1_2
+
 	sub.w	r0, lr, #128	; 0x80                       #! PC = 0x8007624
 	add.w	r12, r0, #1024	; 0x400                    #! PC = 0x8007628
 	vmov	s2, r12                                    #! PC = 0x800762c
@@ -2954,8 +3003,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019a7c; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019a4c; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019a50; Value = 0x00816d60; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019a60; Value = 0x002315dd; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019a70; Value = 0xfff39a28; PC = 0x800764c
@@ -3123,12 +3172,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019a84; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019a54; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f658; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -3301,8 +3350,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019afc; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019acc; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019ad0; Value = 0xff556620; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019ae0; Value = 0x014babc3; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019af0; Value = 0x005ae114; PC = 0x800764c
@@ -3470,12 +3519,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019b04; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019ad4; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f674; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -3648,8 +3697,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019b7c; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019b4c; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019b50; Value = 0x00f686ae; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019b60; Value = 0x0081dc67; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019b70; Value = 0xff0ddb50; PC = 0x800764c
@@ -3817,12 +3866,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019b84; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019b54; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f690; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -3995,8 +4044,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019bfc; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019bcc; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019bd0; Value = 0x009ea6d2; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019be0; Value = 0xff7b62f5; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019bf0; Value = 0xff37a87c; PC = 0x800764c
@@ -4164,12 +4213,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019c04; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019bd4; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f6ac; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -4342,8 +4391,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019c7c; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019c4c; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019c50; Value = 0xff06e83d; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019c60; Value = 0xfec6cdf2; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019c70; Value = 0x006214b9; PC = 0x800764c
@@ -4511,12 +4560,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019c84; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019c54; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f6c8; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -4689,8 +4738,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019cfc; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019ccc; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019cd0; Value = 0xff63ea47; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019ce0; Value = 0xffca706e; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019cf0; Value = 0x002e9d0f; PC = 0x800764c
@@ -4858,12 +4907,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019d04; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019cd4; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f6e4; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -5036,8 +5085,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019d7c; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019d4c; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019d50; Value = 0xff79bd63; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019d60; Value = 0x0093acfc; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019d70; Value = 0x009eb9fb; PC = 0x800764c
@@ -5205,12 +5254,12 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019d84; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019d54; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
 	vmov	r1, s1                                     #! PC = 0x8007630
 	vldmia	r1!, {s4-s10}                            #! EA = L0x800f700; PC = 0x8007634
 	vmov	s1, r1                                     #! PC = 0x8007638
@@ -5383,8 +5432,8 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019dfc; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019dcc; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	ldr.w	r4, [r0]                                  #! EA = L0x20019dd0; Value = 0x00af6f21; PC = 0x8007644
 	ldr.w	r5, [r0, #16]                             #! EA = L0x20019de0; Value = 0xff6f13a8; PC = 0x8007648
 	ldr.w	r6, [r0, #32]                             #! EA = L0x20019df0; Value = 0x003c953d; PC = 0x800764c
@@ -5552,10 +5601,10 @@ __asm_negacyclic_ntt_32:
 	str.w	r7, [r0, #48]	; 0x30                      #! EA = L0x20019e04; PC = 0x80078a4
 	str.w	r4, [r0], #4                              #! EA = L0x20019dd4; PC = 0x80078a8
 	vmov	lr, s3                                     #! PC = 0x80078ac
-	cmp.w	r0, lr                                    #! PC = 0x80078b0
-	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
+#	cmp.w	r0, lr                                    #! PC = 0x80078b0
+#	#bne.w	0x8007644 <_3_4_5_inner_32>              #! PC = 0x80078b4
 	add.w	r0, r0, #112	; 0x70                       #! PC = 0x80078b8
 	vmov	r12, s2                                    #! PC = 0x80078bc
-	cmp.w	r0, r12                                   #! PC = 0x80078c0
-	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x200194c8; Value = 0x20019848; PC = 0x80078c8
+#	cmp.w	r0, r12                                   #! PC = 0x80078c0
+#	#bne.w	0x8007630 <_3_4_5_32>                    #! PC = 0x80078c4
+#	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x200194c8; Value = 0x20019848; PC = 0x80078c8
