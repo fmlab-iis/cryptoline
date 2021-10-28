@@ -699,10 +699,24 @@ let verify_espec vgen s hashopt =
                            "Try #1"] in
              let%lwt r = is_in_ideal (cut_header::header) vars ideal p in
              Lwt.return r) entailments in
+  let rec ebexp_implies_espost e espost =
+    match e with
+    | Eand (e0, e1) ->
+       ebexp_implies_espost e0 espost || ebexp_implies_espost e1 espost
+    | _ -> eq_ebexp e espost in
+  let espost_in_assumes prog espost =
+    List.exists (fun inst ->
+        match inst with
+        | Iassume (e, _) -> ebexp_implies_espost e espost
+        | _ -> false) prog in
   let mk_promise cut_header s =
-    if !apply_slicing
-    then verify_one cut_header vgen (slice_espec_ssa s hashopt)
-    else verify_one cut_header vgen s in
+    if s.espost = Etrue || ebexp_implies_espost s.espre s.espost
+      || espost_in_assumes s.esprog s.espost then
+      Lwt.return_true
+    else
+      (if !apply_slicing
+       then verify_one cut_header vgen (slice_espec_ssa s hashopt)
+       else verify_one cut_header vgen s) in
   let delivered_helper res r = res && r in
   let verify_ands vgen cut_header s =
     let rec verify_and_helper vgen ss res pending =
