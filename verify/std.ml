@@ -479,6 +479,12 @@ let verify_rspec s hashopt =
   verify_rspec_with_cuts hashopt s
 
 let verify_espec_single_conjunct vgen s hashopt =
+  let rec espre_implies_espost espre espost =
+    match espre with
+    | Eand (e0, e1) ->
+       espre_implies_espost e0 espost ||
+         espre_implies_espost e1 espost
+    | _ -> espre = espost in
   let verify_one vgen s =
     let (_, entailments) = polys_of_espec vgen s in
     List.fold_left
@@ -490,6 +496,7 @@ let verify_espec_single_conjunct vgen s hashopt =
         )
         else res) true entailments in
   s.espost = Etrue ||
+  espre_implies_espost s.espre s.espost ||
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
@@ -585,7 +592,8 @@ let redlog_of_espec es =
   let vgen = vgen_of_espec es in
   let (vgen, zssa) = bv2z_espec vgen es in
   let (vgen, premises) =
-    let (vgen, _, pre_ps) = polys_of_ebexp vgen zssa.ppre in
+    let (vgen, _, pre_ps) =
+      polys_of_ebexp vgen zssa.ppre in
     let (vgen, prog_ps) =
       List.fold_left
         (fun (vgen, res) e ->
