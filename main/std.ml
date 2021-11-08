@@ -5,11 +5,17 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert | SaveCoqCryptoline
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
 
 let action = ref Verify
 
 let save_coq_cryptoline_filename = ref ""
+
+let initial_values_string = ref ""
+
+let simulation_steps = ref (-1)
+
+let simulation_dumps_string = ref ""
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast, " Automatically cast variables when parsing untyped programs\n");
@@ -31,6 +37,10 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
     ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
+    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "      Run debugger over the parsed specification\n");
+    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), "      Simulate the parsed specification\n");
+    ("-sim_steps", Int (fun n -> simulation_steps := n), "\n\t     Stop simulate after the specified number of steps \n");
+    ("-sim_dumps", String (fun s -> simulation_dumps_string := s), "\n\t     Dump variable tables for the specified ranges of steps \n");
     ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
      "FILENAME\n\t     Save the specification in the format acceptable by coq-cryptoline\n");
     ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
@@ -126,18 +136,46 @@ let check_well_formedness vs s =
     | _ -> () in
   wf
 
+let split_nonempty_on_char char str = List.filter (fun s -> String.length s <> 0) (String.split_on_char char str)
+
+let parse_initial_values vars =
+  let vals = split_nonempty_on_char ',' !initial_values_string in
+  List.map2 (
+      fun x v ->
+      let w = size_of_var x in
+      let bs = if Str.string_match (Str.regexp "0b([0-1]+)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
+               else if Str.string_match (Str.regexp "0x[0-9a-fA-F]+") v 0 then NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
+               else let bs = NBits.bits_of_num v in
+                    let negative = String.length v > 0 && String.get v 0 = '-' in
+                    if negative then NBits.sext (w - List.length bs) bs
+                    else NBits.zext (w - List.length bs) bs in
+      if List.length bs <> w then failwith ("Bit width mismatch: variable " ^ string_of_var x ^ ", value " ^ v)
+      else bs
+    ) vars vals
+
+let parse_simulation_dump_ranges () =
+  let parse_range str =
+    let tokens = split_nonempty_on_char '-' str in
+    match tokens with
+    | n::m::[] -> Simulator.make_range (int_of_string n) (int_of_string m)
+    | n::[] -> Simulator.make_range (int_of_string n) (int_of_string n)
+    | _ -> raise (Invalid_argument ("A range should be in the format n-m where n <= m.")) in
+  let str = String.trim !simulation_dumps_string in
+  if str = "" then []
+  else List.map parse_range (split_nonempty_on_char ',' str)
+
 let anon file =
-  let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) (VS.elements vs)) in
+  let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
   let parse_and_check file =
-     let (vs, s) = parse_spec file in
-     if check_well_formedness vs s then (vs, from_typecheck_spec s)
-     else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
-     else exit 1 in
+    let (vs, s) = parse_spec file in
+    if check_well_formedness (VS.of_list vs) s then (vs, from_typecheck_spec s)
+    else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+    else exit 1 in
   let t1 = Unix.gettimeofday() in
   let _ = Random.self_init() in
   match !action with
   | Verify ->
-     let (_vs, s) = parse_and_check file in
+     let (_, s) = parse_and_check file in
      let res = Verify.Std.verify_spec s in
      let t2 = Unix.gettimeofday() in
      let _ = print_endline ("Verification result:\t\t\t"
@@ -150,7 +188,7 @@ let anon file =
      print_endline (string_of_spec s)
   | PrintSSA ->
      let (vs, s) = parse_and_check file in
-     let vs = VS.of_list (List.map (ssa_var VM.empty) (VS.elements vs)) in
+     let vs = List.map (ssa_var VM.empty) vs in
      let s = ssa_spec s in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec s)
@@ -162,14 +200,14 @@ let anon file =
      print_endline (string_of_rspec s)
   | MoveAssert ->
      let (vs, s) = parse_and_check file in
-     let vs = VS.of_list (List.map (ssa_var VM.empty) (VS.elements vs)) in
+     let vs = List.map (ssa_var VM.empty) vs in
      let ssa = ssa_spec s in
      let moved = move_asserts ssa in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec moved)
   | SaveCoqCryptoline ->
      let str_of_spec s =
-       "proc main(" ^ string_of_inputs (infer_input_variables s) ^ ") =\n"
+       "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
        ^ string_of_spec s in
      let nth_name id = !save_coq_cryptoline_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
@@ -188,6 +226,18 @@ let anon file =
      let (_, s) = parse_and_check file in
      let coq_specs = spec_to_coq_cryptoline s in
      List.iteri output coq_specs
+  | Simulation ->
+     let _ = Random.self_init () in
+     let (vs, s) = parse_and_check file in
+     let vals = parse_initial_values vs in
+     let m = Simulator.make_map vs vals in
+     Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
+  | Debugger ->
+     let _ = Random.self_init () in
+     let (vs, s) = parse_and_check file in
+     let vals = parse_initial_values vs in
+     let m = Simulator.make_map vs vals in
+     Simulator.shell m s.sprog
 
 
 (*

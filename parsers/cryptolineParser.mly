@@ -1342,7 +1342,7 @@
 
 %start spec
 %start prog
-%type <(Ast.Cryptoline.VS.t * Typecheck.Std.spec)> spec
+%type <(Ast.Cryptoline.var list * Typecheck.Std.spec)> spec
 %type <Ast.Cryptoline.lined_program> prog
 
 %%
@@ -1357,7 +1357,7 @@ spec:
     let (fm, _cm) = $1 SM.empty SM.empty in
     try
       let m = SM.find main fm in
-      (VS.of_list m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost; sepwss = m.fepwss; srpwss = m.frpwss })
+      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost; sepwss = m.fepwss; srpwss = m.frpwss })
     with Not_found ->
       raise (ParseError "A main function is required.")
   }
