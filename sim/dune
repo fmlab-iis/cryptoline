@@ -2,3 +2,6 @@
   (name        simulator)
   (libraries   options ast nBits)
 )
+
+(ocamllex    commandLexer)
+(ocamlyacc   commandParser)

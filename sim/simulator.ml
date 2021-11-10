@@ -1,6 +1,7 @@
 
 open Ast.Cryptoline
 open NBits
+open Command
 
 type range = int * int
 
@@ -239,8 +240,9 @@ class shellManager = fun m p ->
   let add_instr_id p = List.mapi (fun i instr -> (i, instr)) p in
   let add_var_to_table v t = SM.add (string_of_var v) v t in
   let construct_var_table m = VM.fold (fun x _ t -> add_var_to_table x t) m SM.empty in
+  let ip = add_instr_id p in
   object(self)
-    val mutable stack = [construct_var_table m, m, (add_instr_id p)]
+    val mutable stack = [construct_var_table m, m, ip]
 
     val mutable watched = VS.empty
 
@@ -326,6 +328,18 @@ class shellManager = fun m p ->
 
     method unwatch_var v = watched <- VS.remove v watched
 
+    method find_instrs str =
+      let r = Str.regexp_string str in
+      let rec helper res ip =
+        match ip with
+        | [] -> List.rev res
+        | ((_, i) as hd)::tl -> (try
+                           let _ = (Str.search_forward r (string_of_instr i) 0) in
+                           helper (hd::res) tl
+                         with Not_found ->
+                           helper res tl) in
+      helper [] ip
+
     method print_program =
       match stack with
       | (_, _, p)::past -> let past = NBits.take (min max_prev_to_print (List.length past)) past in
@@ -351,6 +365,8 @@ class shellManager = fun m p ->
         ) watched
   end
 
+exception InvalidCommand of string
+
 let shell m p =
   let manager = new shellManager m p in
   let prompt () =
@@ -361,61 +377,70 @@ let shell m p =
                 Some "exit"
     in
     Stream.from f in
-  let process_command str =
-    let args = List.filter (fun s -> String.length s <> 0) (String.split_on_char ' ' str) in
-    match args with
-    | [] -> ()
-    | ["exit" | "q" | "quit"] -> exit 0
+  let parse_command str =
+    try
+      CommandParser.command CommandLexer.token (Lexing.from_string str)
+    with _ ->
+      raise (InvalidCommand str) in
+  let run_command cmd =
+    match cmd with
+    (* Quit debugger *)
+    | Cexit -> exit 0
     (* Run the remaining program *)
-    | ["r" | "run"] -> manager#run; manager#print_program
+    | Crun -> manager#run; manager#print_program
     (* Execute the next instruction *)
-    | ["n" | "next"] -> (try
-                           ignore(manager#next); manager#print_program
-                         with NoMoreInstr ->
-                           print_endline ("No more instruction to be executed."))
+    | Cnext -> (try
+                  ignore(manager#next); manager#print_program
+                with NoMoreInstr ->
+                  print_endline ("No more instruction to be executed."))
     (* Undo the previous instruction *)
-    | ["v" | "previous"] -> (try
-                               ignore(manager#prev); manager#print_program
-                             with NoMoreInstr ->
-                               print_endline ("No more instruction to be reversed."))
+    | Cprevious -> (try
+                      ignore(manager#prev); manager#print_program
+                    with NoMoreInstr ->
+                      print_endline ("No more instruction to be reversed."))
     (* Go to a specific instruction *)
-    | ("g" | "goto")::tl -> (match tl with
-                             | hd::_ -> (try
-                                           let n = int_of_string hd in
-                                           if n < 0 then print_endline ("Invalid program location.")
-                                           else (ignore(manager#goto n); manager#print_program)
-                                         with _ -> print_endline ("Unrecognized step number: " ^ hd))
-                             | _ -> ())
+    | Cgoto n -> if n < 0 then print_endline ("Invalid program location.")
+                 else (ignore(manager#goto n); manager#print_program)
+    (* Find instructions. *)
+    | Cfind instr_str -> let instrs = manager#find_instrs instr_str in
+                         List.iter print_indexed_instr instrs
     (* Print current program location or values of variables *)
-    | ("p" | "print")::tl -> let print_var xn =
-                               try
-                                 let x = manager#get_var_by_name xn in
-                                 let v = manager#get_value x in
-                                 print_endline (string_of_var_with_value x v)
-                               with VarNotFound -> print_endline (xn ^ ": Uninitialized")
-                                  | ValueNotFound -> print_endline ("Value of " ^ xn ^ " is not found.") in
-                             (match tl with
-                              | [] -> manager#print_program
-                              | _ -> List.iter print_var tl)
+    | Cprint args -> let print_var xn =
+                       try
+                         let x = manager#get_var_by_name xn in
+                         let v = manager#get_value x in
+                         print_endline (string_of_var_with_value x v)
+                       with VarNotFound -> print_endline (xn ^ ": Uninitialized")
+                          | ValueNotFound -> print_endline ("Value of " ^ xn ^ " is not found.") in
+                     (match args with
+                      | [] -> manager#print_program
+                      | _ -> List.iter print_var args)
     (* Print watched variables or watch/unwatch variables *)
-    | ("w" | "watch")::tl -> let watch_var xn =
-                               try
-                                 let x = manager#get_var_by_name xn in
-                                 let _ = manager#watch_var x in
-                                 print_endline (xn ^ ": Watched")
-                               with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                             (match tl with
-                              | [] -> manager#print_watched
-                              | _ -> List.iter watch_var tl)
-    | ("uw" | "unwatch")::tl -> let unwatch_var xn =
-                                  try
-                                    let x = manager#get_var_by_name xn in
-                                    let _ = manager#unwatch_var x in
-                                    print_endline (xn ^ ": Unwtched")
-                                  with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                                List.iter unwatch_var tl
+    | Cwatch args -> let watch_var xn =
+                       try
+                         let x = manager#get_var_by_name xn in
+                         let _ = manager#watch_var x in
+                         print_endline (xn ^ ": Watched")
+                       with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+                     (match args with
+                      | [] -> manager#print_watched
+                      | _ -> List.iter watch_var args)
+    | Cunwatch args -> let unwatch_var xn =
+                         try
+                           let x = manager#get_var_by_name xn in
+                           let _ = manager#unwatch_var x in
+                           print_endline (xn ^ ": Unwtched")
+                         with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+                       List.iter unwatch_var args
     (* Dump memory *)
-    | ("d" | "dump")::_ -> dump_map (manager#get_map)
-    | _ -> print_endline ("Error: unrecognized command.")
+    | Cdump -> dump_map (manager#get_map) in
+  let process_command cmd_str =
+    let cmd_str = String.trim cmd_str in
+    if String.length cmd_str = 0 then ()
+    else
+      try
+        run_command (parse_command cmd_str)
+      with (InvalidCommand str) ->
+        print_endline ("Invalid command: " ^ str)
   in
   Stream.iter process_command (prompt())
