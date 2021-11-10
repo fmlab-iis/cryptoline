@@ -6,10 +6,12 @@ open Command
 type range = int * int
 
 let make_range i j =
-  if i > j then raise (Invalid_argument "Invalid range")
+  if i > j then raise (Invalid_argument ("Invalid range from " ^ string_of_int i ^ " to " ^ string_of_int j))
   else (i, j)
 
 let in_range n (i, j) = i <= n && n <= j
+
+let flatten_range (i, j) = List.init (j - i + 1) (fun k -> k + i)
 
 let make_map vars vals = List.fold_left2 (fun m x v -> VM.add x v m) VM.empty vars vals
 

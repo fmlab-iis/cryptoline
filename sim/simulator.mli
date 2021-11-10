@@ -6,6 +6,7 @@ type range
 
 val make_range : int -> int -> range
 val in_range : int -> range -> bool
+val flatten_range : range -> int list
 
 val make_map : var list -> bits list -> bits VM.t
 val simulate : ?steps:int -> ?dumps:(range list) -> bits VM.t -> program -> unit
