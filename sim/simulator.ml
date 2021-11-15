@@ -299,6 +299,13 @@ class shellManager = fun m p ->
       with Not_found ->
         raise VarNotFound
 
+    method get_vars_by_pattern p =
+      let t = self#get_table in
+      SM.fold (fun vn v res ->
+          if Str.string_match (Str.regexp ("^" ^ p ^ "$")) vn 0 then VS.add v res
+          else res
+        ) t VS.empty
+
     method get_map =
       match stack with
       | (_, m, _)::_ -> m
@@ -387,55 +394,62 @@ let shell m p =
   let run_command cmd =
     match cmd with
     (* Quit debugger *)
-    | Cexit -> exit 0
+    | CExit -> exit 0
     (* Run the remaining program *)
-    | Crun -> manager#run; manager#print_program
+    | CRun -> manager#run; manager#print_program
     (* Execute the next instruction *)
-    | Cnext -> (try
+    | CNext -> (try
                   ignore(manager#next); manager#print_program
                 with NoMoreInstr ->
                   print_endline ("No more instruction to be executed."))
     (* Undo the previous instruction *)
-    | Cprevious -> (try
+    | CPrevious -> (try
                       ignore(manager#prev); manager#print_program
                     with NoMoreInstr ->
                       print_endline ("No more instruction to be reversed."))
     (* Go to a specific instruction *)
-    | Cgoto n -> if n < 0 then print_endline ("Invalid program location.")
+    | CGoto n -> if n < 0 then print_endline ("Invalid program location.")
                  else (ignore(manager#goto n); manager#print_program)
     (* Find instructions. *)
-    | Cfind instr_str -> let instrs = manager#find_instrs instr_str in
+    | CFind instr_str -> let instrs = manager#find_instrs instr_str in
                          List.iter print_indexed_instr instrs
     (* Print current program location or values of variables *)
-    | Cprint args -> let print_var xn =
-                       try
-                         let x = manager#get_var_by_name xn in
-                         let v = manager#get_value x in
-                         print_endline (string_of_var_with_value x v)
-                       with VarNotFound -> print_endline (xn ^ ": Uninitialized")
-                          | ValueNotFound -> print_endline ("Value of " ^ xn ^ " is not found.") in
-                     (match args with
-                      | [] -> manager#print_program
-                      | _ -> List.iter print_var args)
+    | CPrint (use_regexp, args) -> let print_var xn =
+                                     try
+                                       let xs =
+                                         if use_regexp then manager#get_vars_by_pattern xn
+                                         else VS.singleton (manager#get_var_by_name xn) in
+                                       VS.iter (fun x ->
+                                           try
+                                             let v = manager#get_value x in
+                                             print_endline (string_of_var_with_value x v)
+                                           with ValueNotFound -> print_endline ("Value of " ^ string_of_var x ^ " is not found.")
+                                         ) xs
+                                     with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+                                   (match args with
+                                    | [] -> manager#print_program
+                                    | _ -> List.iter print_var args)
     (* Print watched variables or watch/unwatch variables *)
-    | Cwatch args -> let watch_var xn =
-                       try
-                         let x = manager#get_var_by_name xn in
-                         let _ = manager#watch_var x in
-                         print_endline (xn ^ ": Watched")
-                       with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                     (match args with
-                      | [] -> manager#print_watched
-                      | _ -> List.iter watch_var args)
-    | Cunwatch args -> let unwatch_var xn =
-                         try
-                           let x = manager#get_var_by_name xn in
-                           let _ = manager#unwatch_var x in
-                           print_endline (xn ^ ": Unwtched")
-                         with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                       List.iter unwatch_var args
+    | CWatch (use_regexp, args) -> let watch_var xn =
+                                     try
+                                       let xs =
+                                         if use_regexp then manager#get_vars_by_pattern xn
+                                         else VS.singleton (manager#get_var_by_name xn) in
+                                       VS.iter (fun v -> manager#watch_var v; print_endline (string_of_var v ^ ": Watched")) xs
+                                     with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+                                   (match args with
+                                    | [] -> manager#print_watched
+                                    | _ -> List.iter watch_var args)
+    | CUnwatch (use_regexp, args) -> let unwatch_var xn =
+                                       try
+                                         let xs =
+                                           if use_regexp then manager#get_vars_by_pattern xn
+                                           else VS.singleton (manager#get_var_by_name xn) in
+                                         VS.iter (fun v -> manager#unwatch_var v; print_endline (string_of_var v ^ ": Unwatched")) xs
+                                       with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+                                     List.iter unwatch_var args
     (* Dump memory *)
-    | Cdump -> dump_map (manager#get_map) in
+    | CDump -> dump_map (manager#get_map) in
   let process_command cmd_str =
     let cmd_str = String.trim cmd_str in
     if String.length cmd_str = 0 then ()

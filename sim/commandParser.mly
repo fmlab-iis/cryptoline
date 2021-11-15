@@ -7,10 +7,10 @@
 %}
 
 %token <string> ARG
-%token EXIT RUN NEXT PREVIOUS GOTO FIND PRINT WATCH UNWATCH DUMP
+%token EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP
 %token EOF
 
-%nonassoc ARG EXIT RUN NEXT PREVIOUS GOTO FIND PRINT WATCH UNWATCH DUMP
+%nonassoc ARG EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP
 
 %start command
 %type <Command.command> command
@@ -22,22 +22,25 @@ command:
 ;
 
 cmd:
-    EXIT                                { Cexit }
-  | RUN                                 { Crun }
-  | NEXT                                { Cnext }
-  | PREVIOUS                            { Cprevious }
+    EXIT                                { CExit }
+  | RUN                                 { CRun }
+  | NEXT                                { CNext }
+  | PREVIOUS                            { CPrevious }
   | GOTO ARG                            { try
                                             let n = int_of_string $2 in
                                             if n < 0 then raise (ParseError ("Invalid goto location: " ^ $2))
-                                            else Cgoto n
+                                            else CGoto n
                                           with Failure _ ->
                                             raise (ParseError ("Invalid goto location: " ^ $2))
                                         }
-  | FIND ARG                            { Cfind $2 }
-  | PRINT args                          { Cprint $2 }
-  | WATCH args                          { Cwatch $2 }
-  | UNWATCH args                        { Cunwatch $2 }
-  | DUMP                                { Cdump }
+  | FIND ARG                            { CFind $2 }
+  | PRINT args                          { CPrint (false, $2) }
+  | REGEXP_PRINT args                   { CPrint (true, $2) }
+  | WATCH args                          { CWatch (false, $2) }
+  | REGEXP_WATCH args                   { CWatch (true, $2) }
+  | UNWATCH args                        { CUnwatch (false, $2) }
+  | REGEXP_UNWATCH args                 { CUnwatch (true, $2) }
+  | DUMP                                { CDump }
 ;
 
 args:

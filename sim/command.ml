@@ -1,12 +1,12 @@
 
 type command =
-  | Cexit
-  | Crun
-  | Cnext
-  | Cprevious
-  | Cgoto of int
-  | Cfind of string
-  | Cprint of string list
-  | Cwatch of string list
-  | Cunwatch of string list
-  | Cdump
+  | CExit
+  | CRun
+  | CNext
+  | CPrevious
+  | CGoto of int
+  | CFind of string
+  | CPrint of bool * string list
+  | CWatch of bool * string list
+  | CUnwatch of bool * string list
+  | CDump

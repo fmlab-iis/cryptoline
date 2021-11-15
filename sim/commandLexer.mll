@@ -22,10 +22,16 @@
               "f"                          , FIND;
               "print"                      , PRINT;
               "p"                          , PRINT;
+              "rprint"                     , REGEXP_PRINT;
+              "rp"                         , REGEXP_PRINT;
               "watch"                      , WATCH;
               "w"                          , WATCH;
+              "rwatch"                     , REGEXP_WATCH;
+              "rw"                         , REGEXP_WATCH;
               "unwatch"                    , UNWATCH;
               "uw"                         , UNWATCH;
+              "runwatch"                   , REGEXP_UNWATCH;
+              "ruw"                        , REGEXP_UNWATCH;
               "dump"                       , DUMP;
               "d"                          , DUMP
             ]
