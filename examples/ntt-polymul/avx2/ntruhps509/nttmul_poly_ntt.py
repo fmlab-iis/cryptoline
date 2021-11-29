@@ -189,7 +189,7 @@ def ymm2coeffs (indices, slice_size):
             ret = ret + idxs[i][(k*slice_size):((k+1)*slice_size)]
     return (ret)
 
-def print_algebraic_condition02 (cname, indices, offset):
+def _print_algebraic_condition02 (cname, indices, offset):
     num_rings = 2**(2+1)
     exps = [ i for i in range (num_rings) ]
     exprevbits = map (lambda e :
@@ -213,6 +213,30 @@ def print_algebraic_condition02 (cname, indices, offset):
         print ('[{0}, x**128 - {1}]'.format (P, revexps[i]),
                end = '\n' if i == num_rings - 1 else ',\n')
 
+def print_algebraic_condition02 (cname, base, offset):
+    num_rings = 2**(2+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    for i in range (num_rings):
+        print ('eqmod (', end = '')
+        for j in range (4):
+            for k in range (16):
+                print ('{0}{1:03x}*x**{1:3}'.
+                       format (cname, 0x80*j + 16*offset + k),
+                       end = ')\n      (' if j == 3 and k == 15 else
+                             ('+\n       ' if k % 4 == 3 else '+'))
+        for k in range (16):
+            print ('L0x{0:x}*x**{1:2}'.
+                   format (base + 2*(128*offset + 128*i + k), 16*offset + k),
+                   end = ')\n      ' if k == 15 else
+                         ('+\n       ' if k % 3 == 2 else '+'))
+        print ('[{0}, x**128 - {1}]'.format (P, revexps[i]),
+               end = '\n' if i == num_rings - 1 else ',\n')
+        
 def print_algebraic_condition3 (base, indices, offset):
     num_rings = 2**(3+1)
     exps = [ i for i in range (num_rings) ]
@@ -236,6 +260,210 @@ def print_algebraic_condition3 (base, indices, offset):
                              ('+\n       ' if k % 4 == 3 else '+'))
         print ('[{0}, x**64 - {1}]'.format (P, revexps[2*offset+i]),
                end = '\n' if i == 1 else ',\n')
+        
+def print_algebraic_condition34 (base, indices, offset):
+    num_rings = 2**(4+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    for i in range (4):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for j in range (2):
+            for k in range (16):
+                print ('ymm{0}_{1:x}*x**{2:2}'.
+                       format (indices[i][j], k, 16*j+k),
+                       end = ')\n      ' if j == 1 and k == 15 else
+                             ('+\n       ' if k % 4 == 3 else '+'))
+        print ('[{0}, x**32 - {1}]'.format (P, revexps[4*offset+i]),
+               end = '\n' if i == 3 else ',\n')
+
+def print_algebraic_condition35 (base, indices, offset):
+    num_rings = 2**(5+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    for i in range (8):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for k in range (16):
+            print ('ymm{0}_{1:x}*x**{1:2}'.
+                   format (indices[i], k),
+                   end = ')\n      ' if k == 15 else
+                         ('+\n       ' if k % 4 == 3 else '+'))
+        print ('[{0}, x**16 - {1}]'.format (P, revexps[8*offset+i]),
+               end = '\n' if i == 7 else ',\n')
+
+def print_algebraic_condition36 (base, indices, offset):
+    num_rings = 2**(6+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    for i in range (16):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for k in range (8):
+            # 0 8 2 a 4 c 6 e or 1 9 3 b 5 d 7 f
+            print ('ymm{0}_{1:x}*x**{2:2}'.
+                   format (indices[2*(i//4)+i%2], 8*(k%2)+k-(k%2)+(1 if i%4 > 1 else 0), k),
+                   end = ')\n      ' if k == 7 else
+                         ('+\n       ' if k % 4 == 3 else '+'))
+        print ('[{0}, x**8 - {1}]'.format (P, revexps[16*offset+i]),
+               end = '\n' if i == 15 else ',\n')
+
+def print_algebraic_condition37 (base, indices, offset):
+    num_rings = 2**(7+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    limbs = [ [0, 8, 4, 12], [1, 9, 5, 13], [2, 10, 6, 14], [3, 11, 7, 15] ]
+    for i in range (32):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for k in range (4):
+            print ('ymm{0}_{1:x}*x**{2:2}'.
+                   format (indices[2*(i//8)+i%2], limbs[(i//2)%4][k], k),
+                   end = ')\n      ' if k == 3 else '+')
+        print ('[{0}, x**4 - {1}]'.format (P, revexps[32*offset+i]),
+               end = '\n' if i == 31 else ',\n')
+
+def print_mid_results (base, offset):
+    print ('ghost')
+    for i in range (128):
+        print ('L0x{0:x}o@sint16'.format (base + 2*(128*offset + i)),
+               end = ' : and [\n' if i == 127 else
+                     (',\n' if i % 3 == 2 else ', '))
+    for i in range (128):
+        print ('L0x{0:x}o = L0x{0:x}'.
+               format (base + 2*(128*offset + i)),
+               end = '\n] && true;\n' if i == 127 else
+                     (',\n' if i % 2 == 1 else ', '))
+        
+def _print_algebraic_condition38 (base, indices, offset):
+    num_rings = 2**(8+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    limbs = [ [0, 8], [1, 9], [2, 10], [3, 11], [4, 12], [5, 13], [6, 14], [7, 15] ]
+    for i in range (64):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for k in range (2):
+            print ('ymm{0}_{1:x}*x**{2:2}'.
+                   format (indices[2*(i//16)+i%2], limbs[(i//2)%8][k], k),
+                   end = ') ' if k == 1 else '+')
+        print ('[{0}, x**2 - {1}]'.format (P, revexps[64*offset+i]),
+               end = '\n' if i == 63 else ',\n')
+
+def __print_algebraic_condition38 (base, offset):
+    num_rings = 2**(8+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    limbs = [ [0, 8], [1, 9], [2, 10], [3, 11], [4, 12], [5, 13], [6, 14], [7, 15] ]
+    for i in range (64):
+        print ('eqmod (', end = '')
+        for j in range (128):
+            print ('L0x{0:x}o*x**{1:3}'.
+                   format (base + 2*(128*offset + j), j),
+                   end = ')\n      (' if j == 127 else
+                         ('+\n       ' if j % 3 == 2 else '+'))
+        for k in range (2):
+            print ('L0x{0:x}*x**{1:2}'.
+                   format (base +
+                           2*(128*offset +
+                              16*(2*(i//16)+i%2)+
+                              limbs[(i//2)%8][k]), k),
+                   end = ') ' if k == 1 else '+')
+        print ('[{0}, x**2 - {1}]'.format (P, revexps[64*offset+i]),
+               end = '\n' if i == 63 else ',\n')
+
+def print_algebraic_condition38 (inp_poly_name, base, offset):
+    num_rings = 2**(8+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    limbs = [ [0, 8], [1, 9], [2, 10], [3, 11], [4, 12], [5, 13], [6, 14], [7, 15] ]
+    for i in range (64):
+        print ('eqmod ({0}**2) ('.format (inp_poly_name), end = '')
+        for k in range (2):
+            print ('L0x{0:x}*x**{1:2}'.
+                   format (base +
+                           2*(128*offset +
+                              16*(2*(i//16)+i%2)+
+                              limbs[(i//2)%8][k]), k),
+                   end = ')\n      ' if k == 1 else '+')
+        print ('[{0}, x**2 - {1}]'.format (P, revexps[64*offset+i]),
+               end = '\n' if i == 63 else ',\n')
+        
+def print_algebraic_postcondition (inp_poly_name, base, offset):
+    num_rings = 2**(8+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e :
+                      list (reversed (nttlib.num_to_bits (e, 9))),
+                      exps)
+    revexps = list (map (lambda b : (ZETA**(nttlib.bits_to_num (b)))%P,
+                         exprevbits))
+    limbs = [ [0, 8], [1, 9], [2, 10], [3, 11], [4, 12], [5, 13], [6, 14], [7, 15] ]
+    for i in range (64):
+        print ('eqmod ({0}**2) ('.format (inp_poly_name),
+               end = '')
+        for k in range (2):
+            print ('L0x{0:x}*x**{1:2}'.
+                   format (base +
+                           2*(128*offset +
+                              16*(2*(i//16)+i%2)+
+                              limbs[(i//2)%8][k]), k),
+                   end = ')\n      ' if k == 1 else '+')
+        print ('[{0}, x**2 - {1}]'.format (P, revexps[64*offset+i]),
+               end = '\n' if i == 63 else ',\n')
+
+def print_range_postcondition (base, factor):
+    for i in range (1024):
+        print ('(-{0})@16 <=s L0x{1:x}, L0x{1:x} <s {0}@16'.
+               format ((P//2)*factor, base + 2*i),
+               end = '\n' if i == 1023 else ',\n')
         
 def print_algebraic_condition (inp_poly_name, indices, level, offset):
     exps = [ i for i in range (2**(level+1)) ]
@@ -290,70 +518,18 @@ print_constants (const_base, pdata10753)
 print ('\n\n\n(**************** indices *****************)\n')
 print_indices (idx_base, idxdata)
 
-print ('\n\n\n(**************** LEVELS 0-2, 0 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 0)
-print ('];')
-cut_counter += 1
+for offset in range (8):
+    print ('\n\n\n(**************** LEVELS 0-2, {0} *****************)\n'.
+           format (offset))
+    print ('(**************** CUT {0:3} *****************)\n'.
+           format (cut_counter))
+    print ('ecut and [')
+#    print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], offset)
+    print_algebraic_condition02 ('c', out_base, offset)
+    print ('];')
+    cut_counter += 1
 
-print ('\n\n\n(**************** LEVELS 0-2, 1 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 1)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 2 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 2)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 3 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 3)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 4 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 4)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 5 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 5)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 6 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 6)
-print ('];')
-cut_counter += 1
-
-print ('\n\n\n(**************** LEVELS 0-2, 7 *****************)\n')
-print ('(**************** CUT {0:3} *****************)\n'.
-       format (cut_counter))
-print ('ecut and [')
-print_algebraic_condition02 ('c', [5, 4, 3, 7, 6, 9, 8, 11], 7)
-print ('];')
-cut_counter += 1
-
+"""
 print ('\n\n\n(**************** LEVELS 3, 0 *****************)\n')
 print ('(**************** CUT {0:3} *****************)\n'.
        format (cut_counter))
@@ -361,5 +537,74 @@ print ('ecut and [')
 print_algebraic_condition3 (out_base, [[3, 4, 5, 6], [8, 9, 10, 11]], 0)
 print ('];')
 cut_counter += 1
+"""
 
+"""
+print ('\n\n\n(**************** LEVELS 3-4, 0 *****************)\n')
+print ('(**************** CUT {0:3} *****************)\n'.
+       format (cut_counter))
+print ('ecut and [')
+print_algebraic_condition34 (out_base, [[7, 3], [5, 6], [4, 8], [10, 11]], 0)
+print ('];')
+cut_counter += 1
+"""
 
+"""
+print ('\n\n\n(**************** LEVELS 3-5, 0 *****************)\n')
+print ('(**************** CUT {0:3} *****************)\n'.
+       format (cut_counter))
+print ('ecut and [')
+print_algebraic_condition35 (out_base, [9, 3, 7, 6, 5, 8, 4, 11], 0)
+print ('];')
+cut_counter += 1
+"""
+
+"""
+print ('\n\n\n(**************** LEVELS 3-6, 0 *****************)\n')
+print ('(**************** CUT {0:3} *****************)\n'.
+       format (cut_counter))
+print ('ecut and [')
+print_algebraic_condition36 (out_base, [4, 3, 10, 6, 9, 8, 7, 11], 0)
+print ('];')
+cut_counter += 1
+"""
+
+"""
+print ('\n\n\n(**************** LEVELS 3-7, 0 *****************)\n')
+print ('(**************** CUT {0:3} *****************)\n'.
+       format (cut_counter))
+print ('ecut and [')
+print_algebraic_condition37 (out_base, [7, 3, 5, 6, 4, 8, 10, 11], 0)
+print ('];')
+cut_counter += 1
+"""
+
+print ('\n\n\n(**************** mid results 0 *****************)\n')
+print_mid_results (out_base, 0);
+
+for offset in range (8):
+    print ('\n\n\n(**************** LEVELS 3-8, {0} *****************)\n'.
+           format (offset))
+    print ('(**************** CUT {0:3} *****************)\n'.
+           format (cut_counter))
+    print ('ecut and [')
+    # print_algebraic_condition38 (out_base, [10, 3, 9, 6, 7, 8, 5, 11], 0)
+    print_algebraic_condition38 ('inp_poly', out_base, offset)
+    print ('] prove with [precondition, cuts [ 1, 2, 3, 4, 5, 6, 7, 8 ] ];')
+    cut_counter += 1
+
+    print ('\n\n(**************** CUT {0:3} *****************)\n'.
+           format (cut_counter))
+    print ('ecut true;')
+    cut_counter += 1
+
+print ('\n\n\n(**************** postcondition *****************)\n')
+print ('and [')
+for offset in range (8):
+    print_algebraic_postcondition ('inp_poly', out_base, offset)
+    print ('' if offset == 7 else ',')
+print ('] prove with [')
+print ('cuts [ 9, 11, 13, 15, 17, 19, 21, 23 ]')
+print ('] && and [')
+print_range_postcondition (out_base, 6)
+print (']')
