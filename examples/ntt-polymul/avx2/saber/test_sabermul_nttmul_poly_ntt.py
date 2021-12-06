@@ -518,13 +518,13 @@ def print_instr(instr):
             (ecut_id, rcut_id, cut_str) = str_level3_twist(ecut_id, rcut_id, "inp_poly",
                                                            [
                                                                [LEVEL3_ZETA_BASE[i+off*4], "zeta_0_{}".format(i+off*4), "y_0_{}".format(i+off*4),
-                                                                make_ymms([4, 6, 8, 3], 0+(i//2)*8, 8) if i % 2 == 0 else make_ymms([7, 10, 5, 11], 0+(i//2)*8, 8)] for i in range(4)
+                                                                make_ymms([[4, 6, 8, 3], [7, 10, 5, 11]][i%2], (i//2)*8, 8)] for i in range(4)
                                                            ])
             print(cut_str)
             print()
         print_comment("===== Start of level 3, off {} =====".format(off))
         level = level + 1
-    elif instr.startswith("(* vpmullw 0x340(%rdx),%ymm6,%ymm12") and level == 3:
+    elif (instr.startswith("(* vpmullw 0x340(%rdx),%ymm6,%ymm12") or instr.startswith("(* vpmullw 0x540(%rdx),%ymm6,%ymm12")) and level == 3:
         # Verified
         print(str_assertions([(9, 12), (7, 13), (4, 14), (10, 15)]))
         print_comment("level 3, off {}, end of reduce          9,7,4,10,0".format(off))
