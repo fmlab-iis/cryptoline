@@ -5,7 +5,7 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
 
 let action = ref Verify
 
@@ -55,6 +55,7 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
     ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
+    ("-pdflow", Unit (fun () -> action := PrintDataFlow), "     Print data flow in SSA as a DOT graph\n");
     ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "      Run debugger over the parsed specification\n");
     ("-sim", String (fun s -> action := Simulation; initial_values_string := s), "      Simulate the parsed specification\n");
     ("-sim_steps", Int (fun n -> simulation_steps := n), "\n\t     Stop simulate after the specified number of steps \n");
@@ -139,6 +140,16 @@ let parse_simulation_dump_ranges () =
   if str = "" then []
   else List.map parse_range (split_nonempty_on_char ',' str)
 
+let print_data_flow p fout =
+  output_string fout "digraph {\n";
+  List.iter (fun i ->
+      let lvs = lvs_instr i in
+      let rvs = rvs_instr i in
+      if not (VS.is_empty lvs) && not (VS.is_empty rvs) then
+        VS.iter (fun lv -> VS.iter (fun rv -> output_string fout (string_of_var rv ^ " -> " ^ string_of_var lv ^ ";\n")) rvs) lvs
+    ) p;
+  output_string fout "}\n"
+
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
   let parse_and_check file =
@@ -173,6 +184,10 @@ let anon file =
   | PrintRSpec ->
      let s = from_typecheck_rspec (rspec_from_file file) in
      print_endline (string_of_rspec s)
+  | PrintDataFlow ->
+     let (_, s) = parse_and_check file in
+     let s = ssa_spec s in
+     print_data_flow s.sprog stdout
   | MoveAssert ->
      let (vs, s) = parse_and_check file in
      let vs = List.map (ssa_var VM.empty) vs in

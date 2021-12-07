@@ -419,22 +419,22 @@ mov L0x555555560d38 (   7)@sint16; mov L0x555555560d3a ( 124)@sint16; mov L0x555
 
 (* _TWISTS4 *)
 
-mov L0x555555560d50 (  -9)@sint16; mov L0x555555560d52 (-16425)@sint16; mov L0x555555560d54 (-28865)@sint16; mov L0x555555560d56 (10350)@sint16;
-mov L0x555555560d58 (-3593)@sint16; mov L0x555555560d5a (-3625)@sint16; mov L0x555555560d5c (-3777)@sint16; mov L0x555555560d5e (3182)@sint16;
-mov L0x555555560d60 (  -9)@sint16; mov L0x555555560d62 (-10350)@sint16; mov L0x555555560d64 (28865)@sint16; mov L0x555555560d66 (16425)@sint16;
-mov L0x555555560d68 (-3593)@sint16; mov L0x555555560d6a (-3182)@sint16; mov L0x555555560d6c (3777)@sint16; mov L0x555555560d6e (3625)@sint16;
-mov L0x555555560d70 (  -9)@sint16; mov L0x555555560d72 (4496)@sint16; mov L0x555555560d74 (-10350)@sint16; mov L0x555555560d76 (14744)@sint16;
-mov L0x555555560d78 (-3593)@sint16; mov L0x555555560d7a (-3696)@sint16; mov L0x555555560d7c (-3182)@sint16; mov L0x555555560d7e (2456)@sint16;
-mov L0x555555560d80 (  -9)@sint16; mov L0x555555560d82 (4974)@sint16; mov L0x555555560d84 (-16425)@sint16; mov L0x555555560d86 (7244)@sint16;
-mov L0x555555560d88 (-3593)@sint16; mov L0x555555560d8a (-2194)@sint16; mov L0x555555560d8c (-3625)@sint16; mov L0x555555560d8e (1100)@sint16;
-mov L0x555555560d90 (  -9)@sint16; mov L0x555555560d92 (-11655)@sint16; mov L0x555555560d94 (4496)@sint16; mov L0x555555560d96 (-18191)@sint16;
-mov L0x555555560d98 (-3593)@sint16; mov L0x555555560d9a ( 121)@sint16; mov L0x555555560d9c (-3696)@sint16; mov L0x555555560d9e (-2319)@sint16;
-mov L0x555555560da0 (  -9)@sint16; mov L0x555555560da2 (-22593)@sint16; mov L0x555555560da4 (7244)@sint16; mov L0x555555560da6 (-20315)@sint16;
-mov L0x555555560da8 (-3593)@sint16; mov L0x555555560daa (2495)@sint16; mov L0x555555560dac (1100)@sint16; mov L0x555555560dae (1701)@sint16;
-mov L0x555555560db0 (  -9)@sint16; mov L0x555555560db2 (-18191)@sint16; mov L0x555555560db4 (14744)@sint16; mov L0x555555560db6 (-23754)@sint16;
-mov L0x555555560db8 (-3593)@sint16; mov L0x555555560dba (-2319)@sint16; mov L0x555555560dbc (2456)@sint16; mov L0x555555560dbe (-2250)@sint16;
-mov L0x555555560dc0 (  -9)@sint16; mov L0x555555560dc2 (-20870)@sint16; mov L0x555555560dc4 (4974)@sint16; mov L0x555555560dc6 (-22593)@sint16;
-mov L0x555555560dc8 (-3593)@sint16; mov L0x555555560dca (-1414)@sint16; mov L0x555555560dcc (-2194)@sint16; mov L0x555555560dce (2495)@sint16;
+mov L0x555555560d40 (  -9)@sint16; mov L0x555555560d42 (-16425)@sint16; mov L0x555555560d44 (-28865)@sint16; mov L0x555555560d46 (10350)@sint16;
+mov L0x555555560d48 (-3593)@sint16; mov L0x555555560d4a (-3625)@sint16; mov L0x555555560d4c (-3777)@sint16; mov L0x555555560d4e (3182)@sint16;
+mov L0x555555560d50 (  -9)@sint16; mov L0x555555560d52 (-10350)@sint16; mov L0x555555560d54 (28865)@sint16; mov L0x555555560d56 (16425)@sint16;
+mov L0x555555560d58 (-3593)@sint16; mov L0x555555560d5a (-3182)@sint16; mov L0x555555560d5c (3777)@sint16; mov L0x555555560d5e (3625)@sint16;
+mov L0x555555560d60 (  -9)@sint16; mov L0x555555560d62 (4496)@sint16; mov L0x555555560d64 (-10350)@sint16; mov L0x555555560d66 (14744)@sint16;
+mov L0x555555560d68 (-3593)@sint16; mov L0x555555560d6a (-3696)@sint16; mov L0x555555560d6c (-3182)@sint16; mov L0x555555560d6e (2456)@sint16;
+mov L0x555555560d70 (  -9)@sint16; mov L0x555555560d72 (4974)@sint16; mov L0x555555560d74 (-16425)@sint16; mov L0x555555560d76 (7244)@sint16;
+mov L0x555555560d78 (-3593)@sint16; mov L0x555555560d7a (-2194)@sint16; mov L0x555555560d7c (-3625)@sint16; mov L0x555555560d7e (1100)@sint16;
+mov L0x555555560d80 (  -9)@sint16; mov L0x555555560d82 (-11655)@sint16; mov L0x555555560d84 (4496)@sint16; mov L0x555555560d86 (-18191)@sint16;
+mov L0x555555560d88 (-3593)@sint16; mov L0x555555560d8a ( 121)@sint16; mov L0x555555560d8c (-3696)@sint16; mov L0x555555560d8e (-2319)@sint16;
+mov L0x555555560d90 (  -9)@sint16; mov L0x555555560d92 (-22593)@sint16; mov L0x555555560d94 (7244)@sint16; mov L0x555555560d96 (-20315)@sint16;
+mov L0x555555560d98 (-3593)@sint16; mov L0x555555560d9a (2495)@sint16; mov L0x555555560d9c (1100)@sint16; mov L0x555555560d9e (1701)@sint16;
+mov L0x555555560da0 (  -9)@sint16; mov L0x555555560da2 (-18191)@sint16; mov L0x555555560da4 (14744)@sint16; mov L0x555555560da6 (-23754)@sint16;
+mov L0x555555560da8 (-3593)@sint16; mov L0x555555560daa (-2319)@sint16; mov L0x555555560dac (2456)@sint16; mov L0x555555560dae (-2250)@sint16;
+mov L0x555555560db0 (  -9)@sint16; mov L0x555555560db2 (-20870)@sint16; mov L0x555555560db4 (4974)@sint16; mov L0x555555560db6 (-22593)@sint16;
+mov L0x555555560db8 (-3593)@sint16; mov L0x555555560dba (-1414)@sint16; mov L0x555555560dbc (-2194)@sint16; mov L0x555555560dbe (2495)@sint16;
 
 ghost x0@sint16 : true && true;
 (* inp_poly *)
@@ -512,7 +512,6 @@ f252*(x0**252) + f253*(x0**253) + f254*(x0**254) + f255*(x0**255) && true;
 
 (* #! -> SP = 0x7fffffffa038 *)
 #! 0x7fffffffa038 = 0x7fffffffa038;
-(* Loading _16XP *)
 (* vmovdqa (%rdx),%ymm0                            #! EA = L0x555555560700; Value = 0x1e011e011e011e01; PC = 0x555555557bdb *)
 mov ymm0_0 L0x555555560700;
 mov ymm0_1 L0x555555560702;
@@ -530,7 +529,6 @@ mov ymm0_c L0x555555560718;
 mov ymm0_d L0x55555556071a;
 mov ymm0_e L0x55555556071c;
 mov ymm0_f L0x55555556071e;
-(* Loading _ZETAS 0~15 *)
 (* vmovdqa 0x100(%rdx),%ymm1                       #! EA = L0x555555560800; Value = 0x70c170c170c170c1; PC = 0x555555557bdf *)
 mov ymm1_0 L0x555555560800;
 mov ymm1_1 L0x555555560802;
@@ -548,7 +546,6 @@ mov ymm1_c L0x555555560818;
 mov ymm1_d L0x55555556081a;
 mov ymm1_e L0x55555556081c;
 mov ymm1_f L0x55555556081e;
-(* Loading _ZETAS 16~31 *)
 (* vmovdqa 0x120(%rdx),%ymm2                       #! EA = L0x555555560820; Value = 0x0ec10ec10ec10ec1; PC = 0x555555557be7 *)
 mov ymm2_0 L0x555555560820;
 mov ymm2_1 L0x555555560822;
@@ -566,7 +563,7 @@ mov ymm2_c L0x555555560838;
 mov ymm2_d L0x55555556083a;
 mov ymm2_e L0x55555556083c;
 mov ymm2_f L0x55555556083e;
-(* level 0, off 0, loading inputs f128-f191 *)
+(* ===== Start of level 0 ===== *)
 (* vmovdqa 0x100(%rsi),%ymm8                       #! EA = L0x7fffffffafe0; Value = 0x00000000ffffffff; PC = 0x555555557bef *)
 mov ymm8_0 L0x7fffffffafe0;
 mov ymm8_1 L0x7fffffffafe2;
@@ -635,7 +632,6 @@ mov ymm11_c L0x7fffffffb058;
 mov ymm11_d L0x7fffffffb05a;
 mov ymm11_e L0x7fffffffb05c;
 mov ymm11_f L0x7fffffffb05e;
-(* level 0, mul		8,9,10,11,1,1,2,2, f(64*\off+128)-f(64*\off+191) * _ZETAS[0] *)
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557c0f *)
 smull mulHymm8_0 mulL_0 ymm1_0 ymm8_0;
 smull mulHymm8_1 mulL_1 ymm1_1 ymm8_1;
@@ -768,7 +764,6 @@ cast ymm15_c@sint16 mulL_c;
 cast ymm15_d@sint16 mulL_d;
 cast ymm15_e@sint16 mulL_e;
 cast ymm15_f@sint16 mulL_f;
-(* level 0, mul		8,9,10,11,1,1,2,2, f(64*\off+128)-f(64*\off+191) * _ZETAS[16] *)
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557c1f *)
 smull mulH_0 mulLymm8_0 ymm8_0 ymm2_0;
 smull mulH_1 mulLymm8_1 ymm8_1 ymm2_1;
@@ -901,7 +896,6 @@ mov ymm11_c mulH_c;
 mov ymm11_d mulH_d;
 mov ymm11_e mulH_e;
 mov ymm11_f mulH_f;
-(* level 0, off 0, loading inputs f000-f063 *)
 (* vmovdqa (%rsi),%ymm4                            #! EA = L0x7fffffffaee0; Value = 0xfffe000000010002; PC = 0x555555557c2f *)
 mov ymm4_0 L0x7fffffffaee0;
 mov ymm4_1 L0x7fffffffaee2;
@@ -970,7 +964,6 @@ mov ymm7_c L0x7fffffffaf58;
 mov ymm7_d L0x7fffffffaf5a;
 mov ymm7_e L0x7fffffffaf5c;
 mov ymm7_f L0x7fffffffaf5e;
-(* level 0, reduce		8,9,10,11 *)
 (* vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557c42 *)
 smull mulH_0 mulLymm12_0 ymm12_0 ymm0_0;
 smull mulH_1 mulLymm12_1 ymm12_1 ymm0_1;
@@ -1171,7 +1164,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 0, update		3,4,5,6,7,8,9,10,11 *)
 (* vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x555555557c52 *)
 add ymm3_0 ymm4_0 ymm8_0;
 add ymm3_1 ymm4_1 ymm8_1;
@@ -1444,7 +1436,6 @@ add ymm11_c ymm11_c ymm15_c;
 add ymm11_d ymm11_d ymm15_d;
 add ymm11_e ymm11_e ymm15_e;
 add ymm11_f ymm11_f ymm15_f;
-(* level 0, off 0, store results *)
 (* vmovdqa %ymm3,(%rdi)                            #! EA = L0x7fffffffb4e0; PC = 0x555555557ca2 *)
 mov L0x7fffffffb4e0 ymm3_0;
 mov L0x7fffffffb4e2 ymm3_1;
@@ -1581,7 +1572,6 @@ mov L0x7fffffffb658 ymm11_c;
 mov L0x7fffffffb65a ymm11_d;
 mov L0x7fffffffb65c ymm11_e;
 mov L0x7fffffffb65e ymm11_f;
-(* level 0, off 1, loading inputs f192-f255 *)
 (* vmovdqa 0x180(%rsi),%ymm8                       #! EA = L0x7fffffffb060; Value = 0x0000000400000000; PC = 0x555555557cd5 *)
 mov ymm8_0 L0x7fffffffb060;
 mov ymm8_1 L0x7fffffffb062;
@@ -1650,7 +1640,6 @@ mov ymm11_c L0x7fffffffb0d8;
 mov ymm11_d L0x7fffffffb0da;
 mov ymm11_e L0x7fffffffb0dc;
 mov ymm11_f L0x7fffffffb0de;
-(* level 0, mul		8,9,10,11,1,1,2,2, f(64*\off+128)-f(64*\off+191) * _ZETAS[0] *)
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557cf5 *)
 smull mulHymm8_0 mulL_0 ymm1_0 ymm8_0;
 smull mulHymm8_1 mulL_1 ymm1_1 ymm8_1;
@@ -1783,7 +1772,6 @@ cast ymm15_c@sint16 mulL_c;
 cast ymm15_d@sint16 mulL_d;
 cast ymm15_e@sint16 mulL_e;
 cast ymm15_f@sint16 mulL_f;
-(* level 0, mul		8,9,10,11,1,1,2,2, f(64*\off+128)-f(64*\off+191) * _ZETAS[16] *)
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557d05 *)
 smull mulH_0 mulLymm8_0 ymm8_0 ymm2_0;
 smull mulH_1 mulLymm8_1 ymm8_1 ymm2_1;
@@ -1916,7 +1904,6 @@ mov ymm11_c mulH_c;
 mov ymm11_d mulH_d;
 mov ymm11_e mulH_e;
 mov ymm11_f mulH_f;
-(* level 0, off 1, loading inputs f064-f127 *)
 (* vmovdqa 0x80(%rsi),%ymm4                        #! EA = L0x7fffffffaf60; Value = 0x0000000100020001; PC = 0x555555557d15 *)
 mov ymm4_0 L0x7fffffffaf60;
 mov ymm4_1 L0x7fffffffaf62;
@@ -1985,7 +1972,6 @@ mov ymm7_c L0x7fffffffafd8;
 mov ymm7_d L0x7fffffffafda;
 mov ymm7_e L0x7fffffffafdc;
 mov ymm7_f L0x7fffffffafde;
-(* level 0, reduce		8,9,10,11 *)
 (* vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557d35 *)
 smull mulH_0 mulLymm12_0 ymm12_0 ymm0_0;
 smull mulH_1 mulLymm12_1 ymm12_1 ymm0_1;
@@ -2186,7 +2172,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 0, update		3,4,5,6,7,8,9,10,11 *)
 (* vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x555555557d45 *)
 add ymm3_0 ymm4_0 ymm8_0;
 add ymm3_1 ymm4_1 ymm8_1;
@@ -2459,7 +2444,6 @@ add ymm11_c ymm11_c ymm15_c;
 add ymm11_d ymm11_d ymm15_d;
 add ymm11_e ymm11_e ymm15_e;
 add ymm11_f ymm11_f ymm15_f;
-(* level 0, off 1, store results *)
 (* vmovdqa %ymm3,0x80(%rdi)                        #! EA = L0x7fffffffb560; PC = 0x555555557d95 *)
 mov L0x7fffffffb560 ymm3_0;
 mov L0x7fffffffb562 ymm3_1;
@@ -2603,143 +2587,79 @@ mov L0x7fffffffb6de ymm11_f;
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-L0x7fffffffb4e0*(x0**0) + L0x7fffffffb4e2*(x0**1) +
-L0x7fffffffb4e4*(x0**2) + L0x7fffffffb4e6*(x0**3) +
-L0x7fffffffb4e8*(x0**4) + L0x7fffffffb4ea*(x0**5) +
-L0x7fffffffb4ec*(x0**6) + L0x7fffffffb4ee*(x0**7) +
-L0x7fffffffb4f0*(x0**8) + L0x7fffffffb4f2*(x0**9) +
-L0x7fffffffb4f4*(x0**10) + L0x7fffffffb4f6*(x0**11) +
-L0x7fffffffb4f8*(x0**12) + L0x7fffffffb4fa*(x0**13) +
-L0x7fffffffb4fc*(x0**14) + L0x7fffffffb4fe*(x0**15) +
-L0x7fffffffb500*(x0**16) + L0x7fffffffb502*(x0**17) +
-L0x7fffffffb504*(x0**18) + L0x7fffffffb506*(x0**19) +
-L0x7fffffffb508*(x0**20) + L0x7fffffffb50a*(x0**21) +
-L0x7fffffffb50c*(x0**22) + L0x7fffffffb50e*(x0**23) +
-L0x7fffffffb510*(x0**24) + L0x7fffffffb512*(x0**25) +
-L0x7fffffffb514*(x0**26) + L0x7fffffffb516*(x0**27) +
-L0x7fffffffb518*(x0**28) + L0x7fffffffb51a*(x0**29) +
-L0x7fffffffb51c*(x0**30) + L0x7fffffffb51e*(x0**31) +
-L0x7fffffffb520*(x0**32) + L0x7fffffffb522*(x0**33) +
-L0x7fffffffb524*(x0**34) + L0x7fffffffb526*(x0**35) +
-L0x7fffffffb528*(x0**36) + L0x7fffffffb52a*(x0**37) +
-L0x7fffffffb52c*(x0**38) + L0x7fffffffb52e*(x0**39) +
-L0x7fffffffb530*(x0**40) + L0x7fffffffb532*(x0**41) +
-L0x7fffffffb534*(x0**42) + L0x7fffffffb536*(x0**43) +
-L0x7fffffffb538*(x0**44) + L0x7fffffffb53a*(x0**45) +
-L0x7fffffffb53c*(x0**46) + L0x7fffffffb53e*(x0**47) +
-L0x7fffffffb540*(x0**48) + L0x7fffffffb542*(x0**49) +
-L0x7fffffffb544*(x0**50) + L0x7fffffffb546*(x0**51) +
-L0x7fffffffb548*(x0**52) + L0x7fffffffb54a*(x0**53) +
-L0x7fffffffb54c*(x0**54) + L0x7fffffffb54e*(x0**55) +
-L0x7fffffffb550*(x0**56) + L0x7fffffffb552*(x0**57) +
-L0x7fffffffb554*(x0**58) + L0x7fffffffb556*(x0**59) +
-L0x7fffffffb558*(x0**60) + L0x7fffffffb55a*(x0**61) +
-L0x7fffffffb55c*(x0**62) + L0x7fffffffb55e*(x0**63) +
-L0x7fffffffb560*(x0**64) + L0x7fffffffb562*(x0**65) +
-L0x7fffffffb564*(x0**66) + L0x7fffffffb566*(x0**67) +
-L0x7fffffffb568*(x0**68) + L0x7fffffffb56a*(x0**69) +
-L0x7fffffffb56c*(x0**70) + L0x7fffffffb56e*(x0**71) +
-L0x7fffffffb570*(x0**72) + L0x7fffffffb572*(x0**73) +
-L0x7fffffffb574*(x0**74) + L0x7fffffffb576*(x0**75) +
-L0x7fffffffb578*(x0**76) + L0x7fffffffb57a*(x0**77) +
-L0x7fffffffb57c*(x0**78) + L0x7fffffffb57e*(x0**79) +
-L0x7fffffffb580*(x0**80) + L0x7fffffffb582*(x0**81) +
-L0x7fffffffb584*(x0**82) + L0x7fffffffb586*(x0**83) +
-L0x7fffffffb588*(x0**84) + L0x7fffffffb58a*(x0**85) +
-L0x7fffffffb58c*(x0**86) + L0x7fffffffb58e*(x0**87) +
-L0x7fffffffb590*(x0**88) + L0x7fffffffb592*(x0**89) +
-L0x7fffffffb594*(x0**90) + L0x7fffffffb596*(x0**91) +
-L0x7fffffffb598*(x0**92) + L0x7fffffffb59a*(x0**93) +
-L0x7fffffffb59c*(x0**94) + L0x7fffffffb59e*(x0**95) +
-L0x7fffffffb5a0*(x0**96) + L0x7fffffffb5a2*(x0**97) +
-L0x7fffffffb5a4*(x0**98) + L0x7fffffffb5a6*(x0**99) +
-L0x7fffffffb5a8*(x0**100) + L0x7fffffffb5aa*(x0**101) +
-L0x7fffffffb5ac*(x0**102) + L0x7fffffffb5ae*(x0**103) +
-L0x7fffffffb5b0*(x0**104) + L0x7fffffffb5b2*(x0**105) +
-L0x7fffffffb5b4*(x0**106) + L0x7fffffffb5b6*(x0**107) +
-L0x7fffffffb5b8*(x0**108) + L0x7fffffffb5ba*(x0**109) +
-L0x7fffffffb5bc*(x0**110) + L0x7fffffffb5be*(x0**111) +
-L0x7fffffffb5c0*(x0**112) + L0x7fffffffb5c2*(x0**113) +
-L0x7fffffffb5c4*(x0**114) + L0x7fffffffb5c6*(x0**115) +
-L0x7fffffffb5c8*(x0**116) + L0x7fffffffb5ca*(x0**117) +
-L0x7fffffffb5cc*(x0**118) + L0x7fffffffb5ce*(x0**119) +
-L0x7fffffffb5d0*(x0**120) + L0x7fffffffb5d2*(x0**121) +
-L0x7fffffffb5d4*(x0**122) + L0x7fffffffb5d6*(x0**123) +
-L0x7fffffffb5d8*(x0**124) + L0x7fffffffb5da*(x0**125) +
-L0x7fffffffb5dc*(x0**126) + L0x7fffffffb5de*(x0**127)
-)
-[7681, x0**128 - 4298],
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e0*(x0**0) + L0x7fffffffb4e2*(x0**1) + L0x7fffffffb4e4*(x0**2) + L0x7fffffffb4e6*(x0**3) +
+    L0x7fffffffb4e8*(x0**4) + L0x7fffffffb4ea*(x0**5) + L0x7fffffffb4ec*(x0**6) + L0x7fffffffb4ee*(x0**7) +
+    L0x7fffffffb4f0*(x0**8) + L0x7fffffffb4f2*(x0**9) + L0x7fffffffb4f4*(x0**10) + L0x7fffffffb4f6*(x0**11) +
+    L0x7fffffffb4f8*(x0**12) + L0x7fffffffb4fa*(x0**13) + L0x7fffffffb4fc*(x0**14) + L0x7fffffffb4fe*(x0**15) +
+    L0x7fffffffb500*(x0**16) + L0x7fffffffb502*(x0**17) + L0x7fffffffb504*(x0**18) + L0x7fffffffb506*(x0**19) +
+    L0x7fffffffb508*(x0**20) + L0x7fffffffb50a*(x0**21) + L0x7fffffffb50c*(x0**22) + L0x7fffffffb50e*(x0**23) +
+    L0x7fffffffb510*(x0**24) + L0x7fffffffb512*(x0**25) + L0x7fffffffb514*(x0**26) + L0x7fffffffb516*(x0**27) +
+    L0x7fffffffb518*(x0**28) + L0x7fffffffb51a*(x0**29) + L0x7fffffffb51c*(x0**30) + L0x7fffffffb51e*(x0**31) +
+    L0x7fffffffb520*(x0**32) + L0x7fffffffb522*(x0**33) + L0x7fffffffb524*(x0**34) + L0x7fffffffb526*(x0**35) +
+    L0x7fffffffb528*(x0**36) + L0x7fffffffb52a*(x0**37) + L0x7fffffffb52c*(x0**38) + L0x7fffffffb52e*(x0**39) +
+    L0x7fffffffb530*(x0**40) + L0x7fffffffb532*(x0**41) + L0x7fffffffb534*(x0**42) + L0x7fffffffb536*(x0**43) +
+    L0x7fffffffb538*(x0**44) + L0x7fffffffb53a*(x0**45) + L0x7fffffffb53c*(x0**46) + L0x7fffffffb53e*(x0**47) +
+    L0x7fffffffb540*(x0**48) + L0x7fffffffb542*(x0**49) + L0x7fffffffb544*(x0**50) + L0x7fffffffb546*(x0**51) +
+    L0x7fffffffb548*(x0**52) + L0x7fffffffb54a*(x0**53) + L0x7fffffffb54c*(x0**54) + L0x7fffffffb54e*(x0**55) +
+    L0x7fffffffb550*(x0**56) + L0x7fffffffb552*(x0**57) + L0x7fffffffb554*(x0**58) + L0x7fffffffb556*(x0**59) +
+    L0x7fffffffb558*(x0**60) + L0x7fffffffb55a*(x0**61) + L0x7fffffffb55c*(x0**62) + L0x7fffffffb55e*(x0**63) +
+    L0x7fffffffb560*(x0**64) + L0x7fffffffb562*(x0**65) + L0x7fffffffb564*(x0**66) + L0x7fffffffb566*(x0**67) +
+    L0x7fffffffb568*(x0**68) + L0x7fffffffb56a*(x0**69) + L0x7fffffffb56c*(x0**70) + L0x7fffffffb56e*(x0**71) +
+    L0x7fffffffb570*(x0**72) + L0x7fffffffb572*(x0**73) + L0x7fffffffb574*(x0**74) + L0x7fffffffb576*(x0**75) +
+    L0x7fffffffb578*(x0**76) + L0x7fffffffb57a*(x0**77) + L0x7fffffffb57c*(x0**78) + L0x7fffffffb57e*(x0**79) +
+    L0x7fffffffb580*(x0**80) + L0x7fffffffb582*(x0**81) + L0x7fffffffb584*(x0**82) + L0x7fffffffb586*(x0**83) +
+    L0x7fffffffb588*(x0**84) + L0x7fffffffb58a*(x0**85) + L0x7fffffffb58c*(x0**86) + L0x7fffffffb58e*(x0**87) +
+    L0x7fffffffb590*(x0**88) + L0x7fffffffb592*(x0**89) + L0x7fffffffb594*(x0**90) + L0x7fffffffb596*(x0**91) +
+    L0x7fffffffb598*(x0**92) + L0x7fffffffb59a*(x0**93) + L0x7fffffffb59c*(x0**94) + L0x7fffffffb59e*(x0**95) +
+    L0x7fffffffb5a0*(x0**96) + L0x7fffffffb5a2*(x0**97) + L0x7fffffffb5a4*(x0**98) + L0x7fffffffb5a6*(x0**99) +
+    L0x7fffffffb5a8*(x0**100) + L0x7fffffffb5aa*(x0**101) + L0x7fffffffb5ac*(x0**102) + L0x7fffffffb5ae*(x0**103) +
+    L0x7fffffffb5b0*(x0**104) + L0x7fffffffb5b2*(x0**105) + L0x7fffffffb5b4*(x0**106) + L0x7fffffffb5b6*(x0**107) +
+    L0x7fffffffb5b8*(x0**108) + L0x7fffffffb5ba*(x0**109) + L0x7fffffffb5bc*(x0**110) + L0x7fffffffb5be*(x0**111) +
+    L0x7fffffffb5c0*(x0**112) + L0x7fffffffb5c2*(x0**113) + L0x7fffffffb5c4*(x0**114) + L0x7fffffffb5c6*(x0**115) +
+    L0x7fffffffb5c8*(x0**116) + L0x7fffffffb5ca*(x0**117) + L0x7fffffffb5cc*(x0**118) + L0x7fffffffb5ce*(x0**119) +
+    L0x7fffffffb5d0*(x0**120) + L0x7fffffffb5d2*(x0**121) + L0x7fffffffb5d4*(x0**122) + L0x7fffffffb5d6*(x0**123) +
+    L0x7fffffffb5d8*(x0**124) + L0x7fffffffb5da*(x0**125) + L0x7fffffffb5dc*(x0**126) + L0x7fffffffb5de*(x0**127)
+  )
+  [7681, x0**128 - (-3383)],
 eqmod
-(inp_poly * inp_poly)
-(
-L0x7fffffffb5e0*(x0**0) + L0x7fffffffb5e2*(x0**1) +
-L0x7fffffffb5e4*(x0**2) + L0x7fffffffb5e6*(x0**3) +
-L0x7fffffffb5e8*(x0**4) + L0x7fffffffb5ea*(x0**5) +
-L0x7fffffffb5ec*(x0**6) + L0x7fffffffb5ee*(x0**7) +
-L0x7fffffffb5f0*(x0**8) + L0x7fffffffb5f2*(x0**9) +
-L0x7fffffffb5f4*(x0**10) + L0x7fffffffb5f6*(x0**11) +
-L0x7fffffffb5f8*(x0**12) + L0x7fffffffb5fa*(x0**13) +
-L0x7fffffffb5fc*(x0**14) + L0x7fffffffb5fe*(x0**15) +
-L0x7fffffffb600*(x0**16) + L0x7fffffffb602*(x0**17) +
-L0x7fffffffb604*(x0**18) + L0x7fffffffb606*(x0**19) +
-L0x7fffffffb608*(x0**20) + L0x7fffffffb60a*(x0**21) +
-L0x7fffffffb60c*(x0**22) + L0x7fffffffb60e*(x0**23) +
-L0x7fffffffb610*(x0**24) + L0x7fffffffb612*(x0**25) +
-L0x7fffffffb614*(x0**26) + L0x7fffffffb616*(x0**27) +
-L0x7fffffffb618*(x0**28) + L0x7fffffffb61a*(x0**29) +
-L0x7fffffffb61c*(x0**30) + L0x7fffffffb61e*(x0**31) +
-L0x7fffffffb620*(x0**32) + L0x7fffffffb622*(x0**33) +
-L0x7fffffffb624*(x0**34) + L0x7fffffffb626*(x0**35) +
-L0x7fffffffb628*(x0**36) + L0x7fffffffb62a*(x0**37) +
-L0x7fffffffb62c*(x0**38) + L0x7fffffffb62e*(x0**39) +
-L0x7fffffffb630*(x0**40) + L0x7fffffffb632*(x0**41) +
-L0x7fffffffb634*(x0**42) + L0x7fffffffb636*(x0**43) +
-L0x7fffffffb638*(x0**44) + L0x7fffffffb63a*(x0**45) +
-L0x7fffffffb63c*(x0**46) + L0x7fffffffb63e*(x0**47) +
-L0x7fffffffb640*(x0**48) + L0x7fffffffb642*(x0**49) +
-L0x7fffffffb644*(x0**50) + L0x7fffffffb646*(x0**51) +
-L0x7fffffffb648*(x0**52) + L0x7fffffffb64a*(x0**53) +
-L0x7fffffffb64c*(x0**54) + L0x7fffffffb64e*(x0**55) +
-L0x7fffffffb650*(x0**56) + L0x7fffffffb652*(x0**57) +
-L0x7fffffffb654*(x0**58) + L0x7fffffffb656*(x0**59) +
-L0x7fffffffb658*(x0**60) + L0x7fffffffb65a*(x0**61) +
-L0x7fffffffb65c*(x0**62) + L0x7fffffffb65e*(x0**63) +
-L0x7fffffffb660*(x0**64) + L0x7fffffffb662*(x0**65) +
-L0x7fffffffb664*(x0**66) + L0x7fffffffb666*(x0**67) +
-L0x7fffffffb668*(x0**68) + L0x7fffffffb66a*(x0**69) +
-L0x7fffffffb66c*(x0**70) + L0x7fffffffb66e*(x0**71) +
-L0x7fffffffb670*(x0**72) + L0x7fffffffb672*(x0**73) +
-L0x7fffffffb674*(x0**74) + L0x7fffffffb676*(x0**75) +
-L0x7fffffffb678*(x0**76) + L0x7fffffffb67a*(x0**77) +
-L0x7fffffffb67c*(x0**78) + L0x7fffffffb67e*(x0**79) +
-L0x7fffffffb680*(x0**80) + L0x7fffffffb682*(x0**81) +
-L0x7fffffffb684*(x0**82) + L0x7fffffffb686*(x0**83) +
-L0x7fffffffb688*(x0**84) + L0x7fffffffb68a*(x0**85) +
-L0x7fffffffb68c*(x0**86) + L0x7fffffffb68e*(x0**87) +
-L0x7fffffffb690*(x0**88) + L0x7fffffffb692*(x0**89) +
-L0x7fffffffb694*(x0**90) + L0x7fffffffb696*(x0**91) +
-L0x7fffffffb698*(x0**92) + L0x7fffffffb69a*(x0**93) +
-L0x7fffffffb69c*(x0**94) + L0x7fffffffb69e*(x0**95) +
-L0x7fffffffb6a0*(x0**96) + L0x7fffffffb6a2*(x0**97) +
-L0x7fffffffb6a4*(x0**98) + L0x7fffffffb6a6*(x0**99) +
-L0x7fffffffb6a8*(x0**100) + L0x7fffffffb6aa*(x0**101) +
-L0x7fffffffb6ac*(x0**102) + L0x7fffffffb6ae*(x0**103) +
-L0x7fffffffb6b0*(x0**104) + L0x7fffffffb6b2*(x0**105) +
-L0x7fffffffb6b4*(x0**106) + L0x7fffffffb6b6*(x0**107) +
-L0x7fffffffb6b8*(x0**108) + L0x7fffffffb6ba*(x0**109) +
-L0x7fffffffb6bc*(x0**110) + L0x7fffffffb6be*(x0**111) +
-L0x7fffffffb6c0*(x0**112) + L0x7fffffffb6c2*(x0**113) +
-L0x7fffffffb6c4*(x0**114) + L0x7fffffffb6c6*(x0**115) +
-L0x7fffffffb6c8*(x0**116) + L0x7fffffffb6ca*(x0**117) +
-L0x7fffffffb6cc*(x0**118) + L0x7fffffffb6ce*(x0**119) +
-L0x7fffffffb6d0*(x0**120) + L0x7fffffffb6d2*(x0**121) +
-L0x7fffffffb6d4*(x0**122) + L0x7fffffffb6d6*(x0**123) +
-L0x7fffffffb6d8*(x0**124) + L0x7fffffffb6da*(x0**125) +
-L0x7fffffffb6dc*(x0**126) + L0x7fffffffb6de*(x0**127)
-)
-[7681, x0**128 - 3383]
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e0*(x0**0) + L0x7fffffffb5e2*(x0**1) + L0x7fffffffb5e4*(x0**2) + L0x7fffffffb5e6*(x0**3) +
+    L0x7fffffffb5e8*(x0**4) + L0x7fffffffb5ea*(x0**5) + L0x7fffffffb5ec*(x0**6) + L0x7fffffffb5ee*(x0**7) +
+    L0x7fffffffb5f0*(x0**8) + L0x7fffffffb5f2*(x0**9) + L0x7fffffffb5f4*(x0**10) + L0x7fffffffb5f6*(x0**11) +
+    L0x7fffffffb5f8*(x0**12) + L0x7fffffffb5fa*(x0**13) + L0x7fffffffb5fc*(x0**14) + L0x7fffffffb5fe*(x0**15) +
+    L0x7fffffffb600*(x0**16) + L0x7fffffffb602*(x0**17) + L0x7fffffffb604*(x0**18) + L0x7fffffffb606*(x0**19) +
+    L0x7fffffffb608*(x0**20) + L0x7fffffffb60a*(x0**21) + L0x7fffffffb60c*(x0**22) + L0x7fffffffb60e*(x0**23) +
+    L0x7fffffffb610*(x0**24) + L0x7fffffffb612*(x0**25) + L0x7fffffffb614*(x0**26) + L0x7fffffffb616*(x0**27) +
+    L0x7fffffffb618*(x0**28) + L0x7fffffffb61a*(x0**29) + L0x7fffffffb61c*(x0**30) + L0x7fffffffb61e*(x0**31) +
+    L0x7fffffffb620*(x0**32) + L0x7fffffffb622*(x0**33) + L0x7fffffffb624*(x0**34) + L0x7fffffffb626*(x0**35) +
+    L0x7fffffffb628*(x0**36) + L0x7fffffffb62a*(x0**37) + L0x7fffffffb62c*(x0**38) + L0x7fffffffb62e*(x0**39) +
+    L0x7fffffffb630*(x0**40) + L0x7fffffffb632*(x0**41) + L0x7fffffffb634*(x0**42) + L0x7fffffffb636*(x0**43) +
+    L0x7fffffffb638*(x0**44) + L0x7fffffffb63a*(x0**45) + L0x7fffffffb63c*(x0**46) + L0x7fffffffb63e*(x0**47) +
+    L0x7fffffffb640*(x0**48) + L0x7fffffffb642*(x0**49) + L0x7fffffffb644*(x0**50) + L0x7fffffffb646*(x0**51) +
+    L0x7fffffffb648*(x0**52) + L0x7fffffffb64a*(x0**53) + L0x7fffffffb64c*(x0**54) + L0x7fffffffb64e*(x0**55) +
+    L0x7fffffffb650*(x0**56) + L0x7fffffffb652*(x0**57) + L0x7fffffffb654*(x0**58) + L0x7fffffffb656*(x0**59) +
+    L0x7fffffffb658*(x0**60) + L0x7fffffffb65a*(x0**61) + L0x7fffffffb65c*(x0**62) + L0x7fffffffb65e*(x0**63) +
+    L0x7fffffffb660*(x0**64) + L0x7fffffffb662*(x0**65) + L0x7fffffffb664*(x0**66) + L0x7fffffffb666*(x0**67) +
+    L0x7fffffffb668*(x0**68) + L0x7fffffffb66a*(x0**69) + L0x7fffffffb66c*(x0**70) + L0x7fffffffb66e*(x0**71) +
+    L0x7fffffffb670*(x0**72) + L0x7fffffffb672*(x0**73) + L0x7fffffffb674*(x0**74) + L0x7fffffffb676*(x0**75) +
+    L0x7fffffffb678*(x0**76) + L0x7fffffffb67a*(x0**77) + L0x7fffffffb67c*(x0**78) + L0x7fffffffb67e*(x0**79) +
+    L0x7fffffffb680*(x0**80) + L0x7fffffffb682*(x0**81) + L0x7fffffffb684*(x0**82) + L0x7fffffffb686*(x0**83) +
+    L0x7fffffffb688*(x0**84) + L0x7fffffffb68a*(x0**85) + L0x7fffffffb68c*(x0**86) + L0x7fffffffb68e*(x0**87) +
+    L0x7fffffffb690*(x0**88) + L0x7fffffffb692*(x0**89) + L0x7fffffffb694*(x0**90) + L0x7fffffffb696*(x0**91) +
+    L0x7fffffffb698*(x0**92) + L0x7fffffffb69a*(x0**93) + L0x7fffffffb69c*(x0**94) + L0x7fffffffb69e*(x0**95) +
+    L0x7fffffffb6a0*(x0**96) + L0x7fffffffb6a2*(x0**97) + L0x7fffffffb6a4*(x0**98) + L0x7fffffffb6a6*(x0**99) +
+    L0x7fffffffb6a8*(x0**100) + L0x7fffffffb6aa*(x0**101) + L0x7fffffffb6ac*(x0**102) + L0x7fffffffb6ae*(x0**103) +
+    L0x7fffffffb6b0*(x0**104) + L0x7fffffffb6b2*(x0**105) + L0x7fffffffb6b4*(x0**106) + L0x7fffffffb6b6*(x0**107) +
+    L0x7fffffffb6b8*(x0**108) + L0x7fffffffb6ba*(x0**109) + L0x7fffffffb6bc*(x0**110) + L0x7fffffffb6be*(x0**111) +
+    L0x7fffffffb6c0*(x0**112) + L0x7fffffffb6c2*(x0**113) + L0x7fffffffb6c4*(x0**114) + L0x7fffffffb6c6*(x0**115) +
+    L0x7fffffffb6c8*(x0**116) + L0x7fffffffb6ca*(x0**117) + L0x7fffffffb6cc*(x0**118) + L0x7fffffffb6ce*(x0**119) +
+    L0x7fffffffb6d0*(x0**120) + L0x7fffffffb6d2*(x0**121) + L0x7fffffffb6d4*(x0**122) + L0x7fffffffb6d6*(x0**123) +
+    L0x7fffffffb6d8*(x0**124) + L0x7fffffffb6da*(x0**125) + L0x7fffffffb6dc*(x0**126) + L0x7fffffffb6de*(x0**127)
+  )
+  [7681, x0**128 - (3383)]
 ] && and [
 (-(8134))@16 <s L0x7fffffffb4e0, L0x7fffffffb4e0 <s (8134)@16, (-(8134))@16 <s L0x7fffffffb4e2, L0x7fffffffb4e2 <s (8134)@16,
 (-(8134))@16 <s L0x7fffffffb4e4, L0x7fffffffb4e4 <s (8134)@16, (-(8134))@16 <s L0x7fffffffb4e6, L0x7fffffffb4e6 <s (8134)@16,
@@ -2871,7 +2791,7 @@ L0x7fffffffb6dc*(x0**126) + L0x7fffffffb6de*(x0**127)
 (-(8134))@16 <s L0x7fffffffb6dc, L0x7fffffffb6dc <s (8134)@16, (-(8134))@16 <s L0x7fffffffb6de, L0x7fffffffb6de <s (8134)@16
 ];
 
-(* Start of level 1, off 0 *)
+(* ===== Start of level 1, off 0 ===== *)
 (* vmovdqa 0x140(%rdx),%ymm15                      #! EA = L0x555555560840; Value = 0xd792d792d792d792; PC = 0x555555557dd5 *)
 mov ymm15_0 L0x555555560840;
 mov ymm15_1 L0x555555560842;
@@ -3506,7 +3426,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 1, off 0, update          3,4,5,6,7,8,9,10,11 *)
 (* vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x555555557e4c *)
 add ymm3_0 ymm4_0 ymm8_0;
 add ymm3_1 ymm4_1 ymm8_1;
@@ -3786,47 +3705,47 @@ add ymm11_f ymm11_f ymm15_f;
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-ymm3_0*(x0**0) + ymm3_1*(x0**1) + ymm3_2*(x0**2) + ymm3_3*(x0**3) +
-ymm3_4*(x0**4) + ymm3_5*(x0**5) + ymm3_6*(x0**6) + ymm3_7*(x0**7) +
-ymm3_8*(x0**8) + ymm3_9*(x0**9) + ymm3_a*(x0**10) + ymm3_b*(x0**11) +
-ymm3_c*(x0**12) + ymm3_d*(x0**13) + ymm3_e*(x0**14) + ymm3_f*(x0**15) +
-ymm4_0*(x0**16) + ymm4_1*(x0**17) + ymm4_2*(x0**18) + ymm4_3*(x0**19) +
-ymm4_4*(x0**20) + ymm4_5*(x0**21) + ymm4_6*(x0**22) + ymm4_7*(x0**23) +
-ymm4_8*(x0**24) + ymm4_9*(x0**25) + ymm4_a*(x0**26) + ymm4_b*(x0**27) +
-ymm4_c*(x0**28) + ymm4_d*(x0**29) + ymm4_e*(x0**30) + ymm4_f*(x0**31) +
-ymm5_0*(x0**32) + ymm5_1*(x0**33) + ymm5_2*(x0**34) + ymm5_3*(x0**35) +
-ymm5_4*(x0**36) + ymm5_5*(x0**37) + ymm5_6*(x0**38) + ymm5_7*(x0**39) +
-ymm5_8*(x0**40) + ymm5_9*(x0**41) + ymm5_a*(x0**42) + ymm5_b*(x0**43) +
-ymm5_c*(x0**44) + ymm5_d*(x0**45) + ymm5_e*(x0**46) + ymm5_f*(x0**47) +
-ymm6_0*(x0**48) + ymm6_1*(x0**49) + ymm6_2*(x0**50) + ymm6_3*(x0**51) +
-ymm6_4*(x0**52) + ymm6_5*(x0**53) + ymm6_6*(x0**54) + ymm6_7*(x0**55) +
-ymm6_8*(x0**56) + ymm6_9*(x0**57) + ymm6_a*(x0**58) + ymm6_b*(x0**59) +
-ymm6_c*(x0**60) + ymm6_d*(x0**61) + ymm6_e*(x0**62) + ymm6_f*(x0**63)
-)
-[7681, x0**64 - 1213],
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(x0**0) + ymm3_1*(x0**1) + ymm3_2*(x0**2) + ymm3_3*(x0**3) +
+    ymm3_4*(x0**4) + ymm3_5*(x0**5) + ymm3_6*(x0**6) + ymm3_7*(x0**7) +
+    ymm3_8*(x0**8) + ymm3_9*(x0**9) + ymm3_a*(x0**10) + ymm3_b*(x0**11) +
+    ymm3_c*(x0**12) + ymm3_d*(x0**13) + ymm3_e*(x0**14) + ymm3_f*(x0**15) +
+    ymm4_0*(x0**16) + ymm4_1*(x0**17) + ymm4_2*(x0**18) + ymm4_3*(x0**19) +
+    ymm4_4*(x0**20) + ymm4_5*(x0**21) + ymm4_6*(x0**22) + ymm4_7*(x0**23) +
+    ymm4_8*(x0**24) + ymm4_9*(x0**25) + ymm4_a*(x0**26) + ymm4_b*(x0**27) +
+    ymm4_c*(x0**28) + ymm4_d*(x0**29) + ymm4_e*(x0**30) + ymm4_f*(x0**31) +
+    ymm5_0*(x0**32) + ymm5_1*(x0**33) + ymm5_2*(x0**34) + ymm5_3*(x0**35) +
+    ymm5_4*(x0**36) + ymm5_5*(x0**37) + ymm5_6*(x0**38) + ymm5_7*(x0**39) +
+    ymm5_8*(x0**40) + ymm5_9*(x0**41) + ymm5_a*(x0**42) + ymm5_b*(x0**43) +
+    ymm5_c*(x0**44) + ymm5_d*(x0**45) + ymm5_e*(x0**46) + ymm5_f*(x0**47) +
+    ymm6_0*(x0**48) + ymm6_1*(x0**49) + ymm6_2*(x0**50) + ymm6_3*(x0**51) +
+    ymm6_4*(x0**52) + ymm6_5*(x0**53) + ymm6_6*(x0**54) + ymm6_7*(x0**55) +
+    ymm6_8*(x0**56) + ymm6_9*(x0**57) + ymm6_a*(x0**58) + ymm6_b*(x0**59) +
+    ymm6_c*(x0**60) + ymm6_d*(x0**61) + ymm6_e*(x0**62) + ymm6_f*(x0**63)
+  )
+  [7681, x0**64 - (1213)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm8_0*(x0**0) + ymm8_1*(x0**1) + ymm8_2*(x0**2) + ymm8_3*(x0**3) +
-ymm8_4*(x0**4) + ymm8_5*(x0**5) + ymm8_6*(x0**6) + ymm8_7*(x0**7) +
-ymm8_8*(x0**8) + ymm8_9*(x0**9) + ymm8_a*(x0**10) + ymm8_b*(x0**11) +
-ymm8_c*(x0**12) + ymm8_d*(x0**13) + ymm8_e*(x0**14) + ymm8_f*(x0**15) +
-ymm9_0*(x0**16) + ymm9_1*(x0**17) + ymm9_2*(x0**18) + ymm9_3*(x0**19) +
-ymm9_4*(x0**20) + ymm9_5*(x0**21) + ymm9_6*(x0**22) + ymm9_7*(x0**23) +
-ymm9_8*(x0**24) + ymm9_9*(x0**25) + ymm9_a*(x0**26) + ymm9_b*(x0**27) +
-ymm9_c*(x0**28) + ymm9_d*(x0**29) + ymm9_e*(x0**30) + ymm9_f*(x0**31) +
-ymm10_0*(x0**32) + ymm10_1*(x0**33) + ymm10_2*(x0**34) + ymm10_3*(x0**35) +
-ymm10_4*(x0**36) + ymm10_5*(x0**37) + ymm10_6*(x0**38) + ymm10_7*(x0**39) +
-ymm10_8*(x0**40) + ymm10_9*(x0**41) + ymm10_a*(x0**42) + ymm10_b*(x0**43) +
-ymm10_c*(x0**44) + ymm10_d*(x0**45) + ymm10_e*(x0**46) + ymm10_f*(x0**47) +
-ymm11_0*(x0**48) + ymm11_1*(x0**49) + ymm11_2*(x0**50) + ymm11_3*(x0**51) +
-ymm11_4*(x0**52) + ymm11_5*(x0**53) + ymm11_6*(x0**54) + ymm11_7*(x0**55) +
-ymm11_8*(x0**56) + ymm11_9*(x0**57) + ymm11_a*(x0**58) + ymm11_b*(x0**59) +
-ymm11_c*(x0**60) + ymm11_d*(x0**61) + ymm11_e*(x0**62) + ymm11_f*(x0**63)
-)
-[7681, x0**64 - 6468]
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(x0**0) + ymm8_1*(x0**1) + ymm8_2*(x0**2) + ymm8_3*(x0**3) +
+    ymm8_4*(x0**4) + ymm8_5*(x0**5) + ymm8_6*(x0**6) + ymm8_7*(x0**7) +
+    ymm8_8*(x0**8) + ymm8_9*(x0**9) + ymm8_a*(x0**10) + ymm8_b*(x0**11) +
+    ymm8_c*(x0**12) + ymm8_d*(x0**13) + ymm8_e*(x0**14) + ymm8_f*(x0**15) +
+    ymm9_0*(x0**16) + ymm9_1*(x0**17) + ymm9_2*(x0**18) + ymm9_3*(x0**19) +
+    ymm9_4*(x0**20) + ymm9_5*(x0**21) + ymm9_6*(x0**22) + ymm9_7*(x0**23) +
+    ymm9_8*(x0**24) + ymm9_9*(x0**25) + ymm9_a*(x0**26) + ymm9_b*(x0**27) +
+    ymm9_c*(x0**28) + ymm9_d*(x0**29) + ymm9_e*(x0**30) + ymm9_f*(x0**31) +
+    ymm10_0*(x0**32) + ymm10_1*(x0**33) + ymm10_2*(x0**34) + ymm10_3*(x0**35) +
+    ymm10_4*(x0**36) + ymm10_5*(x0**37) + ymm10_6*(x0**38) + ymm10_7*(x0**39) +
+    ymm10_8*(x0**40) + ymm10_9*(x0**41) + ymm10_a*(x0**42) + ymm10_b*(x0**43) +
+    ymm10_c*(x0**44) + ymm10_d*(x0**45) + ymm10_e*(x0**46) + ymm10_f*(x0**47) +
+    ymm11_0*(x0**48) + ymm11_1*(x0**49) + ymm11_2*(x0**50) + ymm11_3*(x0**51) +
+    ymm11_4*(x0**52) + ymm11_5*(x0**53) + ymm11_6*(x0**54) + ymm11_7*(x0**55) +
+    ymm11_8*(x0**56) + ymm11_9*(x0**57) + ymm11_a*(x0**58) + ymm11_b*(x0**59) +
+    ymm11_c*(x0**60) + ymm11_d*(x0**61) + ymm11_e*(x0**62) + ymm11_f*(x0**63)
+  )
+  [7681, x0**64 - (-1213)]
 ] && and [
 (-(12312))@16 <s ymm3_0, ymm3_0 <s (12312)@16, (-(12312))@16 <s ymm3_1, ymm3_1 <s (12312)@16,
 (-(12312))@16 <s ymm3_2, ymm3_2 <s (12312)@16, (-(12312))@16 <s ymm3_3, ymm3_3 <s (12312)@16,
@@ -4657,7 +4576,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 2, off 0, update          4,6,8,3,9,7,10,5,11 *)
 (* vpaddw %ymm7,%ymm6,%ymm4                        #! PC = 0x555555557f10 *)
 add ymm4_0 ymm6_0 ymm7_0;
 add ymm4_1 ymm6_1 ymm7_1;
@@ -4937,57 +4855,57 @@ add ymm11_f ymm11_f ymm15_f;
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-ymm4_0*(x0**0) + ymm4_1*(x0**1) + ymm4_2*(x0**2) + ymm4_3*(x0**3) +
-ymm4_4*(x0**4) + ymm4_5*(x0**5) + ymm4_6*(x0**6) + ymm4_7*(x0**7) +
-ymm6_0*(x0**8) + ymm6_1*(x0**9) + ymm6_2*(x0**10) + ymm6_3*(x0**11) +
-ymm6_4*(x0**12) + ymm6_5*(x0**13) + ymm6_6*(x0**14) + ymm6_7*(x0**15) +
-ymm8_0*(x0**16) + ymm8_1*(x0**17) + ymm8_2*(x0**18) + ymm8_3*(x0**19) +
-ymm8_4*(x0**20) + ymm8_5*(x0**21) + ymm8_6*(x0**22) + ymm8_7*(x0**23) +
-ymm3_0*(x0**24) + ymm3_1*(x0**25) + ymm3_2*(x0**26) + ymm3_3*(x0**27) +
-ymm3_4*(x0**28) + ymm3_5*(x0**29) + ymm3_6*(x0**30) + ymm3_7*(x0**31)
-)
-[7681, x0**32 - 7154],
+  (inp_poly * inp_poly)
+  (
+    ymm4_0*(x0**0) + ymm4_1*(x0**1) + ymm4_2*(x0**2) + ymm4_3*(x0**3) +
+    ymm4_4*(x0**4) + ymm4_5*(x0**5) + ymm4_6*(x0**6) + ymm4_7*(x0**7) +
+    ymm6_0*(x0**8) + ymm6_1*(x0**9) + ymm6_2*(x0**10) + ymm6_3*(x0**11) +
+    ymm6_4*(x0**12) + ymm6_5*(x0**13) + ymm6_6*(x0**14) + ymm6_7*(x0**15) +
+    ymm8_0*(x0**16) + ymm8_1*(x0**17) + ymm8_2*(x0**18) + ymm8_3*(x0**19) +
+    ymm8_4*(x0**20) + ymm8_5*(x0**21) + ymm8_6*(x0**22) + ymm8_7*(x0**23) +
+    ymm3_0*(x0**24) + ymm3_1*(x0**25) + ymm3_2*(x0**26) + ymm3_3*(x0**27) +
+    ymm3_4*(x0**28) + ymm3_5*(x0**29) + ymm3_6*(x0**30) + ymm3_7*(x0**31)
+  )
+  [7681, x0**32 - (-527)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm7_0*(x0**0) + ymm7_1*(x0**1) + ymm7_2*(x0**2) + ymm7_3*(x0**3) +
-ymm7_4*(x0**4) + ymm7_5*(x0**5) + ymm7_6*(x0**6) + ymm7_7*(x0**7) +
-ymm10_0*(x0**8) + ymm10_1*(x0**9) + ymm10_2*(x0**10) + ymm10_3*(x0**11) +
-ymm10_4*(x0**12) + ymm10_5*(x0**13) + ymm10_6*(x0**14) + ymm10_7*(x0**15) +
-ymm5_0*(x0**16) + ymm5_1*(x0**17) + ymm5_2*(x0**18) + ymm5_3*(x0**19) +
-ymm5_4*(x0**20) + ymm5_5*(x0**21) + ymm5_6*(x0**22) + ymm5_7*(x0**23) +
-ymm11_0*(x0**24) + ymm11_1*(x0**25) + ymm11_2*(x0**26) + ymm11_3*(x0**27) +
-ymm11_4*(x0**28) + ymm11_5*(x0**29) + ymm11_6*(x0**30) + ymm11_7*(x0**31)
-)
-[7681, x0**32 - 527],
+  (inp_poly * inp_poly)
+  (
+    ymm7_0*(x0**0) + ymm7_1*(x0**1) + ymm7_2*(x0**2) + ymm7_3*(x0**3) +
+    ymm7_4*(x0**4) + ymm7_5*(x0**5) + ymm7_6*(x0**6) + ymm7_7*(x0**7) +
+    ymm10_0*(x0**8) + ymm10_1*(x0**9) + ymm10_2*(x0**10) + ymm10_3*(x0**11) +
+    ymm10_4*(x0**12) + ymm10_5*(x0**13) + ymm10_6*(x0**14) + ymm10_7*(x0**15) +
+    ymm5_0*(x0**16) + ymm5_1*(x0**17) + ymm5_2*(x0**18) + ymm5_3*(x0**19) +
+    ymm5_4*(x0**20) + ymm5_5*(x0**21) + ymm5_6*(x0**22) + ymm5_7*(x0**23) +
+    ymm11_0*(x0**24) + ymm11_1*(x0**25) + ymm11_2*(x0**26) + ymm11_3*(x0**27) +
+    ymm11_4*(x0**28) + ymm11_5*(x0**29) + ymm11_6*(x0**30) + ymm11_7*(x0**31)
+  )
+  [7681, x0**32 - (527)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm4_8*(x0**0) + ymm4_9*(x0**1) + ymm4_a*(x0**2) + ymm4_b*(x0**3) +
-ymm4_c*(x0**4) + ymm4_d*(x0**5) + ymm4_e*(x0**6) + ymm4_f*(x0**7) +
-ymm6_8*(x0**8) + ymm6_9*(x0**9) + ymm6_a*(x0**10) + ymm6_b*(x0**11) +
-ymm6_c*(x0**12) + ymm6_d*(x0**13) + ymm6_e*(x0**14) + ymm6_f*(x0**15) +
-ymm8_8*(x0**16) + ymm8_9*(x0**17) + ymm8_a*(x0**18) + ymm8_b*(x0**19) +
-ymm8_c*(x0**20) + ymm8_d*(x0**21) + ymm8_e*(x0**22) + ymm8_f*(x0**23) +
-ymm3_8*(x0**24) + ymm3_9*(x0**25) + ymm3_a*(x0**26) + ymm3_b*(x0**27) +
-ymm3_c*(x0**28) + ymm3_d*(x0**29) + ymm3_e*(x0**30) + ymm3_f*(x0**31)
-)
-[7681, x0**32 - 849],
+  (inp_poly * inp_poly)
+  (
+    ymm4_8*(x0**0) + ymm4_9*(x0**1) + ymm4_a*(x0**2) + ymm4_b*(x0**3) +
+    ymm4_c*(x0**4) + ymm4_d*(x0**5) + ymm4_e*(x0**6) + ymm4_f*(x0**7) +
+    ymm6_8*(x0**8) + ymm6_9*(x0**9) + ymm6_a*(x0**10) + ymm6_b*(x0**11) +
+    ymm6_c*(x0**12) + ymm6_d*(x0**13) + ymm6_e*(x0**14) + ymm6_f*(x0**15) +
+    ymm8_8*(x0**16) + ymm8_9*(x0**17) + ymm8_a*(x0**18) + ymm8_b*(x0**19) +
+    ymm8_c*(x0**20) + ymm8_d*(x0**21) + ymm8_e*(x0**22) + ymm8_f*(x0**23) +
+    ymm3_8*(x0**24) + ymm3_9*(x0**25) + ymm3_a*(x0**26) + ymm3_b*(x0**27) +
+    ymm3_c*(x0**28) + ymm3_d*(x0**29) + ymm3_e*(x0**30) + ymm3_f*(x0**31)
+  )
+  [7681, x0**32 - (849)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm7_8*(x0**0) + ymm7_9*(x0**1) + ymm7_a*(x0**2) + ymm7_b*(x0**3) +
-ymm7_c*(x0**4) + ymm7_d*(x0**5) + ymm7_e*(x0**6) + ymm7_f*(x0**7) +
-ymm10_8*(x0**8) + ymm10_9*(x0**9) + ymm10_a*(x0**10) + ymm10_b*(x0**11) +
-ymm10_c*(x0**12) + ymm10_d*(x0**13) + ymm10_e*(x0**14) + ymm10_f*(x0**15) +
-ymm5_8*(x0**16) + ymm5_9*(x0**17) + ymm5_a*(x0**18) + ymm5_b*(x0**19) +
-ymm5_c*(x0**20) + ymm5_d*(x0**21) + ymm5_e*(x0**22) + ymm5_f*(x0**23) +
-ymm11_8*(x0**24) + ymm11_9*(x0**25) + ymm11_a*(x0**26) + ymm11_b*(x0**27) +
-ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
-)
-[7681, x0**32 - 6832]
+  (inp_poly * inp_poly)
+  (
+    ymm7_8*(x0**0) + ymm7_9*(x0**1) + ymm7_a*(x0**2) + ymm7_b*(x0**3) +
+    ymm7_c*(x0**4) + ymm7_d*(x0**5) + ymm7_e*(x0**6) + ymm7_f*(x0**7) +
+    ymm10_8*(x0**8) + ymm10_9*(x0**9) + ymm10_a*(x0**10) + ymm10_b*(x0**11) +
+    ymm10_c*(x0**12) + ymm10_d*(x0**13) + ymm10_e*(x0**14) + ymm10_f*(x0**15) +
+    ymm5_8*(x0**16) + ymm5_9*(x0**17) + ymm5_a*(x0**18) + ymm5_b*(x0**19) +
+    ymm5_c*(x0**20) + ymm5_d*(x0**21) + ymm5_e*(x0**22) + ymm5_f*(x0**23) +
+    ymm11_8*(x0**24) + ymm11_9*(x0**25) + ymm11_a*(x0**26) + ymm11_b*(x0**27) +
+    ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
+  )
+  [7681, x0**32 - (-849)]
 ] && and [
 (-(16812))@16 <s ymm4_0, ymm4_0 <s (16812)@16, (-(16812))@16 <s ymm4_1, ymm4_1 <s (16812)@16,
 (-(16812))@16 <s ymm4_2, ymm4_2 <s (16812)@16, (-(16812))@16 <s ymm4_3, ymm4_3 <s (16812)@16,
@@ -5055,14 +4973,15 @@ ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
 (-(16350))@16 <s ymm11_e, ymm11_e <s (16350)@16, (-(16350))@16 <s ymm11_f, ymm11_f <s (16350)@16
 ];
 
-ghost zeta_0_0@sint16, y_0_0@sint16, zeta_0_1@sint16, y_0_1@sint16, zeta_0_2@sint16, y_0_2@sint16, zeta_0_3@sint16, y_0_3@sint16 :
+ghost y_0_0@sint16, y_0_1@sint16, y_0_2@sint16, y_0_3@sint16, zeta_0_0@sint16, zeta_0_1@sint16, zeta_0_2@sint16, zeta_0_3@sint16 :
 and [
   zeta_0_0 = 62,
   zeta_0_1 = 4236,
   zeta_0_2 = 4600,
   zeta_0_3 = 5805
-] && true;
-
+] && and [
+  true
+];
 
 (* ecut 3 *)
 
@@ -5918,7 +5837,6 @@ mulLymm10_a = mulLymm15_a, mulLymm10_b = mulLymm15_b,
 mulLymm10_c = mulLymm15_c, mulLymm10_d = mulLymm15_d,
 mulLymm10_e = mulLymm15_e, mulLymm10_f = mulLymm15_f
 ] && true;
-(* level 3, off 0, end of reduce          9,7,4,10,0 *)
 (* vpmullw 0x340(%rdx),%ymm6,%ymm12                #! EA = L0x555555560a40; Value = 0x688e60a7f94dd279; PC = 0x555555557fe4 *)
 smull mulHymm6_0 mulL_0 L0x555555560a40 ymm6_0;
 smull mulHymm6_1 mulL_1 L0x555555560a42 ymm6_1;
@@ -6451,7 +6369,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 3, off 0, end of reduce          6,5,8,11,0 *)
 (* vpaddw %ymm6,%ymm9,%ymm3                        #! PC = 0x555555558048 *)
 add ymm3_0 ymm9_0 ymm6_0;
 add ymm3_1 ymm9_1 ymm6_1;
@@ -7597,7 +7514,7 @@ eqmod
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3**8 - (3383)]
 ] && and [
-true
+  true
 ];
 (* ===== Start of level 5, off 0 ===== *)
 (* vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x5555555580f2 *)
@@ -8325,7 +8242,7 @@ add ymm11_e ymm11_e ymm14_e;
 add ymm11_f ymm11_f ymm14_f;
 (* ===== End of level 5, off 0 ===== *)
 
-(* ecut 6, rcut 4 *)
+(* ecut 6, rcut 5 *)
 
 cut
 and [
@@ -8522,8 +8439,244 @@ eqmod
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3**4 - (1925)]
 ] && and [
-true
+  true
 ];
+
+ghost y_1_0@sint16, y_1_1@sint16, y_1_2@sint16, y_1_3@sint16, y_1_4@sint16, y_1_5@sint16, y_1_6@sint16, y_1_7@sint16, y_1_8@sint16, y_1_9@sint16, y_1_10@sint16, y_1_11@sint16, y_1_12@sint16, y_1_13@sint16, y_1_14@sint16, y_1_15@sint16, y_1_16@sint16, y_1_17@sint16, y_1_18@sint16, y_1_19@sint16, y_1_20@sint16, y_1_21@sint16, y_1_22@sint16, y_1_23@sint16, y_1_24@sint16, y_1_25@sint16, y_1_26@sint16, y_1_27@sint16, y_1_28@sint16, y_1_29@sint16, y_1_30@sint16, y_1_31@sint16, zeta_1_0@sint16, zeta_1_1@sint16, zeta_1_2@sint16, zeta_1_3@sint16, zeta_1_4@sint16, zeta_1_5@sint16, zeta_1_6@sint16, zeta_1_7@sint16, zeta_1_8@sint16, zeta_1_9@sint16, zeta_1_10@sint16, zeta_1_11@sint16, zeta_1_12@sint16, zeta_1_13@sint16, zeta_1_14@sint16, zeta_1_15@sint16, zeta_1_16@sint16, zeta_1_17@sint16, zeta_1_18@sint16, zeta_1_19@sint16, zeta_1_20@sint16, zeta_1_21@sint16, zeta_1_22@sint16, zeta_1_23@sint16, zeta_1_24@sint16, zeta_1_25@sint16, zeta_1_26@sint16, zeta_1_27@sint16, zeta_1_28@sint16, zeta_1_29@sint16, zeta_1_30@sint16, zeta_1_31@sint16 :
+and [
+  zeta_1_0 = 1,
+  zeta_1_1 = 1213,
+  zeta_1_2 = 7154,
+  zeta_1_3 = 7098,
+  zeta_1_4 = 1366,
+  zeta_1_5 = 2648,
+  zeta_1_6 = 2132,
+  zeta_1_7 = 2446,
+  zeta_1_8 = 1,
+  zeta_1_9 = 1213,
+  zeta_1_10 = 7154,
+  zeta_1_11 = 7098,
+  zeta_1_12 = 1366,
+  zeta_1_13 = 2648,
+  zeta_1_14 = 2132,
+  zeta_1_15 = 2446,
+  zeta_1_16 = 1,
+  zeta_1_17 = 1213,
+  zeta_1_18 = 7154,
+  zeta_1_19 = 7098,
+  zeta_1_20 = 1366,
+  zeta_1_21 = 2648,
+  zeta_1_22 = 2132,
+  zeta_1_23 = 2446,
+  zeta_1_24 = 1,
+  zeta_1_25 = 1213,
+  zeta_1_26 = 7154,
+  zeta_1_27 = 7098,
+  zeta_1_28 = 1366,
+  zeta_1_29 = 2648,
+  zeta_1_30 = 2132,
+  zeta_1_31 = 2446
+] && and [
+  true
+];
+
+(* ecut 7 *)
+
+ecut and [
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*((zeta_1_0 * y_1_0)**0) + ymm5_1*((zeta_1_0 * y_1_0)**1) + ymm5_2*((zeta_1_0 * y_1_0)**2) + ymm5_3*((zeta_1_0 * y_1_0)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*((zeta_1_1 * y_1_1)**0) + ymm3_1*((zeta_1_1 * y_1_1)**1) + ymm3_2*((zeta_1_1 * y_1_1)**2) + ymm3_3*((zeta_1_1 * y_1_1)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_0*((zeta_1_2 * y_1_2)**0) + ymm10_1*((zeta_1_2 * y_1_2)**1) + ymm10_2*((zeta_1_2 * y_1_2)**2) + ymm10_3*((zeta_1_2 * y_1_2)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_0*((zeta_1_3 * y_1_3)**0) + ymm4_1*((zeta_1_3 * y_1_3)**1) + ymm4_2*((zeta_1_3 * y_1_3)**2) + ymm4_3*((zeta_1_3 * y_1_3)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_0*((zeta_1_4 * y_1_4)**0) + ymm7_1*((zeta_1_4 * y_1_4)**1) + ymm7_2*((zeta_1_4 * y_1_4)**2) + ymm7_3*((zeta_1_4 * y_1_4)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*((zeta_1_5 * y_1_5)**0) + ymm6_1*((zeta_1_5 * y_1_5)**1) + ymm6_2*((zeta_1_5 * y_1_5)**2) + ymm6_3*((zeta_1_5 * y_1_5)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_0*((zeta_1_6 * y_1_6)**0) + ymm9_1*((zeta_1_6 * y_1_6)**1) + ymm9_2*((zeta_1_6 * y_1_6)**2) + ymm9_3*((zeta_1_6 * y_1_6)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_0*((zeta_1_7 * y_1_7)**0) + ymm11_1*((zeta_1_7 * y_1_7)**1) + ymm11_2*((zeta_1_7 * y_1_7)**2) + ymm11_3*((zeta_1_7 * y_1_7)**3)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*((zeta_1_8 * y_1_8)**0) + ymm5_5*((zeta_1_8 * y_1_8)**1) + ymm5_6*((zeta_1_8 * y_1_8)**2) + ymm5_7*((zeta_1_8 * y_1_8)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*((zeta_1_9 * y_1_9)**0) + ymm3_5*((zeta_1_9 * y_1_9)**1) + ymm3_6*((zeta_1_9 * y_1_9)**2) + ymm3_7*((zeta_1_9 * y_1_9)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_4*((zeta_1_10 * y_1_10)**0) + ymm10_5*((zeta_1_10 * y_1_10)**1) + ymm10_6*((zeta_1_10 * y_1_10)**2) + ymm10_7*((zeta_1_10 * y_1_10)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_4*((zeta_1_11 * y_1_11)**0) + ymm4_5*((zeta_1_11 * y_1_11)**1) + ymm4_6*((zeta_1_11 * y_1_11)**2) + ymm4_7*((zeta_1_11 * y_1_11)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_4*((zeta_1_12 * y_1_12)**0) + ymm7_5*((zeta_1_12 * y_1_12)**1) + ymm7_6*((zeta_1_12 * y_1_12)**2) + ymm7_7*((zeta_1_12 * y_1_12)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*((zeta_1_13 * y_1_13)**0) + ymm6_5*((zeta_1_13 * y_1_13)**1) + ymm6_6*((zeta_1_13 * y_1_13)**2) + ymm6_7*((zeta_1_13 * y_1_13)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_4*((zeta_1_14 * y_1_14)**0) + ymm9_5*((zeta_1_14 * y_1_14)**1) + ymm9_6*((zeta_1_14 * y_1_14)**2) + ymm9_7*((zeta_1_14 * y_1_14)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_4*((zeta_1_15 * y_1_15)**0) + ymm11_5*((zeta_1_15 * y_1_15)**1) + ymm11_6*((zeta_1_15 * y_1_15)**2) + ymm11_7*((zeta_1_15 * y_1_15)**3)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*((zeta_1_16 * y_1_16)**0) + ymm5_9*((zeta_1_16 * y_1_16)**1) + ymm5_a*((zeta_1_16 * y_1_16)**2) + ymm5_b*((zeta_1_16 * y_1_16)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*((zeta_1_17 * y_1_17)**0) + ymm3_9*((zeta_1_17 * y_1_17)**1) + ymm3_a*((zeta_1_17 * y_1_17)**2) + ymm3_b*((zeta_1_17 * y_1_17)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_8*((zeta_1_18 * y_1_18)**0) + ymm10_9*((zeta_1_18 * y_1_18)**1) + ymm10_a*((zeta_1_18 * y_1_18)**2) + ymm10_b*((zeta_1_18 * y_1_18)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_8*((zeta_1_19 * y_1_19)**0) + ymm4_9*((zeta_1_19 * y_1_19)**1) + ymm4_a*((zeta_1_19 * y_1_19)**2) + ymm4_b*((zeta_1_19 * y_1_19)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_8*((zeta_1_20 * y_1_20)**0) + ymm7_9*((zeta_1_20 * y_1_20)**1) + ymm7_a*((zeta_1_20 * y_1_20)**2) + ymm7_b*((zeta_1_20 * y_1_20)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*((zeta_1_21 * y_1_21)**0) + ymm6_9*((zeta_1_21 * y_1_21)**1) + ymm6_a*((zeta_1_21 * y_1_21)**2) + ymm6_b*((zeta_1_21 * y_1_21)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_8*((zeta_1_22 * y_1_22)**0) + ymm9_9*((zeta_1_22 * y_1_22)**1) + ymm9_a*((zeta_1_22 * y_1_22)**2) + ymm9_b*((zeta_1_22 * y_1_22)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_8*((zeta_1_23 * y_1_23)**0) + ymm11_9*((zeta_1_23 * y_1_23)**1) + ymm11_a*((zeta_1_23 * y_1_23)**2) + ymm11_b*((zeta_1_23 * y_1_23)**3)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*((zeta_1_24 * y_1_24)**0) + ymm5_d*((zeta_1_24 * y_1_24)**1) + ymm5_e*((zeta_1_24 * y_1_24)**2) + ymm5_f*((zeta_1_24 * y_1_24)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*((zeta_1_25 * y_1_25)**0) + ymm3_d*((zeta_1_25 * y_1_25)**1) + ymm3_e*((zeta_1_25 * y_1_25)**2) + ymm3_f*((zeta_1_25 * y_1_25)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_c*((zeta_1_26 * y_1_26)**0) + ymm10_d*((zeta_1_26 * y_1_26)**1) + ymm10_e*((zeta_1_26 * y_1_26)**2) + ymm10_f*((zeta_1_26 * y_1_26)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_c*((zeta_1_27 * y_1_27)**0) + ymm4_d*((zeta_1_27 * y_1_27)**1) + ymm4_e*((zeta_1_27 * y_1_27)**2) + ymm4_f*((zeta_1_27 * y_1_27)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_c*((zeta_1_28 * y_1_28)**0) + ymm7_d*((zeta_1_28 * y_1_28)**1) + ymm7_e*((zeta_1_28 * y_1_28)**2) + ymm7_f*((zeta_1_28 * y_1_28)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*((zeta_1_29 * y_1_29)**0) + ymm6_d*((zeta_1_29 * y_1_29)**1) + ymm6_e*((zeta_1_29 * y_1_29)**2) + ymm6_f*((zeta_1_29 * y_1_29)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_c*((zeta_1_30 * y_1_30)**0) + ymm9_d*((zeta_1_30 * y_1_30)**1) + ymm9_e*((zeta_1_30 * y_1_30)**2) + ymm9_f*((zeta_1_30 * y_1_30)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_c*((zeta_1_31 * y_1_31)**0) + ymm11_d*((zeta_1_31 * y_1_31)**1) + ymm11_e*((zeta_1_31 * y_1_31)**2) + ymm11_f*((zeta_1_31 * y_1_31)**3)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**4 - 1]
+];
+
 (* ===== Start of level 6, off 0 ===== *)
 (* vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560780; Value = 0xfff7fff7fff7fff7; PC = 0x555555558179 *)
 smull mulHymm5_0 mulL_0 L0x555555560780 ymm5_0;
@@ -10843,8 +10996,6 @@ mov ymm11_c bldw_c;
 mov ymm11_d bldw_d;
 mov ymm11_e bldw_e;
 mov ymm11_f bldw_f;
-(* ===== End of level 6, off 0 ===== *)
-(* ===== Start of level 7, off 0 ===== *)
 (* vpaddw %ymm8,%ymm4,%ymm6                        #! PC = 0x555555558348 *)
 add ymm6_0 ymm4_0 ymm8_0;
 add ymm6_1 ymm4_1 ymm8_1;
@@ -10981,6 +11132,1169 @@ sub ymm11_c ymm10_c ymm11_c;
 sub ymm11_d ymm10_d ymm11_d;
 sub ymm11_e ymm10_e ymm11_e;
 sub ymm11_f ymm10_f ymm11_f;
+(* ===== End of level 6, off 0 ===== *)
+
+(* ecut 8, rcut 6 *)
+
+cut
+and [
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*(y_1_0**0) + ymm4_0*(y_1_0**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(y_1_0**0) + ymm9_0*(y_1_0**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(y_1_1**0) + ymm7_0*(y_1_1**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*(y_1_1**0) + ymm11_0*(y_1_1**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_1*(y_1_2**0) + ymm4_1*(y_1_2**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_1*(y_1_2**0) + ymm9_1*(y_1_2**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_1*(y_1_3**0) + ymm7_1*(y_1_3**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_1*(y_1_3**0) + ymm11_1*(y_1_3**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_2*(y_1_4**0) + ymm4_2*(y_1_4**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_2*(y_1_4**0) + ymm9_2*(y_1_4**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_2*(y_1_5**0) + ymm7_2*(y_1_5**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_2*(y_1_5**0) + ymm11_2*(y_1_5**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_3*(y_1_6**0) + ymm4_3*(y_1_6**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_3*(y_1_6**0) + ymm9_3*(y_1_6**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_3*(y_1_7**0) + ymm7_3*(y_1_7**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_3*(y_1_7**0) + ymm11_3*(y_1_7**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*(y_1_8**0) + ymm4_4*(y_1_8**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_4*(y_1_8**0) + ymm9_4*(y_1_8**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*(y_1_9**0) + ymm7_4*(y_1_9**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*(y_1_9**0) + ymm11_4*(y_1_9**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_5*(y_1_10**0) + ymm4_5*(y_1_10**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_5*(y_1_10**0) + ymm9_5*(y_1_10**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_5*(y_1_11**0) + ymm7_5*(y_1_11**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_5*(y_1_11**0) + ymm11_5*(y_1_11**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_6*(y_1_12**0) + ymm4_6*(y_1_12**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_6*(y_1_12**0) + ymm9_6*(y_1_12**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_6*(y_1_13**0) + ymm7_6*(y_1_13**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_6*(y_1_13**0) + ymm11_6*(y_1_13**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_7*(y_1_14**0) + ymm4_7*(y_1_14**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_7*(y_1_14**0) + ymm9_7*(y_1_14**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_7*(y_1_15**0) + ymm7_7*(y_1_15**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_7*(y_1_15**0) + ymm11_7*(y_1_15**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*(y_1_16**0) + ymm4_8*(y_1_16**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_8*(y_1_16**0) + ymm9_8*(y_1_16**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*(y_1_17**0) + ymm7_8*(y_1_17**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*(y_1_17**0) + ymm11_8*(y_1_17**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_9*(y_1_18**0) + ymm4_9*(y_1_18**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_9*(y_1_18**0) + ymm9_9*(y_1_18**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_9*(y_1_19**0) + ymm7_9*(y_1_19**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_9*(y_1_19**0) + ymm11_9*(y_1_19**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_a*(y_1_20**0) + ymm4_a*(y_1_20**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_a*(y_1_20**0) + ymm9_a*(y_1_20**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_a*(y_1_21**0) + ymm7_a*(y_1_21**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_a*(y_1_21**0) + ymm11_a*(y_1_21**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_b*(y_1_22**0) + ymm4_b*(y_1_22**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_b*(y_1_22**0) + ymm9_b*(y_1_22**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_b*(y_1_23**0) + ymm7_b*(y_1_23**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_b*(y_1_23**0) + ymm11_b*(y_1_23**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*(y_1_24**0) + ymm4_c*(y_1_24**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_c*(y_1_24**0) + ymm9_c*(y_1_24**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*(y_1_25**0) + ymm7_c*(y_1_25**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*(y_1_25**0) + ymm11_c*(y_1_25**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_d*(y_1_26**0) + ymm4_d*(y_1_26**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_d*(y_1_26**0) + ymm9_d*(y_1_26**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_d*(y_1_27**0) + ymm7_d*(y_1_27**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_d*(y_1_27**0) + ymm11_d*(y_1_27**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_e*(y_1_28**0) + ymm4_e*(y_1_28**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_e*(y_1_28**0) + ymm9_e*(y_1_28**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_e*(y_1_29**0) + ymm7_e*(y_1_29**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_e*(y_1_29**0) + ymm11_e*(y_1_29**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_f*(y_1_30**0) + ymm4_f*(y_1_30**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_f*(y_1_30**0) + ymm9_f*(y_1_30**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_f*(y_1_31**0) + ymm7_f*(y_1_31**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_f*(y_1_31**0) + ymm11_f*(y_1_31**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**2 - (-1)]
+] prove with [all ghosts] && and [
+  true
+];
+
+
+(* ecut 9 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*(y_1_0**0) + ymm4_0*(y_1_0**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 10 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(y_1_0**0) + ymm9_0*(y_1_0**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 11 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(y_1_1**0) + ymm7_0*(y_1_1**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 12 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*(y_1_1**0) + ymm11_0*(y_1_1**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 13 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_1*(y_1_2**0) + ymm4_1*(y_1_2**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 14 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_1*(y_1_2**0) + ymm9_1*(y_1_2**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 15 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_1*(y_1_3**0) + ymm7_1*(y_1_3**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 16 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_1*(y_1_3**0) + ymm11_1*(y_1_3**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 17 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_2*(y_1_4**0) + ymm4_2*(y_1_4**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 18 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_2*(y_1_4**0) + ymm9_2*(y_1_4**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 19 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_2*(y_1_5**0) + ymm7_2*(y_1_5**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 20 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_2*(y_1_5**0) + ymm11_2*(y_1_5**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 21 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_3*(y_1_6**0) + ymm4_3*(y_1_6**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 22 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_3*(y_1_6**0) + ymm9_3*(y_1_6**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 23 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_3*(y_1_7**0) + ymm7_3*(y_1_7**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 24 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_3*(y_1_7**0) + ymm11_3*(y_1_7**1)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 25 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*(y_1_8**0) + ymm4_4*(y_1_8**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 26 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_4*(y_1_8**0) + ymm9_4*(y_1_8**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 27 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*(y_1_9**0) + ymm7_4*(y_1_9**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 28 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*(y_1_9**0) + ymm11_4*(y_1_9**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 29 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_5*(y_1_10**0) + ymm4_5*(y_1_10**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 30 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_5*(y_1_10**0) + ymm9_5*(y_1_10**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 31 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_5*(y_1_11**0) + ymm7_5*(y_1_11**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 32 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_5*(y_1_11**0) + ymm11_5*(y_1_11**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 33 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_6*(y_1_12**0) + ymm4_6*(y_1_12**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 34 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_6*(y_1_12**0) + ymm9_6*(y_1_12**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 35 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_6*(y_1_13**0) + ymm7_6*(y_1_13**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 36 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_6*(y_1_13**0) + ymm11_6*(y_1_13**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 37 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_7*(y_1_14**0) + ymm4_7*(y_1_14**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 38 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_7*(y_1_14**0) + ymm9_7*(y_1_14**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 39 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_7*(y_1_15**0) + ymm7_7*(y_1_15**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 40 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_7*(y_1_15**0) + ymm11_7*(y_1_15**1)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 41 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*(y_1_16**0) + ymm4_8*(y_1_16**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 42 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_8*(y_1_16**0) + ymm9_8*(y_1_16**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 43 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*(y_1_17**0) + ymm7_8*(y_1_17**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 44 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*(y_1_17**0) + ymm11_8*(y_1_17**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 45 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_9*(y_1_18**0) + ymm4_9*(y_1_18**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 46 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_9*(y_1_18**0) + ymm9_9*(y_1_18**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 47 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_9*(y_1_19**0) + ymm7_9*(y_1_19**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 48 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_9*(y_1_19**0) + ymm11_9*(y_1_19**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 49 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_a*(y_1_20**0) + ymm4_a*(y_1_20**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 50 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_a*(y_1_20**0) + ymm9_a*(y_1_20**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 51 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_a*(y_1_21**0) + ymm7_a*(y_1_21**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 52 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_a*(y_1_21**0) + ymm11_a*(y_1_21**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 53 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_b*(y_1_22**0) + ymm4_b*(y_1_22**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 54 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_b*(y_1_22**0) + ymm9_b*(y_1_22**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 55 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_b*(y_1_23**0) + ymm7_b*(y_1_23**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 56 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_b*(y_1_23**0) + ymm11_b*(y_1_23**1)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 57 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*(y_1_24**0) + ymm4_c*(y_1_24**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 58 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_c*(y_1_24**0) + ymm9_c*(y_1_24**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 59 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*(y_1_25**0) + ymm7_c*(y_1_25**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 60 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*(y_1_25**0) + ymm11_c*(y_1_25**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 61 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_d*(y_1_26**0) + ymm4_d*(y_1_26**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 62 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_d*(y_1_26**0) + ymm9_d*(y_1_26**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 63 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_d*(y_1_27**0) + ymm7_d*(y_1_27**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 64 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_d*(y_1_27**0) + ymm11_d*(y_1_27**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 65 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_e*(y_1_28**0) + ymm4_e*(y_1_28**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 66 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_e*(y_1_28**0) + ymm9_e*(y_1_28**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 67 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_e*(y_1_29**0) + ymm7_e*(y_1_29**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 68 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_e*(y_1_29**0) + ymm11_e*(y_1_29**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 69 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_f*(y_1_30**0) + ymm4_f*(y_1_30**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 70 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_f*(y_1_30**0) + ymm9_f*(y_1_30**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**2 - (-1)]
+prove with [cuts [8]];
+
+
+(* ecut 71 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_f*(y_1_31**0) + ymm7_f*(y_1_31**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**2 - (1)]
+prove with [cuts [8]];
+
+
+(* ecut 72 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_f*(y_1_31**0) + ymm11_f*(y_1_31**1)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**2 - (-1)]
+prove with [cuts [8]];
+
+(* ===== Start of level 7, off 0 ===== *)
 (* vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x55555555836e *)
 smull mulHymm9_0 mulL_0 ymm1_0 ymm9_0;
 smull mulHymm9_1 mulL_1 ymm1_1 ymm9_1;
@@ -11558,79 +12872,950 @@ mov L0x7fffffffb5dc ymm11_e;
 mov L0x7fffffffb5de ymm11_f;
 (* End of level 7, off 0 *)
 
-(* ecut 7, rcut 4 *)
+(* ecut 73, rcut 7 *)
+
+cut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e0*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (1)]
+prove with [all ghosts, cuts [9]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb500*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (-1)]
+prove with [all ghosts, cuts [9]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb520*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (-3383)]
+prove with [all ghosts, cuts [10]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb540*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (3383)]
+prove with [all ghosts, cuts [10]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb560*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (1)]
+prove with [all ghosts, cuts [11]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb580*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (-1)]
+prove with [all ghosts, cuts [11]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a0*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (-3383)]
+prove with [all ghosts, cuts [12]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c0*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (3383)]
+prove with [all ghosts, cuts [12]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e2*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (1)]
+prove with [all ghosts, cuts [13]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb502*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (-1)]
+prove with [all ghosts, cuts [13]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb522*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (-3383)]
+prove with [all ghosts, cuts [14]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb542*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (3383)]
+prove with [all ghosts, cuts [14]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb562*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (1)]
+prove with [all ghosts, cuts [15]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb582*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (-1)]
+prove with [all ghosts, cuts [15]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a2*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (-3383)]
+prove with [all ghosts, cuts [16]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c2*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (3383)]
+prove with [all ghosts, cuts [16]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e4*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (1)]
+prove with [all ghosts, cuts [17]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb504*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (-1)]
+prove with [all ghosts, cuts [17]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb524*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (-3383)]
+prove with [all ghosts, cuts [18]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb544*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (3383)]
+prove with [all ghosts, cuts [18]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb564*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (1)]
+prove with [all ghosts, cuts [19]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb584*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (-1)]
+prove with [all ghosts, cuts [19]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a4*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (-3383)]
+prove with [all ghosts, cuts [20]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c4*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (3383)]
+prove with [all ghosts, cuts [20]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e6*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (1)]
+prove with [all ghosts, cuts [21]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb506*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (-1)]
+prove with [all ghosts, cuts [21]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb526*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (-3383)]
+prove with [all ghosts, cuts [22]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb546*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (3383)]
+prove with [all ghosts, cuts [22]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb566*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (1)]
+prove with [all ghosts, cuts [23]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb586*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (-1)]
+prove with [all ghosts, cuts [23]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a6*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (-3383)]
+prove with [all ghosts, cuts [24]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c6*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (3383)]
+prove with [all ghosts, cuts [24]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e8*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (1)]
+prove with [all ghosts, cuts [25]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb508*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (-1)]
+prove with [all ghosts, cuts [25]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb528*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (-3383)]
+prove with [all ghosts, cuts [26]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb548*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (3383)]
+prove with [all ghosts, cuts [26]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb568*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (1)]
+prove with [all ghosts, cuts [27]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb588*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (-1)]
+prove with [all ghosts, cuts [27]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a8*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (-3383)]
+prove with [all ghosts, cuts [28]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c8*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (3383)]
+prove with [all ghosts, cuts [28]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ea*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (1)]
+prove with [all ghosts, cuts [29]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (-1)]
+prove with [all ghosts, cuts [29]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (-3383)]
+prove with [all ghosts, cuts [30]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (3383)]
+prove with [all ghosts, cuts [30]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56a*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (1)]
+prove with [all ghosts, cuts [31]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58a*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (-1)]
+prove with [all ghosts, cuts [31]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5aa*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (-3383)]
+prove with [all ghosts, cuts [32]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ca*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (3383)]
+prove with [all ghosts, cuts [32]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ec*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (1)]
+prove with [all ghosts, cuts [33]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (-1)]
+prove with [all ghosts, cuts [33]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (-3383)]
+prove with [all ghosts, cuts [34]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (3383)]
+prove with [all ghosts, cuts [34]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56c*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (1)]
+prove with [all ghosts, cuts [35]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58c*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (-1)]
+prove with [all ghosts, cuts [35]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ac*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (-3383)]
+prove with [all ghosts, cuts [36]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5cc*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (3383)]
+prove with [all ghosts, cuts [36]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ee*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (1)]
+prove with [all ghosts, cuts [37]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (-1)]
+prove with [all ghosts, cuts [37]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (-3383)]
+prove with [all ghosts, cuts [38]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (3383)]
+prove with [all ghosts, cuts [38]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56e*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (1)]
+prove with [all ghosts, cuts [39]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58e*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (-1)]
+prove with [all ghosts, cuts [39]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ae*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (-3383)]
+prove with [all ghosts, cuts [40]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ce*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (3383)]
+prove with [all ghosts, cuts [40]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f0*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (1)]
+prove with [all ghosts, cuts [41]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb510*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (-1)]
+prove with [all ghosts, cuts [41]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb530*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (-3383)]
+prove with [all ghosts, cuts [42]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb550*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (3383)]
+prove with [all ghosts, cuts [42]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb570*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (1)]
+prove with [all ghosts, cuts [43]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb590*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (-1)]
+prove with [all ghosts, cuts [43]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b0*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (-3383)]
+prove with [all ghosts, cuts [44]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d0*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (3383)]
+prove with [all ghosts, cuts [44]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f2*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (1)]
+prove with [all ghosts, cuts [45]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb512*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (-1)]
+prove with [all ghosts, cuts [45]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb532*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (-3383)]
+prove with [all ghosts, cuts [46]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb552*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (3383)]
+prove with [all ghosts, cuts [46]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb572*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (1)]
+prove with [all ghosts, cuts [47]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb592*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (-1)]
+prove with [all ghosts, cuts [47]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b2*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (-3383)]
+prove with [all ghosts, cuts [48]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d2*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (3383)]
+prove with [all ghosts, cuts [48]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f4*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (1)]
+prove with [all ghosts, cuts [49]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb514*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (-1)]
+prove with [all ghosts, cuts [49]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb534*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (-3383)]
+prove with [all ghosts, cuts [50]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb554*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (3383)]
+prove with [all ghosts, cuts [50]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb574*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (1)]
+prove with [all ghosts, cuts [51]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb594*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (-1)]
+prove with [all ghosts, cuts [51]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b4*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (-3383)]
+prove with [all ghosts, cuts [52]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d4*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (3383)]
+prove with [all ghosts, cuts [52]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f6*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (1)]
+prove with [all ghosts, cuts [53]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb516*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (-1)]
+prove with [all ghosts, cuts [53]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb536*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (-3383)]
+prove with [all ghosts, cuts [54]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb556*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (3383)]
+prove with [all ghosts, cuts [54]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb576*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (1)]
+prove with [all ghosts, cuts [55]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb596*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (-1)]
+prove with [all ghosts, cuts [55]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b6*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (-3383)]
+prove with [all ghosts, cuts [56]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d6*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (3383)]
+prove with [all ghosts, cuts [56]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f8*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (1)]
+prove with [all ghosts, cuts [57]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb518*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (-1)]
+prove with [all ghosts, cuts [57]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb538*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (-3383)]
+prove with [all ghosts, cuts [58]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb558*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (3383)]
+prove with [all ghosts, cuts [58]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb578*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (1)]
+prove with [all ghosts, cuts [59]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb598*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (-1)]
+prove with [all ghosts, cuts [59]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b8*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (-3383)]
+prove with [all ghosts, cuts [60]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d8*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (3383)]
+prove with [all ghosts, cuts [60]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fa*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (1)]
+prove with [all ghosts, cuts [61]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (-1)]
+prove with [all ghosts, cuts [61]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (-3383)]
+prove with [all ghosts, cuts [62]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (3383)]
+prove with [all ghosts, cuts [62]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57a*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (1)]
+prove with [all ghosts, cuts [63]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59a*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (-1)]
+prove with [all ghosts, cuts [63]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ba*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (-3383)]
+prove with [all ghosts, cuts [64]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5da*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (3383)]
+prove with [all ghosts, cuts [64]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fc*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (1)]
+prove with [all ghosts, cuts [65]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (-1)]
+prove with [all ghosts, cuts [65]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (-3383)]
+prove with [all ghosts, cuts [66]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (3383)]
+prove with [all ghosts, cuts [66]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57c*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (1)]
+prove with [all ghosts, cuts [67]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59c*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (-1)]
+prove with [all ghosts, cuts [67]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5bc*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (-3383)]
+prove with [all ghosts, cuts [68]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5dc*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (3383)]
+prove with [all ghosts, cuts [68]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fe*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (1)]
+prove with [all ghosts, cuts [69]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (-1)]
+prove with [all ghosts, cuts [69]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (-3383)]
+prove with [all ghosts, cuts [70]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (3383)]
+prove with [all ghosts, cuts [70]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57e*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (1)]
+prove with [all ghosts, cuts [71]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59e*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (-1)]
+prove with [all ghosts, cuts [71]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5be*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (-3383)]
+prove with [all ghosts, cuts [72]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5de*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (3383)]
+prove with [all ghosts, cuts [72]]&& and [
+  true
+];
+
+
+(* ecut 74, rcut 8 *)
 
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-L0x7fffffffb5e0*(x0**0) + L0x7fffffffb5e2*(x0**1) +
-L0x7fffffffb5e4*(x0**2) + L0x7fffffffb5e6*(x0**3) +
-L0x7fffffffb5e8*(x0**4) + L0x7fffffffb5ea*(x0**5) +
-L0x7fffffffb5ec*(x0**6) + L0x7fffffffb5ee*(x0**7) +
-L0x7fffffffb5f0*(x0**8) + L0x7fffffffb5f2*(x0**9) +
-L0x7fffffffb5f4*(x0**10) + L0x7fffffffb5f6*(x0**11) +
-L0x7fffffffb5f8*(x0**12) + L0x7fffffffb5fa*(x0**13) +
-L0x7fffffffb5fc*(x0**14) + L0x7fffffffb5fe*(x0**15) +
-L0x7fffffffb600*(x0**16) + L0x7fffffffb602*(x0**17) +
-L0x7fffffffb604*(x0**18) + L0x7fffffffb606*(x0**19) +
-L0x7fffffffb608*(x0**20) + L0x7fffffffb60a*(x0**21) +
-L0x7fffffffb60c*(x0**22) + L0x7fffffffb60e*(x0**23) +
-L0x7fffffffb610*(x0**24) + L0x7fffffffb612*(x0**25) +
-L0x7fffffffb614*(x0**26) + L0x7fffffffb616*(x0**27) +
-L0x7fffffffb618*(x0**28) + L0x7fffffffb61a*(x0**29) +
-L0x7fffffffb61c*(x0**30) + L0x7fffffffb61e*(x0**31) +
-L0x7fffffffb620*(x0**32) + L0x7fffffffb622*(x0**33) +
-L0x7fffffffb624*(x0**34) + L0x7fffffffb626*(x0**35) +
-L0x7fffffffb628*(x0**36) + L0x7fffffffb62a*(x0**37) +
-L0x7fffffffb62c*(x0**38) + L0x7fffffffb62e*(x0**39) +
-L0x7fffffffb630*(x0**40) + L0x7fffffffb632*(x0**41) +
-L0x7fffffffb634*(x0**42) + L0x7fffffffb636*(x0**43) +
-L0x7fffffffb638*(x0**44) + L0x7fffffffb63a*(x0**45) +
-L0x7fffffffb63c*(x0**46) + L0x7fffffffb63e*(x0**47) +
-L0x7fffffffb640*(x0**48) + L0x7fffffffb642*(x0**49) +
-L0x7fffffffb644*(x0**50) + L0x7fffffffb646*(x0**51) +
-L0x7fffffffb648*(x0**52) + L0x7fffffffb64a*(x0**53) +
-L0x7fffffffb64c*(x0**54) + L0x7fffffffb64e*(x0**55) +
-L0x7fffffffb650*(x0**56) + L0x7fffffffb652*(x0**57) +
-L0x7fffffffb654*(x0**58) + L0x7fffffffb656*(x0**59) +
-L0x7fffffffb658*(x0**60) + L0x7fffffffb65a*(x0**61) +
-L0x7fffffffb65c*(x0**62) + L0x7fffffffb65e*(x0**63) +
-L0x7fffffffb660*(x0**64) + L0x7fffffffb662*(x0**65) +
-L0x7fffffffb664*(x0**66) + L0x7fffffffb666*(x0**67) +
-L0x7fffffffb668*(x0**68) + L0x7fffffffb66a*(x0**69) +
-L0x7fffffffb66c*(x0**70) + L0x7fffffffb66e*(x0**71) +
-L0x7fffffffb670*(x0**72) + L0x7fffffffb672*(x0**73) +
-L0x7fffffffb674*(x0**74) + L0x7fffffffb676*(x0**75) +
-L0x7fffffffb678*(x0**76) + L0x7fffffffb67a*(x0**77) +
-L0x7fffffffb67c*(x0**78) + L0x7fffffffb67e*(x0**79) +
-L0x7fffffffb680*(x0**80) + L0x7fffffffb682*(x0**81) +
-L0x7fffffffb684*(x0**82) + L0x7fffffffb686*(x0**83) +
-L0x7fffffffb688*(x0**84) + L0x7fffffffb68a*(x0**85) +
-L0x7fffffffb68c*(x0**86) + L0x7fffffffb68e*(x0**87) +
-L0x7fffffffb690*(x0**88) + L0x7fffffffb692*(x0**89) +
-L0x7fffffffb694*(x0**90) + L0x7fffffffb696*(x0**91) +
-L0x7fffffffb698*(x0**92) + L0x7fffffffb69a*(x0**93) +
-L0x7fffffffb69c*(x0**94) + L0x7fffffffb69e*(x0**95) +
-L0x7fffffffb6a0*(x0**96) + L0x7fffffffb6a2*(x0**97) +
-L0x7fffffffb6a4*(x0**98) + L0x7fffffffb6a6*(x0**99) +
-L0x7fffffffb6a8*(x0**100) + L0x7fffffffb6aa*(x0**101) +
-L0x7fffffffb6ac*(x0**102) + L0x7fffffffb6ae*(x0**103) +
-L0x7fffffffb6b0*(x0**104) + L0x7fffffffb6b2*(x0**105) +
-L0x7fffffffb6b4*(x0**106) + L0x7fffffffb6b6*(x0**107) +
-L0x7fffffffb6b8*(x0**108) + L0x7fffffffb6ba*(x0**109) +
-L0x7fffffffb6bc*(x0**110) + L0x7fffffffb6be*(x0**111) +
-L0x7fffffffb6c0*(x0**112) + L0x7fffffffb6c2*(x0**113) +
-L0x7fffffffb6c4*(x0**114) + L0x7fffffffb6c6*(x0**115) +
-L0x7fffffffb6c8*(x0**116) + L0x7fffffffb6ca*(x0**117) +
-L0x7fffffffb6cc*(x0**118) + L0x7fffffffb6ce*(x0**119) +
-L0x7fffffffb6d0*(x0**120) + L0x7fffffffb6d2*(x0**121) +
-L0x7fffffffb6d4*(x0**122) + L0x7fffffffb6d6*(x0**123) +
-L0x7fffffffb6d8*(x0**124) + L0x7fffffffb6da*(x0**125) +
-L0x7fffffffb6dc*(x0**126) + L0x7fffffffb6de*(x0**127)
-)
-[7681, x0**128 - 3383]
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e0*(x0**0) + L0x7fffffffb5e2*(x0**1) + L0x7fffffffb5e4*(x0**2) + L0x7fffffffb5e6*(x0**3) +
+    L0x7fffffffb5e8*(x0**4) + L0x7fffffffb5ea*(x0**5) + L0x7fffffffb5ec*(x0**6) + L0x7fffffffb5ee*(x0**7) +
+    L0x7fffffffb5f0*(x0**8) + L0x7fffffffb5f2*(x0**9) + L0x7fffffffb5f4*(x0**10) + L0x7fffffffb5f6*(x0**11) +
+    L0x7fffffffb5f8*(x0**12) + L0x7fffffffb5fa*(x0**13) + L0x7fffffffb5fc*(x0**14) + L0x7fffffffb5fe*(x0**15) +
+    L0x7fffffffb600*(x0**16) + L0x7fffffffb602*(x0**17) + L0x7fffffffb604*(x0**18) + L0x7fffffffb606*(x0**19) +
+    L0x7fffffffb608*(x0**20) + L0x7fffffffb60a*(x0**21) + L0x7fffffffb60c*(x0**22) + L0x7fffffffb60e*(x0**23) +
+    L0x7fffffffb610*(x0**24) + L0x7fffffffb612*(x0**25) + L0x7fffffffb614*(x0**26) + L0x7fffffffb616*(x0**27) +
+    L0x7fffffffb618*(x0**28) + L0x7fffffffb61a*(x0**29) + L0x7fffffffb61c*(x0**30) + L0x7fffffffb61e*(x0**31) +
+    L0x7fffffffb620*(x0**32) + L0x7fffffffb622*(x0**33) + L0x7fffffffb624*(x0**34) + L0x7fffffffb626*(x0**35) +
+    L0x7fffffffb628*(x0**36) + L0x7fffffffb62a*(x0**37) + L0x7fffffffb62c*(x0**38) + L0x7fffffffb62e*(x0**39) +
+    L0x7fffffffb630*(x0**40) + L0x7fffffffb632*(x0**41) + L0x7fffffffb634*(x0**42) + L0x7fffffffb636*(x0**43) +
+    L0x7fffffffb638*(x0**44) + L0x7fffffffb63a*(x0**45) + L0x7fffffffb63c*(x0**46) + L0x7fffffffb63e*(x0**47) +
+    L0x7fffffffb640*(x0**48) + L0x7fffffffb642*(x0**49) + L0x7fffffffb644*(x0**50) + L0x7fffffffb646*(x0**51) +
+    L0x7fffffffb648*(x0**52) + L0x7fffffffb64a*(x0**53) + L0x7fffffffb64c*(x0**54) + L0x7fffffffb64e*(x0**55) +
+    L0x7fffffffb650*(x0**56) + L0x7fffffffb652*(x0**57) + L0x7fffffffb654*(x0**58) + L0x7fffffffb656*(x0**59) +
+    L0x7fffffffb658*(x0**60) + L0x7fffffffb65a*(x0**61) + L0x7fffffffb65c*(x0**62) + L0x7fffffffb65e*(x0**63) +
+    L0x7fffffffb660*(x0**64) + L0x7fffffffb662*(x0**65) + L0x7fffffffb664*(x0**66) + L0x7fffffffb666*(x0**67) +
+    L0x7fffffffb668*(x0**68) + L0x7fffffffb66a*(x0**69) + L0x7fffffffb66c*(x0**70) + L0x7fffffffb66e*(x0**71) +
+    L0x7fffffffb670*(x0**72) + L0x7fffffffb672*(x0**73) + L0x7fffffffb674*(x0**74) + L0x7fffffffb676*(x0**75) +
+    L0x7fffffffb678*(x0**76) + L0x7fffffffb67a*(x0**77) + L0x7fffffffb67c*(x0**78) + L0x7fffffffb67e*(x0**79) +
+    L0x7fffffffb680*(x0**80) + L0x7fffffffb682*(x0**81) + L0x7fffffffb684*(x0**82) + L0x7fffffffb686*(x0**83) +
+    L0x7fffffffb688*(x0**84) + L0x7fffffffb68a*(x0**85) + L0x7fffffffb68c*(x0**86) + L0x7fffffffb68e*(x0**87) +
+    L0x7fffffffb690*(x0**88) + L0x7fffffffb692*(x0**89) + L0x7fffffffb694*(x0**90) + L0x7fffffffb696*(x0**91) +
+    L0x7fffffffb698*(x0**92) + L0x7fffffffb69a*(x0**93) + L0x7fffffffb69c*(x0**94) + L0x7fffffffb69e*(x0**95) +
+    L0x7fffffffb6a0*(x0**96) + L0x7fffffffb6a2*(x0**97) + L0x7fffffffb6a4*(x0**98) + L0x7fffffffb6a6*(x0**99) +
+    L0x7fffffffb6a8*(x0**100) + L0x7fffffffb6aa*(x0**101) + L0x7fffffffb6ac*(x0**102) + L0x7fffffffb6ae*(x0**103) +
+    L0x7fffffffb6b0*(x0**104) + L0x7fffffffb6b2*(x0**105) + L0x7fffffffb6b4*(x0**106) + L0x7fffffffb6b6*(x0**107) +
+    L0x7fffffffb6b8*(x0**108) + L0x7fffffffb6ba*(x0**109) + L0x7fffffffb6bc*(x0**110) + L0x7fffffffb6be*(x0**111) +
+    L0x7fffffffb6c0*(x0**112) + L0x7fffffffb6c2*(x0**113) + L0x7fffffffb6c4*(x0**114) + L0x7fffffffb6c6*(x0**115) +
+    L0x7fffffffb6c8*(x0**116) + L0x7fffffffb6ca*(x0**117) + L0x7fffffffb6cc*(x0**118) + L0x7fffffffb6ce*(x0**119) +
+    L0x7fffffffb6d0*(x0**120) + L0x7fffffffb6d2*(x0**121) + L0x7fffffffb6d4*(x0**122) + L0x7fffffffb6d6*(x0**123) +
+    L0x7fffffffb6d8*(x0**124) + L0x7fffffffb6da*(x0**125) + L0x7fffffffb6dc*(x0**126) + L0x7fffffffb6de*(x0**127)
+  )
+  [7681, x0**128 - (3383)]
 ] prove with [ cuts [ 0 ] ] && and [
 (-(8134))@16 <s L0x7fffffffb5e0, L0x7fffffffb5e0 <s (8134)@16, (-(8134))@16 <s L0x7fffffffb5e2, L0x7fffffffb5e2 <s (8134)@16,
 (-(8134))@16 <s L0x7fffffffb5e4, L0x7fffffffb5e4 <s (8134)@16, (-(8134))@16 <s L0x7fffffffb5e6, L0x7fffffffb5e6 <s (8134)@16,
@@ -12333,7 +14518,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 1, off 1, update          3,4,5,6,7,8,9,10,11 *)
 (* vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x555555558475 *)
 add ymm3_0 ymm4_0 ymm8_0;
 add ymm3_1 ymm4_1 ymm8_1;
@@ -12608,52 +14792,52 @@ add ymm11_e ymm11_e ymm15_e;
 add ymm11_f ymm11_f ymm15_f;
 (* ===== End of level 1, off 1 ===== *)
 
-(* ecut 8, rcut 5 *)
+(* ecut 75, rcut 9 *)
 
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-ymm3_0*(x0**0) + ymm3_1*(x0**1) + ymm3_2*(x0**2) + ymm3_3*(x0**3) +
-ymm3_4*(x0**4) + ymm3_5*(x0**5) + ymm3_6*(x0**6) + ymm3_7*(x0**7) +
-ymm3_8*(x0**8) + ymm3_9*(x0**9) + ymm3_a*(x0**10) + ymm3_b*(x0**11) +
-ymm3_c*(x0**12) + ymm3_d*(x0**13) + ymm3_e*(x0**14) + ymm3_f*(x0**15) +
-ymm4_0*(x0**16) + ymm4_1*(x0**17) + ymm4_2*(x0**18) + ymm4_3*(x0**19) +
-ymm4_4*(x0**20) + ymm4_5*(x0**21) + ymm4_6*(x0**22) + ymm4_7*(x0**23) +
-ymm4_8*(x0**24) + ymm4_9*(x0**25) + ymm4_a*(x0**26) + ymm4_b*(x0**27) +
-ymm4_c*(x0**28) + ymm4_d*(x0**29) + ymm4_e*(x0**30) + ymm4_f*(x0**31) +
-ymm5_0*(x0**32) + ymm5_1*(x0**33) + ymm5_2*(x0**34) + ymm5_3*(x0**35) +
-ymm5_4*(x0**36) + ymm5_5*(x0**37) + ymm5_6*(x0**38) + ymm5_7*(x0**39) +
-ymm5_8*(x0**40) + ymm5_9*(x0**41) + ymm5_a*(x0**42) + ymm5_b*(x0**43) +
-ymm5_c*(x0**44) + ymm5_d*(x0**45) + ymm5_e*(x0**46) + ymm5_f*(x0**47) +
-ymm6_0*(x0**48) + ymm6_1*(x0**49) + ymm6_2*(x0**50) + ymm6_3*(x0**51) +
-ymm6_4*(x0**52) + ymm6_5*(x0**53) + ymm6_6*(x0**54) + ymm6_7*(x0**55) +
-ymm6_8*(x0**56) + ymm6_9*(x0**57) + ymm6_a*(x0**58) + ymm6_b*(x0**59) +
-ymm6_c*(x0**60) + ymm6_d*(x0**61) + ymm6_e*(x0**62) + ymm6_f*(x0**63)
-)
-[7681, x0**64 - 5756],
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(x0**0) + ymm3_1*(x0**1) + ymm3_2*(x0**2) + ymm3_3*(x0**3) +
+    ymm3_4*(x0**4) + ymm3_5*(x0**5) + ymm3_6*(x0**6) + ymm3_7*(x0**7) +
+    ymm3_8*(x0**8) + ymm3_9*(x0**9) + ymm3_a*(x0**10) + ymm3_b*(x0**11) +
+    ymm3_c*(x0**12) + ymm3_d*(x0**13) + ymm3_e*(x0**14) + ymm3_f*(x0**15) +
+    ymm4_0*(x0**16) + ymm4_1*(x0**17) + ymm4_2*(x0**18) + ymm4_3*(x0**19) +
+    ymm4_4*(x0**20) + ymm4_5*(x0**21) + ymm4_6*(x0**22) + ymm4_7*(x0**23) +
+    ymm4_8*(x0**24) + ymm4_9*(x0**25) + ymm4_a*(x0**26) + ymm4_b*(x0**27) +
+    ymm4_c*(x0**28) + ymm4_d*(x0**29) + ymm4_e*(x0**30) + ymm4_f*(x0**31) +
+    ymm5_0*(x0**32) + ymm5_1*(x0**33) + ymm5_2*(x0**34) + ymm5_3*(x0**35) +
+    ymm5_4*(x0**36) + ymm5_5*(x0**37) + ymm5_6*(x0**38) + ymm5_7*(x0**39) +
+    ymm5_8*(x0**40) + ymm5_9*(x0**41) + ymm5_a*(x0**42) + ymm5_b*(x0**43) +
+    ymm5_c*(x0**44) + ymm5_d*(x0**45) + ymm5_e*(x0**46) + ymm5_f*(x0**47) +
+    ymm6_0*(x0**48) + ymm6_1*(x0**49) + ymm6_2*(x0**50) + ymm6_3*(x0**51) +
+    ymm6_4*(x0**52) + ymm6_5*(x0**53) + ymm6_6*(x0**54) + ymm6_7*(x0**55) +
+    ymm6_8*(x0**56) + ymm6_9*(x0**57) + ymm6_a*(x0**58) + ymm6_b*(x0**59) +
+    ymm6_c*(x0**60) + ymm6_d*(x0**61) + ymm6_e*(x0**62) + ymm6_f*(x0**63)
+  )
+  [7681, x0**64 - (-1925)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm8_0*(x0**0) + ymm8_1*(x0**1) + ymm8_2*(x0**2) + ymm8_3*(x0**3) +
-ymm8_4*(x0**4) + ymm8_5*(x0**5) + ymm8_6*(x0**6) + ymm8_7*(x0**7) +
-ymm8_8*(x0**8) + ymm8_9*(x0**9) + ymm8_a*(x0**10) + ymm8_b*(x0**11) +
-ymm8_c*(x0**12) + ymm8_d*(x0**13) + ymm8_e*(x0**14) + ymm8_f*(x0**15) +
-ymm9_0*(x0**16) + ymm9_1*(x0**17) + ymm9_2*(x0**18) + ymm9_3*(x0**19) +
-ymm9_4*(x0**20) + ymm9_5*(x0**21) + ymm9_6*(x0**22) + ymm9_7*(x0**23) +
-ymm9_8*(x0**24) + ymm9_9*(x0**25) + ymm9_a*(x0**26) + ymm9_b*(x0**27) +
-ymm9_c*(x0**28) + ymm9_d*(x0**29) + ymm9_e*(x0**30) + ymm9_f*(x0**31) +
-ymm10_0*(x0**32) + ymm10_1*(x0**33) + ymm10_2*(x0**34) + ymm10_3*(x0**35) +
-ymm10_4*(x0**36) + ymm10_5*(x0**37) + ymm10_6*(x0**38) + ymm10_7*(x0**39) +
-ymm10_8*(x0**40) + ymm10_9*(x0**41) + ymm10_a*(x0**42) + ymm10_b*(x0**43) +
-ymm10_c*(x0**44) + ymm10_d*(x0**45) + ymm10_e*(x0**46) + ymm10_f*(x0**47) +
-ymm11_0*(x0**48) + ymm11_1*(x0**49) + ymm11_2*(x0**50) + ymm11_3*(x0**51) +
-ymm11_4*(x0**52) + ymm11_5*(x0**53) + ymm11_6*(x0**54) + ymm11_7*(x0**55) +
-ymm11_8*(x0**56) + ymm11_9*(x0**57) + ymm11_a*(x0**58) + ymm11_b*(x0**59) +
-ymm11_c*(x0**60) + ymm11_d*(x0**61) + ymm11_e*(x0**62) + ymm11_f*(x0**63)
-)
-[7681, x0**64 - 1925]
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(x0**0) + ymm8_1*(x0**1) + ymm8_2*(x0**2) + ymm8_3*(x0**3) +
+    ymm8_4*(x0**4) + ymm8_5*(x0**5) + ymm8_6*(x0**6) + ymm8_7*(x0**7) +
+    ymm8_8*(x0**8) + ymm8_9*(x0**9) + ymm8_a*(x0**10) + ymm8_b*(x0**11) +
+    ymm8_c*(x0**12) + ymm8_d*(x0**13) + ymm8_e*(x0**14) + ymm8_f*(x0**15) +
+    ymm9_0*(x0**16) + ymm9_1*(x0**17) + ymm9_2*(x0**18) + ymm9_3*(x0**19) +
+    ymm9_4*(x0**20) + ymm9_5*(x0**21) + ymm9_6*(x0**22) + ymm9_7*(x0**23) +
+    ymm9_8*(x0**24) + ymm9_9*(x0**25) + ymm9_a*(x0**26) + ymm9_b*(x0**27) +
+    ymm9_c*(x0**28) + ymm9_d*(x0**29) + ymm9_e*(x0**30) + ymm9_f*(x0**31) +
+    ymm10_0*(x0**32) + ymm10_1*(x0**33) + ymm10_2*(x0**34) + ymm10_3*(x0**35) +
+    ymm10_4*(x0**36) + ymm10_5*(x0**37) + ymm10_6*(x0**38) + ymm10_7*(x0**39) +
+    ymm10_8*(x0**40) + ymm10_9*(x0**41) + ymm10_a*(x0**42) + ymm10_b*(x0**43) +
+    ymm10_c*(x0**44) + ymm10_d*(x0**45) + ymm10_e*(x0**46) + ymm10_f*(x0**47) +
+    ymm11_0*(x0**48) + ymm11_1*(x0**49) + ymm11_2*(x0**50) + ymm11_3*(x0**51) +
+    ymm11_4*(x0**52) + ymm11_5*(x0**53) + ymm11_6*(x0**54) + ymm11_7*(x0**55) +
+    ymm11_8*(x0**56) + ymm11_9*(x0**57) + ymm11_a*(x0**58) + ymm11_b*(x0**59) +
+    ymm11_c*(x0**60) + ymm11_d*(x0**61) + ymm11_e*(x0**62) + ymm11_f*(x0**63)
+  )
+  [7681, x0**64 - (1925)]
 ] && and [
 (-(12408))@16 <s ymm3_0, ymm3_0 <s (12408)@16, (-(12408))@16 <s ymm3_1, ymm3_1 <s (12408)@16,
 (-(12408))@16 <s ymm3_2, ymm3_2 <s (12408)@16, (-(12408))@16 <s ymm3_3, ymm3_3 <s (12408)@16,
@@ -13484,7 +15668,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 2, off 1, update          4,6,8,3,9,7,10,5,11 *)
 (* vpaddw %ymm7,%ymm6,%ymm4                        #! PC = 0x555555558539 *)
 add ymm4_0 ymm6_0 ymm7_0;
 add ymm4_1 ymm6_1 ymm7_1;
@@ -13759,62 +15942,62 @@ add ymm11_e ymm11_e ymm15_e;
 add ymm11_f ymm11_f ymm15_f;
 (* ===== End of level 2, off 1 ===== *)
 
-(* ecut 9, rcut 6 *)
+(* ecut 76, rcut 10 *)
 
 cut
 and [
 eqmod
-(inp_poly * inp_poly)
-(
-ymm4_0*(x0**0) + ymm4_1*(x0**1) + ymm4_2*(x0**2) + ymm4_3*(x0**3) +
-ymm4_4*(x0**4) + ymm4_5*(x0**5) + ymm4_6*(x0**6) + ymm4_7*(x0**7) +
-ymm6_0*(x0**8) + ymm6_1*(x0**9) + ymm6_2*(x0**10) + ymm6_3*(x0**11) +
-ymm6_4*(x0**12) + ymm6_5*(x0**13) + ymm6_6*(x0**14) + ymm6_7*(x0**15) +
-ymm8_0*(x0**16) + ymm8_1*(x0**17) + ymm8_2*(x0**18) + ymm8_3*(x0**19) +
-ymm8_4*(x0**20) + ymm8_5*(x0**21) + ymm8_6*(x0**22) + ymm8_7*(x0**23) +
-ymm3_0*(x0**24) + ymm3_1*(x0**25) + ymm3_2*(x0**26) + ymm3_3*(x0**27) +
-ymm3_4*(x0**28) + ymm3_5*(x0**29) + ymm3_6*(x0**30) + ymm3_7*(x0**31)
-)
-[7681, x0**32 - 5953],
+  (inp_poly * inp_poly)
+  (
+    ymm4_0*(x0**0) + ymm4_1*(x0**1) + ymm4_2*(x0**2) + ymm4_3*(x0**3) +
+    ymm4_4*(x0**4) + ymm4_5*(x0**5) + ymm4_6*(x0**6) + ymm4_7*(x0**7) +
+    ymm6_0*(x0**8) + ymm6_1*(x0**9) + ymm6_2*(x0**10) + ymm6_3*(x0**11) +
+    ymm6_4*(x0**12) + ymm6_5*(x0**13) + ymm6_6*(x0**14) + ymm6_7*(x0**15) +
+    ymm8_0*(x0**16) + ymm8_1*(x0**17) + ymm8_2*(x0**18) + ymm8_3*(x0**19) +
+    ymm8_4*(x0**20) + ymm8_5*(x0**21) + ymm8_6*(x0**22) + ymm8_7*(x0**23) +
+    ymm3_0*(x0**24) + ymm3_1*(x0**25) + ymm3_2*(x0**26) + ymm3_3*(x0**27) +
+    ymm3_4*(x0**28) + ymm3_5*(x0**29) + ymm3_6*(x0**30) + ymm3_7*(x0**31)
+  )
+  [7681, x0**32 - (-1728)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm7_0*(x0**0) + ymm7_1*(x0**1) + ymm7_2*(x0**2) + ymm7_3*(x0**3) +
-ymm7_4*(x0**4) + ymm7_5*(x0**5) + ymm7_6*(x0**6) + ymm7_7*(x0**7) +
-ymm10_0*(x0**8) + ymm10_1*(x0**9) + ymm10_2*(x0**10) + ymm10_3*(x0**11) +
-ymm10_4*(x0**12) + ymm10_5*(x0**13) + ymm10_6*(x0**14) + ymm10_7*(x0**15) +
-ymm5_0*(x0**16) + ymm5_1*(x0**17) + ymm5_2*(x0**18) + ymm5_3*(x0**19) +
-ymm5_4*(x0**20) + ymm5_5*(x0**21) + ymm5_6*(x0**22) + ymm5_7*(x0**23) +
-ymm11_0*(x0**24) + ymm11_1*(x0**25) + ymm11_2*(x0**26) + ymm11_3*(x0**27) +
-ymm11_4*(x0**28) + ymm11_5*(x0**29) + ymm11_6*(x0**30) + ymm11_7*(x0**31)
-)
-[7681, x0**32 - 1728],
+  (inp_poly * inp_poly)
+  (
+    ymm7_0*(x0**0) + ymm7_1*(x0**1) + ymm7_2*(x0**2) + ymm7_3*(x0**3) +
+    ymm7_4*(x0**4) + ymm7_5*(x0**5) + ymm7_6*(x0**6) + ymm7_7*(x0**7) +
+    ymm10_0*(x0**8) + ymm10_1*(x0**9) + ymm10_2*(x0**10) + ymm10_3*(x0**11) +
+    ymm10_4*(x0**12) + ymm10_5*(x0**13) + ymm10_6*(x0**14) + ymm10_7*(x0**15) +
+    ymm5_0*(x0**16) + ymm5_1*(x0**17) + ymm5_2*(x0**18) + ymm5_3*(x0**19) +
+    ymm5_4*(x0**20) + ymm5_5*(x0**21) + ymm5_6*(x0**22) + ymm5_7*(x0**23) +
+    ymm11_0*(x0**24) + ymm11_1*(x0**25) + ymm11_2*(x0**26) + ymm11_3*(x0**27) +
+    ymm11_4*(x0**28) + ymm11_5*(x0**29) + ymm11_6*(x0**30) + ymm11_7*(x0**31)
+  )
+  [7681, x0**32 - (1728)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm4_8*(x0**0) + ymm4_9*(x0**1) + ymm4_a*(x0**2) + ymm4_b*(x0**3) +
-ymm4_c*(x0**4) + ymm4_d*(x0**5) + ymm4_e*(x0**6) + ymm4_f*(x0**7) +
-ymm6_8*(x0**8) + ymm6_9*(x0**9) + ymm6_a*(x0**10) + ymm6_b*(x0**11) +
-ymm6_c*(x0**12) + ymm6_d*(x0**13) + ymm6_e*(x0**14) + ymm6_f*(x0**15) +
-ymm8_8*(x0**16) + ymm8_9*(x0**17) + ymm8_a*(x0**18) + ymm8_b*(x0**19) +
-ymm8_c*(x0**20) + ymm8_d*(x0**21) + ymm8_e*(x0**22) + ymm8_f*(x0**23) +
-ymm3_8*(x0**24) + ymm3_9*(x0**25) + ymm3_a*(x0**26) + ymm3_b*(x0**27) +
-ymm3_c*(x0**28) + ymm3_d*(x0**29) + ymm3_e*(x0**30) + ymm3_f*(x0**31)
-)
-[7681, x0**32 - 583],
+  (inp_poly * inp_poly)
+  (
+    ymm4_8*(x0**0) + ymm4_9*(x0**1) + ymm4_a*(x0**2) + ymm4_b*(x0**3) +
+    ymm4_c*(x0**4) + ymm4_d*(x0**5) + ymm4_e*(x0**6) + ymm4_f*(x0**7) +
+    ymm6_8*(x0**8) + ymm6_9*(x0**9) + ymm6_a*(x0**10) + ymm6_b*(x0**11) +
+    ymm6_c*(x0**12) + ymm6_d*(x0**13) + ymm6_e*(x0**14) + ymm6_f*(x0**15) +
+    ymm8_8*(x0**16) + ymm8_9*(x0**17) + ymm8_a*(x0**18) + ymm8_b*(x0**19) +
+    ymm8_c*(x0**20) + ymm8_d*(x0**21) + ymm8_e*(x0**22) + ymm8_f*(x0**23) +
+    ymm3_8*(x0**24) + ymm3_9*(x0**25) + ymm3_a*(x0**26) + ymm3_b*(x0**27) +
+    ymm3_c*(x0**28) + ymm3_d*(x0**29) + ymm3_e*(x0**30) + ymm3_f*(x0**31)
+  )
+  [7681, x0**32 - (583)],
 eqmod
-(inp_poly * inp_poly)
-(
-ymm7_8*(x0**0) + ymm7_9*(x0**1) + ymm7_a*(x0**2) + ymm7_b*(x0**3) +
-ymm7_c*(x0**4) + ymm7_d*(x0**5) + ymm7_e*(x0**6) + ymm7_f*(x0**7) +
-ymm10_8*(x0**8) + ymm10_9*(x0**9) + ymm10_a*(x0**10) + ymm10_b*(x0**11) +
-ymm10_c*(x0**12) + ymm10_d*(x0**13) + ymm10_e*(x0**14) + ymm10_f*(x0**15) +
-ymm5_8*(x0**16) + ymm5_9*(x0**17) + ymm5_a*(x0**18) + ymm5_b*(x0**19) +
-ymm5_c*(x0**20) + ymm5_d*(x0**21) + ymm5_e*(x0**22) + ymm5_f*(x0**23) +
-ymm11_8*(x0**24) + ymm11_9*(x0**25) + ymm11_a*(x0**26) + ymm11_b*(x0**27) +
-ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
-)
-[7681, x0**32 - 7098]
+  (inp_poly * inp_poly)
+  (
+    ymm7_8*(x0**0) + ymm7_9*(x0**1) + ymm7_a*(x0**2) + ymm7_b*(x0**3) +
+    ymm7_c*(x0**4) + ymm7_d*(x0**5) + ymm7_e*(x0**6) + ymm7_f*(x0**7) +
+    ymm10_8*(x0**8) + ymm10_9*(x0**9) + ymm10_a*(x0**10) + ymm10_b*(x0**11) +
+    ymm10_c*(x0**12) + ymm10_d*(x0**13) + ymm10_e*(x0**14) + ymm10_f*(x0**15) +
+    ymm5_8*(x0**16) + ymm5_9*(x0**17) + ymm5_a*(x0**18) + ymm5_b*(x0**19) +
+    ymm5_c*(x0**20) + ymm5_d*(x0**21) + ymm5_e*(x0**22) + ymm5_f*(x0**23) +
+    ymm11_8*(x0**24) + ymm11_9*(x0**25) + ymm11_a*(x0**26) + ymm11_b*(x0**27) +
+    ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
+  )
+  [7681, x0**32 - (-583)]
 ] && and [
 (-(16709))@16 <s ymm4_0, ymm4_0 <s (16709)@16, (-(16709))@16 <s ymm4_1, ymm4_1 <s (16709)@16,
 (-(16709))@16 <s ymm4_2, ymm4_2 <s (16709)@16, (-(16709))@16 <s ymm4_3, ymm4_3 <s (16709)@16,
@@ -13882,16 +16065,17 @@ ymm11_c*(x0**28) + ymm11_d*(x0**29) + ymm11_e*(x0**30) + ymm11_f*(x0**31)
 (-(16658))@16 <s ymm11_e, ymm11_e <s (16658)@16, (-(16658))@16 <s ymm11_f, ymm11_f <s (16658)@16
 ];
 
-ghost zeta_0_4@sint16, y_0_4@sint16, zeta_0_5@sint16, y_0_5@sint16, zeta_0_6@sint16, y_0_6@sint16, zeta_0_7@sint16, y_0_7@sint16 :
+ghost y_0_4@sint16, y_0_5@sint16, y_0_6@sint16, y_0_7@sint16, zeta_0_4@sint16, zeta_0_5@sint16, zeta_0_6@sint16, zeta_0_7@sint16 :
 and [
   zeta_0_4 = 217,
   zeta_0_5 = 7145,
   zeta_0_6 = 738,
   zeta_0_7 = 1115
-] && true;
+] && and [
+  true
+];
 
-
-(* ecut 10 *)
+(* ecut 77 *)
 
 ecut and [
 eqmod
@@ -14745,7 +16929,6 @@ mulLymm10_a = mulLymm15_a, mulLymm10_b = mulLymm15_b,
 mulLymm10_c = mulLymm15_c, mulLymm10_d = mulLymm15_d,
 mulLymm10_e = mulLymm15_e, mulLymm10_f = mulLymm15_f
 ] && true;
-(* level 3, off 1, end of reduce          9,7,4,10,0 *)
 (* vpmullw 0x540(%rdx),%ymm6,%ymm12                #! EA = L0x555555560c40; Value = 0x0ab3996ac48bb8f1; PC = 0x55555555860d *)
 smull mulHymm6_0 mulL_0 L0x555555560c40 ymm6_0;
 smull mulHymm6_1 mulL_1 L0x555555560c42 ymm6_1;
@@ -15278,7 +17461,6 @@ mulLymm11_a = mulLymm15_a, mulLymm11_b = mulLymm15_b,
 mulLymm11_c = mulLymm15_c, mulLymm11_d = mulLymm15_d,
 mulLymm11_e = mulLymm15_e, mulLymm11_f = mulLymm15_f
 ] && true;
-(* level 3, off 1, end of reduce          6,5,8,11,0 *)
 (* vpaddw %ymm6,%ymm9,%ymm3                        #! PC = 0x555555558671 *)
 add ymm3_0 ymm9_0 ymm6_0;
 add ymm3_1 ymm9_1 ymm6_1;
@@ -15417,7 +17599,7 @@ sub ymm11_e ymm10_e ymm11_e;
 sub ymm11_f ymm10_f ymm11_f;
 (* ===== End of level 3, off 1 ===== *)
 
-(* ecut 11, rcut 7 *)
+(* ecut 78, rcut 11 *)
 
 cut
 and [
@@ -16307,7 +18489,7 @@ add ymm11_e ymm11_e ymm13_e;
 add ymm11_f ymm11_f ymm13_f;
 (* ===== End of level 4, off 1 ===== *)
 
-(* ecut 12, rcut 8 *)
+(* ecut 79, rcut 12 *)
 
 cut
 and [
@@ -16424,7 +18606,7 @@ eqmod
   )
   [7681, x0 - zeta_0_7 * y_0_7, y_0_7**8 - (3383)]
 ] && and [
-true
+  true
 ];
 (* ===== Start of level 5, off 1 ===== *)
 (* vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x55555555871b *)
@@ -17152,7 +19334,7 @@ add ymm11_e ymm11_e ymm14_e;
 add ymm11_f ymm11_f ymm14_f;
 (* ===== End of level 5, off 1 ===== *)
 
-(* ecut 13, rcut 8 *)
+(* ecut 80, rcut 13 *)
 
 cut
 and [
@@ -17349,8 +19531,244 @@ eqmod
   )
   [7681, x0 - zeta_0_7 * y_0_7, y_0_7**4 - (1925)]
 ] && and [
-true
+  true
 ];
+
+ghost y_1_32@sint16, y_1_33@sint16, y_1_34@sint16, y_1_35@sint16, y_1_36@sint16, y_1_37@sint16, y_1_38@sint16, y_1_39@sint16, y_1_40@sint16, y_1_41@sint16, y_1_42@sint16, y_1_43@sint16, y_1_44@sint16, y_1_45@sint16, y_1_46@sint16, y_1_47@sint16, y_1_48@sint16, y_1_49@sint16, y_1_50@sint16, y_1_51@sint16, y_1_52@sint16, y_1_53@sint16, y_1_54@sint16, y_1_55@sint16, y_1_56@sint16, y_1_57@sint16, y_1_58@sint16, y_1_59@sint16, y_1_60@sint16, y_1_61@sint16, y_1_62@sint16, y_1_63@sint16, zeta_1_32@sint16, zeta_1_33@sint16, zeta_1_34@sint16, zeta_1_35@sint16, zeta_1_36@sint16, zeta_1_37@sint16, zeta_1_38@sint16, zeta_1_39@sint16, zeta_1_40@sint16, zeta_1_41@sint16, zeta_1_42@sint16, zeta_1_43@sint16, zeta_1_44@sint16, zeta_1_45@sint16, zeta_1_46@sint16, zeta_1_47@sint16, zeta_1_48@sint16, zeta_1_49@sint16, zeta_1_50@sint16, zeta_1_51@sint16, zeta_1_52@sint16, zeta_1_53@sint16, zeta_1_54@sint16, zeta_1_55@sint16, zeta_1_56@sint16, zeta_1_57@sint16, zeta_1_58@sint16, zeta_1_59@sint16, zeta_1_60@sint16, zeta_1_61@sint16, zeta_1_62@sint16, zeta_1_63@sint16 :
+and [
+  zeta_1_32 = 1,
+  zeta_1_33 = 1213,
+  zeta_1_34 = 7154,
+  zeta_1_35 = 7098,
+  zeta_1_36 = 1366,
+  zeta_1_37 = 2648,
+  zeta_1_38 = 2132,
+  zeta_1_39 = 2446,
+  zeta_1_40 = 1,
+  zeta_1_41 = 1213,
+  zeta_1_42 = 7154,
+  zeta_1_43 = 7098,
+  zeta_1_44 = 1366,
+  zeta_1_45 = 2648,
+  zeta_1_46 = 2132,
+  zeta_1_47 = 2446,
+  zeta_1_48 = 1,
+  zeta_1_49 = 1213,
+  zeta_1_50 = 7154,
+  zeta_1_51 = 7098,
+  zeta_1_52 = 1366,
+  zeta_1_53 = 2648,
+  zeta_1_54 = 2132,
+  zeta_1_55 = 2446,
+  zeta_1_56 = 1,
+  zeta_1_57 = 1213,
+  zeta_1_58 = 7154,
+  zeta_1_59 = 7098,
+  zeta_1_60 = 1366,
+  zeta_1_61 = 2648,
+  zeta_1_62 = 2132,
+  zeta_1_63 = 2446
+] && and [
+  true
+];
+
+(* ecut 81 *)
+
+ecut and [
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*((zeta_1_32 * y_1_32)**0) + ymm5_1*((zeta_1_32 * y_1_32)**1) + ymm5_2*((zeta_1_32 * y_1_32)**2) + ymm5_3*((zeta_1_32 * y_1_32)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*((zeta_1_33 * y_1_33)**0) + ymm3_1*((zeta_1_33 * y_1_33)**1) + ymm3_2*((zeta_1_33 * y_1_33)**2) + ymm3_3*((zeta_1_33 * y_1_33)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_0*((zeta_1_34 * y_1_34)**0) + ymm10_1*((zeta_1_34 * y_1_34)**1) + ymm10_2*((zeta_1_34 * y_1_34)**2) + ymm10_3*((zeta_1_34 * y_1_34)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_0*((zeta_1_35 * y_1_35)**0) + ymm4_1*((zeta_1_35 * y_1_35)**1) + ymm4_2*((zeta_1_35 * y_1_35)**2) + ymm4_3*((zeta_1_35 * y_1_35)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_0*((zeta_1_36 * y_1_36)**0) + ymm7_1*((zeta_1_36 * y_1_36)**1) + ymm7_2*((zeta_1_36 * y_1_36)**2) + ymm7_3*((zeta_1_36 * y_1_36)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*((zeta_1_37 * y_1_37)**0) + ymm6_1*((zeta_1_37 * y_1_37)**1) + ymm6_2*((zeta_1_37 * y_1_37)**2) + ymm6_3*((zeta_1_37 * y_1_37)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_0*((zeta_1_38 * y_1_38)**0) + ymm9_1*((zeta_1_38 * y_1_38)**1) + ymm9_2*((zeta_1_38 * y_1_38)**2) + ymm9_3*((zeta_1_38 * y_1_38)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_0*((zeta_1_39 * y_1_39)**0) + ymm11_1*((zeta_1_39 * y_1_39)**1) + ymm11_2*((zeta_1_39 * y_1_39)**2) + ymm11_3*((zeta_1_39 * y_1_39)**3)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*((zeta_1_40 * y_1_40)**0) + ymm5_5*((zeta_1_40 * y_1_40)**1) + ymm5_6*((zeta_1_40 * y_1_40)**2) + ymm5_7*((zeta_1_40 * y_1_40)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*((zeta_1_41 * y_1_41)**0) + ymm3_5*((zeta_1_41 * y_1_41)**1) + ymm3_6*((zeta_1_41 * y_1_41)**2) + ymm3_7*((zeta_1_41 * y_1_41)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_4*((zeta_1_42 * y_1_42)**0) + ymm10_5*((zeta_1_42 * y_1_42)**1) + ymm10_6*((zeta_1_42 * y_1_42)**2) + ymm10_7*((zeta_1_42 * y_1_42)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_4*((zeta_1_43 * y_1_43)**0) + ymm4_5*((zeta_1_43 * y_1_43)**1) + ymm4_6*((zeta_1_43 * y_1_43)**2) + ymm4_7*((zeta_1_43 * y_1_43)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_4*((zeta_1_44 * y_1_44)**0) + ymm7_5*((zeta_1_44 * y_1_44)**1) + ymm7_6*((zeta_1_44 * y_1_44)**2) + ymm7_7*((zeta_1_44 * y_1_44)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*((zeta_1_45 * y_1_45)**0) + ymm6_5*((zeta_1_45 * y_1_45)**1) + ymm6_6*((zeta_1_45 * y_1_45)**2) + ymm6_7*((zeta_1_45 * y_1_45)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_4*((zeta_1_46 * y_1_46)**0) + ymm9_5*((zeta_1_46 * y_1_46)**1) + ymm9_6*((zeta_1_46 * y_1_46)**2) + ymm9_7*((zeta_1_46 * y_1_46)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_4*((zeta_1_47 * y_1_47)**0) + ymm11_5*((zeta_1_47 * y_1_47)**1) + ymm11_6*((zeta_1_47 * y_1_47)**2) + ymm11_7*((zeta_1_47 * y_1_47)**3)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*((zeta_1_48 * y_1_48)**0) + ymm5_9*((zeta_1_48 * y_1_48)**1) + ymm5_a*((zeta_1_48 * y_1_48)**2) + ymm5_b*((zeta_1_48 * y_1_48)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*((zeta_1_49 * y_1_49)**0) + ymm3_9*((zeta_1_49 * y_1_49)**1) + ymm3_a*((zeta_1_49 * y_1_49)**2) + ymm3_b*((zeta_1_49 * y_1_49)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_8*((zeta_1_50 * y_1_50)**0) + ymm10_9*((zeta_1_50 * y_1_50)**1) + ymm10_a*((zeta_1_50 * y_1_50)**2) + ymm10_b*((zeta_1_50 * y_1_50)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_8*((zeta_1_51 * y_1_51)**0) + ymm4_9*((zeta_1_51 * y_1_51)**1) + ymm4_a*((zeta_1_51 * y_1_51)**2) + ymm4_b*((zeta_1_51 * y_1_51)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_8*((zeta_1_52 * y_1_52)**0) + ymm7_9*((zeta_1_52 * y_1_52)**1) + ymm7_a*((zeta_1_52 * y_1_52)**2) + ymm7_b*((zeta_1_52 * y_1_52)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*((zeta_1_53 * y_1_53)**0) + ymm6_9*((zeta_1_53 * y_1_53)**1) + ymm6_a*((zeta_1_53 * y_1_53)**2) + ymm6_b*((zeta_1_53 * y_1_53)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_8*((zeta_1_54 * y_1_54)**0) + ymm9_9*((zeta_1_54 * y_1_54)**1) + ymm9_a*((zeta_1_54 * y_1_54)**2) + ymm9_b*((zeta_1_54 * y_1_54)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_8*((zeta_1_55 * y_1_55)**0) + ymm11_9*((zeta_1_55 * y_1_55)**1) + ymm11_a*((zeta_1_55 * y_1_55)**2) + ymm11_b*((zeta_1_55 * y_1_55)**3)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*((zeta_1_56 * y_1_56)**0) + ymm5_d*((zeta_1_56 * y_1_56)**1) + ymm5_e*((zeta_1_56 * y_1_56)**2) + ymm5_f*((zeta_1_56 * y_1_56)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*((zeta_1_57 * y_1_57)**0) + ymm3_d*((zeta_1_57 * y_1_57)**1) + ymm3_e*((zeta_1_57 * y_1_57)**2) + ymm3_f*((zeta_1_57 * y_1_57)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm10_c*((zeta_1_58 * y_1_58)**0) + ymm10_d*((zeta_1_58 * y_1_58)**1) + ymm10_e*((zeta_1_58 * y_1_58)**2) + ymm10_f*((zeta_1_58 * y_1_58)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm4_c*((zeta_1_59 * y_1_59)**0) + ymm4_d*((zeta_1_59 * y_1_59)**1) + ymm4_e*((zeta_1_59 * y_1_59)**2) + ymm4_f*((zeta_1_59 * y_1_59)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm7_c*((zeta_1_60 * y_1_60)**0) + ymm7_d*((zeta_1_60 * y_1_60)**1) + ymm7_e*((zeta_1_60 * y_1_60)**2) + ymm7_f*((zeta_1_60 * y_1_60)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*((zeta_1_61 * y_1_61)**0) + ymm6_d*((zeta_1_61 * y_1_61)**1) + ymm6_e*((zeta_1_61 * y_1_61)**2) + ymm6_f*((zeta_1_61 * y_1_61)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm9_c*((zeta_1_62 * y_1_62)**0) + ymm9_d*((zeta_1_62 * y_1_62)**1) + ymm9_e*((zeta_1_62 * y_1_62)**2) + ymm9_f*((zeta_1_62 * y_1_62)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**4 - 1],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm11_c*((zeta_1_63 * y_1_63)**0) + ymm11_d*((zeta_1_63 * y_1_63)**1) + ymm11_e*((zeta_1_63 * y_1_63)**2) + ymm11_f*((zeta_1_63 * y_1_63)**3)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**4 - 1]
+];
+
 (* ===== Start of level 6, off 1 ===== *)
 (* vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560780; Value = 0xfff7fff7fff7fff7; PC = 0x5555555587a2 *)
 smull mulHymm5_0 mulL_0 L0x555555560780 ymm5_0;
@@ -19670,8 +22088,6 @@ mov ymm11_c bldw_c;
 mov ymm11_d bldw_d;
 mov ymm11_e bldw_e;
 mov ymm11_f bldw_f;
-(* ===== End of level 6, off 1 ===== *)
-(* ===== Start of level 7, off 1 ===== *)
 (* vpaddw %ymm8,%ymm4,%ymm6                        #! PC = 0x555555558971 *)
 add ymm6_0 ymm4_0 ymm8_0;
 add ymm6_1 ymm4_1 ymm8_1;
@@ -19808,6 +22224,1169 @@ sub ymm11_c ymm10_c ymm11_c;
 sub ymm11_d ymm10_d ymm11_d;
 sub ymm11_e ymm10_e ymm11_e;
 sub ymm11_f ymm10_f ymm11_f;
+(* ===== End of level 6, off 1 ===== *)
+
+(* ecut 82, rcut 14 *)
+
+cut
+and [
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*(y_1_32**0) + ymm4_0*(y_1_32**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(y_1_32**0) + ymm9_0*(y_1_32**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(y_1_33**0) + ymm7_0*(y_1_33**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*(y_1_33**0) + ymm11_0*(y_1_33**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_1*(y_1_34**0) + ymm4_1*(y_1_34**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_1*(y_1_34**0) + ymm9_1*(y_1_34**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_1*(y_1_35**0) + ymm7_1*(y_1_35**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_1*(y_1_35**0) + ymm11_1*(y_1_35**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_2*(y_1_36**0) + ymm4_2*(y_1_36**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_2*(y_1_36**0) + ymm9_2*(y_1_36**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_2*(y_1_37**0) + ymm7_2*(y_1_37**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_2*(y_1_37**0) + ymm11_2*(y_1_37**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_3*(y_1_38**0) + ymm4_3*(y_1_38**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_3*(y_1_38**0) + ymm9_3*(y_1_38**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_3*(y_1_39**0) + ymm7_3*(y_1_39**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_3*(y_1_39**0) + ymm11_3*(y_1_39**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*(y_1_40**0) + ymm4_4*(y_1_40**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_4*(y_1_40**0) + ymm9_4*(y_1_40**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*(y_1_41**0) + ymm7_4*(y_1_41**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*(y_1_41**0) + ymm11_4*(y_1_41**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_5*(y_1_42**0) + ymm4_5*(y_1_42**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_5*(y_1_42**0) + ymm9_5*(y_1_42**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_5*(y_1_43**0) + ymm7_5*(y_1_43**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_5*(y_1_43**0) + ymm11_5*(y_1_43**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_6*(y_1_44**0) + ymm4_6*(y_1_44**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_6*(y_1_44**0) + ymm9_6*(y_1_44**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_6*(y_1_45**0) + ymm7_6*(y_1_45**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_6*(y_1_45**0) + ymm11_6*(y_1_45**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_7*(y_1_46**0) + ymm4_7*(y_1_46**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_7*(y_1_46**0) + ymm9_7*(y_1_46**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_7*(y_1_47**0) + ymm7_7*(y_1_47**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_7*(y_1_47**0) + ymm11_7*(y_1_47**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*(y_1_48**0) + ymm4_8*(y_1_48**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_8*(y_1_48**0) + ymm9_8*(y_1_48**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*(y_1_49**0) + ymm7_8*(y_1_49**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*(y_1_49**0) + ymm11_8*(y_1_49**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_9*(y_1_50**0) + ymm4_9*(y_1_50**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_9*(y_1_50**0) + ymm9_9*(y_1_50**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_9*(y_1_51**0) + ymm7_9*(y_1_51**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_9*(y_1_51**0) + ymm11_9*(y_1_51**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_a*(y_1_52**0) + ymm4_a*(y_1_52**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_a*(y_1_52**0) + ymm9_a*(y_1_52**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_a*(y_1_53**0) + ymm7_a*(y_1_53**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_a*(y_1_53**0) + ymm11_a*(y_1_53**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_b*(y_1_54**0) + ymm4_b*(y_1_54**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_b*(y_1_54**0) + ymm9_b*(y_1_54**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_b*(y_1_55**0) + ymm7_b*(y_1_55**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_b*(y_1_55**0) + ymm11_b*(y_1_55**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*(y_1_56**0) + ymm4_c*(y_1_56**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_c*(y_1_56**0) + ymm9_c*(y_1_56**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*(y_1_57**0) + ymm7_c*(y_1_57**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*(y_1_57**0) + ymm11_c*(y_1_57**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_d*(y_1_58**0) + ymm4_d*(y_1_58**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_d*(y_1_58**0) + ymm9_d*(y_1_58**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_d*(y_1_59**0) + ymm7_d*(y_1_59**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_d*(y_1_59**0) + ymm11_d*(y_1_59**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_e*(y_1_60**0) + ymm4_e*(y_1_60**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_e*(y_1_60**0) + ymm9_e*(y_1_60**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_e*(y_1_61**0) + ymm7_e*(y_1_61**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_e*(y_1_61**0) + ymm11_e*(y_1_61**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_f*(y_1_62**0) + ymm4_f*(y_1_62**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_f*(y_1_62**0) + ymm9_f*(y_1_62**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**2 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_f*(y_1_63**0) + ymm7_f*(y_1_63**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**2 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_f*(y_1_63**0) + ymm11_f*(y_1_63**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**2 - (-1)]
+] prove with [all ghosts] && and [
+  true
+];
+
+
+(* ecut 83 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_0*(y_1_32**0) + ymm4_0*(y_1_32**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 84 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_0*(y_1_32**0) + ymm9_0*(y_1_32**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 85 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_0*(y_1_33**0) + ymm7_0*(y_1_33**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 86 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_0*(y_1_33**0) + ymm11_0*(y_1_33**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 87 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_1*(y_1_34**0) + ymm4_1*(y_1_34**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 88 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_1*(y_1_34**0) + ymm9_1*(y_1_34**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 89 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_1*(y_1_35**0) + ymm7_1*(y_1_35**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 90 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_1*(y_1_35**0) + ymm11_1*(y_1_35**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 91 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_2*(y_1_36**0) + ymm4_2*(y_1_36**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 92 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_2*(y_1_36**0) + ymm9_2*(y_1_36**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 93 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_2*(y_1_37**0) + ymm7_2*(y_1_37**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 94 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_2*(y_1_37**0) + ymm11_2*(y_1_37**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 95 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_3*(y_1_38**0) + ymm4_3*(y_1_38**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 96 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_3*(y_1_38**0) + ymm9_3*(y_1_38**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 97 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_3*(y_1_39**0) + ymm7_3*(y_1_39**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 98 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_3*(y_1_39**0) + ymm11_3*(y_1_39**1)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 99 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_4*(y_1_40**0) + ymm4_4*(y_1_40**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 100 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_4*(y_1_40**0) + ymm9_4*(y_1_40**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 101 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_4*(y_1_41**0) + ymm7_4*(y_1_41**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 102 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_4*(y_1_41**0) + ymm11_4*(y_1_41**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 103 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_5*(y_1_42**0) + ymm4_5*(y_1_42**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 104 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_5*(y_1_42**0) + ymm9_5*(y_1_42**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 105 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_5*(y_1_43**0) + ymm7_5*(y_1_43**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 106 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_5*(y_1_43**0) + ymm11_5*(y_1_43**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 107 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_6*(y_1_44**0) + ymm4_6*(y_1_44**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 108 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_6*(y_1_44**0) + ymm9_6*(y_1_44**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 109 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_6*(y_1_45**0) + ymm7_6*(y_1_45**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 110 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_6*(y_1_45**0) + ymm11_6*(y_1_45**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 111 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_7*(y_1_46**0) + ymm4_7*(y_1_46**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 112 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_7*(y_1_46**0) + ymm9_7*(y_1_46**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 113 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_7*(y_1_47**0) + ymm7_7*(y_1_47**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 114 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_7*(y_1_47**0) + ymm11_7*(y_1_47**1)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 115 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_8*(y_1_48**0) + ymm4_8*(y_1_48**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 116 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_8*(y_1_48**0) + ymm9_8*(y_1_48**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 117 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_8*(y_1_49**0) + ymm7_8*(y_1_49**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 118 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_8*(y_1_49**0) + ymm11_8*(y_1_49**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 119 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_9*(y_1_50**0) + ymm4_9*(y_1_50**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 120 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_9*(y_1_50**0) + ymm9_9*(y_1_50**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 121 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_9*(y_1_51**0) + ymm7_9*(y_1_51**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 122 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_9*(y_1_51**0) + ymm11_9*(y_1_51**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 123 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_a*(y_1_52**0) + ymm4_a*(y_1_52**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 124 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_a*(y_1_52**0) + ymm9_a*(y_1_52**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 125 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_a*(y_1_53**0) + ymm7_a*(y_1_53**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 126 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_a*(y_1_53**0) + ymm11_a*(y_1_53**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 127 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_b*(y_1_54**0) + ymm4_b*(y_1_54**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 128 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_b*(y_1_54**0) + ymm9_b*(y_1_54**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 129 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_b*(y_1_55**0) + ymm7_b*(y_1_55**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 130 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_b*(y_1_55**0) + ymm11_b*(y_1_55**1)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 131 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_c*(y_1_56**0) + ymm4_c*(y_1_56**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 132 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_c*(y_1_56**0) + ymm9_c*(y_1_56**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 133 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_c*(y_1_57**0) + ymm7_c*(y_1_57**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 134 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_c*(y_1_57**0) + ymm11_c*(y_1_57**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 135 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_d*(y_1_58**0) + ymm4_d*(y_1_58**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 136 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_d*(y_1_58**0) + ymm9_d*(y_1_58**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 137 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_d*(y_1_59**0) + ymm7_d*(y_1_59**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 138 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_d*(y_1_59**0) + ymm11_d*(y_1_59**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 139 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_e*(y_1_60**0) + ymm4_e*(y_1_60**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 140 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_e*(y_1_60**0) + ymm9_e*(y_1_60**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 141 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_e*(y_1_61**0) + ymm7_e*(y_1_61**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 142 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_e*(y_1_61**0) + ymm11_e*(y_1_61**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 143 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm6_f*(y_1_62**0) + ymm4_f*(y_1_62**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 144 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm8_f*(y_1_62**0) + ymm9_f*(y_1_62**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**2 - (-1)]
+prove with [cuts [82]];
+
+
+(* ecut 145 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm3_f*(y_1_63**0) + ymm7_f*(y_1_63**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**2 - (1)]
+prove with [cuts [82]];
+
+
+(* ecut 146 *)
+
+ecut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    ymm5_f*(y_1_63**0) + ymm11_f*(y_1_63**1)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**2 - (-1)]
+prove with [cuts [82]];
+
+(* ===== Start of level 7, off 1 ===== *)
 (* vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x555555558997 *)
 smull mulHymm9_0 mulL_0 ymm1_0 ymm9_0;
 smull mulHymm9_1 mulL_1 ymm1_1 ymm9_1;
@@ -20382,14 +23961,1686 @@ mov L0x7fffffffb6d8 ymm11_c;
 mov L0x7fffffffb6da ymm11_d;
 mov L0x7fffffffb6dc ymm11_e;
 mov L0x7fffffffb6de ymm11_f;
+(* End of level 7, off 1 *)
+
+(* ecut 147, rcut 15 *)
+
+cut
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e0*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (1)]
+prove with [all ghosts, cuts [83]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb600*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (-1)]
+prove with [all ghosts, cuts [83]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb620*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (-3383)]
+prove with [all ghosts, cuts [84]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb640*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (3383)]
+prove with [all ghosts, cuts [84]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb660*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (1)]
+prove with [all ghosts, cuts [85]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb680*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (-1)]
+prove with [all ghosts, cuts [85]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6a0*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (-3383)]
+prove with [all ghosts, cuts [86]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c0*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (3383)]
+prove with [all ghosts, cuts [86]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e2*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (1)]
+prove with [all ghosts, cuts [87]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb602*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (-1)]
+prove with [all ghosts, cuts [87]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb622*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (-3383)]
+prove with [all ghosts, cuts [88]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb642*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (3383)]
+prove with [all ghosts, cuts [88]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb662*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (1)]
+prove with [all ghosts, cuts [89]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb682*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (-1)]
+prove with [all ghosts, cuts [89]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6a2*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (-3383)]
+prove with [all ghosts, cuts [90]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c2*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (3383)]
+prove with [all ghosts, cuts [90]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e4*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (1)]
+prove with [all ghosts, cuts [91]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb604*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (-1)]
+prove with [all ghosts, cuts [91]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb624*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (-3383)]
+prove with [all ghosts, cuts [92]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb644*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (3383)]
+prove with [all ghosts, cuts [92]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb664*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (1)]
+prove with [all ghosts, cuts [93]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb684*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (-1)]
+prove with [all ghosts, cuts [93]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6a4*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (-3383)]
+prove with [all ghosts, cuts [94]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c4*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (3383)]
+prove with [all ghosts, cuts [94]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e6*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (1)]
+prove with [all ghosts, cuts [95]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb606*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (-1)]
+prove with [all ghosts, cuts [95]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb626*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (-3383)]
+prove with [all ghosts, cuts [96]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb646*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (3383)]
+prove with [all ghosts, cuts [96]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb666*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (1)]
+prove with [all ghosts, cuts [97]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb686*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (-1)]
+prove with [all ghosts, cuts [97]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6a6*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (-3383)]
+prove with [all ghosts, cuts [98]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c6*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (3383)]
+prove with [all ghosts, cuts [98]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5e8*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (1)]
+prove with [all ghosts, cuts [99]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb608*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (-1)]
+prove with [all ghosts, cuts [99]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb628*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (-3383)]
+prove with [all ghosts, cuts [100]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb648*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (3383)]
+prove with [all ghosts, cuts [100]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb668*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (1)]
+prove with [all ghosts, cuts [101]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb688*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (-1)]
+prove with [all ghosts, cuts [101]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6a8*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (-3383)]
+prove with [all ghosts, cuts [102]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c8*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (3383)]
+prove with [all ghosts, cuts [102]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ea*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (1)]
+prove with [all ghosts, cuts [103]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (-1)]
+prove with [all ghosts, cuts [103]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb62a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (-3383)]
+prove with [all ghosts, cuts [104]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (3383)]
+prove with [all ghosts, cuts [104]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb66a*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (1)]
+prove with [all ghosts, cuts [105]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68a*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (-1)]
+prove with [all ghosts, cuts [105]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6aa*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (-3383)]
+prove with [all ghosts, cuts [106]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ca*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (3383)]
+prove with [all ghosts, cuts [106]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ec*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (1)]
+prove with [all ghosts, cuts [107]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (-1)]
+prove with [all ghosts, cuts [107]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb62c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (-3383)]
+prove with [all ghosts, cuts [108]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (3383)]
+prove with [all ghosts, cuts [108]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb66c*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (1)]
+prove with [all ghosts, cuts [109]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68c*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (-1)]
+prove with [all ghosts, cuts [109]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ac*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (-3383)]
+prove with [all ghosts, cuts [110]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6cc*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (3383)]
+prove with [all ghosts, cuts [110]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ee*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (1)]
+prove with [all ghosts, cuts [111]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (-1)]
+prove with [all ghosts, cuts [111]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb62e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (-3383)]
+prove with [all ghosts, cuts [112]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (3383)]
+prove with [all ghosts, cuts [112]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb66e*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (1)]
+prove with [all ghosts, cuts [113]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68e*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (-1)]
+prove with [all ghosts, cuts [113]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ae*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (-3383)]
+prove with [all ghosts, cuts [114]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ce*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (3383)]
+prove with [all ghosts, cuts [114]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5f0*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (1)]
+prove with [all ghosts, cuts [115]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb610*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (-1)]
+prove with [all ghosts, cuts [115]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb630*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (-3383)]
+prove with [all ghosts, cuts [116]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb650*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (3383)]
+prove with [all ghosts, cuts [116]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb670*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (1)]
+prove with [all ghosts, cuts [117]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb690*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (-1)]
+prove with [all ghosts, cuts [117]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6b0*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (-3383)]
+prove with [all ghosts, cuts [118]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d0*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (3383)]
+prove with [all ghosts, cuts [118]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5f2*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (1)]
+prove with [all ghosts, cuts [119]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb612*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (-1)]
+prove with [all ghosts, cuts [119]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb632*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (-3383)]
+prove with [all ghosts, cuts [120]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb652*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (3383)]
+prove with [all ghosts, cuts [120]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb672*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (1)]
+prove with [all ghosts, cuts [121]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb692*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (-1)]
+prove with [all ghosts, cuts [121]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6b2*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (-3383)]
+prove with [all ghosts, cuts [122]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d2*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (3383)]
+prove with [all ghosts, cuts [122]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5f4*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (1)]
+prove with [all ghosts, cuts [123]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb614*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (-1)]
+prove with [all ghosts, cuts [123]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb634*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (-3383)]
+prove with [all ghosts, cuts [124]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb654*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (3383)]
+prove with [all ghosts, cuts [124]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb674*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (1)]
+prove with [all ghosts, cuts [125]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb694*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (-1)]
+prove with [all ghosts, cuts [125]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6b4*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (-3383)]
+prove with [all ghosts, cuts [126]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d4*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (3383)]
+prove with [all ghosts, cuts [126]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5f6*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (1)]
+prove with [all ghosts, cuts [127]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb616*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (-1)]
+prove with [all ghosts, cuts [127]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb636*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (-3383)]
+prove with [all ghosts, cuts [128]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb656*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (3383)]
+prove with [all ghosts, cuts [128]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb676*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (1)]
+prove with [all ghosts, cuts [129]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb696*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (-1)]
+prove with [all ghosts, cuts [129]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6b6*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (-3383)]
+prove with [all ghosts, cuts [130]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d6*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (3383)]
+prove with [all ghosts, cuts [130]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5f8*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (1)]
+prove with [all ghosts, cuts [131]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb618*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (-1)]
+prove with [all ghosts, cuts [131]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb638*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (-3383)]
+prove with [all ghosts, cuts [132]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb658*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (3383)]
+prove with [all ghosts, cuts [132]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb678*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (1)]
+prove with [all ghosts, cuts [133]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb698*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (-1)]
+prove with [all ghosts, cuts [133]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6b8*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (-3383)]
+prove with [all ghosts, cuts [134]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d8*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (3383)]
+prove with [all ghosts, cuts [134]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5fa*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (1)]
+prove with [all ghosts, cuts [135]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (-1)]
+prove with [all ghosts, cuts [135]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb63a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (-3383)]
+prove with [all ghosts, cuts [136]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (3383)]
+prove with [all ghosts, cuts [136]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb67a*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (1)]
+prove with [all ghosts, cuts [137]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69a*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (-1)]
+prove with [all ghosts, cuts [137]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ba*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (-3383)]
+prove with [all ghosts, cuts [138]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6da*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (3383)]
+prove with [all ghosts, cuts [138]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5fc*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (1)]
+prove with [all ghosts, cuts [139]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (-1)]
+prove with [all ghosts, cuts [139]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb63c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (-3383)]
+prove with [all ghosts, cuts [140]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (3383)]
+prove with [all ghosts, cuts [140]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb67c*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (1)]
+prove with [all ghosts, cuts [141]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69c*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (-1)]
+prove with [all ghosts, cuts [141]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6bc*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (-3383)]
+prove with [all ghosts, cuts [142]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6dc*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (3383)]
+prove with [all ghosts, cuts [142]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5fe*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (1)]
+prove with [all ghosts, cuts [143]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (-1)]
+prove with [all ghosts, cuts [143]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb63e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (-3383)]
+prove with [all ghosts, cuts [144]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (3383)]
+prove with [all ghosts, cuts [144]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb67e*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (1)]
+prove with [all ghosts, cuts [145]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69e*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (-1)]
+prove with [all ghosts, cuts [145]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6be*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (-3383)]
+prove with [all ghosts, cuts [146]],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6de*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (3383)]
+prove with [all ghosts, cuts [146]]&& and [
+  true
+];
+
 (* #! <- SP = 0x7fffffffa038 *)
 #! 0x7fffffffa038 = 0x7fffffffa038;
 (* #retq                                           #! PC = 0x555555558a27 *)
 #retq                                           #! 0x555555558a27 = 0x555555558a27;
 
 {
-true
-&&
-true
+and [
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e0*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb500*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb520*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb540*(y_1_0**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb560*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb580*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a0*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c0*(y_1_1**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e2*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb502*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb522*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb542*(y_1_2**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb562*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb582*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a2*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c2*(y_1_3**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e4*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb504*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb524*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb544*(y_1_4**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb564*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb584*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a4*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c4*(y_1_5**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e6*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb506*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb526*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb546*(y_1_6**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb566*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb586*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a6*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c6*(y_1_7**0)
+  )
+  [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4e8*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb508*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb528*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb548*(y_1_8**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb568*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb588*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5a8*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5c8*(y_1_9**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ea*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54a*(y_1_10**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56a*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58a*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5aa*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ca*(y_1_11**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ec*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54c*(y_1_12**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56c*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58c*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ac*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5cc*(y_1_13**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4ee*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb50e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb52e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb54e*(y_1_14**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb56e*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb58e*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ae*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ce*(y_1_15**0)
+  )
+  [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f0*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb510*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb530*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb550*(y_1_16**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb570*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb590*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b0*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d0*(y_1_17**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f2*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb512*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb532*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb552*(y_1_18**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb572*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb592*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b2*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d2*(y_1_19**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f4*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb514*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb534*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb554*(y_1_20**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb574*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb594*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b4*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d4*(y_1_21**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f6*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb516*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb536*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb556*(y_1_22**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb576*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb596*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b6*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d6*(y_1_23**0)
+  )
+  [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4f8*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb518*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb538*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb558*(y_1_24**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb578*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb598*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5b8*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5d8*(y_1_25**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fa*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55a*(y_1_26**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57a*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59a*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5ba*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5da*(y_1_27**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fc*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55c*(y_1_28**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57c*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59c*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5bc*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5dc*(y_1_29**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb4fe*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb51e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb53e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb55e*(y_1_30**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb57e*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb59e*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5be*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb5de*(y_1_31**0)
+  )
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (3383)]
+] prove with [cuts [73, 147]] && and [
+  true
+]
 }
-
