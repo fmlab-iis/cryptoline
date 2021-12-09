@@ -436,16 +436,22 @@ val ssa_spec : spec -> spec
 (** Cut *)
 
 (*
- * Cut algebra specifications in SSA.
- * Note that this function removes all rcut instructions.
+ * Cut algebra specifications in SSA and return `(espec list) list`
+ * The i-th item in the returned list represents the specifications for
+ * the i-th cut. Each cut corresponds to one `espec list` because different
+ * prove-with clauses may be used. Note that this function removes all range
+ * properties in Icut instructions.
  *)
-val cut_espec : espec -> espec list
+val cut_espec : espec -> (espec list) list
 
 (*
- * Cut range specifications in SSA.
- * Note that this function removes all ecut instructions.
+ * Cut range specifications in SSA and return `(rspec list) list`
+ * The i-th item in the returned list represents the specifications for
+ * the i-th cut. Each cut corresponds to one `rspec list` because different
+ * prove-with clauses may be used. Note that this function removes all algebraic
+ * properties in Icut instructions.
  *)
-val cut_rspec : rspec -> rspec list
+val cut_rspec : rspec -> (rspec list) list
 
 
 
