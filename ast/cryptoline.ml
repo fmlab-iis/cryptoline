@@ -2063,8 +2063,11 @@ let ssa_spec s =
 (** Cut *)
 
 (*
- * Cut algebra specifications in SSA.
- * Note that this function removes all range properties in Icut instructions.
+ * Cut algebra specifications in SSA and return `(espec list) list`
+ * The i-th item in the returned list represents the specifications for
+ * the i-th cut. Each cut corresponds to one `espec list` because different
+ * prove-with clauses may be used. Note that this function removes all range
+ * properties in Icut instructions.
  *)
 let cut_espec es =
   let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
@@ -2072,7 +2075,7 @@ let cut_espec es =
     | [] ->
        let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = post; espwss = [] } in
-       spec::res
+       [spec]::res
     | (Icut ([], _) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl ->
        let specs =
@@ -2084,15 +2087,18 @@ let cut_espec es =
              let spec = { espre = pre; esprog = prove_with@visited; espost = e; espwss = [] } in
              spec::res
            ) [] ecuts in
-       helper (specs @ res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
+       helper (specs::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
   List.rev (helper [] (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost))
 
 (*
- * Cut range specifications in SSA.
- * Note that this function removes all Iecut instructions.
+ * Cut range specifications in SSA and return `(rspec list) list`
+ * The i-th item in the returned list represents the specifications for
+ * the i-th cut. Each cut corresponds to one `rspec list` because different
+ * prove-with clauses may be used. Note that this function removes all algebraic
+ * properties in Icut instructions.
  *)
 let cut_rspec rs =
   let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
@@ -2100,7 +2106,7 @@ let cut_rspec rs =
     | [] ->
        let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = post; rspwss = [] } in
-       spec::res
+       [spec]::res
     | (Icut (_, []) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
        let specs =
@@ -2112,7 +2118,7 @@ let cut_rspec rs =
              let spec = { rspre = pre; rsprog = prove_with@visited; rspost = e; rspwss = [] } in
              spec::res
            ) [] rcuts in
-       helper (specs @ res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
+       helper (specs::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in

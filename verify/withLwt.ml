@@ -8,18 +8,19 @@ open Common
 (* open Lwt.Infix *)
 
 let apply_to_cuts_lwt cuts_ref f def combine ss =
-  let rec helper i ss =
+  let rec helper res i ss =
     match ss with
-    | [] -> def
+    | [] -> res
     | hd::tl ->
        match !cuts_ref with
        | Some cuts when not (List.mem i cuts) ->
           let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-          helper (i+1) tl
+          helper res (i+1) tl
        | _ ->
           let cut_header = ("== Cut #" ^ string_of_int i ^ " ==") in
-          combine (f cut_header hd) (fun () -> helper (i+1) tl) in
-  helper 0 ss
+          let res = List.fold_left (fun res s -> combine res (fun () -> f cut_header s)) res hd in
+          combine res (fun () -> helper res (i+1) tl) in
+  helper def 0 ss
 
 let rec flatten_espec s =
   match s.espost with
@@ -876,7 +877,7 @@ let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cut
               let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
               verify_rec (i+1) tl (res, pending)
            | _ ->
-              let (res', pending') = verify_ands i (flatten_spec hd) (res, pending) in
+              let (res', pending') = verify_ands i (List.flatten (List.map flatten_spec hd)) (res, pending) in
               verify_rec (i+1) tl (res', pending')
          end
        else
