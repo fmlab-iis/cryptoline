@@ -1,0 +1,299 @@
+// [PackageDev] target_format: plist, ext: tmLanguage
+{ "name": "Cryptoline",
+  "scopeName": "source.cryptoline",
+  "fileTypes": [".cl"],
+  "uuid": "af276db7-b1e4-4fe4-b0f6-712121d6f4c2",
+
+  "patterns": [
+    { "include": "#common" },
+    { "include": "#constant-decl" },
+    { "include": "#proc-decl" },
+    { "include": "#instruction" }
+  ],
+  "repository": {
+    "common": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#integer" }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "match": "//.*",
+          "name": "comment.line.double-slash",
+          "comment": "line comment"
+        },
+        {
+          "match": "#.*",
+          "name": "comment.line.number-sign",
+          "comment": "line comment"
+        },
+        {
+          "begin": "/\\*",
+          "end": "\\*/",
+          "name": "comment.block.c-style",
+          "comment": "C-style block comment"
+        },
+        {
+          "begin": "\\(\\*",
+          "end": "\\*\\)",
+          "name": "comment.block.ml-style",
+          "comment": "ML-style block comment, but without nesting (like in C)"
+        }
+      ]
+    },
+    "constant-decl": {
+      "patterns": [
+        {
+          "begin": "\\b(const)\\b",
+          "end": "(?=\\d+)",
+          "beginCaptures": {
+            "1": { "name": "keyword.operator" }
+          },
+          "patterns": [
+            {
+              "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+              "name": "variable.other"
+            },
+            { "include": "#common" }
+          ]
+        }
+      ]
+    },
+    "integer": {
+      "patterns": [
+        {
+          "match": "\\b(\\d+)\\b",
+          "name": "constant.numeric.decimal"
+        },
+        {
+          "match": "\\b(0x[0-9a-fA-F]+)\\b",
+          "name": "constant.numeric.hexadecimal"
+        }
+      ]
+    },
+
+    "proc-decl": {
+      "patterns": [
+        {
+          "begin": "\\b(proc)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.declaration.proc.cryptoline" }
+          },
+          "end": "\\)",
+          "patterns": [
+            { "include": "#common" },
+            {
+              "match": "\\b(main)\\b",
+              "name": "entity.name.function.main"
+            },
+            { "include": "#proc-formals" }
+          ]
+        },
+        {
+          "begin": "({)",
+          "end": "(})",
+          "captures": {
+            "1": { "name": "keyword.operator" }
+          },
+
+          "patterns": [
+            { "include": "#specification" }
+          ]
+        }
+      ]
+    },
+    "proc-formals": {
+      "patterns": [
+        {
+          "begin": "\\(",
+          "end": "(?=\\))",
+          "patterns": [
+            { "include": "#common" },
+            { "include": "#variable" }
+          ]
+        }
+      ]
+    },
+
+    "variable": {
+      "patterns": [
+        {
+          "begin": "\\b([su]?int\\d+|bit)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.type" }
+          },
+          "end": "(?![\\w\\s@])"
+        },
+        { "include": "#type" }
+      ]
+    },
+
+    "type": {
+      "patterns": [
+        {
+          "begin": "(@)",
+          "beginCaptures": {
+            "1": { "name": "keyword.operator" }
+          },
+          "patterns": [
+            {
+              "match": "\\b([su]?int\\d+|bit)\\b",
+              "name": "entity.name.type"
+            }
+          ],
+          "end": "(?![\\d])"
+        }
+      ]
+    },
+
+    "operator": {
+      "patterns": [
+        {
+          "match": "(\\+|-|\\*|\\*\\*)",
+          "name": "keyword.operator.arithmetic"
+        },
+        {
+          "match": "(=)",
+          "name": "keyword.operator.comparison"
+        },
+        {
+          "match": "([<>]=?[su]?)",
+          "name": "keyword.operator.comparison"
+        },
+        {
+          "match": "(!|\\bneg\\b|~)",
+          "name": "keyword.operator.logical",
+          "comment": "Some functions are operators too, such as 'and'."
+        }
+      ]
+    },
+
+    "specification": {
+      "patterns": [
+        { "include": "#common" },
+        { "include": "#operator" },
+        {
+          "match": "(&&)",
+          "name": "keyword.other",
+          "comment": "Not separating espec and rspec for simplicity, but it's possible"
+        },
+        {
+          "match": "\\b(true)\\b",
+          "name": "constant.language.true.cryptoline"
+        },
+        {
+          "match": "\\b(and|or|eq|eq[us]?mod|eqsrem|const|[us]ext|[us]limbs)\\b",
+          "name": "support.function",
+          "comment": "TODO: specialize these functions"
+        },
+        {
+          "match": "\\b([us]?mod|srem)\\b",
+          "name": "keyword.other"
+        },
+        {
+          "match": "(/\\\\|\\\\/)",
+          "name": "support.function"
+        },
+        {
+          "match": "\\b(add|mul|sq)\\b",
+          "name": "support.function",
+          "comment": "functions only for algebraic specs"
+        },
+        {
+          "begin": "(@)",
+          "end": "(?![\\d])",
+          "beginCaptures": {
+            "1": { "name": "keyword.operator" }
+          },
+          "contentName": "entity.name.type",
+          "comment": "Marking bit-widths such as 19@16"
+        },
+        {
+          "match": "\\b(prove|with|all|cuts|assumes|ghosts|precondition)\\b",
+          "name": "keyword.other"
+        }
+      ]
+    },
+
+    "instruction": {
+      "patterns": [
+        { "include": "#common" },
+        {
+          "begin": "\\b(assert|assume|cut)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control" }
+          },
+          "end": "(?=;)",
+          "patterns": [
+            { "include": "#instruction-args" },
+            { "include": "#specification" }
+          ]
+        },
+        {
+          "begin": "\\b(ghost)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control" }
+          },
+          "end": "(?=;)",
+          "patterns": [
+            { "include": "#instruction-args" },
+            { "include": "#specification" },
+            { "include": "#variable" }
+          ],
+          "comment": "TODO: specialize ghost-declared variables"
+        },
+        {
+          "begin": "(c?mov|c?shl|c?lsl|set|clear|nondet|c?move|nop)\\b",
+          "end": "(?=;)",
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.function.instruction"
+            }
+          },
+          "patterns": [
+            { "include": "#common" },
+            { "include": "#instruction-args" },
+            { "include": "#variable" }
+          ],
+          "comment": "assignment instuctions"
+        },
+        {
+          "match": "\\b[su]?(add[sr]?|[su]?adc[sr]?|sub[sbcr]?|sbc[sr]?|sbb[sr]?|mul[srlj]?|spl|split)\\b",
+          "name": "entity.name.function.instruction",
+          "comment": "arithmetic instructions"
+        },
+        {
+          "match": "\\b(and|or|not)\\b",
+          "name": "entity.name.function.instruction",
+          "comment": "bitwise instuctions"
+        },
+        {
+          "match": "\\b(cast|vpc|join)\\b",
+          "name": "entity.name.function.instruction",
+          "comment": "casting instuctions"
+        },
+        {
+          "match": "\\b(call)\\b",
+          "name": "entity.name.function.instruction.call",
+          "comment": "call instruction (arguments TODO)"
+        }
+      ]
+    },
+
+    "instruction-args": {
+      "patterns": [
+        {
+          "begin": "(\\$)",
+          "beginCaptures": {
+            "1": { "name": "keyword.operator.deref" }
+          },
+          "end": "(?![0-9a-zA-Z_])",
+          "contentName": "variable.other"
+        }
+      ]
+    }
+
+  }
+}
