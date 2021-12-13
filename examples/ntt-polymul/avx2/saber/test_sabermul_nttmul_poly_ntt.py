@@ -14,7 +14,7 @@
 # L0x555555560800-L0x55555556093e (_ZETAS, 160個)
 # L0x555555560940-L0x555555560b3e (_TWIST32, 256個, off=0)
 # L0x555555560b40-L0x555555560d3e (_TWIST32, 256個, off=1, note: _TWIST32共有512個)
-# L0x555555560d50-L0x555555560dbe (_TWISTS4的第三個開始, 56個)
+# L0x555555560d40-L0x555555560dbe (_TWISTS4, 64個)
 # L0x7fffffffaee0-L0x7fffffffb0de (input coefficients, 256個)
 # L0x7fffffffb4e0-L0x7fffffffb6de (output coefficients, 256個)
 
