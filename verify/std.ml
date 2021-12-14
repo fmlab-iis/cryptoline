@@ -21,18 +21,19 @@ let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_
  * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
  *)
 let apply_to_cuts cuts_ref f def combine ss =
-  let rec helper i ss =
+  let rec helper res i ss =
     match ss with
-    | [] -> def
+    | [] -> res
     | hd::tl ->
        match !cuts_ref with
        | Some cuts when not (List.mem i cuts) ->
           let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-          helper (i+1) tl
+          helper res (i+1) tl
        | _ ->
           let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-          combine (f hd) (fun () -> helper (i+1) tl) in
-  helper 0 ss
+          let res = List.fold_left (fun res s -> combine res (fun () -> f s)) res hd in
+          combine res (fun () -> helper res (i+1) tl) in
+  helper def 0 ss
 
 (** Verification *)
 
@@ -620,7 +621,7 @@ let redlog_of_espec es =
 
 let redlog_of_espec es =
   let ess = cut_espec es in
-  String.concat "\n\n" (List.map redlog_of_espec ess)
+  String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
 
 let verify_spec s =
   let vgen = vgen_of_spec s in
