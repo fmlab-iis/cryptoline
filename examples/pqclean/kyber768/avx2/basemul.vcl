@@ -1,5 +1,5 @@
 (*
-quine: cv -v -isafety -jobs 24 -no_carry_constraint -slicing basemul.cl
+quine: cv -v -isafety -jobs 24 -no_carry_constraint -slicing basemul.vcl
 Parsing Cryptoline file:                [OK]            0.049982 seconds
 Checking well-formedness:               [OK]            0.042775 seconds
 Transforming to SSA form:               [OK]            0.013076 seconds
