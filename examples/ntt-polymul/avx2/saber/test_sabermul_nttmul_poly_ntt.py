@@ -699,7 +699,7 @@ def str_post():
         str_level6to7_algebra(
             poly_name="inp_poly",
             args=[("zeta_0_{}".format(i//32+4*off), "y_0_{}".format(i//32+4*off), "zeta_1_{}".format(i//4+32*off), "y_1_{}".format(i//4+32*off),
-                  ["L0x{:x}".format(ANS_BASE + 2*(i%8*16 + i//8 + off*128))], get_ntt_mod_level3to7(i%4)) for i in range(128) for off in range(1)],
+                  ["L0x{:x}".format(ANS_BASE + 2*(i%8*16 + i//8 + off*128))], get_ntt_mod_level3to7(i%4)) for i in range(128) for off in range(2)],
             expn=1
         ),
         "] prove with [cuts [{0}]] && and [".format(", ".join(level7_summary_ecut_ids)),

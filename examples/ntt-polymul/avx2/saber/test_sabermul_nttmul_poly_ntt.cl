@@ -25261,9 +25261,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5e0*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb500*(y_1_0**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb600*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25273,9 +25285,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb620*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb540*(y_1_0**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_0 * y_1_0, y_1_0**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb640*(y_1_32**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_32 * y_1_32, y_1_32**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25285,9 +25309,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb660*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb580*(y_1_1**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb680*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25297,9 +25333,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6a0*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5c0*(y_1_1**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_1 * y_1_1, y_1_1**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c0*(y_1_33**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_33 * y_1_33, y_1_33**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25309,9 +25357,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5e2*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb502*(y_1_2**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb602*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25321,9 +25381,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb622*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb542*(y_1_2**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_2 * y_1_2, y_1_2**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb642*(y_1_34**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_34 * y_1_34, y_1_34**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25333,9 +25405,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb662*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb582*(y_1_3**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb682*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25345,9 +25429,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6a2*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5c2*(y_1_3**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_3 * y_1_3, y_1_3**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c2*(y_1_35**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_35 * y_1_35, y_1_35**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25357,9 +25453,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5e4*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb504*(y_1_4**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb604*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25369,9 +25477,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb624*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb544*(y_1_4**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_4 * y_1_4, y_1_4**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb644*(y_1_36**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_36 * y_1_36, y_1_36**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25381,9 +25501,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb664*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb584*(y_1_5**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb684*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25393,9 +25525,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6a4*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5c4*(y_1_5**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_5 * y_1_5, y_1_5**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c4*(y_1_37**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_37 * y_1_37, y_1_37**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25405,9 +25549,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5e6*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb506*(y_1_6**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb606*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25417,9 +25573,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb626*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb546*(y_1_6**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_6 * y_1_6, y_1_6**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb646*(y_1_38**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_38 * y_1_38, y_1_38**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25429,9 +25597,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb666*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb586*(y_1_7**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb686*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25441,9 +25621,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6a6*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5c6*(y_1_7**0)
   )
   [7681, x0 - zeta_0_0 * y_0_0, y_0_0 - zeta_1_7 * y_1_7, y_1_7**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c6*(y_1_39**0)
+  )
+  [7681, x0 - zeta_0_4 * y_0_4, y_0_4 - zeta_1_39 * y_1_39, y_1_39**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25453,9 +25645,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5e8*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb508*(y_1_8**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb608*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25465,9 +25669,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb628*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb548*(y_1_8**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_8 * y_1_8, y_1_8**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb648*(y_1_40**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_40 * y_1_40, y_1_40**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25477,9 +25693,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb668*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb588*(y_1_9**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb688*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25489,9 +25717,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6a8*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5c8*(y_1_9**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_9 * y_1_9, y_1_9**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6c8*(y_1_41**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_41 * y_1_41, y_1_41**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25501,9 +25741,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5ea*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb50a*(y_1_10**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25513,9 +25765,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb62a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb54a*(y_1_10**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_10 * y_1_10, y_1_10**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64a*(y_1_42**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_42 * y_1_42, y_1_42**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25525,9 +25789,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb66a*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb58a*(y_1_11**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68a*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25537,9 +25813,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6aa*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5ca*(y_1_11**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_11 * y_1_11, y_1_11**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ca*(y_1_43**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_43 * y_1_43, y_1_43**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25549,9 +25837,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5ec*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb50c*(y_1_12**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25561,9 +25861,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb62c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb54c*(y_1_12**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_12 * y_1_12, y_1_12**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64c*(y_1_44**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_44 * y_1_44, y_1_44**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25573,9 +25885,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb66c*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb58c*(y_1_13**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68c*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25585,9 +25909,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6ac*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5cc*(y_1_13**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_13 * y_1_13, y_1_13**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6cc*(y_1_45**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_45 * y_1_45, y_1_45**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25597,9 +25933,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5ee*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb50e*(y_1_14**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb60e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25609,9 +25957,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb62e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb54e*(y_1_14**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_14 * y_1_14, y_1_14**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb64e*(y_1_46**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_46 * y_1_46, y_1_46**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25621,9 +25981,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb66e*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb58e*(y_1_15**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb68e*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25633,9 +26005,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6ae*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5ce*(y_1_15**0)
   )
   [7681, x0 - zeta_0_1 * y_0_1, y_0_1 - zeta_1_15 * y_1_15, y_1_15**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6ce*(y_1_47**0)
+  )
+  [7681, x0 - zeta_0_5 * y_0_5, y_0_5 - zeta_1_47 * y_1_47, y_1_47**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25645,9 +26029,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5f0*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb510*(y_1_16**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb610*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25657,9 +26053,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb630*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb550*(y_1_16**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_16 * y_1_16, y_1_16**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb650*(y_1_48**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_48 * y_1_48, y_1_48**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25669,9 +26077,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb670*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb590*(y_1_17**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb690*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25681,9 +26101,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6b0*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5d0*(y_1_17**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_17 * y_1_17, y_1_17**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d0*(y_1_49**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_49 * y_1_49, y_1_49**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25693,9 +26125,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5f2*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb512*(y_1_18**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb612*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25705,9 +26149,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb632*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb552*(y_1_18**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_18 * y_1_18, y_1_18**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb652*(y_1_50**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_50 * y_1_50, y_1_50**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25717,9 +26173,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb672*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb592*(y_1_19**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb692*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25729,9 +26197,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6b2*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5d2*(y_1_19**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_19 * y_1_19, y_1_19**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d2*(y_1_51**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_51 * y_1_51, y_1_51**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25741,9 +26221,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5f4*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb514*(y_1_20**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb614*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25753,9 +26245,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb634*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb554*(y_1_20**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_20 * y_1_20, y_1_20**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb654*(y_1_52**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_52 * y_1_52, y_1_52**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25765,9 +26269,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb674*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb594*(y_1_21**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb694*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25777,9 +26293,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6b4*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5d4*(y_1_21**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_21 * y_1_21, y_1_21**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d4*(y_1_53**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_53 * y_1_53, y_1_53**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25789,9 +26317,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5f6*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb516*(y_1_22**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb616*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25801,9 +26341,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb636*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb556*(y_1_22**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_22 * y_1_22, y_1_22**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb656*(y_1_54**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_54 * y_1_54, y_1_54**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25813,9 +26365,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb676*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb596*(y_1_23**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb696*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25825,9 +26389,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6b6*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5d6*(y_1_23**0)
   )
   [7681, x0 - zeta_0_2 * y_0_2, y_0_2 - zeta_1_23 * y_1_23, y_1_23**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d6*(y_1_55**0)
+  )
+  [7681, x0 - zeta_0_6 * y_0_6, y_0_6 - zeta_1_55 * y_1_55, y_1_55**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25837,9 +26413,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5f8*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb518*(y_1_24**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb618*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25849,9 +26437,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb638*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb558*(y_1_24**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_24 * y_1_24, y_1_24**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb658*(y_1_56**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_56 * y_1_56, y_1_56**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25861,9 +26461,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb678*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb598*(y_1_25**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb698*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25873,9 +26485,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6b8*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5d8*(y_1_25**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_25 * y_1_25, y_1_25**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6d8*(y_1_57**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_57 * y_1_57, y_1_57**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25885,9 +26509,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5fa*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb51a*(y_1_26**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25897,9 +26533,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb63a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb55a*(y_1_26**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_26 * y_1_26, y_1_26**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65a*(y_1_58**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_58 * y_1_58, y_1_58**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25909,9 +26557,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb67a*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb59a*(y_1_27**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69a*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25921,9 +26581,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6ba*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5da*(y_1_27**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_27 * y_1_27, y_1_27**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6da*(y_1_59**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_59 * y_1_59, y_1_59**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25933,9 +26605,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5fc*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb51c*(y_1_28**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25945,9 +26629,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb63c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb55c*(y_1_28**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_28 * y_1_28, y_1_28**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65c*(y_1_60**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_60 * y_1_60, y_1_60**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25957,9 +26653,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb67c*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb59c*(y_1_29**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69c*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25969,9 +26677,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6bc*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5dc*(y_1_29**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_29 * y_1_29, y_1_29**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6dc*(y_1_61**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_61 * y_1_61, y_1_61**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25981,9 +26701,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb5fe*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb51e*(y_1_30**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb61e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -25993,9 +26725,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb63e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb55e*(y_1_30**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_30 * y_1_30, y_1_30**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb65e*(y_1_62**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_62 * y_1_62, y_1_62**1 - (3383)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -26005,9 +26749,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb67e*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb59e*(y_1_31**0)
   )
   [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (-1)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb69e*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (-1)],
 eqmod
   (inp_poly * inp_poly)
   (
@@ -26017,9 +26773,21 @@ eqmod
 eqmod
   (inp_poly * inp_poly)
   (
+    L0x7fffffffb6be*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (-3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
     L0x7fffffffb5de*(y_1_31**0)
   )
-  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (3383)]
+  [7681, x0 - zeta_0_3 * y_0_3, y_0_3 - zeta_1_31 * y_1_31, y_1_31**1 - (3383)],
+eqmod
+  (inp_poly * inp_poly)
+  (
+    L0x7fffffffb6de*(y_1_63**0)
+  )
+  [7681, x0 - zeta_0_7 * y_0_7, y_0_7 - zeta_1_63 * y_1_63, y_1_63**1 - (3383)]
 ] prove with [cuts [73, 147]] && and [
   true
 ]
