@@ -1,50 +1,169 @@
+#!/usr/bin/env python3
 
-const_base = 0x555555560700
-in_base    = 0x7fffffffbb20
-out_base   = 0x7fffffffbb20
+# 1. to_zdsl.py --no-main --no-pre --no-post test_sabermul_nttmul_poly_invntt_tomont.gas 1> test_sabermul_nttmul_poly_invntt_tomont_preprocessed.cl
+# 2. ./test_sabermul_nttmul_poly_invntt_tomont.py test_sabermul_nttmul_poly_invntt_tomont_preprocessed.cl > test_sabermul_nttmul_poly_invntt_tomont.cl
 
-P = 7681 
-R = 2**16
-ZETA = 62 # 10 for 10753
-PINV = (P**(2**15-1))%R - R
-MONT = (R % P) - P
-MONT_PINV = -9
-V = int (2**27/P + 0.5)
-SHIFT = 16
-F = ((R**2)//256)%P
-F_PINV = (F*PINV)%R - R
+# Inputs:
+# %rdx = 0x55555555f7c0
+# L0x555555560700-L0x55555556071e (全都是_16XP = 7681, 16個)
+# L0x555555560780-L0x55555556079e (全都是_16XMONT_PINV = -9, 16個)
+# L0x5555555607a0-L0x5555555607be (全都是_16XMONT = -3593 = 2^16 mod 7681, 16個)
+# L0x555555560800-L0x55555556093e (_ZETAS, 160個)
+# L0x555555560940-L0x555555560b3e (_TWIST32, 256個, off=0)
+# L0x555555560b40-L0x555555560d3e (_TWIST32, 256個, off=1, note: _TWIST32共有512個)
+# L0x555555560d40-L0x555555560dbe (_TWISTS4, 64個)
+# L0x7fffffffbb20-L0x7fffffffbd1e (input coefficients, 256個)
+# L0x7fffffffbb20-L0x7fffffffbd1e (output coefficients, 256個)
 
-pdata7681 = [
-#define _16XP 0
-  P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P,
+import re, math
+from argparse import ArgumentParser
 
-#define _16XPINV 16
-  PINV, PINV, PINV, PINV, PINV, PINV, PINV, PINV,
-  PINV, PINV, PINV, PINV, PINV, PINV, PINV, PINV,
+ORIGINAL_N = 256
+ORIGINAL_P = 8192
+P = 7681
+PINV = -7679   # p^-1 mod 2^16, -7679 * 7681 = 1 (mod 2^16)
+MONT = -3593   # 2^16 mod p, -3593 = 4088 (mod 7681)
+MONT_PINV = -9 # (MONT * p^-1) mod 2^16, -9*7681 = -3593 (mod 2^16)
+ROOT = 62      # 62**256 = -1 (mod 7681)
+# 2^(-16) mod 7681 = 900
+_16XP_BASE = 0x555555560700
+_16XP_NUM = 16
+_16XMONT_PINV_BASE = 0x555555560780
+_16XMONT_PINV_NUM = 16
+_16XMONT_BASE = 0x5555555607a0
+_16XMONT_NUM = 16
+_ZETAS_BASE = 0x555555560800
+_ZETAS_NUM = 160
+_TWIST32_BASE = 0x555555560940
+_TWIST32_NUM = 512
+_TWISTS4_BASE = 0x555555560d40
+_TWISTS4_NUM = 64
+INPUT_BASE = 0x7fffffffbb20 # (L0x7fffffffbb20 ~ L0x7fffffffbd1e)
+INPUT_NUM = 256
+ANS_BASE = 0x7fffffffbb20 # (L0x7fffffffbb20 ~ L0x7fffffffbd1e)
+ANS_NUM = 256
+LEVEL3_TWIST = [62, 4236, 4600, 5805, 217, 7145, 738, 1115]
+LEVEL7_TWIST = [1, 1213, 7154, 7098, 1366, 2648, 2132, 2446]
+POLY_NAME = "inp_poly"
+POLY_VAR = "x"
 
-#define _16XV 32
-  V, V, V, V, V, V, V, V, V, V, V, V, V, V, V, V,
+def join_chunks(xs, glue, n, indent=0):
+    return [" " * indent + glue.join(xs[i:i + n]) for i in range(0, len(xs), n)]
 
-#define _16XSHIFT 48
-  SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT,
-  SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT,
+def num_to_bits (n, w):
+    r = []
+    for i in range (w):
+        r.append (n % 2)
+        n //= 2
+    return (r)
 
-#define _16XMONT_PINV 64
+def bits_to_num (l):
+    r = 0
+    for i in range (len(l) - 1, -1, -1):
+        r = r * 2 + l[i]
+    return (r)
+
+def normalize(i, p):
+    i = i % p
+    return i - p if i > p//2 else i
+
+def ntt_mod(num_ans, prime, mont, root, negacyclic, stage):
+    num_rings = 2**stage
+    num_coeffs = num_ans // num_rings
+    n_expn = int(math.log(num_ans, 2))
+    num_bits = n_expn + 1 if negacyclic else n_expn
+    res = []
+    for i in range (num_rings):
+        if negacyclic:
+            l = num_to_bits(i, stage)
+            l.reverse()
+            l.insert(0, 1)
+            l = [0 for i in range(num_bits - stage - 1)] + l
+        else:
+            l = num_to_bits(i, num_bits)
+            l.reverse()
+        e = bits_to_num(l)
+        modulo = (root**e) % prime
+        modulo_mont = (modulo * mont) % prime
+        modulo = modulo - prime if modulo > prime / 2 else modulo
+        modulo_mont = modulo_mont - prime if modulo_mont > prime / 2 else modulo_mont
+        res.append(dict(modulo = modulo, mont = modulo_mont))
+    return res
+
+def get_ntt_mod_level3to7(i):
+    if i < 2:
+        return 1 if i % 2 == 0 else -1
+    else:
+        s = 0
+        j = 0
+        n = int(math.log(ORIGINAL_N, 2))
+        for k in range(2, n + 1):
+            if i < math.pow(2, k):
+                s = k - 1
+                break
+        j = i % pow(2, s)
+        return ntt_mod(num_ans=ANS_NUM, prime=P, mont=MONT, root=ROOT, negacyclic=True, stage=s)[j]["modulo"]
+    return 0
+
+def make_ymms(ymms, off, num):
+    return ["ymm{}_{:x}".format(ymm, off + i) for ymm in ymms for i in range(num)]
+
+def make_eqmod(poly_name, poly_mult, ymms, coefs, mods, mon_per_line=4):
+    return "\n".join([
+        "eqmod",
+        "  {1}({0} * {0})".format(poly_name, "" if poly_mult == 1 else (str(poly_mult) + " * ")),
+        "  (",
+        " +\n".join(join_chunks(["{0}*({1}**{2})".format(ymms[i], coefs[i], i) for i in range(len(ymms))], " + ", mon_per_line, indent=4)),
+        "  )",
+        "  [{}]".format(", ".join(mods))
+    ])
+
+def print_comment(str):
+    print("(* {} *)".format(str))
+
+def str_ghost(typed_vars, easserts, rasserts):
+    return "\n".join([
+             "ghost {} :".format(", ".join(["{0}@{1}".format(var, typ) for (var, typ) in typed_vars])),
+             "and [",
+             "  {}".format("true" if len(easserts) == 0 else ",\n  ".join(easserts)),
+             "] && and [",
+             "  {}".format("true" if len(rasserts) == 0 else ",\n  ".join(rasserts)),
+             "];"
+           ])
+
+def str_main_args ():
+    return "\n".join([
+        "(* parameters *)\n",
+        ",\n".join(join_chunks(["sint16 f{:03d}".format(i) for i in range(INPUT_NUM)], ", ", 4))])
+
+def str_precondition_algebra ():
+    return "\n".join([
+        "(* algebraic precondition *)\n",
+        "true"])
+
+def str_precondition_range ():
+    return "\n".join([
+        "(* range precondition *)\n",
+        "and [",
+        format(",\n".join(join_chunks(["(-{0})@16 <s f{1:03d}, f{1:03d} <s {0}@16".format(7681, i) for i in range(INPUT_NUM)], ", ", 4))),
+        "]"])
+
+def str_inits ():
+    return "\n".join([
+        "(* inits *)\n",
+        "\n".join(join_chunks(["mov L0x{:x} f{:03d};".format(INPUT_BASE + 2 * i, i) for i in range(INPUT_NUM)], " ", 4))])
+
+def str_twiddles ():
+    _16XP = [ P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P ]
+    _16XMONT_PINV = [
   MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV,
-  MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV,
-
-#define _16XMONT 80
+  MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV
+        ]
+    _16XMONT = [
   MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT,
-  MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT,
-
-#define _16XF_PINV 96
-  F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV,
-  F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV,
-
-#define _16XF 112
-  F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F,
-
-#define _ZETAS 128
+  MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT
+        ]
+    _ZETAS = [
    28865,  28865,  28865,  28865,  28865,  28865,  28865,  28865,
    28865,  28865,  28865,  28865,  28865,  28865,  28865,  28865,
     3777,   3777,   3777,   3777,   3777,   3777,   3777,   3777,
@@ -64,9 +183,9 @@ pdata7681 = [
    14744,  14744,  14744,  14744,  14744,  14744,  14744,  14744,
    -4974,  -4974,  -4974,  -4974,  -4974,  -4974,  -4974,  -4974,
     2456,   2456,   2456,   2456,   2456,   2456,   2456,   2456,
-    2194,   2194,   2194,   2194,   2194,   2194,   2194,   2194,
-
-#define _TWIST32 288
+    2194,   2194,   2194,   2194,   2194,   2194,   2194,   2194
+        ]
+    _TWIST32 = [
       -9,   -529,  32738,  -1851,     -9,  29394,  -7508, -20435,
       -9,  26288,   9855, -19215,     -9,  16006, -12611,   -964,
    -3593,    -17,  -1054,   3781,  -3593,   3794,   2732,  -2515,
@@ -130,9 +249,9 @@ pdata7681 = [
    -5913,  27636, -32329,  -2952,  29667,  23984, -10409,   8831,
   -11792,  14138,  13541,  31518,  11783,  30844, -15358, -19274,
    -1305,   1012,  -3145,   1144,   3555,   -592,   2391,   1151,
-   -3600,    826,   2789,   -226,      7,    124,      2,   2230,
-
-#define _TWIST4 800
+   -3600,    826,   2789,   -226,      7,    124,      2,   2230
+        ]
+    _TWISTS4 = [
       -9, -16425, -28865,  10350,  -3593,  -3625,  -3777,   3182,
       -9, -10350,  28865,  16425,  -3593,  -3182,   3777,   3625,
       -9,   4496, -10350,  14744,  -3593,  -3696,  -3182,   2456,
@@ -141,143 +260,305 @@ pdata7681 = [
       -9, -22593,   7244, -20315,  -3593,   2495,   1100,   1701,
       -9, -18191,  14744, -23754,  -3593,  -2319,   2456,  -2250,
       -9, -20870,   4974, -22593,  -3593,  -1414,  -2194,   2495
-]
+        ]
+    twiddles = [
+        ("_16XP", _16XP, _16XP_BASE),
+        ("_16XMONT_PINV", _16XMONT_PINV, _16XMONT_PINV_BASE),
+        ("_16XMONT", _16XMONT, _16XMONT_BASE),
+        ("_ZETAS", _ZETAS, _ZETAS_BASE),
+        ("_TWIST32", _TWIST32, _TWIST32_BASE),
+        ("_TWISTS4", _TWISTS4, _TWISTS4_BASE)
+        ]
+    res = []
+    for (name, arr, base) in twiddles:
+        res.append("\n(* {} *)\n".format(name))
+        res.append("\n".join(join_chunks(["mov L0x{:x} ({:4d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
+    return "\n".join(res)
 
-def num_to_bits (n, w):
-    r = []
-    for i in range (w):
-        r.append (n % 2)
-        n //= 2
-    return (r)
+def str_init_poly_var():
+    return ("ghost {}@sint16 : true && true;").format(POLY_VAR)
 
-def bits_to_num (l):
-    r = 0
-    for i in range (len(l) - 1, -1, -1):
-        r = r * 2 + l[i]
-    return (r)
+def str_init_poly(off):
+    return str_ghost([("{0}{1}".format(POLY_NAME, i + off*128), "sint16") for i in range(128)],
+                     ["{0}{1} * {0}{1} = {2}".format(POLY_NAME, i + off*128, "L0x{:x}".format(INPUT_BASE + (i%8*16 + i//8 + off*128)*2)) for i in range(128)],
+                     [])
 
-# convert ymm registers of the given indices to coefficient list
-def ymm2coeffs (indices, slice_size):
-    idxs = []
-    for i in range (len (indices)):
-        cur = []
-        for j in range (16):
-            cur.append ('ymm' + str(indices[i]) + '_' + '{0:x}'.format (j))
-        idxs.append (cur)
-    ret = []
-    for k in range (16//slice_size):
-        for i in range (len (indices)):
-            ret = ret + idxs[i][(k*slice_size):((k+1)*slice_size)]
-    return (ret)
+def get_algebra(args, expn, mon_per_line=4):
+    return [
+        make_eqmod(poly_name, poly_mult, ymms, [POLY_VAR] * len(ymms), [str(P), "{0}**{2} - ({1})".format(POLY_VAR, m, expn)], mon_per_line) for (poly_name, poly_mult, ymms, m) in args
+    ]
 
-def coeff_bounds (bounds, slice_size):
-    idxs = []
-    for i in range (len (bounds)):
-        cur = [ bounds[i] for j in range (16)]
-        idxs.append (cur)
-    ret = []
-    for k in range (16//slice_size):
-        for i in range (len (bounds)):
-            ret = ret + idxs[i][(k*slice_size):((k+1)*slice_size)]
-    return (ret)
+def str_algebra(args, expn, mon_per_line=4):
+    return ",\n".join(get_algebra(args, expn, mon_per_line))
 
-def print_parameters (cname):
-    for i in range (256):
-        print ('sint16 {0}{1:02x}'.format (cname, i),
-               end = '\n' if i == 255 else
-                     (',\n' if i % 6 == 5 else ', '))
+def str_assertions(pairs):
+    equalities = []
+    for (ymm1, ymm2) in pairs:
+        for i in range(0, 16):
+            equalities.append("mulLymm{0}_{2:x} = mulLymm{1}_{2:x}".format(ymm1, ymm2, i))
+    return "assert true && and [\n{0}\n];\nassume and [\n{0}\n] && true;".format(",\n".join(join_chunks(equalities, ", ", 2)))
 
-def print_range_precondition (cname, bound):
-    for i in range (256):
-        print ('(-{0})@16 <s {1}{2:02x}, {1}{2:02x} <s ({0})@16'.
-               format (bound, cname, i),
-               end = '\n' if i == 255 else
-                     (',\n' if i % 2 == 1 else ', '))
+level = 0
+off = 0
+ecut_id = 0
+rcut_id = 0
+level5_ecut_ids = [[], []]
+level6_ecut_ids = [[], []]
 
-def print_initialization (base, cname):
-    for i in range (256):
-        print ('mov L0x{0:x} {1}{2:02x};'.format (base + i*2, cname, i),
-               end = '\n' if i % 3 == 2 else ' ')
-        
-def print_constant_definitions (base, table):
-    for i in range (len (table)):
-        print ('mov L0x{0:x} ({1:6d})@sint16;'.format (base + i*2, table[i]),
-               end = '\n' if i % 2 == 1 else ' ')
+def print_instr(instr):
+    global level, off, ecut_id, rcut_id, level5_ecut_ids, level6_ecut_ids
 
-def print_range_condition (indices, slice_size, bounds):
-    coefficients = ymm2coeffs (indices, slice_size)
-    print ('and [')
-    for i in range (len (coefficients)):
-        print ('({0})@16 <s {1}, {1} <s ({2})@16{3}'.
-               format (-bounds[i % len (bounds)],
-                        coefficients[i],
-                        bounds[i % len (bounds)],
-                       ',' if i < len (coefficients) - 1 else ']'))
+    # ========== Level 0 ==========
+    if instr.startswith("(* vmovdqa 0x40(%rsi),%ymm6"):
+        print_comment("===== Start of Level {}, off {} =====".format(level, off))
+    elif instr.startswith("(* vpaddw %ymm5,%ymm4,%ymm14") and level == 0:
+        print(str_assertions([(7, 12), (11, 13)]))
+    elif instr.startswith("(* vpaddw %ymm6,%ymm14,%ymm4") and level == 0:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # print("assert")
+        # print("and [")
+        # print(str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #            2**(level+1),
+        #            make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][(i%8)//2], i//8, 1),
+        #            get_ntt_mod_level3to7(i%4)) for i in range(128)],
+        #     expn=1))
+        # print("] && true;\n")
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-def print_inp_polys (inp_name, cname, level):
-    exps = [ i for i in range (64) ]
-    exprevbits = map (lambda e : [1, level] +
-                                 list (reversed (num_to_bits (e, 6))),
-                      exps)
-    revexps = list (map (lambda b : (ZETA**(bits_to_num (b)))%P,
-                         exprevbits))
-        
-def print_algebraic_condition (cname, indices, factor, level, offset):
-    exps = [ i for i in range (64) ]
-    exprevbits = map (lambda e : [1, level] +
-                                 list (reversed (num_to_bits (e, 6))),
-                      exps)
-    revexps = list (map (lambda b : (ZETA**(bits_to_num (b)))%P,
-                         exprevbits))
-    slice_size = 2**level
-    coefficients = ymm2coeffs (indices, slice_size)
-    degree = 2**(level+1)
-    coeffidx = 0
-    for i in range (len (revexps)):
-        modulus = revexps[i]
-        print ('eqmod ({0}*{1}{2:02x})'.format (factor, cname, i + 128*offset))
-        coeffidx = (2**(level+1)) * (i//(2**(level+1)))
-        for j in range (0, degree):
-            print ('{2}{0}*(x**{1})'.
-                   format (coefficients[coeffidx], j,
-                           '(' if j == 0 else ''),
-                   end = ')\n' if j == degree - 1 else
-                              (' +\n ' if j % 4 == 3 else ' + '))
-            coeffidx += 1
-        print ('[{0}, x - {1}]{2}'.
-               format (P, modulus,
-                       ',' if i < len (revexps) - 1 else ']'))
-        
-print ('\n\n\n(**************** parameters *****************)\n\n')
-print ('bit x,')
-print_parameters ('c')
+    # ========== Level 1 ==========
+    elif instr.startswith("(* vpsubw %ymm14,%ymm4,%ymm4") and level == 1:
+        print(str_assertions([(4, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm5,%ymm5") and level == 1:
+        print(str_assertions([(5, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm6,%ymm6") and level == 1:
+        print(str_assertions([(6, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm7,%ymm7") and level == 1:
+        print(str_assertions([(7, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm8,%ymm8") and level == 1:
+        print(str_assertions([(8, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm13,%ymm13") and level == 1:
+        print(str_assertions([(13, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm10,%ymm10") and level == 1:
+        print(str_assertions([(10, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm11,%ymm11") and level == 1:
+        print(str_assertions([(11, 14)]))
+    elif instr.startswith("(* vpsubw %ymm6,%ymm7,%ymm12") and level == 1:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level1_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][((i//4)%8)], i//32 * 4, 4),
+        #                normalize(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert")
+        # print("and [")
+        # print(level1_algebras)
+        # print("] && true;\n")
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** precondition *****************)\n\n')
-print ('true && and [')
-print_range_precondition ('c', P)
-print (']')
+    # ========== Level 2 ==========
+    elif instr.startswith("(* vpaddw %ymm5,%ymm4,%ymm15") and level == 2:
+        print(str_assertions([(7, 12), (13, 9), (11, 14)]))
+    elif instr.startswith("(* vpsubw %ymm8,%ymm10,%ymm12") and level == 2:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level2_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][((i//8)%4)], i//32 * 4, 4),
+        #                normalize(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert")
+        # print("and [")
+        # print(level2_algebras)
+        # print("] && true;\n")
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** initialization *****************)\n\n')
-print_initialization (in_base, 'c')
+    # ========== Level 3 ==========
+    elif instr.startswith("(* vpaddw %ymm6,%ymm15,%ymm4") and level == 3:
+        print(str_assertions([(10, 12), (11, 13)]))
+    elif instr.startswith("(* vmovdqa 0x80(%rdx),%ymm13") and level == 3:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level3_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][((i//16)%2)], i//32 * 4, 4),
+        #                normalize(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert and [")
+        # print(level3_algebras)
+        # print("] && true;\n")
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** constants *****************)\n\n')
-print_constant_definitions (const_base, pdata7681)
+    # ========== Level 4 ==========
+    elif instr.startswith("(* vpsubw %ymm12,%ymm4,%ymm4") and level == 4:
+        print(str_assertions([(4, 12)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm12,%ymm12") and level == 4:
+        print(str_assertions([(12, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm5,%ymm5") and level == 4:
+        print(str_assertions([(5, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm13,%ymm13") and level == 4:
+        print(str_assertions([(13, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm14,%ymm14") and level == 4:
+        print(str_assertions([(14, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm8,%ymm8") and level == 4:
+        print(str_assertions([(8, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm9,%ymm9") and level == 4:
+        print(str_assertions([(9, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm10,%ymm10") and level == 4:
+        print(str_assertions([(10, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm11,%ymm11") and level == 4:
+        print(str_assertions([(11, 7)]))
+    elif (instr.startswith("(* vpermq $0x4e,0x200(%rdx),%ymm2") or instr.startswith("(* vpermq $0x4e,0x180(%rdx),%ymm2")) and level == 4:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level4_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][((i//32)%2)], i//64 * 8, 8),
+        #                normalize(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #     expn=1,
+        #     mon_per_line=8)
+        # print("assert and [")
+        # print(level4_algebras)
+        # print("] && true;\n")
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** LEVEL 0 0 *****************)\n\n')
-print ('cut and [')
-print_algebraic_condition ('c', [14, 5, 6, 7, 15, 9, 10, 11], 2, 0, 0)
-print ('] && and [')
-print ('];')
+    # ========== Level 5 ==========
+    elif instr.startswith("(* vpsubw %ymm4,%ymm12,%ymm4") and level == 5:
+        print(str_assertions([(4, 12), (6, 13), (8, 14), (10, 15)]))
+    elif (instr.startswith("(* vmovdqa 0x1c0(%rdx),%ymm2") or instr.startswith("(* vmovdqa 0x140(%rdx),%ymm2")) and level == 5:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        level5_summary_ecut_id = ecut_id
+        level5_algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i//64], 0, 16),
+                       normalize(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+            expn=1,
+            mon_per_line=16)
+        print("ecut and [")
+        print(",\n".join(level5_algebras))
+        print("];\n")
+        ecut_id = ecut_id + 1
+        for i in range(128):
+            print("\n(* ecut {0} *)\n".format(ecut_id))
+            print("ecut")
+            print(level5_algebras[i])
+            print("prove with [cuts [{0}]];\n".format(level5_summary_ecut_id))
+            level5_ecut_ids[off].append(ecut_id)
+            ecut_id = ecut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
+
+    # ========== Level 6 ==========
+    elif instr.startswith("(* vpsubw %ymm5,%ymm12,%ymm5") and level == 6:
+        print(str_assertions([(5, 12), (9, 13), (6, 14), (10, 15)]))
+    elif instr.startswith("(* vpsubw %ymm13,%ymm11,%ymm11") and level == 6:
+        print(str_assertions([(13, 11)]))
+    elif instr.startswith("(* vpsubw %ymm13,%ymm3,%ymm3") and level == 6:
+        print(str_assertions([(13, 3)]))
+    elif (instr.startswith("(* vmovdqa 0x140(%rsi),%ymm6") or instr.startswith("(* vmovdqa (%rdi),%ymm4")) and level == 6:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        level6_summary_ecut_id = ecut_id
+        level6_algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       ["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)],
+                       normalize(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+            expn=1,
+            mon_per_line=32)
+        print("ecut")
+        print(",\n".join(["{0} prove with [cuts [{1}]]".format(level6_algebras[i], level5_ecut_ids[off][i]) for i in range(128)]))
+        print(";\n")
+        ecut_id = ecut_id + 1
+        for i in range(128):
+            print("\n(* ecut {0} *)\n".format(ecut_id))
+            print("ecut")
+            print(level6_algebras[i])
+            print("prove with [cuts [{0}]];\n".format(level6_summary_ecut_id))
+            level6_ecut_ids[off].append(ecut_id)
+            ecut_id = ecut_id + 1
+        if off == 0:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+            print("ecut true;")
+            print(str_init_poly(off=1))
+            ecut_id = ecut_id + 1
+        (level, off) = (0, 1) if off == 0 else (7, 0)
+        print_comment("===== Start of Level {}, off {} =====".format(level, off))
+
+    # ========== Level 7 ==========
+    elif instr.startswith("(* vpsubw %ymm8,%ymm12,%ymm8") and level == 7:
+        print(str_assertions([(8, 12), (9, 13), (10, 14), (11, 15)]))
+    elif (instr.startswith("(* vmovdqa 0x80(%rdi),%ymm4") or instr.startswith("(* #! <- SP = 0x7fffffff9a78 *)")) and level == 7:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        off = off + 1
+        if off == 1:
+            print_comment("===== Start of Level {}, off {} =====".format(level, off))
+        elif off == 2:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+            level7_algebras = get_algebra(
+                args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                           2**(level+1),
+                           ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
+                           normalize(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for off in range(2) for i in range(128)],
+                           expn=1,
+                mon_per_line=64)
+            print("ecut")
+            print(",\n".join(["{0} prove with [cuts [{1}]]".format(level7_algebras[i+off*128], level6_ecut_ids[off][i]) for off in range(2) for i in range(128)]))
+            print(";\n")
+            ecut_id = ecut_id + 1
+
+    print(instr)
+
+def str_post():
+    return "\n".join([
+        "{",
+        "true",
+        "&&",
+        "true",
+        "}"
+    ])
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("cl_file", help="the nttmul_poly_ntt cl file to be processed")
+    args = parser.parse_args()
+    with open(args.cl_file) as f:
+        # ========== proc main ==========
+        print('proc main(\n')
+        print(str_main_args())
+        print('\n) =\n')
+        # ========== pre-condition ==========
+        print('{\n')
+        print(str_precondition_algebra())
+        print("\n&&\n")
+        print(str_precondition_range())
+        print('\n}\n')
+        # ========== inits ==========
+        print(str_inits())
+        print(str_twiddles())
+        print()
+        print(str_init_poly_var())
+        print(str_init_poly(off=0))
+        # ========== program ==========
+        print("\n\n#===== program start =====\n\n")
+        for line in f.readlines():
+            print_instr(line.strip())
+        # ========== post-condition ==========
+        print(str_post())
 
 
-"""
-exps = [ i for i in range (128) ]
-exprevbits = map (lambda e : [1] +
-                             list (reversed (num_to_bits (e, 7))),
-                  exps)
-revexps = list (map (lambda b : (bits_to_num (b))%P,
-                     exprevbits))
-for i in range (128):
-    print ('{0:4}'.format (revexps[i]),
-           end = '\n' if i % 16 == 15 else ' ')
-"""    
+if __name__ == "__main__":
+  main()
