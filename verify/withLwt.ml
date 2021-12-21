@@ -638,11 +638,24 @@ let verify_assert vgen s hashopt =
 
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
+  let rec rbexp_implies_rspost re se  =
+    match re with
+    | Rand (re0, re1) ->
+       rbexp_implies_rspost re0 se || rbexp_implies_rspost re1 se
+    | _ -> re = se in
+  let rpost_in_assumes prog rspost =
+    List.exists (fun inst ->
+        match inst with
+        | Iassume (_, r) -> rbexp_implies_rspost r rspost
+        | _ -> false) prog in
   let verify_one cut_header s =
-    let f = bexp_rbexp s.rspre in
-    let p = bexp_program s.rsprog in
-    let g = bexp_rbexp s.rspost in
-    let gs = split_bexp g in
+    if rpost_in_assumes s.rsprog s.rspost then
+      Lwt.return_true
+    else
+      let f = bexp_rbexp s.rspre in
+      let p = bexp_program s.rsprog in
+      let g = bexp_rbexp s.rspost in
+      let gs = split_bexp g in
     Lwt_list.for_all_p
       (fun g ->
         let header = ["range condition: " ^ string_of_bexp g] in
