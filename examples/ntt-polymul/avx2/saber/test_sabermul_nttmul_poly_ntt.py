@@ -8,15 +8,14 @@
 
 # Inputs:
 # %rdx = 0x55555555f7c0
-# L0x555555560700-L0x55555556071e (全都是_16XP = 7681, 16個)
-# L0x555555560780-L0x55555556079e (全都是_16XMONT_PINV = -9, 16個)
-# L0x5555555607a0-L0x5555555607be (全都是_16XMONT = -3593 = 2^16 mod 7681, 16個)
-# L0x555555560800-L0x55555556093e (_ZETAS, 160個)
-# L0x555555560940-L0x555555560b3e (_TWIST32, 256個, off=0)
-# L0x555555560b40-L0x555555560d3e (_TWIST32, 256個, off=1, note: _TWIST32共有512個)
-# L0x555555560d40-L0x555555560dbe (_TWISTS4, 64個)
-# L0x7fffffffaee0-L0x7fffffffb0de (input coefficients, 256個)
-# L0x7fffffffb4e0-L0x7fffffffb6de (output coefficients, 256個)
+# L0x555555560700-L0x55555556071e (_16XP = 7681, num = 16)
+# L0x555555560780-L0x55555556079e (_16XMONT_PINV = -9, num = 16)
+# L0x5555555607a0-L0x5555555607be (_16XMONT = -3593 = 2^16 mod 7681, num = 16)
+# L0x555555560800-L0x55555556093e (_ZETAS, num = 160)
+# L0x555555560940-L0x555555560d3e (_TWIST32, num = 512)
+# L0x555555560d40-L0x555555560dbe (_TWISTS4, num = 64)
+# L0x7fffffffaee0-L0x7fffffffb0de (input coefficients, num = 256)
+# L0x7fffffffb4e0-L0x7fffffffb6de (output coefficients, num = 256)
 
 import re, math
 from argparse import ArgumentParser
