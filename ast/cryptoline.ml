@@ -2076,7 +2076,7 @@ let cut_espec es =
        let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = post; espwss = [] } in
        [spec]::res
-    | (Icut ([], _) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
+    | (Icut ([], _))::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
@@ -2107,7 +2107,7 @@ let cut_rspec rs =
        let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = post; rspwss = [] } in
        [spec]::res
-    | (Icut (_, []) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
+    | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
