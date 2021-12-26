@@ -182,10 +182,10 @@ def print_algebraic_postcondition(vars):
                 end='' if nth == 127 else ','
             ))
 
-def print_range_postcondition (fname, bound, is_last=False):
-    for i in range (0, 128, 2):
-        print ('({0})@16 <=s {4}{1:03}, {4}{1:03} <=s ({3})@16, ({0})@16 <=s {4}{2:03}, {4}{2:03} <=s ({3})@16{5}'.
-               format (-bound, i, i+1, bound, fname, '' if is_last and i == 128 - 2 else ','))
+def print_range_postcondition (base, bound):
+    for i in range (0, 256, 2):
+        print ('({0})@16 <=s L0x{1:x}, L0x{1:x} <=s ({3})@16, ({0})@16 <=s L0x{2:x}, L0x{2:x} <=s ({3})@16{4}'.
+               format (-bound, base + i * 2, base + i * 2 + 2, bound, '' if i == 256 - 2 else ','))
 
 
 print ('(*********** parameters ***********)\n\n\n')
@@ -195,28 +195,20 @@ print_inputs ('c')
 print_inputs ('d', is_last=True)
 
 print ('\n\n\n(*********** precondition ***********)\n\n\n')
-print ('true && and [')
-print_range_precondition ('a', Q)
-print_range_precondition ('b', Q)
+# The original code comment says that one polynomial can have
+# arbitrary coefficients as long as the other is bounded by q.
+# Here we use the bound from NTT's output.
+print ('true && or [ and [')
+print_range_precondition ('a', 16118)
+print_range_precondition ('b', 16118)
 print_range_precondition ('c', Q)
 print_range_precondition ('d', Q, is_last=True)
-print(']')
-
-# The following relaxation "only one side is bounded by Q" is
-# devised from the comment of source code, but I can't verify
-# the post-condition using these.
-#
-# print ('true && or [ and [')
-# print_range_precondition ('a', 16118)
-# print_range_precondition ('b', 16118)
-# print_range_precondition ('c', Q)
-# print_range_precondition ('d', Q, is_last=True)
-# print('], and [')
-# print_range_precondition ('a', Q)
-# print_range_precondition ('b', Q)
-# print_range_precondition ('c', 16118)
-# print_range_precondition ('d', 16118, is_last=True)
-# print (']]')
+print('], and [')
+print_range_precondition ('a', Q)
+print_range_precondition ('b', Q)
+print_range_precondition ('c', 16118)
+print_range_precondition ('d', 16118, is_last=True)
+print (']]')
 
 print ('\n\n\n(*********** initialization ***********)\n\n\n')
 print_initialization (['a', 'b'], input0_base)
@@ -232,8 +224,5 @@ print_algebraic_postcondition(['a', 'b', 'c', 'd'])
 print(']')
 print('&&')
 print('and [')
-print_range_postcondition ('a', (Q - 1) * 2)
-print_range_postcondition ('b', (Q - 1) * 2)
-print_range_postcondition ('c', (Q - 1) * 2)
-print_range_postcondition ('d', (Q - 1) * 2, is_last=True)
+print_range_postcondition (output_base, (Q - 1) * 2)
 print(']')
