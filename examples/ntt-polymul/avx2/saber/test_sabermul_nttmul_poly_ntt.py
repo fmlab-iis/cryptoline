@@ -8,9 +8,9 @@
 
 # Inputs:
 # %rdx = 0x55555555f7c0
-# L0x555555560700-L0x55555556071e (_16XP = 7681, num = 16)
-# L0x555555560780-L0x55555556079e (_16XMONT_PINV = -9, num = 16)
-# L0x5555555607a0-L0x5555555607be (_16XMONT = -3593 = 2^16 mod 7681, num = 16)
+# L0x555555560700-L0x55555556071e (_16XP = 7681 or 10753, num = 16)
+# L0x555555560780-L0x55555556079e (_16XMONT_PINV = -9 or -6, _16XMONT * P^-1 mod 2^16, num = 16)
+# L0x5555555607a0-L0x5555555607be (_16XMONT = -3593 or 1018, 2^16 mod P, num = 16)
 # L0x555555560800-L0x55555556093e (_ZETAS, num = 160)
 # L0x555555560940-L0x555555560d3e (_TWIST32, num = 512)
 # L0x555555560d40-L0x555555560dbe (_TWISTS4, num = 64)
@@ -224,7 +224,6 @@ def str_twiddles ():
         ]
     twiddles = [
         ("_16XP", _16XP, _16XP_BASE),
-        ("_16XMONT", _16XMONT, _16XMONT_BASE),
         ("_16XMONT_PINV", _16XMONT_PINV, _16XMONT_PINV_BASE),
         ("_16XMONT", _16XMONT, _16XMONT_BASE),
         ("_ZETAS", _ZETAS, _ZETAS_BASE),
@@ -234,7 +233,7 @@ def str_twiddles ():
     res = []
     for (name, arr, base) in twiddles:
         res.append("\n(* {} *)\n".format(name))
-        res.append("\n".join(join_chunks(["mov L0x{:x} ({:4d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
+        res.append("\n".join(join_chunks(["mov L0x{:x} ({:6d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
     return "\n".join(res)
 
 def ntt_mod(num_ans, prime, mont, root, negacyclic, stage):
