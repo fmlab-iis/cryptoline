@@ -95,10 +95,8 @@ def modP(n, p):
     n = n % p
     return n - p if n > p//2 else n
 
-def ntt_mod(num_ans, prime, mont, root, negacyclic, stage):
+def ntt_mod(n_expn, prime, mont, root, negacyclic, stage):
     num_rings = 2**stage
-    num_coeffs = num_ans // num_rings
-    n_expn = int(math.log(num_ans, 2))
     num_bits = n_expn + 1 if negacyclic else n_expn
     res = []
     for i in range (num_rings):
@@ -118,20 +116,8 @@ def ntt_mod(num_ans, prime, mont, root, negacyclic, stage):
         res.append(dict(modulo = modulo, mont = modulo_mont))
     return res
 
-def get_ntt_mod_level3to7(i):
-    if i < 2:
-        return 1 if i % 2 == 0 else -1
-    else:
-        s = 0
-        j = 0
-        n = int(math.log(ORIGINAL_N, 2))
-        for k in range(2, n + 1):
-            if i < math.pow(2, k):
-                s = k - 1
-                break
-        j = i % pow(2, s)
-        return ntt_mod(num_ans=ANS_NUM, prime=P, mont=MONT, root=ROOT, negacyclic=True, stage=s)[j]["modulo"]
-    return 0
+def get_ntt_mod_level3to7(stage, i):
+    return ntt_mod(n_expn=9, prime=P, mont=MONT, root=ROOT, negacyclic=False, stage=stage)[i]["modulo"]
 
 def make_ymms(ymms, off, num):
     return ["ymm{}_{:x}".format(ymm, off + i) for ymm in ymms for i in range(num)]
@@ -358,7 +344,7 @@ def print_instr(instr):
         #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
         #            2**(level+1),
         #            make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][(i%8)//2], i//8, 1),
-        #            get_ntt_mod_level3to7(i%4)) for i in range(128)],
+        #            get_ntt_mod_level3to7(2, i%4)) for i in range(128)],
         #     expn=1))
         # print("] && true;\n")
         #
@@ -397,7 +383,7 @@ def print_instr(instr):
         #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
         #                2**(level+1),
         #                make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][((i//4)%8)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
         #     expn=1)
         # print("assert")
         # print("and [")
@@ -425,7 +411,7 @@ def print_instr(instr):
         #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
         #                2**(level+1),
         #                make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][((i//8)%4)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
         #     expn=1)
         # print("assert")
         # print("and [")
@@ -453,7 +439,7 @@ def print_instr(instr):
         #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
         #                2**(level+1),
         #                make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][((i//16)%2)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
         #     expn=1)
         # print("assert and [")
         # print(level3_algebras)
@@ -496,7 +482,7 @@ def print_instr(instr):
         #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
         #                2**(level+1),
         #                make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][((i//32)%2)], i//64 * 8, 8),
-        #                modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+        #                modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
         #     expn=1,
         #     mon_per_line=8)
         # print("assert and [")
@@ -525,7 +511,7 @@ def print_instr(instr):
             args=[("{0}{1}".format(POLY_NAME, i + off*128),
                        2**(level+1),
                        make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i//64], 0, 16),
-                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
             expn=1,
             mon_per_line=16)
         print("cut and [")
@@ -564,7 +550,7 @@ def print_instr(instr):
             args=[("{0}{1}".format(POLY_NAME, i + off*128),
                        2**(level+1),
                        ["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)],
-                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
             expn=1,
             mon_per_line=32)
         print("cut")
@@ -621,7 +607,7 @@ def print_instr(instr):
                 args=[("{0}{1}".format(POLY_NAME, i + off*128),
                            2**(level+1),
                            ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
-                           modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for off in range(2) for i in range(128)],
+                           modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
                            expn=1,
                 mon_per_line=64)
             print("cut")
@@ -642,7 +628,7 @@ def str_post():
         args=[("{0}{1}".format(POLY_NAME, i + off*128),
                    2**(level+1),
                    ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
-                   modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for off in range(2) for i in range(128)],
+                   modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
                    expn=1,
         mon_per_line=64)
     return "\n".join([
