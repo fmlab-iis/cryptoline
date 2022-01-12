@@ -46,6 +46,7 @@ val mathematica_of_var : Ast.Cryptoline.var -> string
 val mathematica_of_eexp : Ast.Cryptoline.eexp -> string
 val macaulay2_of_var : Ast.Cryptoline.var -> string
 val macaulay2_of_eexp : Ast.Cryptoline.eexp -> string
+val maple_of_eexp : Ast.Cryptoline.eexp -> string
 
 (* Slice a precondition and a program according to a safety condition. *)
 val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> (Ast.Cryptoline.rbexp * Ast.Cryptoline.program)

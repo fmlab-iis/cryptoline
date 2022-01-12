@@ -298,6 +298,33 @@ let write_macaulay2_input ifile vars gen p =
   unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
   trace ""
 
+let write_maple_input ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.map string_of_var vars) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
+    let poly = magma_of_eexp p in
+    "interface(prettyprint=0):\n"
+    ^ "with(PolynomialIdeals):\n"
+    ^ "with(Groebner):\n"
+    ^ "Ord := plex(" ^ varseq ^ "):\n"
+    ^ "B := [" ^ generator ^ "]:\n"
+    ^ "g := " ^ poly ^ ":\n"
+    ^ "if member(g, B) or Reduce(g, B, Ord) = 0 then\n"
+    ^ "  true\n"
+    ^ "else\n"
+    ^ "  J := Basis(B, Ord):\n"
+    ^ "  Reduce(g, J, Ord) = 0\n"
+    ^ "end if;\n"
+    ^ "quit:\n" in
+  let ch = open_out ifile in
+  let _ = output_string ch input_text; close_out ch in
+  trace "INPUT TO MAPLE:";
+  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace ""
+
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
@@ -343,6 +370,15 @@ let run_macaulay2 ifile ofile =
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
+let run_maple ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  trace ("Execution time of Maple: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace "OUTPUT FROM MAPLE:";
+  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace ""
+
 let read_singular_output ofile =
   let line = ref "" in
   let ch = open_in ofile in
@@ -381,38 +417,24 @@ let read_sage_output ofile =
   if !has_output && !line = "true" then failwith "Unknown error in Sage"
   else !line
 
-let read_magma_output ofile =
+let read_one_line ofile =
   let line = ref "" in
   let ch = open_in ofile in
   let _ =
     try
-	  line := input_line ch
+      line := input_line ch
     with _ ->
       failwith "Failed to read the output file" in
   let _ = close_in ch in
   String.trim !line
 
-let read_mathematica_output ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-	  line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
+let read_magma_output = read_one_line
 
-let read_macaulay2_output ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-	  line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
+let read_mathematica_output = read_one_line
+
+let read_macaulay2_output = read_one_line
+
+let read_maple_output = read_one_line
 
 let is_in_ideal vars ideal p =
   let ifile = tmpfile "inputfgb_" "" in
@@ -446,6 +468,11 @@ let is_in_ideal vars ideal p =
        let _ = run_macaulay2 ifile ofile in
        let res = read_macaulay2_output ofile in
        res = "0"
+    | Maple ->
+       let _ = write_maple_input ifile vars ideal p in
+       let _ = run_maple ifile ofile in
+       let res = read_maple_output ofile in
+       res = "true"
   in
   let _ = cleanup [ifile; ofile] in
   res

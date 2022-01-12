@@ -7,6 +7,8 @@ val apply_to_option : ('a -> 'b) -> 'b -> 'a option -> 'b
 val map_fst : ('a -> 'c) -> ('a * 'b) list -> ('c * 'b) list
 val map_snd : ('b -> 'c) -> ('a * 'b) list -> ('a * 'c) list
 
+(* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
+val string_of_const : Z.t -> string
 
 (** Types *)
 
@@ -145,6 +147,7 @@ val eexp_precedence : eexp -> int
 val ebinop_eexp_open : ebinop -> eexp -> bool
 val eexp_ebinop_open : eexp -> ebinop -> bool
 
+(* An eexp is atomic if it is a variable or a constant. *)
 val is_eexp_atomic : eexp -> bool
 val string_of_eexp : ?typ:bool -> eexp -> string
 val vars_eexp : eexp -> VS.t

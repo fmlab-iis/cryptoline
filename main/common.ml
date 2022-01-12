@@ -12,13 +12,15 @@ let args =
               Options.Std.string_of_algebra_system Options.Std.Sage;
               Options.Std.string_of_algebra_system Options.Std.Magma;
               Options.Std.string_of_algebra_system Options.Std.Mathematica;
-              Options.Std.string_of_algebra_system Options.Std.Macaulay2],
+              Options.Std.string_of_algebra_system Options.Std.Macaulay2;
+              Options.Std.string_of_algebra_system Options.Std.Maple],
              (fun str ->
                if str = Options.Std.string_of_algebra_system Options.Std.Singular then algebra_system := Singular
                else if str = Options.Std.string_of_algebra_system Options.Std.Sage then algebra_system := Sage
                else if str = Options.Std.string_of_algebra_system Options.Std.Magma then algebra_system := Magma
                else if str = Options.Std.string_of_algebra_system Options.Std.Mathematica then algebra_system := Mathematica
                else if str = Options.Std.string_of_algebra_system Options.Std.Macaulay2 then algebra_system := Macaulay2
+               else if str = Options.Std.string_of_algebra_system Options.Std.Maple then algebra_system := Maple
                else failwith ("Unknown algebra solver: " ^ str))),
      "\n\t     Specify the algebra solver (default is singular)\n");
     ("-br", Set use_binary_repr, "       Always use binary representation in SMTLIB outputs. Otherwise,\n\t     hexadecimal representation is used if applicable.\n");
@@ -30,7 +32,9 @@ let args =
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_system := Macaulay2),
      "PATH\n\t     Use Macaulay2 at the specified path\n");
     ("-magma", String (fun str -> magma_path := str; algebra_system := Magma),
-     "PATH\n\t     Use Magma at the specified path (not tested)\n");
+     "PATH\n\t     Use Magma at the specified path\n");
+    ("-maple", String (fun str -> maple_path := str; algebra_system := Maple),
+     "PATH\n\t     Use Maple at the specified path\n");
     ("-mathematica", String (fun str -> mathematica_path := str; algebra_system := Mathematica),
      "PATH\n\t     Use Mathematica command-line script interpreter at the specified\n\t     path\n");
     ("-no_carry_constraint", Clear carry_constraint, "\n\t     Do not add carry constraints\n");

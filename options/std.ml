@@ -5,6 +5,7 @@ type algebra_system =
   | Magma
   | Mathematica
   | Macaulay2
+  | Maple
 
 type variable_order =
   | LexOrder
@@ -35,6 +36,7 @@ let sage_path = ref "sage"
 let magma_path = ref "magma"
 let mathematica_path = ref "wolframscript"
 let macaulay2_path = ref "M2"
+let maple_path = ref "maple"
 
 let algebra_system = ref default_algebra
 let algebra_args = ref ""
@@ -45,6 +47,7 @@ let string_of_algebra_system s =
   | Sage -> "sage"
   | Mathematica -> "mathematica"
   | Macaulay2 -> "macaulay2"
+  | Maple -> "maple"
 
 let apply_rewriting = ref true
 let polys_rewrite_replace_eexp = ref false

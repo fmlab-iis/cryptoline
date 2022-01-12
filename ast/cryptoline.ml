@@ -45,6 +45,8 @@ let map_fst f pairs =
 let map_snd f pairs =
   List.map (fun (e1, e2) -> (e1, f e2)) pairs
 
+(* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
+let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
 
 (** Types *)
 
@@ -423,6 +425,7 @@ let eexp_ebinop_open e op =
   | Ebinop (op, _, _), Emul -> op = Emul
   | Ebinop (_op, _, _), _ -> false
 
+(* An eexp is atomic if it is a variable or a constant. *)
 let is_eexp_atomic e =
   match e with
   | Evar _ | Econst _ -> true
@@ -431,7 +434,7 @@ let is_eexp_atomic e =
 let rec string_of_eexp ?typ:(typ=false) e =
   match e with
   | Evar v -> string_of_var ~typ:typ v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atomic e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then string_of_eexp ~typ:typ e1 else "(" ^ string_of_eexp ~typ:typ e1 ^ ")")
