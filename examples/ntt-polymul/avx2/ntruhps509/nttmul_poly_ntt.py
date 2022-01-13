@@ -1750,28 +1750,37 @@ def print_algebraic_condition (inp_poly_name, indices, level, offset):
                        ',' if i < len (revexps) - 1 else ']'))
 
         
-cut_counter = 0
+ecut_counter = 0
+rcut_counter = 0
 
 def print_cut_helper (cut_name, condition = '') :
-    global cut_counter
-    print ('\n(**************** CUT {0:3} *****************)\n'.
-           format (cut_counter))
+    print ('\n(**************** CUT {0:3},{1:3} *****************)\n'.
+           format (ecut_counter, rcut_counter))
     print ('{0} {1}'.format (cut_name, condition),
            end = '\n' if condition == '' else ';\n')
-    cut_counter += 1
 
 def print_ecut (condition = ''):
+    global ecut_counter
     print_cut_helper ('ecut', condition)
+    ecut_counter += 1
     
 def print_rcut (condition = ''):
+    global rcut_counter
     print_cut_helper ('rcut', condition)
+    rcut_counter += 1
     
 def print_cut (condition = ''):
+    global ecut_counter
+    global rcut_counter
     print_cut_helper ('cut', condition)
+    ecut_counter += 1
+    rcut_counter += 1
     
-def get_cut_counter () :
-    return (cut_counter - 1)
+def get_ecut_counter () :
+    return (ecut_counter - 1)
 
+def get_rcut_counter () :
+    return (rcut_counter - 1)
 
 print ('\n\n\n(**************** parameters *****************)\n')
 print_parameters ('inp_poly', 'c')
@@ -1797,8 +1806,8 @@ print_constants (const_base, pdata10753)
 print ('\n\n\n(**************** indices *****************)\n')
 print_indices (idx_base, idxdata)
 
-cut02 = [[] for i in range (8)]
-cut_all02 = []
+ecut02 = [[] for i in range (8)]
+rcut_all02 = []
 for offset in range (8):
     print ('\n\n\n(**************** LEVELS 0-2, {0} *****************)\n'.
            format (offset))
@@ -1817,8 +1826,8 @@ for offset in range (8):
             print_range_condition02 (out_base, o)
             print (',' if o < 7 else '')
         print ('] prove with [ precondition ];')
-        cut_all02.append (get_cut_counter ())
-    cut_all = get_cut_counter ()
+        rcut_all02.append (get_rcut_counter ())
+    ecut_all = get_ecut_counter ()
 
 
     print ('\n\n(* === split the CUT into 8 slices === *)')
@@ -1828,8 +1837,8 @@ for offset in range (8):
         print ('  and [')
         print_algebraic_condition02 ('c', out_base, offset, 
                                      num_slice=8, ith_slice=i)
-        print ('  ] prove with [cuts [{0}]];\n'.format(cut_all))
-        cut02[offset].append(get_cut_counter ())
+        print ('  ] prove with [cuts [{0}]];\n'.format(ecut_all))
+        ecut02[offset].append(get_ecut_counter ())
     
     print ('\n\n(* === be ready for next level and offset === *)')
     if offset < 7:
@@ -1839,9 +1848,9 @@ for offset in range (8):
         print ('true && and [')
         print_range_condition02 (out_base, 0)
         print ('] prove with [ cuts [ ', end = '')
-        for i in range (len (cut_all02)) :
-            print ('{0}'.format(cut_all02[i]),
-                   end = '' if i == len (cut_all02) - 1 else ', ')
+        for i in range (len (rcut_all02)) :
+            print ('{0}'.format(rcut_all02[i]),
+                   end = '' if i == len (rcut_all02) - 1 else ', ')
         print (' ] ];')
 
 
@@ -1901,17 +1910,18 @@ print ('\n\n\n(**************** mid results 0 *****************)\n')
 print_mid_results (out_base, 0);
 """
 
-cut38 = []
+ecut38 = []
+rcut38 = []
 for offset in range (8):
     print ('\n\n\n(**************** LEVELS 3-5, {0} *****************)\n'.
            format (offset))
     print_rcut ()
     print ('  and [')
     print_range_condition35 (offset)
-    print ('] prove with [ cuts [ ', end = '')
-    for i in range (len (cut_all02)) :
-        print ('{0}'.format(cut_all02[i]),
-               end = '' if i == len (cut_all02) - 1 else ', ')
+    print ('] prove with [ all ghosts, cuts [ ', end = '')
+    for i in range (len (rcut_all02)) :
+        print ('{0}'.format(rcut_all02[i]),
+               end = '' if i == len (rcut_all02) - 1 else ', ')
     print (' ] ];')
     
     print ('\n\n\n(**************** LEVELS 3-8, {0} *****************)\n'.
@@ -1922,11 +1932,12 @@ for offset in range (8):
     print_algebraic_condition38 ('inp_poly', out_base, offset)
     print ('  ] prove with [ precondition, cuts [ ', end='')
     for i in range (8) :
-        print ('{0}'.format(cut02[i][offset]), end = '' if i == 7 else ', ')
+        print ('{0}'.format(ecut02[i][offset]), end = '' if i == 7 else ', ')
     print ('] ] && and [')
     print_range_postcondition (out_base, offset)
     print ('];')
-    cut38.append(get_cut_counter ())
+    ecut38.append(get_ecut_counter ())
+    rcut38.append(get_rcut_counter ())
 
     print ('\n\n(* === be ready for next level and offset === *)')
     if offset < 7:
@@ -1934,9 +1945,9 @@ for offset in range (8):
         print ('true && and [')
         print_range_condition02 (out_base, offset + 1)
         print ('] prove with [ cuts [ ', end = '')
-        for i in range (len (cut_all02)) :
-            print ('{0}'.format(cut_all02[i]),
-                   end = '' if i == len (cut_all02) - 1 else ', ')
+        for i in range (len (rcut_all02)) :
+            print ('{0}'.format(rcut_all02[i]),
+                   end = '' if i == len (rcut_all02) - 1 else ', ')
         print (' ] ];')
     else:
         print_ecut ('true')
@@ -1950,12 +1961,12 @@ for offset in range (8):
     print_algebraic_postcondition ('inp_poly', out_base, offset)
     print ('] prove with [ cuts [ ' if offset == 7 else ',\n', end='')
 for i in range (8) :
-    print ('{0}'.format(cut38[i]), end = '' if i == 7 else ', ')
+    print ('{0}'.format(ecut38[i]), end = '' if i == 7 else ', ')
 print (' ] ]')
 print ('&& and [')
 for offset in range (8):
     print_range_postcondition (out_base, offset)
     print ('] prove with [ cuts [ ' if offset == 7 else ',\n', end='')
 for i in range (8) :
-    print ('{0}'.format(cut38[i]), end = '' if i == 7 else ', ')
+    print ('{0}'.format(rcut38[i]), end = '' if i == 7 else ', ')
 print (' ] ]')
