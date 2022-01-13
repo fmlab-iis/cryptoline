@@ -1,3 +1,17 @@
+(* frege:  -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint nttmul_poly_ntt.cl
+Parsing Cryptoline file:                [OK]            0.354376 seconds
+Checking well-formedness:               [OK]            0.175865 seconds
+Transforming to SSA form:               [OK]            0.083464 seconds
+Rewriting assignments:                  [OK]            0.127678 seconds
+Verifying program safety:               [OK]            1229.874981 seconds
+Verifying range assertions:             [OK]            423.423196 seconds
+Verifying range specification:          [OK]            1315.274511 seconds
+Rewriting value-preserved casting:      [OK]            0.001344 seconds
+Verifying algebraic assertions:         [OK]            0.053377 seconds
+Verifying algebraic specification:      [OK]            478.410646 seconds
+Verification result:                    [OK]            3447.830031 seconds
+*)
+
 (* quine: -v -isafety -jobs 24 -slicing -no_carry_constraint nttmul_poly_ntt.cl
 Parsing Cryptoline file:                [OK]            0.443280 seconds
 Checking well-formedness:               [OK]            0.225050 seconds
@@ -635,7 +649,7 @@ inp_poly28**2*x**448+inp_poly29**2*x**464+inp_poly30**2*x**480+inp_poly31**2*x**
 ]
 }
 
-(**************** CUT   0 *****************)
+(**************** CUT   0,  0 *****************)
 
 ecut true;
 
@@ -2561,7 +2575,7 @@ mov L0x7fffffffd9fe ymm11_f;
 (**************** LEVELS 0-2, 0 *****************)
 
 
-(**************** CUT   1 *****************)
+(**************** CUT   1,  0 *****************)
 
 ecut 
   and [
@@ -2755,11 +2769,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
 
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT   2 *****************)
+(**************** CUT   2,  0 *****************)
 
 ecut true;
 
-(**************** CUT   3 *****************)
+(**************** CUT   3,  0 *****************)
 
 ecut 
   and [
@@ -2789,11 +2803,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT   4 *****************)
+(**************** CUT   4,  0 *****************)
 
 ecut true;
 
-(**************** CUT   5 *****************)
+(**************** CUT   5,  0 *****************)
 
 ecut 
   and [
@@ -2823,11 +2837,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT   6 *****************)
+(**************** CUT   6,  0 *****************)
 
 ecut true;
 
-(**************** CUT   7 *****************)
+(**************** CUT   7,  0 *****************)
 
 ecut 
   and [
@@ -2857,11 +2871,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT   8 *****************)
+(**************** CUT   8,  0 *****************)
 
 ecut true;
 
-(**************** CUT   9 *****************)
+(**************** CUT   9,  0 *****************)
 
 ecut 
   and [
@@ -2891,11 +2905,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT  10 *****************)
+(**************** CUT  10,  0 *****************)
 
 ecut true;
 
-(**************** CUT  11 *****************)
+(**************** CUT  11,  0 *****************)
 
 ecut 
   and [
@@ -2925,11 +2939,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT  12 *****************)
+(**************** CUT  12,  0 *****************)
 
 ecut true;
 
-(**************** CUT  13 *****************)
+(**************** CUT  13,  0 *****************)
 
 ecut 
   and [
@@ -2959,11 +2973,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT  14 *****************)
+(**************** CUT  14,  0 *****************)
 
 ecut true;
 
-(**************** CUT  15 *****************)
+(**************** CUT  15,  0 *****************)
 
 ecut 
   and [
@@ -2993,11 +3007,11 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
   ] prove with [cuts [1]];
 
 
-(**************** CUT  16 *****************)
+(**************** CUT  16,  0 *****************)
 
 ecut true;
 
-(**************** CUT  17 *****************)
+(**************** CUT  17,  0 *****************)
 
 ecut 
   and [
@@ -3030,7 +3044,7 @@ eqmod (c000*x**  0+c001*x**  1+c002*x**  2+c003*x**  3+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT  18 *****************)
+(**************** CUT  18,  0 *****************)
 
 ecut true;
 
@@ -4359,7 +4373,7 @@ mov L0x7fffffffda1e ymm11_f;
 (**************** LEVELS 0-2, 1 *****************)
 
 
-(**************** CUT  19 *****************)
+(**************** CUT  19,  0 *****************)
 
 ecut 
   and [
@@ -4553,11 +4567,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
 
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT  20 *****************)
+(**************** CUT  20,  0 *****************)
 
 ecut true;
 
-(**************** CUT  21 *****************)
+(**************** CUT  21,  0 *****************)
 
 ecut 
   and [
@@ -4587,11 +4601,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  22 *****************)
+(**************** CUT  22,  0 *****************)
 
 ecut true;
 
-(**************** CUT  23 *****************)
+(**************** CUT  23,  0 *****************)
 
 ecut 
   and [
@@ -4621,11 +4635,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  24 *****************)
+(**************** CUT  24,  0 *****************)
 
 ecut true;
 
-(**************** CUT  25 *****************)
+(**************** CUT  25,  0 *****************)
 
 ecut 
   and [
@@ -4655,11 +4669,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  26 *****************)
+(**************** CUT  26,  0 *****************)
 
 ecut true;
 
-(**************** CUT  27 *****************)
+(**************** CUT  27,  0 *****************)
 
 ecut 
   and [
@@ -4689,11 +4703,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  28 *****************)
+(**************** CUT  28,  0 *****************)
 
 ecut true;
 
-(**************** CUT  29 *****************)
+(**************** CUT  29,  0 *****************)
 
 ecut 
   and [
@@ -4723,11 +4737,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  30 *****************)
+(**************** CUT  30,  0 *****************)
 
 ecut true;
 
-(**************** CUT  31 *****************)
+(**************** CUT  31,  0 *****************)
 
 ecut 
   and [
@@ -4757,11 +4771,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  32 *****************)
+(**************** CUT  32,  0 *****************)
 
 ecut true;
 
-(**************** CUT  33 *****************)
+(**************** CUT  33,  0 *****************)
 
 ecut 
   and [
@@ -4791,11 +4805,11 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
   ] prove with [cuts [19]];
 
 
-(**************** CUT  34 *****************)
+(**************** CUT  34,  0 *****************)
 
 ecut true;
 
-(**************** CUT  35 *****************)
+(**************** CUT  35,  0 *****************)
 
 ecut 
   and [
@@ -4828,7 +4842,7 @@ eqmod (c010*x** 16+c011*x** 17+c012*x** 18+c013*x** 19+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT  36 *****************)
+(**************** CUT  36,  0 *****************)
 
 ecut true;
 
@@ -6157,7 +6171,7 @@ mov L0x7fffffffda3e ymm11_f;
 (**************** LEVELS 0-2, 2 *****************)
 
 
-(**************** CUT  37 *****************)
+(**************** CUT  37,  0 *****************)
 
 ecut 
   and [
@@ -6348,14 +6362,13 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT  38 *****************)
+(**************** CUT  38,  0 *****************)
 
 ecut true;
 
-(**************** CUT  39 *****************)
+(**************** CUT  39,  0 *****************)
 
 ecut 
   and [
@@ -6385,11 +6398,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  40 *****************)
+(**************** CUT  40,  0 *****************)
 
 ecut true;
 
-(**************** CUT  41 *****************)
+(**************** CUT  41,  0 *****************)
 
 ecut 
   and [
@@ -6419,11 +6432,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  42 *****************)
+(**************** CUT  42,  0 *****************)
 
 ecut true;
 
-(**************** CUT  43 *****************)
+(**************** CUT  43,  0 *****************)
 
 ecut 
   and [
@@ -6453,11 +6466,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  44 *****************)
+(**************** CUT  44,  0 *****************)
 
 ecut true;
 
-(**************** CUT  45 *****************)
+(**************** CUT  45,  0 *****************)
 
 ecut 
   and [
@@ -6487,11 +6500,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  46 *****************)
+(**************** CUT  46,  0 *****************)
 
 ecut true;
 
-(**************** CUT  47 *****************)
+(**************** CUT  47,  0 *****************)
 
 ecut 
   and [
@@ -6521,11 +6534,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  48 *****************)
+(**************** CUT  48,  0 *****************)
 
 ecut true;
 
-(**************** CUT  49 *****************)
+(**************** CUT  49,  0 *****************)
 
 ecut 
   and [
@@ -6555,11 +6568,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  50 *****************)
+(**************** CUT  50,  0 *****************)
 
 ecut true;
 
-(**************** CUT  51 *****************)
+(**************** CUT  51,  0 *****************)
 
 ecut 
   and [
@@ -6589,11 +6602,11 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
   ] prove with [cuts [37]];
 
 
-(**************** CUT  52 *****************)
+(**************** CUT  52,  0 *****************)
 
 ecut true;
 
-(**************** CUT  53 *****************)
+(**************** CUT  53,  0 *****************)
 
 ecut 
   and [
@@ -6626,7 +6639,7 @@ eqmod (c020*x** 32+c021*x** 33+c022*x** 34+c023*x** 35+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT  54 *****************)
+(**************** CUT  54,  0 *****************)
 
 ecut true;
 
@@ -7955,7 +7968,7 @@ mov L0x7fffffffda5e ymm11_f;
 (**************** LEVELS 0-2, 3 *****************)
 
 
-(**************** CUT  55 *****************)
+(**************** CUT  55,  0 *****************)
 
 ecut 
   and [
@@ -8146,14 +8159,13 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT  56 *****************)
+(**************** CUT  56,  0 *****************)
 
 ecut true;
 
-(**************** CUT  57 *****************)
+(**************** CUT  57,  0 *****************)
 
 ecut 
   and [
@@ -8183,11 +8195,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  58 *****************)
+(**************** CUT  58,  0 *****************)
 
 ecut true;
 
-(**************** CUT  59 *****************)
+(**************** CUT  59,  0 *****************)
 
 ecut 
   and [
@@ -8217,11 +8229,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  60 *****************)
+(**************** CUT  60,  0 *****************)
 
 ecut true;
 
-(**************** CUT  61 *****************)
+(**************** CUT  61,  0 *****************)
 
 ecut 
   and [
@@ -8251,11 +8263,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  62 *****************)
+(**************** CUT  62,  0 *****************)
 
 ecut true;
 
-(**************** CUT  63 *****************)
+(**************** CUT  63,  0 *****************)
 
 ecut 
   and [
@@ -8285,11 +8297,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  64 *****************)
+(**************** CUT  64,  0 *****************)
 
 ecut true;
 
-(**************** CUT  65 *****************)
+(**************** CUT  65,  0 *****************)
 
 ecut 
   and [
@@ -8319,11 +8331,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  66 *****************)
+(**************** CUT  66,  0 *****************)
 
 ecut true;
 
-(**************** CUT  67 *****************)
+(**************** CUT  67,  0 *****************)
 
 ecut 
   and [
@@ -8353,11 +8365,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  68 *****************)
+(**************** CUT  68,  0 *****************)
 
 ecut true;
 
-(**************** CUT  69 *****************)
+(**************** CUT  69,  0 *****************)
 
 ecut 
   and [
@@ -8387,11 +8399,11 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
   ] prove with [cuts [55]];
 
 
-(**************** CUT  70 *****************)
+(**************** CUT  70,  0 *****************)
 
 ecut true;
 
-(**************** CUT  71 *****************)
+(**************** CUT  71,  0 *****************)
 
 ecut 
   and [
@@ -8424,7 +8436,7 @@ eqmod (c030*x** 48+c031*x** 49+c032*x** 50+c033*x** 51+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT  72 *****************)
+(**************** CUT  72,  0 *****************)
 
 ecut true;
 
@@ -9753,7 +9765,7 @@ mov L0x7fffffffda7e ymm11_f;
 (**************** LEVELS 0-2, 4 *****************)
 
 
-(**************** CUT  73 *****************)
+(**************** CUT  73,  0 *****************)
 
 ecut 
   and [
@@ -9944,14 +9956,13 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT  74 *****************)
+(**************** CUT  74,  0 *****************)
 
 ecut true;
 
-(**************** CUT  75 *****************)
+(**************** CUT  75,  0 *****************)
 
 ecut 
   and [
@@ -9981,11 +9992,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  76 *****************)
+(**************** CUT  76,  0 *****************)
 
 ecut true;
 
-(**************** CUT  77 *****************)
+(**************** CUT  77,  0 *****************)
 
 ecut 
   and [
@@ -10015,11 +10026,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  78 *****************)
+(**************** CUT  78,  0 *****************)
 
 ecut true;
 
-(**************** CUT  79 *****************)
+(**************** CUT  79,  0 *****************)
 
 ecut 
   and [
@@ -10049,11 +10060,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  80 *****************)
+(**************** CUT  80,  0 *****************)
 
 ecut true;
 
-(**************** CUT  81 *****************)
+(**************** CUT  81,  0 *****************)
 
 ecut 
   and [
@@ -10083,11 +10094,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  82 *****************)
+(**************** CUT  82,  0 *****************)
 
 ecut true;
 
-(**************** CUT  83 *****************)
+(**************** CUT  83,  0 *****************)
 
 ecut 
   and [
@@ -10117,11 +10128,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  84 *****************)
+(**************** CUT  84,  0 *****************)
 
 ecut true;
 
-(**************** CUT  85 *****************)
+(**************** CUT  85,  0 *****************)
 
 ecut 
   and [
@@ -10151,11 +10162,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  86 *****************)
+(**************** CUT  86,  0 *****************)
 
 ecut true;
 
-(**************** CUT  87 *****************)
+(**************** CUT  87,  0 *****************)
 
 ecut 
   and [
@@ -10185,11 +10196,11 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
   ] prove with [cuts [73]];
 
 
-(**************** CUT  88 *****************)
+(**************** CUT  88,  0 *****************)
 
 ecut true;
 
-(**************** CUT  89 *****************)
+(**************** CUT  89,  0 *****************)
 
 ecut 
   and [
@@ -10222,9 +10233,10 @@ eqmod (c040*x** 64+c041*x** 65+c042*x** 66+c043*x** 67+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT  90 *****************)
+(**************** CUT  90,  0 *****************)
 
 ecut true;
+
 
 
 (* vpbroadcastw 0x102(%rdx),%ymm1                  #! EA = L0x555555561222; Value = 0x276d0198f85c6adf; PC = 0x55555555720f *)
@@ -11550,7 +11562,7 @@ mov L0x7fffffffda9e ymm11_f;
 (**************** LEVELS 0-2, 5 *****************)
 
 
-(**************** CUT  91 *****************)
+(**************** CUT  91,  0 *****************)
 
 ecut 
   and [
@@ -11741,14 +11753,13 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT  92 *****************)
+(**************** CUT  92,  0 *****************)
 
 ecut true;
 
-(**************** CUT  93 *****************)
+(**************** CUT  93,  0 *****************)
 
 ecut 
   and [
@@ -11778,11 +11789,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT  94 *****************)
+(**************** CUT  94,  0 *****************)
 
 ecut true;
 
-(**************** CUT  95 *****************)
+(**************** CUT  95,  0 *****************)
 
 ecut 
   and [
@@ -11812,11 +11823,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT  96 *****************)
+(**************** CUT  96,  0 *****************)
 
 ecut true;
 
-(**************** CUT  97 *****************)
+(**************** CUT  97,  0 *****************)
 
 ecut 
   and [
@@ -11846,11 +11857,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT  98 *****************)
+(**************** CUT  98,  0 *****************)
 
 ecut true;
 
-(**************** CUT  99 *****************)
+(**************** CUT  99,  0 *****************)
 
 ecut 
   and [
@@ -11880,11 +11891,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT 100 *****************)
+(**************** CUT 100,  0 *****************)
 
 ecut true;
 
-(**************** CUT 101 *****************)
+(**************** CUT 101,  0 *****************)
 
 ecut 
   and [
@@ -11914,11 +11925,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT 102 *****************)
+(**************** CUT 102,  0 *****************)
 
 ecut true;
 
-(**************** CUT 103 *****************)
+(**************** CUT 103,  0 *****************)
 
 ecut 
   and [
@@ -11948,11 +11959,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT 104 *****************)
+(**************** CUT 104,  0 *****************)
 
 ecut true;
 
-(**************** CUT 105 *****************)
+(**************** CUT 105,  0 *****************)
 
 ecut 
   and [
@@ -11982,11 +11993,11 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
   ] prove with [cuts [91]];
 
 
-(**************** CUT 106 *****************)
+(**************** CUT 106,  0 *****************)
 
 ecut true;
 
-(**************** CUT 107 *****************)
+(**************** CUT 107,  0 *****************)
 
 ecut 
   and [
@@ -12019,7 +12030,7 @@ eqmod (c050*x** 80+c051*x** 81+c052*x** 82+c053*x** 83+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 108 *****************)
+(**************** CUT 108,  0 *****************)
 
 ecut true;
 
@@ -13348,7 +13359,7 @@ mov L0x7fffffffdabe ymm11_f;
 (**************** LEVELS 0-2, 6 *****************)
 
 
-(**************** CUT 109 *****************)
+(**************** CUT 109,  0 *****************)
 
 ecut 
   and [
@@ -13539,14 +13550,13 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT 110 *****************)
+(**************** CUT 110,  0 *****************)
 
 ecut true;
 
-(**************** CUT 111 *****************)
+(**************** CUT 111,  0 *****************)
 
 ecut 
   and [
@@ -13576,11 +13586,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 112 *****************)
+(**************** CUT 112,  0 *****************)
 
 ecut true;
 
-(**************** CUT 113 *****************)
+(**************** CUT 113,  0 *****************)
 
 ecut 
   and [
@@ -13610,11 +13620,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 114 *****************)
+(**************** CUT 114,  0 *****************)
 
 ecut true;
 
-(**************** CUT 115 *****************)
+(**************** CUT 115,  0 *****************)
 
 ecut 
   and [
@@ -13644,11 +13654,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 116 *****************)
+(**************** CUT 116,  0 *****************)
 
 ecut true;
 
-(**************** CUT 117 *****************)
+(**************** CUT 117,  0 *****************)
 
 ecut 
   and [
@@ -13678,11 +13688,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 118 *****************)
+(**************** CUT 118,  0 *****************)
 
 ecut true;
 
-(**************** CUT 119 *****************)
+(**************** CUT 119,  0 *****************)
 
 ecut 
   and [
@@ -13712,11 +13722,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 120 *****************)
+(**************** CUT 120,  0 *****************)
 
 ecut true;
 
-(**************** CUT 121 *****************)
+(**************** CUT 121,  0 *****************)
 
 ecut 
   and [
@@ -13746,11 +13756,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 122 *****************)
+(**************** CUT 122,  0 *****************)
 
 ecut true;
 
-(**************** CUT 123 *****************)
+(**************** CUT 123,  0 *****************)
 
 ecut 
   and [
@@ -13780,11 +13790,11 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
   ] prove with [cuts [109]];
 
 
-(**************** CUT 124 *****************)
+(**************** CUT 124,  0 *****************)
 
 ecut true;
 
-(**************** CUT 125 *****************)
+(**************** CUT 125,  0 *****************)
 
 ecut 
   and [
@@ -13817,9 +13827,10 @@ eqmod (c060*x** 96+c061*x** 97+c062*x** 98+c063*x** 99+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 126 *****************)
+(**************** CUT 126,  0 *****************)
 
 ecut true;
+
 
 
 (* vpbroadcastw 0x102(%rdx),%ymm1                  #! EA = L0x555555561222; Value = 0x276d0198f85c6adf; PC = 0x55555555746b *)
@@ -15145,7 +15156,7 @@ mov L0x7fffffffdade ymm11_f;
 (**************** LEVELS 0-2, 7 *****************)
 
 
-(**************** CUT 127 *****************)
+(**************** CUT 127,  0 *****************)
 
 cut 
   and [
@@ -15350,119 +15361,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd2fa,L0x7fffffffd2fa<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd2fc,L0x7fffffffd2fc<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd2fe,L0x7fffffffd2fe<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3e0,L0x7fffffffd3e0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3e2,L0x7fffffffd3e2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3e4,L0x7fffffffd3e4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3e6,L0x7fffffffd3e6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3e8,L0x7fffffffd3e8<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3ea,L0x7fffffffd3ea<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3ec,L0x7fffffffd3ec<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3ee,L0x7fffffffd3ee<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3f0,L0x7fffffffd3f0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3f2,L0x7fffffffd3f2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3f4,L0x7fffffffd3f4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3f6,L0x7fffffffd3f6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3f8,L0x7fffffffd3f8<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3fa,L0x7fffffffd3fa<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3fc,L0x7fffffffd3fc<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3fe,L0x7fffffffd3fe<s  8192@16,
-( -9479)@16<=s L0x7fffffffd4e0,L0x7fffffffd4e0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4e2,L0x7fffffffd4e2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4e4,L0x7fffffffd4e4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4e6,L0x7fffffffd4e6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4e8,L0x7fffffffd4e8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4ea,L0x7fffffffd4ea<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4ec,L0x7fffffffd4ec<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4ee,L0x7fffffffd4ee<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4f0,L0x7fffffffd4f0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4f2,L0x7fffffffd4f2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4f4,L0x7fffffffd4f4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4f6,L0x7fffffffd4f6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4f8,L0x7fffffffd4f8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4fa,L0x7fffffffd4fa<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4fc,L0x7fffffffd4fc<s  9479@16,
-( -9479)@16<=s L0x7fffffffd4fe,L0x7fffffffd4fe<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5e0,L0x7fffffffd5e0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5e2,L0x7fffffffd5e2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5e4,L0x7fffffffd5e4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5e6,L0x7fffffffd5e6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5e8,L0x7fffffffd5e8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5ea,L0x7fffffffd5ea<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5ec,L0x7fffffffd5ec<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5ee,L0x7fffffffd5ee<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5f0,L0x7fffffffd5f0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5f2,L0x7fffffffd5f2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5f4,L0x7fffffffd5f4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5f6,L0x7fffffffd5f6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5f8,L0x7fffffffd5f8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5fa,L0x7fffffffd5fa<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5fc,L0x7fffffffd5fc<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5fe,L0x7fffffffd5fe<s  9479@16,
-(-13154)@16<=s L0x7fffffffd6e0,L0x7fffffffd6e0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6e2,L0x7fffffffd6e2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6e4,L0x7fffffffd6e4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6e6,L0x7fffffffd6e6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6e8,L0x7fffffffd6e8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6ea,L0x7fffffffd6ea<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6ec,L0x7fffffffd6ec<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6ee,L0x7fffffffd6ee<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6f0,L0x7fffffffd6f0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6f2,L0x7fffffffd6f2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6f4,L0x7fffffffd6f4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6f6,L0x7fffffffd6f6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6f8,L0x7fffffffd6f8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6fa,L0x7fffffffd6fa<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6fc,L0x7fffffffd6fc<s 13154@16,
-(-13154)@16<=s L0x7fffffffd6fe,L0x7fffffffd6fe<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7e0,L0x7fffffffd7e0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7e2,L0x7fffffffd7e2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7e4,L0x7fffffffd7e4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7e6,L0x7fffffffd7e6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7e8,L0x7fffffffd7e8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7ea,L0x7fffffffd7ea<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7ec,L0x7fffffffd7ec<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7ee,L0x7fffffffd7ee<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7f0,L0x7fffffffd7f0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7f2,L0x7fffffffd7f2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7f4,L0x7fffffffd7f4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7f6,L0x7fffffffd7f6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7f8,L0x7fffffffd7f8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7fa,L0x7fffffffd7fa<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7fc,L0x7fffffffd7fc<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7fe,L0x7fffffffd7fe<s 13154@16,
-(-13177)@16<=s L0x7fffffffd8e0,L0x7fffffffd8e0<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8e2,L0x7fffffffd8e2<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8e4,L0x7fffffffd8e4<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8e6,L0x7fffffffd8e6<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8e8,L0x7fffffffd8e8<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8ea,L0x7fffffffd8ea<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8ec,L0x7fffffffd8ec<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8ee,L0x7fffffffd8ee<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8f0,L0x7fffffffd8f0<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8f2,L0x7fffffffd8f2<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8f4,L0x7fffffffd8f4<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8f6,L0x7fffffffd8f6<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8f8,L0x7fffffffd8f8<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8fa,L0x7fffffffd8fa<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8fc,L0x7fffffffd8fc<s 13177@16,
-(-13177)@16<=s L0x7fffffffd8fe,L0x7fffffffd8fe<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9e0,L0x7fffffffd9e0<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9e2,L0x7fffffffd9e2<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9e4,L0x7fffffffd9e4<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9e6,L0x7fffffffd9e6<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9e8,L0x7fffffffd9e8<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9ea,L0x7fffffffd9ea<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9ec,L0x7fffffffd9ec<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9ee,L0x7fffffffd9ee<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9f0,L0x7fffffffd9f0<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9f2,L0x7fffffffd9f2<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9f4,L0x7fffffffd9f4<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9f6,L0x7fffffffd9f6<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9f8,L0x7fffffffd9f8<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9fa,L0x7fffffffd9fa<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9fc,L0x7fffffffd9fc<s 13177@16,
-(-13177)@16<=s L0x7fffffffd9fe,L0x7fffffffd9fe<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd300,L0x7fffffffd300<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd302,L0x7fffffffd302<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd304,L0x7fffffffd304<s  8192@16,
@@ -15479,119 +15377,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd31a,L0x7fffffffd31a<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd31c,L0x7fffffffd31c<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd31e,L0x7fffffffd31e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd400,L0x7fffffffd400<s  8192@16,
-( -8192)@16<=s L0x7fffffffd402,L0x7fffffffd402<s  8192@16,
-( -8192)@16<=s L0x7fffffffd404,L0x7fffffffd404<s  8192@16,
-( -8192)@16<=s L0x7fffffffd406,L0x7fffffffd406<s  8192@16,
-( -8192)@16<=s L0x7fffffffd408,L0x7fffffffd408<s  8192@16,
-( -8192)@16<=s L0x7fffffffd40a,L0x7fffffffd40a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd40c,L0x7fffffffd40c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd40e,L0x7fffffffd40e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd410,L0x7fffffffd410<s  8192@16,
-( -8192)@16<=s L0x7fffffffd412,L0x7fffffffd412<s  8192@16,
-( -8192)@16<=s L0x7fffffffd414,L0x7fffffffd414<s  8192@16,
-( -8192)@16<=s L0x7fffffffd416,L0x7fffffffd416<s  8192@16,
-( -8192)@16<=s L0x7fffffffd418,L0x7fffffffd418<s  8192@16,
-( -8192)@16<=s L0x7fffffffd41a,L0x7fffffffd41a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd41c,L0x7fffffffd41c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd41e,L0x7fffffffd41e<s  8192@16,
-( -9479)@16<=s L0x7fffffffd500,L0x7fffffffd500<s  9479@16,
-( -9479)@16<=s L0x7fffffffd502,L0x7fffffffd502<s  9479@16,
-( -9479)@16<=s L0x7fffffffd504,L0x7fffffffd504<s  9479@16,
-( -9479)@16<=s L0x7fffffffd506,L0x7fffffffd506<s  9479@16,
-( -9479)@16<=s L0x7fffffffd508,L0x7fffffffd508<s  9479@16,
-( -9479)@16<=s L0x7fffffffd50a,L0x7fffffffd50a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd50c,L0x7fffffffd50c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd50e,L0x7fffffffd50e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd510,L0x7fffffffd510<s  9479@16,
-( -9479)@16<=s L0x7fffffffd512,L0x7fffffffd512<s  9479@16,
-( -9479)@16<=s L0x7fffffffd514,L0x7fffffffd514<s  9479@16,
-( -9479)@16<=s L0x7fffffffd516,L0x7fffffffd516<s  9479@16,
-( -9479)@16<=s L0x7fffffffd518,L0x7fffffffd518<s  9479@16,
-( -9479)@16<=s L0x7fffffffd51a,L0x7fffffffd51a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd51c,L0x7fffffffd51c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd51e,L0x7fffffffd51e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd600,L0x7fffffffd600<s  9479@16,
-( -9479)@16<=s L0x7fffffffd602,L0x7fffffffd602<s  9479@16,
-( -9479)@16<=s L0x7fffffffd604,L0x7fffffffd604<s  9479@16,
-( -9479)@16<=s L0x7fffffffd606,L0x7fffffffd606<s  9479@16,
-( -9479)@16<=s L0x7fffffffd608,L0x7fffffffd608<s  9479@16,
-( -9479)@16<=s L0x7fffffffd60a,L0x7fffffffd60a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd60c,L0x7fffffffd60c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd60e,L0x7fffffffd60e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd610,L0x7fffffffd610<s  9479@16,
-( -9479)@16<=s L0x7fffffffd612,L0x7fffffffd612<s  9479@16,
-( -9479)@16<=s L0x7fffffffd614,L0x7fffffffd614<s  9479@16,
-( -9479)@16<=s L0x7fffffffd616,L0x7fffffffd616<s  9479@16,
-( -9479)@16<=s L0x7fffffffd618,L0x7fffffffd618<s  9479@16,
-( -9479)@16<=s L0x7fffffffd61a,L0x7fffffffd61a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd61c,L0x7fffffffd61c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd61e,L0x7fffffffd61e<s  9479@16,
-(-13154)@16<=s L0x7fffffffd700,L0x7fffffffd700<s 13154@16,
-(-13154)@16<=s L0x7fffffffd702,L0x7fffffffd702<s 13154@16,
-(-13154)@16<=s L0x7fffffffd704,L0x7fffffffd704<s 13154@16,
-(-13154)@16<=s L0x7fffffffd706,L0x7fffffffd706<s 13154@16,
-(-13154)@16<=s L0x7fffffffd708,L0x7fffffffd708<s 13154@16,
-(-13154)@16<=s L0x7fffffffd70a,L0x7fffffffd70a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd70c,L0x7fffffffd70c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd70e,L0x7fffffffd70e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd710,L0x7fffffffd710<s 13154@16,
-(-13154)@16<=s L0x7fffffffd712,L0x7fffffffd712<s 13154@16,
-(-13154)@16<=s L0x7fffffffd714,L0x7fffffffd714<s 13154@16,
-(-13154)@16<=s L0x7fffffffd716,L0x7fffffffd716<s 13154@16,
-(-13154)@16<=s L0x7fffffffd718,L0x7fffffffd718<s 13154@16,
-(-13154)@16<=s L0x7fffffffd71a,L0x7fffffffd71a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd71c,L0x7fffffffd71c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd71e,L0x7fffffffd71e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd800,L0x7fffffffd800<s 13154@16,
-(-13154)@16<=s L0x7fffffffd802,L0x7fffffffd802<s 13154@16,
-(-13154)@16<=s L0x7fffffffd804,L0x7fffffffd804<s 13154@16,
-(-13154)@16<=s L0x7fffffffd806,L0x7fffffffd806<s 13154@16,
-(-13154)@16<=s L0x7fffffffd808,L0x7fffffffd808<s 13154@16,
-(-13154)@16<=s L0x7fffffffd80a,L0x7fffffffd80a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd80c,L0x7fffffffd80c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd80e,L0x7fffffffd80e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd810,L0x7fffffffd810<s 13154@16,
-(-13154)@16<=s L0x7fffffffd812,L0x7fffffffd812<s 13154@16,
-(-13154)@16<=s L0x7fffffffd814,L0x7fffffffd814<s 13154@16,
-(-13154)@16<=s L0x7fffffffd816,L0x7fffffffd816<s 13154@16,
-(-13154)@16<=s L0x7fffffffd818,L0x7fffffffd818<s 13154@16,
-(-13154)@16<=s L0x7fffffffd81a,L0x7fffffffd81a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd81c,L0x7fffffffd81c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd81e,L0x7fffffffd81e<s 13154@16,
-(-13177)@16<=s L0x7fffffffd900,L0x7fffffffd900<s 13177@16,
-(-13177)@16<=s L0x7fffffffd902,L0x7fffffffd902<s 13177@16,
-(-13177)@16<=s L0x7fffffffd904,L0x7fffffffd904<s 13177@16,
-(-13177)@16<=s L0x7fffffffd906,L0x7fffffffd906<s 13177@16,
-(-13177)@16<=s L0x7fffffffd908,L0x7fffffffd908<s 13177@16,
-(-13177)@16<=s L0x7fffffffd90a,L0x7fffffffd90a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd90c,L0x7fffffffd90c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd90e,L0x7fffffffd90e<s 13177@16,
-(-13177)@16<=s L0x7fffffffd910,L0x7fffffffd910<s 13177@16,
-(-13177)@16<=s L0x7fffffffd912,L0x7fffffffd912<s 13177@16,
-(-13177)@16<=s L0x7fffffffd914,L0x7fffffffd914<s 13177@16,
-(-13177)@16<=s L0x7fffffffd916,L0x7fffffffd916<s 13177@16,
-(-13177)@16<=s L0x7fffffffd918,L0x7fffffffd918<s 13177@16,
-(-13177)@16<=s L0x7fffffffd91a,L0x7fffffffd91a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd91c,L0x7fffffffd91c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd91e,L0x7fffffffd91e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda00,L0x7fffffffda00<s 13177@16,
-(-13177)@16<=s L0x7fffffffda02,L0x7fffffffda02<s 13177@16,
-(-13177)@16<=s L0x7fffffffda04,L0x7fffffffda04<s 13177@16,
-(-13177)@16<=s L0x7fffffffda06,L0x7fffffffda06<s 13177@16,
-(-13177)@16<=s L0x7fffffffda08,L0x7fffffffda08<s 13177@16,
-(-13177)@16<=s L0x7fffffffda0a,L0x7fffffffda0a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda0c,L0x7fffffffda0c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda0e,L0x7fffffffda0e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda10,L0x7fffffffda10<s 13177@16,
-(-13177)@16<=s L0x7fffffffda12,L0x7fffffffda12<s 13177@16,
-(-13177)@16<=s L0x7fffffffda14,L0x7fffffffda14<s 13177@16,
-(-13177)@16<=s L0x7fffffffda16,L0x7fffffffda16<s 13177@16,
-(-13177)@16<=s L0x7fffffffda18,L0x7fffffffda18<s 13177@16,
-(-13177)@16<=s L0x7fffffffda1a,L0x7fffffffda1a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda1c,L0x7fffffffda1c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda1e,L0x7fffffffda1e<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd320,L0x7fffffffd320<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd322,L0x7fffffffd322<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd324,L0x7fffffffd324<s  8192@16,
@@ -15608,119 +15393,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd33a,L0x7fffffffd33a<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd33c,L0x7fffffffd33c<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd33e,L0x7fffffffd33e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd420,L0x7fffffffd420<s  8192@16,
-( -8192)@16<=s L0x7fffffffd422,L0x7fffffffd422<s  8192@16,
-( -8192)@16<=s L0x7fffffffd424,L0x7fffffffd424<s  8192@16,
-( -8192)@16<=s L0x7fffffffd426,L0x7fffffffd426<s  8192@16,
-( -8192)@16<=s L0x7fffffffd428,L0x7fffffffd428<s  8192@16,
-( -8192)@16<=s L0x7fffffffd42a,L0x7fffffffd42a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd42c,L0x7fffffffd42c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd42e,L0x7fffffffd42e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd430,L0x7fffffffd430<s  8192@16,
-( -8192)@16<=s L0x7fffffffd432,L0x7fffffffd432<s  8192@16,
-( -8192)@16<=s L0x7fffffffd434,L0x7fffffffd434<s  8192@16,
-( -8192)@16<=s L0x7fffffffd436,L0x7fffffffd436<s  8192@16,
-( -8192)@16<=s L0x7fffffffd438,L0x7fffffffd438<s  8192@16,
-( -8192)@16<=s L0x7fffffffd43a,L0x7fffffffd43a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd43c,L0x7fffffffd43c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd43e,L0x7fffffffd43e<s  8192@16,
-( -9479)@16<=s L0x7fffffffd520,L0x7fffffffd520<s  9479@16,
-( -9479)@16<=s L0x7fffffffd522,L0x7fffffffd522<s  9479@16,
-( -9479)@16<=s L0x7fffffffd524,L0x7fffffffd524<s  9479@16,
-( -9479)@16<=s L0x7fffffffd526,L0x7fffffffd526<s  9479@16,
-( -9479)@16<=s L0x7fffffffd528,L0x7fffffffd528<s  9479@16,
-( -9479)@16<=s L0x7fffffffd52a,L0x7fffffffd52a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd52c,L0x7fffffffd52c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd52e,L0x7fffffffd52e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd530,L0x7fffffffd530<s  9479@16,
-( -9479)@16<=s L0x7fffffffd532,L0x7fffffffd532<s  9479@16,
-( -9479)@16<=s L0x7fffffffd534,L0x7fffffffd534<s  9479@16,
-( -9479)@16<=s L0x7fffffffd536,L0x7fffffffd536<s  9479@16,
-( -9479)@16<=s L0x7fffffffd538,L0x7fffffffd538<s  9479@16,
-( -9479)@16<=s L0x7fffffffd53a,L0x7fffffffd53a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd53c,L0x7fffffffd53c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd53e,L0x7fffffffd53e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd620,L0x7fffffffd620<s  9479@16,
-( -9479)@16<=s L0x7fffffffd622,L0x7fffffffd622<s  9479@16,
-( -9479)@16<=s L0x7fffffffd624,L0x7fffffffd624<s  9479@16,
-( -9479)@16<=s L0x7fffffffd626,L0x7fffffffd626<s  9479@16,
-( -9479)@16<=s L0x7fffffffd628,L0x7fffffffd628<s  9479@16,
-( -9479)@16<=s L0x7fffffffd62a,L0x7fffffffd62a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd62c,L0x7fffffffd62c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd62e,L0x7fffffffd62e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd630,L0x7fffffffd630<s  9479@16,
-( -9479)@16<=s L0x7fffffffd632,L0x7fffffffd632<s  9479@16,
-( -9479)@16<=s L0x7fffffffd634,L0x7fffffffd634<s  9479@16,
-( -9479)@16<=s L0x7fffffffd636,L0x7fffffffd636<s  9479@16,
-( -9479)@16<=s L0x7fffffffd638,L0x7fffffffd638<s  9479@16,
-( -9479)@16<=s L0x7fffffffd63a,L0x7fffffffd63a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd63c,L0x7fffffffd63c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd63e,L0x7fffffffd63e<s  9479@16,
-(-13154)@16<=s L0x7fffffffd720,L0x7fffffffd720<s 13154@16,
-(-13154)@16<=s L0x7fffffffd722,L0x7fffffffd722<s 13154@16,
-(-13154)@16<=s L0x7fffffffd724,L0x7fffffffd724<s 13154@16,
-(-13154)@16<=s L0x7fffffffd726,L0x7fffffffd726<s 13154@16,
-(-13154)@16<=s L0x7fffffffd728,L0x7fffffffd728<s 13154@16,
-(-13154)@16<=s L0x7fffffffd72a,L0x7fffffffd72a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd72c,L0x7fffffffd72c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd72e,L0x7fffffffd72e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd730,L0x7fffffffd730<s 13154@16,
-(-13154)@16<=s L0x7fffffffd732,L0x7fffffffd732<s 13154@16,
-(-13154)@16<=s L0x7fffffffd734,L0x7fffffffd734<s 13154@16,
-(-13154)@16<=s L0x7fffffffd736,L0x7fffffffd736<s 13154@16,
-(-13154)@16<=s L0x7fffffffd738,L0x7fffffffd738<s 13154@16,
-(-13154)@16<=s L0x7fffffffd73a,L0x7fffffffd73a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd73c,L0x7fffffffd73c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd73e,L0x7fffffffd73e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd820,L0x7fffffffd820<s 13154@16,
-(-13154)@16<=s L0x7fffffffd822,L0x7fffffffd822<s 13154@16,
-(-13154)@16<=s L0x7fffffffd824,L0x7fffffffd824<s 13154@16,
-(-13154)@16<=s L0x7fffffffd826,L0x7fffffffd826<s 13154@16,
-(-13154)@16<=s L0x7fffffffd828,L0x7fffffffd828<s 13154@16,
-(-13154)@16<=s L0x7fffffffd82a,L0x7fffffffd82a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd82c,L0x7fffffffd82c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd82e,L0x7fffffffd82e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd830,L0x7fffffffd830<s 13154@16,
-(-13154)@16<=s L0x7fffffffd832,L0x7fffffffd832<s 13154@16,
-(-13154)@16<=s L0x7fffffffd834,L0x7fffffffd834<s 13154@16,
-(-13154)@16<=s L0x7fffffffd836,L0x7fffffffd836<s 13154@16,
-(-13154)@16<=s L0x7fffffffd838,L0x7fffffffd838<s 13154@16,
-(-13154)@16<=s L0x7fffffffd83a,L0x7fffffffd83a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd83c,L0x7fffffffd83c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd83e,L0x7fffffffd83e<s 13154@16,
-(-13177)@16<=s L0x7fffffffd920,L0x7fffffffd920<s 13177@16,
-(-13177)@16<=s L0x7fffffffd922,L0x7fffffffd922<s 13177@16,
-(-13177)@16<=s L0x7fffffffd924,L0x7fffffffd924<s 13177@16,
-(-13177)@16<=s L0x7fffffffd926,L0x7fffffffd926<s 13177@16,
-(-13177)@16<=s L0x7fffffffd928,L0x7fffffffd928<s 13177@16,
-(-13177)@16<=s L0x7fffffffd92a,L0x7fffffffd92a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd92c,L0x7fffffffd92c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd92e,L0x7fffffffd92e<s 13177@16,
-(-13177)@16<=s L0x7fffffffd930,L0x7fffffffd930<s 13177@16,
-(-13177)@16<=s L0x7fffffffd932,L0x7fffffffd932<s 13177@16,
-(-13177)@16<=s L0x7fffffffd934,L0x7fffffffd934<s 13177@16,
-(-13177)@16<=s L0x7fffffffd936,L0x7fffffffd936<s 13177@16,
-(-13177)@16<=s L0x7fffffffd938,L0x7fffffffd938<s 13177@16,
-(-13177)@16<=s L0x7fffffffd93a,L0x7fffffffd93a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd93c,L0x7fffffffd93c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd93e,L0x7fffffffd93e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda20,L0x7fffffffda20<s 13177@16,
-(-13177)@16<=s L0x7fffffffda22,L0x7fffffffda22<s 13177@16,
-(-13177)@16<=s L0x7fffffffda24,L0x7fffffffda24<s 13177@16,
-(-13177)@16<=s L0x7fffffffda26,L0x7fffffffda26<s 13177@16,
-(-13177)@16<=s L0x7fffffffda28,L0x7fffffffda28<s 13177@16,
-(-13177)@16<=s L0x7fffffffda2a,L0x7fffffffda2a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda2c,L0x7fffffffda2c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda2e,L0x7fffffffda2e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda30,L0x7fffffffda30<s 13177@16,
-(-13177)@16<=s L0x7fffffffda32,L0x7fffffffda32<s 13177@16,
-(-13177)@16<=s L0x7fffffffda34,L0x7fffffffda34<s 13177@16,
-(-13177)@16<=s L0x7fffffffda36,L0x7fffffffda36<s 13177@16,
-(-13177)@16<=s L0x7fffffffda38,L0x7fffffffda38<s 13177@16,
-(-13177)@16<=s L0x7fffffffda3a,L0x7fffffffda3a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda3c,L0x7fffffffda3c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda3e,L0x7fffffffda3e<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd340,L0x7fffffffd340<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd342,L0x7fffffffd342<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd344,L0x7fffffffd344<s  8192@16,
@@ -15737,119 +15409,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd35a,L0x7fffffffd35a<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd35c,L0x7fffffffd35c<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd35e,L0x7fffffffd35e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd440,L0x7fffffffd440<s  8192@16,
-( -8192)@16<=s L0x7fffffffd442,L0x7fffffffd442<s  8192@16,
-( -8192)@16<=s L0x7fffffffd444,L0x7fffffffd444<s  8192@16,
-( -8192)@16<=s L0x7fffffffd446,L0x7fffffffd446<s  8192@16,
-( -8192)@16<=s L0x7fffffffd448,L0x7fffffffd448<s  8192@16,
-( -8192)@16<=s L0x7fffffffd44a,L0x7fffffffd44a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd44c,L0x7fffffffd44c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd44e,L0x7fffffffd44e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd450,L0x7fffffffd450<s  8192@16,
-( -8192)@16<=s L0x7fffffffd452,L0x7fffffffd452<s  8192@16,
-( -8192)@16<=s L0x7fffffffd454,L0x7fffffffd454<s  8192@16,
-( -8192)@16<=s L0x7fffffffd456,L0x7fffffffd456<s  8192@16,
-( -8192)@16<=s L0x7fffffffd458,L0x7fffffffd458<s  8192@16,
-( -8192)@16<=s L0x7fffffffd45a,L0x7fffffffd45a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd45c,L0x7fffffffd45c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd45e,L0x7fffffffd45e<s  8192@16,
-( -9479)@16<=s L0x7fffffffd540,L0x7fffffffd540<s  9479@16,
-( -9479)@16<=s L0x7fffffffd542,L0x7fffffffd542<s  9479@16,
-( -9479)@16<=s L0x7fffffffd544,L0x7fffffffd544<s  9479@16,
-( -9479)@16<=s L0x7fffffffd546,L0x7fffffffd546<s  9479@16,
-( -9479)@16<=s L0x7fffffffd548,L0x7fffffffd548<s  9479@16,
-( -9479)@16<=s L0x7fffffffd54a,L0x7fffffffd54a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd54c,L0x7fffffffd54c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd54e,L0x7fffffffd54e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd550,L0x7fffffffd550<s  9479@16,
-( -9479)@16<=s L0x7fffffffd552,L0x7fffffffd552<s  9479@16,
-( -9479)@16<=s L0x7fffffffd554,L0x7fffffffd554<s  9479@16,
-( -9479)@16<=s L0x7fffffffd556,L0x7fffffffd556<s  9479@16,
-( -9479)@16<=s L0x7fffffffd558,L0x7fffffffd558<s  9479@16,
-( -9479)@16<=s L0x7fffffffd55a,L0x7fffffffd55a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd55c,L0x7fffffffd55c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd55e,L0x7fffffffd55e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd640,L0x7fffffffd640<s  9479@16,
-( -9479)@16<=s L0x7fffffffd642,L0x7fffffffd642<s  9479@16,
-( -9479)@16<=s L0x7fffffffd644,L0x7fffffffd644<s  9479@16,
-( -9479)@16<=s L0x7fffffffd646,L0x7fffffffd646<s  9479@16,
-( -9479)@16<=s L0x7fffffffd648,L0x7fffffffd648<s  9479@16,
-( -9479)@16<=s L0x7fffffffd64a,L0x7fffffffd64a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd64c,L0x7fffffffd64c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd64e,L0x7fffffffd64e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd650,L0x7fffffffd650<s  9479@16,
-( -9479)@16<=s L0x7fffffffd652,L0x7fffffffd652<s  9479@16,
-( -9479)@16<=s L0x7fffffffd654,L0x7fffffffd654<s  9479@16,
-( -9479)@16<=s L0x7fffffffd656,L0x7fffffffd656<s  9479@16,
-( -9479)@16<=s L0x7fffffffd658,L0x7fffffffd658<s  9479@16,
-( -9479)@16<=s L0x7fffffffd65a,L0x7fffffffd65a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd65c,L0x7fffffffd65c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd65e,L0x7fffffffd65e<s  9479@16,
-(-13154)@16<=s L0x7fffffffd740,L0x7fffffffd740<s 13154@16,
-(-13154)@16<=s L0x7fffffffd742,L0x7fffffffd742<s 13154@16,
-(-13154)@16<=s L0x7fffffffd744,L0x7fffffffd744<s 13154@16,
-(-13154)@16<=s L0x7fffffffd746,L0x7fffffffd746<s 13154@16,
-(-13154)@16<=s L0x7fffffffd748,L0x7fffffffd748<s 13154@16,
-(-13154)@16<=s L0x7fffffffd74a,L0x7fffffffd74a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd74c,L0x7fffffffd74c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd74e,L0x7fffffffd74e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd750,L0x7fffffffd750<s 13154@16,
-(-13154)@16<=s L0x7fffffffd752,L0x7fffffffd752<s 13154@16,
-(-13154)@16<=s L0x7fffffffd754,L0x7fffffffd754<s 13154@16,
-(-13154)@16<=s L0x7fffffffd756,L0x7fffffffd756<s 13154@16,
-(-13154)@16<=s L0x7fffffffd758,L0x7fffffffd758<s 13154@16,
-(-13154)@16<=s L0x7fffffffd75a,L0x7fffffffd75a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd75c,L0x7fffffffd75c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd75e,L0x7fffffffd75e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd840,L0x7fffffffd840<s 13154@16,
-(-13154)@16<=s L0x7fffffffd842,L0x7fffffffd842<s 13154@16,
-(-13154)@16<=s L0x7fffffffd844,L0x7fffffffd844<s 13154@16,
-(-13154)@16<=s L0x7fffffffd846,L0x7fffffffd846<s 13154@16,
-(-13154)@16<=s L0x7fffffffd848,L0x7fffffffd848<s 13154@16,
-(-13154)@16<=s L0x7fffffffd84a,L0x7fffffffd84a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd84c,L0x7fffffffd84c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd84e,L0x7fffffffd84e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd850,L0x7fffffffd850<s 13154@16,
-(-13154)@16<=s L0x7fffffffd852,L0x7fffffffd852<s 13154@16,
-(-13154)@16<=s L0x7fffffffd854,L0x7fffffffd854<s 13154@16,
-(-13154)@16<=s L0x7fffffffd856,L0x7fffffffd856<s 13154@16,
-(-13154)@16<=s L0x7fffffffd858,L0x7fffffffd858<s 13154@16,
-(-13154)@16<=s L0x7fffffffd85a,L0x7fffffffd85a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd85c,L0x7fffffffd85c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd85e,L0x7fffffffd85e<s 13154@16,
-(-13177)@16<=s L0x7fffffffd940,L0x7fffffffd940<s 13177@16,
-(-13177)@16<=s L0x7fffffffd942,L0x7fffffffd942<s 13177@16,
-(-13177)@16<=s L0x7fffffffd944,L0x7fffffffd944<s 13177@16,
-(-13177)@16<=s L0x7fffffffd946,L0x7fffffffd946<s 13177@16,
-(-13177)@16<=s L0x7fffffffd948,L0x7fffffffd948<s 13177@16,
-(-13177)@16<=s L0x7fffffffd94a,L0x7fffffffd94a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd94c,L0x7fffffffd94c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd94e,L0x7fffffffd94e<s 13177@16,
-(-13177)@16<=s L0x7fffffffd950,L0x7fffffffd950<s 13177@16,
-(-13177)@16<=s L0x7fffffffd952,L0x7fffffffd952<s 13177@16,
-(-13177)@16<=s L0x7fffffffd954,L0x7fffffffd954<s 13177@16,
-(-13177)@16<=s L0x7fffffffd956,L0x7fffffffd956<s 13177@16,
-(-13177)@16<=s L0x7fffffffd958,L0x7fffffffd958<s 13177@16,
-(-13177)@16<=s L0x7fffffffd95a,L0x7fffffffd95a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd95c,L0x7fffffffd95c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd95e,L0x7fffffffd95e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda40,L0x7fffffffda40<s 13177@16,
-(-13177)@16<=s L0x7fffffffda42,L0x7fffffffda42<s 13177@16,
-(-13177)@16<=s L0x7fffffffda44,L0x7fffffffda44<s 13177@16,
-(-13177)@16<=s L0x7fffffffda46,L0x7fffffffda46<s 13177@16,
-(-13177)@16<=s L0x7fffffffda48,L0x7fffffffda48<s 13177@16,
-(-13177)@16<=s L0x7fffffffda4a,L0x7fffffffda4a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda4c,L0x7fffffffda4c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda4e,L0x7fffffffda4e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda50,L0x7fffffffda50<s 13177@16,
-(-13177)@16<=s L0x7fffffffda52,L0x7fffffffda52<s 13177@16,
-(-13177)@16<=s L0x7fffffffda54,L0x7fffffffda54<s 13177@16,
-(-13177)@16<=s L0x7fffffffda56,L0x7fffffffda56<s 13177@16,
-(-13177)@16<=s L0x7fffffffda58,L0x7fffffffda58<s 13177@16,
-(-13177)@16<=s L0x7fffffffda5a,L0x7fffffffda5a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda5c,L0x7fffffffda5c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda5e,L0x7fffffffda5e<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd360,L0x7fffffffd360<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd362,L0x7fffffffd362<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd364,L0x7fffffffd364<s  8192@16,
@@ -15866,119 +15425,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd37a,L0x7fffffffd37a<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd37c,L0x7fffffffd37c<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd37e,L0x7fffffffd37e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd460,L0x7fffffffd460<s  8192@16,
-( -8192)@16<=s L0x7fffffffd462,L0x7fffffffd462<s  8192@16,
-( -8192)@16<=s L0x7fffffffd464,L0x7fffffffd464<s  8192@16,
-( -8192)@16<=s L0x7fffffffd466,L0x7fffffffd466<s  8192@16,
-( -8192)@16<=s L0x7fffffffd468,L0x7fffffffd468<s  8192@16,
-( -8192)@16<=s L0x7fffffffd46a,L0x7fffffffd46a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd46c,L0x7fffffffd46c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd46e,L0x7fffffffd46e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd470,L0x7fffffffd470<s  8192@16,
-( -8192)@16<=s L0x7fffffffd472,L0x7fffffffd472<s  8192@16,
-( -8192)@16<=s L0x7fffffffd474,L0x7fffffffd474<s  8192@16,
-( -8192)@16<=s L0x7fffffffd476,L0x7fffffffd476<s  8192@16,
-( -8192)@16<=s L0x7fffffffd478,L0x7fffffffd478<s  8192@16,
-( -8192)@16<=s L0x7fffffffd47a,L0x7fffffffd47a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd47c,L0x7fffffffd47c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd47e,L0x7fffffffd47e<s  8192@16,
-( -9479)@16<=s L0x7fffffffd560,L0x7fffffffd560<s  9479@16,
-( -9479)@16<=s L0x7fffffffd562,L0x7fffffffd562<s  9479@16,
-( -9479)@16<=s L0x7fffffffd564,L0x7fffffffd564<s  9479@16,
-( -9479)@16<=s L0x7fffffffd566,L0x7fffffffd566<s  9479@16,
-( -9479)@16<=s L0x7fffffffd568,L0x7fffffffd568<s  9479@16,
-( -9479)@16<=s L0x7fffffffd56a,L0x7fffffffd56a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd56c,L0x7fffffffd56c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd56e,L0x7fffffffd56e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd570,L0x7fffffffd570<s  9479@16,
-( -9479)@16<=s L0x7fffffffd572,L0x7fffffffd572<s  9479@16,
-( -9479)@16<=s L0x7fffffffd574,L0x7fffffffd574<s  9479@16,
-( -9479)@16<=s L0x7fffffffd576,L0x7fffffffd576<s  9479@16,
-( -9479)@16<=s L0x7fffffffd578,L0x7fffffffd578<s  9479@16,
-( -9479)@16<=s L0x7fffffffd57a,L0x7fffffffd57a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd57c,L0x7fffffffd57c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd57e,L0x7fffffffd57e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd660,L0x7fffffffd660<s  9479@16,
-( -9479)@16<=s L0x7fffffffd662,L0x7fffffffd662<s  9479@16,
-( -9479)@16<=s L0x7fffffffd664,L0x7fffffffd664<s  9479@16,
-( -9479)@16<=s L0x7fffffffd666,L0x7fffffffd666<s  9479@16,
-( -9479)@16<=s L0x7fffffffd668,L0x7fffffffd668<s  9479@16,
-( -9479)@16<=s L0x7fffffffd66a,L0x7fffffffd66a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd66c,L0x7fffffffd66c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd66e,L0x7fffffffd66e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd670,L0x7fffffffd670<s  9479@16,
-( -9479)@16<=s L0x7fffffffd672,L0x7fffffffd672<s  9479@16,
-( -9479)@16<=s L0x7fffffffd674,L0x7fffffffd674<s  9479@16,
-( -9479)@16<=s L0x7fffffffd676,L0x7fffffffd676<s  9479@16,
-( -9479)@16<=s L0x7fffffffd678,L0x7fffffffd678<s  9479@16,
-( -9479)@16<=s L0x7fffffffd67a,L0x7fffffffd67a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd67c,L0x7fffffffd67c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd67e,L0x7fffffffd67e<s  9479@16,
-(-13154)@16<=s L0x7fffffffd760,L0x7fffffffd760<s 13154@16,
-(-13154)@16<=s L0x7fffffffd762,L0x7fffffffd762<s 13154@16,
-(-13154)@16<=s L0x7fffffffd764,L0x7fffffffd764<s 13154@16,
-(-13154)@16<=s L0x7fffffffd766,L0x7fffffffd766<s 13154@16,
-(-13154)@16<=s L0x7fffffffd768,L0x7fffffffd768<s 13154@16,
-(-13154)@16<=s L0x7fffffffd76a,L0x7fffffffd76a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd76c,L0x7fffffffd76c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd76e,L0x7fffffffd76e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd770,L0x7fffffffd770<s 13154@16,
-(-13154)@16<=s L0x7fffffffd772,L0x7fffffffd772<s 13154@16,
-(-13154)@16<=s L0x7fffffffd774,L0x7fffffffd774<s 13154@16,
-(-13154)@16<=s L0x7fffffffd776,L0x7fffffffd776<s 13154@16,
-(-13154)@16<=s L0x7fffffffd778,L0x7fffffffd778<s 13154@16,
-(-13154)@16<=s L0x7fffffffd77a,L0x7fffffffd77a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd77c,L0x7fffffffd77c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd77e,L0x7fffffffd77e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd860,L0x7fffffffd860<s 13154@16,
-(-13154)@16<=s L0x7fffffffd862,L0x7fffffffd862<s 13154@16,
-(-13154)@16<=s L0x7fffffffd864,L0x7fffffffd864<s 13154@16,
-(-13154)@16<=s L0x7fffffffd866,L0x7fffffffd866<s 13154@16,
-(-13154)@16<=s L0x7fffffffd868,L0x7fffffffd868<s 13154@16,
-(-13154)@16<=s L0x7fffffffd86a,L0x7fffffffd86a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd86c,L0x7fffffffd86c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd86e,L0x7fffffffd86e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd870,L0x7fffffffd870<s 13154@16,
-(-13154)@16<=s L0x7fffffffd872,L0x7fffffffd872<s 13154@16,
-(-13154)@16<=s L0x7fffffffd874,L0x7fffffffd874<s 13154@16,
-(-13154)@16<=s L0x7fffffffd876,L0x7fffffffd876<s 13154@16,
-(-13154)@16<=s L0x7fffffffd878,L0x7fffffffd878<s 13154@16,
-(-13154)@16<=s L0x7fffffffd87a,L0x7fffffffd87a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd87c,L0x7fffffffd87c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd87e,L0x7fffffffd87e<s 13154@16,
-(-13177)@16<=s L0x7fffffffd960,L0x7fffffffd960<s 13177@16,
-(-13177)@16<=s L0x7fffffffd962,L0x7fffffffd962<s 13177@16,
-(-13177)@16<=s L0x7fffffffd964,L0x7fffffffd964<s 13177@16,
-(-13177)@16<=s L0x7fffffffd966,L0x7fffffffd966<s 13177@16,
-(-13177)@16<=s L0x7fffffffd968,L0x7fffffffd968<s 13177@16,
-(-13177)@16<=s L0x7fffffffd96a,L0x7fffffffd96a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd96c,L0x7fffffffd96c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd96e,L0x7fffffffd96e<s 13177@16,
-(-13177)@16<=s L0x7fffffffd970,L0x7fffffffd970<s 13177@16,
-(-13177)@16<=s L0x7fffffffd972,L0x7fffffffd972<s 13177@16,
-(-13177)@16<=s L0x7fffffffd974,L0x7fffffffd974<s 13177@16,
-(-13177)@16<=s L0x7fffffffd976,L0x7fffffffd976<s 13177@16,
-(-13177)@16<=s L0x7fffffffd978,L0x7fffffffd978<s 13177@16,
-(-13177)@16<=s L0x7fffffffd97a,L0x7fffffffd97a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd97c,L0x7fffffffd97c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd97e,L0x7fffffffd97e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda60,L0x7fffffffda60<s 13177@16,
-(-13177)@16<=s L0x7fffffffda62,L0x7fffffffda62<s 13177@16,
-(-13177)@16<=s L0x7fffffffda64,L0x7fffffffda64<s 13177@16,
-(-13177)@16<=s L0x7fffffffda66,L0x7fffffffda66<s 13177@16,
-(-13177)@16<=s L0x7fffffffda68,L0x7fffffffda68<s 13177@16,
-(-13177)@16<=s L0x7fffffffda6a,L0x7fffffffda6a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda6c,L0x7fffffffda6c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda6e,L0x7fffffffda6e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda70,L0x7fffffffda70<s 13177@16,
-(-13177)@16<=s L0x7fffffffda72,L0x7fffffffda72<s 13177@16,
-(-13177)@16<=s L0x7fffffffda74,L0x7fffffffda74<s 13177@16,
-(-13177)@16<=s L0x7fffffffda76,L0x7fffffffda76<s 13177@16,
-(-13177)@16<=s L0x7fffffffda78,L0x7fffffffda78<s 13177@16,
-(-13177)@16<=s L0x7fffffffda7a,L0x7fffffffda7a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda7c,L0x7fffffffda7c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda7e,L0x7fffffffda7e<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd380,L0x7fffffffd380<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd382,L0x7fffffffd382<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd384,L0x7fffffffd384<s  8192@16,
@@ -15995,119 +15441,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd39a,L0x7fffffffd39a<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd39c,L0x7fffffffd39c<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd39e,L0x7fffffffd39e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd480,L0x7fffffffd480<s  8192@16,
-( -8192)@16<=s L0x7fffffffd482,L0x7fffffffd482<s  8192@16,
-( -8192)@16<=s L0x7fffffffd484,L0x7fffffffd484<s  8192@16,
-( -8192)@16<=s L0x7fffffffd486,L0x7fffffffd486<s  8192@16,
-( -8192)@16<=s L0x7fffffffd488,L0x7fffffffd488<s  8192@16,
-( -8192)@16<=s L0x7fffffffd48a,L0x7fffffffd48a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd48c,L0x7fffffffd48c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd48e,L0x7fffffffd48e<s  8192@16,
-( -8192)@16<=s L0x7fffffffd490,L0x7fffffffd490<s  8192@16,
-( -8192)@16<=s L0x7fffffffd492,L0x7fffffffd492<s  8192@16,
-( -8192)@16<=s L0x7fffffffd494,L0x7fffffffd494<s  8192@16,
-( -8192)@16<=s L0x7fffffffd496,L0x7fffffffd496<s  8192@16,
-( -8192)@16<=s L0x7fffffffd498,L0x7fffffffd498<s  8192@16,
-( -8192)@16<=s L0x7fffffffd49a,L0x7fffffffd49a<s  8192@16,
-( -8192)@16<=s L0x7fffffffd49c,L0x7fffffffd49c<s  8192@16,
-( -8192)@16<=s L0x7fffffffd49e,L0x7fffffffd49e<s  8192@16,
-( -9479)@16<=s L0x7fffffffd580,L0x7fffffffd580<s  9479@16,
-( -9479)@16<=s L0x7fffffffd582,L0x7fffffffd582<s  9479@16,
-( -9479)@16<=s L0x7fffffffd584,L0x7fffffffd584<s  9479@16,
-( -9479)@16<=s L0x7fffffffd586,L0x7fffffffd586<s  9479@16,
-( -9479)@16<=s L0x7fffffffd588,L0x7fffffffd588<s  9479@16,
-( -9479)@16<=s L0x7fffffffd58a,L0x7fffffffd58a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd58c,L0x7fffffffd58c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd58e,L0x7fffffffd58e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd590,L0x7fffffffd590<s  9479@16,
-( -9479)@16<=s L0x7fffffffd592,L0x7fffffffd592<s  9479@16,
-( -9479)@16<=s L0x7fffffffd594,L0x7fffffffd594<s  9479@16,
-( -9479)@16<=s L0x7fffffffd596,L0x7fffffffd596<s  9479@16,
-( -9479)@16<=s L0x7fffffffd598,L0x7fffffffd598<s  9479@16,
-( -9479)@16<=s L0x7fffffffd59a,L0x7fffffffd59a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd59c,L0x7fffffffd59c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd59e,L0x7fffffffd59e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd680,L0x7fffffffd680<s  9479@16,
-( -9479)@16<=s L0x7fffffffd682,L0x7fffffffd682<s  9479@16,
-( -9479)@16<=s L0x7fffffffd684,L0x7fffffffd684<s  9479@16,
-( -9479)@16<=s L0x7fffffffd686,L0x7fffffffd686<s  9479@16,
-( -9479)@16<=s L0x7fffffffd688,L0x7fffffffd688<s  9479@16,
-( -9479)@16<=s L0x7fffffffd68a,L0x7fffffffd68a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd68c,L0x7fffffffd68c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd68e,L0x7fffffffd68e<s  9479@16,
-( -9479)@16<=s L0x7fffffffd690,L0x7fffffffd690<s  9479@16,
-( -9479)@16<=s L0x7fffffffd692,L0x7fffffffd692<s  9479@16,
-( -9479)@16<=s L0x7fffffffd694,L0x7fffffffd694<s  9479@16,
-( -9479)@16<=s L0x7fffffffd696,L0x7fffffffd696<s  9479@16,
-( -9479)@16<=s L0x7fffffffd698,L0x7fffffffd698<s  9479@16,
-( -9479)@16<=s L0x7fffffffd69a,L0x7fffffffd69a<s  9479@16,
-( -9479)@16<=s L0x7fffffffd69c,L0x7fffffffd69c<s  9479@16,
-( -9479)@16<=s L0x7fffffffd69e,L0x7fffffffd69e<s  9479@16,
-(-13154)@16<=s L0x7fffffffd780,L0x7fffffffd780<s 13154@16,
-(-13154)@16<=s L0x7fffffffd782,L0x7fffffffd782<s 13154@16,
-(-13154)@16<=s L0x7fffffffd784,L0x7fffffffd784<s 13154@16,
-(-13154)@16<=s L0x7fffffffd786,L0x7fffffffd786<s 13154@16,
-(-13154)@16<=s L0x7fffffffd788,L0x7fffffffd788<s 13154@16,
-(-13154)@16<=s L0x7fffffffd78a,L0x7fffffffd78a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd78c,L0x7fffffffd78c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd78e,L0x7fffffffd78e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd790,L0x7fffffffd790<s 13154@16,
-(-13154)@16<=s L0x7fffffffd792,L0x7fffffffd792<s 13154@16,
-(-13154)@16<=s L0x7fffffffd794,L0x7fffffffd794<s 13154@16,
-(-13154)@16<=s L0x7fffffffd796,L0x7fffffffd796<s 13154@16,
-(-13154)@16<=s L0x7fffffffd798,L0x7fffffffd798<s 13154@16,
-(-13154)@16<=s L0x7fffffffd79a,L0x7fffffffd79a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd79c,L0x7fffffffd79c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd79e,L0x7fffffffd79e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd880,L0x7fffffffd880<s 13154@16,
-(-13154)@16<=s L0x7fffffffd882,L0x7fffffffd882<s 13154@16,
-(-13154)@16<=s L0x7fffffffd884,L0x7fffffffd884<s 13154@16,
-(-13154)@16<=s L0x7fffffffd886,L0x7fffffffd886<s 13154@16,
-(-13154)@16<=s L0x7fffffffd888,L0x7fffffffd888<s 13154@16,
-(-13154)@16<=s L0x7fffffffd88a,L0x7fffffffd88a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd88c,L0x7fffffffd88c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd88e,L0x7fffffffd88e<s 13154@16,
-(-13154)@16<=s L0x7fffffffd890,L0x7fffffffd890<s 13154@16,
-(-13154)@16<=s L0x7fffffffd892,L0x7fffffffd892<s 13154@16,
-(-13154)@16<=s L0x7fffffffd894,L0x7fffffffd894<s 13154@16,
-(-13154)@16<=s L0x7fffffffd896,L0x7fffffffd896<s 13154@16,
-(-13154)@16<=s L0x7fffffffd898,L0x7fffffffd898<s 13154@16,
-(-13154)@16<=s L0x7fffffffd89a,L0x7fffffffd89a<s 13154@16,
-(-13154)@16<=s L0x7fffffffd89c,L0x7fffffffd89c<s 13154@16,
-(-13154)@16<=s L0x7fffffffd89e,L0x7fffffffd89e<s 13154@16,
-(-13177)@16<=s L0x7fffffffd980,L0x7fffffffd980<s 13177@16,
-(-13177)@16<=s L0x7fffffffd982,L0x7fffffffd982<s 13177@16,
-(-13177)@16<=s L0x7fffffffd984,L0x7fffffffd984<s 13177@16,
-(-13177)@16<=s L0x7fffffffd986,L0x7fffffffd986<s 13177@16,
-(-13177)@16<=s L0x7fffffffd988,L0x7fffffffd988<s 13177@16,
-(-13177)@16<=s L0x7fffffffd98a,L0x7fffffffd98a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd98c,L0x7fffffffd98c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd98e,L0x7fffffffd98e<s 13177@16,
-(-13177)@16<=s L0x7fffffffd990,L0x7fffffffd990<s 13177@16,
-(-13177)@16<=s L0x7fffffffd992,L0x7fffffffd992<s 13177@16,
-(-13177)@16<=s L0x7fffffffd994,L0x7fffffffd994<s 13177@16,
-(-13177)@16<=s L0x7fffffffd996,L0x7fffffffd996<s 13177@16,
-(-13177)@16<=s L0x7fffffffd998,L0x7fffffffd998<s 13177@16,
-(-13177)@16<=s L0x7fffffffd99a,L0x7fffffffd99a<s 13177@16,
-(-13177)@16<=s L0x7fffffffd99c,L0x7fffffffd99c<s 13177@16,
-(-13177)@16<=s L0x7fffffffd99e,L0x7fffffffd99e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda80,L0x7fffffffda80<s 13177@16,
-(-13177)@16<=s L0x7fffffffda82,L0x7fffffffda82<s 13177@16,
-(-13177)@16<=s L0x7fffffffda84,L0x7fffffffda84<s 13177@16,
-(-13177)@16<=s L0x7fffffffda86,L0x7fffffffda86<s 13177@16,
-(-13177)@16<=s L0x7fffffffda88,L0x7fffffffda88<s 13177@16,
-(-13177)@16<=s L0x7fffffffda8a,L0x7fffffffda8a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda8c,L0x7fffffffda8c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda8e,L0x7fffffffda8e<s 13177@16,
-(-13177)@16<=s L0x7fffffffda90,L0x7fffffffda90<s 13177@16,
-(-13177)@16<=s L0x7fffffffda92,L0x7fffffffda92<s 13177@16,
-(-13177)@16<=s L0x7fffffffda94,L0x7fffffffda94<s 13177@16,
-(-13177)@16<=s L0x7fffffffda96,L0x7fffffffda96<s 13177@16,
-(-13177)@16<=s L0x7fffffffda98,L0x7fffffffda98<s 13177@16,
-(-13177)@16<=s L0x7fffffffda9a,L0x7fffffffda9a<s 13177@16,
-(-13177)@16<=s L0x7fffffffda9c,L0x7fffffffda9c<s 13177@16,
-(-13177)@16<=s L0x7fffffffda9e,L0x7fffffffda9e<s 13177@16
-,
 ( -8192)@16<=s L0x7fffffffd3a0,L0x7fffffffd3a0<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd3a2,L0x7fffffffd3a2<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd3a4,L0x7fffffffd3a4<s  8192@16,
@@ -16124,6 +15457,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd3ba,L0x7fffffffd3ba<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd3bc,L0x7fffffffd3bc<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd3be,L0x7fffffffd3be<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3c0,L0x7fffffffd3c0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3c2,L0x7fffffffd3c2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3c4,L0x7fffffffd3c4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3c6,L0x7fffffffd3c6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3c8,L0x7fffffffd3c8<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3ca,L0x7fffffffd3ca<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3cc,L0x7fffffffd3cc<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3ce,L0x7fffffffd3ce<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3d0,L0x7fffffffd3d0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3d2,L0x7fffffffd3d2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3d4,L0x7fffffffd3d4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3d6,L0x7fffffffd3d6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3d8,L0x7fffffffd3d8<s  8192@16,
+( -6144)@16<=s L0x7fffffffd3da,L0x7fffffffd3da<s  6144@16,
+( -6144)@16<=s L0x7fffffffd3dc,L0x7fffffffd3dc<s  6144@16,
+( -6144)@16<=s L0x7fffffffd3de,L0x7fffffffd3de<s  6144@16
+,
+( -8192)@16<=s L0x7fffffffd3e0,L0x7fffffffd3e0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3e2,L0x7fffffffd3e2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3e4,L0x7fffffffd3e4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3e6,L0x7fffffffd3e6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3e8,L0x7fffffffd3e8<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3ea,L0x7fffffffd3ea<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3ec,L0x7fffffffd3ec<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3ee,L0x7fffffffd3ee<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3f0,L0x7fffffffd3f0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3f2,L0x7fffffffd3f2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3f4,L0x7fffffffd3f4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3f6,L0x7fffffffd3f6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3f8,L0x7fffffffd3f8<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3fa,L0x7fffffffd3fa<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3fc,L0x7fffffffd3fc<s  8192@16,
+( -8192)@16<=s L0x7fffffffd3fe,L0x7fffffffd3fe<s  8192@16,
+( -8192)@16<=s L0x7fffffffd400,L0x7fffffffd400<s  8192@16,
+( -8192)@16<=s L0x7fffffffd402,L0x7fffffffd402<s  8192@16,
+( -8192)@16<=s L0x7fffffffd404,L0x7fffffffd404<s  8192@16,
+( -8192)@16<=s L0x7fffffffd406,L0x7fffffffd406<s  8192@16,
+( -8192)@16<=s L0x7fffffffd408,L0x7fffffffd408<s  8192@16,
+( -8192)@16<=s L0x7fffffffd40a,L0x7fffffffd40a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd40c,L0x7fffffffd40c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd40e,L0x7fffffffd40e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd410,L0x7fffffffd410<s  8192@16,
+( -8192)@16<=s L0x7fffffffd412,L0x7fffffffd412<s  8192@16,
+( -8192)@16<=s L0x7fffffffd414,L0x7fffffffd414<s  8192@16,
+( -8192)@16<=s L0x7fffffffd416,L0x7fffffffd416<s  8192@16,
+( -8192)@16<=s L0x7fffffffd418,L0x7fffffffd418<s  8192@16,
+( -8192)@16<=s L0x7fffffffd41a,L0x7fffffffd41a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd41c,L0x7fffffffd41c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd41e,L0x7fffffffd41e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd420,L0x7fffffffd420<s  8192@16,
+( -8192)@16<=s L0x7fffffffd422,L0x7fffffffd422<s  8192@16,
+( -8192)@16<=s L0x7fffffffd424,L0x7fffffffd424<s  8192@16,
+( -8192)@16<=s L0x7fffffffd426,L0x7fffffffd426<s  8192@16,
+( -8192)@16<=s L0x7fffffffd428,L0x7fffffffd428<s  8192@16,
+( -8192)@16<=s L0x7fffffffd42a,L0x7fffffffd42a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd42c,L0x7fffffffd42c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd42e,L0x7fffffffd42e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd430,L0x7fffffffd430<s  8192@16,
+( -8192)@16<=s L0x7fffffffd432,L0x7fffffffd432<s  8192@16,
+( -8192)@16<=s L0x7fffffffd434,L0x7fffffffd434<s  8192@16,
+( -8192)@16<=s L0x7fffffffd436,L0x7fffffffd436<s  8192@16,
+( -8192)@16<=s L0x7fffffffd438,L0x7fffffffd438<s  8192@16,
+( -8192)@16<=s L0x7fffffffd43a,L0x7fffffffd43a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd43c,L0x7fffffffd43c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd43e,L0x7fffffffd43e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd440,L0x7fffffffd440<s  8192@16,
+( -8192)@16<=s L0x7fffffffd442,L0x7fffffffd442<s  8192@16,
+( -8192)@16<=s L0x7fffffffd444,L0x7fffffffd444<s  8192@16,
+( -8192)@16<=s L0x7fffffffd446,L0x7fffffffd446<s  8192@16,
+( -8192)@16<=s L0x7fffffffd448,L0x7fffffffd448<s  8192@16,
+( -8192)@16<=s L0x7fffffffd44a,L0x7fffffffd44a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd44c,L0x7fffffffd44c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd44e,L0x7fffffffd44e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd450,L0x7fffffffd450<s  8192@16,
+( -8192)@16<=s L0x7fffffffd452,L0x7fffffffd452<s  8192@16,
+( -8192)@16<=s L0x7fffffffd454,L0x7fffffffd454<s  8192@16,
+( -8192)@16<=s L0x7fffffffd456,L0x7fffffffd456<s  8192@16,
+( -8192)@16<=s L0x7fffffffd458,L0x7fffffffd458<s  8192@16,
+( -8192)@16<=s L0x7fffffffd45a,L0x7fffffffd45a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd45c,L0x7fffffffd45c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd45e,L0x7fffffffd45e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd460,L0x7fffffffd460<s  8192@16,
+( -8192)@16<=s L0x7fffffffd462,L0x7fffffffd462<s  8192@16,
+( -8192)@16<=s L0x7fffffffd464,L0x7fffffffd464<s  8192@16,
+( -8192)@16<=s L0x7fffffffd466,L0x7fffffffd466<s  8192@16,
+( -8192)@16<=s L0x7fffffffd468,L0x7fffffffd468<s  8192@16,
+( -8192)@16<=s L0x7fffffffd46a,L0x7fffffffd46a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd46c,L0x7fffffffd46c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd46e,L0x7fffffffd46e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd470,L0x7fffffffd470<s  8192@16,
+( -8192)@16<=s L0x7fffffffd472,L0x7fffffffd472<s  8192@16,
+( -8192)@16<=s L0x7fffffffd474,L0x7fffffffd474<s  8192@16,
+( -8192)@16<=s L0x7fffffffd476,L0x7fffffffd476<s  8192@16,
+( -8192)@16<=s L0x7fffffffd478,L0x7fffffffd478<s  8192@16,
+( -8192)@16<=s L0x7fffffffd47a,L0x7fffffffd47a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd47c,L0x7fffffffd47c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd47e,L0x7fffffffd47e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd480,L0x7fffffffd480<s  8192@16,
+( -8192)@16<=s L0x7fffffffd482,L0x7fffffffd482<s  8192@16,
+( -8192)@16<=s L0x7fffffffd484,L0x7fffffffd484<s  8192@16,
+( -8192)@16<=s L0x7fffffffd486,L0x7fffffffd486<s  8192@16,
+( -8192)@16<=s L0x7fffffffd488,L0x7fffffffd488<s  8192@16,
+( -8192)@16<=s L0x7fffffffd48a,L0x7fffffffd48a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd48c,L0x7fffffffd48c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd48e,L0x7fffffffd48e<s  8192@16,
+( -8192)@16<=s L0x7fffffffd490,L0x7fffffffd490<s  8192@16,
+( -8192)@16<=s L0x7fffffffd492,L0x7fffffffd492<s  8192@16,
+( -8192)@16<=s L0x7fffffffd494,L0x7fffffffd494<s  8192@16,
+( -8192)@16<=s L0x7fffffffd496,L0x7fffffffd496<s  8192@16,
+( -8192)@16<=s L0x7fffffffd498,L0x7fffffffd498<s  8192@16,
+( -8192)@16<=s L0x7fffffffd49a,L0x7fffffffd49a<s  8192@16,
+( -8192)@16<=s L0x7fffffffd49c,L0x7fffffffd49c<s  8192@16,
+( -8192)@16<=s L0x7fffffffd49e,L0x7fffffffd49e<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd4a0,L0x7fffffffd4a0<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd4a2,L0x7fffffffd4a2<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd4a4,L0x7fffffffd4a4<s  8192@16,
@@ -16140,6 +15586,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -8192)@16<=s L0x7fffffffd4ba,L0x7fffffffd4ba<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd4bc,L0x7fffffffd4bc<s  8192@16,
 ( -8192)@16<=s L0x7fffffffd4be,L0x7fffffffd4be<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4c0,L0x7fffffffd4c0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4c2,L0x7fffffffd4c2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4c4,L0x7fffffffd4c4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4c6,L0x7fffffffd4c6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4c8,L0x7fffffffd4c8<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4ca,L0x7fffffffd4ca<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4cc,L0x7fffffffd4cc<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4ce,L0x7fffffffd4ce<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4d0,L0x7fffffffd4d0<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4d2,L0x7fffffffd4d2<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4d4,L0x7fffffffd4d4<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4d6,L0x7fffffffd4d6<s  8192@16,
+( -8192)@16<=s L0x7fffffffd4d8,L0x7fffffffd4d8<s  8192@16,
+( -6144)@16<=s L0x7fffffffd4da,L0x7fffffffd4da<s  6144@16,
+( -6144)@16<=s L0x7fffffffd4dc,L0x7fffffffd4dc<s  6144@16,
+( -6144)@16<=s L0x7fffffffd4de,L0x7fffffffd4de<s  6144@16
+,
+( -9479)@16<=s L0x7fffffffd4e0,L0x7fffffffd4e0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4e2,L0x7fffffffd4e2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4e4,L0x7fffffffd4e4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4e6,L0x7fffffffd4e6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4e8,L0x7fffffffd4e8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4ea,L0x7fffffffd4ea<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4ec,L0x7fffffffd4ec<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4ee,L0x7fffffffd4ee<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4f0,L0x7fffffffd4f0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4f2,L0x7fffffffd4f2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4f4,L0x7fffffffd4f4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4f6,L0x7fffffffd4f6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4f8,L0x7fffffffd4f8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4fa,L0x7fffffffd4fa<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4fc,L0x7fffffffd4fc<s  9479@16,
+( -9479)@16<=s L0x7fffffffd4fe,L0x7fffffffd4fe<s  9479@16,
+( -9479)@16<=s L0x7fffffffd500,L0x7fffffffd500<s  9479@16,
+( -9479)@16<=s L0x7fffffffd502,L0x7fffffffd502<s  9479@16,
+( -9479)@16<=s L0x7fffffffd504,L0x7fffffffd504<s  9479@16,
+( -9479)@16<=s L0x7fffffffd506,L0x7fffffffd506<s  9479@16,
+( -9479)@16<=s L0x7fffffffd508,L0x7fffffffd508<s  9479@16,
+( -9479)@16<=s L0x7fffffffd50a,L0x7fffffffd50a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd50c,L0x7fffffffd50c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd50e,L0x7fffffffd50e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd510,L0x7fffffffd510<s  9479@16,
+( -9479)@16<=s L0x7fffffffd512,L0x7fffffffd512<s  9479@16,
+( -9479)@16<=s L0x7fffffffd514,L0x7fffffffd514<s  9479@16,
+( -9479)@16<=s L0x7fffffffd516,L0x7fffffffd516<s  9479@16,
+( -9479)@16<=s L0x7fffffffd518,L0x7fffffffd518<s  9479@16,
+( -9479)@16<=s L0x7fffffffd51a,L0x7fffffffd51a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd51c,L0x7fffffffd51c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd51e,L0x7fffffffd51e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd520,L0x7fffffffd520<s  9479@16,
+( -9479)@16<=s L0x7fffffffd522,L0x7fffffffd522<s  9479@16,
+( -9479)@16<=s L0x7fffffffd524,L0x7fffffffd524<s  9479@16,
+( -9479)@16<=s L0x7fffffffd526,L0x7fffffffd526<s  9479@16,
+( -9479)@16<=s L0x7fffffffd528,L0x7fffffffd528<s  9479@16,
+( -9479)@16<=s L0x7fffffffd52a,L0x7fffffffd52a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd52c,L0x7fffffffd52c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd52e,L0x7fffffffd52e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd530,L0x7fffffffd530<s  9479@16,
+( -9479)@16<=s L0x7fffffffd532,L0x7fffffffd532<s  9479@16,
+( -9479)@16<=s L0x7fffffffd534,L0x7fffffffd534<s  9479@16,
+( -9479)@16<=s L0x7fffffffd536,L0x7fffffffd536<s  9479@16,
+( -9479)@16<=s L0x7fffffffd538,L0x7fffffffd538<s  9479@16,
+( -9479)@16<=s L0x7fffffffd53a,L0x7fffffffd53a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd53c,L0x7fffffffd53c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd53e,L0x7fffffffd53e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd540,L0x7fffffffd540<s  9479@16,
+( -9479)@16<=s L0x7fffffffd542,L0x7fffffffd542<s  9479@16,
+( -9479)@16<=s L0x7fffffffd544,L0x7fffffffd544<s  9479@16,
+( -9479)@16<=s L0x7fffffffd546,L0x7fffffffd546<s  9479@16,
+( -9479)@16<=s L0x7fffffffd548,L0x7fffffffd548<s  9479@16,
+( -9479)@16<=s L0x7fffffffd54a,L0x7fffffffd54a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd54c,L0x7fffffffd54c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd54e,L0x7fffffffd54e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd550,L0x7fffffffd550<s  9479@16,
+( -9479)@16<=s L0x7fffffffd552,L0x7fffffffd552<s  9479@16,
+( -9479)@16<=s L0x7fffffffd554,L0x7fffffffd554<s  9479@16,
+( -9479)@16<=s L0x7fffffffd556,L0x7fffffffd556<s  9479@16,
+( -9479)@16<=s L0x7fffffffd558,L0x7fffffffd558<s  9479@16,
+( -9479)@16<=s L0x7fffffffd55a,L0x7fffffffd55a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd55c,L0x7fffffffd55c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd55e,L0x7fffffffd55e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd560,L0x7fffffffd560<s  9479@16,
+( -9479)@16<=s L0x7fffffffd562,L0x7fffffffd562<s  9479@16,
+( -9479)@16<=s L0x7fffffffd564,L0x7fffffffd564<s  9479@16,
+( -9479)@16<=s L0x7fffffffd566,L0x7fffffffd566<s  9479@16,
+( -9479)@16<=s L0x7fffffffd568,L0x7fffffffd568<s  9479@16,
+( -9479)@16<=s L0x7fffffffd56a,L0x7fffffffd56a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd56c,L0x7fffffffd56c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd56e,L0x7fffffffd56e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd570,L0x7fffffffd570<s  9479@16,
+( -9479)@16<=s L0x7fffffffd572,L0x7fffffffd572<s  9479@16,
+( -9479)@16<=s L0x7fffffffd574,L0x7fffffffd574<s  9479@16,
+( -9479)@16<=s L0x7fffffffd576,L0x7fffffffd576<s  9479@16,
+( -9479)@16<=s L0x7fffffffd578,L0x7fffffffd578<s  9479@16,
+( -9479)@16<=s L0x7fffffffd57a,L0x7fffffffd57a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd57c,L0x7fffffffd57c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd57e,L0x7fffffffd57e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd580,L0x7fffffffd580<s  9479@16,
+( -9479)@16<=s L0x7fffffffd582,L0x7fffffffd582<s  9479@16,
+( -9479)@16<=s L0x7fffffffd584,L0x7fffffffd584<s  9479@16,
+( -9479)@16<=s L0x7fffffffd586,L0x7fffffffd586<s  9479@16,
+( -9479)@16<=s L0x7fffffffd588,L0x7fffffffd588<s  9479@16,
+( -9479)@16<=s L0x7fffffffd58a,L0x7fffffffd58a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd58c,L0x7fffffffd58c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd58e,L0x7fffffffd58e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd590,L0x7fffffffd590<s  9479@16,
+( -9479)@16<=s L0x7fffffffd592,L0x7fffffffd592<s  9479@16,
+( -9479)@16<=s L0x7fffffffd594,L0x7fffffffd594<s  9479@16,
+( -9479)@16<=s L0x7fffffffd596,L0x7fffffffd596<s  9479@16,
+( -9479)@16<=s L0x7fffffffd598,L0x7fffffffd598<s  9479@16,
+( -9479)@16<=s L0x7fffffffd59a,L0x7fffffffd59a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd59c,L0x7fffffffd59c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd59e,L0x7fffffffd59e<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd5a0,L0x7fffffffd5a0<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd5a2,L0x7fffffffd5a2<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd5a4,L0x7fffffffd5a4<s  9479@16,
@@ -16156,6 +15715,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -9479)@16<=s L0x7fffffffd5ba,L0x7fffffffd5ba<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd5bc,L0x7fffffffd5bc<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd5be,L0x7fffffffd5be<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5c0,L0x7fffffffd5c0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5c2,L0x7fffffffd5c2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5c4,L0x7fffffffd5c4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5c6,L0x7fffffffd5c6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5c8,L0x7fffffffd5c8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5ca,L0x7fffffffd5ca<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5cc,L0x7fffffffd5cc<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5ce,L0x7fffffffd5ce<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5d0,L0x7fffffffd5d0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5d2,L0x7fffffffd5d2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5d4,L0x7fffffffd5d4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5d6,L0x7fffffffd5d6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5d8,L0x7fffffffd5d8<s  9479@16,
+( -9474)@16<=s L0x7fffffffd5da,L0x7fffffffd5da<s  9474@16,
+( -9474)@16<=s L0x7fffffffd5dc,L0x7fffffffd5dc<s  9474@16,
+( -9474)@16<=s L0x7fffffffd5de,L0x7fffffffd5de<s  9474@16
+,
+( -9479)@16<=s L0x7fffffffd5e0,L0x7fffffffd5e0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5e2,L0x7fffffffd5e2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5e4,L0x7fffffffd5e4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5e6,L0x7fffffffd5e6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5e8,L0x7fffffffd5e8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5ea,L0x7fffffffd5ea<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5ec,L0x7fffffffd5ec<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5ee,L0x7fffffffd5ee<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5f0,L0x7fffffffd5f0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5f2,L0x7fffffffd5f2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5f4,L0x7fffffffd5f4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5f6,L0x7fffffffd5f6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5f8,L0x7fffffffd5f8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5fa,L0x7fffffffd5fa<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5fc,L0x7fffffffd5fc<s  9479@16,
+( -9479)@16<=s L0x7fffffffd5fe,L0x7fffffffd5fe<s  9479@16,
+( -9479)@16<=s L0x7fffffffd600,L0x7fffffffd600<s  9479@16,
+( -9479)@16<=s L0x7fffffffd602,L0x7fffffffd602<s  9479@16,
+( -9479)@16<=s L0x7fffffffd604,L0x7fffffffd604<s  9479@16,
+( -9479)@16<=s L0x7fffffffd606,L0x7fffffffd606<s  9479@16,
+( -9479)@16<=s L0x7fffffffd608,L0x7fffffffd608<s  9479@16,
+( -9479)@16<=s L0x7fffffffd60a,L0x7fffffffd60a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd60c,L0x7fffffffd60c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd60e,L0x7fffffffd60e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd610,L0x7fffffffd610<s  9479@16,
+( -9479)@16<=s L0x7fffffffd612,L0x7fffffffd612<s  9479@16,
+( -9479)@16<=s L0x7fffffffd614,L0x7fffffffd614<s  9479@16,
+( -9479)@16<=s L0x7fffffffd616,L0x7fffffffd616<s  9479@16,
+( -9479)@16<=s L0x7fffffffd618,L0x7fffffffd618<s  9479@16,
+( -9479)@16<=s L0x7fffffffd61a,L0x7fffffffd61a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd61c,L0x7fffffffd61c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd61e,L0x7fffffffd61e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd620,L0x7fffffffd620<s  9479@16,
+( -9479)@16<=s L0x7fffffffd622,L0x7fffffffd622<s  9479@16,
+( -9479)@16<=s L0x7fffffffd624,L0x7fffffffd624<s  9479@16,
+( -9479)@16<=s L0x7fffffffd626,L0x7fffffffd626<s  9479@16,
+( -9479)@16<=s L0x7fffffffd628,L0x7fffffffd628<s  9479@16,
+( -9479)@16<=s L0x7fffffffd62a,L0x7fffffffd62a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd62c,L0x7fffffffd62c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd62e,L0x7fffffffd62e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd630,L0x7fffffffd630<s  9479@16,
+( -9479)@16<=s L0x7fffffffd632,L0x7fffffffd632<s  9479@16,
+( -9479)@16<=s L0x7fffffffd634,L0x7fffffffd634<s  9479@16,
+( -9479)@16<=s L0x7fffffffd636,L0x7fffffffd636<s  9479@16,
+( -9479)@16<=s L0x7fffffffd638,L0x7fffffffd638<s  9479@16,
+( -9479)@16<=s L0x7fffffffd63a,L0x7fffffffd63a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd63c,L0x7fffffffd63c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd63e,L0x7fffffffd63e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd640,L0x7fffffffd640<s  9479@16,
+( -9479)@16<=s L0x7fffffffd642,L0x7fffffffd642<s  9479@16,
+( -9479)@16<=s L0x7fffffffd644,L0x7fffffffd644<s  9479@16,
+( -9479)@16<=s L0x7fffffffd646,L0x7fffffffd646<s  9479@16,
+( -9479)@16<=s L0x7fffffffd648,L0x7fffffffd648<s  9479@16,
+( -9479)@16<=s L0x7fffffffd64a,L0x7fffffffd64a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd64c,L0x7fffffffd64c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd64e,L0x7fffffffd64e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd650,L0x7fffffffd650<s  9479@16,
+( -9479)@16<=s L0x7fffffffd652,L0x7fffffffd652<s  9479@16,
+( -9479)@16<=s L0x7fffffffd654,L0x7fffffffd654<s  9479@16,
+( -9479)@16<=s L0x7fffffffd656,L0x7fffffffd656<s  9479@16,
+( -9479)@16<=s L0x7fffffffd658,L0x7fffffffd658<s  9479@16,
+( -9479)@16<=s L0x7fffffffd65a,L0x7fffffffd65a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd65c,L0x7fffffffd65c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd65e,L0x7fffffffd65e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd660,L0x7fffffffd660<s  9479@16,
+( -9479)@16<=s L0x7fffffffd662,L0x7fffffffd662<s  9479@16,
+( -9479)@16<=s L0x7fffffffd664,L0x7fffffffd664<s  9479@16,
+( -9479)@16<=s L0x7fffffffd666,L0x7fffffffd666<s  9479@16,
+( -9479)@16<=s L0x7fffffffd668,L0x7fffffffd668<s  9479@16,
+( -9479)@16<=s L0x7fffffffd66a,L0x7fffffffd66a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd66c,L0x7fffffffd66c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd66e,L0x7fffffffd66e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd670,L0x7fffffffd670<s  9479@16,
+( -9479)@16<=s L0x7fffffffd672,L0x7fffffffd672<s  9479@16,
+( -9479)@16<=s L0x7fffffffd674,L0x7fffffffd674<s  9479@16,
+( -9479)@16<=s L0x7fffffffd676,L0x7fffffffd676<s  9479@16,
+( -9479)@16<=s L0x7fffffffd678,L0x7fffffffd678<s  9479@16,
+( -9479)@16<=s L0x7fffffffd67a,L0x7fffffffd67a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd67c,L0x7fffffffd67c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd67e,L0x7fffffffd67e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd680,L0x7fffffffd680<s  9479@16,
+( -9479)@16<=s L0x7fffffffd682,L0x7fffffffd682<s  9479@16,
+( -9479)@16<=s L0x7fffffffd684,L0x7fffffffd684<s  9479@16,
+( -9479)@16<=s L0x7fffffffd686,L0x7fffffffd686<s  9479@16,
+( -9479)@16<=s L0x7fffffffd688,L0x7fffffffd688<s  9479@16,
+( -9479)@16<=s L0x7fffffffd68a,L0x7fffffffd68a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd68c,L0x7fffffffd68c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd68e,L0x7fffffffd68e<s  9479@16,
+( -9479)@16<=s L0x7fffffffd690,L0x7fffffffd690<s  9479@16,
+( -9479)@16<=s L0x7fffffffd692,L0x7fffffffd692<s  9479@16,
+( -9479)@16<=s L0x7fffffffd694,L0x7fffffffd694<s  9479@16,
+( -9479)@16<=s L0x7fffffffd696,L0x7fffffffd696<s  9479@16,
+( -9479)@16<=s L0x7fffffffd698,L0x7fffffffd698<s  9479@16,
+( -9479)@16<=s L0x7fffffffd69a,L0x7fffffffd69a<s  9479@16,
+( -9479)@16<=s L0x7fffffffd69c,L0x7fffffffd69c<s  9479@16,
+( -9479)@16<=s L0x7fffffffd69e,L0x7fffffffd69e<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd6a0,L0x7fffffffd6a0<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd6a2,L0x7fffffffd6a2<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd6a4,L0x7fffffffd6a4<s  9479@16,
@@ -16172,6 +15844,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ( -9479)@16<=s L0x7fffffffd6ba,L0x7fffffffd6ba<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd6bc,L0x7fffffffd6bc<s  9479@16,
 ( -9479)@16<=s L0x7fffffffd6be,L0x7fffffffd6be<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6c0,L0x7fffffffd6c0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6c2,L0x7fffffffd6c2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6c4,L0x7fffffffd6c4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6c6,L0x7fffffffd6c6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6c8,L0x7fffffffd6c8<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6ca,L0x7fffffffd6ca<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6cc,L0x7fffffffd6cc<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6ce,L0x7fffffffd6ce<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6d0,L0x7fffffffd6d0<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6d2,L0x7fffffffd6d2<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6d4,L0x7fffffffd6d4<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6d6,L0x7fffffffd6d6<s  9479@16,
+( -9479)@16<=s L0x7fffffffd6d8,L0x7fffffffd6d8<s  9479@16,
+( -9474)@16<=s L0x7fffffffd6da,L0x7fffffffd6da<s  9474@16,
+( -9474)@16<=s L0x7fffffffd6dc,L0x7fffffffd6dc<s  9474@16,
+( -9474)@16<=s L0x7fffffffd6de,L0x7fffffffd6de<s  9474@16
+,
+(-13154)@16<=s L0x7fffffffd6e0,L0x7fffffffd6e0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6e2,L0x7fffffffd6e2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6e4,L0x7fffffffd6e4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6e6,L0x7fffffffd6e6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6e8,L0x7fffffffd6e8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6ea,L0x7fffffffd6ea<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6ec,L0x7fffffffd6ec<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6ee,L0x7fffffffd6ee<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6f0,L0x7fffffffd6f0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6f2,L0x7fffffffd6f2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6f4,L0x7fffffffd6f4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6f6,L0x7fffffffd6f6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6f8,L0x7fffffffd6f8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6fa,L0x7fffffffd6fa<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6fc,L0x7fffffffd6fc<s 13154@16,
+(-13154)@16<=s L0x7fffffffd6fe,L0x7fffffffd6fe<s 13154@16,
+(-13154)@16<=s L0x7fffffffd700,L0x7fffffffd700<s 13154@16,
+(-13154)@16<=s L0x7fffffffd702,L0x7fffffffd702<s 13154@16,
+(-13154)@16<=s L0x7fffffffd704,L0x7fffffffd704<s 13154@16,
+(-13154)@16<=s L0x7fffffffd706,L0x7fffffffd706<s 13154@16,
+(-13154)@16<=s L0x7fffffffd708,L0x7fffffffd708<s 13154@16,
+(-13154)@16<=s L0x7fffffffd70a,L0x7fffffffd70a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd70c,L0x7fffffffd70c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd70e,L0x7fffffffd70e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd710,L0x7fffffffd710<s 13154@16,
+(-13154)@16<=s L0x7fffffffd712,L0x7fffffffd712<s 13154@16,
+(-13154)@16<=s L0x7fffffffd714,L0x7fffffffd714<s 13154@16,
+(-13154)@16<=s L0x7fffffffd716,L0x7fffffffd716<s 13154@16,
+(-13154)@16<=s L0x7fffffffd718,L0x7fffffffd718<s 13154@16,
+(-13154)@16<=s L0x7fffffffd71a,L0x7fffffffd71a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd71c,L0x7fffffffd71c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd71e,L0x7fffffffd71e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd720,L0x7fffffffd720<s 13154@16,
+(-13154)@16<=s L0x7fffffffd722,L0x7fffffffd722<s 13154@16,
+(-13154)@16<=s L0x7fffffffd724,L0x7fffffffd724<s 13154@16,
+(-13154)@16<=s L0x7fffffffd726,L0x7fffffffd726<s 13154@16,
+(-13154)@16<=s L0x7fffffffd728,L0x7fffffffd728<s 13154@16,
+(-13154)@16<=s L0x7fffffffd72a,L0x7fffffffd72a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd72c,L0x7fffffffd72c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd72e,L0x7fffffffd72e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd730,L0x7fffffffd730<s 13154@16,
+(-13154)@16<=s L0x7fffffffd732,L0x7fffffffd732<s 13154@16,
+(-13154)@16<=s L0x7fffffffd734,L0x7fffffffd734<s 13154@16,
+(-13154)@16<=s L0x7fffffffd736,L0x7fffffffd736<s 13154@16,
+(-13154)@16<=s L0x7fffffffd738,L0x7fffffffd738<s 13154@16,
+(-13154)@16<=s L0x7fffffffd73a,L0x7fffffffd73a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd73c,L0x7fffffffd73c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd73e,L0x7fffffffd73e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd740,L0x7fffffffd740<s 13154@16,
+(-13154)@16<=s L0x7fffffffd742,L0x7fffffffd742<s 13154@16,
+(-13154)@16<=s L0x7fffffffd744,L0x7fffffffd744<s 13154@16,
+(-13154)@16<=s L0x7fffffffd746,L0x7fffffffd746<s 13154@16,
+(-13154)@16<=s L0x7fffffffd748,L0x7fffffffd748<s 13154@16,
+(-13154)@16<=s L0x7fffffffd74a,L0x7fffffffd74a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd74c,L0x7fffffffd74c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd74e,L0x7fffffffd74e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd750,L0x7fffffffd750<s 13154@16,
+(-13154)@16<=s L0x7fffffffd752,L0x7fffffffd752<s 13154@16,
+(-13154)@16<=s L0x7fffffffd754,L0x7fffffffd754<s 13154@16,
+(-13154)@16<=s L0x7fffffffd756,L0x7fffffffd756<s 13154@16,
+(-13154)@16<=s L0x7fffffffd758,L0x7fffffffd758<s 13154@16,
+(-13154)@16<=s L0x7fffffffd75a,L0x7fffffffd75a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd75c,L0x7fffffffd75c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd75e,L0x7fffffffd75e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd760,L0x7fffffffd760<s 13154@16,
+(-13154)@16<=s L0x7fffffffd762,L0x7fffffffd762<s 13154@16,
+(-13154)@16<=s L0x7fffffffd764,L0x7fffffffd764<s 13154@16,
+(-13154)@16<=s L0x7fffffffd766,L0x7fffffffd766<s 13154@16,
+(-13154)@16<=s L0x7fffffffd768,L0x7fffffffd768<s 13154@16,
+(-13154)@16<=s L0x7fffffffd76a,L0x7fffffffd76a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd76c,L0x7fffffffd76c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd76e,L0x7fffffffd76e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd770,L0x7fffffffd770<s 13154@16,
+(-13154)@16<=s L0x7fffffffd772,L0x7fffffffd772<s 13154@16,
+(-13154)@16<=s L0x7fffffffd774,L0x7fffffffd774<s 13154@16,
+(-13154)@16<=s L0x7fffffffd776,L0x7fffffffd776<s 13154@16,
+(-13154)@16<=s L0x7fffffffd778,L0x7fffffffd778<s 13154@16,
+(-13154)@16<=s L0x7fffffffd77a,L0x7fffffffd77a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd77c,L0x7fffffffd77c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd77e,L0x7fffffffd77e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd780,L0x7fffffffd780<s 13154@16,
+(-13154)@16<=s L0x7fffffffd782,L0x7fffffffd782<s 13154@16,
+(-13154)@16<=s L0x7fffffffd784,L0x7fffffffd784<s 13154@16,
+(-13154)@16<=s L0x7fffffffd786,L0x7fffffffd786<s 13154@16,
+(-13154)@16<=s L0x7fffffffd788,L0x7fffffffd788<s 13154@16,
+(-13154)@16<=s L0x7fffffffd78a,L0x7fffffffd78a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd78c,L0x7fffffffd78c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd78e,L0x7fffffffd78e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd790,L0x7fffffffd790<s 13154@16,
+(-13154)@16<=s L0x7fffffffd792,L0x7fffffffd792<s 13154@16,
+(-13154)@16<=s L0x7fffffffd794,L0x7fffffffd794<s 13154@16,
+(-13154)@16<=s L0x7fffffffd796,L0x7fffffffd796<s 13154@16,
+(-13154)@16<=s L0x7fffffffd798,L0x7fffffffd798<s 13154@16,
+(-13154)@16<=s L0x7fffffffd79a,L0x7fffffffd79a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd79c,L0x7fffffffd79c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd79e,L0x7fffffffd79e<s 13154@16,
 (-13154)@16<=s L0x7fffffffd7a0,L0x7fffffffd7a0<s 13154@16,
 (-13154)@16<=s L0x7fffffffd7a2,L0x7fffffffd7a2<s 13154@16,
 (-13154)@16<=s L0x7fffffffd7a4,L0x7fffffffd7a4<s 13154@16,
@@ -16188,6 +15973,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 (-13154)@16<=s L0x7fffffffd7ba,L0x7fffffffd7ba<s 13154@16,
 (-13154)@16<=s L0x7fffffffd7bc,L0x7fffffffd7bc<s 13154@16,
 (-13154)@16<=s L0x7fffffffd7be,L0x7fffffffd7be<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7c0,L0x7fffffffd7c0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7c2,L0x7fffffffd7c2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7c4,L0x7fffffffd7c4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7c6,L0x7fffffffd7c6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7c8,L0x7fffffffd7c8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7ca,L0x7fffffffd7ca<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7cc,L0x7fffffffd7cc<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7ce,L0x7fffffffd7ce<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7d0,L0x7fffffffd7d0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7d2,L0x7fffffffd7d2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7d4,L0x7fffffffd7d4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7d6,L0x7fffffffd7d6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7d8,L0x7fffffffd7d8<s 13154@16,
+(-12913)@16<=s L0x7fffffffd7da,L0x7fffffffd7da<s 12913@16,
+(-12913)@16<=s L0x7fffffffd7dc,L0x7fffffffd7dc<s 12913@16,
+(-12913)@16<=s L0x7fffffffd7de,L0x7fffffffd7de<s 12913@16
+,
+(-13154)@16<=s L0x7fffffffd7e0,L0x7fffffffd7e0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7e2,L0x7fffffffd7e2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7e4,L0x7fffffffd7e4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7e6,L0x7fffffffd7e6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7e8,L0x7fffffffd7e8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7ea,L0x7fffffffd7ea<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7ec,L0x7fffffffd7ec<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7ee,L0x7fffffffd7ee<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7f0,L0x7fffffffd7f0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7f2,L0x7fffffffd7f2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7f4,L0x7fffffffd7f4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7f6,L0x7fffffffd7f6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7f8,L0x7fffffffd7f8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7fa,L0x7fffffffd7fa<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7fc,L0x7fffffffd7fc<s 13154@16,
+(-13154)@16<=s L0x7fffffffd7fe,L0x7fffffffd7fe<s 13154@16,
+(-13154)@16<=s L0x7fffffffd800,L0x7fffffffd800<s 13154@16,
+(-13154)@16<=s L0x7fffffffd802,L0x7fffffffd802<s 13154@16,
+(-13154)@16<=s L0x7fffffffd804,L0x7fffffffd804<s 13154@16,
+(-13154)@16<=s L0x7fffffffd806,L0x7fffffffd806<s 13154@16,
+(-13154)@16<=s L0x7fffffffd808,L0x7fffffffd808<s 13154@16,
+(-13154)@16<=s L0x7fffffffd80a,L0x7fffffffd80a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd80c,L0x7fffffffd80c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd80e,L0x7fffffffd80e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd810,L0x7fffffffd810<s 13154@16,
+(-13154)@16<=s L0x7fffffffd812,L0x7fffffffd812<s 13154@16,
+(-13154)@16<=s L0x7fffffffd814,L0x7fffffffd814<s 13154@16,
+(-13154)@16<=s L0x7fffffffd816,L0x7fffffffd816<s 13154@16,
+(-13154)@16<=s L0x7fffffffd818,L0x7fffffffd818<s 13154@16,
+(-13154)@16<=s L0x7fffffffd81a,L0x7fffffffd81a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd81c,L0x7fffffffd81c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd81e,L0x7fffffffd81e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd820,L0x7fffffffd820<s 13154@16,
+(-13154)@16<=s L0x7fffffffd822,L0x7fffffffd822<s 13154@16,
+(-13154)@16<=s L0x7fffffffd824,L0x7fffffffd824<s 13154@16,
+(-13154)@16<=s L0x7fffffffd826,L0x7fffffffd826<s 13154@16,
+(-13154)@16<=s L0x7fffffffd828,L0x7fffffffd828<s 13154@16,
+(-13154)@16<=s L0x7fffffffd82a,L0x7fffffffd82a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd82c,L0x7fffffffd82c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd82e,L0x7fffffffd82e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd830,L0x7fffffffd830<s 13154@16,
+(-13154)@16<=s L0x7fffffffd832,L0x7fffffffd832<s 13154@16,
+(-13154)@16<=s L0x7fffffffd834,L0x7fffffffd834<s 13154@16,
+(-13154)@16<=s L0x7fffffffd836,L0x7fffffffd836<s 13154@16,
+(-13154)@16<=s L0x7fffffffd838,L0x7fffffffd838<s 13154@16,
+(-13154)@16<=s L0x7fffffffd83a,L0x7fffffffd83a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd83c,L0x7fffffffd83c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd83e,L0x7fffffffd83e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd840,L0x7fffffffd840<s 13154@16,
+(-13154)@16<=s L0x7fffffffd842,L0x7fffffffd842<s 13154@16,
+(-13154)@16<=s L0x7fffffffd844,L0x7fffffffd844<s 13154@16,
+(-13154)@16<=s L0x7fffffffd846,L0x7fffffffd846<s 13154@16,
+(-13154)@16<=s L0x7fffffffd848,L0x7fffffffd848<s 13154@16,
+(-13154)@16<=s L0x7fffffffd84a,L0x7fffffffd84a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd84c,L0x7fffffffd84c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd84e,L0x7fffffffd84e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd850,L0x7fffffffd850<s 13154@16,
+(-13154)@16<=s L0x7fffffffd852,L0x7fffffffd852<s 13154@16,
+(-13154)@16<=s L0x7fffffffd854,L0x7fffffffd854<s 13154@16,
+(-13154)@16<=s L0x7fffffffd856,L0x7fffffffd856<s 13154@16,
+(-13154)@16<=s L0x7fffffffd858,L0x7fffffffd858<s 13154@16,
+(-13154)@16<=s L0x7fffffffd85a,L0x7fffffffd85a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd85c,L0x7fffffffd85c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd85e,L0x7fffffffd85e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd860,L0x7fffffffd860<s 13154@16,
+(-13154)@16<=s L0x7fffffffd862,L0x7fffffffd862<s 13154@16,
+(-13154)@16<=s L0x7fffffffd864,L0x7fffffffd864<s 13154@16,
+(-13154)@16<=s L0x7fffffffd866,L0x7fffffffd866<s 13154@16,
+(-13154)@16<=s L0x7fffffffd868,L0x7fffffffd868<s 13154@16,
+(-13154)@16<=s L0x7fffffffd86a,L0x7fffffffd86a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd86c,L0x7fffffffd86c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd86e,L0x7fffffffd86e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd870,L0x7fffffffd870<s 13154@16,
+(-13154)@16<=s L0x7fffffffd872,L0x7fffffffd872<s 13154@16,
+(-13154)@16<=s L0x7fffffffd874,L0x7fffffffd874<s 13154@16,
+(-13154)@16<=s L0x7fffffffd876,L0x7fffffffd876<s 13154@16,
+(-13154)@16<=s L0x7fffffffd878,L0x7fffffffd878<s 13154@16,
+(-13154)@16<=s L0x7fffffffd87a,L0x7fffffffd87a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd87c,L0x7fffffffd87c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd87e,L0x7fffffffd87e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd880,L0x7fffffffd880<s 13154@16,
+(-13154)@16<=s L0x7fffffffd882,L0x7fffffffd882<s 13154@16,
+(-13154)@16<=s L0x7fffffffd884,L0x7fffffffd884<s 13154@16,
+(-13154)@16<=s L0x7fffffffd886,L0x7fffffffd886<s 13154@16,
+(-13154)@16<=s L0x7fffffffd888,L0x7fffffffd888<s 13154@16,
+(-13154)@16<=s L0x7fffffffd88a,L0x7fffffffd88a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd88c,L0x7fffffffd88c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd88e,L0x7fffffffd88e<s 13154@16,
+(-13154)@16<=s L0x7fffffffd890,L0x7fffffffd890<s 13154@16,
+(-13154)@16<=s L0x7fffffffd892,L0x7fffffffd892<s 13154@16,
+(-13154)@16<=s L0x7fffffffd894,L0x7fffffffd894<s 13154@16,
+(-13154)@16<=s L0x7fffffffd896,L0x7fffffffd896<s 13154@16,
+(-13154)@16<=s L0x7fffffffd898,L0x7fffffffd898<s 13154@16,
+(-13154)@16<=s L0x7fffffffd89a,L0x7fffffffd89a<s 13154@16,
+(-13154)@16<=s L0x7fffffffd89c,L0x7fffffffd89c<s 13154@16,
+(-13154)@16<=s L0x7fffffffd89e,L0x7fffffffd89e<s 13154@16,
 (-13154)@16<=s L0x7fffffffd8a0,L0x7fffffffd8a0<s 13154@16,
 (-13154)@16<=s L0x7fffffffd8a2,L0x7fffffffd8a2<s 13154@16,
 (-13154)@16<=s L0x7fffffffd8a4,L0x7fffffffd8a4<s 13154@16,
@@ -16204,6 +16102,119 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 (-13154)@16<=s L0x7fffffffd8ba,L0x7fffffffd8ba<s 13154@16,
 (-13154)@16<=s L0x7fffffffd8bc,L0x7fffffffd8bc<s 13154@16,
 (-13154)@16<=s L0x7fffffffd8be,L0x7fffffffd8be<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8c0,L0x7fffffffd8c0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8c2,L0x7fffffffd8c2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8c4,L0x7fffffffd8c4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8c6,L0x7fffffffd8c6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8c8,L0x7fffffffd8c8<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8ca,L0x7fffffffd8ca<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8cc,L0x7fffffffd8cc<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8ce,L0x7fffffffd8ce<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8d0,L0x7fffffffd8d0<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8d2,L0x7fffffffd8d2<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8d4,L0x7fffffffd8d4<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8d6,L0x7fffffffd8d6<s 13154@16,
+(-13154)@16<=s L0x7fffffffd8d8,L0x7fffffffd8d8<s 13154@16,
+(-12913)@16<=s L0x7fffffffd8da,L0x7fffffffd8da<s 12913@16,
+(-12913)@16<=s L0x7fffffffd8dc,L0x7fffffffd8dc<s 12913@16,
+(-12913)@16<=s L0x7fffffffd8de,L0x7fffffffd8de<s 12913@16
+,
+(-13177)@16<=s L0x7fffffffd8e0,L0x7fffffffd8e0<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8e2,L0x7fffffffd8e2<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8e4,L0x7fffffffd8e4<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8e6,L0x7fffffffd8e6<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8e8,L0x7fffffffd8e8<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8ea,L0x7fffffffd8ea<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8ec,L0x7fffffffd8ec<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8ee,L0x7fffffffd8ee<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8f0,L0x7fffffffd8f0<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8f2,L0x7fffffffd8f2<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8f4,L0x7fffffffd8f4<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8f6,L0x7fffffffd8f6<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8f8,L0x7fffffffd8f8<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8fa,L0x7fffffffd8fa<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8fc,L0x7fffffffd8fc<s 13177@16,
+(-13177)@16<=s L0x7fffffffd8fe,L0x7fffffffd8fe<s 13177@16,
+(-13177)@16<=s L0x7fffffffd900,L0x7fffffffd900<s 13177@16,
+(-13177)@16<=s L0x7fffffffd902,L0x7fffffffd902<s 13177@16,
+(-13177)@16<=s L0x7fffffffd904,L0x7fffffffd904<s 13177@16,
+(-13177)@16<=s L0x7fffffffd906,L0x7fffffffd906<s 13177@16,
+(-13177)@16<=s L0x7fffffffd908,L0x7fffffffd908<s 13177@16,
+(-13177)@16<=s L0x7fffffffd90a,L0x7fffffffd90a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd90c,L0x7fffffffd90c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd90e,L0x7fffffffd90e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd910,L0x7fffffffd910<s 13177@16,
+(-13177)@16<=s L0x7fffffffd912,L0x7fffffffd912<s 13177@16,
+(-13177)@16<=s L0x7fffffffd914,L0x7fffffffd914<s 13177@16,
+(-13177)@16<=s L0x7fffffffd916,L0x7fffffffd916<s 13177@16,
+(-13177)@16<=s L0x7fffffffd918,L0x7fffffffd918<s 13177@16,
+(-13177)@16<=s L0x7fffffffd91a,L0x7fffffffd91a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd91c,L0x7fffffffd91c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd91e,L0x7fffffffd91e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd920,L0x7fffffffd920<s 13177@16,
+(-13177)@16<=s L0x7fffffffd922,L0x7fffffffd922<s 13177@16,
+(-13177)@16<=s L0x7fffffffd924,L0x7fffffffd924<s 13177@16,
+(-13177)@16<=s L0x7fffffffd926,L0x7fffffffd926<s 13177@16,
+(-13177)@16<=s L0x7fffffffd928,L0x7fffffffd928<s 13177@16,
+(-13177)@16<=s L0x7fffffffd92a,L0x7fffffffd92a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd92c,L0x7fffffffd92c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd92e,L0x7fffffffd92e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd930,L0x7fffffffd930<s 13177@16,
+(-13177)@16<=s L0x7fffffffd932,L0x7fffffffd932<s 13177@16,
+(-13177)@16<=s L0x7fffffffd934,L0x7fffffffd934<s 13177@16,
+(-13177)@16<=s L0x7fffffffd936,L0x7fffffffd936<s 13177@16,
+(-13177)@16<=s L0x7fffffffd938,L0x7fffffffd938<s 13177@16,
+(-13177)@16<=s L0x7fffffffd93a,L0x7fffffffd93a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd93c,L0x7fffffffd93c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd93e,L0x7fffffffd93e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd940,L0x7fffffffd940<s 13177@16,
+(-13177)@16<=s L0x7fffffffd942,L0x7fffffffd942<s 13177@16,
+(-13177)@16<=s L0x7fffffffd944,L0x7fffffffd944<s 13177@16,
+(-13177)@16<=s L0x7fffffffd946,L0x7fffffffd946<s 13177@16,
+(-13177)@16<=s L0x7fffffffd948,L0x7fffffffd948<s 13177@16,
+(-13177)@16<=s L0x7fffffffd94a,L0x7fffffffd94a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd94c,L0x7fffffffd94c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd94e,L0x7fffffffd94e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd950,L0x7fffffffd950<s 13177@16,
+(-13177)@16<=s L0x7fffffffd952,L0x7fffffffd952<s 13177@16,
+(-13177)@16<=s L0x7fffffffd954,L0x7fffffffd954<s 13177@16,
+(-13177)@16<=s L0x7fffffffd956,L0x7fffffffd956<s 13177@16,
+(-13177)@16<=s L0x7fffffffd958,L0x7fffffffd958<s 13177@16,
+(-13177)@16<=s L0x7fffffffd95a,L0x7fffffffd95a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd95c,L0x7fffffffd95c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd95e,L0x7fffffffd95e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd960,L0x7fffffffd960<s 13177@16,
+(-13177)@16<=s L0x7fffffffd962,L0x7fffffffd962<s 13177@16,
+(-13177)@16<=s L0x7fffffffd964,L0x7fffffffd964<s 13177@16,
+(-13177)@16<=s L0x7fffffffd966,L0x7fffffffd966<s 13177@16,
+(-13177)@16<=s L0x7fffffffd968,L0x7fffffffd968<s 13177@16,
+(-13177)@16<=s L0x7fffffffd96a,L0x7fffffffd96a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd96c,L0x7fffffffd96c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd96e,L0x7fffffffd96e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd970,L0x7fffffffd970<s 13177@16,
+(-13177)@16<=s L0x7fffffffd972,L0x7fffffffd972<s 13177@16,
+(-13177)@16<=s L0x7fffffffd974,L0x7fffffffd974<s 13177@16,
+(-13177)@16<=s L0x7fffffffd976,L0x7fffffffd976<s 13177@16,
+(-13177)@16<=s L0x7fffffffd978,L0x7fffffffd978<s 13177@16,
+(-13177)@16<=s L0x7fffffffd97a,L0x7fffffffd97a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd97c,L0x7fffffffd97c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd97e,L0x7fffffffd97e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd980,L0x7fffffffd980<s 13177@16,
+(-13177)@16<=s L0x7fffffffd982,L0x7fffffffd982<s 13177@16,
+(-13177)@16<=s L0x7fffffffd984,L0x7fffffffd984<s 13177@16,
+(-13177)@16<=s L0x7fffffffd986,L0x7fffffffd986<s 13177@16,
+(-13177)@16<=s L0x7fffffffd988,L0x7fffffffd988<s 13177@16,
+(-13177)@16<=s L0x7fffffffd98a,L0x7fffffffd98a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd98c,L0x7fffffffd98c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd98e,L0x7fffffffd98e<s 13177@16,
+(-13177)@16<=s L0x7fffffffd990,L0x7fffffffd990<s 13177@16,
+(-13177)@16<=s L0x7fffffffd992,L0x7fffffffd992<s 13177@16,
+(-13177)@16<=s L0x7fffffffd994,L0x7fffffffd994<s 13177@16,
+(-13177)@16<=s L0x7fffffffd996,L0x7fffffffd996<s 13177@16,
+(-13177)@16<=s L0x7fffffffd998,L0x7fffffffd998<s 13177@16,
+(-13177)@16<=s L0x7fffffffd99a,L0x7fffffffd99a<s 13177@16,
+(-13177)@16<=s L0x7fffffffd99c,L0x7fffffffd99c<s 13177@16,
+(-13177)@16<=s L0x7fffffffd99e,L0x7fffffffd99e<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9a0,L0x7fffffffd9a0<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9a2,L0x7fffffffd9a2<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9a4,L0x7fffffffd9a4<s 13177@16,
@@ -16220,119 +16231,6 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 (-13177)@16<=s L0x7fffffffd9ba,L0x7fffffffd9ba<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9bc,L0x7fffffffd9bc<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9be,L0x7fffffffd9be<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaa0,L0x7fffffffdaa0<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaa2,L0x7fffffffdaa2<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaa4,L0x7fffffffdaa4<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaa6,L0x7fffffffdaa6<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaa8,L0x7fffffffdaa8<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaaa,L0x7fffffffdaaa<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaac,L0x7fffffffdaac<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaae,L0x7fffffffdaae<s 13177@16,
-(-13177)@16<=s L0x7fffffffdab0,L0x7fffffffdab0<s 13177@16,
-(-13177)@16<=s L0x7fffffffdab2,L0x7fffffffdab2<s 13177@16,
-(-13177)@16<=s L0x7fffffffdab4,L0x7fffffffdab4<s 13177@16,
-(-13177)@16<=s L0x7fffffffdab6,L0x7fffffffdab6<s 13177@16,
-(-13177)@16<=s L0x7fffffffdab8,L0x7fffffffdab8<s 13177@16,
-(-13177)@16<=s L0x7fffffffdaba,L0x7fffffffdaba<s 13177@16,
-(-13177)@16<=s L0x7fffffffdabc,L0x7fffffffdabc<s 13177@16,
-(-13177)@16<=s L0x7fffffffdabe,L0x7fffffffdabe<s 13177@16
-,
-( -8192)@16<=s L0x7fffffffd3c0,L0x7fffffffd3c0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3c2,L0x7fffffffd3c2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3c4,L0x7fffffffd3c4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3c6,L0x7fffffffd3c6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3c8,L0x7fffffffd3c8<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3ca,L0x7fffffffd3ca<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3cc,L0x7fffffffd3cc<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3ce,L0x7fffffffd3ce<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3d0,L0x7fffffffd3d0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3d2,L0x7fffffffd3d2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3d4,L0x7fffffffd3d4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3d6,L0x7fffffffd3d6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd3d8,L0x7fffffffd3d8<s  8192@16,
-( -6144)@16<=s L0x7fffffffd3da,L0x7fffffffd3da<s  6144@16,
-( -6144)@16<=s L0x7fffffffd3dc,L0x7fffffffd3dc<s  6144@16,
-( -6144)@16<=s L0x7fffffffd3de,L0x7fffffffd3de<s  6144@16,
-( -8192)@16<=s L0x7fffffffd4c0,L0x7fffffffd4c0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4c2,L0x7fffffffd4c2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4c4,L0x7fffffffd4c4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4c6,L0x7fffffffd4c6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4c8,L0x7fffffffd4c8<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4ca,L0x7fffffffd4ca<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4cc,L0x7fffffffd4cc<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4ce,L0x7fffffffd4ce<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4d0,L0x7fffffffd4d0<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4d2,L0x7fffffffd4d2<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4d4,L0x7fffffffd4d4<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4d6,L0x7fffffffd4d6<s  8192@16,
-( -8192)@16<=s L0x7fffffffd4d8,L0x7fffffffd4d8<s  8192@16,
-( -6144)@16<=s L0x7fffffffd4da,L0x7fffffffd4da<s  6144@16,
-( -6144)@16<=s L0x7fffffffd4dc,L0x7fffffffd4dc<s  6144@16,
-( -6144)@16<=s L0x7fffffffd4de,L0x7fffffffd4de<s  6144@16,
-( -9479)@16<=s L0x7fffffffd5c0,L0x7fffffffd5c0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5c2,L0x7fffffffd5c2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5c4,L0x7fffffffd5c4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5c6,L0x7fffffffd5c6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5c8,L0x7fffffffd5c8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5ca,L0x7fffffffd5ca<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5cc,L0x7fffffffd5cc<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5ce,L0x7fffffffd5ce<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5d0,L0x7fffffffd5d0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5d2,L0x7fffffffd5d2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5d4,L0x7fffffffd5d4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5d6,L0x7fffffffd5d6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd5d8,L0x7fffffffd5d8<s  9479@16,
-( -9474)@16<=s L0x7fffffffd5da,L0x7fffffffd5da<s  9474@16,
-( -9474)@16<=s L0x7fffffffd5dc,L0x7fffffffd5dc<s  9474@16,
-( -9474)@16<=s L0x7fffffffd5de,L0x7fffffffd5de<s  9474@16,
-( -9479)@16<=s L0x7fffffffd6c0,L0x7fffffffd6c0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6c2,L0x7fffffffd6c2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6c4,L0x7fffffffd6c4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6c6,L0x7fffffffd6c6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6c8,L0x7fffffffd6c8<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6ca,L0x7fffffffd6ca<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6cc,L0x7fffffffd6cc<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6ce,L0x7fffffffd6ce<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6d0,L0x7fffffffd6d0<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6d2,L0x7fffffffd6d2<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6d4,L0x7fffffffd6d4<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6d6,L0x7fffffffd6d6<s  9479@16,
-( -9479)@16<=s L0x7fffffffd6d8,L0x7fffffffd6d8<s  9479@16,
-( -9474)@16<=s L0x7fffffffd6da,L0x7fffffffd6da<s  9474@16,
-( -9474)@16<=s L0x7fffffffd6dc,L0x7fffffffd6dc<s  9474@16,
-( -9474)@16<=s L0x7fffffffd6de,L0x7fffffffd6de<s  9474@16,
-(-13154)@16<=s L0x7fffffffd7c0,L0x7fffffffd7c0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7c2,L0x7fffffffd7c2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7c4,L0x7fffffffd7c4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7c6,L0x7fffffffd7c6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7c8,L0x7fffffffd7c8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7ca,L0x7fffffffd7ca<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7cc,L0x7fffffffd7cc<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7ce,L0x7fffffffd7ce<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7d0,L0x7fffffffd7d0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7d2,L0x7fffffffd7d2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7d4,L0x7fffffffd7d4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7d6,L0x7fffffffd7d6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd7d8,L0x7fffffffd7d8<s 13154@16,
-(-12913)@16<=s L0x7fffffffd7da,L0x7fffffffd7da<s 12913@16,
-(-12913)@16<=s L0x7fffffffd7dc,L0x7fffffffd7dc<s 12913@16,
-(-12913)@16<=s L0x7fffffffd7de,L0x7fffffffd7de<s 12913@16,
-(-13154)@16<=s L0x7fffffffd8c0,L0x7fffffffd8c0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8c2,L0x7fffffffd8c2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8c4,L0x7fffffffd8c4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8c6,L0x7fffffffd8c6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8c8,L0x7fffffffd8c8<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8ca,L0x7fffffffd8ca<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8cc,L0x7fffffffd8cc<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8ce,L0x7fffffffd8ce<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8d0,L0x7fffffffd8d0<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8d2,L0x7fffffffd8d2<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8d4,L0x7fffffffd8d4<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8d6,L0x7fffffffd8d6<s 13154@16,
-(-13154)@16<=s L0x7fffffffd8d8,L0x7fffffffd8d8<s 13154@16,
-(-12913)@16<=s L0x7fffffffd8da,L0x7fffffffd8da<s 12913@16,
-(-12913)@16<=s L0x7fffffffd8dc,L0x7fffffffd8dc<s 12913@16,
-(-12913)@16<=s L0x7fffffffd8de,L0x7fffffffd8de<s 12913@16,
 (-13177)@16<=s L0x7fffffffd9c0,L0x7fffffffd9c0<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9c2,L0x7fffffffd9c2<s 13177@16,
 (-13177)@16<=s L0x7fffffffd9c4,L0x7fffffffd9c4<s 13177@16,
@@ -16348,7 +16246,120 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 (-13177)@16<=s L0x7fffffffd9d8,L0x7fffffffd9d8<s 13177@16,
 (-12892)@16<=s L0x7fffffffd9da,L0x7fffffffd9da<s 12892@16,
 (-12892)@16<=s L0x7fffffffd9dc,L0x7fffffffd9dc<s 12892@16,
-(-12892)@16<=s L0x7fffffffd9de,L0x7fffffffd9de<s 12892@16,
+(-12892)@16<=s L0x7fffffffd9de,L0x7fffffffd9de<s 12892@16
+,
+(-13177)@16<=s L0x7fffffffd9e0,L0x7fffffffd9e0<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9e2,L0x7fffffffd9e2<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9e4,L0x7fffffffd9e4<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9e6,L0x7fffffffd9e6<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9e8,L0x7fffffffd9e8<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9ea,L0x7fffffffd9ea<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9ec,L0x7fffffffd9ec<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9ee,L0x7fffffffd9ee<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9f0,L0x7fffffffd9f0<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9f2,L0x7fffffffd9f2<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9f4,L0x7fffffffd9f4<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9f6,L0x7fffffffd9f6<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9f8,L0x7fffffffd9f8<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9fa,L0x7fffffffd9fa<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9fc,L0x7fffffffd9fc<s 13177@16,
+(-13177)@16<=s L0x7fffffffd9fe,L0x7fffffffd9fe<s 13177@16,
+(-13177)@16<=s L0x7fffffffda00,L0x7fffffffda00<s 13177@16,
+(-13177)@16<=s L0x7fffffffda02,L0x7fffffffda02<s 13177@16,
+(-13177)@16<=s L0x7fffffffda04,L0x7fffffffda04<s 13177@16,
+(-13177)@16<=s L0x7fffffffda06,L0x7fffffffda06<s 13177@16,
+(-13177)@16<=s L0x7fffffffda08,L0x7fffffffda08<s 13177@16,
+(-13177)@16<=s L0x7fffffffda0a,L0x7fffffffda0a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda0c,L0x7fffffffda0c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda0e,L0x7fffffffda0e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda10,L0x7fffffffda10<s 13177@16,
+(-13177)@16<=s L0x7fffffffda12,L0x7fffffffda12<s 13177@16,
+(-13177)@16<=s L0x7fffffffda14,L0x7fffffffda14<s 13177@16,
+(-13177)@16<=s L0x7fffffffda16,L0x7fffffffda16<s 13177@16,
+(-13177)@16<=s L0x7fffffffda18,L0x7fffffffda18<s 13177@16,
+(-13177)@16<=s L0x7fffffffda1a,L0x7fffffffda1a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda1c,L0x7fffffffda1c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda1e,L0x7fffffffda1e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda20,L0x7fffffffda20<s 13177@16,
+(-13177)@16<=s L0x7fffffffda22,L0x7fffffffda22<s 13177@16,
+(-13177)@16<=s L0x7fffffffda24,L0x7fffffffda24<s 13177@16,
+(-13177)@16<=s L0x7fffffffda26,L0x7fffffffda26<s 13177@16,
+(-13177)@16<=s L0x7fffffffda28,L0x7fffffffda28<s 13177@16,
+(-13177)@16<=s L0x7fffffffda2a,L0x7fffffffda2a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda2c,L0x7fffffffda2c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda2e,L0x7fffffffda2e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda30,L0x7fffffffda30<s 13177@16,
+(-13177)@16<=s L0x7fffffffda32,L0x7fffffffda32<s 13177@16,
+(-13177)@16<=s L0x7fffffffda34,L0x7fffffffda34<s 13177@16,
+(-13177)@16<=s L0x7fffffffda36,L0x7fffffffda36<s 13177@16,
+(-13177)@16<=s L0x7fffffffda38,L0x7fffffffda38<s 13177@16,
+(-13177)@16<=s L0x7fffffffda3a,L0x7fffffffda3a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda3c,L0x7fffffffda3c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda3e,L0x7fffffffda3e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda40,L0x7fffffffda40<s 13177@16,
+(-13177)@16<=s L0x7fffffffda42,L0x7fffffffda42<s 13177@16,
+(-13177)@16<=s L0x7fffffffda44,L0x7fffffffda44<s 13177@16,
+(-13177)@16<=s L0x7fffffffda46,L0x7fffffffda46<s 13177@16,
+(-13177)@16<=s L0x7fffffffda48,L0x7fffffffda48<s 13177@16,
+(-13177)@16<=s L0x7fffffffda4a,L0x7fffffffda4a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda4c,L0x7fffffffda4c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda4e,L0x7fffffffda4e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda50,L0x7fffffffda50<s 13177@16,
+(-13177)@16<=s L0x7fffffffda52,L0x7fffffffda52<s 13177@16,
+(-13177)@16<=s L0x7fffffffda54,L0x7fffffffda54<s 13177@16,
+(-13177)@16<=s L0x7fffffffda56,L0x7fffffffda56<s 13177@16,
+(-13177)@16<=s L0x7fffffffda58,L0x7fffffffda58<s 13177@16,
+(-13177)@16<=s L0x7fffffffda5a,L0x7fffffffda5a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda5c,L0x7fffffffda5c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda5e,L0x7fffffffda5e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda60,L0x7fffffffda60<s 13177@16,
+(-13177)@16<=s L0x7fffffffda62,L0x7fffffffda62<s 13177@16,
+(-13177)@16<=s L0x7fffffffda64,L0x7fffffffda64<s 13177@16,
+(-13177)@16<=s L0x7fffffffda66,L0x7fffffffda66<s 13177@16,
+(-13177)@16<=s L0x7fffffffda68,L0x7fffffffda68<s 13177@16,
+(-13177)@16<=s L0x7fffffffda6a,L0x7fffffffda6a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda6c,L0x7fffffffda6c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda6e,L0x7fffffffda6e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda70,L0x7fffffffda70<s 13177@16,
+(-13177)@16<=s L0x7fffffffda72,L0x7fffffffda72<s 13177@16,
+(-13177)@16<=s L0x7fffffffda74,L0x7fffffffda74<s 13177@16,
+(-13177)@16<=s L0x7fffffffda76,L0x7fffffffda76<s 13177@16,
+(-13177)@16<=s L0x7fffffffda78,L0x7fffffffda78<s 13177@16,
+(-13177)@16<=s L0x7fffffffda7a,L0x7fffffffda7a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda7c,L0x7fffffffda7c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda7e,L0x7fffffffda7e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda80,L0x7fffffffda80<s 13177@16,
+(-13177)@16<=s L0x7fffffffda82,L0x7fffffffda82<s 13177@16,
+(-13177)@16<=s L0x7fffffffda84,L0x7fffffffda84<s 13177@16,
+(-13177)@16<=s L0x7fffffffda86,L0x7fffffffda86<s 13177@16,
+(-13177)@16<=s L0x7fffffffda88,L0x7fffffffda88<s 13177@16,
+(-13177)@16<=s L0x7fffffffda8a,L0x7fffffffda8a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda8c,L0x7fffffffda8c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda8e,L0x7fffffffda8e<s 13177@16,
+(-13177)@16<=s L0x7fffffffda90,L0x7fffffffda90<s 13177@16,
+(-13177)@16<=s L0x7fffffffda92,L0x7fffffffda92<s 13177@16,
+(-13177)@16<=s L0x7fffffffda94,L0x7fffffffda94<s 13177@16,
+(-13177)@16<=s L0x7fffffffda96,L0x7fffffffda96<s 13177@16,
+(-13177)@16<=s L0x7fffffffda98,L0x7fffffffda98<s 13177@16,
+(-13177)@16<=s L0x7fffffffda9a,L0x7fffffffda9a<s 13177@16,
+(-13177)@16<=s L0x7fffffffda9c,L0x7fffffffda9c<s 13177@16,
+(-13177)@16<=s L0x7fffffffda9e,L0x7fffffffda9e<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaa0,L0x7fffffffdaa0<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaa2,L0x7fffffffdaa2<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaa4,L0x7fffffffdaa4<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaa6,L0x7fffffffdaa6<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaa8,L0x7fffffffdaa8<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaaa,L0x7fffffffdaaa<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaac,L0x7fffffffdaac<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaae,L0x7fffffffdaae<s 13177@16,
+(-13177)@16<=s L0x7fffffffdab0,L0x7fffffffdab0<s 13177@16,
+(-13177)@16<=s L0x7fffffffdab2,L0x7fffffffdab2<s 13177@16,
+(-13177)@16<=s L0x7fffffffdab4,L0x7fffffffdab4<s 13177@16,
+(-13177)@16<=s L0x7fffffffdab6,L0x7fffffffdab6<s 13177@16,
+(-13177)@16<=s L0x7fffffffdab8,L0x7fffffffdab8<s 13177@16,
+(-13177)@16<=s L0x7fffffffdaba,L0x7fffffffdaba<s 13177@16,
+(-13177)@16<=s L0x7fffffffdabc,L0x7fffffffdabc<s 13177@16,
+(-13177)@16<=s L0x7fffffffdabe,L0x7fffffffdabe<s 13177@16,
 (-13177)@16<=s L0x7fffffffdac0,L0x7fffffffdac0<s 13177@16,
 (-13177)@16<=s L0x7fffffffdac2,L0x7fffffffdac2<s 13177@16,
 (-13177)@16<=s L0x7fffffffdac4,L0x7fffffffdac4<s 13177@16,
@@ -16369,14 +16380,13 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 ] prove with [ precondition ];
 
 
-
 (* === split the CUT into 8 slices === *)
 
-(**************** CUT 128 *****************)
+(**************** CUT 128,  1 *****************)
 
 ecut true;
 
-(**************** CUT 129 *****************)
+(**************** CUT 129,  1 *****************)
 
 ecut 
   and [
@@ -16406,11 +16416,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 130 *****************)
+(**************** CUT 130,  1 *****************)
 
 ecut true;
 
-(**************** CUT 131 *****************)
+(**************** CUT 131,  1 *****************)
 
 ecut 
   and [
@@ -16440,11 +16450,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 132 *****************)
+(**************** CUT 132,  1 *****************)
 
 ecut true;
 
-(**************** CUT 133 *****************)
+(**************** CUT 133,  1 *****************)
 
 ecut 
   and [
@@ -16474,11 +16484,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 134 *****************)
+(**************** CUT 134,  1 *****************)
 
 ecut true;
 
-(**************** CUT 135 *****************)
+(**************** CUT 135,  1 *****************)
 
 ecut 
   and [
@@ -16508,11 +16518,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 136 *****************)
+(**************** CUT 136,  1 *****************)
 
 ecut true;
 
-(**************** CUT 137 *****************)
+(**************** CUT 137,  1 *****************)
 
 ecut 
   and [
@@ -16542,11 +16552,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 138 *****************)
+(**************** CUT 138,  1 *****************)
 
 ecut true;
 
-(**************** CUT 139 *****************)
+(**************** CUT 139,  1 *****************)
 
 ecut 
   and [
@@ -16576,11 +16586,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 140 *****************)
+(**************** CUT 140,  1 *****************)
 
 ecut true;
 
-(**************** CUT 141 *****************)
+(**************** CUT 141,  1 *****************)
 
 ecut 
   and [
@@ -16610,11 +16620,11 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
   ] prove with [cuts [127]];
 
 
-(**************** CUT 142 *****************)
+(**************** CUT 142,  1 *****************)
 
 ecut true;
 
-(**************** CUT 143 *****************)
+(**************** CUT 143,  1 *****************)
 
 ecut 
   and [
@@ -16647,7 +16657,7 @@ eqmod (c070*x**112+c071*x**113+c072*x**114+c073*x**115+
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 144 *****************)
+(**************** CUT 144,  1 *****************)
 
 cut 
 true && and [
@@ -16779,8 +16789,7 @@ true && and [
 ( -6144)@16<=s L0x7fffffffd3da,L0x7fffffffd3da<s  6144@16,
 ( -6144)@16<=s L0x7fffffffd3dc,L0x7fffffffd3dc<s  6144@16,
 ( -6144)@16<=s L0x7fffffffd3de,L0x7fffffffd3de<s  6144@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -18654,7 +18663,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 0 *****************)
 
 
-(**************** CUT 145 *****************)
+(**************** CUT 145,  2 *****************)
 
 rcut 
   and [
@@ -18722,7 +18731,7 @@ rcut
 (-28408)@16<=s ymm11_a,ymm11_a<=s 28408@16,(-28408)@16<=s ymm11_b,ymm11_b<=s 28408@16,
 (-28408)@16<=s ymm11_c,ymm11_c<=s 28408@16,(-28408)@16<=s ymm11_d,ymm11_d<=s 28408@16,
 (-28408)@16<=s ymm11_e,ymm11_e<=s 28408@16,(-28408)@16<=s ymm11_f,ymm11_f<=s 28408@16
-] prove with [ all ghosts, cuts [ 127] ];
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -23220,7 +23229,7 @@ mov L0x7fffffffd3de ymm11_f;
 (**************** LEVELS 3-8, 0 *****************)
 
 
-(**************** CUT 146 *****************)
+(**************** CUT 145,  3 *****************)
 
 cut 
   and [
@@ -23486,7 +23495,7 @@ eqmod (inp_poly**2) (L0x7fffffffd3ce*x** 0+L0x7fffffffd3de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 147 *****************)
+(**************** CUT 146,  4 *****************)
 
 cut 
 true && and [
@@ -23618,7 +23627,7 @@ true && and [
 ( -6144)@16<=s L0x7fffffffd4da,L0x7fffffffd4da<s  6144@16,
 ( -6144)@16<=s L0x7fffffffd4dc,L0x7fffffffd4dc<s  6144@16,
 ( -6144)@16<=s L0x7fffffffd4de,L0x7fffffffd4de<s  6144@16
-] prove with [ cuts [ 127 ] ];
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -26185,7 +26194,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 1 *****************)
 
 
-(**************** CUT 148 *****************)
+(**************** CUT 147,  5 *****************)
 
 rcut 
   and [
@@ -26253,8 +26262,7 @@ rcut
 (-25220)@16<=s ymm11_a,ymm11_a<=s 25220@16,(-25220)@16<=s ymm11_b,ymm11_b<=s 25220@16,
 (-25220)@16<=s ymm11_c,ymm11_c<=s 25220@16,(-25220)@16<=s ymm11_d,ymm11_d<=s 25220@16,
 (-25220)@16<=s ymm11_e,ymm11_e<=s 25220@16,(-25220)@16<=s ymm11_f,ymm11_f<=s 25220@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -31048,7 +31056,7 @@ mov L0x7fffffffd4de ymm11_f;
 (**************** LEVELS 3-8, 1 *****************)
 
 
-(**************** CUT 149 *****************)
+(**************** CUT 147,  6 *****************)
 
 cut 
   and [
@@ -31314,7 +31322,7 @@ eqmod (inp_poly**2) (L0x7fffffffd4ce*x** 0+L0x7fffffffd4de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 150 *****************)
+(**************** CUT 148,  7 *****************)
 
 cut 
 true && and [
@@ -31446,8 +31454,7 @@ true && and [
 ( -9474)@16<=s L0x7fffffffd5da,L0x7fffffffd5da<s  9474@16,
 ( -9474)@16<=s L0x7fffffffd5dc,L0x7fffffffd5dc<s  9474@16,
 ( -9474)@16<=s L0x7fffffffd5de,L0x7fffffffd5de<s  9474@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -34014,7 +34021,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 2 *****************)
 
 
-(**************** CUT 151 *****************)
+(**************** CUT 149,  8 *****************)
 
 rcut 
   and [
@@ -34082,8 +34089,7 @@ rcut
 (-27716)@16<=s ymm11_a,ymm11_a<=s 27716@16,(-27716)@16<=s ymm11_b,ymm11_b<=s 27716@16,
 (-27716)@16<=s ymm11_c,ymm11_c<=s 27716@16,(-27716)@16<=s ymm11_d,ymm11_d<=s 27716@16,
 (-27716)@16<=s ymm11_e,ymm11_e<=s 27716@16,(-27716)@16<=s ymm11_f,ymm11_f<=s 27716@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -38877,7 +38883,7 @@ mov L0x7fffffffd5de ymm11_f;
 (**************** LEVELS 3-8, 2 *****************)
 
 
-(**************** CUT 152 *****************)
+(**************** CUT 149,  9 *****************)
 
 cut 
   and [
@@ -39143,7 +39149,7 @@ eqmod (inp_poly**2) (L0x7fffffffd5ce*x** 0+L0x7fffffffd5de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 153 *****************)
+(**************** CUT 150, 10 *****************)
 
 cut 
 true && and [
@@ -39275,8 +39281,7 @@ true && and [
 ( -9474)@16<=s L0x7fffffffd6da,L0x7fffffffd6da<s  9474@16,
 ( -9474)@16<=s L0x7fffffffd6dc,L0x7fffffffd6dc<s  9474@16,
 ( -9474)@16<=s L0x7fffffffd6de,L0x7fffffffd6de<s  9474@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -41843,7 +41848,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 3 *****************)
 
 
-(**************** CUT 154 *****************)
+(**************** CUT 151, 11 *****************)
 
 rcut 
   and [
@@ -41911,8 +41916,7 @@ rcut
 (-27381)@16<=s ymm11_a,ymm11_a<=s 27381@16,(-27381)@16<=s ymm11_b,ymm11_b<=s 27381@16,
 (-27381)@16<=s ymm11_c,ymm11_c<=s 27381@16,(-27381)@16<=s ymm11_d,ymm11_d<=s 27381@16,
 (-27381)@16<=s ymm11_e,ymm11_e<=s 27381@16,(-27381)@16<=s ymm11_f,ymm11_f<=s 27381@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -46706,7 +46710,7 @@ mov L0x7fffffffd6de ymm11_f;
 (**************** LEVELS 3-8, 3 *****************)
 
 
-(**************** CUT 155 *****************)
+(**************** CUT 151, 12 *****************)
 
 cut 
   and [
@@ -46972,7 +46976,7 @@ eqmod (inp_poly**2) (L0x7fffffffd6ce*x** 0+L0x7fffffffd6de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 156 *****************)
+(**************** CUT 152, 13 *****************)
 
 cut 
 true && and [
@@ -47104,8 +47108,7 @@ true && and [
 (-12913)@16<=s L0x7fffffffd7da,L0x7fffffffd7da<s 12913@16,
 (-12913)@16<=s L0x7fffffffd7dc,L0x7fffffffd7dc<s 12913@16,
 (-12913)@16<=s L0x7fffffffd7de,L0x7fffffffd7de<s 12913@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -50264,7 +50267,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 4 *****************)
 
 
-(**************** CUT 157 *****************)
+(**************** CUT 153, 14 *****************)
 
 rcut 
   and [
@@ -50332,8 +50335,7 @@ rcut
 (-12514)@16<=s ymm11_a,ymm11_a<=s 12514@16,(-12514)@16<=s ymm11_b,ymm11_b<=s 12514@16,
 (-12514)@16<=s ymm11_c,ymm11_c<=s 12514@16,(-12514)@16<=s ymm11_d,ymm11_d<=s 12514@16,
 (-12514)@16<=s ymm11_e,ymm11_e<=s 12514@16,(-12514)@16<=s ymm11_f,ymm11_f<=s 12514@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -54535,7 +54537,7 @@ mov L0x7fffffffd7de ymm11_f;
 (**************** LEVELS 3-8, 4 *****************)
 
 
-(**************** CUT 158 *****************)
+(**************** CUT 153, 15 *****************)
 
 cut 
   and [
@@ -54801,7 +54803,7 @@ eqmod (inp_poly**2) (L0x7fffffffd7ce*x** 0+L0x7fffffffd7de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 159 *****************)
+(**************** CUT 154, 16 *****************)
 
 cut 
 true && and [
@@ -54933,8 +54935,7 @@ true && and [
 (-12913)@16<=s L0x7fffffffd8da,L0x7fffffffd8da<s 12913@16,
 (-12913)@16<=s L0x7fffffffd8dc,L0x7fffffffd8dc<s 12913@16,
 (-12913)@16<=s L0x7fffffffd8de,L0x7fffffffd8de<s 12913@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -58093,7 +58094,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 5 *****************)
 
 
-(**************** CUT 160 *****************)
+(**************** CUT 155, 17 *****************)
 
 rcut 
   and [
@@ -58161,8 +58162,7 @@ rcut
 (-12644)@16<=s ymm11_a,ymm11_a<=s 12644@16,(-12644)@16<=s ymm11_b,ymm11_b<=s 12644@16,
 (-12644)@16<=s ymm11_c,ymm11_c<=s 12644@16,(-12644)@16<=s ymm11_d,ymm11_d<=s 12644@16,
 (-12644)@16<=s ymm11_e,ymm11_e<=s 12644@16,(-12644)@16<=s ymm11_f,ymm11_f<=s 12644@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -62364,7 +62364,7 @@ mov L0x7fffffffd8de ymm11_f;
 (**************** LEVELS 3-8, 5 *****************)
 
 
-(**************** CUT 161 *****************)
+(**************** CUT 155, 18 *****************)
 
 cut 
   and [
@@ -62630,7 +62630,7 @@ eqmod (inp_poly**2) (L0x7fffffffd8ce*x** 0+L0x7fffffffd8de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 162 *****************)
+(**************** CUT 156, 19 *****************)
 
 cut 
 true && and [
@@ -62762,8 +62762,7 @@ true && and [
 (-12892)@16<=s L0x7fffffffd9da,L0x7fffffffd9da<s 12892@16,
 (-12892)@16<=s L0x7fffffffd9dc,L0x7fffffffd9dc<s 12892@16,
 (-12892)@16<=s L0x7fffffffd9de,L0x7fffffffd9de<s 12892@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -65922,7 +65921,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 6 *****************)
 
 
-(**************** CUT 163 *****************)
+(**************** CUT 157, 20 *****************)
 
 rcut 
   and [
@@ -65990,8 +65989,7 @@ rcut
 (-11126)@16<=s ymm11_a,ymm11_a<=s 11126@16,(-11126)@16<=s ymm11_b,ymm11_b<=s 11126@16,
 (-11126)@16<=s ymm11_c,ymm11_c<=s 11126@16,(-11126)@16<=s ymm11_d,ymm11_d<=s 11126@16,
 (-11126)@16<=s ymm11_e,ymm11_e<=s 11126@16,(-11126)@16<=s ymm11_f,ymm11_f<=s 11126@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -70193,7 +70191,7 @@ mov L0x7fffffffd9de ymm11_f;
 (**************** LEVELS 3-8, 6 *****************)
 
 
-(**************** CUT 164 *****************)
+(**************** CUT 157, 21 *****************)
 
 cut 
   and [
@@ -70459,7 +70457,7 @@ eqmod (inp_poly**2) (L0x7fffffffd9ce*x** 0+L0x7fffffffd9de*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 165 *****************)
+(**************** CUT 158, 22 *****************)
 
 cut 
 true && and [
@@ -70591,8 +70589,7 @@ true && and [
 (-12892)@16<=s L0x7fffffffdada,L0x7fffffffdada<s 12892@16,
 (-12892)@16<=s L0x7fffffffdadc,L0x7fffffffdadc<s 12892@16,
 (-12892)@16<=s L0x7fffffffdade,L0x7fffffffdade<s 12892@16
-] prove with [ cuts [ 127 ] ];
-
+] prove with [ cuts [ 0 ] ];
 
 
 
@@ -73751,7 +73748,7 @@ sub ymm11_f ymm10_f ymm11_f;
 (**************** LEVELS 3-5, 7 *****************)
 
 
-(**************** CUT 166 *****************)
+(**************** CUT 159, 23 *****************)
 
 rcut 
   and [
@@ -73819,8 +73816,7 @@ rcut
 (-12953)@16<=s ymm11_a,ymm11_a<=s 12953@16,(-12953)@16<=s ymm11_b,ymm11_b<=s 12953@16,
 (-12953)@16<=s ymm11_c,ymm11_c<=s 12953@16,(-12953)@16<=s ymm11_d,ymm11_d<=s 12953@16,
 (-12953)@16<=s ymm11_e,ymm11_e<=s 12953@16,(-12953)@16<=s ymm11_f,ymm11_f<=s 12953@16
-] prove with [ all ghosts, cuts [ 127 ] ];
-
+] prove with [ all ghosts, cuts [ 0 ] ];
 
 
 
@@ -78023,7 +78019,7 @@ mov L0x7fffffffdade ymm11_f;
 (**************** LEVELS 3-8, 7 *****************)
 
 
-(**************** CUT 167 *****************)
+(**************** CUT 159, 24 *****************)
 
 cut 
   and [
@@ -78289,7 +78285,7 @@ eqmod (inp_poly**2) (L0x7fffffffdace*x** 0+L0x7fffffffdade*x** 1)
 
 (* === be ready for next level and offset === *)
 
-(**************** CUT 168 *****************)
+(**************** CUT 160, 25 *****************)
 
 ecut true;
 
@@ -79335,7 +79331,7 @@ eqmod (inp_poly**2) (L0x7fffffffdaae*x** 0+L0x7fffffffdabe*x** 1)
       [10753, x**2 - 7527],
 eqmod (inp_poly**2) (L0x7fffffffdace*x** 0+L0x7fffffffdade*x** 1)
       [10753, x**2 - 3226]
-] prove with [ cuts [ 146, 149, 152, 155, 158, 161, 164, 167 ] ]
+] prove with [ cuts [ 145, 147, 149, 151, 153, 155, 157, 159 ] ]
 && and [
 (-28323)@16<=s L0x7fffffffd2e0,L0x7fffffffd2e0<=s 28323@16,
 (-28323)@16<=s L0x7fffffffd2f0,L0x7fffffffd2f0<=s 28323@16,
@@ -80368,5 +80364,5 @@ eqmod (inp_poly**2) (L0x7fffffffdace*x** 0+L0x7fffffffdade*x** 1)
 (-30657)@16<=s L0x7fffffffdabe,L0x7fffffffdabe<=s 30657@16,
 (-30657)@16<=s L0x7fffffffdace,L0x7fffffffdace<=s 30657@16,
 (-30657)@16<=s L0x7fffffffdade,L0x7fffffffdade<=s 30657@16
-] prove with [ cuts [ 146, 149, 152, 155, 158, 161, 164, 167 ] ]
+] prove with [ cuts [ 3, 6, 9, 12, 15, 18, 21, 24 ] ]
 }

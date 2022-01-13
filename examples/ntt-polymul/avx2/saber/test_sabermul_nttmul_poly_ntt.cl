@@ -1,3 +1,17 @@
+(* frege:  -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint test_sabermul_nttmul_poly_ntt.cl
+Parsing Cryptoline file:                [OK]            0.123403 seconds
+Checking well-formedness:               [OK]            0.034980 seconds
+Transforming to SSA form:               [OK]            0.022514 seconds
+Rewriting assignments:                  [OK]            0.025887 seconds
+Verifying program safety:               [OK]            207.764951 seconds
+Verifying range assertions:             [OK]            77.953031 seconds
+Verifying range specification:          [OK]            193.820535 seconds
+Rewriting value-preserved casting:      [OK]            0.000127 seconds
+Verifying algebraic assertions:         [OK]            0.003455 seconds
+Verifying algebraic specification:      [OK]            60.141588 seconds
+Verification result:                    [OK]            539.903745 seconds
+*)
+
 (*
 on frege
 Arguments: -v -jobs 20 -isafety -no_carry_constraint -slicing test_sabermul_nttmul_poly_ntt.cl
