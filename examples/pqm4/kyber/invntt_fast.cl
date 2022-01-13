@@ -1,3 +1,17 @@
+(* frege:  -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint invntt_fast.cl
+Parsing Cryptoline file:                [OK]            0.231618 seconds
+Checking well-formedness:               [OK]            0.050828 seconds
+Transforming to SSA form:               [OK]            0.039724 seconds
+Rewriting assignments:                  [OK]            0.042047 seconds
+Verifying program safety:               [OK]            233.812975 seconds
+Verifying range assertions:             [OK]            0.020043 seconds
+Verifying range specification:          [OK]            126.298541 seconds
+Rewriting value-preserved casting:      [OK]            0.001375 seconds
+Verifying algebraic assertions:         [OK]            184.752831 seconds
+Verifying algebraic specification:      [OK]            23397.629823 seconds
+Verification result:                    [OK]            23942.907136 seconds
+*)
+
 (* server@szu: -v -jobs 8 -no_carry_constraint -slicing -isafety invntt_fast.cl
 Parsing Cryptoline file:                [OK]            0.322784 seconds
 Checking well-formedness:               [OK]            0.057714 seconds

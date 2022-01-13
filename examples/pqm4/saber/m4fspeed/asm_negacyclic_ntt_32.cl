@@ -1,3 +1,17 @@
+(* frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint asm_negacyclic_ntt_32.cl
+Parsing Cryptoline file:                [OK]            0.076667 seconds
+Checking well-formedness:               [OK]            0.022552 seconds
+Transforming to SSA form:               [OK]            0.012493 seconds
+Rewriting assignments:                  [OK]            0.010377 seconds
+Verifying program safety:               [OK]            2731.957961 seconds
+Verifying range assertions:             [OK]            0.013543 seconds
+Verifying range specification:          [OK]            2196.753107 seconds
+Rewriting value-preserved casting:      [OK]            0.265091 seconds
+Verifying algebraic assertions:         [OK]            71.021907 seconds
+Verifying algebraic specification:      [OK]            39.249517 seconds
+Verification result:                    [OK]            5039.390968 seconds
+*)
+
 (* server@szu: -v -jobs 26 -isafety -no_carry_constraint -slicing asm_negacyclic_ntt_32.cl 
 Parsing Cryptoline file:                [OK]            0.087007 seconds
 Checking well-formedness:               [OK]            0.040263 seconds
