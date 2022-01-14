@@ -312,7 +312,9 @@ let write_maple_input ifile vars gen p =
     ^ "Ord := plex(" ^ varseq ^ "):\n"
     ^ "B := [" ^ generator ^ "]:\n"
     ^ "g := " ^ poly ^ ":\n"
-    ^ "if member(g, B) or Reduce(g, B, Ord) = 0 then\n"
+    (* maple may hang if B is not a Groebner basis *)
+    (*^ "if member(g, B) or Reduce(g, B, Ord) = 0 then\n"*)
+    ^ "if member(g, B) then\n"
     ^ "  true\n"
     ^ "else\n"
     ^ "  J := Basis(B, Ord):\n"
