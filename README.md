@@ -1,75 +1,87 @@
-Cryptoline
+CryptoLine
 ==========
 
-Cryptoline is a tool and a language for the verification of low-level
-implementations of mathematical constructs.
-It has been used to verify implementations in
+CryptoLine is a tool and a language for the verification of low-level implementations of
+mathematical constructs. It has been used to verify implementations in
 [OpenSSL](https://www.openssl.org),
 [BoringSSL](https://opensource.google.com/projects/boringssl),
-[mbed TLS](https://tls.mbed.org), etc.
+[mbed TLS](https://tls.mbed.org),
+[pqm4](https://github.com/mupq/pqm4),
+[ntt-polymul](https://github.com/ntt-polymul/ntt-polymul), etc.
+
 
 Prerequisite
 ============
 
-To compile and run Cryptoline, the following packages need to be installed.
+To compile and run CryptoLine, the following packages need to be installed.
 
-- [OCaml compiler](https://ocaml.org) (version 4.07.0 up, installed by [opam](http://opam.ocaml.org) is recommended)
+- [OCaml compiler](https://ocaml.org) (version 4.08.1 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num, zarith (can be installed by [opam](http://opam.ocaml.org))
+- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num, zarith
 - One of the following computer algebra systems:
-  + [Singular](https://www.singular.uni-kl.de) (recommended)
+  + [Singular](https://www.singular.uni-kl.de) (recommended, the default to be used)
   + [SageMath](http://www.sagemath.org)
   + [Magma](http://magma.maths.usyd.edu.au/magma/)
   + [Mathematica](https://www.wolfram.com/mathematica/)
   + [Macaulay2](https://faculty.math.illinois.edu/Macaulay2/)
+  + [Maple](https://www.maplesoft.com)
 - One of the following SMT solvers:
-  + [Boolector](https://boolector.github.io) (recommended)
+  + [Boolector](https://boolector.github.io) (recommended, the default to be used)
   + [Z3](https://github.com/Z3Prover/z3)
   + [Mathsat](http://mathsat.fbk.eu)
 
-Compilation
-===========
 
-Use the following command to install Cryptoline to opam.
+Installation
+============
 
-opam will handle dependencies.
+Follow the following instructions to build and install CryptoLine as well as the default solver Singular and Boolector on Ubuntu 20.04 LTS.
 
 ```
-opam install .
+$ sudo apt -y install \
+	build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
+	boolector singular
+$ dune build
+$ dune install
 ```
 
 Run the following command to see the available command-line arguments.
 
-Make sure `$HOME/.opam/$OCAML_VERSION/bin` is in your $PATH.
-
 ```
-cv
+$ cv
 ```
 
-Uninstall
+To uninstall CryptoLine, run the following command.
 
 ```
-opam uninstall .
+dune uninstall
 ```
 
-Cryptoline Language
+Note that Singular and Boolector provided by Ubuntu are pretty old.
+It is recommended to install newer versions of Singular and Boolector.
+Using the scripts install-singular.sh and install-boolector.sh, Singular
+4.3.0 and Boolector 3.2.0 can be installed.
+
+```
+$ scripts/install-singular.sh
+$ scripts/install-boolector.sh
+```
+
+
+CryptoLine Language
 ===================
 
-```
-cd doc
-pdflatex cryptoline.tex
-```
+Read doc/cryptoline.pdf for the details of the CryptoLine language.
 
-Read doc/cryptoline.pdf for the details of the Cryptoline language.
 
-Cryptoline Language in Emacs
-===================
-cryptoline-mode.el in the project root
+Syntax Highlight in Emacs
+=========================
+CryptoLine-mode.el in the project root
 
 only support syntax highlighting now
 
 ```elisp
-(add-to-list 'load-path "cryptoline/cryptoline-mode.el") ; need to change to the right location
+; Change [PATH_TO_CRYPTOLINE] to the right location
+(add-to-list 'load-path "[PATH_TO_CRYPTOLINE]/misc/cryptoline-mode.el")
 (autoload 'cryptoline-mode "cryptoline-mode" "Major mode for CryptoLine files." t)
 (add-to-list 'auto-mode-alist '("\\.cl\\'" . cryptoline-mode))
 ```

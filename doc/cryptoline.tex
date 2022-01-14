@@ -3,11 +3,18 @@
 \usepackage{xspace}
 \usepackage{amsbsy}
 \usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{tabularray}
+
+\newcommand{\hide}[1]{}
+
+\newcommand{\mZ}{\ensuremath{\mathbb{Z}}}
+\newcommand{\mN}{\ensuremath{\mathbb{N}}}
 
 \newcommand{\derefop}{\mathit{\$}}
 \newcommand{\deref}[1]{\mathit{\$#1}}
 \newcommand{\wordsize}{W\xspace}
-\newcommand{\cryptoline}{\textsc{Cryptoline}\xspace}
+\newcommand{\cryptoline}{\textsc{CryptoLine}\xspace}
 \newcommand{\prog}{\mathit{prog}\xspace}
 \newcommand{\stmt}{\mathit{stmt}\xspace}
 \newcommand{\proc}{\mathit{proc}\xspace}
@@ -34,6 +41,14 @@
 \newcommand{\sleop}{\mathit{<=s}\xspace}
 \newcommand{\sgtop}{\mathit{>s}\xspace}
 \newcommand{\sgeop}{\mathit{>=s}\xspace}
+\newcommand{\iult}{\mathit{ult}\xspace}
+\newcommand{\iule}{\mathit{ule}\xspace}
+\newcommand{\iugt}{\mathit{ugt}\xspace}
+\newcommand{\iuge}{\mathit{uge}\xspace}
+\newcommand{\islt}{\mathit{slt}\xspace}
+\newcommand{\isle}{\mathit{sle}\xspace}
+\newcommand{\isgt}{\mathit{sgt}\xspace}
+\newcommand{\isge}{\mathit{sge}\xspace}
 \newcommand{\pre}{\mathit{pre}\xspace}
 \newcommand{\post}{\mathit{post}\xspace}
 \newcommand{\pred}{\mathit{pred}\xspace}
@@ -42,7 +57,8 @@
 \newcommand{\predclause}{\mathit{pred\_clause}\xspace}
 \newcommand{\epredclause}{\mathit{epred\_clause}\xspace}
 \newcommand{\rpredclause}{\mathit{rpred\_clause}\xspace}
-\newcommand{\iext}{\mathit{ext}\xspace}
+\newcommand{\iuext}{\mathit{uext}\xspace}
+\newcommand{\isext}{\mathit{sext}\xspace}
 \newcommand{\imod}{\mathit{mod}\xspace}
 \newcommand{\iumod}{\mathit{umod}\xspace}
 \newcommand{\ismod}{\mathit{smod}\xspace}
@@ -76,6 +92,12 @@
 \newcommand{\isubs}{\mathit{subs}\xspace}
 \newcommand{\iusubs}{\mathit{usubs}\xspace}
 \newcommand{\issubs}{\mathit{ssubs}\xspace}
+\newcommand{\isubc}{\mathit{subc}\xspace}
+\newcommand{\iusubc}{\mathit{usubc}\xspace}
+\newcommand{\issubc}{\mathit{ssubc}\xspace}
+\newcommand{\isubb}{\mathit{subb}\xspace}
+\newcommand{\iusubb}{\mathit{usubb}\xspace}
+\newcommand{\issubb}{\mathit{ssubb}\xspace}
 \newcommand{\isubr}{\mathit{subr}\xspace}
 \newcommand{\iusubr}{\mathit{usubr}\xspace}
 \newcommand{\issubr}{\mathit{ssubr}\xspace}
@@ -88,6 +110,15 @@
 \newcommand{\isbcr}{\mathit{sbcr}\xspace}
 \newcommand{\iusbcr}{\mathit{usbcr}\xspace}
 \newcommand{\issbcr}{\mathit{ssbcr}\xspace}
+\newcommand{\isbb}{\mathit{sbb}\xspace}
+\newcommand{\iusbb}{\mathit{usbb}\xspace}
+\newcommand{\issbb}{\mathit{ssbb}\xspace}
+\newcommand{\isbbs}{\mathit{sbbs}\xspace}
+\newcommand{\iusbbs}{\mathit{usbbs}\xspace}
+\newcommand{\issbbs}{\mathit{ssbbs}\xspace}
+\newcommand{\isbbr}{\mathit{sbbr}\xspace}
+\newcommand{\iusbbr}{\mathit{usbbr}\xspace}
+\newcommand{\issbbr}{\mathit{ssbbr}\xspace}
 \newcommand{\imul}{\mathit{mul}\xspace}
 \newcommand{\iumul}{\mathit{umul}\xspace}
 \newcommand{\ismul}{\mathit{smul}\xspace}
@@ -100,15 +131,26 @@
 \newcommand{\imull}{\mathit{mull}\xspace}
 \newcommand{\iumull}{\mathit{umull}\xspace}
 \newcommand{\ismull}{\mathit{smull}\xspace}
+\newcommand{\imulj}{\mathit{mulj}\xspace}
+\newcommand{\iumulj}{\mathit{umulj}\xspace}
+\newcommand{\ismulj}{\mathit{smulj}\xspace}
 \newcommand{\isplit}{\mathit{split}\xspace}
+\newcommand{\ijoin}{\mathit{join}\xspace}
 \newcommand{\ishl}{\mathit{shl}\xspace}
 \newcommand{\icshl}{\mathit{cshl}\xspace}
 \newcommand{\iset}{\mathit{set}\xspace}
 \newcommand{\iclear}{\mathit{clear}\xspace}
 \newcommand{\inondet}{\mathit{nondet}\xspace}
 \newcommand{\icmov}{\mathit{cmov}\xspace}
+\newcommand{\ieq}{\mathit{eq}\xspace}
+\newcommand{\ieqmod}{\mathit{eqmod}\xspace}
+\newcommand{\iequmod}{\mathit{equmod}\xspace}
+\newcommand{\ieqsmod}{\mathit{eqsmod}\xspace}
+\newcommand{\ieqsrem}{\mathit{eqsrem}\xspace}
+\newcommand{\ineg}{\mathit{neg}\xspace}
 \newcommand{\iand}{\mathit{and}\xspace}
 \newcommand{\ior}{\mathit{or}\xspace}
+\newcommand{\ixor}{\mathit{xor}\xspace}
 \newcommand{\inot}{\mathit{not}\xspace}
 \newcommand{\iassert}{\mathit{assert}\xspace}
 \newcommand{\iassume}{\mathit{assume}\xspace}
@@ -128,145 +170,121 @@
 \newcommand{\assumes}{\mathit{assumes}\xspace}
 \newcommand{\ghosts}{\mathit{ghosts}\xspace}
 \newcommand{\varseq}{\mathit{varseq}\xspace}
-\newcommand{\atomic}{\mathit{atomic}\xspace}
-\newcommand{\atomicseq}{\mathit{atomicseq}\xspace}
+\newcommand{\atom}{\mathit{atom}\xspace}
+\newcommand{\atomseq}{\mathit{atomseq}\xspace}
 \newcommand{\var}{\mathit{var}\xspace}
+\newcommand{\tvar}{\mathit{typed\_var}\xspace}
+\newcommand{\lval}{\mathit{lval}\xspace}
 \newcommand{\simpleconst}{\mathit{simple\_const}\xspace}
 \newcommand{\complexconst}{\mathit{complexy\_const}\xspace}
 \newcommand{\const}{\mathit{const}\xspace}
+\newcommand{\tconst}{\mathit{typed\_const}\xspace}
 \newcommand{\id}{\mathit{id}\xspace}
+\newcommand{\typ}{\mathit{typ}\xspace}
 \newcommand{\letter}{\mathit{letter}\xspace}
 \newcommand{\digit}{\mathit{digit}\xspace}
 \newcommand{\underscore}{\mathit{underscore}\xspace}
+\newcommand{\uint}{\mathsf{uint}\xspace}
+\newcommand{\sint}{\mathsf{sint}\xspace}
+\newcommand{\bit}{\mathsf{bit}\xspace}
+\newcommand{\band}{\&\&}
 
 \begin{document}
 
 \title{\cryptoline}
-
+\date{\today}
 \maketitle
 
 \section{Introduction}
 
 \cryptoline is a tool and a language for the verification of low-level
 implementations of mathematical constructs.
+In \cryptoline, users can specify two kinds of properties,
+namely algebraic properties and range properties.
+Algebraic properties involve equalities and modular equalities in the
+integer domain while range properties involve bit-accurate variable
+ranges.
+\cryptoline verifies algebraic properties and range properties
+separately.
+Verification of algebraic properties is reduced to ideal membership
+queries which are solved by external computer algebra systems.
+Verification of range properties is reduced to Satisfiability Modulo
+Theories (SMT) queries which are solved by external SMT solvers.
 
 \section{\cryptoline Language}
-
-Assume a wordsize $\wordsize$.
 
 
 \appendix
 \section{Syntax of \cryptoline}
-An \emph{identifier} is a regular string started by a letter or an underscore, followed by letters, digits, or underscores.
+
+An \emph{identifier} is a regular string started by a letter or an
+underscore, followed by letters, digits, or underscores.
 \[
-\id ::= (\letter \mid \underscore) \{ \letter \mid \digit \mid \underscore \}
+\id ::= (\letter \mid \underscore) [ \letter \mid \digit \mid \underscore ]
 \]
-A \emph{constant} is an integer, a named integer, or arithmetic expressions over constants.
+
+All constants and variables in \cryptoline are typed.
+Let $w$ be a positive integer.
+$\uint w$ and $\sint w$ in \cryptoline denote the types of bit-vectors
+with width $w$ in the unsigned and two's complement signed
+representations respectively.
+The type $\uint 1$ is also written as $\bit$.
 \[
-\begin{array}{rcl}
-\const &  ::= & \simpleconst \\
-       & \mid & \pmb{(}\ \complexconst\ \pmb{)} \\
-\simpleconst &  ::= & \Sigma \\
-             & \mid & \pmb{\derefop} \id \\
-\complexconst &  ::= & \const \\
-              & \mid & \pmb{\minusop}\ \complexconst \\
-              & \mid & \complexconst\ \pmb{\addop}\ \complexconst \\
-              & \mid & \complexconst\ \pmb{\subop}\ \complexconst \\
-              & \mid & \complexconst\ \pmb{\mulop}\ \complexconst \\
-              & \mid & \complexconst\ \pmb{\powop}\ \complexconst
-\end{array}
+  \begin{array}{rcl}
+    \typ & ::= & \uint 1 \mid \sint 2 \mid \uint 2 \mid \sint 3 \mid
+                \cdots \mid \uint w \mid \sint (w+1)
+  \end{array}
+\]
+
+A \emph{constant} is an integer, a hexadecimal number, a named
+constant, or arithmetic expressions over constants.
+\[
+  \begin{array}{rcl}
+    \const &  ::= & \simpleconst \\
+           & \mid & \pmb(\ \complexconst\ \pmb) \\
+    \simpleconst &  ::= & \mZ \\
+           & \mid & 0x[0-9a-fA-F]^+ \\
+           & \mid & \pmb\derefop \id \\
+    \complexconst &  ::= & \const \\
+           & \mid & \pmb\minusop\ \complexconst \\
+           & \mid & \complexconst\ \pmb\addop\ \complexconst \\
+           & \mid & \complexconst\ \pmb\subop\ \complexconst \\
+           & \mid & \complexconst\ \pmb\mulop\ \complexconst \\
+           & \mid & \complexconst\ \pmb\powop\ \complexconst \\
+    \tconst & ::= & \const @ \typ \\
+           & \mid &  \typ\ \const
+  \end{array}
 \]
 The value of a named integer $c$ is read by $\$c$.
-\cryptoline supports the following arithmetic operators over constants: unary minus (\pmb{-}), addition (\pmb{+}), subtraction (\pmb{-}), multiplication (\pmb{*}), and exponent (\pmb{**}).
-The value of a constant is always a bit vector of width $\wordsize$ unless its bit width is explicitly specified.
+\cryptoline supports the following arithmetic operators over
+constants: unary minus (-), addition (+), subtraction (-),
+multiplication (*), and exponent (**).
+A \emph{typed constant} is a constant with its type explicitly
+specified.
+
 A \emph{variable} is an identity.
+A \emph{typed variable} is a variable with its type explicitly
+specified.
+An $\lval$ is either a variable or a typed variable.
 \[
-\var ::= \id
+  \begin{array}{rcl}
+    \var & ::= & \id \\
+    \tvar & ::= & \var @ \typ \mid \typ\ \var \\
+    \lval & ::= & \var \mid \tvar
+  \end{array}
 \]
-The value of a variable is always a bit vector of width $\wordsize$.
-A sequence of variables is comma separated.
+The notation $t_{\circ}^*$ and $t_{\circ}^+$ respectlvey represents a
+possibly empty and a non-empty sequence of $\circ$-separated $t$.
+
+An \emph{atom} is either a typed constant, a variable, or a typed
+variable.
+It is not necessary to specify the variable type explicitly in
+an atom because \cryptoline can infer the type automatically.
 \[
-\varseq ::= \var\ \{ \pmb{,}\ \var \}
-\]
-An \emph{atomic} is either a constant or a variable.
-\[
-\atomic ::= \const \mid \var
+\atom ::= \tconst \mid \var \mid \tvar
 \]
 
-\cryptoline supports the following \emph{instructions}.
-\[
-\begin{array}{rclcl}
-\instr &  ::= & \pmb\imov\ \var\ \atomic %\\
-       & \mid & \pmb\iadd\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iuadd\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\isadd\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iadds\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iuadds\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\isadds\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iaddr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iuaddr\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\isaddr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iadc\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\iuadc\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\isadc\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\iadcs\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\iuadcs\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\isadcs\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\iadcr\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\iuadcr\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\isadcr\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\isub\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iusub\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\issub\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\isubs\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iusubs\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\issubs\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\isubr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iusubr\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\issubr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\isbc\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\iusbc\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\issbc\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\isbcs\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\iusbcs\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\issbcs\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\isbcr\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\iusbcr\ \var\ \var\ \atomic\ \atomic\ \var \\
-       & \mid & \pmb\issbcr\ \var\ \var\ \atomic\ \atomic\ \var %\\
-       & \mid & \pmb\imul\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iumul\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\ismul\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\imuls\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iumuls\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\ismuls\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\imulr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\iumulr\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\ismulr\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\imull\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iumull\ \var\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\ismull\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\iset\ \var \\
-       & \mid & \pmb\iclear\ \var %\\
-       & \mid & \pmb\inondet\ \var \\
-       & \mid & \pmb\icmov\ \var\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\ishl\ \var\ \atomic\ \const \\
-       & \mid & \pmb\icshl\ \var\ \var\ \atomic\ \atomic\ \const %\\
-       & \mid & \pmb\isplit\ \var\ \var\ \atomic\ \const \\
-       & \mid & \pmb\iand\ \var\ \atomic\ \atomic %\\
-       & \mid & \pmb\ior\ \var\ \atomic\ \atomic \\
-       & \mid & \pmb\inot\ \var\ \atomic %\\
-       & \mid & \pmb\iassert\ \pred \\
-       & \mid & \pmb\iassume\ \pred %\\
-       & \mid & \pmb\icut\ \predclause \\
-       & \mid & \pmb\iecut\ \epredclause %\\
-       & \mid & \pmb\ircut\ \rpredclause \\
-       & \mid & \pmb\ighost\ \varseq\ \pmb{:}\ \pred %\\
-       & \mid & \pmb\icall\ \id\ \pmb{(}\ [ \atomic\ \{\pmb{,}\ \atomic \} ]\ \pmb{)} \\
-       & \mid & \pmb\inop
-\end{array}
-\]
-
-An \emph{algebraic expression} is evaluated over $\Sigma$.
+An \emph{algebraic expression} is evaluated over $\mZ$.
 \[
 \begin{array}{rclcl}
 \eexp &  ::= & \simpleconst %\\
@@ -276,101 +294,285 @@ An \emph{algebraic expression} is evaluated over $\Sigma$.
       & \mid & \eexp\ \pmb{-}\ \eexp %\\
       & \mid & \eexp\ \pmb{*}\ \eexp \\
       & \mid & \eexp\ \pmb{**}\ \eexp %\\
-      & \mid & \pmb\ilimbs\ \const\ \pmb{[}\ \eexp\ \{\pmb{,}\ \eexp\}\ \pmb{]} \\
+      & \mid & \pmb\ilimbs\ \const\ \pmb{[}\ \eexp_{\pmb,}^+\ \pmb{]} \\
       & \mid & \pmb{(}\ \eexp\ \pmb{)}
 \end{array}
 \]
+$\ilimbs\ n\ [e_1, \ldots, e_m ]$ represents $e_1 + e_2 2^n + e_3
+2^{2n} + \cdots + e_m 2^{mn}$.
 A \emph{range expression} is evaluated over bit vectors.
+$\iconst\ w\ n$ is a bit-vector of width $w$ and value $n$.
+$\negop$ ($\ineg$) is logical negation.
+$\notop$ ($\inot$), $\andop$ ($\iand$), $\orop$ ($\ior$), $\xorop$ ($\ixor$) are respectively bit-wise
+negation, bit-wise AND, bit-wise OR, and bit-wise XOR.
+$\iumod$ is unsigned remainder.
+$\isrem$ is 2's complement signed remainder (sign follows dividend).
+$\ismod$ is 2's complement signed remainder (sign follows divisor).
+$\iuext$ and $\isext$ are respectively unsigned and signed extension
+operations.
 \[
 \begin{array}{rclcl}
-\rexp &  ::= & \pmb\iconst\ \const\ \const %\\
-      & \mid & \pmb{-}\ \rexp \\
-      & \mid & \rexp\ \pmb\addop\ \rexp %\\
-      & \mid & \rexp\ \pmb\subop\ \rexp \\
-      & \mid & \rexp\ \pmb\mulop\ \rexp %\\
-      & \mid & \pmb\negop\ \rexp \\
-      & \mid & \pmb\notop\ \rexp %\\
-      & \mid & \rexp\ \pmb\andop\ \rexp \\
-      & \mid & \rexp\ \pmb\orop\ \rexp %\\
-      & \mid & \rexp\ \pmb\xorop\ \rexp \\
-      & \mid & \pmb\iumod\ \rexp\ \rexp %\\
-      & \mid & \pmb\isrem\ \rexp\ \rexp \\
-      & \mid & \pmb\ismod\ \rexp\ \rexp %\\
-      & \mid & \pmb\iext\ \rexp\ \const \\
-      & \mid & \pmb\ilimbs\ \const\ \pmb{[}\ \rexp\ \{\pmb{,}\ \rexp\}\ \pmb{]} %\\
-      & \mid & \pmb{(}\ \rexp\ \pmb{)}
+  \rexp &  ::= & \pmb{(}\ \rexp\ \pmb{)}
+  & \mid & \pmb\iconst\ \const\ \const \\
+        & \mid & \pmb{-}\ \rexp
+  & \mid & \rexp\ \pmb\addop\ \rexp \\
+        & \mid & \rexp\ \pmb\subop\ \rexp
+  & \mid & \rexp\ \pmb\mulop\ \rexp \\
+        & \mid & \pmb\negop\ \rexp
+  & \mid & \pmb\ineg\ \rexp \\
+        & \mid & \pmb\notop\ \rexp
+  & \mid & \pmb\inot\ \rexp \\
+        & \mid & \rexp\ \pmb\andop\ \rexp
+  & \mid & \pmb\iand\ \rexp\ \rexp \\
+        & \mid & \rexp\ \pmb\orop\ \rexp
+  & \mid & \pmb\ior\ \rexp\ \rexp \\
+        & \mid & \rexp\ \pmb\xorop\ \rexp
+  & \mid & \pmb\ixor\ \rexp\ \rexp \\
+        & \mid & \pmb\iumod\ \rexp\ \rexp
+  & \mid & \pmb\isrem\ \rexp\ \rexp \\
+        & \mid & \pmb\ismod\ \rexp\ \rexp
+  & \mid & \pmb\ilimbs\ \const\ \pmb[\ \rexp_{\pmb,}^+\ \pmb] \\
+        & \mid & \pmb\iuext\ \rexp\ \const
+  & \mid & \pmb\isext\ \rexp\ \const \\
 \end{array}
 \]
 
 A \emph{predicate} is represented by an algebraic predicate and a range predicate.
 \[
 \begin{array}{rclcl}
-\pred &  ::= & \true %\\
-      & \mid & \epred\ \pmb{\&\&}\ \rpred
+\pred &  ::= & \pmb\true
+      & \mid & \epred\ \pmb\band\ \rpred
 \end{array}
 \]
-An \emph{algebraic predicate} specifies the equalities (possibly modular a number) between variables.
+An \emph{algebraic predicate} is evaluated over the integer domain.
+$e_1 = e_2$ ($\ieq\ e_1\ e_2$) is an equality over algebraic
+expressions.
+$e_1 = e_2\ (\imod\ e_3)$ ($\ieqmod\ e_1\ e_2\ e_3$) is a modular equality.
+$p_1\ \landop\ p_2$ ($\iand\ p_1\ p_2$) is a logical conjunction of
+$p_1$ and $p_2$.
+The conjunction of a sequence of algebraic predicates $e_1, \ldots,
+e_n$ is written as $\landop\ [e_1, \ldots, e_n]$ ($\iand\ [e_1, \ldots,
+e_n]$).
 \[
 \begin{array}{rclcl}
-\epred &  ::= & \true %\\
-       & \mid & \eexp\ \pmb\eqop\ \eexp \\
-       & \mid & \eexp\ \pmb\eqop\ \eexp\ \pmb(\ \imod\ \eexp\ \pmb) %\\
-       & \mid & \epred\ \pmb{\landop} \epred\\
-       & \mid & \pmb{\landop}\ \pmb{[}\ \epred\ \{\pmb{,}\ \epred\}\ \pmb{]} %\\
-       & \mid & \pmb{(}\ \epred\ \pmb{)} \\
+  \epred &  ::= & \pmb(\ \epred\ \pmb)
+  & \mid & \pmb\true \\
+         & \mid & \eexp\ \pmb\eqop\ \eexp
+  & \mid & \pmb\ieq\ \eexp\ \eexp \\
+         & \mid & \eexp\ \pmb\eqop\ \eexp\ \pmb(\ \pmb\imod\ \eexp\ \pmb)
+  & \mid & \pmb\ieqmod\ \eexp\ \eexp\ \eexp \\
+         & \mid & \epred\ \pmb\landop\ \epred
+  & \mid & \pmb\iand\ \epred\ \epred \\
+         & \mid & \pmb\landop\ \pmb[\ \epred_{\pmb,}^+\ \pmb]
+  & \mid & \pmb\iand\ \pmb[\ \epred_{\pmb,}^+\ \pmb] \\
 \end{array}
 \]
 A \emph{range predicate} specifies the ranges of variables.
+\cryptoline offers comparisons such as equality ($\eqop$), modular
+equalities ($\iequmod$, $\ieqsmod$, $\ieqsrem$), unsigned less than
+($\ultop$), unsigned less than or equal to ($\uleop$), unsigned
+greater than ($\ugtop$), unsigned greater than or equal to ($\ugeop$),
+signed less than ($\sltop$), signed less than or equal to ($\sleop$),
+signed greater than ($\sgtop$), and signed greater than or equal to
+($\sgeop$).
 \[
 \begin{array}{rclcl}
-\rpred &  ::= & \true %\\
-       & \mid & \rexp\ \pmb\eqop\ \rexp \\
-       & \mid & \rexp\ \pmb\eqop\ \rexp\ \pmb(\ \imod\ \rexp\ \pmb) %\\
-       & \mid & \rexp\ \pmb\ultop\ \rexp \\
-       & \mid & \rexp\ \pmb\uleop\ \rexp %\\
-       & \mid & \rexp\ \pmb\ugtop\ \rexp \\
-       & \mid & \rexp\ \pmb\ugeop\ \rexp %\\
-       & \mid & \rexp\ \pmb\sltop\ \rexp \\
-       & \mid & \rexp\ \pmb\sleop\ \rexp %\\
-       & \mid & \rexp\ \pmb\sgtop\ \rexp \\
-       & \mid & \rexp\ \pmb\sgeop\ \rexp %\\
-       & \mid & \negop \rpred \\
-       & \mid & \rpred\ \pmb{\landop} \rpred %\\
-       & \mid & \rpred\ \pmb{\lorop} \rpred\\
-       & \mid & \pmb{\landop}\ \pmb{[}\ \rpred\ \{\pmb{,}\ \rpred\}\ \pmb{]} %\\
-       & \mid & \pmb{\lorop}\ \pmb{[}\ \rpred\ \{\pmb{,}\ \rpred\}\ \pmb{]} \\
-       & \mid & \pmb{(}\ \rpred\ \pmb{)}
+  \rpred &  ::= & \pmb{(}\ \rpred\ \pmb{)}
+  & \mid & \pmb\true \\
+         & \mid & \rexp\ \pmb\eqop\ \rexp
+  & \mid & \pmb\ieq\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\eqop\ \rexp\ \pmb(\ \iumod\ \rexp\ \pmb)
+  & \mid & \pmb\iequmod\ \rexp\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\eqop\ \rexp\ \pmb(\ \ismod\ \rexp\ \pmb)
+  & \mid & \pmb\ieqsmod\ \rexp\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\eqop\ \rexp\ \pmb(\ \isrem\ \rexp\ \pmb)
+  & \mid & \pmb\ieqsrem\ \rexp\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\ultop\ \rexp
+  & \mid & \pmb\iult\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\uleop\ \rexp
+  & \mid & \pmb\iule\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\ugtop\ \rexp
+  & \mid & \pmb\iugt\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\ugeop\ \rexp
+  & \mid & \pmb\iuge\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\sltop\ \rexp
+  & \mid & \pmb\islt\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\sleop\ \rexp
+  & \mid & \pmb\isle\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\sgtop\ \rexp
+  & \mid & \pmb\isgt\ \rexp\ \rexp \\
+         & \mid & \rexp\ \pmb\sgeop\ \rexp
+  & \mid & \pmb\isge\ \rexp\ \rexp \\
+         & \mid & \pmb\negop \rpred
+  & \mid & \pmb\ineg \rpred \\
+         & \mid & \rpred\ \pmb{\landop}\ \rpred
+  & \mid & \pmb{\iand}\ \rpred\ \rpred \\
+         & \mid & \rpred\ \pmb{\lorop}\ \rpred
+  & \mid & \pmb{\ior}\ \rpred\ \rpred \\
+         & \mid & \pmb{\landop}\ \pmb{[}\ \rpred_{\pmb,}^+\ \pmb{]}
+  & \mid & \pmb{\iand}\ \pmb{[}\ \rpred_{\pmb,}^+\ \pmb{]} \\
+         & \mid & \pmb{\lorop}\ \pmb{[}\ \rpred_{\pmb,}^+\ \pmb{]}
+  & \mid & \pmb{\ior}\ \pmb{[}\ \rpred_{\pmb,}^+\ \pmb{]}
 \end{array}
 \]
+
+There are numerous \emph{instructions} supported by \cryptoline.
+$\imov\ x\ a$ assigns destination variable $x$ by the value of the
+source atom $a$.
+$\icmov\ x\ c\ a_1\ a_2$ assigns destination variable $x$ by the value of the
+source atom $a_1$ if the condition bit $c$ is $1$, and otherwise by
+the value of the source atom $a_2$.
+$\iadd\ x\ a_1\ a_2$ assigns $x$ by the addition of the source atoms
+$a_1$ and $a_2$.
+Note that $\iadd$ may overflow.
+$\iadds\ c\ x\ a_1\ a_2$ assigns $x$ by the addition of the source atoms
+$a_1$ and $a_2$ with carry bit $c$ set.
+$\iaddr\ c\ x\ a_1\ a_2$ assigns $x$ by the addition of the source atoms
+$a_1$ and $a_2$ with carry bit $c$ reset to $0$.
+$\iadc\ x\ a_1\ a_2 y$ assigns $x$ by the addition of the carry bit $y$
+and the source atoms $a_1$ and $a_2$.
+$\iadcs$ and $\iadcr$ are the same as $\iadc$ except the carry bit is
+respectively set and reset.
+There are also instructions $\isub$ for subtraction; $\isubc$, $\isbc$
+and $isbcs$ for subtraction with carry; $\isubb$, $\isbb$, and
+$\isbbs$ for subtraction with borrow.
+$\imul$, $\imuls$, and $\imulr$ are half multiplication operations.
+The differenace is that $\imuls$ sets the carry bit if the
+multiplication under- or over-flow while $\imulr$ always resets the
+carry bit.
+$\imull$ is full multiplication with results split into high part and
+low part.
+$\imulj$ is also full multiplication without splitting the results.
+$\iset\ x$ assigns the bit variable $x$ by $1$ while $\iclear\ x$
+assigns the bit variable $x$ by $0$.
+$\iand$, $\ior$, $\inot$, and $\ixor$ are bit-wise operations.
+$\iassert$ tells \cryptoline to verify the specified predicate.
+$\iassume$ tells \cryptoline to assume the specified predicate.
+$\icut\ e\ \band\ r$ is an alias of one $\iecut\ e$ followed by a
+$\ircut\ r$.
+For $\iecut$, \cryptoline verifies the specified algebraic predicate
+and starts afresh with the predicate assumed when verifying algebraic
+properties.
+Similarly for $\ircut$, \cryptoline verifies the specified range
+predicate and starts afresh with the predicate assumed when verifying
+range properties.
+$\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined procedure $p$
+with arguments $a_1, a_2, \ldots, a_n$.
+\[
+\begin{array}{rclcl}
+  \instr &  ::= & \pmb\imov\ \lval\ \atom
+  & \mid & \pmb\icmov\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\iadd\ \lval\ \atom\ \atom
+  & \mid & \pmb\iadds\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\iaddr\ \lval\ \lval\ \atom\ \atom
+  & \mid & \pmb\iadc\ \lval\ \atom\ \atom\ \var \\
+         & \mid & \pmb\iadcs\ \lval\ \lval\ \atom\ \atom\ \var
+  & \mid & \pmb\iadcr\ \lval\ \lval\ \atom\ \atom\ \var \\
+         & \mid & \pmb\isub\ \lval\ \atom\ \atom
+  & \mid & \pmb\isubc\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\isubb\ \lval\ \lval\ \atom\ \atom
+  & \mid & \pmb\isubr\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\isbc\ \lval\ \atom\ \atom\ \var
+  & \mid & \pmb\isbcs\ \lval\ \lval\ \atom\ \atom\ \var \\
+         & \mid & \pmb\isbcr\ \lval\ \lval\ \atom\ \atom\ \var
+  & \mid & \pmb\isbb\ \lval\ \atom\ \atom\ \var \\
+         & \mid & \pmb\isbbs\ \lval\ \lval\ \atom\ \atom\ \var
+  & \mid & \pmb\isbbr\ \lval\ \lval\ \atom\ \atom\ \var \\
+         & \mid & \pmb\imul\ \lval\ \atom\ \atom
+  & \mid & \pmb\imuls\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\imulr\ \lval\ \lval\ \atom\ \atom
+  & \mid & \pmb\imull\ \lval\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\imulj\ \lval\ \atom\ \atom
+  & \mid & \pmb\inondet\ \lval \\
+         & \mid & \pmb\iset\ \lval
+  & \mid & \pmb\iclear\ \lval \\
+         & \mid & \pmb\ishl\ \lval\ \atom\ \const
+  & \mid & \pmb\icshl\ \lval\ \lval\ \atom\ \atom\ \const \\
+         & \mid & \pmb\isplit\ \lval\ \lval\ \atom\ \const
+  & \mid & \pmb\ijoin\ \lval\ \lval\ \atom\ \const \\
+         & \mid & \pmb\iand\ \lval\ \atom\ \atom
+  & \mid & \pmb\ior\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\ixor\ \lval\ \atom \atom
+  & \mid & \pmb\inot\ \lval\ \atom \\
+         & \mid & \pmb\iassert\ \pred
+  & \mid & \pmb\iassume\ \pred \\
+  & \mid & \pmb\icut\ \predclause
+         & \mid & \pmb\iecut\ \epredclause \\
+  & \mid & \pmb\ircut\ \rpredclause
+         & \mid & \pmb\ighost\ \tvar_{\pmb,}^+\ \pmb{:}\ \pred \\
+  & \mid & \pmb\icall\ \id\ \pmb{(}\ \atom_{\pmb,}^*\
+           \pmb{)}
+  & \mid & \pmb\inop
+\end{array}
+\]
+Instructions $\iadd$, $\iadds$, $\iaddr$, $\iadc$, $\iadcs$,
+$\iadcr$, $\isub$, $\isubc$, $\isubb$, $\isubr$, $\isbc$, $\isbcs$,
+$\isbcr$, $\isbb$, $\isbbs$, $\isbbr$, $\imul$, $\imuls$, $\imulr$,
+$\imull$, $\imulj$, and $\isplit$ also have specific unsigned and
+signed versions with prefix ``u'' or ``s''.
+For example, $\iuadd$ and $\isadd$ are respectively unsigned and
+signed versions of $\iadd$.
 
 Sometimes a predicate has to be proved with facts that have been cut off.
 \cryptoline offers the specification of hints required to prove a predicate.
 \[
 \begin{array}{rclcl}
-\predclause &  ::= & \true %\\
-            & \mid & \epredclause\ \pmb{\&\&}\ \rpredclause \\
-\epredclause &  ::= & \epred %\\
-             & \mid & \epred\ \pmb\iprove\ \pmb\iwith\ \provewith\ \{\pmb{,}\ \provewith\} \\
-\rpredclause &  ::= & \rpred %\\
-             & \mid & \rpred\ \pmb\iprove\ \pmb\iwith\ \provewith\ \{\pmb{,}\ \provewith\} \\
-\provewith &  ::= & \pmb\precondition %\\
-           & \mid & \pmb\all\ \pmb\cuts \\
-           & \mid & \pmb\all\ \pmb\assumes %\\
-           & \mid & \pmb\all\ \pmb\ghosts \\
+  \predclause &  ::= & \true %\\
+              & \mid & \epredclause\ \pmb{\&\&}\ \rpredclause \\
+  \epredclause &  ::= & \epred %\\
+              & \mid & \epred\ \pmb\iprove\ \pmb\iwith\ \pmb[
+                       \provewith_{\pmb,}^+ \pmb] \\
+              & \mid & \epredclause_{\pmb,}^+ \\
+  \rpredclause &  ::= & \rpred %\\
+              & \mid & \rpred\ \pmb\iprove\ \pmb\iwith\ \pmb[
+                       \provewith_{\pmb,}^+ \pmb]\\
+  & \mid & \rpredclause_{\pmb,}^+ \\
+  \provewith &  ::= & \pmb\precondition %\\
+              & \mid & \pmb\all\ \pmb\cuts \\
+              & \mid & \pmb\all\ \pmb\assumes %\\
+              & \mid & \pmb\all\ \pmb\ghosts \\
+              & \mid & \pmb\cuts\ \pmb[ \mN_{\pmb,}^+ \pmb]
 \end{array}
 \]
+Note that the indices of $\iecut$ and $\ircut$ are numbered separately
+(starting from 0).
+When verifying algebraic properties, $\ircut$ instructions are
+ignored.
+When verifying range properties, $\iecut$ instructions are
+ignored.
+For example, consider the following program.
+\begin{verbatim}
+mov x 15@uint16;
+ecut x = 15;
+mov y 3@uint16;
+cut y = 3 && and [x = 15@16, y = 3@16];
+add z x y;
+rcut z = 18@16;
+\end{verbatim}
+If we want to prove $e\ \provewith\ [\cuts [1]]\ \band\ r\ \provewith\
+[\cuts [1]]$, then $y = 3$ will be assumed when proving the algebraic
+property $e$ while $z = 18@16$ will be assumed when proving the range
+property $r$.
 
-A \emph{procedure} is a parameterized program together with its specification (precondition and postcondition).
+A \emph{procedure} is a parameterized program together with its
+specification (precondition and postcondition).
 \[
-\proc ::= \pmb\proc\ \id\ \pmb{(}\ [\formals]\ \pmb{)} = [\pmb\{\ \pre\ \pmb\}]\ \prog\ [\pmb\{\ \post\ \pmb\}]
+\proc ::= \pmb\proc\ \id\ \pmb{(}\ \formals\ \pmb{)} = \pmb\{\ \pre\ \pmb\}\ \prog\ \pmb\{\ \post\ \pmb\}
 \]
-The \emph{formal parameters} of a procedure are separated (by a semicolon) into \emph{inout} and \emph{out} variables.
+The \emph{formal parameters} of a procedure may be separated by a
+semicolon into \emph{inout} and \emph{out} variables.
 \[
-\formals ::= \varseq\ \pmb{;}\ \varseq
+\formals ::= \tvar_{\pmb,}^* \mid \tvar_{\pmb,}^*\ \pmb{;}\ \tvar_{\pmb,}^*
 \]
-Variables before the semicolon are inout variables while variables after the semicolon are out variables.
-The difference between inout and out variables is that when calling a procedure, actual parameters of the inout formal variables must be defined but this is not required for the actual parameters of the out formal variables.
-However, this does not mean that an out variable can be read before initialized.
+Variables before the semicolon are inout variables while variables
+after the semicolon are out variables.
+Formal parameters without a semicolon are all inout variables.
+The difference between inout and out variables is that when calling a
+procedure, actual parameters of the inout formal variables must be
+defined but this is not required for the actual parameters of the out
+formal variables.
+However, this does not mean that an out variable can be read before
+initialized.
 Every variable must be initialized before reading its value.
 A \emph{precondition} is a predicate.
 \[
@@ -389,11 +591,11 @@ A \emph{statement} is a declaration of a procedure or a named integer.
 \end{array}
 \]
 
-A \emph{program} is a sequence of statements.
+A \emph{program} is a sequence of semicolon separated statements.
 The entry point of the program is the \emph{main} procedure.
 Other procedures called in main are inlined.
 \[
-\prog ::= \stmt\ \{ \stmt \}
+\prog ::= \stmt_{\pmb;}^+
 \]
 
 
