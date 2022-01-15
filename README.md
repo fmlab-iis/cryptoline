@@ -59,7 +59,7 @@ dune uninstall
 Note that Singular and Boolector provided by Ubuntu are pretty old.
 It is recommended to install newer versions of Singular and Boolector.
 Using the scripts install-singular.sh and install-boolector.sh, Singular
-4.3.0 and Boolector 3.2.0 can be installed.
+4.1.3p2 and Boolector 3.2.0 can be installed.
 
 ```
 $ scripts/install-singular.sh
