@@ -443,6 +443,7 @@ carry bit.
 $\imull$ is full multiplication with results split into high part and
 low part.
 $\imulj$ is also full multiplication without splitting the results.
+$\inondet$ assigns a variable by a nondeterministic value.
 $\iset\ x$ assigns the bit variable $x$ by $1$ while $\iclear\ x$
 assigns the bit variable $x$ by $0$.
 $\iand$, $\ior$, $\inot$, and $\ixor$ are bit-wise operations.
@@ -456,6 +457,10 @@ properties.
 Similarly for $\ircut$, \cryptoline verifies the specified range
 predicate and starts afresh with the predicate assumed when verifying
 range properties.
+$\ighost$ can introduce logical variables that must only be used in
+specifications such as $\iassert$, $\iassume$, $\icut$, $\iecut$,
+$\ircut$, and postconditions.
+The predicate in a $\ighost$ instruction is always assumed.
 $\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined procedure $p$
 with arguments $a_1, a_2, \ldots, a_n$.
 \[
