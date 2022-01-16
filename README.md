@@ -47,7 +47,7 @@ $ dune install
 Run the following command to see the available command-line arguments.
 
 ```
-$ cv
+$ cv -help
 ```
 
 To uninstall CryptoLine, run the following command.
