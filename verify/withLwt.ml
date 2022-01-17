@@ -273,14 +273,13 @@ let write_maple_input ifile vars gen p =
     ^ "Ord := plex(" ^ varseq ^ "):\n"
     ^ "B := [" ^ generator ^ "]:\n"
     ^ "g := " ^ poly ^ ":\n"
-    (* maple may hang if B is not a Groebner basis *)
-    (*^ "if member(g, B) or Reduce(g, B, Ord) = 0 then\n"*)
     ^ "if member(g, B) then\n"
-    ^ "  true\n"
+    ^ "  res := true\n"
     ^ "else\n"
-    ^ "  J := Basis(B, Ord):\n"
-    ^ "  Reduce(g, J, Ord) = 0\n"
-    ^ "end if;\n"
+    ^ "  J := PolynomialIdeal(B):\n"
+    ^ "  res := IdealMembership(g, J):\n"
+    ^ "end if:\n"
+    ^ "res;\n"
     ^ "quit:\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
