@@ -1884,14 +1884,15 @@ eexp:
   | eexp MULOP eexp                               { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
   | eexp POWOP const                              { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+                                                      let i = $3 cm in
                                                       match e with
-                                                      | Econst n -> Econst (Z.pow n i)
+                                                      | Econst n ->
+                                                         let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
+                                                         Econst c
                                                       | _ ->
-                                                         (match i with
-                                                          | 0 -> Econst Z.one
-                                                          | 1 -> e
-                                                          | _ -> epow e (Econst (Z.of_int i)))
+                                                         if Z.equal i Z.zero then Econst Z.one
+                                                         else if Z.equal i Z.one then e
+                                                         else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
 ;
@@ -1918,14 +1919,15 @@ eexp_no_unary:
   | eexp_no_unary MULOP eexp                      { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
   | eexp_no_unary POWOP const                     { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+                                                      let i = $3 cm in
                                                       match e with
-                                                      | Econst n -> Econst (Z.pow n i)
+                                                      | Econst n ->
+                                                         let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
+                                                         Econst c
                                                       | _ ->
-                                                         (match i with
-                                                          | 0 -> Econst Z.one
-                                                          | 1 -> e
-                                                          | _ -> epow e (Econst (Z.of_int i)))
+                                                         if Z.equal i Z.zero then Econst Z.one
+                                                         else if Z.equal i Z.one then e
+                                                         else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
 ;
@@ -2788,7 +2790,14 @@ complex_const:
   | complex_const ADDOP complex_const             { fun cm -> Z.add ($1 cm) ($3 cm) }
   | complex_const SUBOP complex_const             { fun cm -> Z.sub ($1 cm) ($3 cm) }
   | complex_const MULOP complex_const             { fun cm -> Z.mul ($1 cm) ($3 cm) }
-  | complex_const POWOP complex_const             { fun cm -> Z.pow ($1 cm) (Z.to_int ($3 cm)) }
+  | complex_const POWOP complex_const             { fun cm ->
+                                                    let n = $1 cm in
+                                                    let i = $3 cm in
+                                                    try
+                                                      Z.pow n (Z.to_int i)
+                                                    with Z.Overflow ->
+                                                      big_pow n i
+                                                  }
 ;
 
 carry:
