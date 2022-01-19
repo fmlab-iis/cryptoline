@@ -4,11 +4,13 @@ val verify_safety_inc :
   (int * Ast.Cryptoline.instr * Qfbv.Std.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option ->
   Common.round_result
+(* Verify assertions of a spec in SSA without considering
+   verify_eacuts and verify_racuts *)
 val verify_assert :
   Common.var_gen -> Ast.Cryptoline.spec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
 val verify_eassert :
-  Common.var_gen -> Ast.Cryptoline.spec -> 
+  Common.var_gen -> Ast.Cryptoline.spec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
 val verify_rassert :
   Common.var_gen -> Ast.Cryptoline.spec ->

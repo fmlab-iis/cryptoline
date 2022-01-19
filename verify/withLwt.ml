@@ -7,41 +7,6 @@ open Qfbv.WithLwt
 open Common
 (* open Lwt.Infix *)
 
-let apply_to_cuts_lwt cuts_ref f def combine ss =
-  let rec helper res i ss =
-    match ss with
-    | [] -> res
-    | hd::tl ->
-       match !cuts_ref with
-       | Some cuts when not (List.mem i cuts) ->
-          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-          helper res (i+1) tl
-       | _ ->
-          let cut_header = ("== Cut #" ^ string_of_int i ^ " ==") in
-          let res = List.fold_left (fun res s -> combine res (fun () -> f cut_header s)) res hd in
-          combine res (fun () -> helper res (i+1) tl) in
-  helper def 0 ss
-
-let rec flatten_espec s =
-  match s.espost with
-  | Eand (e1, e2) ->
-     let res1 = flatten_espec { espre = s.espre; esprog = s.esprog;
-                                espost = e1; espwss = s.espwss } in
-     let res2 = flatten_espec { espre = s.espre; esprog = s.esprog;
-                                espost = e2; espwss = s.espwss } in
-     res1@res2
-  | _ -> [s]
-
-let rec flatten_rspec s =
-  match s.rspost with
-  | Rand (e1, e2) ->
-     let res1 = flatten_rspec { rspre = s.rspre; rsprog = s.rsprog;
-                                rspost = e1; rspwss = s.rspwss } in
-     let res2 = flatten_rspec { rspre = s.rspre; rsprog = s.rsprog;
-                                rspost = e2; rspwss = s.rspwss } in
-     res1@res2
-  | _ -> [s]
-
 let work_on_pending delivered_helper res pending =
   let (delivered, promised) = Lwt_main.run (Lwt.nchoose_split pending) in
   let res' = List.fold_left delivered_helper res delivered in
@@ -53,6 +18,45 @@ let rec finish_pending delivered_helper res pending =
   | _ -> let (res', pending') = work_on_pending delivered_helper res pending in
          finish_pending delivered_helper res' pending'
 
+let apply_to_cuts_lwt ids f delivered_helper res pending ss =
+  let ids = Option.map (List.map (normalize_index (List.length ss))) ids in
+  let rec helper i (res, pending) ss =
+    match ss with
+    | [] -> finish_pending delivered_helper res pending
+    | hd::tl ->
+       begin
+         match ids with
+         | Some ids when not (List.mem i ids) ->
+            let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
+            helper (i+1) (res, pending) tl
+         | _ ->
+            let cut_header = ("== Cut #" ^ string_of_int i ^ " ==") in
+            let (res, pending) = List.fold_left (f cut_header) (res, pending) hd in
+            helper (i+1) (res, pending) tl
+       end in
+  helper 0 (res, pending) ss
+
+let rec split_espec_post s =
+  match s.espost with
+  | Eand (e1, e2) ->
+     let res1 = split_espec_post { espre = s.espre; esprog = s.esprog;
+                                espost = e1; espwss = s.espwss } in
+     let res2 = split_espec_post { espre = s.espre; esprog = s.esprog;
+                                espost = e2; espwss = s.espwss } in
+     res1@res2
+  | _ -> [s]
+
+let rec split_rspec_post s =
+  match s.rspost with
+  | Rand (e1, e2) ->
+     let res1 = split_rspec_post { rspre = s.rspre; rsprog = s.rsprog;
+                                rspost = e1; rspwss = s.rspwss } in
+     let res2 = split_rspec_post { rspre = s.rspre; rsprog = s.rsprog;
+                                rspost = e2; rspwss = s.rspwss } in
+     res1@res2
+  | _ -> [s]
+
+(* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_inc timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
     let header = ["= Verifying safety condition =";
@@ -511,7 +515,7 @@ let verify_rspec_assert_no_rcut header s hashopt =
            { rspre = s.rspre; rsprog = s.rsprog; rspost = e1;
              rspwss = s.rspwss } in
        if r1 then
-         let%lwt r2 = 
+         let%lwt r2 =
            verify_ands cut_header
              { rspre = s.rspre; rsprog = s.rsprog; rspost = e2;
                rspwss = s.rspwss } in
@@ -532,14 +536,14 @@ let verify_espec_assert_no_ecut header vgen s hashopt =
     let (_, entailments) = polys_of_espec vgen s in
     Lwt_list.for_all_p
       (fun (post, vars, ideal, p) ->
-        let eheader = ["algebraic condition: " ^ string_of_ebexp post;
-                       "Try #0"] in
+        let eheader = ["= algebraic condition: " ^ string_of_ebexp post;
+                       "Try #0 ="] in
         let%lwt r = is_in_ideal (cut_header@eheader) vars [] p in
         if r then
           Lwt.return_true
         else
-          let eheader = ["algebraic condition: " ^ string_of_ebexp post;
-                         "Try #1"] in
+          let eheader = ["= algebraic condition: " ^ string_of_ebexp post;
+                         "Try #1 ="] in
           let%lwt r = is_in_ideal (cut_header@eheader) vars ideal p in
           Lwt.return r) entailments in
   let rec verify_ands cut_header vgen s hashopt =
@@ -567,77 +571,57 @@ let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
   let delivered_helper res (r, _e) = res && r in
-  let mk_promise i epre evisited e =
-    let header = ["=== Checking algebraic assertion in ecut #" ^ string_of_int i ^ ": " ^
-                    Ast.Cryptoline.string_of_bexp e ^ " ==="] in
+  let mk_promise cut_header epre evisited e =
+    let header = cut_header::["= Checking algebraic assertion: " ^
+                                Ast.Cryptoline.string_of_bexp e ^ " ="] in
     let%lwt e_res =
       verify_espec_assert_no_ecut header vgen
         (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt in
     Lwt.return (e_res, e) in
-  let rec verify i res pending epre evisited p =
-    if res then
-      if List.length pending < !jobs then
-        match p with
-        | [] ->
-           finish_pending delivered_helper res pending
-        | Iassert e::tl ->
-           begin
-             match !verify_eacuts with
-             | Some cuts when not (List.mem i cuts) ->
-                let _ = trace ("== Skip algebraic assertions in ecut #" ^ string_of_int i ^ " ==") in
-                verify i res pending epre evisited tl
-             | _ ->
-                let promise = mk_promise i epre evisited e in
-                verify i res (promise::pending) epre evisited tl
-           end
-        | Icut ([], _)::tl -> verify i res pending epre evisited tl
-        | Icut (ecuts, _)::tl -> verify (i+1) res pending (eands (fst (List.split ecuts))) [] tl
-        | hd::tl ->
-           verify i res pending epre (hd::evisited) tl
+  let verify_spec cut_header (res, pending) s =
+    let rec verify_program (res, pending) epre evisited p =
+      if res then
+        if List.length pending < !jobs then
+          match p with
+          | [] -> (res, pending)
+          | Iassert e::tl -> let promise = mk_promise cut_header epre evisited e in
+                             verify_program (res, promise::pending) epre evisited tl
+          | hd::tl -> verify_program (res, pending) epre (hd::evisited) tl
+        else
+          let (res', promised) = work_on_pending delivered_helper res pending in
+          verify_program (res', promised) epre evisited p
       else
-        let (res', promised) =
-          work_on_pending delivered_helper res pending in
-        verify i res' promised epre evisited p
-    else
-      finish_pending delivered_helper res pending in
-  verify 0 true [] (eqn_bexp s.spre) [] s.sprog
+        (res, pending) in
+    verify_program (res, pending) s.espre [] s.esprog in
+  apply_to_cuts_lwt !verify_eacuts verify_spec delivered_helper true [] (cut_espec (espec_of_spec s))
 
 let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let delivered_helper res (r, _e) = res && r in
-  let mk_promise i rpre rvisited e =
-    let header = ["=== Checking range assertion in rcut #" ^ string_of_int i  ^ ": " ^
-                    Ast.Cryptoline.string_of_bexp e ^ " ==="] in
+  let mk_promise cut_header rpre rvisited e =
+    let header = cut_header::["= Checking range assertion: " ^
+                                Ast.Cryptoline.string_of_bexp e ^ " ="] in
     let%lwt r_res =
       verify_rspec_assert_no_rcut header
         (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     Lwt.return (r_res, e) in
-  let rec verify i res pending rpre rvisited p =
-    if res then
-      if List.length pending < !jobs then
-        match p with
-        | [] -> finish_pending delivered_helper res pending
-        | Iassert e::tl ->
-           begin
-             match !verify_racuts with
-             | Some cuts when not (List.mem i cuts) ->
-                let _ = trace ("== Skip range assertions in rcut #" ^ string_of_int i ^ " ==") in
-                verify i res pending rpre rvisited tl
-             | _ ->
-                let promise = mk_promise i rpre rvisited e in
-                verify i res (promise::pending) rpre rvisited tl
-           end
-        | Icut (_, [])::tl -> verify i res pending rpre rvisited tl
-        | Icut (_, rcuts)::tl -> verify (i+1) res pending (rands (fst (List.split rcuts))) [] tl
-        | hd::tl ->
-           verify i res pending rpre (hd::rvisited) tl
+  let verify_spec cut_header (res, pending) s =
+    let rec verify_program (res, pending) rpre rvisited p =
+      if res then
+        if List.length pending < !jobs then
+          match p with
+          | [] -> (res, pending)
+          | Iassert e::tl -> let promise = mk_promise cut_header rpre rvisited e in
+                             verify_program (res, promise::pending) rpre rvisited tl
+          | hd::tl -> verify_program (res, pending) rpre (hd::rvisited) tl
+        else
+          let (res', promised) = work_on_pending delivered_helper res pending in
+          verify_program (res', promised) rpre rvisited p
       else
-        let (res', promised) = work_on_pending delivered_helper res pending in
-        verify i res' promised rpre rvisited p
-    else
-      finish_pending delivered_helper res pending in
-  verify 0 true [] (rng_bexp s.spre) [] s.sprog
+        (res, pending) in
+    verify_program (res, pending) s.rspre [] s.rsprog in
+  apply_to_cuts_lwt !verify_racuts verify_spec delivered_helper true [] (cut_rspec (rspec_of_spec s))
 
 let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
@@ -707,23 +691,22 @@ let verify_rspec s hashopt =
     if !apply_slicing then verify_one cut_header (slice_rspec_ssa s hashopt)
     else verify_one cut_header s in
   let delivered_helper res r = res && r in
-  let verify_ands cut_header s =
-    let rec verify_ands_helper ss res pending =
+  let verify_ands cut_header (res, pending) s =
+    let rec verify_ands_helper (res, pending) ss =
       if res then
         if List.length pending < !jobs then
           match ss with
-          | [] -> finish_pending delivered_helper res pending
+          | [] -> (res, pending)
           | hd::tl -> let promise = mk_promise cut_header hd in
-                      verify_ands_helper tl res (promise::pending)
+                      verify_ands_helper (res, promise::pending) tl
         else
-          let (res', pending') =
-            work_on_pending delivered_helper res pending in
-          verify_ands_helper ss res' pending'
+          let (res', pending') = work_on_pending delivered_helper res pending in
+          verify_ands_helper (res', pending') ss
       else
-        finish_pending delivered_helper res pending in
-    let ss = flatten_rspec s in
-    verify_ands_helper ss true [] in
-  apply_to_cuts_lwt verify_rcuts verify_ands true (fun res cont -> if res then cont() else res) (cut_rspec s)
+        (res, pending) in
+    let ss = split_rspec_post s in
+    verify_ands_helper (res, pending) ss in
+  apply_to_cuts_lwt !verify_rcuts verify_ands delivered_helper true [] (cut_rspec s)
 
 let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specification =====" in
@@ -731,12 +714,12 @@ let verify_espec vgen s hashopt =
     let (_, entailments) = polys_of_espec vgen s in
     Lwt_list.for_all_p
       (fun (post, vars, ideal, p) ->
-        let header = ["algebraic condition: " ^ string_of_ebexp post;
-                      "Try #0"] in
+        let header = ["= algebraic condition: " ^ string_of_ebexp post;
+                      "Try #0 ="] in
         let%lwt r = is_in_ideal (cut_header::header) vars [] p in
         if r then Lwt.return_true
-        else let header = ["algebraic condition: " ^ string_of_ebexp post;
-                           "Try #1"] in
+        else let header = ["= algebraic condition: " ^ string_of_ebexp post;
+                           "Try #1 ="] in
              let%lwt r = is_in_ideal (cut_header::header) vars ideal p in
              Lwt.return r) entailments in
   let rec ebexp_implies_espost e espost =
@@ -758,24 +741,23 @@ let verify_espec vgen s hashopt =
        then verify_one cut_header vgen (slice_espec_ssa s hashopt)
        else verify_one cut_header vgen s) in
   let delivered_helper res r = res && r in
-  let verify_ands vgen cut_header s =
-    let rec verify_and_helper vgen ss res pending =
+  let verify_ands vgen cut_header (res, pending) s =
+    let rec verify_and_helper vgen (res, pending) ss =
       if res then
         if List.length pending < !jobs then
           match ss with
-          | [] -> finish_pending delivered_helper res pending
+          | [] -> (res, pending)
           | hd::tl ->
              let promise = mk_promise cut_header hd in
-             verify_and_helper vgen tl res (promise::pending)
+             verify_and_helper vgen (res, promise::pending) tl
         else
-          let (res', pending') =
-            work_on_pending delivered_helper res pending in
-          verify_and_helper vgen ss res' pending'
+          let (res', pending') = work_on_pending delivered_helper res pending in
+          verify_and_helper vgen (res', pending') ss
       else
-        finish_pending delivered_helper res pending in
-    let ss = flatten_espec s in
-    verify_and_helper vgen ss true [] in
-  apply_to_cuts_lwt verify_ecuts (verify_ands vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
+        (res, pending) in
+    let ss = split_espec_post s in
+    verify_and_helper vgen (res, pending) ss in
+  apply_to_cuts_lwt !verify_ecuts (verify_ands vgen) delivered_helper true [] (cut_espec s)
 
 type cli_round_result =
   Solved of result
@@ -846,6 +828,7 @@ let run_cli_vsafety id timeout idx instr ifile =
               | "timeout" -> (id, timeout, idx, instr, "[TIMEOUT]", Unfinished [(id, timeout, idx, instr)])
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
+(* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_cli f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
@@ -901,43 +884,32 @@ let verify_safety_cli f p =
  * s: a range or an algebraic specification
  * run_cli_verify: a function that verifies an atomic predicate
  * header_gen: a function that generats the header output to the log for some cut
- * flatten_spec: a function that flattens the specification
+ * flatten_spec: a function that converts a specification (containing no cut) into verification
+ *               targets (in the form of specifications). For example, to verify algebraic
+ *               assertions, convert a specifiction into several specifications where a post-condition
+ *               corresponds to an algebraic property in an assertion.
  * cut_spec: a function that cuts the input specification
  * verify_cuts: a list option specifying the indices of cuts to be verified
  *)
 let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cuts =
   let delivered_helper res r = res && r in
-  let rec verify_ands i ss (res, pending) =
-    if res then
-      if List.length pending < !jobs then
-        match ss with
-        | [] -> (res, pending)
-        | hd::tl ->
-           let promise = run_cli_verify (header_gen i) hd in
-           verify_ands i tl (res, promise::pending)
-      else
-        let (res', pending') = work_on_pending delivered_helper res pending in
-        verify_ands i ss (res', pending')
+  let verify_ands cut_header (res, pending) s =
+    let rec verify_ands_helper (res, pending) ss =
+      if res then
+        if List.length pending < !jobs then
+          match ss with
+          | [] -> (res, pending)
+          | hd::tl ->
+             let promise = run_cli_verify (header_gen cut_header) hd in
+             verify_ands_helper (res, promise::pending) tl
+        else
+          let (res', pending') = work_on_pending delivered_helper res pending in
+          verify_ands_helper (res', pending') ss
     else
       (res, pending) in
-  let rec verify_rec i ss (res, pending) =
-    match ss with
-    | [] -> (res, pending)
-    | hd::tl ->
-       if res then
-         begin
-           match verify_cuts with
-           | Some cuts when not (List.mem i cuts) ->
-              let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-              verify_rec (i+1) tl (res, pending)
-           | _ ->
-              let (res', pending') = verify_ands i (List.flatten (List.map flatten_spec hd)) (res, pending) in
-              verify_rec (i+1) tl (res', pending')
-         end
-       else
-         (res, pending) in
-  let (res, pending) = verify_rec 0 (cut_spec s) (true, []) in
-  finish_pending delivered_helper res pending
+    let ss = flatten_spec s in
+    verify_ands_helper (res, pending) ss in
+  apply_to_cuts_lwt verify_cuts verify_ands delivered_helper true [] (cut_spec s)
 
 (* Run CLI to verify an espec (no conjunction in the postcondition). *)
 let run_cli_vespec header s =
@@ -1017,8 +989,8 @@ let run_cli_vespec header s =
 let verify_espec_cli s =
   let _ = trace "===== Verifying algebraic specification =====" in
   verify_spec_cli s
-                  run_cli_vespec (fun cutno -> "== Algebraic Specification at Cut #" ^ string_of_int cutno ^ " ==")
-                  flatten_espec cut_espec !verify_ecuts
+                  run_cli_vespec (fun cut_header -> cut_header ^ "\n\n= Algebraic Specification =")
+                  split_espec_post cut_espec !verify_ecuts
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition). *)
 let run_cli_vrspec header s =
@@ -1081,62 +1053,40 @@ let run_cli_vrspec header s =
 let verify_rspec_cli s _ =
   let _ = trace "===== Verifying range specification =====" in
   verify_spec_cli s
-                  run_cli_vrspec (fun cutno -> "== Range Specification at Cut #" ^ string_of_int cutno ^ " ==")
-                  flatten_rspec cut_rspec !verify_rcuts
+                  run_cli_vrspec (fun cut_header -> cut_header ^ "\n\n= Range Specification =")
+                  split_rspec_post cut_rspec !verify_rcuts
 
 let verify_eassert_cli s =
   let _ = trace "===== Verifying algebraic assertions =====" in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify i epre evisited p =
-    match p with
-    | [] -> true
-    | Iassert e::tl ->
-       begin
-         match !verify_eacuts with
-         | Some cuts when not (List.mem i cuts) ->
-            verify i epre evisited tl
-         | _ ->
-            let verifiers = List.flatten [
-                                (match eqn_bexp e with
-                                 | Etrue -> []
-                                 | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
-                                                     run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     flatten_espec cut_espec None]);
-                                [fun () -> verify i epre evisited tl]
-                              ] in
-            List.for_all (fun f -> f()) verifiers
-       end
-    | Icut ([], _)::tl -> verify i epre evisited tl
-    | Icut (ecuts, _)::tl -> verify (i+1) (eands (fst (List.split ecuts))) [] tl
-    | hd::tl -> verify i epre (hd::evisited) tl in
-  verify 0 (eqn_bexp s.spre) [] s.sprog
+  let flatten_assertions s =
+    let rec flatten_helper res_rev epre evisited_rev p =
+      match p with
+      | [] -> List.rev res_rev
+      | Iassert e::tl ->
+         let ss = split_espec_post (mkespec epre (List.rev evisited_rev) (eqn_bexp e)) in
+         flatten_helper (List.rev_append ss res_rev) epre evisited_rev tl
+      | hd::tl -> flatten_helper res_rev epre (hd::evisited_rev) tl in
+    flatten_helper [] s.espre [] s.esprog in
+  verify_spec_cli (espec_of_spec s)
+    run_cli_vespec (fun cut_header -> cut_header ^ "\n\n= Algebraic Assertion =")
+    flatten_assertions cut_espec !verify_eacuts
 
 let verify_rassert_cli s =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
-  let rec verify i rpre rvisited p =
-    match p with
-    | [] -> true
-    | Iassert e::tl ->
-       begin
-         match !verify_racuts with
-         | Some cuts when not (List.mem i cuts) ->
-            verify i rpre rvisited tl
-         | _ ->
-            let verifiers = List.flatten [
-                                (match rng_bexp e with
-                                 | Rtrue -> []
-                                 | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
-                                                     run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     flatten_rspec cut_rspec None]);
-                                [fun () -> verify i rpre rvisited tl]
-                              ] in
-            List.for_all (fun f -> f()) verifiers
-       end
-    | Icut (_, [])::tl -> verify i rpre rvisited tl
-    | Icut (_, rcuts)::tl -> verify (i+1) (rands (fst (List.split rcuts))) [] tl
-    | hd::tl -> verify i rpre (hd::rvisited) tl in
-  verify 0 (rng_bexp s.spre) [] s.sprog
+  let flatten_assertions s =
+    let rec flatten_helper res_rev rpre rvisited_rev p =
+      match p with
+      | [] -> List.rev res_rev
+      | Iassert e::tl ->
+         let ss = split_rspec_post (mkrspec rpre (List.rev rvisited_rev) (rng_bexp e)) in
+         flatten_helper (List.rev_append ss res_rev) rpre rvisited_rev tl
+      | hd::tl -> flatten_helper res_rev rpre (hd::rvisited_rev) tl in
+    flatten_helper [] s.rspre [] s.rsprog in
+  verify_spec_cli (rspec_of_spec s)
+    run_cli_vrspec (fun cut_header -> cut_header ^ "\n\n= Algebraic Assertion =")
+    flatten_assertions cut_rspec !verify_racuts
 
 let verify_assert_cli s =
   let _ = trace "===== Verifying assertions =====" in
@@ -1155,7 +1105,7 @@ let verify_assert_cli s =
                                  | Rtrue -> []
                                  | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
                                                      run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     flatten_rspec cut_rspec None])
+                                                     split_rspec_post cut_rspec None])
                            end;
                            begin
                              match !verify_eacuts with
@@ -1165,7 +1115,7 @@ let verify_assert_cli s =
                                  | Etrue -> []
                                  | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
                                                      run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     flatten_espec cut_espec None])
+                                                     split_espec_post cut_espec None])
                            end;
                            [fun () -> verify (ei, ri) (epre, rpre) (evisited, rvisited) tl]
                          ] in

@@ -1749,7 +1749,7 @@ bexp_prove_with_list:
 ebexp_prove_with:
   ebexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
 | ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
 | ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | ebexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | ebexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
@@ -1758,7 +1758,7 @@ ebexp_prove_with:
 rbexp_prove_with:
   rbexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
 | rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
 | rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
@@ -1778,16 +1778,16 @@ bexp_prove_with:
 ;
 
 prove_with_specs:
-    prove_with_spec                               { [$1] }
-  | prove_with_spec COMMA prove_with_specs        { $1::$3 }
+    prove_with_spec                               { fun cm -> [$1 cm] }
+  | prove_with_spec COMMA prove_with_specs        { fun cm -> ($1 cm)::($3 cm) }
 ;
 
 prove_with_spec:
-    PRECONDITION                                  { Precondition }
-  | CUTS LSQUARE num_list RSQUARE                 { Cuts $3 }
-  | ALL CUTS                                      { AllCuts }
-  | ALL ASSUMES                                   { AllAssumes }
-  | ALL GHOSTS                                    { AllGhosts }
+    PRECONDITION                                  { fun _ -> Precondition }
+  | CUTS LSQUARE complex_const_list RSQUARE       { fun cm -> Cuts ($3 cm) }
+  | ALL CUTS                                      { fun _ -> AllCuts }
+  | ALL ASSUMES                                   { fun _ -> AllAssumes }
+  | ALL GHOSTS                                    { fun _ -> AllGhosts }
 ;
 
 bexp:
@@ -2764,9 +2764,9 @@ gvar:
                                                   }
 ;
 
-num_list:
-    NUM                                           { [Z.to_int $1] }
-  | NUM COMMA num_list                            { (Z.to_int $1)::$3 }
+complex_const_list:
+    complex_const                                 { fun cm -> [Z.to_int ($1 cm)] }
+  | complex_const COMMA complex_const_list        { fun cm -> (Z.to_int ($1 cm))::($3 cm) }
 
 const:
     simple_const                                  { fun cm -> $1 cm }

@@ -1227,7 +1227,7 @@ let vars_in_appearing_order cmp es =
     List.rev_map
       (fun freq_vs -> List.map fst (List.sort mycmp freq_vs)) freq_vss in
   List.flatten (List.rev rev_sorted_vss)
-  
+
 let vars_in_lex_order es =
   VS.elements (List.fold_left (fun res e -> VS.union res (vars_eexp e)) VS.empty es)
 

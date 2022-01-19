@@ -569,3 +569,6 @@ val separate_assertions : spec -> spec list
 val move_asserts : spec -> spec
 val spec_to_coq_cryptoline : spec -> spec list
 val infer_input_variables : spec -> VS.t
+
+val normalize_index : int -> int -> int
+val normalize_spec : spec -> spec
