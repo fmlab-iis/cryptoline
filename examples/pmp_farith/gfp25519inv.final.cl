@@ -288,6 +288,18 @@ mov L0x7fffffffdef8 rsi;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
 
+ghost X2@uint256 : and [
+     eq X2 (limbs 64 [L0x7fffffffdee0, L0x7fffffffdee8, L0x7fffffffdef0, L0x7fffffffdef8])
+     ] && true;
+
+cut
+    and [
+     eqmod X2
+     	   (X1**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 
 
 # /* 2 */  gfp25519sqr(&t,&z2);
@@ -526,6 +538,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X4@uint256 : and [
+     eq X4 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X4
+     	   (X2**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 
 
@@ -768,6 +792,18 @@ mov L0x7fffffffded8 rsi;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
 
+ghost X8@uint256 : and [
+     eq X8 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X8
+     	   (X4**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 
 
 #         /* 8  */ gfp25519mul(&z9,&t,e);
@@ -995,6 +1031,18 @@ mov L0x7fffffffdf18 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X9@uint256 : and [
+     eq X9 (limbs 64 [L0x7fffffffdf00, L0x7fffffffdf08, L0x7fffffffdf10, L0x7fffffffdf18])
+     ] && true;
+
+cut
+    and [
+     eqmod X9
+     	   (mul X8 X1)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 
 
 #  /* 9  */ gfp25519mul(&z11,&z9,&z2);
@@ -1220,6 +1268,18 @@ mov L0x7fffffffdf38 r11;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
+
+ghost X11@uint256 : and [
+     eq X11 (limbs 64 [L0x7fffffffdf20, L0x7fffffffdf28, L0x7fffffffdf30, L0x7fffffffdf38])
+     ] && true;
+
+cut
+    and [
+     eqmod X11
+     	   (mul X9 X2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 
 
@@ -1461,6 +1521,18 @@ mov L0x7fffffffded8 rsi;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
 
+ghost X22@uint256 : and [
+     eq X22 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X22
+     	   (X11**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 
 
 #       /* 22 */ gfp25519mul(&z2_5_0,&t,&z9);
@@ -1687,6 +1759,18 @@ mov L0x7fffffffdf58 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X31@uint256 : and [
+     eq X31 (limbs 64 [L0x7fffffffdf40, L0x7fffffffdf48, L0x7fffffffdf50, L0x7fffffffdf58])
+     ] && true;
+
+cut
+    and [
+     eqmod X31
+     	   (mul X22 X9)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #        /* 2^5 - 1       */ gfp25519nsqr(&t,&z2_5_0, 5);
 
 
@@ -1900,6 +1984,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X62@uint256 : and [
+     eq X62 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X62
+     	   (X31**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -2073,6 +2169,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X124@uint256 : and [
+     eq X124 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X124
+     	   (X62**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -2246,6 +2354,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X248@uint256 : and [
+     eq X248 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X248
+     	   (X124**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -2419,6 +2539,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X496@uint256 : and [
+     eq X496 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X496
+     	   (X248**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -2618,6 +2750,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X992@uint256 : and [
+     eq X992 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X992
+     	   (X496**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #        /* 2^10 - 2^5    */ gfp25519mul(&z2_10_0,&t,&z2_5_0); 
 
@@ -2843,6 +2987,18 @@ mov L0x7fffffffdf78 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1023@uint256 : and [
+     eq X1023 (limbs 64 [L0x7fffffffdf60, L0x7fffffffdf68, L0x7fffffffdf70, L0x7fffffffdf78])
+     ] && true;
+
+cut
+    and [
+     eqmod X1023
+     	   (mul X992 X31)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #        /* 2^10 - 1      */ gfp25519nsqr(&t,&z2_10_0, 10);
 
 
@@ -3056,6 +3212,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2046@uint256 : and [
+     eq X2046 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2046
+     	   (X1023**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -3229,6 +3397,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4092@uint256 : and [
+     eq X4092 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4092
+     	   (X2046**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -3402,6 +3582,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X8184@uint256 : and [
+     eq X8184 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X8184
+     	   (X4092**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -3575,6 +3767,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X16368@uint256 : and [
+     eq X16368 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X16368
+     	   (X8184**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -3748,6 +3952,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X32736@uint256 : and [
+     eq X32736 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X32736
+     	   (X16368**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -3921,6 +4137,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X65472@uint256 : and [
+     eq X65472 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X65472
+     	   (X32736**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -4094,6 +4322,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X130944@uint256 : and [
+     eq X130944 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X130944
+     	   (X65472**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -4267,6 +4507,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X261888@uint256 : and [
+     eq X261888 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X261888
+     	   (X130944**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -4440,6 +4692,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X523776@uint256 : and [
+     eq X523776 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X523776
+     	   (X261888**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -4639,6 +4903,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1047552@uint256 : and [
+     eq X1047552 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1047552
+     	   (X523776**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 # /* 2^20 - 2^10   */ gfp25519mul(&z2_20_0,&t,&z2_10_0);
 
@@ -4863,6 +5139,18 @@ mov L0x7fffffffdf98 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1048575@uint256 : and [
+     eq X1048575 (limbs 64 [L0x7fffffffdf80, L0x7fffffffdf88, L0x7fffffffdf90, L0x7fffffffdf98])
+     ] && true;
+
+cut
+    and [
+     eqmod X1048575
+     	   (mul X1047552 X1023)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^20 - 1      */  gfp25519nsqr(&t,&z2_20_0, 20);
 
 (* mov    $0x14,%edx                               #! PC = 0x401e3b *)
@@ -5072,6 +5360,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2097150@uint256 : and [
+     eq X2097150 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2097150
+     	   (X1048575**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -5245,6 +5545,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4194300@uint256 : and [
+     eq X4194300 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4194300
+     	   (X2097150**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -5418,6 +5730,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X8388600@uint256 : and [
+     eq X8388600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X8388600
+     	   (X4194300**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -5591,6 +5915,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X16777200@uint256 : and [
+     eq X16777200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X16777200
+     	   (X8388600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -5764,6 +6100,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X33554400@uint256 : and [
+     eq X33554400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X33554400
+     	   (X16777200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -5937,6 +6285,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X67108800@uint256 : and [
+     eq X67108800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X67108800
+     	   (X33554400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6110,6 +6470,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X134217600@uint256 : and [
+     eq X134217600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X134217600
+     	   (X67108800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6283,6 +6655,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X268435200@uint256 : and [
+     eq X268435200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X268435200
+     	   (X134217600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6456,6 +6840,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X536870400@uint256 : and [
+     eq X536870400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X536870400
+     	   (X268435200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6629,6 +7025,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1073740800@uint256 : and [
+     eq X1073740800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1073740800
+     	   (X536870400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6802,6 +7210,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2147481600@uint256 : and [
+     eq X2147481600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2147481600
+     	   (X1073740800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -6975,6 +7395,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4294963200@uint256 : and [
+     eq X4294963200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4294963200
+     	   (X2147481600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -7148,6 +7580,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X8589926400@uint256 : and [
+     eq X8589926400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X8589926400
+     	   (X4294963200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -7321,6 +7765,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X17179852800@uint256 : and [
+     eq X17179852800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X17179852800
+     	   (X8589926400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -7494,6 +7950,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X34359705600@uint256 : and [
+     eq X34359705600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X34359705600
+     	   (X17179852800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -7667,6 +8135,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X68719411200@uint256 : and [
+     eq X68719411200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X68719411200
+     	   (X34359705600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -7840,6 +8320,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X137438822400@uint256 : and [
+     eq X137438822400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X137438822400
+     	   (X68719411200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -8013,6 +8505,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X274877644800@uint256 : and [
+     eq X274877644800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X274877644800
+     	   (X137438822400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -8186,6 +8690,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X549755289600@uint256 : and [
+     eq X549755289600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X549755289600
+     	   (X274877644800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -8385,6 +8901,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1099510579200@uint256 : and [
+     eq X1099510579200 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1099510579200
+     	   (X549755289600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^40 - 2^20   */ gfp25519mul(&t,&t,&z2_20_0);
 
@@ -8610,6 +9138,18 @@ mov L0x7fffffffded8 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1099511627775@uint256 : and [
+     eq X1099511627775 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X1099511627775
+     	   (mul X1099510579200 X1048575)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^40 - 1      */ gfp25519nsqr(&t,&t,10);
 
 (* lea    0xe0(%rsp),%r12                          #! PC = 0x401e59 *)
@@ -8821,6 +9361,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2199023255550@uint256 : and [
+     eq X2199023255550 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2199023255550
+     	   (X1099511627775**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -8994,6 +9546,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4398046511100@uint256 : and [
+     eq X4398046511100 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4398046511100
+     	   (X2199023255550**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -9167,6 +9731,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X8796093022200@uint256 : and [
+     eq X8796093022200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X8796093022200
+     	   (X4398046511100**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -9340,6 +9916,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X17592186044400@uint256 : and [
+     eq X17592186044400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X17592186044400
+     	   (X8796093022200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -9513,6 +10101,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X35184372088800@uint256 : and [
+     eq X35184372088800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X35184372088800
+     	   (X17592186044400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -9686,6 +10286,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X70368744177600@uint256 : and [
+     eq X70368744177600 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X70368744177600
+     	   (X35184372088800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -9859,6 +10471,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X140737488355200@uint256 : and [
+     eq X140737488355200 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X140737488355200
+     	   (X70368744177600**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -10032,6 +10656,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X281474976710400@uint256 : and [
+     eq X281474976710400 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X281474976710400
+     	   (X140737488355200**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -10205,6 +10841,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X562949953420800@uint256 : and [
+     eq X562949953420800 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X562949953420800
+     	   (X281474976710400**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -10404,6 +11052,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1125899906841600@uint256 : and [
+     eq X1125899906841600 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1125899906841600
+     	   (X562949953420800**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^50 - 2^10   */ gfp25519mul(&z2_50_0,&t,&z2_10_0);
 
@@ -10628,6 +11288,18 @@ mov L0x7fffffffdfb8 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1125899906842623@uint256 : and [
+     eq X1125899906842623 (limbs 64 [L0x7fffffffdfa0, L0x7fffffffdfa8, L0x7fffffffdfb0, L0x7fffffffdfb8])
+     ] && true;
+
+cut
+    and [
+     eqmod X1125899906842623
+     	   (mul X1125899906841600 X1023)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^50 - 1      */ gfp25519nsqr(&t,&z2_50_0, 50);
 
 (* lea    0x100(%rsp),%rbx                         #! PC = 0x401e7f *)
@@ -10839,6 +11511,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2251799813685246@uint256 : and [
+     eq X2251799813685246 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2251799813685246
+     	   (X1125899906842623**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11012,6 +11696,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4503599627370492@uint256 : and [
+     eq X4503599627370492 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4503599627370492
+     	   (X2251799813685246**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11185,6 +11881,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X9007199254740984@uint256 : and [
+     eq X9007199254740984 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X9007199254740984
+     	   (X4503599627370492**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11358,6 +12066,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X18014398509481968@uint256 : and [
+     eq X18014398509481968 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X18014398509481968
+     	   (X9007199254740984**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11531,6 +12251,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X36028797018963936@uint256 : and [
+     eq X36028797018963936 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X36028797018963936
+     	   (X18014398509481968**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11704,6 +12436,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X72057594037927872@uint256 : and [
+     eq X72057594037927872 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X72057594037927872
+     	   (X36028797018963936**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -11877,6 +12621,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X144115188075855744@uint256 : and [
+     eq X144115188075855744 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X144115188075855744
+     	   (X72057594037927872**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12050,6 +12806,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X288230376151711488@uint256 : and [
+     eq X288230376151711488 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X288230376151711488
+     	   (X144115188075855744**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12223,6 +12991,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X576460752303422976@uint256 : and [
+     eq X576460752303422976 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X576460752303422976
+     	   (X288230376151711488**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12396,6 +13176,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1152921504606845952@uint256 : and [
+     eq X1152921504606845952 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1152921504606845952
+     	   (X576460752303422976**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12569,6 +13361,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2305843009213691904@uint256 : and [
+     eq X2305843009213691904 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2305843009213691904
+     	   (X1152921504606845952**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12742,6 +13546,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4611686018427383808@uint256 : and [
+     eq X4611686018427383808 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4611686018427383808
+     	   (X2305843009213691904**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -12915,6 +13731,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X9223372036854767616@uint256 : and [
+     eq X9223372036854767616 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X9223372036854767616
+     	   (X4611686018427383808**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13088,6 +13916,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X18446744073709535232@uint256 : and [
+     eq X18446744073709535232 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X18446744073709535232
+     	   (X9223372036854767616**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13261,6 +14101,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X36893488147419070464@uint256 : and [
+     eq X36893488147419070464 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X36893488147419070464
+     	   (X18446744073709535232**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13434,6 +14286,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X73786976294838140928@uint256 : and [
+     eq X73786976294838140928 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X73786976294838140928
+     	   (X36893488147419070464**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13607,6 +14471,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X147573952589676281856@uint256 : and [
+     eq X147573952589676281856 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X147573952589676281856
+     	   (X73786976294838140928**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13780,6 +14656,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X295147905179352563712@uint256 : and [
+     eq X295147905179352563712 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X295147905179352563712
+     	   (X147573952589676281856**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -13953,6 +14841,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X590295810358705127424@uint256 : and [
+     eq X590295810358705127424 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X590295810358705127424
+     	   (X295147905179352563712**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14126,6 +15026,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1180591620717410254848@uint256 : and [
+     eq X1180591620717410254848 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1180591620717410254848
+     	   (X590295810358705127424**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14299,6 +15211,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2361183241434820509696@uint256 : and [
+     eq X2361183241434820509696 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2361183241434820509696
+     	   (X1180591620717410254848**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14472,6 +15396,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4722366482869641019392@uint256 : and [
+     eq X4722366482869641019392 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4722366482869641019392
+     	   (X2361183241434820509696**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14645,6 +15581,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X9444732965739282038784@uint256 : and [
+     eq X9444732965739282038784 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X9444732965739282038784
+     	   (X4722366482869641019392**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14818,6 +15766,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X18889465931478564077568@uint256 : and [
+     eq X18889465931478564077568 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X18889465931478564077568
+     	   (X9444732965739282038784**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -14991,6 +15951,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X37778931862957128155136@uint256 : and [
+     eq X37778931862957128155136 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X37778931862957128155136
+     	   (X18889465931478564077568**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -15164,6 +16136,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X75557863725914256310272@uint256 : and [
+     eq X75557863725914256310272 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X75557863725914256310272
+     	   (X37778931862957128155136**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -15337,6 +16321,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X151115727451828512620544@uint256 : and [
+     eq X151115727451828512620544 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X151115727451828512620544
+     	   (X75557863725914256310272**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -15510,6 +16506,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X302231454903657025241088@uint256 : and [
+     eq X302231454903657025241088 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X302231454903657025241088
+     	   (X151115727451828512620544**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -15683,6 +16691,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X604462909807314050482176@uint256 : and [
+     eq X604462909807314050482176 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X604462909807314050482176
+     	   (X302231454903657025241088**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -15856,6 +16876,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1208925819614628100964352@uint256 : and [
+     eq X1208925819614628100964352 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1208925819614628100964352
+     	   (X604462909807314050482176**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16029,6 +17061,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2417851639229256201928704@uint256 : and [
+     eq X2417851639229256201928704 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2417851639229256201928704
+     	   (X1208925819614628100964352**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16202,6 +17246,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4835703278458512403857408@uint256 : and [
+     eq X4835703278458512403857408 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4835703278458512403857408
+     	   (X2417851639229256201928704**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16375,6 +17431,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X9671406556917024807714816@uint256 : and [
+     eq X9671406556917024807714816 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X9671406556917024807714816
+     	   (X4835703278458512403857408**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16548,6 +17616,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X19342813113834049615429632@uint256 : and [
+     eq X19342813113834049615429632 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X19342813113834049615429632
+     	   (X9671406556917024807714816**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16721,6 +17801,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X38685626227668099230859264@uint256 : and [
+     eq X38685626227668099230859264 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X38685626227668099230859264
+     	   (X19342813113834049615429632**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -16894,6 +17986,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X77371252455336198461718528@uint256 : and [
+     eq X77371252455336198461718528 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X77371252455336198461718528
+     	   (X38685626227668099230859264**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17067,6 +18171,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X154742504910672396923437056@uint256 : and [
+     eq X154742504910672396923437056 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X154742504910672396923437056
+     	   (X77371252455336198461718528**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17240,6 +18356,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X309485009821344793846874112@uint256 : and [
+     eq X309485009821344793846874112 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X309485009821344793846874112
+     	   (X154742504910672396923437056**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17413,6 +18541,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X618970019642689587693748224@uint256 : and [
+     eq X618970019642689587693748224 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X618970019642689587693748224
+     	   (X309485009821344793846874112**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17586,6 +18726,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1237940039285379175387496448@uint256 : and [
+     eq X1237940039285379175387496448 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1237940039285379175387496448
+     	   (X618970019642689587693748224**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17759,6 +18911,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2475880078570758350774992896@uint256 : and [
+     eq X2475880078570758350774992896 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2475880078570758350774992896
+     	   (X1237940039285379175387496448**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -17932,6 +19096,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X4951760157141516701549985792@uint256 : and [
+     eq X4951760157141516701549985792 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X4951760157141516701549985792
+     	   (X2475880078570758350774992896**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18105,6 +19281,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X9903520314283033403099971584@uint256 : and [
+     eq X9903520314283033403099971584 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X9903520314283033403099971584
+     	   (X4951760157141516701549985792**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18278,6 +19466,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X19807040628566066806199943168@uint256 : and [
+     eq X19807040628566066806199943168 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X19807040628566066806199943168
+     	   (X9903520314283033403099971584**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18451,6 +19651,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X39614081257132133612399886336@uint256 : and [
+     eq X39614081257132133612399886336 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X39614081257132133612399886336
+     	   (X19807040628566066806199943168**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18624,6 +19836,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X79228162514264267224799772672@uint256 : and [
+     eq X79228162514264267224799772672 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X79228162514264267224799772672
+     	   (X39614081257132133612399886336**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18797,6 +20021,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X158456325028528534449599545344@uint256 : and [
+     eq X158456325028528534449599545344 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X158456325028528534449599545344
+     	   (X79228162514264267224799772672**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -18970,6 +20206,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X316912650057057068899199090688@uint256 : and [
+     eq X316912650057057068899199090688 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X316912650057057068899199090688
+     	   (X158456325028528534449599545344**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -19143,6 +20391,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X633825300114114137798398181376@uint256 : and [
+     eq X633825300114114137798398181376 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X633825300114114137798398181376
+     	   (X316912650057057068899199090688**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -19342,6 +20602,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1267650600228228275596796362752@uint256 : and [
+     eq X1267650600228228275596796362752 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1267650600228228275596796362752
+     	   (X633825300114114137798398181376**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^100 - 2^50  */ gfp25519mul(&z2_100_0,&t,&z2_50_0);
 
@@ -19566,6 +20838,18 @@ mov L0x7fffffffdfd8 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1267650600228229401496703205375@uint256 : and [
+     eq X1267650600228229401496703205375 (limbs 64 [L0x7fffffffdfc0, L0x7fffffffdfc8, L0x7fffffffdfd0, L0x7fffffffdfd8])
+     ] && true;
+
+cut
+    and [
+     eqmod X1267650600228229401496703205375
+     	   (mul X1267650600228228275596796362752 X1125899906842623)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^100 - 1     */ gfp25519nsqr(&t,&z2_100_0, 100);
 
 (* mov    $0x64,%edx                               #! PC = 0x401ea5 *)
@@ -19775,6 +21059,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2535301200456458802993406410750@uint256 : and [
+     eq X2535301200456458802993406410750 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2535301200456458802993406410750
+     	   (X1267650600228229401496703205375**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -19948,6 +21244,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5070602400912917605986812821500@uint256 : and [
+     eq X5070602400912917605986812821500 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5070602400912917605986812821500
+     	   (X2535301200456458802993406410750**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20121,6 +21429,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X10141204801825835211973625643000@uint256 : and [
+     eq X10141204801825835211973625643000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X10141204801825835211973625643000
+     	   (X5070602400912917605986812821500**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20294,6 +21614,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X20282409603651670423947251286000@uint256 : and [
+     eq X20282409603651670423947251286000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X20282409603651670423947251286000
+     	   (X10141204801825835211973625643000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20467,6 +21799,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X40564819207303340847894502572000@uint256 : and [
+     eq X40564819207303340847894502572000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X40564819207303340847894502572000
+     	   (X20282409603651670423947251286000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20640,6 +21984,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X81129638414606681695789005144000@uint256 : and [
+     eq X81129638414606681695789005144000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X81129638414606681695789005144000
+     	   (X40564819207303340847894502572000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20813,6 +22169,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X162259276829213363391578010288000@uint256 : and [
+     eq X162259276829213363391578010288000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X162259276829213363391578010288000
+     	   (X81129638414606681695789005144000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -20986,6 +22354,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X324518553658426726783156020576000@uint256 : and [
+     eq X324518553658426726783156020576000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X324518553658426726783156020576000
+     	   (X162259276829213363391578010288000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -21159,6 +22539,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X649037107316853453566312041152000@uint256 : and [
+     eq X649037107316853453566312041152000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X649037107316853453566312041152000
+     	   (X324518553658426726783156020576000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -21332,6 +22724,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1298074214633706907132624082304000@uint256 : and [
+     eq X1298074214633706907132624082304000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1298074214633706907132624082304000
+     	   (X649037107316853453566312041152000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -21505,6 +22909,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2596148429267413814265248164608000@uint256 : and [
+     eq X2596148429267413814265248164608000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2596148429267413814265248164608000
+     	   (X1298074214633706907132624082304000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -21678,6 +23094,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5192296858534827628530496329216000@uint256 : and [
+     eq X5192296858534827628530496329216000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5192296858534827628530496329216000
+     	   (X2596148429267413814265248164608000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -21851,6 +23279,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X10384593717069655257060992658432000@uint256 : and [
+     eq X10384593717069655257060992658432000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X10384593717069655257060992658432000
+     	   (X5192296858534827628530496329216000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22024,6 +23464,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X20769187434139310514121985316864000@uint256 : and [
+     eq X20769187434139310514121985316864000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X20769187434139310514121985316864000
+     	   (X10384593717069655257060992658432000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22197,6 +23649,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X41538374868278621028243970633728000@uint256 : and [
+     eq X41538374868278621028243970633728000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X41538374868278621028243970633728000
+     	   (X20769187434139310514121985316864000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22370,6 +23834,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X83076749736557242056487941267456000@uint256 : and [
+     eq X83076749736557242056487941267456000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X83076749736557242056487941267456000
+     	   (X41538374868278621028243970633728000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22543,6 +24019,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X166153499473114484112975882534912000@uint256 : and [
+     eq X166153499473114484112975882534912000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X166153499473114484112975882534912000
+     	   (X83076749736557242056487941267456000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22716,6 +24204,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X332306998946228968225951765069824000@uint256 : and [
+     eq X332306998946228968225951765069824000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X332306998946228968225951765069824000
+     	   (X166153499473114484112975882534912000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -22889,6 +24389,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X664613997892457936451903530139648000@uint256 : and [
+     eq X664613997892457936451903530139648000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X664613997892457936451903530139648000
+     	   (X332306998946228968225951765069824000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23062,6 +24574,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1329227995784915872903807060279296000@uint256 : and [
+     eq X1329227995784915872903807060279296000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1329227995784915872903807060279296000
+     	   (X664613997892457936451903530139648000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23235,6 +24759,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2658455991569831745807614120558592000@uint256 : and [
+     eq X2658455991569831745807614120558592000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2658455991569831745807614120558592000
+     	   (X1329227995784915872903807060279296000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23408,6 +24944,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5316911983139663491615228241117184000@uint256 : and [
+     eq X5316911983139663491615228241117184000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5316911983139663491615228241117184000
+     	   (X2658455991569831745807614120558592000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23581,6 +25129,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X10633823966279326983230456482234368000@uint256 : and [
+     eq X10633823966279326983230456482234368000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X10633823966279326983230456482234368000
+     	   (X5316911983139663491615228241117184000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23754,6 +25314,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X21267647932558653966460912964468736000@uint256 : and [
+     eq X21267647932558653966460912964468736000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X21267647932558653966460912964468736000
+     	   (X10633823966279326983230456482234368000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -23927,6 +25499,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X42535295865117307932921825928937472000@uint256 : and [
+     eq X42535295865117307932921825928937472000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X42535295865117307932921825928937472000
+     	   (X21267647932558653966460912964468736000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24100,6 +25684,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X85070591730234615865843651857874944000@uint256 : and [
+     eq X85070591730234615865843651857874944000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X85070591730234615865843651857874944000
+     	   (X42535295865117307932921825928937472000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24273,6 +25869,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X170141183460469231731687303715749888000@uint256 : and [
+     eq X170141183460469231731687303715749888000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X170141183460469231731687303715749888000
+     	   (X85070591730234615865843651857874944000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24446,6 +26054,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X340282366920938463463374607431499776000@uint256 : and [
+     eq X340282366920938463463374607431499776000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X340282366920938463463374607431499776000
+     	   (X170141183460469231731687303715749888000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24619,6 +26239,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X680564733841876926926749214862999552000@uint256 : and [
+     eq X680564733841876926926749214862999552000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X680564733841876926926749214862999552000
+     	   (X340282366920938463463374607431499776000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24792,6 +26424,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1361129467683753853853498429725999104000@uint256 : and [
+     eq X1361129467683753853853498429725999104000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1361129467683753853853498429725999104000
+     	   (X680564733841876926926749214862999552000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -24965,6 +26609,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2722258935367507707706996859451998208000@uint256 : and [
+     eq X2722258935367507707706996859451998208000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2722258935367507707706996859451998208000
+     	   (X1361129467683753853853498429725999104000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -25138,6 +26794,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5444517870735015415413993718903996416000@uint256 : and [
+     eq X5444517870735015415413993718903996416000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5444517870735015415413993718903996416000
+     	   (X2722258935367507707706996859451998208000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -25311,6 +26979,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X10889035741470030830827987437807992832000@uint256 : and [
+     eq X10889035741470030830827987437807992832000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X10889035741470030830827987437807992832000
+     	   (X5444517870735015415413993718903996416000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -25484,6 +27164,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X21778071482940061661655974875615985664000@uint256 : and [
+     eq X21778071482940061661655974875615985664000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X21778071482940061661655974875615985664000
+     	   (X10889035741470030830827987437807992832000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -25657,6 +27349,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X43556142965880123323311949751231971328000@uint256 : and [
+     eq X43556142965880123323311949751231971328000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X43556142965880123323311949751231971328000
+     	   (X21778071482940061661655974875615985664000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -25830,6 +27534,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X87112285931760246646623899502463942656000@uint256 : and [
+     eq X87112285931760246646623899502463942656000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X87112285931760246646623899502463942656000
+     	   (X43556142965880123323311949751231971328000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26003,6 +27719,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X174224571863520493293247799004927885312000@uint256 : and [
+     eq X174224571863520493293247799004927885312000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X174224571863520493293247799004927885312000
+     	   (X87112285931760246646623899502463942656000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26176,6 +27904,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X348449143727040986586495598009855770624000@uint256 : and [
+     eq X348449143727040986586495598009855770624000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X348449143727040986586495598009855770624000
+     	   (X174224571863520493293247799004927885312000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26349,6 +28089,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X696898287454081973172991196019711541248000@uint256 : and [
+     eq X696898287454081973172991196019711541248000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X696898287454081973172991196019711541248000
+     	   (X348449143727040986586495598009855770624000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26522,6 +28274,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1393796574908163946345982392039423082496000@uint256 : and [
+     eq X1393796574908163946345982392039423082496000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1393796574908163946345982392039423082496000
+     	   (X696898287454081973172991196019711541248000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26695,6 +28459,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2787593149816327892691964784078846164992000@uint256 : and [
+     eq X2787593149816327892691964784078846164992000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2787593149816327892691964784078846164992000
+     	   (X1393796574908163946345982392039423082496000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -26868,6 +28644,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5575186299632655785383929568157692329984000@uint256 : and [
+     eq X5575186299632655785383929568157692329984000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5575186299632655785383929568157692329984000
+     	   (X2787593149816327892691964784078846164992000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27041,6 +28829,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X11150372599265311570767859136315384659968000@uint256 : and [
+     eq X11150372599265311570767859136315384659968000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X11150372599265311570767859136315384659968000
+     	   (X5575186299632655785383929568157692329984000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27214,6 +29014,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X22300745198530623141535718272630769319936000@uint256 : and [
+     eq X22300745198530623141535718272630769319936000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X22300745198530623141535718272630769319936000
+     	   (X11150372599265311570767859136315384659968000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27387,6 +29199,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X44601490397061246283071436545261538639872000@uint256 : and [
+     eq X44601490397061246283071436545261538639872000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X44601490397061246283071436545261538639872000
+     	   (X22300745198530623141535718272630769319936000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27560,6 +29384,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X89202980794122492566142873090523077279744000@uint256 : and [
+     eq X89202980794122492566142873090523077279744000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X89202980794122492566142873090523077279744000
+     	   (X44601490397061246283071436545261538639872000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27733,6 +29569,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X178405961588244985132285746181046154559488000@uint256 : and [
+     eq X178405961588244985132285746181046154559488000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X178405961588244985132285746181046154559488000
+     	   (X89202980794122492566142873090523077279744000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -27906,6 +29754,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X356811923176489970264571492362092309118976000@uint256 : and [
+     eq X356811923176489970264571492362092309118976000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X356811923176489970264571492362092309118976000
+     	   (X178405961588244985132285746181046154559488000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28079,6 +29939,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X713623846352979940529142984724184618237952000@uint256 : and [
+     eq X713623846352979940529142984724184618237952000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X713623846352979940529142984724184618237952000
+     	   (X356811923176489970264571492362092309118976000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28252,6 +30124,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1427247692705959881058285969448369236475904000@uint256 : and [
+     eq X1427247692705959881058285969448369236475904000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1427247692705959881058285969448369236475904000
+     	   (X713623846352979940529142984724184618237952000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28425,6 +30309,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2854495385411919762116571938896738472951808000@uint256 : and [
+     eq X2854495385411919762116571938896738472951808000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2854495385411919762116571938896738472951808000
+     	   (X1427247692705959881058285969448369236475904000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28598,6 +30494,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5708990770823839524233143877793476945903616000@uint256 : and [
+     eq X5708990770823839524233143877793476945903616000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5708990770823839524233143877793476945903616000
+     	   (X2854495385411919762116571938896738472951808000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28771,6 +30679,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X11417981541647679048466287755586953891807232000@uint256 : and [
+     eq X11417981541647679048466287755586953891807232000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X11417981541647679048466287755586953891807232000
+     	   (X5708990770823839524233143877793476945903616000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -28944,6 +30864,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X22835963083295358096932575511173907783614464000@uint256 : and [
+     eq X22835963083295358096932575511173907783614464000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X22835963083295358096932575511173907783614464000
+     	   (X11417981541647679048466287755586953891807232000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29117,6 +31049,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X45671926166590716193865151022347815567228928000@uint256 : and [
+     eq X45671926166590716193865151022347815567228928000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X45671926166590716193865151022347815567228928000
+     	   (X22835963083295358096932575511173907783614464000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29290,6 +31234,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X91343852333181432387730302044695631134457856000@uint256 : and [
+     eq X91343852333181432387730302044695631134457856000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X91343852333181432387730302044695631134457856000
+     	   (X45671926166590716193865151022347815567228928000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29463,6 +31419,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X182687704666362864775460604089391262268915712000@uint256 : and [
+     eq X182687704666362864775460604089391262268915712000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X182687704666362864775460604089391262268915712000
+     	   (X91343852333181432387730302044695631134457856000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29636,6 +31604,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X365375409332725729550921208178782524537831424000@uint256 : and [
+     eq X365375409332725729550921208178782524537831424000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X365375409332725729550921208178782524537831424000
+     	   (X182687704666362864775460604089391262268915712000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29809,6 +31789,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X730750818665451459101842416357565049075662848000@uint256 : and [
+     eq X730750818665451459101842416357565049075662848000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X730750818665451459101842416357565049075662848000
+     	   (X365375409332725729550921208178782524537831424000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -29982,6 +31974,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1461501637330902918203684832715130098151325696000@uint256 : and [
+     eq X1461501637330902918203684832715130098151325696000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1461501637330902918203684832715130098151325696000
+     	   (X730750818665451459101842416357565049075662848000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -30155,6 +32159,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2923003274661805836407369665430260196302651392000@uint256 : and [
+     eq X2923003274661805836407369665430260196302651392000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2923003274661805836407369665430260196302651392000
+     	   (X1461501637330902918203684832715130098151325696000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -30328,6 +32344,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5846006549323611672814739330860520392605302784000@uint256 : and [
+     eq X5846006549323611672814739330860520392605302784000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5846006549323611672814739330860520392605302784000
+     	   (X2923003274661805836407369665430260196302651392000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -30501,6 +32529,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X11692013098647223345629478661721040785210605568000@uint256 : and [
+     eq X11692013098647223345629478661721040785210605568000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X11692013098647223345629478661721040785210605568000
+     	   (X5846006549323611672814739330860520392605302784000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -30674,6 +32714,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X23384026197294446691258957323442081570421211136000@uint256 : and [
+     eq X23384026197294446691258957323442081570421211136000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X23384026197294446691258957323442081570421211136000
+     	   (X11692013098647223345629478661721040785210605568000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -30847,6 +32899,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X46768052394588893382517914646884163140842422272000@uint256 : and [
+     eq X46768052394588893382517914646884163140842422272000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X46768052394588893382517914646884163140842422272000
+     	   (X23384026197294446691258957323442081570421211136000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31020,6 +33084,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X93536104789177786765035829293768326281684844544000@uint256 : and [
+     eq X93536104789177786765035829293768326281684844544000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X93536104789177786765035829293768326281684844544000
+     	   (X46768052394588893382517914646884163140842422272000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31193,6 +33269,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X187072209578355573530071658587536652563369689088000@uint256 : and [
+     eq X187072209578355573530071658587536652563369689088000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X187072209578355573530071658587536652563369689088000
+     	   (X93536104789177786765035829293768326281684844544000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31366,6 +33454,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X374144419156711147060143317175073305126739378176000@uint256 : and [
+     eq X374144419156711147060143317175073305126739378176000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X374144419156711147060143317175073305126739378176000
+     	   (X187072209578355573530071658587536652563369689088000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31539,6 +33639,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X748288838313422294120286634350146610253478756352000@uint256 : and [
+     eq X748288838313422294120286634350146610253478756352000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X748288838313422294120286634350146610253478756352000
+     	   (X374144419156711147060143317175073305126739378176000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31712,6 +33824,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1496577676626844588240573268700293220506957512704000@uint256 : and [
+     eq X1496577676626844588240573268700293220506957512704000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1496577676626844588240573268700293220506957512704000
+     	   (X748288838313422294120286634350146610253478756352000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -31885,6 +34009,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X2993155353253689176481146537400586441013915025408000@uint256 : and [
+     eq X2993155353253689176481146537400586441013915025408000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X2993155353253689176481146537400586441013915025408000
+     	   (X1496577676626844588240573268700293220506957512704000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32058,6 +34194,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X5986310706507378352962293074801172882027830050816000@uint256 : and [
+     eq X5986310706507378352962293074801172882027830050816000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X5986310706507378352962293074801172882027830050816000
+     	   (X2993155353253689176481146537400586441013915025408000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32231,6 +34379,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X11972621413014756705924586149602345764055660101632000@uint256 : and [
+     eq X11972621413014756705924586149602345764055660101632000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X11972621413014756705924586149602345764055660101632000
+     	   (X5986310706507378352962293074801172882027830050816000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32404,6 +34564,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X23945242826029513411849172299204691528111320203264000@uint256 : and [
+     eq X23945242826029513411849172299204691528111320203264000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X23945242826029513411849172299204691528111320203264000
+     	   (X11972621413014756705924586149602345764055660101632000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32577,6 +34749,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X47890485652059026823698344598409383056222640406528000@uint256 : and [
+     eq X47890485652059026823698344598409383056222640406528000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X47890485652059026823698344598409383056222640406528000
+     	   (X23945242826029513411849172299204691528111320203264000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32750,6 +34934,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X95780971304118053647396689196818766112445280813056000@uint256 : and [
+     eq X95780971304118053647396689196818766112445280813056000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X95780971304118053647396689196818766112445280813056000
+     	   (X47890485652059026823698344598409383056222640406528000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -32923,6 +35119,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X191561942608236107294793378393637532224890561626112000@uint256 : and [
+     eq X191561942608236107294793378393637532224890561626112000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X191561942608236107294793378393637532224890561626112000
+     	   (X95780971304118053647396689196818766112445280813056000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33096,6 +35304,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X383123885216472214589586756787275064449781123252224000@uint256 : and [
+     eq X383123885216472214589586756787275064449781123252224000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X383123885216472214589586756787275064449781123252224000
+     	   (X191561942608236107294793378393637532224890561626112000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33269,6 +35489,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X766247770432944429179173513574550128899562246504448000@uint256 : and [
+     eq X766247770432944429179173513574550128899562246504448000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X766247770432944429179173513574550128899562246504448000
+     	   (X383123885216472214589586756787275064449781123252224000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33442,6 +35674,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1532495540865888858358347027149100257799124493008896000@uint256 : and [
+     eq X1532495540865888858358347027149100257799124493008896000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1532495540865888858358347027149100257799124493008896000
+     	   (X766247770432944429179173513574550128899562246504448000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33615,6 +35859,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3064991081731777716716694054298200515598248986017792000@uint256 : and [
+     eq X3064991081731777716716694054298200515598248986017792000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3064991081731777716716694054298200515598248986017792000
+     	   (X1532495540865888858358347027149100257799124493008896000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33788,6 +36044,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6129982163463555433433388108596401031196497972035584000@uint256 : and [
+     eq X6129982163463555433433388108596401031196497972035584000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6129982163463555433433388108596401031196497972035584000
+     	   (X3064991081731777716716694054298200515598248986017792000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -33961,6 +36229,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X12259964326927110866866776217192802062392995944071168000@uint256 : and [
+     eq X12259964326927110866866776217192802062392995944071168000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X12259964326927110866866776217192802062392995944071168000
+     	   (X6129982163463555433433388108596401031196497972035584000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34134,6 +36414,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X24519928653854221733733552434385604124785991888142336000@uint256 : and [
+     eq X24519928653854221733733552434385604124785991888142336000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X24519928653854221733733552434385604124785991888142336000
+     	   (X12259964326927110866866776217192802062392995944071168000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34307,6 +36599,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X49039857307708443467467104868771208249571983776284672000@uint256 : and [
+     eq X49039857307708443467467104868771208249571983776284672000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X49039857307708443467467104868771208249571983776284672000
+     	   (X24519928653854221733733552434385604124785991888142336000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34480,6 +36784,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X98079714615416886934934209737542416499143967552569344000@uint256 : and [
+     eq X98079714615416886934934209737542416499143967552569344000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X98079714615416886934934209737542416499143967552569344000
+     	   (X49039857307708443467467104868771208249571983776284672000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34653,6 +36969,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X196159429230833773869868419475084832998287935105138688000@uint256 : and [
+     eq X196159429230833773869868419475084832998287935105138688000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X196159429230833773869868419475084832998287935105138688000
+     	   (X98079714615416886934934209737542416499143967552569344000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34826,6 +37154,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X392318858461667547739736838950169665996575870210277376000@uint256 : and [
+     eq X392318858461667547739736838950169665996575870210277376000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X392318858461667547739736838950169665996575870210277376000
+     	   (X196159429230833773869868419475084832998287935105138688000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -34999,6 +37339,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X784637716923335095479473677900339331993151740420554752000@uint256 : and [
+     eq X784637716923335095479473677900339331993151740420554752000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X784637716923335095479473677900339331993151740420554752000
+     	   (X392318858461667547739736838950169665996575870210277376000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -35172,6 +37524,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1569275433846670190958947355800678663986303480841109504000@uint256 : and [
+     eq X1569275433846670190958947355800678663986303480841109504000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1569275433846670190958947355800678663986303480841109504000
+     	   (X784637716923335095479473677900339331993151740420554752000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -35345,6 +37709,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3138550867693340381917894711601357327972606961682219008000@uint256 : and [
+     eq X3138550867693340381917894711601357327972606961682219008000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3138550867693340381917894711601357327972606961682219008000
+     	   (X1569275433846670190958947355800678663986303480841109504000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -35518,6 +37894,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6277101735386680763835789423202714655945213923364438016000@uint256 : and [
+     eq X6277101735386680763835789423202714655945213923364438016000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6277101735386680763835789423202714655945213923364438016000
+     	   (X3138550867693340381917894711601357327972606961682219008000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -35691,6 +38079,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X12554203470773361527671578846405429311890427846728876032000@uint256 : and [
+     eq X12554203470773361527671578846405429311890427846728876032000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X12554203470773361527671578846405429311890427846728876032000
+     	   (X6277101735386680763835789423202714655945213923364438016000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -35864,6 +38264,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X25108406941546723055343157692810858623780855693457752064000@uint256 : and [
+     eq X25108406941546723055343157692810858623780855693457752064000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X25108406941546723055343157692810858623780855693457752064000
+     	   (X12554203470773361527671578846405429311890427846728876032000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36037,6 +38449,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X50216813883093446110686315385621717247561711386915504128000@uint256 : and [
+     eq X50216813883093446110686315385621717247561711386915504128000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X50216813883093446110686315385621717247561711386915504128000
+     	   (X25108406941546723055343157692810858623780855693457752064000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36210,6 +38634,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X100433627766186892221372630771243434495123422773831008256000@uint256 : and [
+     eq X100433627766186892221372630771243434495123422773831008256000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X100433627766186892221372630771243434495123422773831008256000
+     	   (X50216813883093446110686315385621717247561711386915504128000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36383,6 +38819,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X200867255532373784442745261542486868990246845547662016512000@uint256 : and [
+     eq X200867255532373784442745261542486868990246845547662016512000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X200867255532373784442745261542486868990246845547662016512000
+     	   (X100433627766186892221372630771243434495123422773831008256000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36556,6 +39004,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X401734511064747568885490523084973737980493691095324033024000@uint256 : and [
+     eq X401734511064747568885490523084973737980493691095324033024000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X401734511064747568885490523084973737980493691095324033024000
+     	   (X200867255532373784442745261542486868990246845547662016512000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36729,6 +39189,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X803469022129495137770981046169947475960987382190648066048000@uint256 : and [
+     eq X803469022129495137770981046169947475960987382190648066048000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X803469022129495137770981046169947475960987382190648066048000
+     	   (X401734511064747568885490523084973737980493691095324033024000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -36928,6 +39400,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1606938044258990275541962092339894951921974764381296132096000@uint256 : and [
+     eq X1606938044258990275541962092339894951921974764381296132096000 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1606938044258990275541962092339894951921974764381296132096000
+     	   (X803469022129495137770981046169947475960987382190648066048000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^200 - 2^100 */  gfp25519mul(&t,&t,&z2_100_0);
 
@@ -37152,6 +39636,18 @@ mov L0x7fffffffded8 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1606938044258990275541962092341162602522202993782792835301375@uint256 : and [
+     eq X1606938044258990275541962092341162602522202993782792835301375 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X1606938044258990275541962092341162602522202993782792835301375
+     	   (mul X1606938044258990275541962092339894951921974764381296132096000 X1267650600228229401496703205375)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^200 - 1     */ gfp25519nsqr(&t,&t, 50);
 
 
@@ -37362,6 +39858,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3213876088517980551083924184682325205044405987565585670602750@uint256 : and [
+     eq X3213876088517980551083924184682325205044405987565585670602750 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3213876088517980551083924184682325205044405987565585670602750
+     	   (X1606938044258990275541962092341162602522202993782792835301375**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -37535,6 +40043,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6427752177035961102167848369364650410088811975131171341205500@uint256 : and [
+     eq X6427752177035961102167848369364650410088811975131171341205500 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6427752177035961102167848369364650410088811975131171341205500
+     	   (X3213876088517980551083924184682325205044405987565585670602750**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -37708,6 +40228,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X12855504354071922204335696738729300820177623950262342682411000@uint256 : and [
+     eq X12855504354071922204335696738729300820177623950262342682411000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X12855504354071922204335696738729300820177623950262342682411000
+     	   (X6427752177035961102167848369364650410088811975131171341205500**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -37881,6 +40413,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X25711008708143844408671393477458601640355247900524685364822000@uint256 : and [
+     eq X25711008708143844408671393477458601640355247900524685364822000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X25711008708143844408671393477458601640355247900524685364822000
+     	   (X12855504354071922204335696738729300820177623950262342682411000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38054,6 +40598,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X51422017416287688817342786954917203280710495801049370729644000@uint256 : and [
+     eq X51422017416287688817342786954917203280710495801049370729644000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X51422017416287688817342786954917203280710495801049370729644000
+     	   (X25711008708143844408671393477458601640355247900524685364822000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38227,6 +40783,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X102844034832575377634685573909834406561420991602098741459288000@uint256 : and [
+     eq X102844034832575377634685573909834406561420991602098741459288000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X102844034832575377634685573909834406561420991602098741459288000
+     	   (X51422017416287688817342786954917203280710495801049370729644000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38400,6 +40968,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X205688069665150755269371147819668813122841983204197482918576000@uint256 : and [
+     eq X205688069665150755269371147819668813122841983204197482918576000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X205688069665150755269371147819668813122841983204197482918576000
+     	   (X102844034832575377634685573909834406561420991602098741459288000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38573,6 +41153,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X411376139330301510538742295639337626245683966408394965837152000@uint256 : and [
+     eq X411376139330301510538742295639337626245683966408394965837152000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X411376139330301510538742295639337626245683966408394965837152000
+     	   (X205688069665150755269371147819668813122841983204197482918576000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38746,6 +41338,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X822752278660603021077484591278675252491367932816789931674304000@uint256 : and [
+     eq X822752278660603021077484591278675252491367932816789931674304000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X822752278660603021077484591278675252491367932816789931674304000
+     	   (X411376139330301510538742295639337626245683966408394965837152000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -38919,6 +41523,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1645504557321206042154969182557350504982735865633579863348608000@uint256 : and [
+     eq X1645504557321206042154969182557350504982735865633579863348608000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1645504557321206042154969182557350504982735865633579863348608000
+     	   (X822752278660603021077484591278675252491367932816789931674304000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39092,6 +41708,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3291009114642412084309938365114701009965471731267159726697216000@uint256 : and [
+     eq X3291009114642412084309938365114701009965471731267159726697216000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3291009114642412084309938365114701009965471731267159726697216000
+     	   (X1645504557321206042154969182557350504982735865633579863348608000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39265,6 +41893,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6582018229284824168619876730229402019930943462534319453394432000@uint256 : and [
+     eq X6582018229284824168619876730229402019930943462534319453394432000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6582018229284824168619876730229402019930943462534319453394432000
+     	   (X3291009114642412084309938365114701009965471731267159726697216000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39438,6 +42078,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X13164036458569648337239753460458804039861886925068638906788864000@uint256 : and [
+     eq X13164036458569648337239753460458804039861886925068638906788864000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X13164036458569648337239753460458804039861886925068638906788864000
+     	   (X6582018229284824168619876730229402019930943462534319453394432000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39611,6 +42263,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X26328072917139296674479506920917608079723773850137277813577728000@uint256 : and [
+     eq X26328072917139296674479506920917608079723773850137277813577728000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X26328072917139296674479506920917608079723773850137277813577728000
+     	   (X13164036458569648337239753460458804039861886925068638906788864000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39784,6 +42448,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X52656145834278593348959013841835216159447547700274555627155456000@uint256 : and [
+     eq X52656145834278593348959013841835216159447547700274555627155456000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X52656145834278593348959013841835216159447547700274555627155456000
+     	   (X26328072917139296674479506920917608079723773850137277813577728000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -39957,6 +42633,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X105312291668557186697918027683670432318895095400549111254310912000@uint256 : and [
+     eq X105312291668557186697918027683670432318895095400549111254310912000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X105312291668557186697918027683670432318895095400549111254310912000
+     	   (X52656145834278593348959013841835216159447547700274555627155456000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40130,6 +42818,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X210624583337114373395836055367340864637790190801098222508621824000@uint256 : and [
+     eq X210624583337114373395836055367340864637790190801098222508621824000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X210624583337114373395836055367340864637790190801098222508621824000
+     	   (X105312291668557186697918027683670432318895095400549111254310912000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40303,6 +43003,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X421249166674228746791672110734681729275580381602196445017243648000@uint256 : and [
+     eq X421249166674228746791672110734681729275580381602196445017243648000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X421249166674228746791672110734681729275580381602196445017243648000
+     	   (X210624583337114373395836055367340864637790190801098222508621824000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40476,6 +43188,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X842498333348457493583344221469363458551160763204392890034487296000@uint256 : and [
+     eq X842498333348457493583344221469363458551160763204392890034487296000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X842498333348457493583344221469363458551160763204392890034487296000
+     	   (X421249166674228746791672110734681729275580381602196445017243648000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40649,6 +43373,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1684996666696914987166688442938726917102321526408785780068974592000@uint256 : and [
+     eq X1684996666696914987166688442938726917102321526408785780068974592000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1684996666696914987166688442938726917102321526408785780068974592000
+     	   (X842498333348457493583344221469363458551160763204392890034487296000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40822,6 +43558,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3369993333393829974333376885877453834204643052817571560137949184000@uint256 : and [
+     eq X3369993333393829974333376885877453834204643052817571560137949184000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3369993333393829974333376885877453834204643052817571560137949184000
+     	   (X1684996666696914987166688442938726917102321526408785780068974592000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -40995,6 +43743,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6739986666787659948666753771754907668409286105635143120275898368000@uint256 : and [
+     eq X6739986666787659948666753771754907668409286105635143120275898368000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6739986666787659948666753771754907668409286105635143120275898368000
+     	   (X3369993333393829974333376885877453834204643052817571560137949184000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -41168,6 +43928,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X13479973333575319897333507543509815336818572211270286240551796736000@uint256 : and [
+     eq X13479973333575319897333507543509815336818572211270286240551796736000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X13479973333575319897333507543509815336818572211270286240551796736000
+     	   (X6739986666787659948666753771754907668409286105635143120275898368000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -41341,6 +44113,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X26959946667150639794667015087019630673637144422540572481103593472000@uint256 : and [
+     eq X26959946667150639794667015087019630673637144422540572481103593472000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X26959946667150639794667015087019630673637144422540572481103593472000
+     	   (X13479973333575319897333507543509815336818572211270286240551796736000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -41514,6 +44298,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X53919893334301279589334030174039261347274288845081144962207186944000@uint256 : and [
+     eq X53919893334301279589334030174039261347274288845081144962207186944000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X53919893334301279589334030174039261347274288845081144962207186944000
+     	   (X26959946667150639794667015087019630673637144422540572481103593472000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -41687,6 +44483,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X107839786668602559178668060348078522694548577690162289924414373888000@uint256 : and [
+     eq X107839786668602559178668060348078522694548577690162289924414373888000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X107839786668602559178668060348078522694548577690162289924414373888000
+     	   (X53919893334301279589334030174039261347274288845081144962207186944000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -41860,6 +44668,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X215679573337205118357336120696157045389097155380324579848828747776000@uint256 : and [
+     eq X215679573337205118357336120696157045389097155380324579848828747776000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X215679573337205118357336120696157045389097155380324579848828747776000
+     	   (X107839786668602559178668060348078522694548577690162289924414373888000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42033,6 +44853,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X431359146674410236714672241392314090778194310760649159697657495552000@uint256 : and [
+     eq X431359146674410236714672241392314090778194310760649159697657495552000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X431359146674410236714672241392314090778194310760649159697657495552000
+     	   (X215679573337205118357336120696157045389097155380324579848828747776000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42206,6 +45038,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X862718293348820473429344482784628181556388621521298319395314991104000@uint256 : and [
+     eq X862718293348820473429344482784628181556388621521298319395314991104000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X862718293348820473429344482784628181556388621521298319395314991104000
+     	   (X431359146674410236714672241392314090778194310760649159697657495552000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42379,6 +45223,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1725436586697640946858688965569256363112777243042596638790629982208000@uint256 : and [
+     eq X1725436586697640946858688965569256363112777243042596638790629982208000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1725436586697640946858688965569256363112777243042596638790629982208000
+     	   (X862718293348820473429344482784628181556388621521298319395314991104000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42552,6 +45408,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3450873173395281893717377931138512726225554486085193277581259964416000@uint256 : and [
+     eq X3450873173395281893717377931138512726225554486085193277581259964416000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3450873173395281893717377931138512726225554486085193277581259964416000
+     	   (X1725436586697640946858688965569256363112777243042596638790629982208000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42725,6 +45593,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X6901746346790563787434755862277025452451108972170386555162519928832000@uint256 : and [
+     eq X6901746346790563787434755862277025452451108972170386555162519928832000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X6901746346790563787434755862277025452451108972170386555162519928832000
+     	   (X3450873173395281893717377931138512726225554486085193277581259964416000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -42898,6 +45778,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X13803492693581127574869511724554050904902217944340773110325039857664000@uint256 : and [
+     eq X13803492693581127574869511724554050904902217944340773110325039857664000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X13803492693581127574869511724554050904902217944340773110325039857664000
+     	   (X6901746346790563787434755862277025452451108972170386555162519928832000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43071,6 +45963,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X27606985387162255149739023449108101809804435888681546220650079715328000@uint256 : and [
+     eq X27606985387162255149739023449108101809804435888681546220650079715328000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X27606985387162255149739023449108101809804435888681546220650079715328000
+     	   (X13803492693581127574869511724554050904902217944340773110325039857664000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43244,6 +46148,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X55213970774324510299478046898216203619608871777363092441300159430656000@uint256 : and [
+     eq X55213970774324510299478046898216203619608871777363092441300159430656000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X55213970774324510299478046898216203619608871777363092441300159430656000
+     	   (X27606985387162255149739023449108101809804435888681546220650079715328000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43417,6 +46333,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X110427941548649020598956093796432407239217743554726184882600318861312000@uint256 : and [
+     eq X110427941548649020598956093796432407239217743554726184882600318861312000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X110427941548649020598956093796432407239217743554726184882600318861312000
+     	   (X55213970774324510299478046898216203619608871777363092441300159430656000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43590,6 +46518,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X220855883097298041197912187592864814478435487109452369765200637722624000@uint256 : and [
+     eq X220855883097298041197912187592864814478435487109452369765200637722624000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X220855883097298041197912187592864814478435487109452369765200637722624000
+     	   (X110427941548649020598956093796432407239217743554726184882600318861312000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43763,6 +46703,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X441711766194596082395824375185729628956870974218904739530401275445248000@uint256 : and [
+     eq X441711766194596082395824375185729628956870974218904739530401275445248000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X441711766194596082395824375185729628956870974218904739530401275445248000
+     	   (X220855883097298041197912187592864814478435487109452369765200637722624000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -43936,6 +46888,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X883423532389192164791648750371459257913741948437809479060802550890496000@uint256 : and [
+     eq X883423532389192164791648750371459257913741948437809479060802550890496000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X883423532389192164791648750371459257913741948437809479060802550890496000
+     	   (X441711766194596082395824375185729628956870974218904739530401275445248000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44109,6 +47073,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X1766847064778384329583297500742918515827483896875618958121605101780992000@uint256 : and [
+     eq X1766847064778384329583297500742918515827483896875618958121605101780992000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X1766847064778384329583297500742918515827483896875618958121605101780992000
+     	   (X883423532389192164791648750371459257913741948437809479060802550890496000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44282,6 +47258,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3533694129556768659166595001485837031654967793751237916243210203561984000@uint256 : and [
+     eq X3533694129556768659166595001485837031654967793751237916243210203561984000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3533694129556768659166595001485837031654967793751237916243210203561984000
+     	   (X1766847064778384329583297500742918515827483896875618958121605101780992000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44455,6 +47443,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X7067388259113537318333190002971674063309935587502475832486420407123968000@uint256 : and [
+     eq X7067388259113537318333190002971674063309935587502475832486420407123968000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X7067388259113537318333190002971674063309935587502475832486420407123968000
+     	   (X3533694129556768659166595001485837031654967793751237916243210203561984000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44628,6 +47628,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X14134776518227074636666380005943348126619871175004951664972840814247936000@uint256 : and [
+     eq X14134776518227074636666380005943348126619871175004951664972840814247936000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X14134776518227074636666380005943348126619871175004951664972840814247936000
+     	   (X7067388259113537318333190002971674063309935587502475832486420407123968000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44801,6 +47813,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X28269553036454149273332760011886696253239742350009903329945681628495872000@uint256 : and [
+     eq X28269553036454149273332760011886696253239742350009903329945681628495872000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X28269553036454149273332760011886696253239742350009903329945681628495872000
+     	   (X14134776518227074636666380005943348126619871175004951664972840814247936000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -44974,6 +47998,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X56539106072908298546665520023773392506479484700019806659891363256991744000@uint256 : and [
+     eq X56539106072908298546665520023773392506479484700019806659891363256991744000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X56539106072908298546665520023773392506479484700019806659891363256991744000
+     	   (X28269553036454149273332760011886696253239742350009903329945681628495872000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -45147,6 +48183,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X113078212145816597093331040047546785012958969400039613319782726513983488000@uint256 : and [
+     eq X113078212145816597093331040047546785012958969400039613319782726513983488000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X113078212145816597093331040047546785012958969400039613319782726513983488000
+     	   (X56539106072908298546665520023773392506479484700019806659891363256991744000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -45320,6 +48368,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X226156424291633194186662080095093570025917938800079226639565453027966976000@uint256 : and [
+     eq X226156424291633194186662080095093570025917938800079226639565453027966976000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X226156424291633194186662080095093570025917938800079226639565453027966976000
+     	   (X113078212145816597093331040047546785012958969400039613319782726513983488000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -45493,6 +48553,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X452312848583266388373324160190187140051835877600158453279130906055933952000@uint256 : and [
+     eq X452312848583266388373324160190187140051835877600158453279130906055933952000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X452312848583266388373324160190187140051835877600158453279130906055933952000
+     	   (X226156424291633194186662080095093570025917938800079226639565453027966976000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -45666,6 +48738,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X904625697166532776746648320380374280103671755200316906558261812111867904000@uint256 : and [
+     eq X904625697166532776746648320380374280103671755200316906558261812111867904000 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X904625697166532776746648320380374280103671755200316906558261812111867904000
+     	   (X452312848583266388373324160190187140051835877600158453279130906055933952000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -45865,6 +48949,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X1809251394333065553493296640760748560207343510400633813116523624223735808000@uint256 : and [
+     eq X1809251394333065553493296640760748560207343510400633813116523624223735808000 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X1809251394333065553493296640760748560207343510400633813116523624223735808000
+     	   (X904625697166532776746648320380374280103671755200316906558261812111867904000**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^250 - 2^50  */ gfp25519mul(&t,&t,&z2_50_0);
 
@@ -46089,6 +49185,18 @@ mov L0x7fffffffded8 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X1809251394333065553493296640760748560207343510400633813116524750123642650623@uint256 : and [
+     eq X1809251394333065553493296640760748560207343510400633813116524750123642650623 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+     eqmod X1809251394333065553493296640760748560207343510400633813116524750123642650623
+     	   (mul X1809251394333065553493296640760748560207343510400633813116523624223735808000 X1125899906842623)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
+
 #	/* 2^250 - 1     */ gfp25519nsqr(&t,&t,5); 
 
 (* mov    $0x5,%edx                                #! PC = 0x401ee1 *)
@@ -46298,6 +49406,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X3618502788666131106986593281521497120414687020801267626233049500247285301246@uint256 : and [
+     eq X3618502788666131106986593281521497120414687020801267626233049500247285301246 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X3618502788666131106986593281521497120414687020801267626233049500247285301246
+     	   (X1809251394333065553493296640760748560207343510400633813116524750123642650623**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -46471,6 +49591,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X7237005577332262213973186563042994240829374041602535252466099000494570602492@uint256 : and [
+     eq X7237005577332262213973186563042994240829374041602535252466099000494570602492 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X7237005577332262213973186563042994240829374041602535252466099000494570602492
+     	   (X3618502788666131106986593281521497120414687020801267626233049500247285301246**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -46644,6 +49776,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X14474011154664524427946373126085988481658748083205070504932198000989141204984@uint256 : and [
+     eq X14474011154664524427946373126085988481658748083205070504932198000989141204984 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X14474011154664524427946373126085988481658748083205070504932198000989141204984
+     	   (X7237005577332262213973186563042994240829374041602535252466099000494570602492**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -46817,6 +49961,18 @@ nondet carry@uint1;
 nondet overflow@uint1;
 (* #jne    0x401b3d <.START>                       #! PC = 0x401c9f *)
 #jne    0x401b3d <.START>                       #! 0x401c9f = 0x401c9f;
+
+ghost X28948022309329048855892746252171976963317496166410141009864396001978282409968@uint256 : and [
+     eq X28948022309329048855892746252171976963317496166410141009864396001978282409968 (limbs 64 [rbx, rbp, rax, rsi])
+     ] && true;
+
+cut
+    and [
+     eqmod X28948022309329048855892746252171976963317496166410141009864396001978282409968
+     	   (X14474011154664524427946373126085988481658748083205070504932198000989141204984**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 (* dec    %rdi                                     #! PC = 0x401b3d *)
 (* dec    %%rdi *)
 (* xor    %r13,%r13                                #! PC = 0x401b40 *)
@@ -47016,6 +50172,18 @@ mov L0x7fffffffded8 rsi;
 #! 0x7fffffffdeb8 = 0x7fffffffdeb8;
 (* #retq                                           #! PC = 0x401cbf *)
 #retq                                           #! 0x401cbf = 0x401cbf;
+
+ghost X57896044618658097711785492504343953926634992332820282019728792003956564819936@uint256 : and [
+     eq X57896044618658097711785492504343953926634992332820282019728792003956564819936 (limbs 64 [L0x7fffffffdec0, L0x7fffffffdec8, L0x7fffffffded0, L0x7fffffffded8])
+     ] && true;
+
+cut
+    and [
+      eqmod X57896044618658097711785492504343953926634992332820282019728792003956564819936
+     	   (X28948022309329048855892746252171976963317496166410141009864396001978282409968**2)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] && true;
+
 
 #	/* 2^255 - 2^5   */ gfp25519mul(einv,&t,&z11);
 
@@ -47240,7 +50408,30 @@ mov L0x7fffffffe088 r11;
 (* #retq                                           #! PC = 0x401ad5 *)
 #retq                                           #! 0x401ad5 = 0x401ad5;
 
+ghost X57896044618658097711785492504343953926634992332820282019728792003956564819947@uint256 : and [
+     eq X57896044618658097711785492504343953926634992332820282019728792003956564819947 (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088])
+     ] && true;
+
+cut
+    and [
+     eqmod X57896044618658097711785492504343953926634992332820282019728792003956564819947
+     	   (mul X57896044618658097711785492504343953926634992332820282019728792003956564819936 X11)
+	   (((2**255 )- 19)) ]
+   prove with [all ghosts] &&  (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) < (2**255+2**64)@256;
+
+
 #	/* 2^255 - 21    */
+
+#
+#{
+#  and [
+#    eqmod	
+#    (limbs 64 [L0x7fffffffe050, L0x7fffffffe058, L0x7fffffffe060, L0x7fffffffe068])
+#    ((limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) ** 57896044618658097711785492504343953926634992332820282019728792003956564819947)
+#    (((2**255 )- 19)) ]
+#    prove with [all cuts, all ghosts] && true
+#}
+
 
 (* mov    0x128(%rsp),%rax                         #! EA = L0x7fffffffdfe8; Value = 0x64e11aee4710d300; PC = 0x401eff *)
 (* mov    0x128(%%rsp),%%rax                         #! L0x7fffffffdfe8 = L0x7fffffffdfe8; 0x64e11aee4710d300 = 0x64e11aee4710d300; 0x401eff = 0x401eff; *)
@@ -47306,6 +50497,13 @@ mov L0x7fffffffe088 r10;
 (* #retq                                           #! PC = 0x401b10 *)
 #retq                                           #! 0x401b10 = 0x401b10;
 
+ghost XPenultimate@uint256 : and [
+     eq XPenultimate (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088])
+     ] && true;
+
+cut
+    and [
+        eqmod XPenultimate X57896044618658097711785492504343953926634992332820282019728792003956564819947 (((2**255 )- 19)) ] prove with [all ghosts] && (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) < (2**255)@256;
 
 (* mov    %rbp,%rdi                                #! PC = 0x401f45 *)
 mov rdi rbp;
@@ -47316,7 +50514,7 @@ mov rdi rbp;
 (* mov    %rsp,%r11                                #! PC = 0x401cc0 *)
 mov r11 rsp;
 (* sub    $0x10,%rsp                               #! PC = 0x401cc3 *)
-subb dontcare rsp rsp 0x10@uint64;
+subs dontcare rsp rsp 0x10@uint64;
 (* mov    %r11,(%rsp)                              #! EA = L0x7fffffffe028; PC = 0x401cc7 *)
 mov L0x7fffffffe028 r11;
 (* mov    %r12,0x8(%rsp)                           #! EA = L0x7fffffffe030; PC = 0x401ccb *)
@@ -47344,12 +50542,14 @@ sbbs carry r9 r9 0xffffffffffffffff@uint64 carry;
 (* sbb    0x405058,%r10                            #! PC = 0x401cfb *)
 sbbs carry r10 r10 0xffffffffffffffff@uint64 carry;
 (* sbb    0x405060,%r11                            #! PC = 0x401d03 *)
-sbb r11 r11 0x7fffffffffffffff@uint64 carry;
+sbbs b1 r11 r11 0x7fffffffffffffff@uint64 carry;
 (* mov    %r11,%r12                                #! PC = 0x401d0b *)
 mov r12 r11;
 (* shl    %r12                                     #! PC = 0x401d0e *)
 adds carry r12 r12 r12;
 (* cmovb  %rax,%r8                                 #! PC = 0x401d11 *)
+assert true && (carry = b1);
+assume (carry = b1) && true;
 cmov r8 carry rax r8;
 (* cmovb  %rcx,%r9                                 #! PC = 0x401d15 *)
 cmov r9 carry rcx r9;
@@ -47374,11 +50574,34 @@ mov r12  L0x7fffffffe030;
 (* #retq                                           #! PC = 0x401d39 *)
 #retq                                           #! 0x401d39 = 0x401d39;
 
+ghost XFinal@uint256 : and [
+     eq XFinal (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088])
+     ] && true;
+
+cut
+    and [
+        eqmod XFinal XPenultimate (((2**255 )- 19)) ] prove with [all ghosts] &&
+	#true;
+	(limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) < (2**255-19)@256;
+
+cut 
+    and [
+    eqmod XFinal (X1 ** 57896044618658097711785492504343953926634992332820282019728792003956564819947)
+    (((2**255 )- 19)) ] prove with [all cuts] && true;
 
 
 {
-  true
+  and [
+    eqmod
+    XFinal
+    (X1 ** 57896044618658097711785492504343953926634992332820282019728792003956564819947)
+    (((2**255 )- 19)),
+    eq
+    X1 
+    (limbs 64 [L0x7fffffffe050, L0x7fffffffe058, L0x7fffffffe060, L0x7fffffffe068]),
+    eq
+    XFinal (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) ]
+    prove with [all cuts, all ghosts]
   &&
   true
 }
-
