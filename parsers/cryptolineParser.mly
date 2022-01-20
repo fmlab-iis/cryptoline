@@ -2786,7 +2786,7 @@ simple_const:
 
 complex_const:
     const                                         { fun cm -> $1 cm }
-  | SUBOP complex_const %prec UMINUS              { fun cm -> Z.neg ($2 cm) }
+  | SUBOP const %prec UMINUS                      { fun cm -> Z.neg ($2 cm) }
   | complex_const ADDOP complex_const             { fun cm -> Z.add ($1 cm) ($3 cm) }
   | complex_const SUBOP complex_const             { fun cm -> Z.sub ($1 cm) ($3 cm) }
   | complex_const MULOP complex_const             { fun cm -> Z.mul ($1 cm) ($3 cm) }
