@@ -667,7 +667,12 @@ let rec string_of_ebexp ?typ:(typ=false) e =
   match e with
   | Etrue -> "true"
   | Eeq (e1, e2) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
-  | Eeqmod (e1, e2, ms) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2 ^ " (mod " ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ ")"
+  | Eeqmod (e1, e2, ms) ->
+     string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
+     ^ (match ms with
+        | [] -> ""
+        | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
+        | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
   | Eand (e1, e2) ->
      let es = split_eand e in
      match es with
