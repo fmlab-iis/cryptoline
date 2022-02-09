@@ -2,7 +2,7 @@
   (dev
     (flags         (:standard -w +42-33-39-3)))
   (release
-    (flags         (:standard -O3))))
+    (ocamlopt_flags         (:standard -O3))))
 
 (library
   (name             nBits)

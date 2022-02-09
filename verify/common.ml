@@ -1227,7 +1227,7 @@ let vars_in_appearing_order cmp es =
     List.rev_map
       (fun freq_vs -> List.map fst (List.sort mycmp freq_vs)) freq_vss in
   List.flatten (List.rev rev_sorted_vss)
-  
+
 let vars_in_lex_order es =
   VS.elements (List.fold_left (fun res e -> VS.union res (vars_eexp e)) VS.empty es)
 
@@ -1304,7 +1304,7 @@ let rec singular_of_eexp e =
 let rec sage_of_eexp e =
   match e with
   | Evar v -> string_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
@@ -1317,7 +1317,7 @@ let rec sage_of_eexp e =
 let rec magma_of_eexp e =
   match e with
   | Evar v -> string_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
@@ -1327,12 +1327,14 @@ let rec magma_of_eexp e =
      ^ " " ^ algebra_symbol_of_ebinop op ^ " "
      ^ (if is_eexp_atomic e2 then magma_of_eexp e2 else "(" ^ magma_of_eexp e2 ^ ")")
 
+let maple_of_eexp e = magma_of_eexp e
+
 (* Underscore is not allowed in variable names in Mathematica. *)
 let mathematica_of_var v = "v[\"" ^ string_of_var v ^ "\"]"
 let rec mathematica_of_eexp e =
   match e with
   | Evar v -> mathematica_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then mathematica_of_eexp e else " (" ^ mathematica_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
@@ -1346,7 +1348,7 @@ let macaulay2_of_var v = String.map (fun c -> if c = '_' then '\'' else c) (stri
 let rec macaulay2_of_eexp e =
   match e with
   | Evar v -> macaulay2_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atomic e then macaulay2_of_eexp e else " (" ^ macaulay2_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->

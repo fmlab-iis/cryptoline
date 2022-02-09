@@ -202,7 +202,7 @@ ebexp_atomic:
   | LPAR ebexp RPAR                               { $2 }
   | eexp EQOP eexp eq_suffix                      { match $4 with
                                                     | None -> Eeq ($1, $3)
-                                                    | Some m -> Eeqmod ($1, $3, [ m ]) }
+                                                    | Some ms -> Eeqmod ($1, $3, ms) }
   | AND LSQUARE ebexps RSQUARE                    { eands $3 }
   | LANDOP LSQUARE ebexps RSQUARE                 { eands $3 }
 ;
@@ -221,7 +221,8 @@ ebexp_atomic_without_eqmod:
 
 eq_suffix:
                                                   { None }
-  | LPAR MOD eexp RPAR                            { Some $3 }
+  | LPAR MOD eexp RPAR                            { Some [$3] }
+  | LPAR MOD LSQUARE eexps RSQUARE RPAR           { Some $4 }
 ;
 
 ebexps:

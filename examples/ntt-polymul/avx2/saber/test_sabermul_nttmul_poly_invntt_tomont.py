@@ -1,50 +1,186 @@
+#!/usr/bin/env python3
 
-const_base = 0x555555560700
-in_base    = 0x7fffffffbb20
-out_base   = 0x7fffffffbb20
+# 1. to_zdsl.py --no-main --no-pre --no-post test_sabermul_nttmul_poly_invntt_tomont.gas 1> test_sabermul_nttmul_poly_invntt_tomont_preprocessed.cl
+# 2. ./test_sabermul_nttmul_poly_invntt_tomont.py test_sabermul_nttmul_poly_invntt_tomont_preprocessed.cl > test_sabermul_nttmul_poly_invntt_tomont.cl
 
-P = 7681 
-R = 2**16
-ZETA = 62 # 10 for 10753
-PINV = (P**(2**15-1))%R - R
-MONT = (R % P) - P
-MONT_PINV = -9
-V = int (2**27/P + 0.5)
-SHIFT = 16
-F = ((R**2)//256)%P
-F_PINV = (F*PINV)%R - R
+# Inputs:
+# %rdx = 0x55555555f7c0
+# L0x555555560700-L0x55555556071e (_16XP = 7681 or 10753, num = 16)
+# L0x555555560780-L0x55555556079e (_16XMONT_PINV = -9 or -6, _16XMONT * P^-1 mod 2^16, num = 16)
+# L0x5555555607a0-L0x5555555607be (_16XMONT = -3593 or 1018, 2^16 mod P, num = 16)
+# L0x555555560800-L0x55555556093e (_ZETAS, num = 160)
+# L0x555555560940-L0x555555560d3e (_TWIST32, num = 512)
+# L0x555555560d40-L0x555555560dbe (_TWISTS4, num = 64)
+# L0x7fffffffbb20-L0x7fffffffbd1e (input coefficients, num = 256)
+# L0x7fffffffbb20-L0x7fffffffbd1e (output coefficients, num = 256)
 
-pdata7681 = [
-#define _16XP 0
-  P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P,
+import re, math
+from argparse import ArgumentParser
 
-#define _16XPINV 16
-  PINV, PINV, PINV, PINV, PINV, PINV, PINV, PINV,
-  PINV, PINV, PINV, PINV, PINV, PINV, PINV, PINV,
+ORIGINAL_N = 256
+ORIGINAL_P = 8192
+P = 7681
+PINV = -7679   # p^-1 mod 2^16, -7679 * 7681 = 1 (mod 2^16)
+MONT = -3593   # 2^16 mod p, -3593 = 4088 (mod 7681)
+MONT_PINV = -9 # (MONT * p^-1) mod 2^16, -9*7681 = -3593 (mod 2^16)
+ROOT = 62      # 62**256 = -1 (mod 7681)
+# 2^(-16) mod 7681 = 900
+_16XP_BASE = 0x555555560700
+_16XP_NUM = 16
+_16XMONT_PINV_BASE = 0x555555560780
+_16XMONT_PINV_NUM = 16
+_16XMONT_BASE = 0x5555555607a0
+_16XMONT_NUM = 16
+_ZETAS_BASE = 0x555555560800
+_ZETAS_NUM = 160
+_TWIST32_BASE = 0x555555560940
+_TWIST32_NUM = 512
+_TWISTS4_BASE = 0x555555560d40
+_TWISTS4_NUM = 64
+INPUT_BASE = 0x7fffffffbb20 # (L0x7fffffffbb20 ~ L0x7fffffffbd1e)
+INPUT_NUM = 256
+ANS_BASE = 0x7fffffffbb20 # (L0x7fffffffbb20 ~ L0x7fffffffbd1e)
+ANS_NUM = 256
+LEVEL3_TWIST = [62, 4236, 4600, 5805, 217, 7145, 738, 1115]
+LEVEL7_TWIST = [1, 1213, 7154, 7098, 1366, 2648, 2132, 2446]
+POLY_NAME = "inp_poly"
+POLY_VAR = "x"
 
-#define _16XV 32
-  V, V, V, V, V, V, V, V, V, V, V, V, V, V, V, V,
+INIT_RANGES_7681 = [
+    4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199
+    ]
 
-#define _16XSHIFT 48
-  SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT,
-  SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT, SHIFT,
+RANGES_7681 = [
+    # Level 0
+    [8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305, 8636, 8636, 8398, 4305],
+    # Level 1
+    [4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271, 4439, 4439, 4439, 4439, 4439, 4536, 4782, 4407, 4439, 4251, 4767, 4051, 4439, 4554, 4636, 4301, 4439, 4101, 4390, 4322, 4439, 4271, 4450, 4269, 4439, 4322, 4111, 4154, 4439, 3861, 4785, 4271],
+    # Level 2
+    [8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178, 8878, 8975, 9221, 8846, 8878, 8975, 9221, 8846, 8878, 8805, 9403, 8352, 4321, 4321, 4362, 4305, 8878, 8372, 8840, 8591, 4324, 4274, 4324, 4299, 8878, 8183, 8896, 8425, 4257, 4178, 4257, 4178],
+    # Level 3
+    [17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 17780, 18624, 17198, 13199, 13296, 13583, 13151, 17756, 16555, 17736, 17016, 8581, 8452, 8581, 8477, 4839, 4766, 4839, 4782, 4305, 4305, 4305, 4305],
+    # Level 4
+    [4838, 4798, 4242, 4963, 4284, 4492, 4795, 5077, 4490, 4177, 4808, 4310, 4326, 3944, 4560, 4665, 4308, 4448, 3978, 4714, 4588, 4665, 4057, 4307, 4511, 4352, 5174, 3977, 3842, 3870, 3841, 4398, 4838, 4356, 4583, 4983, 4304, 4881, 4429, 4548, 4792, 4066, 5157, 4604, 4148, 4611, 4070, 4005, 4403, 4898, 4962, 3904, 4663, 4926, 4679, 4143, 4517, 5123, 5044, 4767, 4768, 4053, 4593, 3897, 4838, 4474, 4762, 4851, 4588, 4327, 3841, 4175, 4341, 5099, 4736, 3913, 4768, 4268, 4782, 4595, 4792, 4571, 4762, 4137, 4257, 4291, 3902, 4999, 4548, 4596, 5008, 3885, 4765, 3984, 4477, 4143, 4838, 5029, 4293, 4504, 5087, 4917, 4988, 4996, 4358, 4047, 4203, 4262, 4046, 4077, 4303, 4621, 4601, 4998, 4306, 4225, 3872, 4064, 4988, 4722, 4574, 4356, 4140, 4517, 4148, 4111, 4677, 4101, 4838, 4930, 4810, 4177, 4456, 4878, 3967, 4651, 4511, 3977, 3841, 5061, 4606, 3897, 4222, 4817, 4665, 4746, 4077, 4565, 5007, 4486, 4554, 3936, 4986, 4817, 4687, 5080, 3982, 4013, 4522, 3979, 4838, 4375, 4543, 4913, 3978, 4610, 4191, 4881, 4376, 4844, 5021, 4318, 3864, 4485, 4834, 4232, 4108, 4949, 4908, 5036, 4048, 4047, 4002, 3965, 4040, 5126, 4422, 4094, 4496, 4165, 4220, 4321, 4838, 5045, 4749, 4638, 3842, 4192, 4346, 4296, 4509, 4509, 5092, 4475, 3982, 4309, 4053, 4196, 4591, 4191, 4404, 4885, 5001, 4960, 4569, 5036, 4286, 4528, 5091, 4098, 3864, 4238, 4251, 4077, 4838, 3844, 4186, 5041, 5025, 4402, 4283, 4374, 4803, 4504, 4578, 4968, 4781, 4739, 4414, 4708, 3877, 3895, 5000, 4870, 3978, 4996, 4351, 4776, 4358, 4617, 4363, 4046, 4195, 4420, 4121, 4778],
+    # Level 5
+    [9676, 9154, 8825, 9946, 8588, 9373, 9224, 9625, 9282, 8243, 9965, 8914, 8474, 8555, 8630, 8670, 8711, 9346, 8940, 8618, 9251, 9591, 8736, 8450, 9028, 9475, 10218, 8744, 8610, 7923, 8434, 8295, 4143, 4142, 4112, 4158, 4111, 4142, 4142, 4142, 4142, 4111, 4158, 4127, 4111, 4111, 4111, 4112, 4112, 4142, 4127, 4111, 4142, 4142, 4112, 4111, 4127, 4142, 4173, 4112, 4111, 4096, 4111, 4111, 9676, 9503, 9055, 9355, 9675, 9244, 8829, 9171, 8699, 9146, 8939, 8175, 8814, 8345, 9085, 9216, 9393, 9569, 9068, 8362, 8129, 8355, 8890, 9721, 9122, 8952, 9148, 8402, 8913, 8095, 9154, 8244, 4178, 4178, 4143, 4178, 4178, 4178, 4143, 4169, 4143, 4169, 4143, 4143, 4143, 4143, 4151, 4178, 4178, 4178, 4151, 4143, 4125, 4143, 4143, 4178, 4160, 4143, 4169, 4143, 4143, 4125, 4169, 4143, 9676, 9305, 9353, 9090, 8434, 9488, 8158, 9532, 8887, 8821, 8862, 9379, 8470, 8382, 9056, 9049, 8773, 9695, 8985, 9601, 9055, 8533, 8556, 7901, 9026, 9943, 9109, 9174, 8478, 8178, 8742, 8300, 3995, 3982, 3982, 3982, 3978, 3982, 3965, 3982, 3978, 3978, 3978, 3982, 3978, 3978, 3982, 3982, 3978, 3995, 3982, 3995, 3982, 3978, 3978, 3965, 3982, 3995, 3982, 3982, 3978, 3965, 3978, 3978, 9676, 8889, 8935, 9679, 8867, 8594, 8629, 8670, 9312, 9013, 9670, 9443, 8763, 9048, 8467, 8904, 8468, 8086, 9404, 9755, 8979, 9956, 8920, 9812, 8644, 9145, 9454, 8144, 8059, 8658, 8372, 8855, 4364, 4323, 4323, 4364, 4323, 4296, 4323, 4323, 4337, 4323, 4364, 4337, 4323, 4323, 4296, 4323, 4296, 4269, 4337, 4364, 4323, 4391, 4323, 4364, 4323, 4337, 4337, 4269, 4269, 4323, 4296, 4323],
+    # Level 6
+    [4838, 4838, 4439, 4838, 4838, 4838, 4439, 4838, 4439, 4439, 4838, 4439, 4439, 4439, 4439, 4439, 4439, 4838, 4439, 4439, 4439, 4439, 4439, 4439, 4439, 4838, 4838, 4439, 4439, 4439, 4439, 4439, 8321, 8320, 8255, 8336, 8289, 8320, 8285, 8311, 8285, 8280, 8301, 8270, 8254, 8254, 8262, 8290, 8290, 8320, 8278, 8254, 8267, 8285, 8255, 8289, 8287, 8285, 8342, 8255, 8254, 8221, 8280, 8254, 4898, 4848, 4798, 4898, 4823, 4848, 4823, 4873, 4798, 4773, 4873, 4767, 4773, 4767, 4798, 4798, 4823, 4873, 4823, 4767, 4773, 4798, 4798, 4823, 4823, 4848, 4898, 4767, 4773, 4717, 4798, 4742, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4274, 4838, 4439, 4838, 4838, 4439, 4439, 4439, 4439, 4439, 4439, 4838, 4838, 4439, 4439, 4439, 4439, 4439, 4439, 4838, 4838, 4439, 4838, 4439, 4439, 4439, 4838, 4838, 4439, 4439, 4439, 4439, 4439, 8359, 8305, 8305, 8346, 8301, 8278, 8288, 8305, 8315, 8301, 8342, 8319, 8301, 8301, 8278, 8305, 8274, 8264, 8319, 8359, 8305, 8369, 8301, 8329, 8305, 8332, 8319, 8251, 8247, 8288, 8274, 8301, 4711, 4711, 4711, 4711, 4636, 4711, 4636, 4711, 4711, 4636, 4711, 4711, 4636, 4636, 4636, 4711, 4636, 4636, 4711, 4711, 4711, 4711, 4636, 4636, 4636, 4711, 4711, 4636, 4636, 4636, 4636, 4636, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178, 4178],
+    # Level 7
+    [9676, 9277, 9277, 9676, 9277, 9277, 8878, 9277, 8878, 8878, 9676, 9277, 8878, 8878, 8878, 8878, 8878, 9277, 9277, 9277, 8878, 9277, 8878, 8878, 8878, 9676, 9676, 8878, 8878, 8878, 8878, 8878, 16680, 16625, 16560, 16682, 16590, 16598, 16573, 16616, 16600, 16581, 16643, 16589, 16555, 16555, 16540, 16595, 16564, 16584, 16597, 16613, 16572, 16654, 16556, 16618, 16592, 16617, 16661, 16506, 16501, 16509, 16554, 16555, 9609, 9559, 9509, 9609, 9459, 9559, 9459, 9584, 9509, 9409, 9584, 9478, 9409, 9403, 9434, 9509, 9459, 9509, 9534, 9478, 9484, 9509, 9434, 9459, 9459, 9559, 9609, 9403, 9409, 9353, 9434, 9378, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 8452, 4378, 4362, 4362, 4378, 4362, 4362, 4321, 4362, 4321, 4321, 4378, 4362, 4321, 4321, 4321, 4321, 4321, 4362, 4362, 4362, 4321, 4362, 4321, 4321, 4321, 4378, 4378, 4321, 4321, 4321, 4321, 4321, 4766, 4766, 4766, 4782, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4766, 4378, 4378, 4378, 4378, 4362, 4378, 4362, 4378, 4378, 4362, 4378, 4362, 4362, 4362, 4362, 4378, 4362, 4378, 4378, 4362, 4362, 4378, 4362, 4362, 4362, 4378, 4378, 4362, 4362, 4362, 4362, 4362, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305, 4305]
+    ]
 
-#define _16XMONT_PINV 64
+def join_chunks(xs, glue, n, indent=0):
+    return [" " * indent + glue.join(xs[i:i + n]) for i in range(0, len(xs), n)]
+
+def flatten(ll):
+    return [i for l in ll for i in l]
+
+def ziplist(l1, l2):
+    return list(zip(l1, l2))
+
+def num_to_bits (n, w):
+    r = []
+    for i in range (w):
+        r.append (n % 2)
+        n //= 2
+    return (r)
+
+def bits_to_num (l):
+    r = 0
+    for i in range (len(l) - 1, -1, -1):
+        r = r * 2 + l[i]
+    return (r)
+
+def modP(n, p):
+    n = n % p
+    return n - p if n > p//2 else n
+
+def ntt_mod(n_expn, prime, mont, root, negacyclic, stage):
+    num_rings = 2**stage
+    num_bits = n_expn + 1 if negacyclic else n_expn
+    res = []
+    for i in range (num_rings):
+        if negacyclic:
+            l = num_to_bits(i, stage)
+            l.reverse()
+            l.insert(0, 1)
+            l = [0 for i in range(num_bits - stage - 1)] + l
+        else:
+            l = num_to_bits(i, num_bits)
+            l.reverse()
+        e = bits_to_num(l)
+        modulo = (root**e) % prime
+        modulo_mont = (modulo * mont) % prime
+        modulo = modulo - prime if modulo > prime / 2 else modulo
+        modulo_mont = modulo_mont - prime if modulo_mont > prime / 2 else modulo_mont
+        res.append(dict(modulo = modulo, mont = modulo_mont))
+    return res
+
+def get_ntt_mod_level3to7(stage, i):
+    return ntt_mod(n_expn=9, prime=P, mont=MONT, root=ROOT, negacyclic=False, stage=stage)[i]["modulo"]
+
+def make_ymms(ymms, off, num):
+    return ["ymm{}_{:x}".format(ymm, off + i) for ymm in ymms for i in range(num)]
+
+def make_eqmod(poly_name, poly_mult, ymms, coefs, mods, mon_per_line=4):
+    return "\n".join([
+        "eqmod",
+        "  {1}({0} * {0})".format(poly_name, "" if poly_mult == 1 else (str(poly_mult) + " * ")),
+        "  (",
+        " +\n".join(join_chunks(["{0}*({1}**{2})".format(ymms[i], coefs[i], i) for i in range(len(ymms))], " + ", mon_per_line, indent=4)),
+        "  )",
+        "  [{}]".format(", ".join(mods))
+    ])
+
+def str_range(args, left_rel, right_rel):
+    return "  " + ",\n  ".join(join_chunks(["(-({1}))@16 {2} {0}, {0} {3} ({1})@16".format(ymm, r, left_rel, right_rel) for (ymm, r) in args], ", ", 2))
+
+def print_comment(str):
+    print("(* {} *)".format(str))
+
+def str_ghost(typed_vars, easserts, rasserts):
+    return "\n".join([
+             "ghost {} :".format(", ".join(["{0}@{1}".format(var, typ) for (var, typ) in typed_vars])),
+             "and [",
+             "  {}".format("true" if len(easserts) == 0 else ",\n  ".join(easserts)),
+             "] && and [",
+             "  {}".format("true" if len(rasserts) == 0 else ",\n  ".join(rasserts)),
+             "];"
+           ])
+
+def str_main_args ():
+    return "\n".join([
+        "(* parameters *)\n",
+        ",\n".join(join_chunks(["sint16 f{:03d}".format(i) for i in range(INPUT_NUM)], ", ", 4))])
+
+def str_precondition_algebra ():
+    return "\n".join([
+        "(* algebraic precondition *)\n",
+        "true"])
+
+def str_precondition_range ():
+    return "\n".join([
+        "(* range precondition *)\n",
+        "and [",
+        ",\n".join(join_chunks(["(-{0})@16 <=s f{1:03d}, f{1:03d} <=s {0}@16".format(INIT_RANGES_7681[i+off*128], i%8*16 + i//8 + off*128) for off in range(2) for i in range(128)], ", ", 4)),
+        "]"])
+
+def str_inits ():
+    return "\n".join([
+        "(* inits *)\n",
+        "\n".join(join_chunks(["mov L0x{:x} f{:03d};".format(INPUT_BASE + 2 * i, i) for i in range(INPUT_NUM)], " ", 4))])
+
+def str_twiddles ():
+    _16XP = [ P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P ]
+    _16XMONT_PINV = [
   MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV,
-  MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV,
-
-#define _16XMONT 80
+  MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV, MONT_PINV
+        ]
+    _16XMONT = [
   MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT,
-  MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT,
-
-#define _16XF_PINV 96
-  F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV,
-  F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV, F_PINV,
-
-#define _16XF 112
-  F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F,
-
-#define _ZETAS 128
+  MONT, MONT, MONT, MONT, MONT, MONT, MONT, MONT
+        ]
+    _ZETAS = [
    28865,  28865,  28865,  28865,  28865,  28865,  28865,  28865,
    28865,  28865,  28865,  28865,  28865,  28865,  28865,  28865,
     3777,   3777,   3777,   3777,   3777,   3777,   3777,   3777,
@@ -64,9 +200,9 @@ pdata7681 = [
    14744,  14744,  14744,  14744,  14744,  14744,  14744,  14744,
    -4974,  -4974,  -4974,  -4974,  -4974,  -4974,  -4974,  -4974,
     2456,   2456,   2456,   2456,   2456,   2456,   2456,   2456,
-    2194,   2194,   2194,   2194,   2194,   2194,   2194,   2194,
-
-#define _TWIST32 288
+    2194,   2194,   2194,   2194,   2194,   2194,   2194,   2194
+        ]
+    _TWIST32 = [
       -9,   -529,  32738,  -1851,     -9,  29394,  -7508, -20435,
       -9,  26288,   9855, -19215,     -9,  16006, -12611,   -964,
    -3593,    -17,  -1054,   3781,  -3593,   3794,   2732,  -2515,
@@ -130,9 +266,9 @@ pdata7681 = [
    -5913,  27636, -32329,  -2952,  29667,  23984, -10409,   8831,
   -11792,  14138,  13541,  31518,  11783,  30844, -15358, -19274,
    -1305,   1012,  -3145,   1144,   3555,   -592,   2391,   1151,
-   -3600,    826,   2789,   -226,      7,    124,      2,   2230,
-
-#define _TWIST4 800
+   -3600,    826,   2789,   -226,      7,    124,      2,   2230
+        ]
+    _TWISTS4 = [
       -9, -16425, -28865,  10350,  -3593,  -3625,  -3777,   3182,
       -9, -10350,  28865,  16425,  -3593,  -3182,   3777,   3625,
       -9,   4496, -10350,  14744,  -3593,  -3696,  -3182,   2456,
@@ -141,143 +277,401 @@ pdata7681 = [
       -9, -22593,   7244, -20315,  -3593,   2495,   1100,   1701,
       -9, -18191,  14744, -23754,  -3593,  -2319,   2456,  -2250,
       -9, -20870,   4974, -22593,  -3593,  -1414,  -2194,   2495
-]
+        ]
+    twiddles = [
+        ("_16XP", _16XP, _16XP_BASE),
+        ("_16XMONT_PINV", _16XMONT_PINV, _16XMONT_PINV_BASE),
+        ("_16XMONT", _16XMONT, _16XMONT_BASE),
+        ("_ZETAS", _ZETAS, _ZETAS_BASE),
+        ("_TWIST32", _TWIST32, _TWIST32_BASE),
+        ("_TWISTS4", _TWISTS4, _TWISTS4_BASE)
+        ]
+    res = []
+    for (name, arr, base) in twiddles:
+        res.append("\n(* {} *)\n".format(name))
+        res.append("\n".join(join_chunks(["mov L0x{:x} ({:6d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
+    return "\n".join(res)
 
-def num_to_bits (n, w):
-    r = []
-    for i in range (w):
-        r.append (n % 2)
-        n //= 2
-    return (r)
+def str_init_poly_var():
+    return ("ghost {}@sint16 : true && true;").format(POLY_VAR)
 
-def bits_to_num (l):
-    r = 0
-    for i in range (len(l) - 1, -1, -1):
-        r = r * 2 + l[i]
-    return (r)
+def str_init_poly(off):
+    return str_ghost([("{0}{1}".format(POLY_NAME, i + off*128), "sint16") for i in range(128)],
+                     ["{0}{1} * {0}{1} = {2}".format(POLY_NAME, i + off*128, "L0x{:x}".format(INPUT_BASE + (i%8*16 + i//8 + off*128)*2)) for i in range(128)],
+                     [])
 
-# convert ymm registers of the given indices to coefficient list
-def ymm2coeffs (indices, slice_size):
-    idxs = []
-    for i in range (len (indices)):
-        cur = []
-        for j in range (16):
-            cur.append ('ymm' + str(indices[i]) + '_' + '{0:x}'.format (j))
-        idxs.append (cur)
-    ret = []
-    for k in range (16//slice_size):
-        for i in range (len (indices)):
-            ret = ret + idxs[i][(k*slice_size):((k+1)*slice_size)]
-    return (ret)
+def get_algebra(args, expn, mon_per_line=4):
+    return [
+        make_eqmod(poly_name, poly_mult, ymms, [POLY_VAR] * len(ymms),
+                       [str(P), "{0} - ({1})".format(POLY_VAR, m) if expn == 1 else "{0}**{2} - ({1})".format(POLY_VAR, m, expn)],
+                       mon_per_line) for (poly_name, poly_mult, ymms, m) in args
+    ]
 
-def coeff_bounds (bounds, slice_size):
-    idxs = []
-    for i in range (len (bounds)):
-        cur = [ bounds[i] for j in range (16)]
-        idxs.append (cur)
-    ret = []
-    for k in range (16//slice_size):
-        for i in range (len (bounds)):
-            ret = ret + idxs[i][(k*slice_size):((k+1)*slice_size)]
-    return (ret)
+def str_algebra(args, expn, mon_per_line=4):
+    return ",\n".join(get_algebra(args, expn, mon_per_line))
 
-def print_parameters (cname):
-    for i in range (256):
-        print ('sint16 {0}{1:02x}'.format (cname, i),
-               end = '\n' if i == 255 else
-                     (',\n' if i % 6 == 5 else ', '))
+def str_assertions(pairs):
+    equalities = []
+    for (ymm1, ymm2) in pairs:
+        for i in range(0, 16):
+            equalities.append("mulLymm{0}_{2:x} = mulLymm{1}_{2:x}".format(ymm1, ymm2, i))
+    return "assert true && and [\n{0}\n];\nassume and [\n{0}\n] && true;".format(",\n".join(join_chunks(equalities, ", ", 2)))
 
-def print_range_precondition (cname, bound):
-    for i in range (256):
-        print ('(-{0})@16 <s {1}{2:02x}, {1}{2:02x} <s ({0})@16'.
-               format (bound, cname, i),
-               end = '\n' if i == 255 else
-                     (',\n' if i % 2 == 1 else ', '))
+level = 0
+off = 0
+ecut_id = 0
+rcut_id = 0
+level5_ecut_ids = [[], []]
+level6_ecut_ids = [[], []]
+level6_rcut_ids = []
+level7_ecut_ids = []
+level7_rcut_ids = []
 
-def print_initialization (base, cname):
-    for i in range (256):
-        print ('mov L0x{0:x} {1}{2:02x};'.format (base + i*2, cname, i),
-               end = '\n' if i % 3 == 2 else ' ')
-        
-def print_constant_definitions (base, table):
-    for i in range (len (table)):
-        print ('mov L0x{0:x} ({1:6d})@sint16;'.format (base + i*2, table[i]),
-               end = '\n' if i % 2 == 1 else ' ')
+def print_instr(instr):
+    global level, off, ecut_id, rcut_id, level5_ecut_ids, level6_ecut_ids, level6_rcut_ids, level7_ecut_ids, level7_rcut_ids
 
-def print_range_condition (indices, slice_size, bounds):
-    coefficients = ymm2coeffs (indices, slice_size)
-    print ('and [')
-    for i in range (len (coefficients)):
-        print ('({0})@16 <s {1}, {1} <s ({2})@16{3}'.
-               format (-bounds[i % len (bounds)],
-                        coefficients[i],
-                        bounds[i % len (bounds)],
-                       ',' if i < len (coefficients) - 1 else ']'))
+    # ========== Level 0 ==========
+    if instr.startswith("(* vmovdqa 0x40(%rsi),%ymm6"):
+        print_comment("===== Start of Level {}, off {} =====".format(level, off))
+    elif instr.startswith("(* vpaddw %ymm5,%ymm4,%ymm14") and level == 0:
+        print(str_assertions([(7, 12), (11, 13)]))
+    elif instr.startswith("(* vpaddw %ymm6,%ymm14,%ymm4") and level == 0:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # print("assert")
+        # print("and [")
+        # print(str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #            2**(level+1),
+        #            make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][(i%8)//2], i//8, 1),
+        #            get_ntt_mod_level3to7(2, i%4)) for i in range(128)],
+        #     expn=1))
+        # print("] && true;\n")
+        #
+        print("\n(* rcut {0} *)\n".format(rcut_id))
+        print("rcut and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][i%4], i//4, 1) for i in range(64)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        rcut_id = rcut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-def print_inp_polys (inp_name, cname, level):
-    exps = [ i for i in range (64) ]
-    exprevbits = map (lambda e : [1, level] +
-                                 list (reversed (num_to_bits (e, 6))),
-                      exps)
-    revexps = list (map (lambda b : (ZETA**(bits_to_num (b)))%P,
-                         exprevbits))
-        
-def print_algebraic_condition (cname, indices, factor, level, offset):
-    exps = [ i for i in range (64) ]
-    exprevbits = map (lambda e : [1, level] +
-                                 list (reversed (num_to_bits (e, 6))),
-                      exps)
-    revexps = list (map (lambda b : (ZETA**(bits_to_num (b)))%P,
-                         exprevbits))
-    slice_size = 2**level
-    coefficients = ymm2coeffs (indices, slice_size)
-    degree = 2**(level+1)
-    coeffidx = 0
-    for i in range (len (revexps)):
-        modulus = revexps[i]
-        print ('eqmod ({0}*{1}{2:02x})'.format (factor, cname, i + 128*offset))
-        coeffidx = (2**(level+1)) * (i//(2**(level+1)))
-        for j in range (0, degree):
-            print ('{2}{0}*(x**{1})'.
-                   format (coefficients[coeffidx], j,
-                           '(' if j == 0 else ''),
-                   end = ')\n' if j == degree - 1 else
-                              (' +\n ' if j % 4 == 3 else ' + '))
-            coeffidx += 1
-        print ('[{0}, x - {1}]{2}'.
-               format (P, modulus,
-                       ',' if i < len (revexps) - 1 else ']'))
-        
-print ('\n\n\n(**************** parameters *****************)\n\n')
-print ('bit x,')
-print_parameters ('c')
+    # ========== Level 1 ==========
+    elif instr.startswith("(* vpsubw %ymm14,%ymm4,%ymm4") and level == 1:
+        print(str_assertions([(4, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm5,%ymm5") and level == 1:
+        print(str_assertions([(5, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm6,%ymm6") and level == 1:
+        print(str_assertions([(6, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm7,%ymm7") and level == 1:
+        print(str_assertions([(7, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm8,%ymm8") and level == 1:
+        print(str_assertions([(8, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm13,%ymm13") and level == 1:
+        print(str_assertions([(13, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm10,%ymm10") and level == 1:
+        print(str_assertions([(10, 14)]))
+    elif instr.startswith("(* vpsubw %ymm14,%ymm11,%ymm11") and level == 1:
+        print(str_assertions([(11, 14)]))
+    elif instr.startswith("(* vpsubw %ymm6,%ymm7,%ymm12") and level == 1:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level1_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][((i//4)%8)], i//32 * 4, 4),
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert")
+        # print("and [")
+        # print(level1_algebras)
+        # print("] && true;\n")
+        #
+        print("\n(* rcut {0} *)\n".format(rcut_id))
+        print("rcut and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][i%8], i//8 * 4, 4) for i in range(32)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        rcut_id = rcut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** precondition *****************)\n\n')
-print ('true && and [')
-print_range_precondition ('c', P)
-print (']')
+    # ========== Level 2 ==========
+    elif instr.startswith("(* vpaddw %ymm5,%ymm4,%ymm15") and level == 2:
+        print(str_assertions([(7, 12), (13, 9), (11, 14)]))
+    elif instr.startswith("(* vpsubw %ymm8,%ymm10,%ymm12") and level == 2:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level2_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][((i//8)%4)], i//32 * 4, 4),
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert")
+        # print("and [")
+        # print(level2_algebras)
+        # print("] && true;\n")
+        #
+        print("\n(* rcut {0} *)\n".format(rcut_id))
+        print("rcut and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][i%4], i//4 * 4, 4) for i in range(16)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        rcut_id = rcut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** initialization *****************)\n\n')
-print_initialization (in_base, 'c')
+    # ========== Level 3 ==========
+    elif instr.startswith("(* vpaddw %ymm6,%ymm15,%ymm4") and level == 3:
+        print(str_assertions([(10, 12), (11, 13)]))
+    elif instr.startswith("(* vmovdqa 0x80(%rdx),%ymm13") and level == 3:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level3_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][((i//16)%2)], i//32 * 4, 4),
+        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+        #     expn=1)
+        # print("assert and [")
+        # print(level3_algebras)
+        # print("] && true;\n")
+        #
+        print("\n(* rcut {0} *)\n".format(rcut_id))
+        print("rcut and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][i%2], i//2 * 4, 4) for i in range(8)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        rcut_id = rcut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** constants *****************)\n\n')
-print_constant_definitions (const_base, pdata7681)
+    # ========== Level 4 ==========
+    elif instr.startswith("(* vpsubw %ymm12,%ymm4,%ymm4") and level == 4:
+        print(str_assertions([(4, 12)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm12,%ymm12") and level == 4:
+        print(str_assertions([(12, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm5,%ymm5") and level == 4:
+        print(str_assertions([(5, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm13,%ymm13") and level == 4:
+        print(str_assertions([(13, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm14,%ymm14") and level == 4:
+        print(str_assertions([(14, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm8,%ymm8") and level == 4:
+        print(str_assertions([(8, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm9,%ymm9") and level == 4:
+        print(str_assertions([(9, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm10,%ymm10") and level == 4:
+        print(str_assertions([(10, 7)]))
+    elif instr.startswith("(* vpsubw %ymm7,%ymm11,%ymm11") and level == 4:
+        print(str_assertions([(11, 7)]))
+    elif (instr.startswith("(* vpermq $0x4e,0x200(%rdx),%ymm2") or instr.startswith("(* vpermq $0x4e,0x180(%rdx),%ymm2")) and level == 4:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        # # Verified
+        # level4_algebras = str_algebra(
+        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
+        #                2**(level+1),
+        #                make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][((i//32)%2)], i//64 * 8, 8),
+        #                modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+        #     expn=1,
+        #     mon_per_line=8)
+        # print("assert and [")
+        # print(level4_algebras)
+        # print("] && true;\n")
+        #
+        print("\n(* rcut {0} *)\n".format(rcut_id))
+        print("rcut and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][i%2], i//2 * 8, 8) for i in range(4)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        rcut_id = rcut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
 
-print ('\n\n\n(**************** LEVEL 0 0 *****************)\n\n')
-print ('cut and [')
-print_algebraic_condition ('c', [14, 5, 6, 7, 15, 9, 10, 11], 2, 0, 0)
-print ('] && and [')
-print ('];')
+    # ========== Level 5 ==========
+    elif instr.startswith("(* vpsubw %ymm4,%ymm12,%ymm4") and level == 5:
+        print(str_assertions([(4, 12), (6, 13), (8, 14), (10, 15)]))
+    elif (instr.startswith("(* vmovdqa 0x1c0(%rdx),%ymm2") or instr.startswith("(* vmovdqa 0x140(%rdx),%ymm2")) and level == 5:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        level5_summary_ecut_id = ecut_id
+        level5_algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i//64], 0, 16),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1,
+            mon_per_line=16)
+        print("cut and [")
+        print(",\n".join(level5_algebras))
+        print("] && and [")
+        print(str_range(
+            ziplist(flatten([make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i], 0, 16) for i in range(2)]), RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        ecut_id = ecut_id + 1
+        rcut_id = rcut_id + 1
+        for i in range(128):
+            print("\n(* ecut {0} *)\n".format(ecut_id))
+            print("ecut")
+            print(level5_algebras[i])
+            print("prove with [cuts [{0}]];\n".format(level5_summary_ecut_id))
+            level5_ecut_ids[off].append(ecut_id)
+            ecut_id = ecut_id + 1
+        level = level + 1
+        print_comment("===== Start of level {}, off {} =====".format(level, off))
+
+    # ========== Level 6 ==========
+    elif instr.startswith("(* vpsubw %ymm5,%ymm12,%ymm5") and level == 6:
+        print(str_assertions([(5, 12), (9, 13), (6, 14), (10, 15)]))
+    elif instr.startswith("(* vpsubw %ymm13,%ymm11,%ymm11") and level == 6:
+        print(str_assertions([(13, 11)]))
+    elif instr.startswith("(* vpsubw %ymm13,%ymm3,%ymm3") and level == 6:
+        print(str_assertions([(13, 3)]))
+    elif (instr.startswith("(* vmovdqa 0x140(%rsi),%ymm6") or instr.startswith("(* vmovdqa (%rdi),%ymm4")) and level == 6:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        level6_summary_ecut_id = ecut_id
+        level6_rcut_ids.append(rcut_id)
+        level6_algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       ["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)],
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1,
+            mon_per_line=32)
+        print("cut")
+        print(",\n".join(["{0} prove with [cuts [{1}]]".format(level6_algebras[i], level5_ecut_ids[off][i]) for i in range(128)]))
+        print("&& and [")
+        print(str_range(
+            ziplist(["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)], RANGES_7681[level][(off*128):(off*128+128)]),
+            "<=s",
+            "<=s"))
+        print("];\n")
+        ecut_id = ecut_id + 1
+        rcut_id = rcut_id + 1
+        for i in range(128):
+            print("\n(* ecut {0} *)\n".format(ecut_id))
+            print("ecut")
+            print(level6_algebras[i])
+            print("prove with [cuts [{0}]];\n".format(level6_summary_ecut_id))
+            level6_ecut_ids[off].append(ecut_id)
+            ecut_id = ecut_id + 1
+        if off == 0:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+            print("cut true && and [")
+            print(",\n".join(join_chunks(["(-{0})@16 <=s f{1:03d}, f{1:03d} <=s {0}@16".format(INIT_RANGES_7681[i+128], i%8*16 + i//8 + 128) for i in range(128)], ", ", 4)))
+            print("] prove with [precondition];\n")
+            print(str_init_poly(off=1))
+            ecut_id = ecut_id + 1
+            rcut_id = rcut_id + 1
+        if off == 1:
+            # Summarize ranges after level 6 (off=0 and off=1)
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+            print("rcut and [")
+            print(str_range(
+                ziplist(["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for off in range(2) for j in range(128)], RANGES_7681[level]),
+                "<=s",
+                "<=s"))
+            print("] prove with [cuts {0}];\n".format(level6_rcut_ids))
+            rcut_id = rcut_id + 1
+        (level, off) = (0, 1) if off == 0 else (7, 0)
+        print_comment("===== Start of Level {}, off {} =====".format(level, off))
+
+    # ========== Level 7 ==========
+    elif instr.startswith("(* vpsubw %ymm8,%ymm12,%ymm8") and level == 7:
+        print(str_assertions([(8, 12), (9, 13), (10, 14), (11, 15)]))
+    elif (instr.startswith("(* vmovdqa 0x80(%rdi),%ymm4") or instr.startswith("(* #! <- SP = 0x7fffffff9a78 *)")) and level == 7:
+        print_comment("===== End of Level {}, off {} =====".format(level, off))
+        off = off + 1
+        if off == 1:
+            print_comment("===== Start of Level {}, off {} =====".format(level, off))
+        elif off == 2:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+            level7_ecut_ids.append(ecut_id)
+            level7_rcut_ids.append(rcut_id)
+            level7_algebras = get_algebra(
+                args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                           2**(level+1),
+                           ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
+                           modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
+                           expn=1,
+                mon_per_line=64)
+            print("cut")
+            print(",\n".join(["{0} prove with [cuts [{1}]]".format(level7_algebras[i+off*128], level6_ecut_ids[off][i]) for off in range(2) for i in range(128)]))
+            print("&& and [")
+            print(str_range(
+                ziplist(["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)], RANGES_7681[level]),
+                "<=s",
+                "<=s"))
+            print("];\n")
+            ecut_id = ecut_id + 1
+            rcut_id = rcut_id + 1
+
+    print(instr)
+
+def str_post():
+    level7_algebras = get_algebra(
+        args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                   2**(level+1),
+                   ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
+                   modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
+                   expn=1,
+        mon_per_line=64)
+    return "\n".join([
+        "\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id),
+        "{",
+        "and [",
+        ",\n".join(level7_algebras),
+        "] prove with [cuts {0}] && and [".format(level7_ecut_ids),
+        str_range(ziplist(["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)], RANGES_7681[level]),
+                      "<=s",
+                      "<=s"),
+        "] prove with [cuts {0}]".format(level7_rcut_ids),
+        "}"
+    ])
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("cl_file", help="the nttmul_poly_ntt cl file to be processed")
+    args = parser.parse_args()
+    with open(args.cl_file) as f:
+        # ========== proc main ==========
+        print('proc main(\n')
+        print(str_main_args())
+        print('\n) =\n')
+        # ========== pre-condition ==========
+        print('{\n')
+        print(str_precondition_algebra())
+        print("\n&&\n")
+        print(str_precondition_range())
+        print('\n}\n')
+        # ========== inits ==========
+        print(str_inits())
+        print(str_twiddles())
+        print()
+        print(str_init_poly_var())
+        print(str_init_poly(off=0))
+        # ========== program ==========
+        print("\n\n#===== program start =====\n\n")
+        for line in f.readlines():
+            print_instr(line.strip())
+        # ========== post-condition ==========
+        print(str_post())
 
 
-"""
-exps = [ i for i in range (128) ]
-exprevbits = map (lambda e : [1] +
-                             list (reversed (num_to_bits (e, 7))),
-                  exps)
-revexps = list (map (lambda b : (bits_to_num (b))%P,
-                     exprevbits))
-for i in range (128):
-    print ('{0:4}'.format (revexps[i]),
-           end = '\n' if i % 16 == 15 else ' ')
-"""    
+if __name__ == "__main__":
+  main()

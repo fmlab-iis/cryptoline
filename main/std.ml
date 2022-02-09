@@ -4,6 +4,7 @@ open Options.Std
 open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
+open Utils
 
 type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
 
@@ -16,24 +17,6 @@ let initial_values_string = ref ""
 let simulation_steps = ref (-1)
 
 let simulation_dumps_string = ref ""
-
-let split_nonempty_on_char char str = List.filter (fun s -> String.length s <> 0) (String.split_on_char char str)
-
-let parse_range str =
-  let error_msg = "Invalid range `" ^ str ^ "`. A range should be in the format `n` or `n-m` where 0 <= n and n <= m." in
-  try
-    let n = int_of_string str in
-    if n < 0 then raise (Invalid_argument error_msg)
-    else Simulator.make_range n n
-  with Failure _ ->
-    let tokens = split_nonempty_on_char '-' str in
-    (try
-       match tokens with
-       | n::m::[] -> Simulator.make_range (int_of_string n) (int_of_string m)
-       | n::[] -> Simulator.make_range (int_of_string n) (int_of_string n)
-       | _ -> raise (Invalid_argument "")
-     with Invalid_argument _ ->
-       raise (Invalid_argument error_msg))
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast, " Automatically cast variables when parsing untyped programs\n");
@@ -64,15 +47,15 @@ let args = [
      "FILENAME\n\t     Save the specification in the format acceptable by coq-cryptoline\n");
     ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
     ("-v", Set verbose, "\t     Display verbose messages\n");
-    ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map Simulator.flatten_range |> List.flatten)),
+    ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      "INDICES\n\t     Verify the specified algebraic cuts (comma separated). The indices\n\t     start with 0. The algebraic postcondition is the last cut.\n");
-    ("-veacuts", String (fun str -> verify_eacuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map Simulator.flatten_range |> List.flatten)),
+    ("-veacuts", String (fun str -> verify_eacuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      "INDICES\n\t     Verify the specified algebraic assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the algebraic assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
-    ("-vrcuts", String (fun str -> verify_rcuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map Simulator.flatten_range |> List.flatten)),
+    ("-vrcuts", String (fun str -> verify_rcuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      "INDICES\n\t     Verify the specified range cuts (comma separated). The indices\n\t     start with 0. The range postcondition is the last cut.\n");
-    ("-vracuts", String (fun str -> verify_racuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map Simulator.flatten_range |> List.flatten)),
+    ("-vracuts", String (fun str -> verify_racuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      "INDICES\n\t     Verify the specified range assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the range assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
-    ("-vscuts", String (fun str -> verify_scuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map Simulator.flatten_range |> List.flatten)),
+    ("-vscuts", String (fun str -> verify_scuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      "INDICES\n\t     Verify safety of instructions before the specified cuts (comma\n\t     separated). The indices start with 0. For each i in the specified\n\t     indices, the safety of instructions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n")
   ]@Common.args
 let args = List.sort Pervasives.compare args
@@ -121,7 +104,7 @@ let check_well_formedness vs s =
   wf
 
 let parse_initial_values vars =
-  let vals = split_nonempty_on_char ',' !initial_values_string in
+  let vals = split_on_char_nonempty ',' !initial_values_string in
   List.map2 (
       fun x v ->
       let w = size_of_var x in
@@ -138,7 +121,7 @@ let parse_initial_values vars =
 let parse_simulation_dump_ranges () =
   let str = String.trim !simulation_dumps_string in
   if str = "" then []
-  else List.map parse_range (split_nonempty_on_char ',' str)
+  else List.map parse_range (split_on_char_nonempty ',' str)
 
 let print_data_flow p fout =
   output_string fout "digraph {\n";

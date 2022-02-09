@@ -1,0 +1,516 @@
+__asm_intt_SIMD_top:
+# x0 = 0xffffffffb408
+# x1 = 0xaaaaaaaad110
+# x2 = 0xaaaaaaaaca80
+# x3 = 0x0
+# x4 = 0xaaaaaaaac989
+# x5 = 0xaaaaaaad22ea
+# x6 = 0xa
+# x7 = 0x0
+	#! -> SP = 0xffffffff9b60
+	sub	sp, sp, #0x90                               #! PC = 0xaaaaaaaabca4
+	stp	x19, x20, [sp]                              #! EA = L0xffffffff9ad0; PC = 0xaaaaaaaabca8
+	stp	x21, x22, [sp, #16]                         #! EA = L0xffffffff9ae0; PC = 0xaaaaaaaabcac
+	stp	x23, x24, [sp, #32]                         #! EA = L0xffffffff9af0; PC = 0xaaaaaaaabcb0
+	stp	x25, x26, [sp, #48]                         #! EA = L0xffffffff9b00; PC = 0xaaaaaaaabcb4
+	stp	x27, x28, [sp, #64]                         #! EA = L0xffffffff9b10; PC = 0xaaaaaaaabcb8
+	stp	d8, d9, [sp, #80]                           #! EA = L0xffffffff9b20; PC = 0xaaaaaaaabcbc
+	stp	d10, d11, [sp, #96]                         #! EA = L0xffffffff9b30; PC = 0xaaaaaaaabcc0
+	stp	d12, d13, [sp, #112]                        #! EA = L0xffffffff9b40; PC = 0xaaaaaaaabcc4
+	stp	d14, d15, [sp, #128]                        #! EA = L0xffffffff9b50; PC = 0xaaaaaaaabcc8
+	ldrsh	w20, [x2]                                 #! EA = L0xaaaaaaaaca80; Value = 0x7ff6fdf60cff0d01; PC = 0xaaaaaaaabccc
+	ldrsh	w21, [x2, #8]                             #! EA = L0xaaaaaaaaca88; Value = 0x0a3a020013b04ebf; PC = 0xaaaaaaaabcd0
+	ldur	w22, [x2, #10]                             #! EA = L0xaaaaaaaaca8a; Value = 0x010a0a3a020013b0; PC = 0xaaaaaaaabcd4
+	ldur	w23, [x2, #14]                             #! EA = L0xaaaaaaaaca8e; Value = 0x00000000010a0a3a; PC = 0xaaaaaaaabcd8
+	mov	x28, x1                                     #! PC = 0xaaaaaaaabcdc
+	add	x0, x0, #0x0                                #! PC = 0xaaaaaaaabce0
+	add	x1, x0, #0x20                               #! PC = 0xaaaaaaaabce4
+	add	x2, x0, #0x40                               #! PC = 0xaaaaaaaabce8
+	add	x3, x0, #0x60                               #! PC = 0xaaaaaaaabcec
+	add	x4, x0, #0x80                               #! PC = 0xaaaaaaaabcf0
+	add	x5, x0, #0xa0                               #! PC = 0xaaaaaaaabcf4
+	add	x6, x0, #0xc0                               #! PC = 0xaaaaaaaabcf8
+	add	x7, x0, #0xe0                               #! PC = 0xaaaaaaaabcfc
+	add	x8, x0, #0x100                              #! PC = 0xaaaaaaaabd00
+	add	x9, x0, #0x120                              #! PC = 0xaaaaaaaabd04
+	add	x10, x0, #0x140                             #! PC = 0xaaaaaaaabd08
+	add	x11, x0, #0x160                             #! PC = 0xaaaaaaaabd0c
+	add	x12, x0, #0x180                             #! PC = 0xaaaaaaaabd10
+	add	x13, x0, #0x1a0                             #! PC = 0xaaaaaaaabd14
+	add	x14, x0, #0x1c0                             #! PC = 0xaaaaaaaabd18
+	add	x15, x0, #0x1e0                             #! PC = 0xaaaaaaaabd1c
+	ld1	{v0.8h-v3.8h}, [x28], #64                   #! EA = L0xaaaaaaaad110; Value = 0x06403d8500000000; PC = 0xaaaaaaaabd20
+	mov	v0.h[0], w20                                #! PC = 0xaaaaaaaabd24
+	dup	v24.8h, w20                                 #! PC = 0xaaaaaaaabd28
+	dup	v25.8h, w21                                 #! PC = 0xaaaaaaaabd2c
+	ld1	{v4.8h}, [x0]                               #! EA = L0xffffffffb408; Value = 0x0000000000000000; PC = 0xaaaaaaaabd30
+	ld1	{v5.8h}, [x1]                               #! EA = L0xffffffffb428; Value = 0x0000000000000000; PC = 0xaaaaaaaabd34
+	ld1	{v6.8h}, [x2]                               #! EA = L0xffffffffb448; Value = 0x0000000000000000; PC = 0xaaaaaaaabd38
+	ld1	{v7.8h}, [x3]                               #! EA = L0xffffffffb468; Value = 0x0000000000000000; PC = 0xaaaaaaaabd3c
+	ld1	{v8.8h}, [x4]                               #! EA = L0xffffffffb488; Value = 0x0000000000000000; PC = 0xaaaaaaaabd40
+	ld1	{v9.8h}, [x5]                               #! EA = L0xffffffffb4a8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd44
+	ld1	{v10.8h}, [x6]                              #! EA = L0xffffffffb4c8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd48
+	ld1	{v11.8h}, [x7]                              #! EA = L0xffffffffb4e8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd4c
+	ld1	{v12.8h}, [x8]                              #! EA = L0xffffffffb508; Value = 0x0000000000000000; PC = 0xaaaaaaaabd50
+	ld1	{v13.8h}, [x9]                              #! EA = L0xffffffffb528; Value = 0x0000000000000000; PC = 0xaaaaaaaabd54
+	ld1	{v14.8h}, [x10]                             #! EA = L0xffffffffb548; Value = 0x0000000000000000; PC = 0xaaaaaaaabd58
+	ld1	{v15.8h}, [x11]                             #! EA = L0xffffffffb568; Value = 0x0000000000000000; PC = 0xaaaaaaaabd5c
+	ld1	{v16.8h}, [x12]                             #! EA = L0xffffffffb588; Value = 0x0000000000000000; PC = 0xaaaaaaaabd60
+	ld1	{v17.8h}, [x13]                             #! EA = L0xffffffffb5a8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd64
+	ld1	{v18.8h}, [x14]                             #! EA = L0xffffffffb5c8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd68
+	ld1	{v19.8h}, [x15]                             #! EA = L0xffffffffb5e8; Value = 0x0000000000000000; PC = 0xaaaaaaaabd6c
+	sub	v28.8h, v12.8h, v13.8h                      #! PC = 0xaaaaaaaabd70
+	sub	v29.8h, v14.8h, v15.8h                      #! PC = 0xaaaaaaaabd74
+	sub	v30.8h, v16.8h, v17.8h                      #! PC = 0xaaaaaaaabd78
+	sub	v31.8h, v18.8h, v19.8h                      #! PC = 0xaaaaaaaabd7c
+	add	v12.8h, v12.8h, v13.8h                      #! PC = 0xaaaaaaaabd80
+	add	v14.8h, v14.8h, v15.8h                      #! PC = 0xaaaaaaaabd84
+	add	v16.8h, v16.8h, v17.8h                      #! PC = 0xaaaaaaaabd88
+	add	v18.8h, v18.8h, v19.8h                      #! PC = 0xaaaaaaaabd8c
+	mul	v13.8h, v28.8h, v3.h[1]                     #! PC = 0xaaaaaaaabd90
+	sub	v20.8h, v4.8h, v5.8h                        #! PC = 0xaaaaaaaabd94
+	mul	v15.8h, v29.8h, v3.h[3]                     #! PC = 0xaaaaaaaabd98
+	sub	v21.8h, v6.8h, v7.8h                        #! PC = 0xaaaaaaaabd9c
+	mul	v17.8h, v30.8h, v3.h[5]                     #! PC = 0xaaaaaaaabda0
+	sub	v22.8h, v8.8h, v9.8h                        #! PC = 0xaaaaaaaabda4
+	mul	v19.8h, v31.8h, v3.h[7]                     #! PC = 0xaaaaaaaabda8
+	sub	v23.8h, v10.8h, v11.8h                      #! PC = 0xaaaaaaaabdac
+	sqrdmulh	v28.8h, v28.8h, v3.h[0]                #! PC = 0xaaaaaaaabdb0
+	add	v4.8h, v4.8h, v5.8h                         #! PC = 0xaaaaaaaabdb4
+	sqrdmulh	v29.8h, v29.8h, v3.h[2]                #! PC = 0xaaaaaaaabdb8
+	add	v6.8h, v6.8h, v7.8h                         #! PC = 0xaaaaaaaabdbc
+	sqrdmulh	v30.8h, v30.8h, v3.h[4]                #! PC = 0xaaaaaaaabdc0
+	add	v8.8h, v8.8h, v9.8h                         #! PC = 0xaaaaaaaabdc4
+	sqrdmulh	v31.8h, v31.8h, v3.h[6]                #! PC = 0xaaaaaaaabdc8
+	add	v10.8h, v10.8h, v11.8h                      #! PC = 0xaaaaaaaabdcc
+	mls	v13.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaabdd0
+	mls	v15.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaabdd4
+	mls	v17.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaabdd8
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaabddc
+	mul	v5.8h, v20.8h, v2.h[1]                      #! PC = 0xaaaaaaaabde0
+	sub	v28.8h, v12.8h, v14.8h                      #! PC = 0xaaaaaaaabde4
+	mul	v7.8h, v21.8h, v2.h[3]                      #! PC = 0xaaaaaaaabde8
+	sub	v29.8h, v13.8h, v15.8h                      #! PC = 0xaaaaaaaabdec
+	mul	v9.8h, v22.8h, v2.h[5]                      #! PC = 0xaaaaaaaabdf0
+	sub	v30.8h, v16.8h, v18.8h                      #! PC = 0xaaaaaaaabdf4
+	mul	v11.8h, v23.8h, v2.h[7]                     #! PC = 0xaaaaaaaabdf8
+	sub	v31.8h, v17.8h, v19.8h                      #! PC = 0xaaaaaaaabdfc
+	sqrdmulh	v20.8h, v20.8h, v2.h[0]                #! PC = 0xaaaaaaaabe00
+	add	v12.8h, v12.8h, v14.8h                      #! PC = 0xaaaaaaaabe04
+	sqrdmulh	v21.8h, v21.8h, v2.h[2]                #! PC = 0xaaaaaaaabe08
+	add	v13.8h, v13.8h, v15.8h                      #! PC = 0xaaaaaaaabe0c
+	sqrdmulh	v22.8h, v22.8h, v2.h[4]                #! PC = 0xaaaaaaaabe10
+	add	v16.8h, v16.8h, v18.8h                      #! PC = 0xaaaaaaaabe14
+	sqrdmulh	v23.8h, v23.8h, v2.h[6]                #! PC = 0xaaaaaaaabe18
+	add	v17.8h, v17.8h, v19.8h                      #! PC = 0xaaaaaaaabe1c
+	mls	v5.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaabe20
+	mls	v7.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaabe24
+	mls	v9.8h, v22.8h, v0.h[0]                      #! PC = 0xaaaaaaaabe28
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaabe2c
+	mul	v14.8h, v28.8h, v1.h[5]                     #! PC = 0xaaaaaaaabe30
+	sub	v20.8h, v4.8h, v6.8h                        #! PC = 0xaaaaaaaabe34
+	mul	v15.8h, v29.8h, v1.h[5]                     #! PC = 0xaaaaaaaabe38
+	sub	v21.8h, v5.8h, v7.8h                        #! PC = 0xaaaaaaaabe3c
+	mul	v18.8h, v30.8h, v1.h[7]                     #! PC = 0xaaaaaaaabe40
+	sub	v22.8h, v8.8h, v10.8h                       #! PC = 0xaaaaaaaabe44
+	mul	v19.8h, v31.8h, v1.h[7]                     #! PC = 0xaaaaaaaabe48
+	sub	v23.8h, v9.8h, v11.8h                       #! PC = 0xaaaaaaaabe4c
+	sqrdmulh	v28.8h, v28.8h, v1.h[4]                #! PC = 0xaaaaaaaabe50
+	add	v4.8h, v4.8h, v6.8h                         #! PC = 0xaaaaaaaabe54
+	sqrdmulh	v29.8h, v29.8h, v1.h[4]                #! PC = 0xaaaaaaaabe58
+	add	v5.8h, v5.8h, v7.8h                         #! PC = 0xaaaaaaaabe5c
+	sqrdmulh	v30.8h, v30.8h, v1.h[6]                #! PC = 0xaaaaaaaabe60
+	add	v8.8h, v8.8h, v10.8h                        #! PC = 0xaaaaaaaabe64
+	sqrdmulh	v31.8h, v31.8h, v1.h[6]                #! PC = 0xaaaaaaaabe68
+	add	v9.8h, v9.8h, v11.8h                        #! PC = 0xaaaaaaaabe6c
+	mls	v14.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaabe70
+	mls	v15.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaabe74
+	mls	v18.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaabe78
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaabe7c
+	mul	v6.8h, v20.8h, v1.h[1]                      #! PC = 0xaaaaaaaabe80
+	sub	v28.8h, v12.8h, v16.8h                      #! PC = 0xaaaaaaaabe84
+	mul	v7.8h, v21.8h, v1.h[1]                      #! PC = 0xaaaaaaaabe88
+	sub	v29.8h, v13.8h, v17.8h                      #! PC = 0xaaaaaaaabe8c
+	mul	v10.8h, v22.8h, v1.h[3]                     #! PC = 0xaaaaaaaabe90
+	sub	v30.8h, v14.8h, v18.8h                      #! PC = 0xaaaaaaaabe94
+	mul	v11.8h, v23.8h, v1.h[3]                     #! PC = 0xaaaaaaaabe98
+	sub	v31.8h, v15.8h, v19.8h                      #! PC = 0xaaaaaaaabe9c
+	sqrdmulh	v20.8h, v20.8h, v1.h[0]                #! PC = 0xaaaaaaaabea0
+	add	v12.8h, v12.8h, v16.8h                      #! PC = 0xaaaaaaaabea4
+	sqrdmulh	v21.8h, v21.8h, v1.h[0]                #! PC = 0xaaaaaaaabea8
+	add	v13.8h, v13.8h, v17.8h                      #! PC = 0xaaaaaaaabeac
+	sqrdmulh	v22.8h, v22.8h, v1.h[2]                #! PC = 0xaaaaaaaabeb0
+	add	v14.8h, v14.8h, v18.8h                      #! PC = 0xaaaaaaaabeb4
+	sqrdmulh	v23.8h, v23.8h, v1.h[2]                #! PC = 0xaaaaaaaabeb8
+	add	v15.8h, v15.8h, v19.8h                      #! PC = 0xaaaaaaaabebc
+	mls	v6.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaabec0
+	mls	v7.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaabec4
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaabec8
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaabecc
+	mul	v16.8h, v28.8h, v0.h[7]                     #! PC = 0xaaaaaaaabed0
+	sub	v20.8h, v4.8h, v8.8h                        #! PC = 0xaaaaaaaabed4
+	mul	v17.8h, v29.8h, v0.h[7]                     #! PC = 0xaaaaaaaabed8
+	sub	v21.8h, v5.8h, v9.8h                        #! PC = 0xaaaaaaaabedc
+	mul	v18.8h, v30.8h, v0.h[7]                     #! PC = 0xaaaaaaaabee0
+	sub	v22.8h, v6.8h, v10.8h                       #! PC = 0xaaaaaaaabee4
+	mul	v19.8h, v31.8h, v0.h[7]                     #! PC = 0xaaaaaaaabee8
+	sub	v23.8h, v7.8h, v11.8h                       #! PC = 0xaaaaaaaabeec
+	sqrdmulh	v28.8h, v28.8h, v0.h[6]                #! PC = 0xaaaaaaaabef0
+	add	v4.8h, v4.8h, v8.8h                         #! PC = 0xaaaaaaaabef4
+	sqrdmulh	v29.8h, v29.8h, v0.h[6]                #! PC = 0xaaaaaaaabef8
+	add	v5.8h, v5.8h, v9.8h                         #! PC = 0xaaaaaaaabefc
+	sqrdmulh	v30.8h, v30.8h, v0.h[6]                #! PC = 0xaaaaaaaabf00
+	add	v6.8h, v6.8h, v10.8h                        #! PC = 0xaaaaaaaabf04
+	sqrdmulh	v31.8h, v31.8h, v0.h[6]                #! PC = 0xaaaaaaaabf08
+	add	v7.8h, v7.8h, v11.8h                        #! PC = 0xaaaaaaaabf0c
+	mls	v16.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf10
+	mls	v17.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf14
+	mls	v18.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf18
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf1c
+	mul	v8.8h, v20.8h, v0.h[5]                      #! PC = 0xaaaaaaaabf20
+	mul	v9.8h, v21.8h, v0.h[5]                      #! PC = 0xaaaaaaaabf24
+	mul	v10.8h, v22.8h, v0.h[5]                     #! PC = 0xaaaaaaaabf28
+	mul	v11.8h, v23.8h, v0.h[5]                     #! PC = 0xaaaaaaaabf2c
+	sqrdmulh	v20.8h, v20.8h, v0.h[4]                #! PC = 0xaaaaaaaabf30
+	sqrdmulh	v21.8h, v21.8h, v0.h[4]                #! PC = 0xaaaaaaaabf34
+	sqrdmulh	v22.8h, v22.8h, v0.h[4]                #! PC = 0xaaaaaaaabf38
+	sqrdmulh	v23.8h, v23.8h, v0.h[4]                #! PC = 0xaaaaaaaabf3c
+	mls	v8.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaabf40
+	mls	v9.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaabf44
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf48
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaabf4c
+	sqdmulh	v20.8h, v4.8h, v25.8h                   #! PC = 0xaaaaaaaabf50
+	sqdmulh	v21.8h, v5.8h, v25.8h                   #! PC = 0xaaaaaaaabf54
+	sqdmulh	v22.8h, v12.8h, v25.8h                  #! PC = 0xaaaaaaaabf58
+	srshr	v20.8h, v20.8h, #11                       #! PC = 0xaaaaaaaabf5c
+	sqdmulh	v23.8h, v13.8h, v25.8h                  #! PC = 0xaaaaaaaabf60
+	srshr	v21.8h, v21.8h, #11                       #! PC = 0xaaaaaaaabf64
+	srshr	v22.8h, v22.8h, #11                       #! PC = 0xaaaaaaaabf68
+	mls	v4.8h, v20.8h, v24.8h                       #! PC = 0xaaaaaaaabf6c
+	srshr	v23.8h, v23.8h, #11                       #! PC = 0xaaaaaaaabf70
+	mls	v5.8h, v21.8h, v24.8h                       #! PC = 0xaaaaaaaabf74
+	mls	v12.8h, v22.8h, v24.8h                      #! PC = 0xaaaaaaaabf78
+	mls	v13.8h, v23.8h, v24.8h                      #! PC = 0xaaaaaaaabf7c
+	mov	v0.s[1], w23                                #! PC = 0xaaaaaaaabf80
+	sub	v28.8h, v4.8h, v12.8h                       #! PC = 0xaaaaaaaabf84
+	sub	v29.8h, v5.8h, v13.8h                       #! PC = 0xaaaaaaaabf88
+	sub	v30.8h, v6.8h, v14.8h                       #! PC = 0xaaaaaaaabf8c
+	sub	v31.8h, v7.8h, v15.8h                       #! PC = 0xaaaaaaaabf90
+	add	v4.8h, v4.8h, v12.8h                        #! PC = 0xaaaaaaaabf94
+	add	v5.8h, v5.8h, v13.8h                        #! PC = 0xaaaaaaaabf98
+	add	v6.8h, v6.8h, v14.8h                        #! PC = 0xaaaaaaaabf9c
+	add	v7.8h, v7.8h, v15.8h                        #! PC = 0xaaaaaaaabfa0
+	mul	v12.8h, v28.8h, v0.h[3]                     #! PC = 0xaaaaaaaabfa4
+	sub	v20.8h, v8.8h, v16.8h                       #! PC = 0xaaaaaaaabfa8
+	mul	v13.8h, v29.8h, v0.h[3]                     #! PC = 0xaaaaaaaabfac
+	sub	v21.8h, v9.8h, v17.8h                       #! PC = 0xaaaaaaaabfb0
+	mul	v14.8h, v30.8h, v0.h[3]                     #! PC = 0xaaaaaaaabfb4
+	sub	v22.8h, v10.8h, v18.8h                      #! PC = 0xaaaaaaaabfb8
+	mul	v15.8h, v31.8h, v0.h[3]                     #! PC = 0xaaaaaaaabfbc
+	sub	v23.8h, v11.8h, v19.8h                      #! PC = 0xaaaaaaaabfc0
+	sqrdmulh	v28.8h, v28.8h, v0.h[2]                #! PC = 0xaaaaaaaabfc4
+	add	v8.8h, v8.8h, v16.8h                        #! PC = 0xaaaaaaaabfc8
+	sqrdmulh	v29.8h, v29.8h, v0.h[2]                #! PC = 0xaaaaaaaabfcc
+	add	v9.8h, v9.8h, v17.8h                        #! PC = 0xaaaaaaaabfd0
+	sqrdmulh	v30.8h, v30.8h, v0.h[2]                #! PC = 0xaaaaaaaabfd4
+	add	v10.8h, v10.8h, v18.8h                      #! PC = 0xaaaaaaaabfd8
+	sqrdmulh	v31.8h, v31.8h, v0.h[2]                #! PC = 0xaaaaaaaabfdc
+	add	v11.8h, v11.8h, v19.8h                      #! PC = 0xaaaaaaaabfe0
+	mls	v12.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaabfe4
+	mls	v13.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaabfe8
+	mls	v14.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaabfec
+	mls	v15.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaabff0
+	mul	v16.8h, v20.8h, v0.h[3]                     #! PC = 0xaaaaaaaabff4
+	mul	v17.8h, v21.8h, v0.h[3]                     #! PC = 0xaaaaaaaabff8
+	mul	v18.8h, v22.8h, v0.h[3]                     #! PC = 0xaaaaaaaabffc
+	mul	v19.8h, v23.8h, v0.h[3]                     #! PC = 0xaaaaaaaac000
+	sqrdmulh	v20.8h, v20.8h, v0.h[2]                #! PC = 0xaaaaaaaac004
+	sqrdmulh	v21.8h, v21.8h, v0.h[2]                #! PC = 0xaaaaaaaac008
+	sqrdmulh	v22.8h, v22.8h, v0.h[2]                #! PC = 0xaaaaaaaac00c
+	sqrdmulh	v23.8h, v23.8h, v0.h[2]                #! PC = 0xaaaaaaaac010
+	mls	v16.8h, v20.8h, v0.h[0]                     #! PC = 0xaaaaaaaac014
+	mls	v17.8h, v21.8h, v0.h[0]                     #! PC = 0xaaaaaaaac018
+	mls	v18.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac01c
+	mls	v19.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac020
+	mov	v0.s[1], w22                                #! PC = 0xaaaaaaaac024
+	sqrdmulh	v28.8h, v4.8h, v0.h[2]                 #! PC = 0xaaaaaaaac028
+	sqrdmulh	v29.8h, v5.8h, v0.h[2]                 #! PC = 0xaaaaaaaac02c
+	sqrdmulh	v30.8h, v6.8h, v0.h[2]                 #! PC = 0xaaaaaaaac030
+	sqrdmulh	v31.8h, v7.8h, v0.h[2]                 #! PC = 0xaaaaaaaac034
+	sqrdmulh	v20.8h, v8.8h, v0.h[2]                 #! PC = 0xaaaaaaaac038
+	sqrdmulh	v21.8h, v9.8h, v0.h[2]                 #! PC = 0xaaaaaaaac03c
+	sqrdmulh	v22.8h, v10.8h, v0.h[2]                #! PC = 0xaaaaaaaac040
+	sqrdmulh	v23.8h, v11.8h, v0.h[2]                #! PC = 0xaaaaaaaac044
+	mul	v4.8h, v4.8h, v0.h[3]                       #! PC = 0xaaaaaaaac048
+	mul	v5.8h, v5.8h, v0.h[3]                       #! PC = 0xaaaaaaaac04c
+	mul	v6.8h, v6.8h, v0.h[3]                       #! PC = 0xaaaaaaaac050
+	mul	v7.8h, v7.8h, v0.h[3]                       #! PC = 0xaaaaaaaac054
+	mul	v8.8h, v8.8h, v0.h[3]                       #! PC = 0xaaaaaaaac058
+	mul	v9.8h, v9.8h, v0.h[3]                       #! PC = 0xaaaaaaaac05c
+	mul	v10.8h, v10.8h, v0.h[3]                     #! PC = 0xaaaaaaaac060
+	mul	v11.8h, v11.8h, v0.h[3]                     #! PC = 0xaaaaaaaac064
+	mls	v4.8h, v28.8h, v0.h[0]                      #! PC = 0xaaaaaaaac068
+	mls	v5.8h, v29.8h, v0.h[0]                      #! PC = 0xaaaaaaaac06c
+	mls	v6.8h, v30.8h, v0.h[0]                      #! PC = 0xaaaaaaaac070
+	mls	v7.8h, v31.8h, v0.h[0]                      #! PC = 0xaaaaaaaac074
+	mls	v8.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaac078
+	mls	v9.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaac07c
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac080
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac084
+	st1	{v4.8h}, [x0], #16                          #! EA = L0xffffffffb408; PC = 0xaaaaaaaac088
+	ld1	{v4.8h}, [x0]                               #! EA = L0xffffffffb418; Value = 0x0000000000000000; PC = 0xaaaaaaaac08c
+	st1	{v5.8h}, [x1], #16                          #! EA = L0xffffffffb428; PC = 0xaaaaaaaac090
+	ld1	{v5.8h}, [x1]                               #! EA = L0xffffffffb438; Value = 0x0000000000000000; PC = 0xaaaaaaaac094
+	st1	{v6.8h}, [x2], #16                          #! EA = L0xffffffffb448; PC = 0xaaaaaaaac098
+	ld1	{v6.8h}, [x2]                               #! EA = L0xffffffffb458; Value = 0x0000000000000000; PC = 0xaaaaaaaac09c
+	st1	{v7.8h}, [x3], #16                          #! EA = L0xffffffffb468; PC = 0xaaaaaaaac0a0
+	ld1	{v7.8h}, [x3]                               #! EA = L0xffffffffb478; Value = 0x0000000000000000; PC = 0xaaaaaaaac0a4
+	st1	{v8.8h}, [x4], #16                          #! EA = L0xffffffffb488; PC = 0xaaaaaaaac0a8
+	ld1	{v8.8h}, [x4]                               #! EA = L0xffffffffb498; Value = 0x0000000000000000; PC = 0xaaaaaaaac0ac
+	st1	{v9.8h}, [x5], #16                          #! EA = L0xffffffffb4a8; PC = 0xaaaaaaaac0b0
+	ld1	{v9.8h}, [x5]                               #! EA = L0xffffffffb4b8; Value = 0x0000000000000000; PC = 0xaaaaaaaac0b4
+	st1	{v10.8h}, [x6], #16                         #! EA = L0xffffffffb4c8; PC = 0xaaaaaaaac0b8
+	ld1	{v10.8h}, [x6]                              #! EA = L0xffffffffb4d8; Value = 0x0000000000000000; PC = 0xaaaaaaaac0bc
+	st1	{v11.8h}, [x7], #16                         #! EA = L0xffffffffb4e8; PC = 0xaaaaaaaac0c0
+	ld1	{v11.8h}, [x7]                              #! EA = L0xffffffffb4f8; Value = 0x0000000000000000; PC = 0xaaaaaaaac0c4
+	st1	{v12.8h}, [x8], #16                         #! EA = L0xffffffffb508; PC = 0xaaaaaaaac0c8
+	ld1	{v12.8h}, [x8]                              #! EA = L0xffffffffb518; Value = 0x0000000000000000; PC = 0xaaaaaaaac0cc
+	st1	{v13.8h}, [x9], #16                         #! EA = L0xffffffffb528; PC = 0xaaaaaaaac0d0
+	ld1	{v13.8h}, [x9]                              #! EA = L0xffffffffb538; Value = 0x0000000000000000; PC = 0xaaaaaaaac0d4
+	st1	{v14.8h}, [x10], #16                        #! EA = L0xffffffffb548; PC = 0xaaaaaaaac0d8
+	ld1	{v14.8h}, [x10]                             #! EA = L0xffffffffb558; Value = 0x0000000000000000; PC = 0xaaaaaaaac0dc
+	st1	{v15.8h}, [x11], #16                        #! EA = L0xffffffffb568; PC = 0xaaaaaaaac0e0
+	ld1	{v15.8h}, [x11]                             #! EA = L0xffffffffb578; Value = 0x0000000000000000; PC = 0xaaaaaaaac0e4
+	st1	{v16.8h}, [x12], #16                        #! EA = L0xffffffffb588; PC = 0xaaaaaaaac0e8
+	ld1	{v16.8h}, [x12]                             #! EA = L0xffffffffb598; Value = 0x0000000000000000; PC = 0xaaaaaaaac0ec
+	st1	{v17.8h}, [x13], #16                        #! EA = L0xffffffffb5a8; PC = 0xaaaaaaaac0f0
+	ld1	{v17.8h}, [x13]                             #! EA = L0xffffffffb5b8; Value = 0x0000000000000000; PC = 0xaaaaaaaac0f4
+	st1	{v18.8h}, [x14], #16                        #! EA = L0xffffffffb5c8; PC = 0xaaaaaaaac0f8
+	ld1	{v18.8h}, [x14]                             #! EA = L0xffffffffb5d8; Value = 0x0000000000000000; PC = 0xaaaaaaaac0fc
+	st1	{v19.8h}, [x15], #16                        #! EA = L0xffffffffb5e8; PC = 0xaaaaaaaac100
+	ld1	{v19.8h}, [x15]                             #! EA = L0xffffffffb5f8; Value = 0x0000000000000000; PC = 0xaaaaaaaac104
+	sub	v28.8h, v12.8h, v13.8h                      #! PC = 0xaaaaaaaac108
+	sub	v29.8h, v14.8h, v15.8h                      #! PC = 0xaaaaaaaac10c
+	sub	v30.8h, v16.8h, v17.8h                      #! PC = 0xaaaaaaaac110
+	sub	v31.8h, v18.8h, v19.8h                      #! PC = 0xaaaaaaaac114
+	add	v12.8h, v12.8h, v13.8h                      #! PC = 0xaaaaaaaac118
+	add	v14.8h, v14.8h, v15.8h                      #! PC = 0xaaaaaaaac11c
+	add	v16.8h, v16.8h, v17.8h                      #! PC = 0xaaaaaaaac120
+	add	v18.8h, v18.8h, v19.8h                      #! PC = 0xaaaaaaaac124
+	mul	v13.8h, v28.8h, v3.h[1]                     #! PC = 0xaaaaaaaac128
+	sub	v20.8h, v4.8h, v5.8h                        #! PC = 0xaaaaaaaac12c
+	mul	v15.8h, v29.8h, v3.h[3]                     #! PC = 0xaaaaaaaac130
+	sub	v21.8h, v6.8h, v7.8h                        #! PC = 0xaaaaaaaac134
+	mul	v17.8h, v30.8h, v3.h[5]                     #! PC = 0xaaaaaaaac138
+	sub	v22.8h, v8.8h, v9.8h                        #! PC = 0xaaaaaaaac13c
+	mul	v19.8h, v31.8h, v3.h[7]                     #! PC = 0xaaaaaaaac140
+	sub	v23.8h, v10.8h, v11.8h                      #! PC = 0xaaaaaaaac144
+	sqrdmulh	v28.8h, v28.8h, v3.h[0]                #! PC = 0xaaaaaaaac148
+	add	v4.8h, v4.8h, v5.8h                         #! PC = 0xaaaaaaaac14c
+	sqrdmulh	v29.8h, v29.8h, v3.h[2]                #! PC = 0xaaaaaaaac150
+	add	v6.8h, v6.8h, v7.8h                         #! PC = 0xaaaaaaaac154
+	sqrdmulh	v30.8h, v30.8h, v3.h[4]                #! PC = 0xaaaaaaaac158
+	add	v8.8h, v8.8h, v9.8h                         #! PC = 0xaaaaaaaac15c
+	sqrdmulh	v31.8h, v31.8h, v3.h[6]                #! PC = 0xaaaaaaaac160
+	add	v10.8h, v10.8h, v11.8h                      #! PC = 0xaaaaaaaac164
+	mls	v13.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaac168
+	mls	v15.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaac16c
+	mls	v17.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaac170
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaac174
+	mul	v5.8h, v20.8h, v2.h[1]                      #! PC = 0xaaaaaaaac178
+	sub	v28.8h, v12.8h, v14.8h                      #! PC = 0xaaaaaaaac17c
+	mul	v7.8h, v21.8h, v2.h[3]                      #! PC = 0xaaaaaaaac180
+	sub	v29.8h, v13.8h, v15.8h                      #! PC = 0xaaaaaaaac184
+	mul	v9.8h, v22.8h, v2.h[5]                      #! PC = 0xaaaaaaaac188
+	sub	v30.8h, v16.8h, v18.8h                      #! PC = 0xaaaaaaaac18c
+	mul	v11.8h, v23.8h, v2.h[7]                     #! PC = 0xaaaaaaaac190
+	sub	v31.8h, v17.8h, v19.8h                      #! PC = 0xaaaaaaaac194
+	sqrdmulh	v20.8h, v20.8h, v2.h[0]                #! PC = 0xaaaaaaaac198
+	add	v12.8h, v12.8h, v14.8h                      #! PC = 0xaaaaaaaac19c
+	sqrdmulh	v21.8h, v21.8h, v2.h[2]                #! PC = 0xaaaaaaaac1a0
+	add	v13.8h, v13.8h, v15.8h                      #! PC = 0xaaaaaaaac1a4
+	sqrdmulh	v22.8h, v22.8h, v2.h[4]                #! PC = 0xaaaaaaaac1a8
+	add	v16.8h, v16.8h, v18.8h                      #! PC = 0xaaaaaaaac1ac
+	sqrdmulh	v23.8h, v23.8h, v2.h[6]                #! PC = 0xaaaaaaaac1b0
+	add	v17.8h, v17.8h, v19.8h                      #! PC = 0xaaaaaaaac1b4
+	mls	v5.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaac1b8
+	mls	v7.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaac1bc
+	mls	v9.8h, v22.8h, v0.h[0]                      #! PC = 0xaaaaaaaac1c0
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac1c4
+	mul	v14.8h, v28.8h, v1.h[5]                     #! PC = 0xaaaaaaaac1c8
+	sub	v20.8h, v4.8h, v6.8h                        #! PC = 0xaaaaaaaac1cc
+	mul	v15.8h, v29.8h, v1.h[5]                     #! PC = 0xaaaaaaaac1d0
+	sub	v21.8h, v5.8h, v7.8h                        #! PC = 0xaaaaaaaac1d4
+	mul	v18.8h, v30.8h, v1.h[7]                     #! PC = 0xaaaaaaaac1d8
+	sub	v22.8h, v8.8h, v10.8h                       #! PC = 0xaaaaaaaac1dc
+	mul	v19.8h, v31.8h, v1.h[7]                     #! PC = 0xaaaaaaaac1e0
+	sub	v23.8h, v9.8h, v11.8h                       #! PC = 0xaaaaaaaac1e4
+	sqrdmulh	v28.8h, v28.8h, v1.h[4]                #! PC = 0xaaaaaaaac1e8
+	add	v4.8h, v4.8h, v6.8h                         #! PC = 0xaaaaaaaac1ec
+	sqrdmulh	v29.8h, v29.8h, v1.h[4]                #! PC = 0xaaaaaaaac1f0
+	add	v5.8h, v5.8h, v7.8h                         #! PC = 0xaaaaaaaac1f4
+	sqrdmulh	v30.8h, v30.8h, v1.h[6]                #! PC = 0xaaaaaaaac1f8
+	add	v8.8h, v8.8h, v10.8h                        #! PC = 0xaaaaaaaac1fc
+	sqrdmulh	v31.8h, v31.8h, v1.h[6]                #! PC = 0xaaaaaaaac200
+	add	v9.8h, v9.8h, v11.8h                        #! PC = 0xaaaaaaaac204
+	mls	v14.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaac208
+	mls	v15.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaac20c
+	mls	v18.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaac210
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaac214
+	mul	v6.8h, v20.8h, v1.h[1]                      #! PC = 0xaaaaaaaac218
+	sub	v28.8h, v12.8h, v16.8h                      #! PC = 0xaaaaaaaac21c
+	mul	v7.8h, v21.8h, v1.h[1]                      #! PC = 0xaaaaaaaac220
+	sub	v29.8h, v13.8h, v17.8h                      #! PC = 0xaaaaaaaac224
+	mul	v10.8h, v22.8h, v1.h[3]                     #! PC = 0xaaaaaaaac228
+	sub	v30.8h, v14.8h, v18.8h                      #! PC = 0xaaaaaaaac22c
+	mul	v11.8h, v23.8h, v1.h[3]                     #! PC = 0xaaaaaaaac230
+	sub	v31.8h, v15.8h, v19.8h                      #! PC = 0xaaaaaaaac234
+	sqrdmulh	v20.8h, v20.8h, v1.h[0]                #! PC = 0xaaaaaaaac238
+	add	v12.8h, v12.8h, v16.8h                      #! PC = 0xaaaaaaaac23c
+	sqrdmulh	v21.8h, v21.8h, v1.h[0]                #! PC = 0xaaaaaaaac240
+	add	v13.8h, v13.8h, v17.8h                      #! PC = 0xaaaaaaaac244
+	sqrdmulh	v22.8h, v22.8h, v1.h[2]                #! PC = 0xaaaaaaaac248
+	add	v14.8h, v14.8h, v18.8h                      #! PC = 0xaaaaaaaac24c
+	sqrdmulh	v23.8h, v23.8h, v1.h[2]                #! PC = 0xaaaaaaaac250
+	add	v15.8h, v15.8h, v19.8h                      #! PC = 0xaaaaaaaac254
+	mls	v6.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaac258
+	mls	v7.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaac25c
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac260
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac264
+	mul	v16.8h, v28.8h, v0.h[7]                     #! PC = 0xaaaaaaaac268
+	sub	v20.8h, v4.8h, v8.8h                        #! PC = 0xaaaaaaaac26c
+	mul	v17.8h, v29.8h, v0.h[7]                     #! PC = 0xaaaaaaaac270
+	sub	v21.8h, v5.8h, v9.8h                        #! PC = 0xaaaaaaaac274
+	mul	v18.8h, v30.8h, v0.h[7]                     #! PC = 0xaaaaaaaac278
+	sub	v22.8h, v6.8h, v10.8h                       #! PC = 0xaaaaaaaac27c
+	mul	v19.8h, v31.8h, v0.h[7]                     #! PC = 0xaaaaaaaac280
+	sub	v23.8h, v7.8h, v11.8h                       #! PC = 0xaaaaaaaac284
+	sqrdmulh	v28.8h, v28.8h, v0.h[6]                #! PC = 0xaaaaaaaac288
+	add	v4.8h, v4.8h, v8.8h                         #! PC = 0xaaaaaaaac28c
+	sqrdmulh	v29.8h, v29.8h, v0.h[6]                #! PC = 0xaaaaaaaac290
+	add	v5.8h, v5.8h, v9.8h                         #! PC = 0xaaaaaaaac294
+	sqrdmulh	v30.8h, v30.8h, v0.h[6]                #! PC = 0xaaaaaaaac298
+	add	v6.8h, v6.8h, v10.8h                        #! PC = 0xaaaaaaaac29c
+	sqrdmulh	v31.8h, v31.8h, v0.h[6]                #! PC = 0xaaaaaaaac2a0
+	add	v7.8h, v7.8h, v11.8h                        #! PC = 0xaaaaaaaac2a4
+	mls	v16.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2a8
+	mls	v17.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2ac
+	mls	v18.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2b0
+	mls	v19.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2b4
+	mul	v8.8h, v20.8h, v0.h[5]                      #! PC = 0xaaaaaaaac2b8
+	mul	v9.8h, v21.8h, v0.h[5]                      #! PC = 0xaaaaaaaac2bc
+	mul	v10.8h, v22.8h, v0.h[5]                     #! PC = 0xaaaaaaaac2c0
+	mul	v11.8h, v23.8h, v0.h[5]                     #! PC = 0xaaaaaaaac2c4
+	sqrdmulh	v20.8h, v20.8h, v0.h[4]                #! PC = 0xaaaaaaaac2c8
+	sqrdmulh	v21.8h, v21.8h, v0.h[4]                #! PC = 0xaaaaaaaac2cc
+	sqrdmulh	v22.8h, v22.8h, v0.h[4]                #! PC = 0xaaaaaaaac2d0
+	sqrdmulh	v23.8h, v23.8h, v0.h[4]                #! PC = 0xaaaaaaaac2d4
+	mls	v8.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaac2d8
+	mls	v9.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaac2dc
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2e0
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac2e4
+	sqdmulh	v20.8h, v4.8h, v25.8h                   #! PC = 0xaaaaaaaac2e8
+	sqdmulh	v21.8h, v5.8h, v25.8h                   #! PC = 0xaaaaaaaac2ec
+	sqdmulh	v22.8h, v12.8h, v25.8h                  #! PC = 0xaaaaaaaac2f0
+	srshr	v20.8h, v20.8h, #11                       #! PC = 0xaaaaaaaac2f4
+	sqdmulh	v23.8h, v13.8h, v25.8h                  #! PC = 0xaaaaaaaac2f8
+	srshr	v21.8h, v21.8h, #11                       #! PC = 0xaaaaaaaac2fc
+	srshr	v22.8h, v22.8h, #11                       #! PC = 0xaaaaaaaac300
+	mls	v4.8h, v20.8h, v24.8h                       #! PC = 0xaaaaaaaac304
+	srshr	v23.8h, v23.8h, #11                       #! PC = 0xaaaaaaaac308
+	mls	v5.8h, v21.8h, v24.8h                       #! PC = 0xaaaaaaaac30c
+	mls	v12.8h, v22.8h, v24.8h                      #! PC = 0xaaaaaaaac310
+	mls	v13.8h, v23.8h, v24.8h                      #! PC = 0xaaaaaaaac314
+	mov	v0.s[1], w23                                #! PC = 0xaaaaaaaac318
+	sub	v28.8h, v4.8h, v12.8h                       #! PC = 0xaaaaaaaac31c
+	sub	v29.8h, v5.8h, v13.8h                       #! PC = 0xaaaaaaaac320
+	sub	v30.8h, v6.8h, v14.8h                       #! PC = 0xaaaaaaaac324
+	sub	v31.8h, v7.8h, v15.8h                       #! PC = 0xaaaaaaaac328
+	add	v4.8h, v4.8h, v12.8h                        #! PC = 0xaaaaaaaac32c
+	add	v5.8h, v5.8h, v13.8h                        #! PC = 0xaaaaaaaac330
+	add	v6.8h, v6.8h, v14.8h                        #! PC = 0xaaaaaaaac334
+	add	v7.8h, v7.8h, v15.8h                        #! PC = 0xaaaaaaaac338
+	mul	v12.8h, v28.8h, v0.h[3]                     #! PC = 0xaaaaaaaac33c
+	sub	v20.8h, v8.8h, v16.8h                       #! PC = 0xaaaaaaaac340
+	mul	v13.8h, v29.8h, v0.h[3]                     #! PC = 0xaaaaaaaac344
+	sub	v21.8h, v9.8h, v17.8h                       #! PC = 0xaaaaaaaac348
+	mul	v14.8h, v30.8h, v0.h[3]                     #! PC = 0xaaaaaaaac34c
+	sub	v22.8h, v10.8h, v18.8h                      #! PC = 0xaaaaaaaac350
+	mul	v15.8h, v31.8h, v0.h[3]                     #! PC = 0xaaaaaaaac354
+	sub	v23.8h, v11.8h, v19.8h                      #! PC = 0xaaaaaaaac358
+	sqrdmulh	v28.8h, v28.8h, v0.h[2]                #! PC = 0xaaaaaaaac35c
+	add	v8.8h, v8.8h, v16.8h                        #! PC = 0xaaaaaaaac360
+	sqrdmulh	v29.8h, v29.8h, v0.h[2]                #! PC = 0xaaaaaaaac364
+	add	v9.8h, v9.8h, v17.8h                        #! PC = 0xaaaaaaaac368
+	sqrdmulh	v30.8h, v30.8h, v0.h[2]                #! PC = 0xaaaaaaaac36c
+	add	v10.8h, v10.8h, v18.8h                      #! PC = 0xaaaaaaaac370
+	sqrdmulh	v31.8h, v31.8h, v0.h[2]                #! PC = 0xaaaaaaaac374
+	add	v11.8h, v11.8h, v19.8h                      #! PC = 0xaaaaaaaac378
+	mls	v12.8h, v28.8h, v0.h[0]                     #! PC = 0xaaaaaaaac37c
+	mls	v13.8h, v29.8h, v0.h[0]                     #! PC = 0xaaaaaaaac380
+	mls	v14.8h, v30.8h, v0.h[0]                     #! PC = 0xaaaaaaaac384
+	mls	v15.8h, v31.8h, v0.h[0]                     #! PC = 0xaaaaaaaac388
+	mul	v16.8h, v20.8h, v0.h[3]                     #! PC = 0xaaaaaaaac38c
+	mul	v17.8h, v21.8h, v0.h[3]                     #! PC = 0xaaaaaaaac390
+	mul	v18.8h, v22.8h, v0.h[3]                     #! PC = 0xaaaaaaaac394
+	mul	v19.8h, v23.8h, v0.h[3]                     #! PC = 0xaaaaaaaac398
+	sqrdmulh	v20.8h, v20.8h, v0.h[2]                #! PC = 0xaaaaaaaac39c
+	sqrdmulh	v21.8h, v21.8h, v0.h[2]                #! PC = 0xaaaaaaaac3a0
+	sqrdmulh	v22.8h, v22.8h, v0.h[2]                #! PC = 0xaaaaaaaac3a4
+	sqrdmulh	v23.8h, v23.8h, v0.h[2]                #! PC = 0xaaaaaaaac3a8
+	mls	v16.8h, v20.8h, v0.h[0]                     #! PC = 0xaaaaaaaac3ac
+	mls	v17.8h, v21.8h, v0.h[0]                     #! PC = 0xaaaaaaaac3b0
+	mls	v18.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac3b4
+	mls	v19.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac3b8
+	mov	v0.s[1], w22                                #! PC = 0xaaaaaaaac3bc
+	sqrdmulh	v28.8h, v4.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3c0
+	sqrdmulh	v29.8h, v5.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3c4
+	sqrdmulh	v30.8h, v6.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3c8
+	sqrdmulh	v31.8h, v7.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3cc
+	sqrdmulh	v20.8h, v8.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3d0
+	sqrdmulh	v21.8h, v9.8h, v0.h[2]                 #! PC = 0xaaaaaaaac3d4
+	sqrdmulh	v22.8h, v10.8h, v0.h[2]                #! PC = 0xaaaaaaaac3d8
+	sqrdmulh	v23.8h, v11.8h, v0.h[2]                #! PC = 0xaaaaaaaac3dc
+	mul	v4.8h, v4.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3e0
+	mul	v5.8h, v5.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3e4
+	mul	v6.8h, v6.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3e8
+	mul	v7.8h, v7.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3ec
+	mul	v8.8h, v8.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3f0
+	mul	v9.8h, v9.8h, v0.h[3]                       #! PC = 0xaaaaaaaac3f4
+	mul	v10.8h, v10.8h, v0.h[3]                     #! PC = 0xaaaaaaaac3f8
+	mul	v11.8h, v11.8h, v0.h[3]                     #! PC = 0xaaaaaaaac3fc
+	mls	v4.8h, v28.8h, v0.h[0]                      #! PC = 0xaaaaaaaac400
+	mls	v5.8h, v29.8h, v0.h[0]                      #! PC = 0xaaaaaaaac404
+	mls	v6.8h, v30.8h, v0.h[0]                      #! PC = 0xaaaaaaaac408
+	mls	v7.8h, v31.8h, v0.h[0]                      #! PC = 0xaaaaaaaac40c
+	mls	v8.8h, v20.8h, v0.h[0]                      #! PC = 0xaaaaaaaac410
+	mls	v9.8h, v21.8h, v0.h[0]                      #! PC = 0xaaaaaaaac414
+	mls	v10.8h, v22.8h, v0.h[0]                     #! PC = 0xaaaaaaaac418
+	mls	v11.8h, v23.8h, v0.h[0]                     #! PC = 0xaaaaaaaac41c
+	st1	{v4.8h}, [x0], #16                          #! EA = L0xffffffffb418; PC = 0xaaaaaaaac420
+	st1	{v5.8h}, [x1], #16                          #! EA = L0xffffffffb438; PC = 0xaaaaaaaac424
+	st1	{v6.8h}, [x2], #16                          #! EA = L0xffffffffb458; PC = 0xaaaaaaaac428
+	st1	{v7.8h}, [x3], #16                          #! EA = L0xffffffffb478; PC = 0xaaaaaaaac42c
+	st1	{v8.8h}, [x4], #16                          #! EA = L0xffffffffb498; PC = 0xaaaaaaaac430
+	st1	{v9.8h}, [x5], #16                          #! EA = L0xffffffffb4b8; PC = 0xaaaaaaaac434
+	st1	{v10.8h}, [x6], #16                         #! EA = L0xffffffffb4d8; PC = 0xaaaaaaaac438
+	st1	{v11.8h}, [x7], #16                         #! EA = L0xffffffffb4f8; PC = 0xaaaaaaaac43c
+	st1	{v12.8h}, [x8], #16                         #! EA = L0xffffffffb518; PC = 0xaaaaaaaac440
+	st1	{v13.8h}, [x9], #16                         #! EA = L0xffffffffb538; PC = 0xaaaaaaaac444
+	st1	{v14.8h}, [x10], #16                        #! EA = L0xffffffffb558; PC = 0xaaaaaaaac448
+	st1	{v15.8h}, [x11], #16                        #! EA = L0xffffffffb578; PC = 0xaaaaaaaac44c
+	st1	{v16.8h}, [x12], #16                        #! EA = L0xffffffffb598; PC = 0xaaaaaaaac450
+	st1	{v17.8h}, [x13], #16                        #! EA = L0xffffffffb5b8; PC = 0xaaaaaaaac454
+	st1	{v18.8h}, [x14], #16                        #! EA = L0xffffffffb5d8; PC = 0xaaaaaaaac458
+	st1	{v19.8h}, [x15], #16                        #! EA = L0xffffffffb5f8; PC = 0xaaaaaaaac45c
+	ldp	x19, x20, [sp]                              #! EA = L0xffffffff9ad0; Value = 0x0000aaaaaaaaca80; PC = 0xaaaaaaaac460
+	ldp	x21, x22, [sp, #16]                         #! EA = L0xffffffff9ae0; Value = 0x0000aaaaaaabe020; PC = 0xaaaaaaaac464
+	ldp	x23, x24, [sp, #32]                         #! EA = L0xffffffff9af0; Value = 0x0000000000000000; PC = 0xaaaaaaaac468
+	ldp	x25, x26, [sp, #48]                         #! EA = L0xffffffff9b00; Value = 0x0000ffffffffae08; PC = 0xaaaaaaaac46c
+	ldp	x27, x28, [sp, #64]                         #! EA = L0xffffffff9b10; Value = 0x0000aaaaaaad18b0; PC = 0xaaaaaaaac470
+	ldp	d8, d9, [sp, #80]                           #! EA = L0xffffffff9b20; Value = 0x0000000000000000; PC = 0xaaaaaaaac474
+	ldp	d10, d11, [sp, #96]                         #! EA = L0xffffffff9b30; Value = 0x0000000000000000; PC = 0xaaaaaaaac478
+	ldp	d12, d13, [sp, #112]                        #! EA = L0xffffffff9b40; Value = 0x0000000000000000; PC = 0xaaaaaaaac47c
+	ldp	d14, d15, [sp, #128]                        #! EA = L0xffffffff9b50; Value = 0x0000000000000000; PC = 0xaaaaaaaac480
+	add	sp, sp, #0x90                               #! PC = 0xaaaaaaaac484
+	#br	x30                                         #! PC = 0xaaaaaaaac488

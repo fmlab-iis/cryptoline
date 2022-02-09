@@ -2055,7 +2055,7 @@ bexp_prove_with_list:
 ebexp_prove_with:
   ebexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
 | ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
 | ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | ebexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | ebexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
@@ -2064,7 +2064,7 @@ ebexp_prove_with:
 rbexp_prove_with:
   rbexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
 | rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5) }
+                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
 | rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
@@ -2084,16 +2084,16 @@ bexp_prove_with:
 ;
 
 prove_with_specs:
-    prove_with_spec                               { [$1] }
-  | prove_with_spec COMMA prove_with_specs        { $1::$3 }
+    prove_with_spec                               { fun cm -> [$1 cm] }
+  | prove_with_spec COMMA prove_with_specs        { fun cm -> ($1 cm)::($3 cm) }
 ;
 
 prove_with_spec:
-    PRECONDITION                                  { Precondition }
-  | CUTS LSQUARE num_list RSQUARE                 { Cuts $3 }
-  | ALL CUTS                                      { AllCuts }
-  | ALL ASSUMES                                   { AllAssumes }
-  | ALL GHOSTS                                    { AllGhosts }
+    PRECONDITION                                  { fun _ -> Precondition }
+  | CUTS LSQUARE complex_const_list RSQUARE       { fun cm -> Cuts ($3 cm) }
+  | ALL CUTS                                      { fun _ -> AllCuts }
+  | ALL ASSUMES                                   { fun _ -> AllAssumes }
+  | ALL GHOSTS                                    { fun _ -> AllGhosts }
 ;
 
 bexp:
@@ -2190,14 +2190,15 @@ eexp:
   | eexp MULOP eexp                               { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
   | eexp POWOP const                              { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+                                                      let i = $3 cm in
                                                       match e with
-                                                      | Econst n -> Econst (Z.pow n i)
+                                                      | Econst n ->
+                                                         let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
+                                                         Econst c
                                                       | _ ->
-                                                         (match i with
-                                                          | 0 -> Econst Z.one
-                                                          | 1 -> e
-                                                          | _ -> epow e (Econst (Z.of_int i)))
+                                                         if Z.equal i Z.zero then Econst Z.one
+                                                         else if Z.equal i Z.one then e
+                                                         else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
 ;
@@ -2224,14 +2225,15 @@ eexp_no_unary:
   | eexp_no_unary MULOP eexp                      { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
   | eexp_no_unary POWOP const                     { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+                                                      let i = $3 cm in
                                                       match e with
-                                                      | Econst n -> Econst (Z.pow n i)
+                                                      | Econst n ->
+                                                         let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
+                                                         Econst c
                                                       | _ ->
-                                                         (match i with
-                                                          | 0 -> Econst Z.one
-                                                          | 1 -> e
-                                                          | _ -> epow e (Econst (Z.of_int i)))
+                                                         if Z.equal i Z.zero then Econst Z.one
+                                                         else if Z.equal i Z.one then e
+                                                         else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
 ;
@@ -3086,9 +3088,9 @@ gvar:
                                                   }
 ;
 
-num_list:
-    NUM                                           { [Z.to_int $1] }
-  | NUM COMMA num_list                            { (Z.to_int $1)::$3 }
+complex_const_list:
+    complex_const                                 { fun cm -> [Z.to_int ($1 cm)] }
+  | complex_const COMMA complex_const_list        { fun cm -> (Z.to_int ($1 cm))::($3 cm) }
 
 const:
     simple_const                                  { fun cm -> $1 cm }
@@ -3108,11 +3110,18 @@ simple_const:
 
 complex_const:
     const                                         { fun cm -> $1 cm }
-  | SUBOP complex_const %prec UMINUS              { fun cm -> Z.neg ($2 cm) }
+  | SUBOP const %prec UMINUS                      { fun cm -> Z.neg ($2 cm) }
   | complex_const ADDOP complex_const             { fun cm -> Z.add ($1 cm) ($3 cm) }
   | complex_const SUBOP complex_const             { fun cm -> Z.sub ($1 cm) ($3 cm) }
   | complex_const MULOP complex_const             { fun cm -> Z.mul ($1 cm) ($3 cm) }
-  | complex_const POWOP complex_const             { fun cm -> Z.pow ($1 cm) (Z.to_int ($3 cm)) }
+  | complex_const POWOP complex_const             { fun cm ->
+                                                    let n = $1 cm in
+                                                    let i = $3 cm in
+                                                    try
+                                                      Z.pow n (Z.to_int i)
+                                                    with Z.Overflow ->
+                                                      big_pow n i
+                                                  }
 ;
 
 carry:

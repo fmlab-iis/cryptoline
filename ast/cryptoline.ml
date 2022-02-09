@@ -1,6 +1,8 @@
 
 open Set
 
+exception IndexOutOfBound of int
+
 let z_two = Z.of_int 2
 
 let _eq_symbol = "="
@@ -45,6 +47,8 @@ let map_fst f pairs =
 let map_snd f pairs =
   List.map (fun (e1, e2) -> (e1, f e2)) pairs
 
+(* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
+let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
 
 (** Types *)
 
@@ -423,6 +427,7 @@ let eexp_ebinop_open e op =
   | Ebinop (op, _, _), Emul -> op = Emul
   | Ebinop (_op, _, _), _ -> false
 
+(* An eexp is atomic if it is a variable or a constant. *)
 let is_eexp_atomic e =
   match e with
   | Evar _ | Econst _ -> true
@@ -431,7 +436,7 @@ let is_eexp_atomic e =
 let rec string_of_eexp ?typ:(typ=false) e =
   match e with
   | Evar v -> string_of_var ~typ:typ v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atomic e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then string_of_eexp ~typ:typ e1 else "(" ^ string_of_eexp ~typ:typ e1 ^ ")")
@@ -662,7 +667,12 @@ let rec string_of_ebexp ?typ:(typ=false) e =
   match e with
   | Etrue -> "true"
   | Eeq (e1, e2) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
-  | Eeqmod (e1, e2, ms) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2 ^ " (mod " ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ ")"
+  | Eeqmod (e1, e2, ms) ->
+     string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
+     ^ (match ms with
+        | [] -> ""
+        | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
+        | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
   | Eand (e1, e2) ->
      let es = split_eand e in
      match es with
@@ -2076,7 +2086,7 @@ let cut_espec es =
        let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter es.espwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { espre = pre; esprog = prove_with@(List.rev visited_rev); espost = post; espwss = [] } in
        [spec]::res
-    | (Icut ([], _) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
+    | (Icut ([], _))::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
@@ -2107,7 +2117,7 @@ let cut_rspec rs =
        let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rs.rspwss (precond, cuts_rev, List.rev before_rev)) in
        let spec = { rspre = pre; rsprog = prove_with@(List.rev visited_rev); rspost = post; rspwss = [] } in
        [spec]::res
-    | (Icut (_, []) as hd)::tl -> helper res (precond, before_rev, after_rev, hd::cuts_rev) (pre, visited_rev, tl, post)
+    | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
        let specs =
          let visited = List.rev visited_rev in
@@ -2961,3 +2971,87 @@ let infer_input_variables s =
 let spec_to_coq_cryptoline s =
   let ssa = ssa_spec s in
   List.map move_asserts (cut_spec (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec ssa else ssa))
+
+
+(* Test if the instruction is a cut over algebra properties *)
+let is_ecut i =
+  match i with
+  | Icut (_::_, _) -> true
+  | _ -> false
+
+(* Test if the instruction is a cut over range properties *)
+let is_rcut i =
+  match i with
+  | Icut (_, _::_) -> true
+  | _ -> false
+
+
+(*
+ * Normalize an index. If `n - 1` is the maximal index.
+ * `normal n i` is `i` if i is non-negative.
+ * `normal n i` is `n + 1` if i is negative.
+ *)
+let normalize_index num id =
+  let res =
+    if id >= 0 then id
+    else num + id in
+  if res < 0 then raise (IndexOutOfBound id)
+  else res
+
+let normalize_pws num_cuts pws =
+  match pws with
+  | Cuts ids -> Cuts (List.map (normalize_index num_cuts) ids)
+  | _ -> pws
+
+let normalize_epwss num_ecuts (e, pwss) = (e, List.map (normalize_pws num_ecuts) pwss)
+let normalize_rpwss num_rcuts (r, pwss) = (r, List.map (normalize_pws num_rcuts) pwss)
+
+(*
+ * Normalize program. After normalization:
+ * - All indices in prove-with clauses are positive.
+ *)
+let normalize_program ?num_ecuts ?num_rcuts p =
+  let num_ecuts =
+    match num_ecuts with
+    | None -> List.length (List.filter is_ecut p) + 1
+    | Some i -> i in
+  let num_rcuts =
+    match num_rcuts with
+    | None -> List.length (List.filter is_rcut p) + 1
+    | Some i -> i in
+  (* Convert negative indices to positive indices *)
+  let normalize_prove_with p =
+    let update_instruction i =
+      match i with
+      | Icut (espwss, rspwss) ->
+         (try
+            Icut (List.map (normalize_epwss num_ecuts) espwss, List.map (normalize_rpwss num_rcuts) rspwss)
+          with IndexOutOfBound id ->
+            failwith("Index out of bound in " ^ string_of_instr i ^ ": " ^ string_of_int id)
+         )
+      | _ -> i in
+    List.map update_instruction p in
+  normalize_prove_with p
+
+(*
+ * Normalize spec. After normalization:
+ * - All indices in prove-with clauses are positive.
+ *)
+let normalize_spec s =
+  (* Note that postcondition is always the last cut. *)
+  let (num_ecuts, num_rcuts) = (List.length (List.filter is_ecut s.sprog) + 1, List.length (List.filter is_rcut s.sprog) + 1) in
+  let np = normalize_program ~num_ecuts:num_ecuts ~num_rcuts:num_rcuts s.sprog in
+  let nepwss =
+    try
+      List.map (normalize_pws num_ecuts) s.sepwss
+    with IndexOutOfBound id ->
+      failwith("Index out of bound in algebraic postcondition: " ^ string_of_int id) in
+  let nrpwss = try
+      List.map (normalize_pws num_rcuts) s.srpwss
+    with IndexOutOfBound id ->
+      failwith("Index out of bound in range postcondition: " ^ string_of_int id) in
+  { spre = s.spre;
+    sprog = np;
+    spost = s.spost;
+    sepwss = nepwss;
+    srpwss = nrpwss }

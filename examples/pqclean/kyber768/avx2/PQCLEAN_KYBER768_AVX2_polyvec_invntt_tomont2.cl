@@ -1,3 +1,17 @@
+(* frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint PQCLEAN_KYBER768_AVX2_polyvec_invntt_tomont2.cl
+Parsing Cryptoline file:                [OK]            0.337400 seconds
+Checking well-formedness:               [OK]            0.081178 seconds
+Transforming to SSA form:               [OK]            0.076843 seconds
+Rewriting assignments:                  [OK]            0.061946 seconds
+Verifying program safety:               [OK]            20976.662275 seconds
+Verifying range assertions:             [OK]            5469.672196 seconds
+Verifying range specification:          [OK]            8958.654177 seconds
+Rewriting value-preserved casting:      [OK]            0.001428 seconds
+Verifying algebraic assertions:         [OK]            0.014406 seconds
+Verifying algebraic specification:      [OK]            812.368892 seconds
+Verification result:                    [OK]            36217.979238 seconds
+*)
+
 (* quine: -v -isafety -isafety_timeout 14400 -jobs 36 -slicing -no_carry_constraint PQCLEAN_KYBER768_AVX2_polyvec_invntt_tomont2.cl
 Parsing Cryptoline file:                [OK]            0.373952 seconds
 Checking well-formedness:               [OK]            0.100101 seconds

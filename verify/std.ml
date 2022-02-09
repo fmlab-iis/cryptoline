@@ -17,21 +17,23 @@ let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_
 let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
 
 (*
- * `apply_to_cuts idx_ref vf def combine cuts` applies verifiction function vf to cuts specified in idx_ref.
+ * `apply_to_cuts ids vf def combine cuts` applies verifiction function vf to cuts with ID specified in ids.
  * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
+ * Note that cuts must be all cuts (including the poscondition as the last cut) of the specification to be verified.
  *)
-let apply_to_cuts cuts_ref f def combine ss =
+let apply_to_cuts ids f def combine ss =
+  let ids = Option.map (List.map (normalize_index (List.length ss))) ids in
   let rec helper res i ss =
     match ss with
     | [] -> res
     | hd::tl ->
-       match !cuts_ref with
-       | Some cuts when not (List.mem i cuts) ->
+       match ids with
+       | Some ids when not (List.mem i ids) ->
           let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
           helper res (i+1) tl
        | _ ->
           let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-          let res = List.fold_left (fun res s -> combine res (fun () -> f s)) res hd in
+          let res = List.fold_left (fun res s -> combine res (fun () -> f i s)) res hd in
           combine res (fun () -> helper res (i+1) tl) in
   helper def 0 ss
 
@@ -99,16 +101,16 @@ let verify_safety_inc timeout f p qs hashopt =
 let verify_safety s hashopt =
   let _ = trace "===== Verifying program safety =====" in
   let _ = if !incremental_safety then vprintln "" in
-  let verify_one (i, f, p) =
-    let _ = trace ("=== Verifying program safety incrementally: cut #" ^ string_of_int i ^ " ===") in
-    let _ = if !incremental_safety then vprintln ("\t Cut " ^ string_of_int i) in
+  let verify_safety_without_cuts cid s =
+    let _ = trace ("=== Verifying program safety incrementally: Cut #" ^ string_of_int cid ^ " ===") in
+    let _ = if !incremental_safety then vprintln ("\t Cut " ^ string_of_int cid) in
     if !incremental_safety && !Options.Std.use_cli then
-      WithLwt.verify_safety_cli f p
+      WithLwt.verify_safety_cli s.rspre s.rsprog
     else if !incremental_safety then
       let round = ref 1 in
       let timeout = ref !incremental_safety_timeout in
       let safety = ref None in
-      let qs = ref (bexp_program_safe_conds p) in
+      let qs = ref (bexp_program_safe_conds s.rsprog) in
       let _ =
         while !safety = None do
           let _ = trace ("Round: " ^ string_of_int !round ^ "\n"
@@ -119,9 +121,9 @@ let verify_safety s hashopt =
                                  ^ string_of_int !timeout ^ " seconds)") in
           let res =
             if !jobs > 1 then
-              WithLwt.verify_safety_inc !timeout f p !qs hashopt
+              WithLwt.verify_safety_inc !timeout s.rspre s.rsprog !qs hashopt
             else
-              verify_safety_inc !timeout f p !qs hashopt in
+              verify_safety_inc !timeout s.rspre s.rsprog !qs hashopt in
           let _ =
             match res with
               Solved r -> safety := if r = Unsat then Some true else Some false
@@ -139,28 +141,10 @@ let verify_safety s hashopt =
         | None -> assert false in
       res
     else
-      let g = bexp_program_safe p in
-      let fp = safety_assumptions f p g hashopt in
+      let g = bexp_program_safe s.rsprog in
+      let fp = safety_assumptions s.rspre s.rsprog g hashopt in
       solve_simp (fp@[g]) = Unsat in
-  let rec cut i f visited_rev p =
-    match p with
-    | [] -> [(i, f, List.rev visited_rev)]
-    | Icut (_, [])::tl -> cut i f visited_rev tl (* Drop Icut without range properties *)
-    | Icut (_, rcuts)::tl ->
-       let e = rands (fst (List.split rcuts)) in
-       (i, f, List.rev visited_rev)::cut (i+1) e [] tl
-    | hd::tl -> cut i f (hd::visited_rev) tl in
-  let rec verify_rec ss =
-    match ss with
-    | [] -> true
-    | ((i, _, _) as hd)::tl ->
-       match !verify_scuts with
-       | Some cuts when not (List.mem i cuts) ->
-          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-          verify_rec tl
-       | _ ->
-          (verify_one hd) && verify_rec tl in
-  let res = verify_rec (cut 0 (rng_bexp s.spre) [] s.sprog) in
+  let res = apply_to_cuts !verify_scuts verify_safety_without_cuts true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
@@ -298,6 +282,34 @@ let write_macaulay2_input ifile vars gen p =
   unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
   trace ""
 
+let write_maple_input ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.map string_of_var vars) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
+    let poly = magma_of_eexp p in
+    "interface(prettyprint=0):\n"
+    ^ "with(PolynomialIdeals):\n"
+    ^ "with(Groebner):\n"
+    ^ "Ord := plex(" ^ varseq ^ "):\n"
+    ^ "B := [" ^ generator ^ "]:\n"
+    ^ "g := " ^ poly ^ ":\n"
+    ^ "if member(g, B) then\n"
+    ^ "  res := true\n"
+    ^ "else\n"
+    ^ "  J := PolynomialIdeal(B):\n"
+    ^ "  res := IdealMembership(g, J):\n"
+    ^ "end if:\n"
+    ^ "res;\n"
+    ^ "quit:\n" in
+  let ch = open_out ifile in
+  let _ = output_string ch input_text; close_out ch in
+  trace "INPUT TO MAPLE:";
+  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace ""
+
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
@@ -343,6 +355,15 @@ let run_macaulay2 ifile ofile =
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
+let run_maple ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  trace ("Execution time of Maple: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace "OUTPUT FROM MAPLE:";
+  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace ""
+
 let read_singular_output ofile =
   let line = ref "" in
   let ch = open_in ofile in
@@ -381,38 +402,24 @@ let read_sage_output ofile =
   if !has_output && !line = "true" then failwith "Unknown error in Sage"
   else !line
 
-let read_magma_output ofile =
+let read_one_line ofile =
   let line = ref "" in
   let ch = open_in ofile in
   let _ =
     try
-	  line := input_line ch
+      line := input_line ch
     with _ ->
       failwith "Failed to read the output file" in
   let _ = close_in ch in
   String.trim !line
 
-let read_mathematica_output ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-	  line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
+let read_magma_output = read_one_line
 
-let read_macaulay2_output ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-	  line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
+let read_mathematica_output = read_one_line
+
+let read_macaulay2_output = read_one_line
+
+let read_maple_output = read_one_line
 
 let is_in_ideal vars ideal p =
   let ifile = tmpfile "inputfgb_" "" in
@@ -446,34 +453,52 @@ let is_in_ideal vars ideal p =
        let _ = run_macaulay2 ifile ofile in
        let res = read_macaulay2_output ofile in
        res = "0"
+    | Maple ->
+       let _ = write_maple_input ifile vars ideal p in
+       let _ = run_maple ifile ofile in
+       let res = read_maple_output ofile in
+       res = "true"
   in
   let _ = cleanup [ifile; ofile] in
   res
 
 let verify_rspec_single_conjunct s hashopt =
+  let rec rbexp_implies_rspost re se  =
+    match re with
+    | Rand (re0, re1) ->
+       rbexp_implies_rspost re0 se || rbexp_implies_rspost re1 se
+    | _ -> re = se in
+  let rpost_in_assumes prog rspost =
+    List.exists (fun inst ->
+        match inst with
+        | Iassume (_, r) -> rbexp_implies_rspost r rspost
+        | _ -> false) prog in
   let verify_one s =
-    let f = bexp_rbexp s.rspre in
-    let p = bexp_program s.rsprog in
-    let g = bexp_rbexp s.rspost in
-    let gs = split_bexp g in
-    List.for_all
-      (fun g ->
-        let _ = trace ("range condition: " ^ string_of_bexp g) in
-        solve_simp (f::p@[g]) = Unsat)
-      gs in
+    if rpost_in_assumes s.rsprog s.rspost then
+      true
+    else
+      let f = bexp_rbexp s.rspre in
+      let p = bexp_program s.rsprog in
+      let g = bexp_rbexp s.rspost in
+      let gs = split_bexp g in
+      List.for_all
+        (fun g ->
+          let _ = trace ("range condition: " ^ string_of_bexp g) in
+          solve_simp (f::p@[g]) = Unsat)
+        gs in
   s.rspost = Rtrue ||
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
-let rec verify_rspec_without_cuts hashopt s =
+let rec verify_rspec_without_cuts hashopt cid s =
   match s.rspost with
   | Rand (e1, e2) ->
-     verify_rspec_without_cuts hashopt { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
-       verify_rspec_without_cuts hashopt { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
+     verify_rspec_without_cuts hashopt cid { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
+       verify_rspec_without_cuts hashopt cid { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
   | _ -> verify_rspec_single_conjunct s hashopt
 
 let verify_rspec_with_cuts hashopt s =
-  apply_to_cuts verify_rcuts (verify_rspec_without_cuts hashopt) true (fun res cont -> if res then cont() else res) (cut_rspec s)
+  apply_to_cuts !verify_rcuts (verify_rspec_without_cuts hashopt) true (fun res cont -> if res then cont() else res) (cut_rspec s)
 
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
@@ -501,15 +526,15 @@ let verify_espec_single_conjunct vgen s hashopt =
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let rec verify_espec_without_cuts hashopt vgen s =
+let rec verify_espec_without_cuts hashopt vgen cid s =
   match s.espost with
   | Eand (e1, e2) ->
-     verify_espec_without_cuts hashopt vgen { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-       verify_espec_without_cuts hashopt vgen { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
+     verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
+       verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
   | _ -> verify_espec_single_conjunct vgen s hashopt
 
 let verify_espec_with_cuts hashopt vgen s =
-  apply_to_cuts verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
+  apply_to_cuts !verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
 
 let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specification =====" in
@@ -518,54 +543,54 @@ let verify_espec vgen s hashopt =
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify epre evisited p =
+  let rec verify cid epre evisited p =
     match p with
     | [] -> true
     | Iassert e::tl ->
        let _ = trace ("=== Checking algebraic assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_espec_without_cuts hashopt vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
-           (fun () -> verify epre evisited tl) ]
+         [ (fun () -> verify_espec_without_cuts hashopt vgen cid (mkespec epre (List.rev evisited) (eqn_bexp e)));
+           (fun () -> verify cid epre evisited tl) ]
     | (Icut _)::_ -> assert false
-    | hd::tl -> verify epre (hd::evisited) tl in
-  let verify s = verify s.espre [] s.esprog in
-  apply_to_cuts verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
+    | hd::tl -> verify cid epre (hd::evisited) tl in
+  let verify cid s = verify cid s.espre [] s.esprog in
+  apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
 
 let verify_rassert _vgen s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
-  let rec verify rpre rvisited p =
+  let rec verify cid rpre rvisited p =
     match p with
     | [] -> true
     | Iassert e::tl ->
        let _ = trace ("=== Checking range assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec_without_cuts hashopt (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
-           (fun () -> verify rpre rvisited tl) ]
-    | Icut (_, [])::tl -> verify rpre rvisited tl
-    | Icut (_, rcuts)::tl -> verify (rands (fst (List.split rcuts))) [] tl
-    | hd::tl -> verify rpre (hd::rvisited) tl in
-  let verify s = verify s.rspre [] s.rsprog in
-  apply_to_cuts verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s))
+         [ (fun () -> verify_rspec_without_cuts hashopt cid (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
+           (fun () -> verify cid rpre rvisited tl) ]
+    | Icut (_, [])::tl -> verify cid rpre rvisited tl
+    | Icut (_, rcuts)::tl -> verify cid (rands (fst (List.split rcuts))) [] tl
+    | hd::tl -> verify cid rpre (hd::rvisited) tl in
+  let verify cid s = verify cid s.rspre [] s.rsprog in
+  apply_to_cuts !verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s))
 
 let verify_assert vgen s hashopt =
   let _ = trace "===== Verifying assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify (epre, rpre) (evisited, rvisited) p =
+  let rec verify (ecut_id, rcut_id) (epre, rpre) (evisited, rvisited) p =
     match p with
     | [] -> true
     | Iassert e::tl ->
        let _ = trace ("=== Checking assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
        List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec_without_cuts hashopt (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
-           (fun () -> verify_espec_without_cuts hashopt vgen (mkespec epre (List.rev evisited) (eqn_bexp e)));
-           (fun () -> verify (epre, rpre) (evisited, rvisited) tl) ]
-    | Icut (ecuts, [])::tl -> verify (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
-    | Icut ([], rcuts)::tl -> verify (epre, rands (fst (List.split rcuts))) (evisited, []) tl
-    | Icut (ecuts, rcuts)::tl -> verify (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
-    | hd::tl -> verify (epre, rpre) (hd::evisited, hd::rvisited) tl in
-  verify (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
+         [ (fun () -> verify_rspec_without_cuts hashopt rcut_id (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
+           (fun () -> verify_espec_without_cuts hashopt vgen ecut_id (mkespec epre (List.rev evisited) (eqn_bexp e)));
+           (fun () -> verify (ecut_id, rcut_id) (epre, rpre) (evisited, rvisited) tl) ]
+    | Icut (ecuts, [])::tl -> verify (ecut_id + 1, rcut_id) (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
+    | Icut ([], rcuts)::tl -> verify (ecut_id, rcut_id + 1) (epre, rands (fst (List.split rcuts))) (evisited, []) tl
+    | Icut (ecuts, rcuts)::tl -> verify (ecut_id + 1, rcut_id + 1) (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
+    | hd::tl -> verify (ecut_id, rcut_id) (epre, rpre) (hd::evisited, hd::rvisited) tl in
+  verify (0, 0) (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
 
 let redlog_of_espec es =
   let eqn_of_eexp e =
@@ -623,6 +648,7 @@ let redlog_of_espec es =
   let ess = cut_espec es in
   String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
 
+(* The main verification process *)
 let verify_spec s =
   let vgen = vgen_of_spec s in
   let has_assert p = List.exists
@@ -637,6 +663,13 @@ let verify_spec s =
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
     (true, ssa, hashopt) in
+  let normalize_spec (s, hashopt) =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint ("Normalizing specification:\t\t") in
+    let ns = normalize_spec s in
+    let t2 = Unix.gettimeofday() in
+    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    (true, ns, hashopt) in
   let rewrite_assignments (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Rewriting assignments:\t\t\t") in
@@ -711,8 +744,8 @@ let verify_spec s =
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option
-                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list=
-    [spec_to_ssa]
+                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list =
+    [spec_to_ssa; normalize_spec]
     @(if !apply_rewriting then [rewrite_assignments] else [])
     (* @(if !apply_slicing then [build_var_dep_hash] else []) *)
     @(if !verify_program_safety then [program_safe] else [])

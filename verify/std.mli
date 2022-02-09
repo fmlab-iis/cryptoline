@@ -26,7 +26,10 @@ val verify_instruction_safety : int -> rbexp -> program -> int ->
                                 VS.t atomichash_t option ->
                                 Common.round_result
 
-(* Verifies assertions of a specification in SSA. *)
+(*
+ * Verifies assertions of a specification in SSA without considering
+ * verify_eacuts and verify_racuts.
+ *)
 val verify_assert : var_gen -> spec -> VS.t atomichash_t option -> bool
 
 (* Verifies an algebraic spec in SSA. *)

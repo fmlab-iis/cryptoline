@@ -1,0 +1,683 @@
+nttmul_poly_ntt:
+# %rdi = 0x7fffffff2c00
+# %rsi = 0x7fffffff3000
+# %rdx = 0x5555555607c0
+# %rcx = 0x7ffff7ed21e7
+# %r8  = 0xa
+# %r9  = 0x1b
+	#! -> SP = 0x7fffffff2738
+	vmovdqa (%rdx),%ymm0                            #! EA = L0x5555555607c0; Value = 0x1e011e011e011e01; PC = 0x555555557357
+	vmovdqa 0x100(%rdx),%ymm1                       #! EA = L0x5555555608c0; Value = 0x70c170c170c170c1; PC = 0x55555555735b
+	vmovdqa 0x120(%rdx),%ymm2                       #! EA = L0x5555555608e0; Value = 0x0ec10ec10ec10ec1; PC = 0x555555557363
+	vmovdqa 0x100(%rsi),%ymm8                       #! EA = L0x7fffffff3100; Value = 0x0000000000000000; PC = 0x55555555736b
+	vmovdqa 0x120(%rsi),%ymm9                       #! EA = L0x7fffffff3120; Value = 0x0000000000000000; PC = 0x555555557373
+	vmovdqa 0x140(%rsi),%ymm10                      #! EA = L0x7fffffff3140; Value = 0x0000000000000000; PC = 0x55555555737b
+	vmovdqa 0x160(%rsi),%ymm11                      #! EA = L0x7fffffff3160; Value = 0x0000000000000000; PC = 0x555555557383
+	vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x55555555738b
+	vpmullw %ymm1,%ymm9,%ymm13                      #! PC = 0x55555555738f
+	vpmullw %ymm1,%ymm10,%ymm14                     #! PC = 0x555555557393
+	vpmullw %ymm1,%ymm11,%ymm15                     #! PC = 0x555555557397
+	vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x55555555739b
+	vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x55555555739f
+	vpmulhw %ymm2,%ymm10,%ymm10                     #! PC = 0x5555555573a3
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x5555555573a7
+	vmovdqa (%rsi),%ymm4                            #! EA = L0x7fffffff3000; Value = 0x0000000000000000; PC = 0x5555555573ab
+	vmovdqa 0x20(%rsi),%ymm5                        #! EA = L0x7fffffff3020; Value = 0x0000000000000000; PC = 0x5555555573af
+	vmovdqa 0x40(%rsi),%ymm6                        #! EA = L0x7fffffff3040; Value = 0x0000000000000000; PC = 0x5555555573b4
+	vmovdqa 0x60(%rsi),%ymm7                        #! EA = L0x7fffffff3060; Value = 0x0000000000000000; PC = 0x5555555573b9
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555573be
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x5555555573c2
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x5555555573c6
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x5555555573ca
+	vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x5555555573ce
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x5555555573d3
+	vpaddw %ymm9,%ymm5,%ymm4                        #! PC = 0x5555555573d8
+	vpsubw %ymm9,%ymm5,%ymm9                        #! PC = 0x5555555573dd
+	vpaddw %ymm10,%ymm6,%ymm5                       #! PC = 0x5555555573e2
+	vpsubw %ymm10,%ymm6,%ymm10                      #! PC = 0x5555555573e7
+	vpaddw %ymm11,%ymm7,%ymm6                       #! PC = 0x5555555573ec
+	vpsubw %ymm11,%ymm7,%ymm11                      #! PC = 0x5555555573f1
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x5555555573f6
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x5555555573fb
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x555555557400
+	vpaddw %ymm13,%ymm9,%ymm9                       #! PC = 0x555555557405
+	vpsubw %ymm14,%ymm5,%ymm5                       #! PC = 0x55555555740a
+	vpaddw %ymm14,%ymm10,%ymm10                     #! PC = 0x55555555740f
+	vpsubw %ymm15,%ymm6,%ymm6                       #! PC = 0x555555557414
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x555555557419
+	vmovdqa %ymm3,(%rdi)                            #! EA = L0x7fffffff2c00; PC = 0x55555555741e
+	vmovdqa %ymm4,0x20(%rdi)                        #! EA = L0x7fffffff2c20; PC = 0x555555557422
+	vmovdqa %ymm5,0x40(%rdi)                        #! EA = L0x7fffffff2c40; PC = 0x555555557427
+	vmovdqa %ymm6,0x60(%rdi)                        #! EA = L0x7fffffff2c60; PC = 0x55555555742c
+	vmovdqa %ymm8,0x100(%rdi)                       #! EA = L0x7fffffff2d00; PC = 0x555555557431
+	vmovdqa %ymm9,0x120(%rdi)                       #! EA = L0x7fffffff2d20; PC = 0x555555557439
+	vmovdqa %ymm10,0x140(%rdi)                      #! EA = L0x7fffffff2d40; PC = 0x555555557441
+	vmovdqa %ymm11,0x160(%rdi)                      #! EA = L0x7fffffff2d60; PC = 0x555555557449
+	vmovdqa 0x180(%rsi),%ymm8                       #! EA = L0x7fffffff3180; Value = 0x0000000000000000; PC = 0x555555557451
+	vmovdqa 0x1a0(%rsi),%ymm9                       #! EA = L0x7fffffff31a0; Value = 0x0000000000000000; PC = 0x555555557459
+	vmovdqa 0x1c0(%rsi),%ymm10                      #! EA = L0x7fffffff31c0; Value = 0x0000000000000000; PC = 0x555555557461
+	vmovdqa 0x1e0(%rsi),%ymm11                      #! EA = L0x7fffffff31e0; Value = 0x0000000000000000; PC = 0x555555557469
+	vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557471
+	vpmullw %ymm1,%ymm9,%ymm13                      #! PC = 0x555555557475
+	vpmullw %ymm1,%ymm10,%ymm14                     #! PC = 0x555555557479
+	vpmullw %ymm1,%ymm11,%ymm15                     #! PC = 0x55555555747d
+	vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557481
+	vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x555555557485
+	vpmulhw %ymm2,%ymm10,%ymm10                     #! PC = 0x555555557489
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x55555555748d
+	vmovdqa 0x80(%rsi),%ymm4                        #! EA = L0x7fffffff3080; Value = 0x0000000000000000; PC = 0x555555557491
+	vmovdqa 0xa0(%rsi),%ymm5                        #! EA = L0x7fffffff30a0; Value = 0x0000000000000000; PC = 0x555555557499
+	vmovdqa 0xc0(%rsi),%ymm6                        #! EA = L0x7fffffff30c0; Value = 0x0000000000000000; PC = 0x5555555574a1
+	vmovdqa 0xe0(%rsi),%ymm7                        #! EA = L0x7fffffff30e0; Value = 0x0000000000000000; PC = 0x5555555574a9
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555574b1
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x5555555574b5
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x5555555574b9
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x5555555574bd
+	vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x5555555574c1
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x5555555574c6
+	vpaddw %ymm9,%ymm5,%ymm4                        #! PC = 0x5555555574cb
+	vpsubw %ymm9,%ymm5,%ymm9                        #! PC = 0x5555555574d0
+	vpaddw %ymm10,%ymm6,%ymm5                       #! PC = 0x5555555574d5
+	vpsubw %ymm10,%ymm6,%ymm10                      #! PC = 0x5555555574da
+	vpaddw %ymm11,%ymm7,%ymm6                       #! PC = 0x5555555574df
+	vpsubw %ymm11,%ymm7,%ymm11                      #! PC = 0x5555555574e4
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x5555555574e9
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x5555555574ee
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x5555555574f3
+	vpaddw %ymm13,%ymm9,%ymm9                       #! PC = 0x5555555574f8
+	vpsubw %ymm14,%ymm5,%ymm5                       #! PC = 0x5555555574fd
+	vpaddw %ymm14,%ymm10,%ymm10                     #! PC = 0x555555557502
+	vpsubw %ymm15,%ymm6,%ymm6                       #! PC = 0x555555557507
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x55555555750c
+	vmovdqa %ymm3,0x80(%rdi)                        #! EA = L0x7fffffff2c80; PC = 0x555555557511
+	vmovdqa %ymm4,0xa0(%rdi)                        #! EA = L0x7fffffff2ca0; PC = 0x555555557519
+	vmovdqa %ymm5,0xc0(%rdi)                        #! EA = L0x7fffffff2cc0; PC = 0x555555557521
+	vmovdqa %ymm6,0xe0(%rdi)                        #! EA = L0x7fffffff2ce0; PC = 0x555555557529
+	vmovdqa %ymm8,0x180(%rdi)                       #! EA = L0x7fffffff2d80; PC = 0x555555557531
+	vmovdqa %ymm9,0x1a0(%rdi)                       #! EA = L0x7fffffff2da0; PC = 0x555555557539
+	vmovdqa %ymm10,0x1c0(%rdi)                      #! EA = L0x7fffffff2dc0; PC = 0x555555557541
+	vmovdqa %ymm11,0x1e0(%rdi)                      #! EA = L0x7fffffff2de0; PC = 0x555555557549
+	vmovdqa 0x140(%rdx),%ymm15                      #! EA = L0x555555560900; Value = 0xd792d792d792d792; PC = 0x555555557551
+	vmovdqa 0x80(%rdi),%ymm8                        #! EA = L0x7fffffff2c80; Value = 0x0000000000000000; PC = 0x555555557559
+	vmovdqa 0xa0(%rdi),%ymm9                        #! EA = L0x7fffffff2ca0; Value = 0x0000000000000000; PC = 0x555555557561
+	vmovdqa 0xc0(%rdi),%ymm10                       #! EA = L0x7fffffff2cc0; Value = 0x0000000000000000; PC = 0x555555557569
+	vmovdqa 0xe0(%rdi),%ymm11                       #! EA = L0x7fffffff2ce0; Value = 0x0000000000000000; PC = 0x555555557571
+	vmovdqa 0x160(%rdx),%ymm3                       #! EA = L0x555555560920; Value = 0xf392f392f392f392; PC = 0x555555557579
+	vpmullw %ymm15,%ymm8,%ymm12                     #! PC = 0x555555557581
+	vpmullw %ymm15,%ymm9,%ymm13                     #! PC = 0x555555557586
+	vpmullw %ymm15,%ymm10,%ymm14                    #! PC = 0x55555555758b
+	vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555557590
+	vpmulhw %ymm3,%ymm8,%ymm8                       #! PC = 0x555555557595
+	vpmulhw %ymm3,%ymm9,%ymm9                       #! PC = 0x555555557599
+	vpmulhw %ymm3,%ymm10,%ymm10                     #! PC = 0x55555555759d
+	vpmulhw %ymm3,%ymm11,%ymm11                     #! PC = 0x5555555575a1
+	vmovdqa (%rdi),%ymm4                            #! EA = L0x7fffffff2c00; Value = 0x0000000000000000; PC = 0x5555555575a5
+	vmovdqa 0x20(%rdi),%ymm5                        #! EA = L0x7fffffff2c20; Value = 0x0000000000000000; PC = 0x5555555575a9
+	vmovdqa 0x40(%rdi),%ymm6                        #! EA = L0x7fffffff2c40; Value = 0x0000000000000000; PC = 0x5555555575ae
+	vmovdqa 0x60(%rdi),%ymm7                        #! EA = L0x7fffffff2c60; Value = 0x0000000000000000; PC = 0x5555555575b3
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555575b8
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x5555555575bc
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x5555555575c0
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x5555555575c4
+	vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x5555555575c8
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x5555555575cd
+	vpaddw %ymm9,%ymm5,%ymm4                        #! PC = 0x5555555575d2
+	vpsubw %ymm9,%ymm5,%ymm9                        #! PC = 0x5555555575d7
+	vpaddw %ymm10,%ymm6,%ymm5                       #! PC = 0x5555555575dc
+	vpsubw %ymm10,%ymm6,%ymm10                      #! PC = 0x5555555575e1
+	vpaddw %ymm11,%ymm7,%ymm6                       #! PC = 0x5555555575e6
+	vpsubw %ymm11,%ymm7,%ymm11                      #! PC = 0x5555555575eb
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x5555555575f0
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x5555555575f5
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x5555555575fa
+	vpaddw %ymm13,%ymm9,%ymm9                       #! PC = 0x5555555575ff
+	vpsubw %ymm14,%ymm5,%ymm5                       #! PC = 0x555555557604
+	vpaddw %ymm14,%ymm10,%ymm10                     #! PC = 0x555555557609
+	vpsubw %ymm15,%ymm6,%ymm6                       #! PC = 0x55555555760e
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x555555557613
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm7             #! PC = 0x555555557618
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm10            #! PC = 0x55555555761e
+	vperm2i128 $0x20,%ymm11,%ymm6,%ymm5             #! PC = 0x555555557624
+	vperm2i128 $0x31,%ymm11,%ymm6,%ymm11            #! PC = 0x55555555762a
+	vmovdqa 0x180(%rdx),%ymm15                      #! EA = L0x555555560940; Value = 0x1190119011901190; PC = 0x555555557630
+	vmovdqa 0x1a0(%rdx),%ymm6                       #! EA = L0x555555560960; Value = 0xf190f190f190f190; PC = 0x555555557638
+	vpmullw %ymm15,%ymm7,%ymm12                     #! PC = 0x555555557640
+	vpmullw %ymm15,%ymm10,%ymm13                    #! PC = 0x555555557645
+	vpmullw %ymm15,%ymm5,%ymm14                     #! PC = 0x55555555764a
+	vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x55555555764f
+	vpmulhw %ymm6,%ymm7,%ymm7                       #! PC = 0x555555557654
+	vpmulhw %ymm6,%ymm10,%ymm10                     #! PC = 0x555555557658
+	vpmulhw %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555765c
+	vpmulhw %ymm6,%ymm11,%ymm11                     #! PC = 0x555555557660
+	vperm2i128 $0x20,%ymm8,%ymm3,%ymm6              #! PC = 0x555555557664
+	vperm2i128 $0x31,%ymm8,%ymm3,%ymm8              #! PC = 0x55555555766a
+	vperm2i128 $0x20,%ymm9,%ymm4,%ymm3              #! PC = 0x555555557670
+	vperm2i128 $0x31,%ymm9,%ymm4,%ymm9              #! PC = 0x555555557676
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555767c
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557680
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557684
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557688
+	vpaddw %ymm7,%ymm6,%ymm4                        #! PC = 0x55555555768c
+	vpsubw %ymm7,%ymm6,%ymm7                        #! PC = 0x555555557690
+	vpaddw %ymm10,%ymm8,%ymm6                       #! PC = 0x555555557694
+	vpsubw %ymm10,%ymm8,%ymm10                      #! PC = 0x555555557699
+	vpaddw %ymm5,%ymm3,%ymm8                        #! PC = 0x55555555769e
+	vpsubw %ymm5,%ymm3,%ymm5                        #! PC = 0x5555555576a2
+	vpaddw %ymm11,%ymm9,%ymm3                       #! PC = 0x5555555576a6
+	vpsubw %ymm11,%ymm9,%ymm11                      #! PC = 0x5555555576ab
+	vpsubw %ymm12,%ymm4,%ymm4                       #! PC = 0x5555555576b0
+	vpaddw %ymm12,%ymm7,%ymm7                       #! PC = 0x5555555576b5
+	vpsubw %ymm13,%ymm6,%ymm6                       #! PC = 0x5555555576ba
+	vpaddw %ymm13,%ymm10,%ymm10                     #! PC = 0x5555555576bf
+	vpsubw %ymm14,%ymm8,%ymm8                       #! PC = 0x5555555576c4
+	vpaddw %ymm14,%ymm5,%ymm5                       #! PC = 0x5555555576c9
+	vpsubw %ymm15,%ymm3,%ymm3                       #! PC = 0x5555555576ce
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x5555555576d3
+	vpunpcklqdq %ymm7,%ymm4,%ymm9                   #! PC = 0x5555555576d8
+	vpunpckhqdq %ymm7,%ymm4,%ymm7                   #! PC = 0x5555555576dc
+	vpunpcklqdq %ymm10,%ymm6,%ymm4                  #! PC = 0x5555555576e0
+	vpunpckhqdq %ymm10,%ymm6,%ymm10                 #! PC = 0x5555555576e5
+	vpunpcklqdq %ymm5,%ymm8,%ymm6                   #! PC = 0x5555555576ea
+	vpunpckhqdq %ymm5,%ymm8,%ymm5                   #! PC = 0x5555555576ee
+	vpunpcklqdq %ymm11,%ymm3,%ymm8                  #! PC = 0x5555555576f2
+	vpunpckhqdq %ymm11,%ymm3,%ymm11                 #! PC = 0x5555555576f7
+	vpmullw 0x240(%rdx),%ymm9,%ymm12                #! EA = L0x555555560a00; Value = 0xf8c57fe2fdeffff7; PC = 0x5555555576fc
+	vpmullw 0x280(%rdx),%ymm7,%ymm13                #! EA = L0x555555560a40; Value = 0xe767de9266b03f97; PC = 0x555555557704
+	vpmullw 0x2c0(%rdx),%ymm4,%ymm14                #! EA = L0x555555560a80; Value = 0x52b0267fa9e90b00; PC = 0x55555555770c
+	vpmullw 0x300(%rdx),%ymm10,%ymm15               #! EA = L0x555555560ac0; Value = 0xb4f11790a16a06bc; PC = 0x555555557714
+	vpmulhw 0x260(%rdx),%ymm9,%ymm9                 #! EA = L0x555555560a20; Value = 0x0ec5fbe2ffeff1f7; PC = 0x55555555771c
+	vpmulhw 0x2a0(%rdx),%ymm7,%ymm7                 #! EA = L0x555555560a60; Value = 0xf967fa9206b0f197; PC = 0x555555557724
+	vpmulhw 0x2e0(%rdx),%ymm4,%ymm4                 #! EA = L0x555555560aa0; Value = 0xf2b0087ff7e90b00; PC = 0x55555555772c
+	vpmulhw 0x320(%rdx),%ymm10,%ymm10               #! EA = L0x555555560ae0; Value = 0xf2f1f7900d6a0ebc; PC = 0x555555557734
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555773c
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557740
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557744
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557748
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x55555555774c
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x555555557751
+	vpsubw %ymm14,%ymm4,%ymm4                       #! PC = 0x555555557756
+	vpsubw %ymm15,%ymm10,%ymm10                     #! PC = 0x55555555775b
+	vpmullw 0x340(%rdx),%ymm6,%ymm12                #! EA = L0x555555560b00; Value = 0x688e60a7f94dd279; PC = 0x555555557760
+	vpmullw 0x380(%rdx),%ymm5,%ymm13                #! EA = L0x555555560b40; Value = 0xc0c6a003edf0524a; PC = 0x555555557768
+	vpmullw 0x3c0(%rdx),%ymm8,%ymm14                #! EA = L0x555555560b80; Value = 0x397e6827a2b6b00b; PC = 0x555555557770
+	vpmullw 0x400(%rdx),%ymm11,%ymm15               #! EA = L0x555555560bc0; Value = 0x8049bbe04939ec89; PC = 0x555555557778
+	vpmulhw 0x360(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560b20; Value = 0x0c8ef2a7ff4d0079; PC = 0x555555557780
+	vpmulhw 0x3a0(%rdx),%ymm5,%ymm5                 #! EA = L0x555555560b60; Value = 0xf4c6fa030df0fe4a; PC = 0x555555557788
+	vpmulhw 0x3e0(%rdx),%ymm8,%ymm8                 #! EA = L0x555555560ba0; Value = 0xfd7efa27f6b6fa0b; PC = 0x555555557790
+	vpmulhw 0x420(%rdx),%ymm11,%ymm11               #! EA = L0x555555560be0; Value = 0x0e49fbe0f739fa89; PC = 0x555555557798
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555577a0
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x5555555577a4
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x5555555577a8
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x5555555577ac
+	vpsubw %ymm12,%ymm6,%ymm6                       #! PC = 0x5555555577b0
+	vpsubw %ymm13,%ymm5,%ymm5                       #! PC = 0x5555555577b5
+	vpsubw %ymm14,%ymm8,%ymm8                       #! PC = 0x5555555577ba
+	vpsubw %ymm15,%ymm11,%ymm11                     #! PC = 0x5555555577bf
+	vpaddw %ymm6,%ymm9,%ymm3                        #! PC = 0x5555555577c4
+	vpsubw %ymm6,%ymm9,%ymm6                        #! PC = 0x5555555577c8
+	vpaddw %ymm5,%ymm7,%ymm9                        #! PC = 0x5555555577cc
+	vpsubw %ymm5,%ymm7,%ymm5                        #! PC = 0x5555555577d0
+	vpaddw %ymm8,%ymm4,%ymm7                        #! PC = 0x5555555577d4
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x5555555577d9
+	vpaddw %ymm11,%ymm10,%ymm4                      #! PC = 0x5555555577de
+	vpsubw %ymm11,%ymm10,%ymm11                     #! PC = 0x5555555577e3
+	vmovdqa 0x80(%rdx),%ymm14                       #! EA = L0x555555560840; Value = 0xfff7fff7fff7fff7; PC = 0x5555555577e8
+	vmovdqa 0xa0(%rdx),%ymm15                       #! EA = L0x555555560860; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x5555555577f0
+	vpmullw %ymm14,%ymm7,%ymm13                     #! PC = 0x5555555577f8
+	vpmulhw %ymm15,%ymm7,%ymm7                      #! PC = 0x5555555577fd
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557802
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x555555557806
+	vpmullw %ymm14,%ymm4,%ymm13                     #! PC = 0x55555555780b
+	vpmulhw %ymm15,%ymm4,%ymm4                      #! PC = 0x555555557810
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557815
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x555555557819
+	vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x55555555781e
+	vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x555555557822
+	vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557826
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x55555555782a
+	vpaddw %ymm7,%ymm3,%ymm10                       #! PC = 0x55555555782e
+	vpsubw %ymm7,%ymm3,%ymm7                        #! PC = 0x555555557832
+	vpaddw %ymm4,%ymm9,%ymm3                        #! PC = 0x555555557836
+	vpsubw %ymm4,%ymm9,%ymm4                        #! PC = 0x55555555783a
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555783e
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557842
+	vpaddw %ymm8,%ymm6,%ymm9                        #! PC = 0x555555557846
+	vpsubw %ymm8,%ymm6,%ymm8                        #! PC = 0x55555555784b
+	vpaddw %ymm11,%ymm5,%ymm6                       #! PC = 0x555555557850
+	vpsubw %ymm11,%ymm5,%ymm11                      #! PC = 0x555555557855
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x55555555785a
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x55555555785f
+	vpsubw %ymm13,%ymm6,%ymm6                       #! PC = 0x555555557864
+	vpaddw %ymm13,%ymm11,%ymm11                     #! PC = 0x555555557869
+	vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x55555555786e
+	vpmulhw %ymm15,%ymm3,%ymm3                      #! PC = 0x555555557873
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557878
+	vpsubw %ymm13,%ymm3,%ymm3                       #! PC = 0x55555555787c
+	vpmullw %ymm1,%ymm4,%ymm12                      #! PC = 0x555555557881
+	vpmullw 0x140(%rdx),%ymm6,%ymm13                #! EA = L0x555555560900; Value = 0xd792d792d792d792; PC = 0x555555557885
+	vpmullw 0x1c0(%rdx),%ymm11,%ymm14               #! EA = L0x555555560980; Value = 0x4029402940294029; PC = 0x55555555788d
+	vpmulhw %ymm2,%ymm4,%ymm4                       #! PC = 0x555555557895
+	vpmulhw 0x160(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560920; Value = 0xf392f392f392f392; PC = 0x555555557899
+	vpmulhw 0x1e0(%rdx),%ymm11,%ymm11               #! EA = L0x5555555609a0; Value = 0x0e290e290e290e29; PC = 0x5555555578a1
+	vpaddw %ymm3,%ymm10,%ymm5                       #! PC = 0x5555555578a9
+	vpsubw %ymm3,%ymm10,%ymm3                       #! PC = 0x5555555578ad
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555578b1
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x5555555578b5
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x5555555578b9
+	vpaddw %ymm4,%ymm7,%ymm10                       #! PC = 0x5555555578bd
+	vpsubw %ymm4,%ymm7,%ymm4                        #! PC = 0x5555555578c1
+	vpaddw %ymm6,%ymm9,%ymm7                        #! PC = 0x5555555578c5
+	vpsubw %ymm6,%ymm9,%ymm6                        #! PC = 0x5555555578c9
+	vpaddw %ymm11,%ymm8,%ymm9                       #! PC = 0x5555555578cd
+	vpsubw %ymm11,%ymm8,%ymm11                      #! PC = 0x5555555578d2
+	vpsubw %ymm12,%ymm10,%ymm10                     #! PC = 0x5555555578d7
+	vpaddw %ymm12,%ymm4,%ymm4                       #! PC = 0x5555555578dc
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x5555555578e1
+	vpaddw %ymm13,%ymm6,%ymm6                       #! PC = 0x5555555578e6
+	vpsubw %ymm14,%ymm9,%ymm9                       #! PC = 0x5555555578eb
+	vpaddw %ymm14,%ymm11,%ymm11                     #! PC = 0x5555555578f0
+	vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560840; Value = 0xfff7fff7fff7fff7; PC = 0x5555555578f5
+	vpmulhw 0xa0(%rdx),%ymm5,%ymm5                  #! EA = L0x555555560860; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x5555555578fd
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557905
+	vpsubw %ymm12,%ymm5,%ymm5                       #! PC = 0x555555557909
+	vpbroadcastq 0x650(%rdx),%ymm12                 #! EA = L0x555555560e10; Value = 0x402970c1d792fff7; PC = 0x55555555790e
+	vpbroadcastq 0x658(%rdx),%ymm13                 #! EA = L0x555555560e18; Value = 0x0e290ec1f392f1f7; PC = 0x555555557917
+	vpmullw %ymm12,%ymm3,%ymm12                     #! PC = 0x555555557920
+	vpmulhw %ymm13,%ymm3,%ymm3                      #! PC = 0x555555557925
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555792a
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x55555555792e
+	vpbroadcastq 0x660(%rdx),%ymm12                 #! EA = L0x555555560e20; Value = 0x3998d7921190fff7; PC = 0x555555557933
+	vpbroadcastq 0x668(%rdx),%ymm13                 #! EA = L0x555555560e28; Value = 0x0998f392f190f1f7; PC = 0x55555555793c
+	vpmullw %ymm12,%ymm10,%ymm12                    #! PC = 0x555555557945
+	vpmulhw %ymm13,%ymm10,%ymm10                    #! PC = 0x55555555794a
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555794f
+	vpsubw %ymm12,%ymm10,%ymm10                     #! PC = 0x555555557953
+	vpbroadcastq 0x670(%rdx),%ymm12                 #! EA = L0x555555560e30; Value = 0x1c4cbfd7136efff7; PC = 0x555555557958
+	vpbroadcastq 0x678(%rdx),%ymm13                 #! EA = L0x555555560e38; Value = 0x044cf1d7f76ef1f7; PC = 0x555555557961
+	vpmullw %ymm12,%ymm4,%ymm12                     #! PC = 0x55555555796a
+	vpmulhw %ymm13,%ymm4,%ymm4                      #! PC = 0x55555555796f
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557974
+	vpsubw %ymm12,%ymm4,%ymm4                       #! PC = 0x555555557978
+	vpbroadcastq 0x680(%rdx),%ymm12                 #! EA = L0x555555560e40; Value = 0xb8f11190d279fff7; PC = 0x55555555797d
+	vpbroadcastq 0x688(%rdx),%ymm13                 #! EA = L0x555555560e48; Value = 0xf6f1f1900079f1f7; PC = 0x555555557986
+	vpmullw %ymm12,%ymm7,%ymm12                     #! PC = 0x55555555798f
+	vpmulhw %ymm13,%ymm7,%ymm7                      #! PC = 0x555555557994
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557999
+	vpsubw %ymm12,%ymm7,%ymm7                       #! PC = 0x55555555799d
+	vpbroadcastq 0x690(%rdx),%ymm12                 #! EA = L0x555555560e50; Value = 0xb0a51c4ca7bffff7; PC = 0x5555555579a2
+	vpbroadcastq 0x698(%rdx),%ymm13                 #! EA = L0x555555560e58; Value = 0x06a5044c09bff1f7; PC = 0x5555555579ab
+	vpmullw %ymm12,%ymm6,%ymm12                     #! PC = 0x5555555579b4
+	vpmulhw %ymm13,%ymm6,%ymm6                      #! PC = 0x5555555579b9
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555579be
+	vpsubw %ymm12,%ymm6,%ymm6                       #! PC = 0x5555555579c2
+	vpbroadcastq 0x6a0(%rdx),%ymm12                 #! EA = L0x555555560e60; Value = 0xa3363998b8f1fff7; PC = 0x5555555579c7
+	vpbroadcastq 0x6a8(%rdx),%ymm13                 #! EA = L0x555555560e68; Value = 0xf7360998f6f1f1f7; PC = 0x5555555579d0
+	vpmullw %ymm12,%ymm9,%ymm12                     #! PC = 0x5555555579d9
+	vpmulhw %ymm13,%ymm9,%ymm9                      #! PC = 0x5555555579de
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x5555555579e3
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x5555555579e7
+	vpbroadcastq 0x6b0(%rdx),%ymm12                 #! EA = L0x555555560e70; Value = 0xa7bf136eae7afff7; PC = 0x5555555579ec
+	vpbroadcastq 0x6b8(%rdx),%ymm13                 #! EA = L0x555555560e78; Value = 0x09bff76efa7af1f7; PC = 0x5555555579f5
+	vpmullw %ymm12,%ymm11,%ymm12                    #! PC = 0x5555555579fe
+	vpmulhw %ymm13,%ymm11,%ymm11                    #! PC = 0x555555557a03
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557a08
+	vpsubw %ymm12,%ymm11,%ymm11                     #! PC = 0x555555557a0c
+	vmovsldup %ymm7,%ymm8                           #! PC = 0x555555557a11
+	vpblendd $0xaa,%ymm8,%ymm5,%ymm8                #! PC = 0x555555557a15
+	vpsrlq $0x20,%ymm5,%ymm5                        #! PC = 0x555555557a1b
+	vpblendd $0xaa,%ymm7,%ymm5,%ymm7                #! PC = 0x555555557a20
+	vmovsldup %ymm6,%ymm5                           #! PC = 0x555555557a26
+	vpblendd $0xaa,%ymm5,%ymm3,%ymm5                #! PC = 0x555555557a2a
+	vpsrlq $0x20,%ymm3,%ymm3                        #! PC = 0x555555557a30
+	vpblendd $0xaa,%ymm6,%ymm3,%ymm6                #! PC = 0x555555557a35
+	vmovsldup %ymm9,%ymm3                           #! PC = 0x555555557a3b
+	vpblendd $0xaa,%ymm3,%ymm10,%ymm3               #! PC = 0x555555557a40
+	vpsrlq $0x20,%ymm10,%ymm10                      #! PC = 0x555555557a46
+	vpblendd $0xaa,%ymm9,%ymm10,%ymm9               #! PC = 0x555555557a4c
+	vmovsldup %ymm11,%ymm10                         #! PC = 0x555555557a52
+	vpblendd $0xaa,%ymm10,%ymm4,%ymm10              #! PC = 0x555555557a57
+	vpsrlq $0x20,%ymm4,%ymm4                        #! PC = 0x555555557a5d
+	vpblendd $0xaa,%ymm11,%ymm4,%ymm11              #! PC = 0x555555557a62
+	vpslld $0x10,%ymm3,%ymm4                        #! PC = 0x555555557a68
+	vpblendw $0xaa,%ymm4,%ymm8,%ymm4                #! PC = 0x555555557a6d
+	vpsrld $0x10,%ymm8,%ymm8                        #! PC = 0x555555557a73
+	vpblendw $0xaa,%ymm3,%ymm8,%ymm3                #! PC = 0x555555557a79
+	vpslld $0x10,%ymm9,%ymm8                        #! PC = 0x555555557a7f
+	vpblendw $0xaa,%ymm8,%ymm7,%ymm8                #! PC = 0x555555557a85
+	vpsrld $0x10,%ymm7,%ymm7                        #! PC = 0x555555557a8b
+	vpblendw $0xaa,%ymm9,%ymm7,%ymm9                #! PC = 0x555555557a90
+	vpslld $0x10,%ymm10,%ymm7                       #! PC = 0x555555557a96
+	vpblendw $0xaa,%ymm7,%ymm5,%ymm7                #! PC = 0x555555557a9c
+	vpsrld $0x10,%ymm5,%ymm5                        #! PC = 0x555555557aa2
+	vpblendw $0xaa,%ymm10,%ymm5,%ymm10              #! PC = 0x555555557aa7
+	vpslld $0x10,%ymm11,%ymm5                       #! PC = 0x555555557aad
+	vpblendw $0xaa,%ymm5,%ymm6,%ymm5                #! PC = 0x555555557ab3
+	vpsrld $0x10,%ymm6,%ymm6                        #! PC = 0x555555557ab9
+	vpblendw $0xaa,%ymm11,%ymm6,%ymm11              #! PC = 0x555555557abe
+	vpaddw %ymm8,%ymm4,%ymm6                        #! PC = 0x555555557ac4
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x555555557ac9
+	vpaddw %ymm9,%ymm3,%ymm4                        #! PC = 0x555555557ace
+	vpsubw %ymm9,%ymm3,%ymm9                        #! PC = 0x555555557ad3
+	vpaddw %ymm5,%ymm7,%ymm3                        #! PC = 0x555555557ad8
+	vpsubw %ymm5,%ymm7,%ymm5                        #! PC = 0x555555557adc
+	vpaddw %ymm11,%ymm10,%ymm7                      #! PC = 0x555555557ae0
+	vpsubw %ymm11,%ymm10,%ymm11                     #! PC = 0x555555557ae5
+	vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x555555557aea
+	vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x555555557aee
+	vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x555555557af2
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x555555557af6
+	vpaddw %ymm4,%ymm6,%ymm10                       #! PC = 0x555555557afa
+	vpsubw %ymm4,%ymm6,%ymm4                        #! PC = 0x555555557afe
+	vpaddw %ymm7,%ymm3,%ymm6                        #! PC = 0x555555557b02
+	vpsubw %ymm7,%ymm3,%ymm7                        #! PC = 0x555555557b06
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557b0a
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557b0e
+	vpaddw %ymm9,%ymm8,%ymm3                        #! PC = 0x555555557b12
+	vpsubw %ymm9,%ymm8,%ymm9                        #! PC = 0x555555557b17
+	vpaddw %ymm11,%ymm5,%ymm8                       #! PC = 0x555555557b1c
+	vpsubw %ymm11,%ymm5,%ymm11                      #! PC = 0x555555557b21
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x555555557b26
+	vpaddw %ymm12,%ymm9,%ymm9                       #! PC = 0x555555557b2b
+	vpsubw %ymm13,%ymm8,%ymm8                       #! PC = 0x555555557b30
+	vpaddw %ymm13,%ymm11,%ymm11                     #! PC = 0x555555557b35
+	vmovdqa %ymm10,(%rdi)                           #! EA = L0x7fffffff2c00; PC = 0x555555557b3a
+	vmovdqa %ymm4,0x20(%rdi)                        #! EA = L0x7fffffff2c20; PC = 0x555555557b3e
+	vmovdqa %ymm3,0x40(%rdi)                        #! EA = L0x7fffffff2c40; PC = 0x555555557b43
+	vmovdqa %ymm9,0x60(%rdi)                        #! EA = L0x7fffffff2c60; PC = 0x555555557b48
+	vmovdqa %ymm6,0x80(%rdi)                        #! EA = L0x7fffffff2c80; PC = 0x555555557b4d
+	vmovdqa %ymm7,0xa0(%rdi)                        #! EA = L0x7fffffff2ca0; PC = 0x555555557b55
+	vmovdqa %ymm8,0xc0(%rdi)                        #! EA = L0x7fffffff2cc0; PC = 0x555555557b5d
+	vmovdqa %ymm11,0xe0(%rdi)                       #! EA = L0x7fffffff2ce0; PC = 0x555555557b65
+	vmovdqa 0x1c0(%rdx),%ymm15                      #! EA = L0x555555560980; Value = 0x4029402940294029; PC = 0x555555557b6d
+	vmovdqa 0x180(%rdi),%ymm8                       #! EA = L0x7fffffff2d80; Value = 0x0000000000000000; PC = 0x555555557b75
+	vmovdqa 0x1a0(%rdi),%ymm9                       #! EA = L0x7fffffff2da0; Value = 0x0000000000000000; PC = 0x555555557b7d
+	vmovdqa 0x1c0(%rdi),%ymm10                      #! EA = L0x7fffffff2dc0; Value = 0x0000000000000000; PC = 0x555555557b85
+	vmovdqa 0x1e0(%rdi),%ymm11                      #! EA = L0x7fffffff2de0; Value = 0x0000000000000000; PC = 0x555555557b8d
+	vmovdqa 0x1e0(%rdx),%ymm3                       #! EA = L0x5555555609a0; Value = 0x0e290e290e290e29; PC = 0x555555557b95
+	vpmullw %ymm15,%ymm8,%ymm12                     #! PC = 0x555555557b9d
+	vpmullw %ymm15,%ymm9,%ymm13                     #! PC = 0x555555557ba2
+	vpmullw %ymm15,%ymm10,%ymm14                    #! PC = 0x555555557ba7
+	vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555557bac
+	vpmulhw %ymm3,%ymm8,%ymm8                       #! PC = 0x555555557bb1
+	vpmulhw %ymm3,%ymm9,%ymm9                       #! PC = 0x555555557bb5
+	vpmulhw %ymm3,%ymm10,%ymm10                     #! PC = 0x555555557bb9
+	vpmulhw %ymm3,%ymm11,%ymm11                     #! PC = 0x555555557bbd
+	vmovdqa 0x100(%rdi),%ymm4                       #! EA = L0x7fffffff2d00; Value = 0x0000000000000000; PC = 0x555555557bc1
+	vmovdqa 0x120(%rdi),%ymm5                       #! EA = L0x7fffffff2d20; Value = 0x0000000000000000; PC = 0x555555557bc9
+	vmovdqa 0x140(%rdi),%ymm6                       #! EA = L0x7fffffff2d40; Value = 0x0000000000000000; PC = 0x555555557bd1
+	vmovdqa 0x160(%rdi),%ymm7                       #! EA = L0x7fffffff2d60; Value = 0x0000000000000000; PC = 0x555555557bd9
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557be1
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557be5
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557be9
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557bed
+	vpaddw %ymm8,%ymm4,%ymm3                        #! PC = 0x555555557bf1
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x555555557bf6
+	vpaddw %ymm9,%ymm5,%ymm4                        #! PC = 0x555555557bfb
+	vpsubw %ymm9,%ymm5,%ymm9                        #! PC = 0x555555557c00
+	vpaddw %ymm10,%ymm6,%ymm5                       #! PC = 0x555555557c05
+	vpsubw %ymm10,%ymm6,%ymm10                      #! PC = 0x555555557c0a
+	vpaddw %ymm11,%ymm7,%ymm6                       #! PC = 0x555555557c0f
+	vpsubw %ymm11,%ymm7,%ymm11                      #! PC = 0x555555557c14
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x555555557c19
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x555555557c1e
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x555555557c23
+	vpaddw %ymm13,%ymm9,%ymm9                       #! PC = 0x555555557c28
+	vpsubw %ymm14,%ymm5,%ymm5                       #! PC = 0x555555557c2d
+	vpaddw %ymm14,%ymm10,%ymm10                     #! PC = 0x555555557c32
+	vpsubw %ymm15,%ymm6,%ymm6                       #! PC = 0x555555557c37
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x555555557c3c
+	vperm2i128 $0x20,%ymm10,%ymm5,%ymm7             #! PC = 0x555555557c41
+	vperm2i128 $0x31,%ymm10,%ymm5,%ymm10            #! PC = 0x555555557c47
+	vperm2i128 $0x20,%ymm11,%ymm6,%ymm5             #! PC = 0x555555557c4d
+	vperm2i128 $0x31,%ymm11,%ymm6,%ymm11            #! PC = 0x555555557c53
+	vmovdqa 0x200(%rdx),%ymm15                      #! EA = L0x5555555609c0; Value = 0x3998399839983998; PC = 0x555555557c59
+	vmovdqa 0x220(%rdx),%ymm6                       #! EA = L0x5555555609e0; Value = 0x0998099809980998; PC = 0x555555557c61
+	vpmullw %ymm15,%ymm7,%ymm12                     #! PC = 0x555555557c69
+	vpmullw %ymm15,%ymm10,%ymm13                    #! PC = 0x555555557c6e
+	vpmullw %ymm15,%ymm5,%ymm14                     #! PC = 0x555555557c73
+	vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555557c78
+	vpmulhw %ymm6,%ymm7,%ymm7                       #! PC = 0x555555557c7d
+	vpmulhw %ymm6,%ymm10,%ymm10                     #! PC = 0x555555557c81
+	vpmulhw %ymm6,%ymm5,%ymm5                       #! PC = 0x555555557c85
+	vpmulhw %ymm6,%ymm11,%ymm11                     #! PC = 0x555555557c89
+	vperm2i128 $0x20,%ymm8,%ymm3,%ymm6              #! PC = 0x555555557c8d
+	vperm2i128 $0x31,%ymm8,%ymm3,%ymm8              #! PC = 0x555555557c93
+	vperm2i128 $0x20,%ymm9,%ymm4,%ymm3              #! PC = 0x555555557c99
+	vperm2i128 $0x31,%ymm9,%ymm4,%ymm9              #! PC = 0x555555557c9f
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557ca5
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557ca9
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557cad
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557cb1
+	vpaddw %ymm7,%ymm6,%ymm4                        #! PC = 0x555555557cb5
+	vpsubw %ymm7,%ymm6,%ymm7                        #! PC = 0x555555557cb9
+	vpaddw %ymm10,%ymm8,%ymm6                       #! PC = 0x555555557cbd
+	vpsubw %ymm10,%ymm8,%ymm10                      #! PC = 0x555555557cc2
+	vpaddw %ymm5,%ymm3,%ymm8                        #! PC = 0x555555557cc7
+	vpsubw %ymm5,%ymm3,%ymm5                        #! PC = 0x555555557ccb
+	vpaddw %ymm11,%ymm9,%ymm3                       #! PC = 0x555555557ccf
+	vpsubw %ymm11,%ymm9,%ymm11                      #! PC = 0x555555557cd4
+	vpsubw %ymm12,%ymm4,%ymm4                       #! PC = 0x555555557cd9
+	vpaddw %ymm12,%ymm7,%ymm7                       #! PC = 0x555555557cde
+	vpsubw %ymm13,%ymm6,%ymm6                       #! PC = 0x555555557ce3
+	vpaddw %ymm13,%ymm10,%ymm10                     #! PC = 0x555555557ce8
+	vpsubw %ymm14,%ymm8,%ymm8                       #! PC = 0x555555557ced
+	vpaddw %ymm14,%ymm5,%ymm5                       #! PC = 0x555555557cf2
+	vpsubw %ymm15,%ymm3,%ymm3                       #! PC = 0x555555557cf7
+	vpaddw %ymm15,%ymm11,%ymm11                     #! PC = 0x555555557cfc
+	vpunpcklqdq %ymm7,%ymm4,%ymm9                   #! PC = 0x555555557d01
+	vpunpckhqdq %ymm7,%ymm4,%ymm7                   #! PC = 0x555555557d05
+	vpunpcklqdq %ymm10,%ymm6,%ymm4                  #! PC = 0x555555557d09
+	vpunpckhqdq %ymm10,%ymm6,%ymm10                 #! PC = 0x555555557d0e
+	vpunpcklqdq %ymm5,%ymm8,%ymm6                   #! PC = 0x555555557d13
+	vpunpckhqdq %ymm5,%ymm8,%ymm5                   #! PC = 0x555555557d17
+	vpunpcklqdq %ymm11,%ymm3,%ymm8                  #! PC = 0x555555557d1b
+	vpunpckhqdq %ymm11,%ymm3,%ymm11                 #! PC = 0x555555557d20
+	vpmullw 0x440(%rdx),%ymm9,%ymm12                #! EA = L0x555555560c00; Value = 0xa9e9de92f8c5fff7; PC = 0x555555557d25
+	vpmullw 0x480(%rdx),%ymm7,%ymm13                #! EA = L0x555555560c40; Value = 0xedf060a7b4f106bc; PC = 0x555555557d2d
+	vpmullw 0x4c0(%rdx),%ymm4,%ymm14                #! EA = L0x555555560c80; Value = 0x40febbe0397eb00b; PC = 0x555555557d35
+	vpmullw 0x500(%rdx),%ymm10,%ymm15               #! EA = L0x555555560cc0; Value = 0xb7b6c124a283172a; PC = 0x555555557d3d
+	vpmulhw 0x460(%rdx),%ymm9,%ymm9                 #! EA = L0x555555560c20; Value = 0xf7e9fa920ec5f1f7; PC = 0x555555557d45
+	vpmulhw 0x4a0(%rdx),%ymm7,%ymm7                 #! EA = L0x555555560c60; Value = 0x0df0f2a7f2f10ebc; PC = 0x555555557d4d
+	vpmulhw 0x4e0(%rdx),%ymm4,%ymm4                 #! EA = L0x555555560ca0; Value = 0x04fefbe0fd7efa0b; PC = 0x555555557d55
+	vpmulhw 0x520(%rdx),%ymm10,%ymm10               #! EA = L0x555555560ce0; Value = 0x0bb6f924fc83032a; PC = 0x555555557d5d
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557d65
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557d69
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557d6d
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557d71
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x555555557d75
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x555555557d7a
+	vpsubw %ymm14,%ymm4,%ymm4                       #! PC = 0x555555557d7f
+	vpsubw %ymm15,%ymm10,%ymm10                     #! PC = 0x555555557d84
+	vpmullw 0x540(%rdx),%ymm6,%ymm12                #! EA = L0x555555560d00; Value = 0x0ab3996ac48bb8f1; PC = 0x555555557d89
+	vpmullw 0x580(%rdx),%ymm5,%ymm13                #! EA = L0x555555560d40; Value = 0x8ee2f280eab41199; PC = 0x555555557d91
+	vpmullw 0x5c0(%rdx),%ymm8,%ymm14                #! EA = L0x555555560d80; Value = 0x41f5a6a5ce0a1d43; PC = 0x555555557d99
+	vpmullw 0x600(%rdx),%ymm11,%ymm15               #! EA = L0x555555560dc0; Value = 0xf47881b76bf4e8e7; PC = 0x555555557da1
+	vpmulhw 0x560(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560d20; Value = 0x04b3056a0e8bf6f1; PC = 0x555555557da9
+	vpmulhw 0x5a0(%rdx),%ymm5,%ymm5                 #! EA = L0x555555560d60; Value = 0x0ae2f28002b4ff99; PC = 0x555555557db1
+	vpmulhw 0x5e0(%rdx),%ymm8,%ymm8                 #! EA = L0x555555560da0; Value = 0xf7f5fca5fa0af743; PC = 0x555555557db9
+	vpmulhw 0x620(%rdx),%ymm11,%ymm11               #! EA = L0x555555560de0; Value = 0x0478f3b703f4fae7; PC = 0x555555557dc1
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557dc9
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557dcd
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557dd1
+	vpmulhw %ymm0,%ymm15,%ymm15                     #! PC = 0x555555557dd5
+	vpsubw %ymm12,%ymm6,%ymm6                       #! PC = 0x555555557dd9
+	vpsubw %ymm13,%ymm5,%ymm5                       #! PC = 0x555555557dde
+	vpsubw %ymm14,%ymm8,%ymm8                       #! PC = 0x555555557de3
+	vpsubw %ymm15,%ymm11,%ymm11                     #! PC = 0x555555557de8
+	vpaddw %ymm6,%ymm9,%ymm3                        #! PC = 0x555555557ded
+	vpsubw %ymm6,%ymm9,%ymm6                        #! PC = 0x555555557df1
+	vpaddw %ymm5,%ymm7,%ymm9                        #! PC = 0x555555557df5
+	vpsubw %ymm5,%ymm7,%ymm5                        #! PC = 0x555555557df9
+	vpaddw %ymm8,%ymm4,%ymm7                        #! PC = 0x555555557dfd
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x555555557e02
+	vpaddw %ymm11,%ymm10,%ymm4                      #! PC = 0x555555557e07
+	vpsubw %ymm11,%ymm10,%ymm11                     #! PC = 0x555555557e0c
+	vmovdqa 0x80(%rdx),%ymm14                       #! EA = L0x555555560840; Value = 0xfff7fff7fff7fff7; PC = 0x555555557e11
+	vmovdqa 0xa0(%rdx),%ymm15                       #! EA = L0x555555560860; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x555555557e19
+	vpmullw %ymm14,%ymm7,%ymm13                     #! PC = 0x555555557e21
+	vpmulhw %ymm15,%ymm7,%ymm7                      #! PC = 0x555555557e26
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557e2b
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x555555557e2f
+	vpmullw %ymm14,%ymm4,%ymm13                     #! PC = 0x555555557e34
+	vpmulhw %ymm15,%ymm4,%ymm4                      #! PC = 0x555555557e39
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557e3e
+	vpsubw %ymm13,%ymm4,%ymm4                       #! PC = 0x555555557e42
+	vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557e47
+	vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x555555557e4b
+	vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557e4f
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x555555557e53
+	vpaddw %ymm7,%ymm3,%ymm10                       #! PC = 0x555555557e57
+	vpsubw %ymm7,%ymm3,%ymm7                        #! PC = 0x555555557e5b
+	vpaddw %ymm4,%ymm9,%ymm3                        #! PC = 0x555555557e5f
+	vpsubw %ymm4,%ymm9,%ymm4                        #! PC = 0x555555557e63
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557e67
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557e6b
+	vpaddw %ymm8,%ymm6,%ymm9                        #! PC = 0x555555557e6f
+	vpsubw %ymm8,%ymm6,%ymm8                        #! PC = 0x555555557e74
+	vpaddw %ymm11,%ymm5,%ymm6                       #! PC = 0x555555557e79
+	vpsubw %ymm11,%ymm5,%ymm11                      #! PC = 0x555555557e7e
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x555555557e83
+	vpaddw %ymm12,%ymm8,%ymm8                       #! PC = 0x555555557e88
+	vpsubw %ymm13,%ymm6,%ymm6                       #! PC = 0x555555557e8d
+	vpaddw %ymm13,%ymm11,%ymm11                     #! PC = 0x555555557e92
+	vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x555555557e97
+	vpmulhw %ymm15,%ymm3,%ymm3                      #! PC = 0x555555557e9c
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557ea1
+	vpsubw %ymm13,%ymm3,%ymm3                       #! PC = 0x555555557ea5
+	vpmullw %ymm1,%ymm4,%ymm12                      #! PC = 0x555555557eaa
+	vpmullw 0x140(%rdx),%ymm6,%ymm13                #! EA = L0x555555560900; Value = 0xd792d792d792d792; PC = 0x555555557eae
+	vpmullw 0x1c0(%rdx),%ymm11,%ymm14               #! EA = L0x555555560980; Value = 0x4029402940294029; PC = 0x555555557eb6
+	vpmulhw %ymm2,%ymm4,%ymm4                       #! PC = 0x555555557ebe
+	vpmulhw 0x160(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560920; Value = 0xf392f392f392f392; PC = 0x555555557ec2
+	vpmulhw 0x1e0(%rdx),%ymm11,%ymm11               #! EA = L0x5555555609a0; Value = 0x0e290e290e290e29; PC = 0x555555557eca
+	vpaddw %ymm3,%ymm10,%ymm5                       #! PC = 0x555555557ed2
+	vpsubw %ymm3,%ymm10,%ymm3                       #! PC = 0x555555557ed6
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557eda
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555557ede
+	vpmulhw %ymm0,%ymm14,%ymm14                     #! PC = 0x555555557ee2
+	vpaddw %ymm4,%ymm7,%ymm10                       #! PC = 0x555555557ee6
+	vpsubw %ymm4,%ymm7,%ymm4                        #! PC = 0x555555557eea
+	vpaddw %ymm6,%ymm9,%ymm7                        #! PC = 0x555555557eee
+	vpsubw %ymm6,%ymm9,%ymm6                        #! PC = 0x555555557ef2
+	vpaddw %ymm11,%ymm8,%ymm9                       #! PC = 0x555555557ef6
+	vpsubw %ymm11,%ymm8,%ymm11                      #! PC = 0x555555557efb
+	vpsubw %ymm12,%ymm10,%ymm10                     #! PC = 0x555555557f00
+	vpaddw %ymm12,%ymm4,%ymm4                       #! PC = 0x555555557f05
+	vpsubw %ymm13,%ymm7,%ymm7                       #! PC = 0x555555557f0a
+	vpaddw %ymm13,%ymm6,%ymm6                       #! PC = 0x555555557f0f
+	vpsubw %ymm14,%ymm9,%ymm9                       #! PC = 0x555555557f14
+	vpaddw %ymm14,%ymm11,%ymm11                     #! PC = 0x555555557f19
+	vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560840; Value = 0xfff7fff7fff7fff7; PC = 0x555555557f1e
+	vpmulhw 0xa0(%rdx),%ymm5,%ymm5                  #! EA = L0x555555560860; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x555555557f26
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557f2e
+	vpsubw %ymm12,%ymm5,%ymm5                       #! PC = 0x555555557f32
+	vpbroadcastq 0x650(%rdx),%ymm12                 #! EA = L0x555555560e10; Value = 0x402970c1d792fff7; PC = 0x555555557f37
+	vpbroadcastq 0x658(%rdx),%ymm13                 #! EA = L0x555555560e18; Value = 0x0e290ec1f392f1f7; PC = 0x555555557f40
+	vpmullw %ymm12,%ymm3,%ymm12                     #! PC = 0x555555557f49
+	vpmulhw %ymm13,%ymm3,%ymm3                      #! PC = 0x555555557f4e
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557f53
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x555555557f57
+	vpbroadcastq 0x660(%rdx),%ymm12                 #! EA = L0x555555560e20; Value = 0x3998d7921190fff7; PC = 0x555555557f5c
+	vpbroadcastq 0x668(%rdx),%ymm13                 #! EA = L0x555555560e28; Value = 0x0998f392f190f1f7; PC = 0x555555557f65
+	vpmullw %ymm12,%ymm10,%ymm12                    #! PC = 0x555555557f6e
+	vpmulhw %ymm13,%ymm10,%ymm10                    #! PC = 0x555555557f73
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557f78
+	vpsubw %ymm12,%ymm10,%ymm10                     #! PC = 0x555555557f7c
+	vpbroadcastq 0x670(%rdx),%ymm12                 #! EA = L0x555555560e30; Value = 0x1c4cbfd7136efff7; PC = 0x555555557f81
+	vpbroadcastq 0x678(%rdx),%ymm13                 #! EA = L0x555555560e38; Value = 0x044cf1d7f76ef1f7; PC = 0x555555557f8a
+	vpmullw %ymm12,%ymm4,%ymm12                     #! PC = 0x555555557f93
+	vpmulhw %ymm13,%ymm4,%ymm4                      #! PC = 0x555555557f98
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557f9d
+	vpsubw %ymm12,%ymm4,%ymm4                       #! PC = 0x555555557fa1
+	vpbroadcastq 0x680(%rdx),%ymm12                 #! EA = L0x555555560e40; Value = 0xb8f11190d279fff7; PC = 0x555555557fa6
+	vpbroadcastq 0x688(%rdx),%ymm13                 #! EA = L0x555555560e48; Value = 0xf6f1f1900079f1f7; PC = 0x555555557faf
+	vpmullw %ymm12,%ymm7,%ymm12                     #! PC = 0x555555557fb8
+	vpmulhw %ymm13,%ymm7,%ymm7                      #! PC = 0x555555557fbd
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557fc2
+	vpsubw %ymm12,%ymm7,%ymm7                       #! PC = 0x555555557fc6
+	vpbroadcastq 0x690(%rdx),%ymm12                 #! EA = L0x555555560e50; Value = 0xb0a51c4ca7bffff7; PC = 0x555555557fcb
+	vpbroadcastq 0x698(%rdx),%ymm13                 #! EA = L0x555555560e58; Value = 0x06a5044c09bff1f7; PC = 0x555555557fd4
+	vpmullw %ymm12,%ymm6,%ymm12                     #! PC = 0x555555557fdd
+	vpmulhw %ymm13,%ymm6,%ymm6                      #! PC = 0x555555557fe2
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555557fe7
+	vpsubw %ymm12,%ymm6,%ymm6                       #! PC = 0x555555557feb
+	vpbroadcastq 0x6a0(%rdx),%ymm12                 #! EA = L0x555555560e60; Value = 0xa3363998b8f1fff7; PC = 0x555555557ff0
+	vpbroadcastq 0x6a8(%rdx),%ymm13                 #! EA = L0x555555560e68; Value = 0xf7360998f6f1f1f7; PC = 0x555555557ff9
+	vpmullw %ymm12,%ymm9,%ymm12                     #! PC = 0x555555558002
+	vpmulhw %ymm13,%ymm9,%ymm9                      #! PC = 0x555555558007
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x55555555800c
+	vpsubw %ymm12,%ymm9,%ymm9                       #! PC = 0x555555558010
+	vpbroadcastq 0x6b0(%rdx),%ymm12                 #! EA = L0x555555560e70; Value = 0xa7bf136eae7afff7; PC = 0x555555558015
+	vpbroadcastq 0x6b8(%rdx),%ymm13                 #! EA = L0x555555560e78; Value = 0x09bff76efa7af1f7; PC = 0x55555555801e
+	vpmullw %ymm12,%ymm11,%ymm12                    #! PC = 0x555555558027
+	vpmulhw %ymm13,%ymm11,%ymm11                    #! PC = 0x55555555802c
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555558031
+	vpsubw %ymm12,%ymm11,%ymm11                     #! PC = 0x555555558035
+	vmovsldup %ymm7,%ymm8                           #! PC = 0x55555555803a
+	vpblendd $0xaa,%ymm8,%ymm5,%ymm8                #! PC = 0x55555555803e
+	vpsrlq $0x20,%ymm5,%ymm5                        #! PC = 0x555555558044
+	vpblendd $0xaa,%ymm7,%ymm5,%ymm7                #! PC = 0x555555558049
+	vmovsldup %ymm6,%ymm5                           #! PC = 0x55555555804f
+	vpblendd $0xaa,%ymm5,%ymm3,%ymm5                #! PC = 0x555555558053
+	vpsrlq $0x20,%ymm3,%ymm3                        #! PC = 0x555555558059
+	vpblendd $0xaa,%ymm6,%ymm3,%ymm6                #! PC = 0x55555555805e
+	vmovsldup %ymm9,%ymm3                           #! PC = 0x555555558064
+	vpblendd $0xaa,%ymm3,%ymm10,%ymm3               #! PC = 0x555555558069
+	vpsrlq $0x20,%ymm10,%ymm10                      #! PC = 0x55555555806f
+	vpblendd $0xaa,%ymm9,%ymm10,%ymm9               #! PC = 0x555555558075
+	vmovsldup %ymm11,%ymm10                         #! PC = 0x55555555807b
+	vpblendd $0xaa,%ymm10,%ymm4,%ymm10              #! PC = 0x555555558080
+	vpsrlq $0x20,%ymm4,%ymm4                        #! PC = 0x555555558086
+	vpblendd $0xaa,%ymm11,%ymm4,%ymm11              #! PC = 0x55555555808b
+	vpslld $0x10,%ymm3,%ymm4                        #! PC = 0x555555558091
+	vpblendw $0xaa,%ymm4,%ymm8,%ymm4                #! PC = 0x555555558096
+	vpsrld $0x10,%ymm8,%ymm8                        #! PC = 0x55555555809c
+	vpblendw $0xaa,%ymm3,%ymm8,%ymm3                #! PC = 0x5555555580a2
+	vpslld $0x10,%ymm9,%ymm8                        #! PC = 0x5555555580a8
+	vpblendw $0xaa,%ymm8,%ymm7,%ymm8                #! PC = 0x5555555580ae
+	vpsrld $0x10,%ymm7,%ymm7                        #! PC = 0x5555555580b4
+	vpblendw $0xaa,%ymm9,%ymm7,%ymm9                #! PC = 0x5555555580b9
+	vpslld $0x10,%ymm10,%ymm7                       #! PC = 0x5555555580bf
+	vpblendw $0xaa,%ymm7,%ymm5,%ymm7                #! PC = 0x5555555580c5
+	vpsrld $0x10,%ymm5,%ymm5                        #! PC = 0x5555555580cb
+	vpblendw $0xaa,%ymm10,%ymm5,%ymm10              #! PC = 0x5555555580d0
+	vpslld $0x10,%ymm11,%ymm5                       #! PC = 0x5555555580d6
+	vpblendw $0xaa,%ymm5,%ymm6,%ymm5                #! PC = 0x5555555580dc
+	vpsrld $0x10,%ymm6,%ymm6                        #! PC = 0x5555555580e2
+	vpblendw $0xaa,%ymm11,%ymm6,%ymm11              #! PC = 0x5555555580e7
+	vpaddw %ymm8,%ymm4,%ymm6                        #! PC = 0x5555555580ed
+	vpsubw %ymm8,%ymm4,%ymm8                        #! PC = 0x5555555580f2
+	vpaddw %ymm9,%ymm3,%ymm4                        #! PC = 0x5555555580f7
+	vpsubw %ymm9,%ymm3,%ymm9                        #! PC = 0x5555555580fc
+	vpaddw %ymm5,%ymm7,%ymm3                        #! PC = 0x555555558101
+	vpsubw %ymm5,%ymm7,%ymm5                        #! PC = 0x555555558105
+	vpaddw %ymm11,%ymm10,%ymm7                      #! PC = 0x555555558109
+	vpsubw %ymm11,%ymm10,%ymm11                     #! PC = 0x55555555810e
+	vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x555555558113
+	vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x555555558117
+	vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x55555555811b
+	vpmulhw %ymm2,%ymm11,%ymm11                     #! PC = 0x55555555811f
+	vpaddw %ymm4,%ymm6,%ymm10                       #! PC = 0x555555558123
+	vpsubw %ymm4,%ymm6,%ymm4                        #! PC = 0x555555558127
+	vpaddw %ymm7,%ymm3,%ymm6                        #! PC = 0x55555555812b
+	vpsubw %ymm7,%ymm3,%ymm7                        #! PC = 0x55555555812f
+	vpmulhw %ymm0,%ymm12,%ymm12                     #! PC = 0x555555558133
+	vpmulhw %ymm0,%ymm13,%ymm13                     #! PC = 0x555555558137
+	vpaddw %ymm9,%ymm8,%ymm3                        #! PC = 0x55555555813b
+	vpsubw %ymm9,%ymm8,%ymm9                        #! PC = 0x555555558140
+	vpaddw %ymm11,%ymm5,%ymm8                       #! PC = 0x555555558145
+	vpsubw %ymm11,%ymm5,%ymm11                      #! PC = 0x55555555814a
+	vpsubw %ymm12,%ymm3,%ymm3                       #! PC = 0x55555555814f
+	vpaddw %ymm12,%ymm9,%ymm9                       #! PC = 0x555555558154
+	vpsubw %ymm13,%ymm8,%ymm8                       #! PC = 0x555555558159
+	vpaddw %ymm13,%ymm11,%ymm11                     #! PC = 0x55555555815e
+	vmovdqa %ymm10,0x100(%rdi)                      #! EA = L0x7fffffff2d00; PC = 0x555555558163
+	vmovdqa %ymm4,0x120(%rdi)                       #! EA = L0x7fffffff2d20; PC = 0x55555555816b
+	vmovdqa %ymm3,0x140(%rdi)                       #! EA = L0x7fffffff2d40; PC = 0x555555558173
+	vmovdqa %ymm9,0x160(%rdi)                       #! EA = L0x7fffffff2d60; PC = 0x55555555817b
+	vmovdqa %ymm6,0x180(%rdi)                       #! EA = L0x7fffffff2d80; PC = 0x555555558183
+	vmovdqa %ymm7,0x1a0(%rdi)                       #! EA = L0x7fffffff2da0; PC = 0x55555555818b
+	vmovdqa %ymm8,0x1c0(%rdi)                       #! EA = L0x7fffffff2dc0; PC = 0x555555558193
+	vmovdqa %ymm11,0x1e0(%rdi)                      #! EA = L0x7fffffff2de0; PC = 0x55555555819b
+	#! <- SP = 0x7fffffff2738
+	#retq                                           #! PC = 0x5555555581a3

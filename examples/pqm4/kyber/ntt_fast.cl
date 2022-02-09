@@ -1,3 +1,17 @@
+(* frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint ntt_fast.cl
+Parsing Cryptoline file:                [OK]            0.109802 seconds
+Checking well-formedness:               [OK]            0.027693 seconds
+Transforming to SSA form:               [OK]            0.015379 seconds
+Rewriting assignments:                  [OK]            0.022070 seconds
+Verifying program safety:               [OK]            173.794938 seconds
+Verifying range assertions:             [OK]            15.324068 seconds
+Verifying range specification:          [OK]            175.768826 seconds
+Rewriting value-preserved casting:      [OK]            0.000774 seconds
+Verifying algebraic assertions:         [OK]            83.216711 seconds
+Verifying algebraic specification:      [OK]            51.182438 seconds
+Verification result:                    [OK]            499.472731 seconds
+*)
+
 (* quine: -v -isafety -jobs 16 -no_carry_constraint -slicing ntt_fast.cl
 Parsing Cryptoline file:                [OK]            0.109507 seconds
 Checking well-formedness:               [OK]            0.029281 seconds
@@ -10,6 +24,20 @@ Rewriting value-preserved casting:      [OK]            0.001526 seconds
 Verifying algebraic assertions:         [OK]            198.749329 seconds
 Verifying algebraic specification:      [OK]            136.934062 seconds
 Verification result:                    [OK]            1045.691112 seconds
+
+ -v -isafety -slicing -no_carry_constraint -jobs 16 ntt_fast.cl
+ Parsing Cryptoline file:                [OK]            0.194602 seconds
+ Checking well-formedness:               [OK]            0.052738 seconds
+ Transforming to SSA form:               [OK]            0.034242 seconds
+ Rewriting assignments:                  [OK]            0.051811 seconds
+ Verifying program safety:               [OK]            547.106896 seconds
+ Verifying range assertions:             [OK]            50.916378 seconds
+ Verifying range specification:          [OK]            505.137297 seconds
+ Rewriting value-preserved casting:      [OK]            0.000698 seconds
+ Verifying algebraic assertions:         [OK]            140.793761 seconds
+ Verifying algebraic specification:      [OK]            94.124697 seconds
+ Verification result:                    [OK]            1338.433261 seconds
+              
 *)
 
 proc main (
