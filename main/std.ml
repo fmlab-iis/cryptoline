@@ -39,7 +39,7 @@ let args = [
     ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
     ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), "     Print data flow in SSA as a DOT graph\n");
-    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "      Run debugger over the parsed specification\n");
+    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "args\n\t     Run debugger with specified input arguments (comma separated)\n");
     ("-sim", String (fun s -> action := Simulation; initial_values_string := s), "      Simulate the parsed specification\n");
     ("-sim_steps", Int (fun n -> simulation_steps := n), "\n\t     Stop simulate after the specified number of steps \n");
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s), "\n\t     Dump variable tables for the specified ranges of steps \n");
