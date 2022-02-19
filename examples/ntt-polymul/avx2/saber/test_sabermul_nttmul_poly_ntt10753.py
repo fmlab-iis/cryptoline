@@ -236,10 +236,8 @@ def str_twiddles ():
         res.append("\n".join(join_chunks(["mov L0x{:x} ({:6d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
     return "\n".join(res)
 
-def ntt_mod(num_ans, prime, mont, root, negacyclic, stage):
+def ntt_mod(n_expn, prime, mont, root, negacyclic, stage):
     num_rings = 2**stage
-    num_coeffs = num_ans // num_rings
-    n_expn = int(math.log(num_ans, 2))
     num_bits = n_expn + 1 if negacyclic else n_expn
     res = []
     for i in range (num_rings):
@@ -301,22 +299,10 @@ def str_algebra(args, expn, mon_per_line=4):
     return ",\n".join(get_algebra(args, expn, mon_per_line))
 
 def get_ntt_mod_level0to2(stage, i):
-    return ntt_mod(num_ans=ANS_NUM, prime=P, mont=MONT, root=ROOT, negacyclic=True, stage=stage)[i]["modulo"]
+    return ntt_mod(n_expn=8, prime=P, mont=MONT, root=ROOT, negacyclic=True, stage=stage)[i]["modulo"]
 
-def get_ntt_mod_level3to7(i):
-    if i < 2:
-        return 1 if i % 2 == 0 else -1
-    else:
-        s = 0
-        j = 0
-        n = int(math.log(ORIGINAL_N, 2))
-        for k in range(2, n + 1):
-            if i < math.pow(2, k):
-                s = k - 1
-                break
-        j = i % pow(2, s)
-        return ntt_mod(num_ans=ANS_NUM, prime=P, mont=MONT, root=ROOT, negacyclic=True, stage=s)[j]["modulo"]
-    return 0
+def get_ntt_mod_level3to7(stage, i):
+    return ntt_mod(n_expn=9, prime=P, mont=MONT, root=ROOT, negacyclic=False, stage=stage)[i]["modulo"]
 
 def str_assertions(pairs):
     equalities = []
@@ -334,6 +320,11 @@ level7_rcut_ids = []
 
 def print_comment(str):
     print("(* {} *)".format(str))
+
+def print_unpack_vectors(indices):
+    for i in indices:
+        dest = ', '.join([f'ymm{i}_{hex(j)[2:]}' for j in range(16)])
+        print(f'mov [{dest}] %ymm{i};')
 
 def print_instr(instr):
     global level, off, ecut_id, rcut_id, level7_ecut_ids, level7_rcut_ids
@@ -371,6 +362,9 @@ def print_instr(instr):
     elif instr.startswith("(* vperm2i128 $0x20,%ymm10,%ymm5,%ymm7") and level == 1:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([3, 4, 5, 6, 8, 9, 10, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
@@ -396,6 +390,9 @@ def print_instr(instr):
     elif instr.startswith("(* vpunpcklqdq %ymm7,%ymm4,%ymm9") and level == 2:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([4, 6, 8, 3, 7, 10, 5, 11])
+
         print ("cut")
         print ("and [")
         print(str_algebra(
@@ -423,13 +420,16 @@ def print_instr(instr):
     elif instr.startswith("(* vmovdqa 0x80(%rdx),%ymm14") and level == 3:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([3, 9, 7, 4, 6, 5, 8, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
             args=[(POLY_NAME,
                   LEVEL3_TWIST_INV[(i//2)+4*off],
                   make_ymms([[3, 9, 7, 4], [6, 5, 8, 11]][i%2], (i//2)*4, 4),
-                  modP(LEVEL3_TWIST_BASE[(i//2)+4*off]**16 * get_ntt_mod_level3to7(i%2), P)) for i in range(8)],
+                  modP(LEVEL3_TWIST_BASE[(i//2)+4*off]**16 * get_ntt_mod_level3to7(level - 2, i%2), P)) for i in range(8)],
             expn=16))
         print("] && and [")
         print(str_range_condition(
@@ -452,13 +452,16 @@ def print_instr(instr):
     elif instr.startswith("(* vpmullw %ymm14,%ymm3,%ymm13") and level == 4:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([10, 3, 7, 4, 9, 6, 8, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
             args=[(POLY_NAME,
                   LEVEL3_TWIST_INV[(i//4)+4*off],
                   make_ymms([[10, 3], [7, 4], [9, 6], [8, 11]][i%4], (i//4)*4, 4),
-                  modP(LEVEL3_TWIST_BASE[(i//4)+4*off]**8 * get_ntt_mod_level3to7(i%4), P)) for i in range(16)],
+                  modP(LEVEL3_TWIST_BASE[(i//4)+4*off]**8 * get_ntt_mod_level3to7(level - 2, i%4), P)) for i in range(16)],
             expn=8))
         print("] && and [")
         print(str_range_condition(
@@ -479,13 +482,16 @@ def print_instr(instr):
     elif instr.startswith("(* vpmullw 0x80(%rdx),%ymm5,%ymm12") and level == 5:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([5, 3, 10, 4, 7, 6, 9, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
             args=[(POLY_NAME,
                   LEVEL3_TWIST_INV[(i//8)+4*off],
                   make_ymms([[5], [3], [10], [4], [7], [6], [9], [11]][i%8], (i//8)*4, 4),
-                  modP(LEVEL3_TWIST_BASE[(i//8)+4*off]**4 * get_ntt_mod_level3to7(i%8), P)) for i in range(32)],
+                  modP(LEVEL3_TWIST_BASE[(i//8)+4*off]**4 * get_ntt_mod_level3to7(level - 2, i%8), P)) for i in range(32)],
             expn=4))
         print("] && and [")
         print(str_range_condition(
@@ -519,13 +525,16 @@ def print_instr(instr):
         # End of level 6
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([6, 4, 8, 9, 3, 7, 5, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
             args=[(POLY_NAME,
                   "{0}*{1}".format(str(LEVEL3_TWIST_INV[(i//16)+4*off]), str(LEVEL7_TWIST_INV[(i//2)%8])),
                   make_ymms([[6, 4], [8, 9], [3, 7], [5, 11]][i%4], i//4, 1),
-                  modP(LEVEL3_TWIST_BASE[(i//16)+4*off]**2 * LEVEL7_TWIST_BASE[(i//2)%8]**2 * get_ntt_mod_level3to7(i%2), P)) for i in range(64)],
+                  modP(LEVEL3_TWIST_BASE[(i//16)+4*off]**2 * LEVEL7_TWIST_BASE[(i//2)%8]**2 * get_ntt_mod_level3to7(level - 5, i%2), P)) for i in range(64)],
             expn=2))
         print("] && and [")
         print(str_range_condition(
@@ -553,7 +562,7 @@ def print_instr(instr):
             args=[(POLY_NAME,
                   "{0}*{1}".format(str(LEVEL3_TWIST_INV[(i//32)+4*off]), str(LEVEL7_TWIST_INV[(i//4)%8])),
                   ["L0x{:x}".format(ANS_BASE + 2*(i%8*16 + i//8 + off*128))],
-                  modP(LEVEL3_TWIST_BASE[(i//32)+4*off] * LEVEL7_TWIST_BASE[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for i in range(128)],
+                  modP(LEVEL3_TWIST_BASE[(i//32)+4*off] * LEVEL7_TWIST_BASE[(i//4)%8] * get_ntt_mod_level3to7(level - 5, i%4), P)) for i in range(128)],
             expn=1))
         print("&& and [")
         print(str_range_condition(
@@ -597,7 +606,7 @@ def str_post():
             args=[(POLY_NAME,
                        "{0}*{1}".format(str(LEVEL3_TWIST_INV[(i//32)+4*off]), str(LEVEL7_TWIST_INV[(i//4)%8])),
                        ["L0x{:x}".format(ANS_BASE + 2*(i%8*16 + i//8 + off*128))],
-                       modP(LEVEL3_TWIST_BASE[(i//32)+4*off] * LEVEL7_TWIST_BASE[(i//4)%8] * get_ntt_mod_level3to7(i%4), P)) for off in range(2) for i in range(128)],
+                       modP(LEVEL3_TWIST_BASE[(i//32)+4*off] * LEVEL7_TWIST_BASE[(i//4)%8] * get_ntt_mod_level3to7(7 - 5, i%4), P)) for off in range(2) for i in range(128)],
             expn=1),
         "] prove with [cuts {0}] && and [".format(level7_ecut_ids),
         str_range_condition(
