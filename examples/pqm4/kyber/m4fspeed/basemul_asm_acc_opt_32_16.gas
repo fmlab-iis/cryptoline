@@ -1,0 +1,1808 @@
+basemul_asm_acc_opt_32_16:
+# r0 = 0x2001a0a8
+# r1 = 0x2001a4a8
+# r2 = 0x20019aa8
+# r3 = 0x2001aaa8
+	#! -> SP = 0x20019aa0
+	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}#! EA = L0x20019aa0; PC = 0x8005e60
+	movw	r8, #3329	; 0xd01                          #! PC = 0x8005e64
+	movt	r8, #3327	; 0xcff                          #! PC = 0x8005e68
+	ldr.w	r11, [sp, #36]	; 0x24                     #! EA = L0x20019aa0; Value = 0x20019ca8; PC = 0x8005e6c
+	movw	lr, #64	; 0x40                             #! PC = 0x8005e70
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4a8; Value = 0x01bdff5d; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019aa8; Value = 0x06ed0cc9; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ca8; Value = 0x0007489d; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaa8; Value = 0x038bff5d; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cac; Value = 0xffe14427; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0a8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4ac; Value = 0xf9f90431; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019aac; Value = 0x01d9035b; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cb0; Value = 0x005cf87b; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaac; Value = 0xfe6f0431; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cb4; Value = 0x007dbe9d; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0ac; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4b0; Value = 0x01acfa4d; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ab0; Value = 0x06f1024a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cb8; Value = 0xffc11a92; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aab0; Value = 0xffa9fa4d; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cbc; Value = 0x00436328; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0b0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4b4; Value = 0x00ec00e0; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ab4; Value = 0x079e00ef; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cc0; Value = 0x00130e1a; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aab4; Value = 0x037800e0; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cc4; Value = 0xffcd8119; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0b4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4b8; Value = 0xfec7fa20; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ab8; Value = 0x08e60109; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cc8; Value = 0x0041032a; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aab8; Value = 0x0268fa20; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ccc; Value = 0xffc9a643; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0b8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4bc; Value = 0x041e028a; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019abc; Value = 0x0864052b; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cd0; Value = 0x0026e501; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aabc; Value = 0x0567028a; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cd4; Value = 0xffb7e7a4; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0bc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4c0; Value = 0xfae2fb8a; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ac0; Value = 0x0b4b06e7; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cd8; Value = 0xffd7f5ce; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aac0; Value = 0xfaa4fb8a; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cdc; Value = 0x0000894e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0c0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4c4; Value = 0x036401a9; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ac4; Value = 0x03b90624; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ce0; Value = 0x003105b3; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aac4; Value = 0x03ef01a9; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ce4; Value = 0x001ee73e; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0c4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4c8; Value = 0x0161fa2c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ac8; Value = 0x0ba20373; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ce8; Value = 0xffeb62c8; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aac8; Value = 0xfa97fa2c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cec; Value = 0xfffb6a26; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0c8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4cc; Value = 0xff46fd3d; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019acc; Value = 0x0a150b50; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cf0; Value = 0x00329d32; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aacc; Value = 0x0607fd3d; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cf4; Value = 0x00156ef7; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0cc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4d0; Value = 0xff1302c2; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ad0; Value = 0x09bb0b12; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019cf8; Value = 0x0025c8ca; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aad0; Value = 0xf9dc02c2; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019cfc; Value = 0x00038c91; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0d0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4d4; Value = 0xfc5ffb05; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ad4; Value = 0x07d40a83; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d00; Value = 0x0002ba4f; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aad4; Value = 0xfce9fb05; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d04; Value = 0x00440bd5; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0d4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4d8; Value = 0xf9d20410; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ad8; Value = 0x0ad7081b; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d08; Value = 0xffd6380b; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aad8; Value = 0xfc1f0410; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d0c; Value = 0x001f2e0d; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0d8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4dc; Value = 0xfaa203a8; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019adc; Value = 0x03df050d; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d10; Value = 0xffd44b1f; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aadc; Value = 0x047003a8; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d14; Value = 0xfffb5fa9; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0dc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4e0; Value = 0x060afa90; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ae0; Value = 0x01c60a55; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d18; Value = 0xfff44b07; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aae0; Value = 0xfdf9fa90; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d1c; Value = 0x0007c111; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0e0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4e4; Value = 0xfb760198; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ae4; Value = 0x09f30669; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d20; Value = 0x001c9358; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aae4; Value = 0xff780198; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d24; Value = 0x000508fd; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0e4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4e8; Value = 0xfc0205ef; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ae8; Value = 0x08b10409; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d28; Value = 0xffe2369b; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aae8; Value = 0x05b305ef; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d2c; Value = 0x0003e02e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0e8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4ec; Value = 0xfa2005f3; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019aec; Value = 0x093c091d; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d30; Value = 0xffea8276; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaec; Value = 0xfa6305f3; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d34; Value = 0xffc89643; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0ec; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4f0; Value = 0xfeb9029f; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019af0; Value = 0x092f058d; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d38; Value = 0x001faa7d; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaf0; Value = 0xf9bb029f; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d3c; Value = 0xffc2d76f; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0f0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4f4; Value = 0x02fb0558; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019af4; Value = 0x087f0023; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d40; Value = 0x00223f48; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaf4; Value = 0xfe600558; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d44; Value = 0xffe15ec2; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0f4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4f8; Value = 0x05a405fc; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019af8; Value = 0x033608fd; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d48; Value = 0x000cc9c7; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aaf8; Value = 0x025505fc; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d4c; Value = 0xffb82bc7; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0f8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a4fc; Value = 0xfd66ff20; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019afc; Value = 0x02b50bbe; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d50; Value = 0xffff504e; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aafc; Value = 0x052aff20; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d54; Value = 0xffe46e3f; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a0fc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a500; Value = 0xfe9b058f; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b00; Value = 0x01f605c2; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d58; Value = 0x00131bb9; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab00; Value = 0x002c058f; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d5c; Value = 0x0011e307; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a100; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a504; Value = 0xfb5af9c6; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b04; Value = 0x011809e5; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d60; Value = 0xffdf3d53; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab04; Value = 0x03c3f9c6; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d64; Value = 0x000ce23b; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a104; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a508; Value = 0x02e00449; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b08; Value = 0x046001ac; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d68; Value = 0x006955c1; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab08; Value = 0x01d90449; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d6c; Value = 0x0061dea1; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a108; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a50c; Value = 0x01ddffd3; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b0c; Value = 0x0979027f; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d70; Value = 0x004c5c2e; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab0c; Value = 0xfbc8ffd3; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d74; Value = 0xfff0238e; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a10c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a510; Value = 0xfc09f9c6; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b10; Value = 0x022d0cdf; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d78; Value = 0xfffe266c; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab10; Value = 0xfb5df9c6; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d7c; Value = 0x0024b10e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a110; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a514; Value = 0xfa5e05c4; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b14; Value = 0x00f10ab4; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d80; Value = 0x000c6137; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab14; Value = 0xfeb205c4; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d84; Value = 0xffea311d; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a114; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a518; Value = 0xfa18fa06; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b18; Value = 0x07100217; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d88; Value = 0x00466132; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab18; Value = 0xfb01fa06; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d8c; Value = 0x004e8cb5; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a118; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a51c; Value = 0x061603ba; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b1c; Value = 0x0b710087; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d90; Value = 0xfff5983d; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab1c; Value = 0xff6903ba; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d94; Value = 0xffbb100c; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a11c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a520; Value = 0xff93049f; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b20; Value = 0x05bf038c; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019d98; Value = 0x005c8d9c; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab20; Value = 0x01c2049f; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019d9c; Value = 0x007004c4; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a120; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a524; Value = 0xfaadff62; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b24; Value = 0x08160518; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019da0; Value = 0xfff7d0a6; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab24; Value = 0xfcfdff62; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019da4; Value = 0x000b01c9; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a124; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a528; Value = 0x0244fca1; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b28; Value = 0x06d8093a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019da8; Value = 0xffdd6363; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab28; Value = 0xfc33fca1; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dac; Value = 0x00468c6d; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a128; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a52c; Value = 0xfb560447; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b2c; Value = 0x04d20145; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019db0; Value = 0xffdd7397; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab2c; Value = 0xfd830447; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019db4; Value = 0x0004b749; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a12c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a530; Value = 0x03e8058c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b30; Value = 0x05580133; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019db8; Value = 0x00509a3f; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab30; Value = 0xff48058c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dbc; Value = 0x00606adf; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a130; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a534; Value = 0x0026f9db; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b34; Value = 0x043c00b6; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019dc0; Value = 0xfff633cd; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab34; Value = 0x0201f9db; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dc4; Value = 0xfff8018d; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a134; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a538; Value = 0xfc47fb40; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b38; Value = 0x033302c5; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019dc8; Value = 0x004d7903; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab38; Value = 0xfaa1fb40; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dcc; Value = 0x00225dab; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a138; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a53c; Value = 0x0359fe59; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b3c; Value = 0x02d0000c; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019dd0; Value = 0x0003ed51; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab3c; Value = 0x0031fe59; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dd4; Value = 0xffbc01d0; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a13c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a540; Value = 0x04b70290; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b40; Value = 0x03900752; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019dd8; Value = 0xffff04d3; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab40; Value = 0xfb520290; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ddc; Value = 0xfffab69b; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a140; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a544; Value = 0x038b057a; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b44; Value = 0x05070a46; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019de0; Value = 0x003aaab8; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab44; Value = 0xfa88057a; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019de4; Value = 0x00398b1e; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a144; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a548; Value = 0x0642037f; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b48; Value = 0x0668064a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019de8; Value = 0x0037a54e; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab48; Value = 0xfdb5037f; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dec; Value = 0xffb0d358; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a148; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a54c; Value = 0x0418fd8f; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b4c; Value = 0x034f0b37; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019df0; Value = 0x00040c86; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab4c; Value = 0xfa1dfd8f; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019df4; Value = 0xffe38b64; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a14c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a550; Value = 0x0039027c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b50; Value = 0x049c0851; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019df8; Value = 0xfff0f479; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab50; Value = 0x03e8027c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019dfc; Value = 0x0013dc4d; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a150; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a554; Value = 0xf9d605c2; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b54; Value = 0x03ef08f8; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e00; Value = 0x00701110; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab54; Value = 0x036d05c2; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e04; Value = 0x00014092; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a154; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a558; Value = 0x02180438; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b58; Value = 0x0149046a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e08; Value = 0x003ee0e5; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab58; Value = 0x030d0438; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e0c; Value = 0x002502cc; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a158; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a55c; Value = 0x0618f98d; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b5c; Value = 0x08d1067f; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e10; Value = 0x0029e144; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab5c; Value = 0x04b5f98d; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e14; Value = 0xffd0cd70; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a15c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a560; Value = 0x01b80428; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b60; Value = 0x0cd30aa5; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e18; Value = 0xfff14130; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab60; Value = 0x01e50428; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e1c; Value = 0xffa2c463; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a160; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a564; Value = 0xfd820310; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b64; Value = 0x0afd08f9; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e20; Value = 0xfff02504; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab64; Value = 0xff7f0310; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e24; Value = 0xffede0fe; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a164; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a568; Value = 0xfb9ffed4; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b68; Value = 0x08a906fd; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e28; Value = 0x0017de88; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab68; Value = 0xfd71fed4; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e2c; Value = 0xffcf989a; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a168; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a56c; Value = 0x0549050f; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b6c; Value = 0x04a10284; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e30; Value = 0x003283c5; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab6c; Value = 0x04bb050f; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e34; Value = 0x00089222; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a16c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a570; Value = 0xf9c4019c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b70; Value = 0x009b0c9a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e38; Value = 0xffe6bdd9; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab70; Value = 0x0663019c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e3c; Value = 0x008cf4c7; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a170; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a574; Value = 0xfd12003c; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b74; Value = 0x00c906af; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e40; Value = 0xffd59434; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab74; Value = 0xffb0003c; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e44; Value = 0x00021274; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a174; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a578; Value = 0xfd9901e2; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b78; Value = 0x09fb02d3; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e48; Value = 0x0064089f; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab78; Value = 0xfd3f01e2; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e4c; Value = 0x004ae900; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a178; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a57c; Value = 0x05e3fbc9; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b7c; Value = 0x08340423; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e50; Value = 0x0067523b; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab7c; Value = 0xfd60fbc9; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e54; Value = 0x002be742; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a17c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a580; Value = 0xfba701e3; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b80; Value = 0x01eb041b; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e58; Value = 0x00364813; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab80; Value = 0xfaea01e3; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e5c; Value = 0x005d05ae; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a180; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a584; Value = 0x02490047; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b84; Value = 0x05e60067; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e60; Value = 0x0012c678; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab84; Value = 0x04b00047; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e64; Value = 0xfff46a90; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a184; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a588; Value = 0x0361030a; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b88; Value = 0x00df00eb; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e68; Value = 0x002b7f78; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab88; Value = 0x05ff030a; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e6c; Value = 0x003cedea; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a188; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a58c; Value = 0xfe0cfa3e; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b8c; Value = 0x085002f2; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e70; Value = 0x00365262; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab8c; Value = 0x0136fa3e; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e74; Value = 0x00317b9f; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a18c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a590; Value = 0x01fe0670; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b90; Value = 0x03910771; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e78; Value = 0x001ebbe2; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab90; Value = 0x00580670; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e7c; Value = 0xfff93715; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a190; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a594; Value = 0x0252fa57; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b94; Value = 0x048d079d; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e80; Value = 0xffe2e631; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab94; Value = 0x000ffa57; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e84; Value = 0xffff065d; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a194; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a598; Value = 0x03dc03eb; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b98; Value = 0x04a501b6; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e88; Value = 0x002a6ffa; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab98; Value = 0xfa0003eb; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e8c; Value = 0xffdbb5ab; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a198; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a59c; Value = 0x007b0317; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019b9c; Value = 0x0bb601ed; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e90; Value = 0x0029b62b; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ab9c; Value = 0x01460317; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e94; Value = 0x00033bc2; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a19c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5a0; Value = 0xfb9c0306; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ba0; Value = 0x0b860c2f; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019e98; Value = 0xffd1fefd; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aba0; Value = 0xfa740306; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019e9c; Value = 0xfffa0f56; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1a0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5a4; Value = 0x05ba03aa; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ba4; Value = 0x068d0141; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ea0; Value = 0x001f2e43; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aba4; Value = 0xfc6003aa; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ea4; Value = 0xfff01a19; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1a4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5a8; Value = 0x01af0594; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ba8; Value = 0x05ef03d5; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ea8; Value = 0x0020ddea; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aba8; Value = 0x01030594; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019eac; Value = 0xffd12ac5; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1a8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5ac; Value = 0xfc3bfe64; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bac; Value = 0x04500520; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019eb0; Value = 0xfff244a3; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abac; Value = 0x0225fe64; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019eb4; Value = 0x002b82a3; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1ac; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5b0; Value = 0x0273fdc8; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bb0; Value = 0x031a0373; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019eb8; Value = 0xffb96c38; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abb0; Value = 0xfd9dfdc8; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ebc; Value = 0xff9e099b; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1b0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5b4; Value = 0x05cafd58; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bb4; Value = 0x082408cd; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ec0; Value = 0xffe0b24d; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abb4; Value = 0xffbbfd58; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ec4; Value = 0xffb502d5; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1b4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5b8; Value = 0xfe4c04c8; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bb8; Value = 0x00740ba0; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ec8; Value = 0xff96fbad; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abb8; Value = 0x02c704c8; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ecc; Value = 0xffc51135; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1b8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5bc; Value = 0xfa1d018a; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bbc; Value = 0x0911072c; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ed0; Value = 0x0052f154; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abbc; Value = 0x01a5018a; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ed4; Value = 0x0049631a; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1bc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5c0; Value = 0xfc02fed3; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bc0; Value = 0x05b80258; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ed8; Value = 0xff9268bc; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abc0; Value = 0x0605fed3; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019edc; Value = 0xffb171d2; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1c0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5c4; Value = 0xfbda01d9; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bc4; Value = 0x012407cf; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ee0; Value = 0xfff6fee6; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abc4; Value = 0x02f501d9; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ee4; Value = 0x003df147; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1c4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5c8; Value = 0x047404eb; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bc8; Value = 0x00dd0a66; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ee8; Value = 0xffa141df; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abc8; Value = 0x056c04eb; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019eec; Value = 0xffe53812; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1c8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5cc; Value = 0x04dc0394; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bcc; Value = 0x0b1e0acc; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ef0; Value = 0x00305392; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abcc; Value = 0xfe480394; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ef4; Value = 0x0033f7fa; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1cc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5d0; Value = 0xfb5e0439; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bd0; Value = 0x0c7201a0; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ef8; Value = 0x005a2d34; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abd0; Value = 0xfe820439; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019efc; Value = 0x0010367e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1d0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5d4; Value = 0x006f03a2; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bd4; Value = 0x07550432; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f00; Value = 0x001a3d1a; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abd4; Value = 0x001a03a2; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f04; Value = 0x0056e660; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1d4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5d8; Value = 0xfc9303a0; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bd8; Value = 0x01650a1d; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f08; Value = 0xffd6f3ac; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abd8; Value = 0x054503a0; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f0c; Value = 0xffcf47f0; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1d8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5dc; Value = 0x05ebfdcf; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bdc; Value = 0x09210a1c; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f10; Value = 0x0042f2a1; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abdc; Value = 0xfe29fdcf; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f14; Value = 0x004a1ff0; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1dc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5e0; Value = 0xfc79fe18; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019be0; Value = 0x02220c06; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f18; Value = 0xffc9d141; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abe0; Value = 0xfd43fe18; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f1c; Value = 0x00447ac5; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1e0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5e4; Value = 0xfb7f0149; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019be4; Value = 0x07a2010a; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f20; Value = 0x0002cdb9; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abe4; Value = 0xfcb30149; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f24; Value = 0xffafce61; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1e4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5e8; Value = 0x0210012e; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019be8; Value = 0x082d0969; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f28; Value = 0x0008daec; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abe8; Value = 0xfac7012e; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f2c; Value = 0xfff4edc7; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1e8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5ec; Value = 0x0541fcbc; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bec; Value = 0x0b410433; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f30; Value = 0xfffd37ea; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abec; Value = 0xf9c6fcbc; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f34; Value = 0x002c86fa; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1ec; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5f0; Value = 0x0559fac2; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bf0; Value = 0x06f909de; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f38; Value = 0x00489fdd; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abf0; Value = 0x0264fac2; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f3c; Value = 0x001997b5; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1f0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5f4; Value = 0xfd4afcde; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bf4; Value = 0x05fd04e8; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f40; Value = 0x0004ca5b; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abf4; Value = 0x0688fcde; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f44; Value = 0xfffe458e; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1f4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5f8; Value = 0xfe6b0131; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bf8; Value = 0x0afb056d; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f48; Value = 0x002ba60f; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abf8; Value = 0xfb580131; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f4c; Value = 0xffff9a06; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1f8; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a5fc; Value = 0x00d704a5; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019bfc; Value = 0x056c0116; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f50; Value = 0xffe54105; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001abfc; Value = 0xfed004a5; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f54; Value = 0xff9ef4b7; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a1fc; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a600; Value = 0xff80fa1f; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c00; Value = 0x0a490514; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f58; Value = 0xffb5260c; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac00; Value = 0xfe9dfa1f; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f5c; Value = 0xfffa9b6a; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a200; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a604; Value = 0x0195ff3e; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c04; Value = 0x090300c4; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f60; Value = 0x0096d311; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac04; Value = 0xfec3ff3e; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f64; Value = 0x002f1fe5; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a204; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a608; Value = 0xfd42058e; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c08; Value = 0x04c309bc; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f68; Value = 0x00245624; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac08; Value = 0x04e1058e; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f6c; Value = 0x0052e60e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a208; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a60c; Value = 0xf998fc20; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c0c; Value = 0x0b0e0194; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f70; Value = 0xffd63c51; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac0c; Value = 0x00aefc20; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f74; Value = 0xffc3e1b2; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a20c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a610; Value = 0xfe27f9f6; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c10; Value = 0x08e703ec; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f78; Value = 0xfffbef50; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac10; Value = 0x03c7f9f6; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f7c; Value = 0x00030deb; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a210; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a614; Value = 0x0172018c; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c14; Value = 0x067602b5; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f80; Value = 0x001b9e78; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac14; Value = 0xfb6c018c; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f84; Value = 0x000b94be; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a214; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a618; Value = 0xffc50441; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c18; Value = 0x02e10c20; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f88; Value = 0x0029080e; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac18; Value = 0x03d60441; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f8c; Value = 0x00657451; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a218; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a61c; Value = 0xfaeb034c; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c1c; Value = 0x07b10ccd; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f90; Value = 0x00401f24; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac1c; Value = 0xfc86034c; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f94; Value = 0x0023f5c1; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a21c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a620; Value = 0x03da03c5; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c20; Value = 0x0c090349; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019f98; Value = 0xffcde801; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac20; Value = 0x03f403c5; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019f9c; Value = 0xfff37fb2; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a220; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a624; Value = 0xfff0fb92; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c24; Value = 0x028c00ef; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fa0; Value = 0xffe9e077; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac24; Value = 0x0614fb92; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fa4; Value = 0x00381dfc; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a224; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a628; Value = 0xfef80449; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c28; Value = 0x09ad0c4b; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fa8; Value = 0x001bda38; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac28; Value = 0xfb3e0449; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fac; Value = 0x007c646f; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a228; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a62c; Value = 0x025502d1; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c2c; Value = 0x02910c09; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fb0; Value = 0x00464057; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac2c; Value = 0x01f302d1; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fb4; Value = 0xfffe0380; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a22c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a630; Value = 0x00ba04ae; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c30; Value = 0x0709054f; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fb8; Value = 0xfffd4934; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac30; Value = 0x002b04ae; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fbc; Value = 0x0035690a; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a230; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a634; Value = 0xfb0df98e; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c34; Value = 0x0787013a; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fc0; Value = 0x00178238; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac34; Value = 0xfaecf98e; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fc4; Value = 0xffe3d786; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a234; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a638; Value = 0x04c0fa90; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c38; Value = 0x08a20c82; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fc8; Value = 0xffdac711; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac38; Value = 0x02adfa90; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fcc; Value = 0x00020814; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a238; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a63c; Value = 0xfa630206; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c3c; Value = 0x09bb0795; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fd0; Value = 0x001ee160; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac3c; Value = 0xff790206; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fd4; Value = 0xff532038; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a23c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a640; Value = 0x00de05c1; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c40; Value = 0x0914051e; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fd8; Value = 0xffdfd8bd; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac40; Value = 0x057805c1; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fdc; Value = 0x00709898; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a240; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a644; Value = 0x043d01c6; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c44; Value = 0x08d909e0; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fe0; Value = 0x000f22ed; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac44; Value = 0xfad401c6; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fe4; Value = 0x000d134f; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a244; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a648; Value = 0x0281fa6c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c48; Value = 0x07530889; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019fe8; Value = 0xffae8908; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac48; Value = 0x011bfa6c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019fec; Value = 0xffce62ce; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a248; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a64c; Value = 0xfac30539; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c4c; Value = 0x079a08c1; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ff0; Value = 0x0022c6fc; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac4c; Value = 0x058f0539; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ff4; Value = 0x001be5f7; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a24c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a650; Value = 0x05c30508; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c50; Value = 0x00780ac0; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x20019ff8; Value = 0xffeb9f21; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac50; Value = 0xfaf90508; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x20019ffc; Value = 0x002edcac; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a250; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a654; Value = 0xfcfc0423; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c54; Value = 0x07dc063c; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a000; Value = 0xffc55411; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac54; Value = 0xfaa50423; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a004; Value = 0xff8b6912; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a254; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a658; Value = 0x0178fc4c; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c58; Value = 0x0bb206f4; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a008; Value = 0xfff371e2; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac58; Value = 0x058ffc4c; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a00c; Value = 0xfff7c1c1; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a258; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a65c; Value = 0xfbe30609; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c5c; Value = 0x0c1902a7; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a010; Value = 0xfff720b3; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac5c; Value = 0xfced0609; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a014; Value = 0xffebc485; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a25c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a660; Value = 0xfb4c049e; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c60; Value = 0x0c1e068a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a018; Value = 0xfff65a6e; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac60; Value = 0xfa48049e; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a01c; Value = 0xfff5ab1e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a260; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a664; Value = 0xf9c7fde3; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c64; Value = 0x087b0afe; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a020; Value = 0xffe629c1; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac64; Value = 0xff9efde3; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a024; Value = 0xfff15768; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a264; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a668; Value = 0xfbd502fc; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c68; Value = 0x054e0c9b; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a028; Value = 0x005771ab; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac68; Value = 0x00ea02fc; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a02c; Value = 0xffcd8fae; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a268; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a66c; Value = 0x0203ffbd; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c6c; Value = 0x02a20c81; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a030; Value = 0xffd9fc68; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac6c; Value = 0xfadcffbd; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a034; Value = 0xffe785e4; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a26c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a670; Value = 0xfd2c042e; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c70; Value = 0x012a00ff; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a038; Value = 0x001cc6af; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac70; Value = 0x0558042e; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a03c; Value = 0xffdb93cf; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a270; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a674; Value = 0xfa730397; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c74; Value = 0x07030b97; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a040; Value = 0xfffddd12; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac74; Value = 0x04870397; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a044; Value = 0x0064bf22; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a274; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a678; Value = 0xfa050075; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c78; Value = 0x08ed040a; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a048; Value = 0x0036890a; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac78; Value = 0x01f80075; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a04c; Value = 0x006320e9; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a278; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a67c; Value = 0x0501044d; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c7c; Value = 0x07810027; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a050; Value = 0x00288dc8; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac7c; Value = 0xfe7f044d; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a054; Value = 0xffc7b30a; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a27c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a680; Value = 0xf98a0331; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c80; Value = 0x06400828; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a058; Value = 0x00061a7c; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac80; Value = 0xfcb10331; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a05c; Value = 0xffede632; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a280; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a684; Value = 0x0375016f; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c84; Value = 0x00080626; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a060; Value = 0x00018670; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac84; Value = 0x05c9016f; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a064; Value = 0x0025fe26; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a284; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a688; Value = 0x026105a3; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c88; Value = 0x030a0aa7; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a068; Value = 0xffe4da36; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac88; Value = 0xfffc05a3; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a06c; Value = 0x00176775; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a288; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a68c; Value = 0xfc0300c7; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c8c; Value = 0x010a0a9e; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a070; Value = 0xffe85969; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac8c; Value = 0x01bf00c7; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a074; Value = 0x004919d8; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a28c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a690; Value = 0x063601d4; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c90; Value = 0x00a70598; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a078; Value = 0xffc50352; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac90; Value = 0xfda001d4; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a07c; Value = 0xffb0ba44; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a290; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a694; Value = 0x031f02a9; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c94; Value = 0x05280a0f; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a080; Value = 0xffd2af29; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac94; Value = 0xfa5702a9; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a084; Value = 0x00197237; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a294; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a698; Value = 0xfaa1fbef; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c98; Value = 0x029b092e; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a088; Value = 0xffd04333; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac98; Value = 0x0603fbef; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a08c; Value = 0xffda1f87; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a298; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a69c; Value = 0xfd8dff01; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019c9c; Value = 0x04170b57; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a090; Value = 0x00727126; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001ac9c; Value = 0xfbe8ff01; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a094; Value = 0xffc8894f; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a29c; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a6a0; Value = 0xfcc6fb95; PC = 0x8005e74
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ca0; Value = 0x0557082f; PC = 0x8005e78
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a098; Value = 0x001e478d; PC = 0x8005e7c
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aca0; Value = 0xfa12fb95; PC = 0x8005e80
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a09c; Value = 0x0029da9e; PC = 0x8005e84
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005e88
+	smulbt	r5, r10, r8                              #! PC = 0x8005e8c
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005e90
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005e94
+	smulbt	r7, r10, r8                              #! PC = 0x8005e98
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005e9c
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ea0
+	str.w	r5, [r0], #4                              #! EA = L0x2001a2a0; PC = 0x8005ea4
+	ldr.w	r4, [r1], #4                              #! EA = L0x2001a6a4; Value = 0xfe7bfaad; PC = 0x8005ea8
+	ldr.w	r6, [r2], #4                              #! EA = L0x20019ca4; Value = 0x08830661; PC = 0x8005eac
+	ldr.w	r5, [r11], #4                             #! EA = L0x2001a0a0; Value = 0x00206396; PC = 0x8005eb0
+	ldr.w	r10, [r3], #4                             #! EA = L0x2001aca4; Value = 0xfc16faad; PC = 0x8005eb4
+	ldr.w	r7, [r11], #4                             #! EA = L0x2001a0a4; Value = 0xffe9825f; PC = 0x8005eb8
+	smlad	r10, r10, r6, r5                          #! PC = 0x8005ebc
+	smulbt	r5, r10, r8                              #! PC = 0x8005ec0
+	smlabb	r5, r8, r5, r10                          #! PC = 0x8005ec4
+	smladx	r10, r4, r6, r7                          #! PC = 0x8005ec8
+	smulbt	r7, r10, r8                              #! PC = 0x8005ecc
+	smlabb	r7, r8, r7, r10                          #! PC = 0x8005ed0
+	pkhtb	r5, r7, r5, asr #16                       #! PC = 0x8005ed4
+	str.w	r5, [r0], #4                              #! EA = L0x2001a2a4; PC = 0x8005ed8
+	subs.w	lr, lr, #1                               #! PC = 0x8005edc
+	#bne.w	0x8005e74 <basemul_asm_acc_opt_32_16+20> #! PC = 0x8005ee0
+	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x20019a7c; Value = 0x20019ca8; PC = 0x8005ee4
+	add.w	r0, sp, #1544	; 0x608                     #! PC = 0x8004880
+	#bl	0x8003e70 <poly_invntt>                     #! PC = 0x8004884
+	#! -> SP = 0x20019aa0
+	#b.w	0x8003888 <invntt>                         #! PC = 0x8003e70
