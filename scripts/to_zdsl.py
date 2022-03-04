@@ -182,6 +182,7 @@ def parse_subst(line):
     lhs = re.escape(tokens[0])
     lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
     lhs = lhs.replace('\#', '#')          # arm constants start with '#'
+    lhs = re.sub(r"(\\ )+", "\\\\s+", lhs)
     rhs = tokens[1]
     pairs = [(tokens[0], tokens[1])]
     pairs = process_builtin_variables(lhs, rhs, indices)
