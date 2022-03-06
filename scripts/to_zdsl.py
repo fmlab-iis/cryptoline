@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# * __random_N__ is replaced by a random string where N is a natural number.
+#   Every occurrence of __random_i__ is replaced by the same string.
+# * __counter_C__ is replaced by the value of the counter named C
+# * __incr_C__ is replaced by the value of the counter C plus 1 and the counter C is incremented by 1.
+# * __C_incr__ is replaced by the value of the counter C and the counter C is incremented by 1.
+
 import sys
 import re
 import collections
@@ -12,6 +18,8 @@ import cryptoline
 length_random_string = 5
 
 verbose = False
+
+counters = {}
 
 ea_pattern = "L0x[a-fA-f0-9]+"
 address_offset_group_pattern = r"(L0x\w+)\[\s*([\+|-])\s*(\d+)\s*\]"
@@ -74,7 +82,7 @@ def process_builtin_variables(pat, rep, indices):
   for i in indices:
     for lhs, rhs in pairs:
       if lhs.find("$" + str(i) + "c") != -1:
-        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">0x[0-9a-fA-F]+)", 1)
+        pc = lhs.replace("$" + str(i) + "c", "(\\#|\\$)?(?P<c" + str(i) + ">[-]?0x[0-9a-fA-F]+)", 1)
         pc = pc.replace("$" + str(i) + "c", "(\\#|\\$)?(?P=c" + str(i) + ")")
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
@@ -182,6 +190,7 @@ def parse_subst(line):
     lhs = re.escape(tokens[0])
     lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
     lhs = lhs.replace('\#', '#')          # arm constants start with '#'
+    lhs = re.sub(r"(\\ )+", "\\\\s+", lhs)
     rhs = tokens[1]
     pairs = [(tokens[0], tokens[1])]
     pairs = process_builtin_variables(lhs, rhs, indices)
@@ -202,6 +211,28 @@ def replace_random(line):
   for idx in list(indices_set):
     r = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(length_random_string))
     line = line.replace("__random_{}__".format(idx), r)
+  return line
+
+def get_counter(ct):
+  if ct in counters:
+    return counters[ct]
+  else:
+    return 0
+
+def incr_counter(ct):
+  counters[ct] = get_counter(ct) + 1
+
+def replace_counter(line):
+  cts = re.findall(r"__(incr|counter)_([a-zA-Z0-9]+)__|__([a-zA-Z0-9]+)_(incr)_", line)
+  for (cmd1, name1, name2, cmd2) in cts:
+    if cmd1 == "incr":
+      incr_counter(name1)
+      line = line.replace(f"__{cmd1}_{name1}__", str(get_counter(name1)), 1)
+    elif cmd1 == "counter":
+      line = line.replace(f"__{cmd1}_{name1}__", str(get_counter(name1)), 1)
+    elif cmd2 == "incr":
+      line = line.replace(f"__{name2}_{cmd2}__", str(get_counter(name2)), 1)
+      incr_counter(name2)
   return line
 
 def replace_address_with_offset(line):
@@ -243,6 +274,7 @@ def translate_instrs(tspec, instrs):
         res = re.sub("#.*$", "", res).strip()
         res = replace_address_with_offset(res)
         res = replace_random(res)
+        res = replace_counter(res)
         if lhs_num_lines > 1:
           instr.asm = "\n   ".join([x.asm for x in instrs[i:(i+lhs_num_lines)]])
           instr.dsl = res

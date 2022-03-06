@@ -54334,7 +54334,8 @@ cut
 cut 
     and [
     eqmod XFinal (X1 ** 57896044618658097711785492504343953926634992332820282019728792003956564819947)
-    (((2**255 )- 19)) ] prove with [all cuts] && true;
+    (((2**255 )- 19)) ] prove with [all cuts] &&
+    (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) < (2**255-19)@256;
 
 
 {
@@ -54350,5 +54351,5 @@ cut
     XFinal (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) ]
     prove with [all cuts, all ghosts]
   &&
-  true
+  (limbs 64 [L0x7fffffffe070, L0x7fffffffe078, L0x7fffffffe080, L0x7fffffffe088]) < (2**255-19)@256
 }
