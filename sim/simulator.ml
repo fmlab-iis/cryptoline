@@ -440,7 +440,9 @@ let shell m p =
                                        with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
                                      List.iter unwatch_var args
     (* Dump memory *)
-    | CDump -> dump_map (manager#get_map) in
+    | CDump -> dump_map (manager#get_map)
+    (* Print help message *)
+    | CHelp -> print_endline(Command.command_help()) in
   let process_command cmd_str =
     let cmd_str = String.trim cmd_str in
     if String.length cmd_str = 0 then ()

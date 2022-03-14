@@ -33,7 +33,10 @@
               "runwatch"                   , REGEXP_UNWATCH;
               "ruw"                        , REGEXP_UNWATCH;
               "dump"                       , DUMP;
-              "d"                          , DUMP
+              "d"                          , DUMP;
+              "help"                       , HELP;
+              "h"                          , HELP;
+              "?"                          , HELP
             ]
 
   let string_buff = Buffer.create 256

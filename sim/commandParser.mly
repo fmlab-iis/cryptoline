@@ -7,10 +7,10 @@
 %}
 
 %token <string> ARG
-%token EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP
+%token EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP HELP
 %token EOF
 
-%nonassoc ARG EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP
+%nonassoc ARG EXIT RUN NEXT PREVIOUS GOTO FIND PRINT REGEXP_PRINT WATCH REGEXP_WATCH UNWATCH REGEXP_UNWATCH DUMP HELP
 
 %start command
 %type <Command.command> command
@@ -41,6 +41,7 @@ cmd:
   | UNWATCH args                        { CUnwatch (false, $2) }
   | REGEXP_UNWATCH args                 { CUnwatch (true, $2) }
   | DUMP                                { CDump }
+  | HELP                                { CHelp }
 ;
 
 args:

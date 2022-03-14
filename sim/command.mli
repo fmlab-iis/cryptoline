@@ -10,3 +10,6 @@ type command =
   | CWatch of bool * string list (* CWatch (use_regexp, vars) *)
   | CUnwatch of bool * string list (* CUnwatch (use_regexp, vars) *)
   | CDump
+  | CHelp
+
+val command_help : unit -> string
