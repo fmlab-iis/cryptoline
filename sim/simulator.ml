@@ -242,11 +242,11 @@ class shellManager = fun m p ->
     (* Runs the remaining program *)
     method run =
       match self#get_next_instr with
-      | Some _ -> ignore(self#next); self#run
+      | Some _ -> ignore(self#next1); self#run
       | None -> ()
 
     (* Executes and returns the next instruction. *)
-    method next =
+    method next1 =
       match stack with
       | (t, m, (k, i)::p)::_ -> let m' = simulate_instr m i in
                                 let t' = VS.fold add_var_to_table (lvs_instr i) t in
@@ -254,12 +254,22 @@ class shellManager = fun m p ->
                                 (k, i)
       | _ -> raise NoMoreInstr
 
+    method next n =
+      if n <= 0 then self#get_next_instr
+      else let _ = self#next1 in
+           self#next (n - 1)
+
     (* Undos and returns the previous instruction.*)
-    method prev =
+    method prev1 =
       match stack with
       | _::(((_, _, (k, i)::_)::_) as p) -> let _ = stack <- p in
                                             (k, i)
       | _ -> raise NoMoreInstr
+
+    method prev n =
+      if n <= 0 then self#get_prev_instr
+      else let _ = self#prev1 in
+           self#prev (n - 1)
 
     method goto n =
       let m = List.length stack - 1 in
@@ -267,12 +277,12 @@ class shellManager = fun m p ->
         if n = 0 then ()
         else if n < 0 then let _ =
                              try
-                               ignore(self#prev)
+                               ignore(self#prev1)
                              with NoMoreInstr -> () in
                            helper (n + 1)
         else let _ =
                try
-                 ignore(self#next)
+                 ignore(self#next1)
                with NoMoreInstr -> () in
              helper (n - 1)
       in
@@ -389,15 +399,15 @@ let shell m p =
     (* Run the remaining program *)
     | CRun -> manager#run; manager#print_program
     (* Execute the next instruction *)
-    | CNext -> (try
-                  ignore(manager#next); manager#print_program
-                with NoMoreInstr ->
-                  print_endline ("No more instruction to be executed."))
+    | CNext n -> (try
+                    ignore(manager#next n); manager#print_program
+                  with NoMoreInstr ->
+                    print_endline ("No more instruction to be executed."))
     (* Undo the previous instruction *)
-    | CPrevious -> (try
-                      ignore(manager#prev); manager#print_program
-                    with NoMoreInstr ->
-                      print_endline ("No more instruction to be reversed."))
+    | CPrevious n -> (try
+                        ignore(manager#prev n); manager#print_program
+                      with NoMoreInstr ->
+                        print_endline ("No more instruction to be reversed."))
     (* Go to a specific instruction *)
     | CGoto n -> if n < 0 then print_endline ("Invalid program location.")
                  else (ignore(manager#goto n); manager#print_program)

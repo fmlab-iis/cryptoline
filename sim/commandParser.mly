@@ -24,8 +24,28 @@ command:
 cmd:
     EXIT                                { CExit }
   | RUN                                 { CRun }
-  | NEXT                                { CNext }
-  | PREVIOUS                            { CPrevious }
+  | NEXT args                           { match $2 with
+                                          | [] -> CNext 1
+                                          | [arg] ->
+                                             (try
+                                                let n = int_of_string arg in
+                                                if n <= 0 then raise (ParseError ("The number of nexp steps must be positive."))
+                                                else CNext n
+                                              with Failure _ ->
+                                                raise (ParseError ("Invalid next argument: " ^ String.concat " " $2)))
+                                          | _ -> raise (ParseError ("Next command has at most 1 argument."))
+                                        }
+  | PREVIOUS args                       { match $2 with
+                                          | [] -> CPrevious 1
+                                          | [arg] ->
+                                             (try
+                                                let n = int_of_string arg in
+                                                if n <= 0 then raise (ParseError ("The number of previous steps must be positive."))
+                                                else CPrevious n
+                                              with Failure _ ->
+                                                raise (ParseError ("Invalid next argument: " ^ String.concat " " $2)))
+                                          | _ -> raise (ParseError ("Next command has at most 1 argument."))
+                                        }
   | GOTO ARG                            { try
                                             let n = int_of_string $2 in
                                             if n < 0 then raise (ParseError ("Invalid goto location: " ^ $2))

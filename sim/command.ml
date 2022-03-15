@@ -2,8 +2,8 @@
 type command =
   | CExit
   | CRun
-  | CNext
-  | CPrevious
+  | CNext of int
+  | CPrevious of int
   | CGoto of int
   | CFind of string
   | CPrint of bool * string list
@@ -24,8 +24,8 @@ let command_help () =
       "--------------------------------------------------------------------------------";
       highlight("exit/quit/q"); "\t\t\tQuit\n";
       highlight("run/r"); "\t\t\tRun the program\n";
-      highlight("next/n"); "\t\t\tRun the next instruction\n";
-      highlight("previous/prev/v"); "\t\t\tUndo the previous instruction\n";
+      highlight("next/n [N]"); "\t\t\tRun the next N instructions\n";
+      highlight("previous/prev/v [N]"); "\t\t\tUndo the previous N instructions\n";
       highlight("goto/g N"); "\t\t\tRun until the N-th instruction\n";
       highlight("find/f STR"); "\t\t\tSearch for instructions\n";
       highlight("print/p [VAR VAR ...]"); "\t\t\tPrint the instructions near the program counter or"; "\t\t\tprint values of specified variables\n";

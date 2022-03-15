@@ -2,8 +2,8 @@
 type command =
   | CExit
   | CRun
-  | CNext
-  | CPrevious
+  | CNext of int
+  | CPrevious of int
   | CGoto of int
   | CFind of string
   | CPrint of bool * string list (* CPrint (use_regexp, vars) *)
