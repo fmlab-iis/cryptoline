@@ -55,3 +55,11 @@ val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.St
  * The precondition and the program may be sliced.
  *)
 val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> Qfbv.Std.bexp list
+
+val smtlib_espec : var_gen -> Ast.Cryptoline.espec -> var_gen * string
+
+(* Returns true if a postcondition appears in a precondition. *)
+val espre_implies_espost : Ast.Cryptoline.ebexp -> Ast.Cryptoline.ebexp -> bool
+
+(* Returns true if a postcondition appears in some assume instruction in the program. *)
+val espost_in_assumes : Ast.Cryptoline.program -> Ast.Cryptoline.ebexp -> bool

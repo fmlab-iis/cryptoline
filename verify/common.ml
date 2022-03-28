@@ -900,7 +900,7 @@ let bv2z_program vgen p =
        let (vgen, zhd) = bv2z_instr vgen hd in
        bv2z_program_helper vgen tl (List.rev_append zhd rev_res) in
   bv2z_program_helper vgen p []
-  
+
 type poly_spec =
   { ppre : ebexp;
     pprog : ebexp list;
@@ -1394,3 +1394,126 @@ let safety_assumptions f p safety_cond hashopt =
       slice_for_safety f p safety_cond hashopt
     else (f, p) in
   (bexp_rbexp f)::(bexp_program p)
+
+
+(*
+ * Convert `eeqmod e1 e2 [m1; m2; ...; mn]` to `e1 - e2 = k1 * m1 + k2 * m2 + ... + kn * mn`
+ * where k1, k2, ..., kn are new variables of type bit.
+ *)
+let rec translate_eeqmod vgen e =
+  match e with
+  | Eeqmod (e1, e2, ms) ->
+     let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ -> let (k, vgen) = gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
+     let ks = List.rev_map (fun k -> evar (mkvar k bit_t)) ks_rev in
+     (vgen, eeq (esub e1 e2) (eadds (List.map2 (fun k m -> emul k m) ks ms)))
+  | Eand (e1, e2) ->
+     let (vgen, e1) = translate_eeqmod vgen e1 in
+     let (vgen, e2) = translate_eeqmod vgen e2 in
+     (vgen, Eand (e1, e2))
+  | _ -> (vgen, e)
+
+
+(** Conversion from algebraic specifications to SMTLIB format *)
+
+let smtlib_eunop op =
+  match op with
+  | Eneg -> "-"
+
+let smtlib_ebinop op =
+  match op with
+  | Eadd -> "+"
+  | Esub -> "-"
+  | Emul -> "*"
+  | Epow -> "expn"
+
+let rec smtlib_eexp e =
+  match e with
+  | Evar v -> string_of_var v
+  | Econst c -> if Z.lt c Z.zero then "(- " ^ Z.to_string (Z.abs c) ^ ")"
+                else Z.to_string c
+  | Eunop (op, e) -> String.concat "" ["("; smtlib_eunop op; " "; smtlib_eexp e; ")"]
+  | Ebinop (op, e1, e2) -> String.concat "" ["("; smtlib_ebinop op; " "; smtlib_eexp e1; " "; smtlib_eexp e2; ")"]
+
+let smtlib_add e1 e2 = "(+ " ^ e1 ^ " " ^ e2 ^ ")"
+let rec smtlib_adds es =
+  match es with
+  | [] -> ""
+  | e::[] -> e
+  | hd::tl -> smtlib_add hd (smtlib_adds tl)
+let smtlib_mul e1 e2 = "(* " ^ e1 ^ " " ^ e2 ^ ")"
+let smtlib_not e = "(not " ^ e ^ ")"
+let smtlib_assert e = "(assert " ^ e ^ ")"
+let smtlib_declare_int v = "(declare-fun " ^ v ^ " () Int)"
+let smtlib_exists k e = "(exists ((" ^ k ^ " Int)) " ^ e ^ ")"
+let smtlib_define_expn () =
+  match !native_smtlib_expn_operator with
+  | Some op -> "(define-fun expn ((x Int) (n Int)) Int (" ^ op ^ " x n))"
+  | _ -> "(define-fun-rec expn ((x Int) (n Int)) Int (ite (= n 0) 1 (* x (expn x (- n 1)))))"
+
+let rec smtlib_ebexp_premise vgen e =
+  match e with
+  | Etrue -> (vgen, "true")
+  | Eeq (e1, e2) -> (vgen, String.concat "" ["(= "; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Eeqmod (e1, e2, ms) ->
+     let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ -> let (k, vgen) = gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
+     (vgen, String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"])
+  | Eand (e1, e2) ->
+     let (vgen, e1) = smtlib_ebexp_premise vgen e1 in
+     let (vgen, e2) = smtlib_ebexp_premise vgen e2 in
+     (vgen, String.concat "" ["(and "; e1; " "; e2; ")"])
+
+let rec smtlib_ebexp_consequence vgen e =
+  match e with
+  | Etrue -> (vgen, [], "true")
+  | Eeq (e1, e2) -> (vgen, [], String.concat "" ["(= "; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Eeqmod (e1, e2, ms) ->
+     let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ -> let (k, vgen) = gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
+     let unquantified = String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"] in
+     let quantified = List.fold_left (fun quantified k -> smtlib_exists k quantified) unquantified ks_rev in
+     (vgen, ks_rev, quantified)
+  | Eand (e1, e2) ->
+     let (vgen, ks_rev1, e1) = smtlib_ebexp_consequence vgen e1 in
+     let (vgen, ks_rev2, e2) = smtlib_ebexp_consequence vgen e2 in
+     (vgen, List.rev_append ks_rev1 ks_rev2, String.concat "" ["(and "; e1; " "; e2; ")"])
+
+let smtlib_espec vgen es =
+  let (vgen, zs) = bv2z_espec vgen es in
+  (* Convert to ebexp *)
+  let (vgen, zf, zp, zg) =
+    let (vgen, zf) = translate_eeqmod vgen zs.ppre in
+    let (vgen, zp_rev) = List.fold_left (fun (vgen, zp_rev) i -> let (vgen, zi) = translate_eeqmod vgen i in (vgen, zi::zp_rev)) (vgen, []) zs.pprog in
+    (vgen, zf, List.rev zp_rev, zs.ppost) in
+  (* Collect free variables *)
+  let vars = VS.elements (List.fold_left (fun res e -> VS.union res (vars_ebexp e)) VS.empty ([zf]@zp@[zg])) in
+  (* Convert to SMTLIB format *)
+  let (vgen, _ks_rev, f, p, g) =
+    let (vgen, f) = smtlib_ebexp_premise vgen zf in
+    let (vgen, p_rev) = List.fold_left (fun (vgen, p_rev) e -> let (vgen, e) = smtlib_ebexp_premise vgen e in (vgen, e::p_rev)) (vgen, []) zp in
+    let (vgen, ks_rev, g) = smtlib_ebexp_consequence vgen zg in
+    (vgen, ks_rev, f, List.rev p_rev, g) in
+  (* Return the string representation in SMTLIB *)
+  (vgen,
+   String.concat "\n" [
+       "(set-logic UFNIA)";
+       smtlib_define_expn();
+       String.concat "\n" (List.map smtlib_declare_int (List.map string_of_var vars));
+       smtlib_assert f;
+       String.concat "\n" (List.map smtlib_assert p);
+       (smtlib_assert (smtlib_not g));
+       "(check-sat)"
+     ])
+
+(* Returns true if espost appears in espre. *)
+let rec espre_implies_espost espre espost =
+  match espre with
+  | Eand (e0, e1) ->
+     espre_implies_espost e0 espost ||
+       espre_implies_espost e1 espost
+  | _ -> eq_ebexp espre espost
+
+(* Returns true if espost appears in some assume instruction in prog. *)
+let espost_in_assumes prog espost =
+  List.exists (fun inst ->
+      match inst with
+      | Iassume (e, _) -> espre_implies_espost e espost
+      | _ -> false) prog

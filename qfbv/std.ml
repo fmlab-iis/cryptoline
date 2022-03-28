@@ -35,7 +35,7 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
   let mk_task task =
     let t1 = Unix.gettimeofday() in
     let cmd =
-      !smt_solver ^ " " ^ !smt_args ^ " "
+      !range_solver ^ " " ^ !range_solver_args ^ " "
       ^ "\"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2> \"" ^ errfile ^ "\"" in
     let%lwt _ =
       match timeout with
@@ -48,10 +48,10 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
                      Lwt.return (Unix.WSIGNALED Sys.sigalrm) in
     let t2 = Unix.gettimeofday() in
     let%lwt _ = Options.WithLwt.log_lock () in
-    let%lwt _ = Options.WithLwt.trace ("Run " ^ !smt_solver ^ " with command: " ^ cmd) in
-    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !smt_solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let%lwt _ = Options.WithLwt.trace ("Run " ^ !range_solver ^ " with command: " ^ cmd) in
+    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
     let%lwt _ = Options.WithLwt.trace
-                  ("OUTPUT FROM " ^ !smt_solver ^ ":") in
+                  ("OUTPUT FROM " ^ !range_solver ^ ":") in
     let%lwt _ = Options.WithLwt.unix
                   ("cat " ^ ofile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.unix

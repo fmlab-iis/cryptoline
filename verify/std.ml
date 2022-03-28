@@ -312,7 +312,7 @@ let write_maple_input ifile vars gen p =
 
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Singular: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM SINGULAR:";
@@ -321,7 +321,7 @@ let run_singular ifile ofile =
 
 let run_sage ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!sage_path ^ " " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Sage: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM SAGE:";
@@ -330,7 +330,7 @@ let run_sage ifile ofile =
 
 let run_magma ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Magma: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM MAGMA:";
@@ -339,7 +339,7 @@ let run_magma ifile ofile =
 
 let run_mathematica ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Mathematica: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM MATHEMATICA:";
@@ -348,7 +348,7 @@ let run_mathematica ifile ofile =
 
 let run_macaulay2 ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Macaulay2: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM MACAULAY2:";
@@ -357,7 +357,7 @@ let run_macaulay2 ifile ofile =
 
 let run_maple ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Maple: " ^ string_of_float (t2 -. t1) ^ " seconds");
   trace "OUTPUT FROM MAPLE:";
@@ -425,7 +425,7 @@ let is_in_ideal vars ideal p =
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
   let res =
-    match !algebra_system with
+    match !algebra_solver with
     | Singular ->
        let _ = write_singular_input ifile vars ideal p in
        let _ = run_singular ifile ofile in
@@ -458,6 +458,7 @@ let is_in_ideal vars ideal p =
        let _ = run_maple ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
+    | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
   in
   let _ = cleanup [ifile; ofile] in
   res
@@ -504,23 +505,45 @@ let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   verify_rspec_with_cuts hashopt s
 
+let verify_espec_single_conjunct_ideal vgen s =
+  let (_, entailments) = polys_of_espec vgen s in
+  List.fold_left
+    (fun res (post, vars, ideal, p) ->
+      if res then (
+        let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
+        if let _ = trace ("Try #0") in is_in_ideal vars [] p then true
+        else let _ = trace ("Try #1") in is_in_ideal vars ideal p
+      )
+      else res) true entailments
+
+let verify_espec_single_conjunct_smt solver vgen s =
+  let (_, smtlib) = smtlib_espec vgen s in
+  let ifile = tmpfile "inputfgb_" ".smt2" in
+  let ofile = tmpfile "outputfgb_" "" in
+  let _ = trace ("algebraic condition: " ^ string_of_ebexp s.espost) in
+  let _ =
+    let ch = open_out ifile in
+    let _ = output_string ch smtlib; close_out ch in
+    trace "INPUT TO SMT Solver:";
+    unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile);
+    trace "" in
+  let _ =
+    let t1 = Unix.gettimeofday() in
+    let _ = unix (solver ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+    let t2 = Unix.gettimeofday() in
+    trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds");
+    trace "OUTPUT FROM SMT SOLVER:";
+    unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+    trace "" in
+  let res = read_one_line ofile = "unsat" in
+  let _ = cleanup [ifile; ofile] in
+  res
+
 let verify_espec_single_conjunct vgen s hashopt =
-  let rec espre_implies_espost espre espost =
-    match espre with
-    | Eand (e0, e1) ->
-       espre_implies_espost e0 espost ||
-         espre_implies_espost e1 espost
-    | _ -> espre = espost in
-  let verify_one vgen s =
-    let (_, entailments) = polys_of_espec vgen s in
-    List.fold_left
-      (fun res (post, vars, ideal, p) ->
-        if res then (
-          let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
-          if let _ = trace ("Try #0") in is_in_ideal vars [] p then true
-          else let _ = trace ("Try #1") in is_in_ideal vars ideal p
-        )
-        else res) true entailments in
+  let verify_one =
+    match !algebra_solver with
+    | SMTSolver solver -> verify_espec_single_conjunct_smt solver
+    | _ -> verify_espec_single_conjunct_ideal in
   s.espost = Etrue ||
   espre_implies_espost s.espre s.espost ||
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)

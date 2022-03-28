@@ -1,12 +1,13 @@
 
 
-type algebra_system =
+type algebra_solver =
   | Singular
   | Sage
   | Magma
   | Mathematica
   | Macaulay2
   | Maple
+  | SMTSolver of string
 
 type variable_order =
   | LexOrder
@@ -14,8 +15,8 @@ type variable_order =
   | RevLexOrder
   | RevAppearingOrder
 
-val default_solver : string
-val default_algebra : algebra_system
+val default_range_solver : string
+val default_algebra_solver : algebra_solver
 
 val wordsize : int ref
 
@@ -26,8 +27,8 @@ val stp_path : string ref
 val minisat_path : string ref
 val cryptominisat_path : string ref
 
-val smt_solver : string ref
-val smt_args : string ref
+val range_solver : string ref
+val range_solver_args : string ref
 
 val use_btor : bool ref
 
@@ -38,9 +39,9 @@ val mathematica_path : string ref
 val macaulay2_path : string ref
 val maple_path : string ref
 
-val algebra_system : algebra_system ref
-val algebra_args : string ref
-val string_of_algebra_system : algebra_system -> string
+val algebra_solver : algebra_solver ref
+val algebra_solver_args : string ref
+val string_of_algebra_solver : algebra_solver -> string
 
 val apply_rewriting : bool ref
 val polys_rewrite_replace_eexp : bool ref
@@ -99,3 +100,5 @@ val tmpfile : string -> string -> string
 val cleanup : string list -> unit
 
 val cryptoline_filename_extension : string
+
+val native_smtlib_expn_operator : string option ref

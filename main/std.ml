@@ -19,44 +19,67 @@ let simulation_steps = ref (-1)
 let simulation_dumps_string = ref ""
 
 let args = [
-    ("-autocast", Set Options.Std.auto_cast, " Automatically cast variables when parsing untyped programs\n");
-    ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true), "  Automatically cast variables when parsing untyped programs\n");
-    ("-cli", Set Options.Std.use_cli, "\t     Use CLI to run verification tasks (when # of jobs > 1)\n");
-    ("-cli_path", String (fun str -> Options.Std.cli_path := str), "PATH\n\t     Set the path to CLI\n");
-    ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false), "\n\t     Disable verification of all algebra properties\n");
-    ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false), "\n\t     Disable verification of all range properties (excluding safety)\n");
-    ("-disable_assertion", Unit (fun () -> verify_eassertion := false; verify_rassertion := false), "\n\t     Disable verification of all assertions\n");
-    ("-disable_eassertion", Clear verify_eassertion, "\n\t     Disable verification of algebraic assertions\n");
-    ("-disable_rassertion", Clear verify_rassertion, "\n\t     Disable verification of range assertions\n");
-    ("-disable_epost", Clear verify_epost, "\n\t     Disable verification of algebraic postconditions (including cuts)\n");
-    ("-disable_rpost", Clear verify_rpost, "\n\t     Disable verification of range postconditions (including cuts)\n");
-    ("-disable_safety", Clear verify_program_safety, "\n\t     Disable verification of program safety\n");
+    ("-autocast", Set Options.Std.auto_cast,
+     Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
+    ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),
+     Common.mk_arg_desc(["  Automatically cast variables when parsing untyped programs."]));
+    ("-cli", Set Options.Std.use_cli,
+     Common.mk_arg_desc(["\t     Use CLI to run verification tasks (when # of jobs > 1)."]));
+    ("-cli_path", String (fun str -> Options.Std.cli_path := str),
+     Common.mk_arg_desc(["PATH"; "Set the path to CLI."]));
+    ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false),
+     Common.mk_arg_desc([""; "Disable verification of all algebra properties."]));
+    ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false),
+     Common.mk_arg_desc([""; "Disable verification of all range properties (excluding safety)."]));
+    ("-disable_assertion", Unit (fun () -> verify_eassertion := false; verify_rassertion := false),
+     Common.mk_arg_desc([""; "Disable verification of all assertions."]));
+    ("-disable_eassertion", Clear verify_eassertion,
+     Common.mk_arg_desc([""; "Disable verification of algebraic assertions."]));
+    ("-disable_rassertion", Clear verify_rassertion,
+     Common.mk_arg_desc([""; "Disable verification of range assertions."]));
+    ("-disable_epost", Clear verify_epost,
+     Common.mk_arg_desc([""; "Disable verification of algebraic postconditions (including cuts)."]));
+    ("-disable_rpost", Clear verify_rpost,
+     Common.mk_arg_desc([""; "Disable verification of range postconditions (including cuts)."]));
+    ("-disable_safety", Clear verify_program_safety,
+     Common.mk_arg_desc([""; "Disable verification of program safety."]));
     ("-jobs", Int (fun j -> jobs := j),
-     "N    Set number of jobs (default = 4)\n");
-    ("-ma", Unit (fun () -> action := MoveAssert), "\t     Convert to SSA and move assertions to post-condition");
-    ("-p", Unit (fun () -> action := Parse), "\t     Print the parsed specification\n");
-    ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
-    ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
-    ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
-    ("-pdflow", Unit (fun () -> action := PrintDataFlow), "     Print data flow in SSA as a DOT graph\n");
-    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "args\n\t     Run debugger with specified input arguments (comma separated)\n");
-    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), "      Simulate the parsed specification\n");
-    ("-sim_steps", Int (fun n -> simulation_steps := n), "\n\t     Stop simulate after the specified number of steps \n");
-    ("-sim_dumps", String (fun s -> simulation_dumps_string := s), "\n\t     Dump variable tables for the specified ranges of steps \n");
+     Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
+    ("-ma", Unit (fun () -> action := MoveAssert), Common.mk_arg_desc(["\t     Convert to SSA and move assertions to post-condition."]));
+    ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
+    ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
+    ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
+    ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
+    ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["     Print data flow in SSA as a DOT graph."]));
+    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s),
+     Common.mk_arg_desc(["args"; "Run debugger with specified input arguments (comma separated)."]));
+    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
+    ("-sim_steps", Int (fun n -> simulation_steps := n),
+     Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
+    ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
+     Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
     ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
-     "FILENAME\n\t     Save the specification in the format acceptable by coq-cryptoline\n");
-    ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
-    ("-v", Set verbose, "\t     Display verbose messages\n");
+     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by coq-cryptoline."]));
+    ("-typing_file", String (fun f -> Options.Std.typing_file := Some f),
+     Common.mk_arg_desc([""; "Predefined typing in parsing untyped programs."]));
+    ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified algebraic cuts (comma separated). The indices\n\t     start with 0. The algebraic postcondition is the last cut.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
     ("-veacuts", String (fun str -> verify_eacuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified algebraic assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the algebraic assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic assertions before the specified";
+                         "cuts (comma separated). The indices For each i in the specified"; "indices, the algebraic assertions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]));
     ("-vrcuts", String (fun str -> verify_rcuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified range cuts (comma separated). The indices\n\t     start with 0. The range postcondition is the last cut.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified range cuts (comma separated). The indices";
+                         "start with 0. The range postcondition is the last cut."]));
     ("-vracuts", String (fun str -> verify_racuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified range assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the range assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified range assertions before the specified";
+                         "cuts (comma separated). The indices For each i in the specified"; "indices, the range assertions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]));
     ("-vscuts", String (fun str -> verify_scuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify safety of instructions before the specified cuts (comma\n\t     separated). The indices start with 0. For each i in the specified\n\t     indices, the safety of instructions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n")
+     Common.mk_arg_desc(["INDICES"; "Verify safety of instructions before the specified cuts (comma";
+                         "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]))
   ]@Common.args
 let args = List.sort Pervasives.compare args
 
