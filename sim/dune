@@ -1,6 +1,7 @@
 (library
   (name        simulator)
   (libraries   options utils ast nBits)
+  (flags       (:standard -w -3))
 )
 
 (ocamllex    commandLexer)
