@@ -1193,8 +1193,9 @@
           else ()) relmtyps
         in (rtyphint, rvs)
 
-  (* Alias colliding names in dest and src *)
-  let gen_aliasing_instrs lno dest_names_set src vm relmtyp =
+  (* Given source atomics and names of destinations, make a series of aliasing movs on colliding names.
+     Besides instructions, it also returns some context after rewriting *)
+  let gen_tmp_movs lno dest_names_set src vm relmtyp =
     let rewrite_src map a = match a with
     | `AVAR ({atmname; _} as var) when SS.mem atmname dest_names_set -> (
       let tmp_name = "_tmp_" ^ atmname in
@@ -1209,7 +1210,6 @@
     | `ACONST _ -> (map, a) in
 
     let (tmp_to_orig, src_safe) = List.fold_left_map rewrite_src SM.empty src in
-
     let tmp_names = SM.fold (fun k _ names -> k::names) tmp_to_orig [] in
     (* Add introduced temp. variables into variable map *)
     let vm_safe = SM.fold (fun k _ map -> SM.add k (mkvar k relmtyp) map) tmp_to_orig vm in
@@ -1219,7 +1219,15 @@
         let instr = (lno, Imov (SM.find tmp_name vm_safe, Avar (mkvar orig.atmname relmtyp))) in
         instr::instrs
     ) tmp_to_orig []) in
+    (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
+  let gen_tmp_movs_2 lno dest_names_set srcs vm relmtyp =
+    let srclen = (List.length srcs) / 2 in
+    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_tmp_movs lno dest_names_set srcs vm relmtyp in
+    let (src1_sr, src2_sr) = List.fold_left (fun (a, b) (i, x) ->
+      if i <= srclen then (x::a,    b)
+                     else (   a, x::b)) ([], []) (List.combine (1 -- (srclen * 2)) src_safe_joined) in
+    let src_safe = List.rev (List.combine src1_sr src2_sr) in
     (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
   let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
@@ -1232,7 +1240,7 @@
     else () in
 
     let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=None} in
@@ -1264,12 +1272,7 @@
     else () in
 
     let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let src_joined = src1 @ src2 in
-    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_aliasing_instrs lno dest_names_set src_joined vm relmtyp in
-    let (src1_safe_rev, src2_safe_rev) = List.fold_left (fun (a, b) (i, x) ->
-      if i < srclen then (x::a,    b)
-                    else (   a, x::b)) ([], []) (List.combine (0 -- (srclen * 2 - 1)) src_safe_joined) in
-    let src_safe = List.rev (List.combine src1_safe_rev src2_safe_rev) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
       let lvtoken = {lvname; lvtyphint=None} in
@@ -1283,8 +1286,8 @@
   let unpack_vinstr_21n mapper lno dest1_tok dest2_tok src_tok num fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm_tmp, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
-    let (vxm',    dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_tmp ym gm (Some src_typ_vec) in
+    let (vxm_i, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm  ym gm (Some src_typ_vec) in
+    let (vxm',  dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_i ym gm (Some src_typ_vec) in
 
     let _ = if ((List.length dest1_names) <> (List.length src) ||
                 (List.length dest2_names) <> (List.length src)) then
@@ -1292,7 +1295,7 @@
     else () in
 
     let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (dest1_names @ dest2_names) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
 
     let map_func (vm, ym, gm) ((lvname1, lvname2), rv) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
@@ -1319,8 +1322,8 @@
     (* XXX: is destL always unsigned? *)
     let src_typ_vec = (relmtyp, List.length src1) in
     let destL_typ = (to_uint relmtyp, snd src_typ_vec) in
-    let (vxm_tmp, destH_names, _) = resolve_lv_vec_with lno destH_tok fm cm vm vxm     ym gm (Some src_typ_vec) in
-    let (vxm',    destL_names, _) = resolve_lv_vec_with lno destL_tok fm cm vm vxm_tmp ym gm (Some destL_typ) in
+    let (vxm_i, destH_names, _) = resolve_lv_vec_with lno destH_tok fm cm vm vxm   ym gm (Some src_typ_vec) in
+    let (vxm',  destL_names, _) = resolve_lv_vec_with lno destL_tok fm cm vm vxm_i ym gm (Some destL_typ) in
 
     let _ = if ((List.length destH_names) <> srclen ||
                 (List.length destL_names) <> srclen) then
@@ -1328,12 +1331,8 @@
     else () in
 
     let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (destH_names @ destL_names) in
-    let src_joined = src1 @ src2 in
-    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_aliasing_instrs lno dest_names_set src_joined vm relmtyp in
-    let (src1_safe_rev, src2_safe_rev) = List.fold_left (fun (a, b) (i, x) ->
-      if i < srclen then (x::a,    b)
-                    else (   a, x::b)) ([], []) (List.combine (0 -- (srclen * 2 - 1)) src_safe_joined) in
-    let src_safe = List.rev (List.combine src1_safe_rev src2_safe_rev) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+    let dest_names = List.combine destH_names destL_names in
 
     let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
@@ -1341,7 +1340,6 @@
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv1 rv2 fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
-    let dest_names = List.combine destH_names destL_names in
     let ((vm', ym', gm'), iss) = (
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
@@ -1355,7 +1353,7 @@
     else () in
 
     let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_aliasing_instrs lno dest_names_set src vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
