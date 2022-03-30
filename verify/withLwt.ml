@@ -935,7 +935,6 @@ let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cut
 
 (* Run CLI to verify an espec (no conjunction in the postcondition, no cut). *)
 let run_cli_vespec header s =
-  let t1 = Unix.gettimeofday() in
   let ifile = tmpfile "espec_input_" "" in
   let ofile = tmpfile "espec_output_" "" in
   let lfile = tmpfile "espec_log_" "" in
@@ -991,12 +990,10 @@ let run_cli_vespec header s =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
-  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
-  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
@@ -1017,8 +1014,15 @@ let run_cli_vespec header s =
  * Check if the input specification is trivially valid first.
  *)
 let run_cli_vespec header s =
-  if is_espec_trivial s then Lwt.return_true
-  else run_cli_vespec header s
+  let t1 = Unix.gettimeofday() in
+  let%lwt res =
+    if is_espec_trivial s then Lwt.return_true
+    else run_cli_vespec header s in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return res
 
 (* Verify an espec using CLI to run verification tasks *)
 let verify_espec_cli s =
@@ -1029,7 +1033,6 @@ let verify_espec_cli s =
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
 let run_cli_vrspec header s =
-  let t1 = Unix.gettimeofday() in
   let ifile = tmpfile "rspec_input_" "" in
   let ofile = tmpfile "rspec_output_" "" in
   let lfile = tmpfile "rspec_log_" "" in
@@ -1066,12 +1069,10 @@ let run_cli_vrspec header s =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
-  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
-  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
@@ -1092,8 +1093,15 @@ let run_cli_vrspec header s =
  * Check if the input specification is trivially valid first.
  *)
 let run_cli_vrspec header s =
-  if is_rspec_trivial s then Lwt.return_true
-  else run_cli_vrspec header s
+  let t1 = Unix.gettimeofday() in
+  let%lwt res =
+    if is_rspec_trivial s then Lwt.return_true
+    else run_cli_vrspec header s in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return res
 
 (* Verify a rspec using CLI to run verification tasks *)
 let verify_rspec_cli s _ =

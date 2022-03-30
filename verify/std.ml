@@ -473,30 +473,13 @@ let is_in_ideal vars ideal p =
   res
 
 let verify_rspec_single_conjunct s hashopt =
-  let rec rbexp_implies_rspost re se  =
-    match re with
-    | Rand (re0, re1) ->
-       rbexp_implies_rspost re0 se || rbexp_implies_rspost re1 se
-    | _ -> re = se in
-  let rpost_in_assumes prog rspost =
-    List.exists (fun inst ->
-        match inst with
-        | Iassume (_, r) -> rbexp_implies_rspost r rspost
-        | _ -> false) prog in
   let verify_one s =
-    if rpost_in_assumes s.rsprog s.rspost then
-      true
-    else
-      let f = bexp_rbexp s.rspre in
-      let p = bexp_program s.rsprog in
-      let g = bexp_rbexp s.rspost in
-      let gs = split_bexp g in
-      List.for_all
-        (fun g ->
-          let _ = trace ("range condition: " ^ string_of_bexp g) in
-          solve_simp (f::p@[g]) = Unsat)
-        gs in
-  s.rspost = Rtrue ||
+    let f = bexp_rbexp s.rspre in
+    let p = bexp_program s.rsprog in
+    let g = bexp_rbexp s.rspost in
+    let _ = trace ("range condition: " ^ string_of_bexp g) in
+    solve_simp (f::p@[g]) = Unsat in
+  is_rspec_trivial s ||
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
@@ -553,8 +536,7 @@ let verify_espec_single_conjunct vgen s hashopt =
     match !algebra_solver with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
-  s.espost = Etrue ||
-  espre_implies_espost s.espre s.espost ||
+  is_espec_trivial s ||
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
