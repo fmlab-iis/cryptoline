@@ -98,7 +98,7 @@ let verify_safety_inc timeout f p qs hashopt =
            let _ = vprintln "[TIMEOUT]" in
            (add_unsolved (id, i, q) res, revp, p) in
        let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
        res in
   let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
@@ -151,7 +151,7 @@ let verify_safety s hashopt =
       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
       let res = solve_simp (fp@[g]) = Unsat in
       let t2 = Unix.gettimeofday() in
-      let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+      let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
       res in
   let res = apply_to_cuts !verify_scuts verify_safety_without_cuts true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
@@ -323,7 +323,7 @@ let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Singular: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Singular: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SINGULAR:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -332,7 +332,7 @@ let run_sage ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Sage: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Sage: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SAGE:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -341,7 +341,7 @@ let run_magma ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Magma: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Magma: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAGMA:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -350,7 +350,7 @@ let run_mathematica ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MATHEMATICA:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -359,7 +359,7 @@ let run_macaulay2 ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MACAULAY2:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -368,7 +368,7 @@ let run_maple ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Maple: " ^ string_of_running_time t1 t2 ^ " seconds");
+  trace ("Execution time of Maple: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAPLE:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -523,7 +523,7 @@ let verify_espec_single_conjunct_smt solver vgen s =
     let t1 = Unix.gettimeofday() in
     let _ = unix (solver ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
     let t2 = Unix.gettimeofday() in
-    trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2 ^ " seconds");
+    trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2);
     trace "OUTPUT FROM SMT SOLVER:";
     unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
     trace "" in

@@ -76,7 +76,7 @@ let verify_safety_inc timeout f prog qs hashopt =
         Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
     let t2 = Unix.gettimeofday() in
     let%lwt _ = Options.WithLwt.log_lock () in
-    let%lwt _ = Options.WithLwt.trace("Execution time of safety task #" ^ string_of_int id ^ ": " ^ string_of_running_time t1 t2 ^ " seconds") in
+    let%lwt _ = Options.WithLwt.trace("Execution time of safety task #" ^ string_of_int id ^ ": " ^ string_of_running_time t1 t2) in
     let%lwt _ = Options.WithLwt.log_unlock () in
     Lwt.return res in
   let delivered_helper r (id, i, q, ret_str, ret) =
@@ -310,7 +310,7 @@ let run_singular header ifile ofile =
   let%lwt _ = Options.WithLwt.trace "INPUT TO SINGULAR:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SINGULAR:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -329,7 +329,7 @@ let run_sage header ifile ofile =
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ifile ^ "\" >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SAGE:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -346,7 +346,7 @@ let run_magma header ifile ofile =
   let%lwt _ = Options.WithLwt.trace "INPUT TO MAGMA:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAGMA:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -363,7 +363,7 @@ let run_mathematica header ifile ofile =
   let%lwt _ = Options.WithLwt.trace "INPUT TO MATHEMATICA:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MATHEMATICA:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -381,7 +381,7 @@ let run_macaulay2 header ifile ofile =
   let%lwt _ = Options.WithLwt.trace "INPUT TO MACAULAY2:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MACAULAY2:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -398,7 +398,7 @@ let run_maple header ifile ofile =
   let%lwt _ = Options.WithLwt.trace "INPUT TO MAPLE:" in
   let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
   let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Maple: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Maple: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAPLE:" in
   let%lwt _ = Options.WithLwt.unix
                 ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
@@ -522,7 +522,7 @@ let verify_rspec_single_conjunct cut_header s hashopt =
        else verify_one cut_header s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
@@ -588,7 +588,7 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
       let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
       let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile) in
       let%lwt _ = Options.WithLwt.trace "" in
-      let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2 ^ " seconds") in
+      let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
       let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
       let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
       Options.WithLwt.trace "" in
@@ -614,7 +614,7 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
                else verify_one cut_headers vgen s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.log_unlock () in
   res
 
@@ -828,7 +828,7 @@ let run_cli_vsafety id timeout idx instr ifile =
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of safety task #" ^ string_of_int idx ^ ": " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of safety task #" ^ string_of_int idx ^ ": " ^ string_of_running_time t1 t2) in
   let _ =
     (* Log abnormal outputs *)
     if not (List.mem line ["sat"; "unsat"; "unknown"; "timeout"]) then
@@ -1020,7 +1020,7 @@ let run_cli_vespec header s =
     else run_cli_vespec header s in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
@@ -1099,7 +1099,7 @@ let run_cli_vrspec header s =
     else run_cli_vrspec header s in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2 ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
