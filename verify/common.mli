@@ -58,8 +58,20 @@ val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.
 
 val smtlib_espec : var_gen -> Ast.Cryptoline.espec -> var_gen * string
 
-(* Returns true if a postcondition appears in a precondition. *)
+(* Returns true if an algebraic postcondition appears in a precondition. *)
 val espre_implies_espost : Ast.Cryptoline.ebexp -> Ast.Cryptoline.ebexp -> bool
 
-(* Returns true if a postcondition appears in some assume instruction in the program. *)
+(* Returns true if an algebraic postcondition appears in some assume instruction in the program. *)
 val espost_in_assumes : Ast.Cryptoline.program -> Ast.Cryptoline.ebexp -> bool
+
+(* Returns true if a range postcondition appears in a precondition. *)
+val rspre_implies_rspost : Ast.Cryptoline.rbexp -> Ast.Cryptoline.rbexp -> bool
+
+(* Returns true if a range postcondition appears in some assume instruction in the program. *)
+val rspost_in_assumes : Ast.Cryptoline.program -> Ast.Cryptoline.rbexp -> bool
+
+(* Returns true if an algebraic specification is trivially valid. *)
+val is_espec_trivial : Ast.Cryptoline.espec -> bool
+
+(* Returns true if a range specification is trivially valid. *)
+val is_rspec_trivial : Ast.Cryptoline.rspec -> bool

@@ -1517,3 +1517,25 @@ let espost_in_assumes prog espost =
       match inst with
       | Iassume (e, _) -> espre_implies_espost e espost
       | _ -> false) prog
+
+let is_espec_trivial s =
+  (s.espost = Etrue)
+  || (espre_implies_espost s.espre s.espost)
+  || (espost_in_assumes s.esprog s.espost)
+
+let rec rspre_implies_rspost re se  =
+  match re with
+  | Rand (re0, re1) ->
+     rspre_implies_rspost re0 se || rspre_implies_rspost re1 se
+  | _ -> re = se
+
+let rspost_in_assumes prog rspost =
+  List.exists (fun inst ->
+      match inst with
+      | Iassume (_, r) -> rspre_implies_rspost r rspost
+      | _ -> false) prog
+
+let is_rspec_trivial s =
+  (s.rspost = Rtrue)
+  || (rspre_implies_rspost s.rspre s.rspost)
+  || (rspost_in_assumes s.rsprog s.rspost)

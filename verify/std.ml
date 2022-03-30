@@ -81,20 +81,25 @@ let verify_safety_inc timeout f p qs hashopt =
       Solved Sat
     | Solved Unknown -> (res, revp, p)
     | _ ->
-       try
-         let _ = trace ("= Verifying safety condition =") in
-         let _ = trace ("ID: " ^ string_of_int id ^ "\n"
-                        ^ "Instruction: " ^ string_of_instr i) in
-         let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
-         let (revp', p') = find_program_prefix i revp p in
-         let fp = safety_assumptions f (List.rev revp') q hashopt in
-         match solve_simp ~timeout:timeout (fp@[q]) with
-         | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
-         | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
-         | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
-       with TimeoutException ->
-         let _ = vprintln "[TIMEOUT]" in
-         (add_unsolved (id, i, q) res, revp, p) in
+       let t1 = Unix.gettimeofday() in
+       let res =
+         try
+           let _ = trace ("= Verifying safety condition =") in
+           let _ = trace ("ID: " ^ string_of_int id ^ "\n"
+                          ^ "Instruction: " ^ string_of_instr i) in
+           let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
+           let (revp', p') = find_program_prefix i revp p in
+           let fp = safety_assumptions f (List.rev revp') q hashopt in
+           match solve_simp ~timeout:timeout (fp@[q]) with
+           | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
+           | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
+           | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
+         with TimeoutException ->
+           let _ = vprintln "[TIMEOUT]" in
+           (add_unsolved (id, i, q) res, revp, p) in
+       let t2 = Unix.gettimeofday() in
+       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+       res in
   let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
 
@@ -141,9 +146,13 @@ let verify_safety s hashopt =
         | None -> assert false in
       res
     else
+      let t1 = Unix.gettimeofday() in
       let g = bexp_program_safe s.rsprog in
       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-      solve_simp (fp@[g]) = Unsat in
+      let res = solve_simp (fp@[g]) = Unsat in
+      let t2 = Unix.gettimeofday() in
+      let _ = Options.Std.trace("Execution of safety task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+      res in
   let res = apply_to_cuts !verify_scuts verify_safety_without_cuts true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res

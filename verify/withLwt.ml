@@ -59,19 +59,26 @@ let rec split_rspec_post s =
 (* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_inc timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
+    let t1 = Unix.gettimeofday() in
     let header = ["= Verifying safety condition =";
                   "ID: " ^ string_of_int id ^ "\n"
                   ^ "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
     let solve = solve_simp ~timeout:timeout ~header:header (fp@[q]) in
-    try%lwt
-      let%lwt solve_res = solve in
-      match solve_res with
-      | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
-      | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
-      | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
-    with TimeoutException ->
-      Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
+    let%lwt res =
+      try%lwt
+        let%lwt solve_res = solve in
+           match solve_res with
+           | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
+           | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
+           | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
+      with TimeoutException ->
+        Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
+    let t2 = Unix.gettimeofday() in
+    let%lwt _ = Options.WithLwt.log_lock () in
+    let%lwt _ = Options.WithLwt.trace("Execution time of safety task #" ^ string_of_int id ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let%lwt _ = Options.WithLwt.log_unlock () in
+    Lwt.return res in
   let delivered_helper r (id, i, q, ret_str, ret) =
     let _ = vprint ("\t\t Safety condition #" ^
                       string_of_int id ^ "\t") in
@@ -494,20 +501,36 @@ let is_in_ideal header vars ideal p =
   in
   res
 
-(* Verify range assertions in a rspec containing no rcut *)
-let verify_rspec_assert_no_rcut header s hashopt =
+(*
+ * Verify a range specification containing neither cut nor conjunction.
+ * What is done in this function: trivial postcondition check, trivial implication check, program slicing, solver invocation
+ *)
+let verify_rspec_single_conjunct cut_header s hashopt =
   let verify_one cut_header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp s.rspost in
-    let gs = split_bexp g in
-    Lwt_list.for_all_p
-      (fun g ->
-        let rheader = ["range condition: " ^ string_of_bexp g] in
-        let%lwt r =
-          solve_simp ~header:(cut_header@rheader) (f::p@[g]) in
-        Lwt.return (r = Unsat))
-      gs in
+    let rheader = ["range condition: " ^ string_of_bexp g] in
+    let%lwt r = solve_simp ~header:(cut_header@rheader) (f::p@[g]) in
+    Lwt.return (r = Unsat) in
+  let t1 = Unix.gettimeofday() in
+  let%lwt res =
+    if is_rspec_trivial s then Lwt.return_true
+    else
+      (if !apply_slicing
+       then verify_one cut_header (slice_rspec_ssa s hashopt)
+       else verify_one cut_header s) in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return res
+
+(*
+ * Verify a range specification containing no rcut.
+ * What is done in this function: split conjunctions.
+ *)
+let verify_rspec_no_rcut header s hashopt =
   let rec verify_ands cut_header s =
     match s.rspost with
     | Rand (e1, e2) ->
@@ -524,10 +547,7 @@ let verify_rspec_assert_no_rcut header s hashopt =
        else
          Lwt.return_false
     | _ ->
-       let%lwt r = if s.rspost = Rtrue then Lwt.return_true
-                   else (if !apply_slicing
-                         then verify_one cut_header (slice_rspec_ssa s hashopt)
-                         else verify_one cut_header s) in
+       let%lwt r = verify_rspec_single_conjunct cut_header s hashopt in
        Lwt.return r in
   verify_ands header s
 
@@ -577,20 +597,32 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
   let%lwt _ = cleanup_lwt [ifile; ofile] in
   Lwt.return (res = "unsat")
 
+(*
+ * Verify an algebraic specification containing neither cut nor conjunction.
+ * What is done in this function: trivial postcondition check, trivial implication check, program slicing, solver invocation.
+ *)
 let verify_espec_single_conjunct cut_headers vgen s hashopt =
   let verify_one =
     match !algebra_solver with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
-  if (s.espost = Etrue)
-     || (espre_implies_espost s.espre s.espost)
-     || (espost_in_assumes s.esprog s.espost) then Lwt.return_true
-  else (if !apply_slicing
-        then verify_one cut_headers vgen (slice_espec_ssa s hashopt)
-        else verify_one cut_headers vgen s)
+  let t1 = Unix.gettimeofday() in
+  let res = if is_espec_trivial s then Lwt.return_true
+            else
+              (if !apply_slicing
+               then verify_one cut_headers vgen (slice_espec_ssa s hashopt)
+               else verify_one cut_headers vgen s) in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  res
 
-(* Verify algebraic assertions in an espec containing no ecut *)
-let verify_espec_assert_no_ecut headers vgen s hashopt =
+(*
+ * Verify an algebraic specification containing no ecut.
+ * What is done in this function: split conjunctions.
+ *)
+let verify_espec_no_ecut headers vgen s hashopt =
   let rec verify_ands cut_headers vgen s hashopt =
     match s.espost with
     | Eand (e1, e2) ->
@@ -617,7 +649,7 @@ let verify_eassert vgen s hashopt =
     let headers = cut_headers@["= Checking algebraic assertion: " ^
                                  Ast.Cryptoline.string_of_bexp e ^ " ="] in
     let%lwt e_res =
-      verify_espec_assert_no_ecut headers vgen
+      verify_espec_no_ecut headers vgen
         (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt in
     Lwt.return (e_res, e) in
   let verify_spec cut_headers (res, pending) s =
@@ -645,7 +677,7 @@ let verify_rassert _vgen s hashopt =
     let headers = cut_headers@["= Checking range assertion: " ^
                                  Ast.Cryptoline.string_of_bexp e ^ " ="] in
     let%lwt r_res =
-      verify_rspec_assert_no_rcut headers
+      verify_rspec_no_rcut headers
         (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     Lwt.return (r_res, e) in
   let verify_spec cut_headers (res, pending) s =
@@ -674,11 +706,11 @@ let verify_assert vgen s hashopt =
     let headers = ["=== Checking assertion in ecut #" ^ string_of_int ei ^ ", rcut #" ^ string_of_int ri ^ ": " ^
                      Ast.Cryptoline.string_of_bexp e ^ " ==="] in
     let%lwt r_res =
-      verify_rspec_assert_no_rcut headers
+      verify_rspec_no_rcut headers
         (mkrspec rpre (List.rev rvisited) (rng_bexp e)) hashopt in
     let%lwt e_res =
       if r_res then
-        verify_espec_assert_no_ecut headers vgen
+        verify_espec_no_ecut headers vgen
           (mkespec epre (List.rev evisited) (eqn_bexp e)) hashopt
       else
         Lwt.return_false in
@@ -705,33 +737,7 @@ let verify_assert vgen s hashopt =
 
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
-  let rec rbexp_implies_rspost re se  =
-    match re with
-    | Rand (re0, re1) ->
-       rbexp_implies_rspost re0 se || rbexp_implies_rspost re1 se
-    | _ -> re = se in
-  let rpost_in_assumes prog rspost =
-    List.exists (fun inst ->
-        match inst with
-        | Iassume (_, r) -> rbexp_implies_rspost r rspost
-        | _ -> false) prog in
-  let verify_one cut_headers s =
-    if rpost_in_assumes s.rsprog s.rspost then
-      Lwt.return_true
-    else
-      let f = bexp_rbexp s.rspre in
-      let p = bexp_program s.rsprog in
-      let g = bexp_rbexp s.rspost in
-      let gs = split_bexp g in
-    Lwt_list.for_all_p
-      (fun g ->
-        let headers = ["range condition: " ^ string_of_bexp g] in
-        let%lwt r = solve_simp ~header:(cut_headers@headers) (f::p@[g]) in
-        Lwt.return (r = Unsat))
-      gs in
-  let mk_promise cut_headers s =
-    if !apply_slicing then verify_one cut_headers (slice_rspec_ssa s hashopt)
-    else verify_one cut_headers s in
+  let mk_promise cut_headers s = verify_rspec_no_rcut cut_headers s hashopt in
   let delivered_helper res r = res && r in
   let verify_ands cut_headers (res, pending) s =
     let rec verify_ands_helper (res, pending) ss =
@@ -784,6 +790,7 @@ type cli_round_result =
  * ifile: the range specification containing the program
  *)
 let run_cli_vsafety id timeout idx instr ifile =
+  let t1 = Unix.gettimeofday() in
   let ofile = tmpfile "safety_output_" "" in
   let lfile = tmpfile "safety_log_" "" in
   (* Run CLI *)
@@ -817,9 +824,11 @@ let run_cli_vsafety id timeout idx instr ifile =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
+  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of safety task #" ^ string_of_int idx ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if not (List.mem line ["sat"; "unsat"; "unknown"; "timeout"]) then
@@ -924,8 +933,9 @@ let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cut
     verify_ands_helper (res, pending) ss in
   apply_to_cuts_lwt verify_cuts verify_ands delivered_helper true [] (cut_spec s)
 
-(* Run CLI to verify an espec (no conjunction in the postcondition). *)
+(* Run CLI to verify an espec (no conjunction in the postcondition, no cut). *)
 let run_cli_vespec header s =
+  let t1 = Unix.gettimeofday() in
   let ifile = tmpfile "espec_input_" "" in
   let ofile = tmpfile "espec_output_" "" in
   let lfile = tmpfile "espec_log_" "" in
@@ -981,10 +991,12 @@ let run_cli_vespec header s =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
+  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
@@ -1000,6 +1012,14 @@ let run_cli_vespec header s =
   (* Return the result *)
   Lwt.return (String.trim line = "true")
 
+(*
+ * Run CLI to verify an espec (no conjunction in the postcondition, no cut).
+ * Check if the input specification is trivially valid first.
+ *)
+let run_cli_vespec header s =
+  if is_espec_trivial s then Lwt.return_true
+  else run_cli_vespec header s
+
 (* Verify an espec using CLI to run verification tasks *)
 let verify_espec_cli s =
   let _ = trace "===== Verifying algebraic specification =====" in
@@ -1007,8 +1027,9 @@ let verify_espec_cli s =
                   run_cli_vespec (fun cut_header -> cut_header ^ "\n\n= Algebraic Specification =")
                   split_espec_post cut_espec !verify_ecuts
 
-(* Run CLI to verify a rspec (no conjunction in the postcondition). *)
+(* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
 let run_cli_vrspec header s =
+  let t1 = Unix.gettimeofday() in
   let ifile = tmpfile "rspec_input_" "" in
   let ofile = tmpfile "rspec_output_" "" in
   let lfile = tmpfile "rspec_log_" "" in
@@ -1045,10 +1066,12 @@ let run_cli_vrspec header s =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
+  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of range spec: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
@@ -1063,6 +1086,14 @@ let run_cli_vrspec header s =
   let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
   (* Return the result *)
   Lwt.return (String.trim line = "true")
+
+(*
+ * Run CLI to verify a rspec (no conjunction in the postcondition, no cut).
+ * Check if the input specification is trivially valid first.
+ *)
+let run_cli_vrspec header s =
+  if is_rspec_trivial s then Lwt.return_true
+  else run_cli_vrspec header s
 
 (* Verify a rspec using CLI to run verification tasks *)
 let verify_rspec_cli s _ =
@@ -1100,7 +1131,7 @@ let verify_rassert_cli s =
       | hd::tl -> flatten_helper res_rev rpre (hd::rvisited_rev) tl in
     flatten_helper [] s.rspre [] s.rsprog in
   verify_spec_cli (rspec_of_spec s)
-    run_cli_vrspec (fun cut_header -> cut_header ^ "\n\n= Algebraic Assertion =")
+    run_cli_vrspec (fun cut_header -> cut_header ^ "\n\n= Range Assertion =")
     flatten_assertions cut_rspec !verify_racuts
 
 let verify_assert_cli s =
