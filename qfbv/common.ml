@@ -1377,14 +1377,14 @@ let cnf_imp_check_sat ch es =
                                     let (cs, p) = bb#bit_blast_bexp p in
                                     (cs@@clauses, p::premises)) ([], []) premises in
     let t2 = Unix.gettimeofday() in
-    let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_running_time t1 t2 ^ " seconds") in
     (clauses_p, premises) in
   let (clauses_g, goal) =
     let t1 = Unix.gettimeofday() in
     let _ = trace "Bit-blasting goal" in
     let (clauses_g, goal) = bb#bit_blast_bexp goal in
     let t2 = Unix.gettimeofday() in
-    let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_running_time t1 t2 ^ " seconds") in
     (clauses_g, goal) in
   let clauses = (bb#prelude)@@clauses_p@@(List.map (fun p -> [p]) premises)@@clauses_g@@(bb#not_atom goal) in
   let _ = trace "Finished making clauses" in

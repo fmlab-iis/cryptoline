@@ -49,7 +49,7 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
     let t2 = Unix.gettimeofday() in
     let%lwt _ = Options.WithLwt.log_lock () in
     let%lwt _ = Options.WithLwt.trace ("Run " ^ !range_solver ^ " with command: " ^ cmd) in
-    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_running_time t1 t2 ^ " seconds") in
     let%lwt _ = Options.WithLwt.trace
                   ("OUTPUT FROM " ^ !range_solver ^ ":") in
     let%lwt _ = Options.WithLwt.unix
