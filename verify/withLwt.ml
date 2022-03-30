@@ -1071,7 +1071,7 @@ let run_cli_vrspec header s =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
-  let%lwt _ = Options.WithLwt.trace("Execution time of range spec: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_float (t2 -. t1) ^ " seconds") in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
