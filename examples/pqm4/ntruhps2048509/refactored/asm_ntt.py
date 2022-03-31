@@ -62,6 +62,16 @@ def print_constants (base, consts):
                end = '\n' if i == len (consts) - 1 else
                      ('\n' if i % 2 == 1 else ' '))
 
+def print_algebraic_midcondition (base, cinp_poly_name, level, idx):
+    num_rings = 2**(level+1)
+    exps = [ i for i in range (num_rings) ]
+    exprevbits = map (lambda e : list (reversed (num_to_bits (e, 8))),
+                      exps)
+    revexps = list (map (lambda b : (omega**(bits_to_num (b)))%Q, exprevbits))
+    
+        
+    
+                                  
 def print_algebraic_postcondition (base, cinp_poly_name, level):
     num_rings = 2**(level+1)
     exps = [ i for i in range (num_rings) ]
@@ -84,6 +94,7 @@ def print_range_postcondition (base, factor):
         print ('(-{0})@32*{1}@32 <s L0x{2:x}, L0x{2:x} <s {0}@32*{1}@32'.
                format (factor, Q, base + 4*i),
                end = '\n' if i == 1023 else ',\n')
+
 
 print ('\n\n\n(**************** LEVELS 0-3 32 ****************)\n\n\n')
         
@@ -123,8 +134,16 @@ print ('and [')
 print_inp_poly ('cinp_poly', 'cf', 8)
 print ('] && true;')
 
+for idx in range (61):
+    print_ecut ('')
+    print ('and [')
+    print_algebraic_midcondition (out_base, 'cf', 2, idx)
+    print ('];')
+    mid_ecuts.append (get_ecut_counter ())
+    
+    
 print ('\n\n\n(**************** post conditions ****************)\n')
-print ('and [')
+pprint ('and [')
 print ('eqmod (inp_poly**2) (cinp_poly**2) (2**11),')
 print_algebraic_postcondition (out_base, 'cinp_poly', 3)
 print ('] && and [')
@@ -160,6 +179,13 @@ print ('] && true;')
 
 print ('\n\n\n(**************** constants ****************)\n')
 print_constants (const_base_small, streamlined_CT_small_table_Q1)
+
+for idx in range (61):
+    print_ecut ('')
+    print ('and [')
+    print_algebraic_midcondition (out_base, 'cf', 2, idx)
+    print ('];')
+    mid_ecuts.append (get_ecut_counter ())
 
 print ('\n\n\n(**************** post conditions ****************)\n')
 print ('and [')
