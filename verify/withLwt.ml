@@ -64,14 +64,13 @@ let verify_safety_inc timeout f prog qs hashopt =
                   "ID: " ^ string_of_int id ^ "\n"
                   ^ "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
-    let solve = solve_simp ~timeout:timeout ~header:header (fp@[q]) in
+    let%lwt solve_res = solve_simp ~timeout:timeout ~header:header (fp@[q]) in
     let%lwt res =
       try%lwt
-        let%lwt solve_res = solve in
-           match solve_res with
-           | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
-           | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
-           | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
+            match solve_res with
+            | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
+            | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
+            | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
       with TimeoutException ->
         Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
     let t2 = Unix.gettimeofday() in
@@ -514,12 +513,11 @@ let verify_rspec_single_conjunct cut_header s hashopt =
     let%lwt r = solve_simp ~header:(cut_header@rheader) (f::p@[g]) in
     Lwt.return (r = Unsat) in
   let t1 = Unix.gettimeofday() in
-  let%lwt res =
-    if is_rspec_trivial s then Lwt.return_true
-    else
-      (if !apply_slicing
-       then verify_one cut_header (slice_rspec_ssa s hashopt)
-       else verify_one cut_header s) in
+  let%lwt res = if is_rspec_trivial s then Lwt.return_true
+                else
+                  (if !apply_slicing
+                   then verify_one cut_header (slice_rspec_ssa s hashopt)
+                   else verify_one cut_header s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
@@ -607,16 +605,16 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
   let t1 = Unix.gettimeofday() in
-  let res = if is_espec_trivial s then Lwt.return_true
-            else
-              (if !apply_slicing
-               then verify_one cut_headers vgen (slice_espec_ssa s hashopt)
-               else verify_one cut_headers vgen s) in
+  let%lwt res = if is_espec_trivial s then Lwt.return_true
+                else
+                  (if !apply_slicing
+                   then verify_one cut_headers vgen (slice_espec_ssa s hashopt)
+                   else verify_one cut_headers vgen s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  res
+  Lwt.return res
 
 (*
  * Verify an algebraic specification containing no ecut.
