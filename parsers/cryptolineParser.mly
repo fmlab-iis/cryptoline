@@ -1230,6 +1230,15 @@
     let src_safe = List.rev (List.combine src1_sr src2_sr) in
     (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
+  let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
+    let srclen = List.length src1 in
+    let _ = if (List.length src2) <> srclen then
+      raise_at lno "Two sources should have the same length."
+    else if relmtyp <> relmtyp' then
+      raise_at lno "Two sources should have the same element type."
+    else () in
+    ((relmtyp, srclen), src1, src2)
+
   let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
@@ -1254,19 +1263,12 @@
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let unpack_vinstr_12 mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let (relmtyp , src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let vatm1 = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let vatm2 = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
+    let (relmtyp, srclen) = src_typ_vec in
 
-    let srclen = List.length src1 in
-    let _ = if (List.length src2) <> srclen then
-      raise_at lno "Two sources should have the same length."
-    else if relmtyp <> relmtyp' then
-      raise_at lno "Two sources should have the same element type."
-    else () in
-
-    let src_typ_vec = (relmtyp, srclen) in
     let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
-
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
@@ -1309,19 +1311,14 @@
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
   let unpack_vmull mapper lno destH_tok destL_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let (relmtyp , src1) = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let (relmtyp', src2) = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
-
-    let srclen = List.length src1 in
-    let _ = if (List.length src2) <> srclen then
-      raise_at lno "Two sources should have the same length."
-    else if relmtyp <> relmtyp' then
-      raise_at lno "Two sources should have the same element type."
-    else () in
+    let vatm1 = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let vatm2 = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
+    let (relmtyp, srclen) = src_typ_vec in
 
     (* XXX: is destL always unsigned? *)
     let src_typ_vec = (relmtyp, List.length src1) in
-    let destL_typ = (to_uint relmtyp, snd src_typ_vec) in
+    let destL_typ = (to_uint relmtyp, srclen) in
     let (vxm_i, destH_names, _) = resolve_lv_vec_with lno destH_tok fm cm vm vxm   ym gm (Some src_typ_vec) in
     let (vxm',  destL_names, _) = resolve_lv_vec_with lno destL_tok fm cm vm vxm_i ym gm (Some destL_typ) in
 
