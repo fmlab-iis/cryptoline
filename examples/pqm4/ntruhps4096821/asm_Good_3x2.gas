@@ -1,12 +1,56 @@
-__asm_Good_3x2:
+#! [lr], $1c = %%EA
+#! [lr] = %%EA
+#! [lr, $1c] = %%EA
+#! [r$1c, #-$2c] = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! [sp, $1c] = %%EA
+#! r1! = EA
+#! r$1c = %%r$1c
+#! s$1c = %%s$1c
+#! lr = %%lr
+
+#! add $1v, $2v -> add $1v $1v $2v
+#! add.w $1v, %%r0, \#$2c ; $3c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r0, \#$2c -> adds dc $1v r0 $2c@uint32
+#! add.w %%lr, %%lr, \#$1c ; $2c -> adds dc lr lr $1c@uint32
+#! add.w %%lr, %%lr, \#$1c -> adds dc lr lr $1c@uint32
+#! add.w $1v, $2v, $3v, lsl \#1 -> shl tmpx2 $3v 1;\nadd $1v $2v tmpx2
+#! add.w $1v, $2v, $3v -> add $1v $2v $3v
+#! addw $1v, %%r0, \#$2c ; $3c -> adds dc $1v r0 $2c@uint32
+#! cmp.w $1v, $2v -> (* cmp.w $1v, $2v *)nop
+#! ldmia.w $1ea, { $2v, $3v } -> mov $2v $1ea;\nmov $3v $1ea[+4]
+#! ldrsh.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldrsh.w $1v, $2ea -> mov $1v $2ea
+#! mul.w $1v, $2v, %%r2 -> mull dontcare $1v $2v r2;\ncast $1v@sint32 $1v
+#! rsb $1v, $2v, $3c -> sub $1v $3c@sint32 $2v
+#! sbfx $1v, $2v, \#0, \#12 -> mov $2v_o $2v;\nsplit dontcare sbfxlow $2v 12;\nsplit sbfxmsb dontcare sbfxlow 11;\ncast sbfxlow@sint32 sbfxlow;\ncast sbfxmsb@bit sbfxmsb;\ncmov sbfxhi sbfxmsb 0xfffff000@sint32 0x0@sint32;\nadd $1v sbfxhi sbfxlow;\nghost cfIDX@sint32 : and [cfIDX = $1v] && true
+#! smlal $1v, $2v, $3v, %%r3 -> smull tmpml_h tmpml_l $3v r3;\nadds carry $1v $1v tmpml_l;\nadc $2v $2v tmpml_h carry;\nassert eqmod $1v 0 (2**32) && true;\nassume $1v = 0 && true
+#! smlal $1v, $2v, $3v, $4v -> smull tmpml_h tmpml_l $3v $4v;\nadds carry $1v $1v tmpml_l;\nadc $2v $2v tmpml_h carry
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v
+#! str.w $1v, $2ea -> mov $2ea $1v
+#! sub.w $1v, %%lr, \#$2c ; $3c -> subs dc $1v lr $2c@uint32
+#! sub.w $1v, %%lr, \#$2c -> subs dc $1v lr $2c@uint32
+#! sub.w $1v, %%r0, \#$2c -> subs dc $1v r0 $2c@uint32
+#! sub.w $1v, $2v, $3v, lsl \#1 -> shl tmpx2 $3v 1;\nsub $1v $2v tmpx2
+#! sub.w $1v, $2v, $3v -> sub $1v $2v $3v
+#! sub.w $1v, $2v, \#$3c ; $4c -> sub $1v $2v $3c@sint32
+#! sub.w $1v, $2v, \#$3c -> sub $1v $2v $3c@sint32
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! subw %%r0, %%r0, \#$1c ; $2c -> subc dc r0 r0 $1c@uint32
+#! vmov $1v, $2v -> mov $1v $2v
+
+#__asm_Good_3x2:
 # r0 = 0x20014898
 # r1 = 0x8063178
 # r2 = 0x47d3cabf
 # r3 = 0x335ac1
 	#! -> SP = 0x20014890
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x8055e24
-	ldr.w	lr, [sp, #40]	; 0x28                      #! EA = L0x20014890; Value = 0x20018570; PC = 0x8055e28
-	ldmia.w	r1, {r10, r11}                          #! EA = L0x8063178; Value = 0xffe96350; PC = 0x8055e2c
+	#stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x8055e24
+	#ldr.w	lr, [sp, #40]	; 0x28                      #! EA = L0x20014890; Value = 0x20018570; PC = 0x8055e28
+	ldmia.w	r1!, {r10, r11}                          #! EA = L0x8063178; Value = 0xffe96350; PC = 0x8055e2c
 	add.w	r12, r0, #12                              #! PC = 0x8055e30
 	addw	r1, r0, #2916	; 0xb64                      #! PC = 0x8055e34
 	vmov	s3, r1                                     #! PC = 0x8055e38
@@ -8296,6 +8340,6 @@ __asm_Good_3x2:
 	add.w	r0, r0, #4                                #! PC = 0x8056a18
 	cmp.w	r0, r12                                   #! PC = 0x8056a1c
 	#bne.w	0x8056634 <_Good_loop2>                  #! PC = 0x8056a20
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x8056a24
-	add.w	r7, sp, #6912	; 0x1b00                    #! PC = 0x8003a20
-	mov	r0, r4                                      #! PC = 0x8003a24
+	#ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x8056a24
+	#add.w	r7, sp, #6912	; 0x1b00                    #! PC = 0x8003a20
+	#mov	r0, r4                                      #! PC = 0x8003a24
