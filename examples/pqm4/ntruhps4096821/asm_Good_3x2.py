@@ -207,37 +207,39 @@ cfecut = nttlib.get_ecut_counter ()
 
 for zexp in range (2):
     for yexp in range (3):
-        nttlib.print_ecut ('')
-        print ('and [')
-        for z in range (32):
-            for y in range (3):
-                for x in range (3):
+        for x in range (3):
+            nttlib.print_ecut ('')
+            print ('and [')
+            for z in range (32):
+                for y in range (3):
                     print_algebra_condition_eqmod ('cf', out_base, x, y, z,
                                                    yexp, zexp)
-                    print ('' if z==31 and y==2 and x==2 else ',')
-        print ('] prove with [ all cuts ];\n\n')
-        collect_ecuts.append (nttlib.get_ecut_counter ())
+                    print ('' if z==31 and y==2 else ',')
+            print ('] prove with [ all cuts ];\n\n')
+            collect_ecuts.append (nttlib.get_ecut_counter ())
 
 nttlib.print_ecut ('true')
         
 print ('\n\n\n(******************** input polynomials ********************)\n')
-print ('ghost F@sint32, CF@sint32 : and [\nF**2 = ')
+print ('ghost F@sint32, CF0@sint32, CF1@sint32, CF2@sint32 : and [\nF**2 = ')
 for yz in range (9*32):
     for x in range (3):
         print ('f{0}{1}{2:02}*x**{0}*(y*z)**{3:3}'.
                format (x, yz%9, yz%32, yz),
-               end = ',\nCF**2 =\n' if yz==9*32-1 and x==2 else
+               end = ',\n' if yz==9*32-1 and x==2 else
                      ('+\n' if x==2 else '+'))
-for yz in range (9*32):
-    for x in range (3):
+for x in range (3):
+    print ('CF{0}**2 ='.format (x))
+    for yz in range (9*32):
         print ('cf{0}{1}{2:02}*x**{0}*(y*z)**{3:3}'.
                format (x, yz%9, yz%32, yz),
-               end = '\n' if yz==9*32-1 and x==2 else
-                     ('+\n' if x==2 else '+'))
+               end = '\n' if x==2 and yz==9*32-1 else
+                     (',\n' if yz==9*32-1 else
+                     ('+\n' if yz%3==2 else '+')))
 print ('] && true;\n')
 
 nttlib.print_ecut ('')
-print ('eqmod CF**2 F**2 2048 prove with [ cuts [ {0} ] ];\n'.
+print ('eqmod CF0**2+CF1**2+CF2**2 F**2 2048 prove with [ cuts [ {0} ] ];\n'.
        format (cfecut))
 cfecut=nttlib.get_ecut_counter ()
 
@@ -245,14 +247,16 @@ for zexp in range (2):
     for yexp in range (3):
         cgidx = 3*zexp+yexp
         print ('\n\n\n(******************** output polynomial {0} ********************)\n'.format (cgidx))
-        print ('ghost CG{0}@sint32,'.format (cgidx))
-        for z in range (32):
-            for y in range (3):
-                for x in range (3):
+        print ('ghost')
+        for x in range (3):
+            print ('CG{0}{1}@sint32,'.format (cgidx, x))
+            for z in range (32):
+                for y in range (3):
                     print ('cg{0}{1}{2}{3:02}@sint32'.
                            format (cgidx, x, y, z),
                            end = ' : and [\n' if z==31 and y==2 and x==2 else
-                                 (',\n' if (x+3*(y+3*z))%5==4 else ', '))
+                                 (',\n' if (y+3*z)%5==4 or (z==31 and y==2)
+                                        else ', '))
         for z in range (32):
             for y in range (3):
                 for x in range (3):
@@ -261,32 +265,48 @@ for zexp in range (2):
                                    out_base+4*(x+3*(y+9*z)+9*yexp+864*zexp)),
                            end = ',\n' if z==31 and y==2 and x==2 else
                                  (',\n' if (x+3*(y+3*z))%4==3 else ','))
-        print ('CG{0}**2 = '.format (cgidx))
-        for z in range (32):
-            for y in range (3):
-                for x in range (3):
+        for x in range (3):
+            print ('CG{0}{1}**2 = '.format (cgidx, x))
+            for z in range (32):
+                for y in range (3):
                     print ('cg{0}{1}{2}{3:02}*x**{1}*y**{2}*z**{3:2}'.
                            format (cgidx, x, y, z),
                            end = '\n' if z==31 and y==2 and x==2 else
-                                 ('+\n' if (x+3*(y+3*z))%3==2 else '+'))
+                                 (',\n' if z==31 and y==2 else
+                                 ('+\n' if y%3==2 else '+')))
         print ('] && true;\n')
-        
+
+        prefinal_ecuts = []
+        for x in range (3):
+            nttlib.print_ecut ('true')
+            nttlib.print_ecut ('')
+            print ('eqmod CG{0}{1}**2 CF{1}**2 '.format (cgidx, x), end='')
+            print ('[ {0}, y**3 - {1:7}, z**32 - {2:7} ]'.
+                   format (Q1, omega9Q1**(3*yexp)%Q1, omega4Q1**(2*zexp)%Q1))
+            print ('prove with [ all ghosts, cuts [ {0} ] ];\n'.
+                   format (collect_ecuts[x+3*(yexp+3*zexp)]))
+            prefinal_ecuts.append (nttlib.get_ecut_counter ())
+
         nttlib.print_ecut ('true')
         nttlib.print_ecut ('')
-        print ('eqmod CG{0}**2 CF**2 [ {1}, y**3 - {2:7}, z**32 - {3:7} ]'.
-               format (cgidx, Q1, omega9Q1**(3*yexp)%Q1, omega4Q1**(2*zexp)%Q1))
-        print ('prove with [ all ghosts, cuts [ {0} ] ];\n'.
-               format (collect_ecuts[yexp+3*zexp]))
+        print ('eqmod CG{0}0**2+CG{0}1**2+CG{0}2**2 '.format (cgidx), end = '')
+        print ('CF0**2+CF1**2+CF2**2'.format (cgidx))
+        print ('      [ {0}, y**3 - {1:7}, z**32 - {2:7} ]'.
+               format (Q1, omega9Q1**(3*yexp)%Q1, omega4Q1**(2*zexp)%Q1))
+        print ('prove with [ cuts [ {0}, {1}, {2} ] ];\n'.
+               format (prefinal_ecuts[0], prefinal_ecuts[1], prefinal_ecuts[2]))
         final_ecuts.append (nttlib.get_ecut_counter ())
     
 print ('\n\n\n(******************** postcondition ********************)\n')
 print ('and [')
-print ('eqmod CF**2 F**2 2048,')
+print ('eqmod CF0**2+CF1**2+CF2**2 F**2 2048,')
 for zexp in range (2):
     for yexp in range (3):
         cgidx = 3*zexp+yexp
-        print ('eqmod CG{0}**2 CF**2 [ {1}, y**3 - {2:7}, z**32 - {3:7} ]'.
-               format (cgidx, Q1, omega9Q1**(3*yexp)%Q1, omega4Q1**(2*zexp)%Q1),
+        print ('eqmod CG{0}0**2+CG{0}1**2+CG{0}2**2 '.format (cgidx), end = '')
+        print ('CF0**2+CF1**2+CF2**2')
+        print ('      [ {0}, y**3 - {1:7}, z**32 - {2:7} ]'.
+               format (Q1, omega9Q1**(3*yexp)%Q1, omega4Q1**(2*zexp)%Q1),
                end = '\n] ' if zexp==1 and yexp==2 else ',\n')
 print ('prove with [ cuts [ {0}, '.format (cfecut), end = '')
 for i in range (len (final_ecuts)):
