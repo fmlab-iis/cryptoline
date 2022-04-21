@@ -1,13 +1,50 @@
-__asm_3x2block_ntt:
+#! [lr], $1c = %%EA
+#! [lr] = %%EA
+#! [lr, $1c] = %%EA
+#! [r$1c, #-$2c] = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! [sp, $1c] = %%EA
+#! r1! = EA
+#! r$1c = %%r$1c
+#! s$1c = %%s$1c
+#! lr = %%lr
+
+#! add $1v, $2v -> add $1v $1v $2v
+#! add.w $1v, %%r0, \#$2c ; $3c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r0, \#$2c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, $2v, $3v -> add $1v $2v $3v
+#! cmp.w $1v, $2v -> (* cmp.w $1v, $2v *)nop
+#! ldmia.w $1ea, { $2v, $3v } -> mov $2v $1ea;\nmov $3v $1ea[+4]
+#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr.w $1v, $2ea -> mov $1v $2ea
+#! mul.w $1v, $2v, %%r2 -> mull dontcare $1v $2v r2;\ncast $1v@sint32 $1v
+#! rsb $1v, $2v, $3v -> sub $1v $3v $2v
+#! smlal $1v, $2v, $3v, %%r3 -> smull tmpml_h tmpml_l $3v r3;\nadds carry $1v $1v tmpml_l;\nadc $2v $2v tmpml_h carry;\nassert eqmod $1v 0 (2**32) && true;\nassume $1v = 0 && true
+#! smlal $1v, $2v, $3v, $4v -> smull tmpml_h tmpml_l $3v $4v;\nadds carry $1v $1v tmpml_l;\nadc $2v $2v tmpml_h carry
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v
+#! str.w $1v, $2ea -> mov $2ea $1v
+#! sub.w $1v, %%r0, \#$2c ; $3c -> subs dc $1v r0 $2c@uint32
+#! sub.w $1v, %%r0, \#$2c -> subs dc $1v r0 $2c@uint32
+#! sub.w $1v, $2v, $3v, lsl \#1 -> shl tmpx2 $3v 1;\nsub $1v $2v tmpx2
+#! sub.w $1v, $2v, $3v -> sub $1v $2v $3v
+#! sub.w $1v, $2v, \#$3c ; $4c -> sub $1v $2v $3c@sint32
+#! sub.w $1v, $2v, \#$3c -> sub $1v $2v $3c@sint32
+#! vldmia $1ea, {%%s4-%%s21} -> mov s4 $1ea[+0];\nmov s5 $1ea[+4];\nmov s6 $1ea[+8];\nmov s7 $1ea[+12];\nmov s8 $1ea[+16];\nmov s9 $1ea[+20];\nmov s10 $1ea[+24];\nmov s11 $1ea[+28];\nmov s12 $1ea[+32];\nmov s13 $1ea[+36];\nmov s14 $1ea[+40];\nmov s15 $1ea[+44];\nmov s16 $1ea[+48];\nmov s17 $1ea[+52];\nmov s18 $1ea[+56];\nmov s19 $1ea[+60];\nmov s20 $1ea[+64];\nmov s21 $1ea[+68]
+#! vmov $1v, $2v -> mov $1v $2v
+
+#__asm_3x2block_ntt:
 # r0 = 0x20014898
 # r1 = 0x8063178
 # r2 = 0x47d3cabf
 # r3 = 0x335ac1
 	#! -> SP = 0x20014890
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x8037fe8
-	vpush	{s16-s22}                                 #! PC = 0x8037fec
+	#stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x8037fe8
+	#vpush	{s16-s22}                                 #! PC = 0x8037fec
 	ldmia.w	r1!, {r10, r11}                         #! EA = L0x8063178; Value = 0xffe96350; PC = 0x8037ff0
-	vldmia	r1, {s4-s21}                             #! EA = L0x8063180; PC = 0x8037ff4
+	vldmia	r1!, {s4-s21}                             #! EA = L0x8063180; PC = 0x8037ff4
 	add.w	r12, r0, #12                              #! PC = 0x8037ff8
 	vmov	s2, r12                                    #! PC = 0x8037ffc
 	add.w	lr, r0, #1728	; 0x6c0                     #! PC = 0x8038000
@@ -14552,6 +14589,6 @@ __asm_3x2block_ntt:
 	vmov	r12, s2                                    #! PC = 0x80384ac
 	cmp.w	r0, r12                                   #! PC = 0x80384b0
 	#bne.w	0x8038234 <_3x2>                         #! PC = 0x80384b4
-	vpop	{s16-s22}                                  #! PC = 0x80384b8
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x80384bc
-	mov	r0, r4                                      #! PC = 0x8003a32
+	#vpop	{s16-s22}                                  #! PC = 0x80384b8
+	#ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x80384bc
+
