@@ -102,3 +102,5 @@ val cleanup : string list -> unit
 val cryptoline_filename_extension : string
 
 val native_smtlib_expn_operator : string option ref
+
+val two_phase_rewriting : bool ref

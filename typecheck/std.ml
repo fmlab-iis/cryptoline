@@ -199,11 +199,11 @@ let illformed_instr_reason vs cs gs lno i =
     if not (VS.subset (vars_rbexp e) (VS.union vs gs)) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_rbexp e) (VS.union vs gs)) ^ " at line " ^ (string_of_int lno))
     else None in
   let defined_ghost gvs e =
-    if not (vs_disjoint gvs gs) then Some ("Redefined ghost variables: " ^ string_of_vs (VS.inter gvs gs) ^ " at line " ^ (string_of_int lno))
+    if not (VS.disjoint gvs gs) then Some ("Redefined ghost variables: " ^ string_of_vs (VS.inter gvs gs) ^ " at line " ^ (string_of_int lno))
     else if not (VS.subset (vars_bexp e) (VS.union gvs (VS.union vs gs))) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_bexp e) (VS.union gvs (VS.union vs gs))) ^ " at line " ^ (string_of_int lno))
     else None in
   let ghost_disjoint gvs =
-    if not (vs_disjoint gvs vs) then Some ("Ghost variables cannot be program variables: " ^ string_of_vs (VS.inter gvs vs) ^ " at line " ^ (string_of_int lno))
+    if not (VS.disjoint gvs vs) then Some ("Ghost variables cannot be program variables: " ^ string_of_vs (VS.inter gvs vs) ^ " at line " ^ (string_of_int lno))
     else None in
   let const_in_range atomics =
     let in_range a =

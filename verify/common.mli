@@ -27,12 +27,18 @@ val split_bexp : Qfbv.Std.bexp -> Qfbv.Std.bexp list
 
 (* for algebraic specification *)
 
+val bv2z_espec : var_gen -> espec -> var_gen * poly_spec
 val polys_of_espec :
   var_gen -> Ast.Cryptoline.espec ->
   var_gen *
     (Ast.Cryptoline.ebexp * Ast.Cryptoline.VS.elt list * Ast.Cryptoline.eexp list *
        Ast.Cryptoline.eexp) list
-val bv2z_espec : var_gen -> Ast.Cryptoline.espec -> var_gen * poly_spec
+val polys_of_espec_two_phase :
+  ?sliced:bool ->
+  var_gen -> Ast.Cryptoline.espec ->
+  var_gen *
+    (Ast.Cryptoline.ebexp * Ast.Cryptoline.VS.elt list * Ast.Cryptoline.eexp list *
+       Ast.Cryptoline.eexp) list
 val rewrite_assignments_ebexp :
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.ebexp ->
   Ast.Cryptoline.eexp list * Ast.Cryptoline.ebexp
@@ -57,21 +63,3 @@ val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.St
 val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Std.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> Qfbv.Std.bexp list
 
 val smtlib_espec : var_gen -> Ast.Cryptoline.espec -> var_gen * string
-
-(* Returns true if an algebraic postcondition appears in a precondition. *)
-val espre_implies_espost : Ast.Cryptoline.ebexp -> Ast.Cryptoline.ebexp -> bool
-
-(* Returns true if an algebraic postcondition appears in some assume instruction in the program. *)
-val espost_in_assumes : Ast.Cryptoline.program -> Ast.Cryptoline.ebexp -> bool
-
-(* Returns true if a range postcondition appears in a precondition. *)
-val rspre_implies_rspost : Ast.Cryptoline.rbexp -> Ast.Cryptoline.rbexp -> bool
-
-(* Returns true if a range postcondition appears in some assume instruction in the program. *)
-val rspost_in_assumes : Ast.Cryptoline.program -> Ast.Cryptoline.rbexp -> bool
-
-(* Returns true if an algebraic specification is trivially valid. *)
-val is_espec_trivial : Ast.Cryptoline.espec -> bool
-
-(* Returns true if a range specification is trivially valid. *)
-val is_rspec_trivial : Ast.Cryptoline.rspec -> bool

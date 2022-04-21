@@ -64,6 +64,7 @@ let args =
     ("-slicing", Set apply_slicing, mk_arg_desc(["  Enable slicing."]));
     ("-tmpdir", String (fun str -> tmpdir := Some str),
      mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
+    ("-two_phase_rewriting", Set two_phase_rewriting, mk_arg_desc [""; "Use two-phase rewriting in verifying algebraic specifications."; "Note that single-phase rewriting is still used when -cli is"; "enabled."]);
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],
                     (fun str ->
                       try

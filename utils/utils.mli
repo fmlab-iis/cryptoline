@@ -15,3 +15,6 @@ val parse_range : string -> range
 
 (* Same as String.split_on_char but only nonempty strings are returned. *)
 val split_on_char_nonempty : char -> string -> string list
+
+
+val tflatten : 'a list list -> 'a list

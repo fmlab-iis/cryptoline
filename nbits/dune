@@ -8,4 +8,5 @@
   (name             nBits)
   (modules          nBits extracted extra)
   (libraries        zarith)
+  (public_name      cryptoline.nbits)
 )

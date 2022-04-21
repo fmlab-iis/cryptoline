@@ -29,3 +29,9 @@ let parse_range str =
        | _ -> raise (Invalid_argument "")
      with Invalid_argument _ ->
        raise (InvalidRange error_msg))
+
+
+(** Lists *)
+
+let tflatten xss =
+  List.rev (List.fold_left (fun rev xs -> List.rev_append xs rev) [] xss)

@@ -2,6 +2,7 @@
   (name        simulator)
   (libraries   options utils ast nBits)
   (flags       (:standard -w -3))
+  (public_name cryptoline.sim)
 )
 
 (ocamllex    commandLexer)

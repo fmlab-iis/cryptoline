@@ -2,4 +2,5 @@
   (name        qfbv)
   (preprocess  (pps lwt_ppx))
   (libraries   options ast)
+  (public_name cryptoline.qfbv)
 )

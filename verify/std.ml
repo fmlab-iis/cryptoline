@@ -264,7 +264,7 @@ let write_mathematica_input ifile vars gen p =
 let write_macaulay2_input ifile vars gen p =
   let input_text =
     let (vars, gen, p, default_generator) =
-      let dummy_var = mkvar "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
+      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
       let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
       if no_var_in_generator then
         (dummy_var::vars,
@@ -497,8 +497,7 @@ let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   verify_rspec_with_cuts hashopt s
 
-let verify_espec_single_conjunct_ideal vgen s =
-  let (_, entailments) = polys_of_espec vgen s in
+let verify_entailments entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
@@ -507,6 +506,10 @@ let verify_espec_single_conjunct_ideal vgen s =
         else let _ = trace ("Try #1") in is_in_ideal vars ideal p
       )
       else res) true entailments
+
+let verify_espec_single_conjunct_ideal vgen s =
+  let (_, entailments) = polys_of_espec vgen s in
+  verify_entailments entailments
 
 let verify_espec_single_conjunct_smt solver vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
@@ -540,12 +543,26 @@ let verify_espec_single_conjunct vgen s hashopt =
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let rec verify_espec_without_cuts hashopt vgen cid s =
-  match s.espost with
-  | Eand (e1, e2) ->
-     verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-       verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-  | _ -> verify_espec_single_conjunct vgen s hashopt
+let verify_espec_without_cuts hashopt vgen cid s =
+  if !Options.Std.two_phase_rewriting then
+    let s = remove_trivial_epost s in
+    if s.espost = Etrue then true
+    else
+      let (s, sliced) =
+        match s.espost with
+        | Eand _ -> (s, false)
+        | _ -> (slice_espec_ssa s None, true) in
+      (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
+      let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+      verify_entailments entailments
+  else
+    let rec verify_ands hashopt vgen cid s =
+      match s.espost with
+      | Eand (e1, e2) ->
+         verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
+           verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
+      | _ -> verify_espec_single_conjunct vgen s hashopt in
+    verify_ands hashopt vgen cid s
 
 let verify_espec_with_cuts hashopt vgen s =
   apply_to_cuts !verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
