@@ -161,7 +161,7 @@ let simulate_instr m i =
   | Imulj (v, a1, a2) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
-     let bs = (if atomic_is_signed a1 then umuljB else smuljB) bs1 bs2 in
+     let bs = (if atomic_is_signed a1 then smuljB else umuljB) bs1 bs2 in
      VM.add v bs m
   | Isplit (vh, vl, a, n) ->
      let bs = value_of_atomic m a in
