@@ -1267,9 +1267,8 @@
     let vatm2 = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
-    let dst_typ_vec = (to_double_size relmtyp, srclen) in
 
-    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some dst_typ_vec) in
+    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
@@ -1372,6 +1371,30 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
+  let unpack_vmulj mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
+    let vatm1 = resolve_atomic_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let vatm2 = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
+    let (relmtyp, srclen) = src_typ_vec in
+    let dst_typ_vec = (to_double_size relmtyp, srclen) in
+
+    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some dst_typ_vec) in
+    let _ = if (List.length dest_names) <> srclen then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+
+    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+
+    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
+      let lvtoken = {lvname; lvtyphint=None} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    
   let parse_vcast_at lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_atomic_vec_with lno src_tok fm cm vm vxm ym gm in
     let (vxm', dest_names, tar_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm None in
@@ -1477,7 +1500,7 @@
       | `MULJ (`LVPLAIN dest, src1, src2) ->
          parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `VMULJ (dest, src1, src2) ->
-         unpack_vinstr_12 parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vmulj parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_split_at lno destH destL src num fm cm vm vxm ym gm
       | `VSPLIT (destH, destL, src, num) ->
