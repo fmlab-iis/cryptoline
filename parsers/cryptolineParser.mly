@@ -1489,6 +1489,8 @@
          parse_sbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `MUL (`LVPLAIN dest, src1, src2) ->
          parse_mul_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VMUL (dest, src1, src2) ->
+         unpack_vinstr_12 parse_mul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `MULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_muls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `MULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1543,6 +1545,8 @@
          parse_usbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `UMUL (`LVPLAIN dest, src1, src2) ->
          parse_umul_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VUMUL (dest, src1, src2) ->
+         unpack_vinstr_12 parse_umul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `UMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_umuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `UMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1553,6 +1557,8 @@
          unpack_vmull parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `UMULJ (`LVPLAIN dest, src1, src2) ->
          parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VUMULJ (dest, src1, src2) ->
+         unpack_vmulj parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_usplit_at lno destH destL src num fm cm vm vxm ym gm
       | `VUSPLIT (destH, destL, src, num) ->
@@ -1595,6 +1601,8 @@
          parse_ssbbr_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
       | `SMUL (`LVPLAIN dest, src1, src2) ->
          parse_smul_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VSMUL (dest, src1, src2) ->
+         unpack_vinstr_12 parse_smul_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_smuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SMULR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1605,6 +1613,8 @@
          unpack_vmull parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `SMULJ (`LVPLAIN dest, src1, src2) ->
          parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VSMULJ (dest, src1, src2) ->
+         unpack_vmulj parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_ssplit_at lno destH destL src num fm cm vm vxm ym gm
       | `VSSPLIT (destH, destL, src, num) ->
@@ -1914,6 +1924,7 @@ instr:
   | SBBR lcarry lval atomic atomic carry      { (!lnum, `SBBR ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP SBBR atomic atomic carry { (!lnum, `SBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | MUL lval atomic atomic                    { (!lnum, `MUL ($2, $3, $4)) }
+  | MUL lval_v atomic_v atomic_v              { (!lnum, `VMUL ($2, $3, $4)) }
   | lhs EQOP MUL atomic atomic                { (!lnum, `MUL (`LVPLAIN $1, $4, $5)) }
   | MULS lcarry lval atomic atomic            { (!lnum, `MULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULS atomic atomic       { (!lnum, `MULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
@@ -1963,6 +1974,7 @@ instr:
   | USBBR lcarry lval atomic atomic carry     { (!lnum, `USBBR ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP USBBR atomic atomic carry{ (!lnum, `USBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | UMUL lval atomic atomic                   { (!lnum, `UMUL ($2, $3, $4)) }
+  | UMUL lval_v atomic_v atomic_v             { (!lnum, `VUMUL ($2, $3, $4)) }
   | lhs EQOP UMUL atomic atomic               { (!lnum, `UMUL (`LVPLAIN $1, $4, $5)) }
   | UMULS lcarry lval atomic atomic           { (!lnum, `UMULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULS atomic atomic      { (!lnum, `UMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
@@ -1972,6 +1984,7 @@ instr:
   | UMULL lval_v lval_v atomic_v atomic_v     { (!lnum, `VUMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULL atomic atomic      { (!lnum, `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | UMULJ lval atomic atomic                  { (!lnum, `UMULJ ($2, $3, $4)) }
+  | UMULJ lval_v atomic_v atomic_v            { (!lnum, `VUMULJ ($2, $3, $4)) }
   | lhs EQOP UMULJ atomic atomic              { (!lnum, `UMULJ (`LVPLAIN $1, $4, $5)) }
   | USPLIT lval lval atomic const             { (!lnum, `USPLIT ($2, $3, $4, $5)) }
   | USPLIT lval_v lval_v atomic_v const       { (!lnum, `VUSPLIT ($2, $3, $4, $5)) }
@@ -2011,6 +2024,7 @@ instr:
   | SSBBR lcarry lval atomic atomic carry     { (!lnum, `SSBBR ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP SSBBR atomic atomic carry{ (!lnum, `SSBBR (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | SMUL lval atomic atomic                   { (!lnum, `SMUL ($2, $3, $4) )}
+  | SMUL lval_v atomic_v atomic_v             { (!lnum, `VSMUL ($2, $3, $4) )}
   | lhs EQOP SMUL atomic atomic               { (!lnum, `SMUL (`LVPLAIN $1, $4, $5) )}
   | SMULS lcarry lval atomic atomic           { (!lnum, `SMULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULS atomic atomic      { (!lnum, `SMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
@@ -2020,6 +2034,7 @@ instr:
   | SMULL lval_v lval_v atomic_v atomic_v     { (!lnum, `VSMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULL atomic atomic      { (!lnum, `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SMULJ lval atomic atomic                  { (!lnum, `SMULJ ($2, $3, $4)) }
+  | SMULJ lval_v atomic_v atomic_v            { (!lnum, `VSMULJ ($2, $3, $4)) }
   | lhs EQOP SMULJ atomic atomic              { (!lnum, `SMULJ (`LVPLAIN $1, $4, $5)) }
   | SSPLIT lval lval atomic const             { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
   | SSPLIT lval_v lval_v atomic_v const       { (!lnum, `VSSPLIT ($2, $3, $4, $5)) }
