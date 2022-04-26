@@ -1267,8 +1267,9 @@
     let vatm2 = resolve_atomic_vec_with lno src2_tok fm cm vm vxm ym gm in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
+    let dst_typ_vec = (to_double_size relmtyp, srclen) in
 
-    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
+    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some dst_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
@@ -1469,6 +1470,8 @@
          unpack_vmull parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
       | `MULJ (`LVPLAIN dest, src1, src2) ->
          parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VMULJ (dest, src1, src2) ->
+         unpack_vinstr_12 parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_split_at lno destH destL src num fm cm vm vxm ym gm
       | `VSPLIT (destH, destL, src, num) ->
@@ -1888,6 +1891,7 @@ instr:
   | MULL lval_v lval_v atomic_v atomic_v      { (!lnum, `VMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULL atomic atomic       { (!lnum, `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | MULJ lval atomic atomic                   { (!lnum, `MULJ ($2, $3, $4)) }
+  | MULJ lval_v atomic_v atomic_v             { (!lnum, `VMULJ ($2, $3, $4)) }
   | lhs EQOP MULJ atomic atomic               { (!lnum, `MULJ (`LVPLAIN $1, $4, $5)) }
   | SPLIT lval lval atomic const              { (!lnum, `SPLIT ($2, $3, $4, $5)) }
   | SPLIT lval_v lval_v atomic_v const        { (!lnum, `VSPLIT ($2, $3, $4, $5)) }
