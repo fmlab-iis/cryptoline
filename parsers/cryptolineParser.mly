@@ -1442,10 +1442,16 @@
          unpack_vinstr_12 parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
+      | `VSUBC (flag, dest, src1, src2) ->
+         unpack_vinstr_c12 parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_subb_at lno flag dest src1 src2 fm cm vm vxm ym gm
+      | `VSUBB (flag, dest, src1, src2) ->
+         unpack_vinstr_c12 parse_subb_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SUBR (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
          parse_subr_at lno flag dest src1 src2 fm cm vm vxm ym gm
+      | `VSUBR (flag, dest, src1, src2) ->
+         unpack_vinstr_c12 parse_subr_at lno flag dest src1 src2 fm cm vm vxm ym gm
       | `SBC (`LVPLAIN dest, src1, src2, carry) ->
          parse_sbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
       | `SBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
@@ -1864,10 +1870,13 @@ instr:
   | SUB lval_v atomic_v atomic_v              { (!lnum, `VSUB ($2, $3, $4)) }
   | lhs EQOP SUB atomic atomic                { (!lnum, `SUB (`LVPLAIN $1, $4, $5)) }
   | SUBC lcarry lval atomic atomic            { (!lnum, `SUBC ($2, $3, $4, $5)) }
+  | SUBC lcarry_v lval_v atomic_v atomic_v    { (!lnum, `VSUBC ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBC atomic atomic       { (!lnum, `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SUBB lcarry lval atomic atomic            { (!lnum, `SUBB ($2, $3, $4, $5)) }
+  | SUBB lcarry_v lval_v atomic_v atomic_v    { (!lnum, `VSUBB ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBB atomic atomic       { (!lnum, `SUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SUBR lcarry lval atomic atomic            { (!lnum, `SUBR ($2, $3, $4, $5)) }
+  | SUBR lcarry_v lval_v atomic_v atomic_v    { (!lnum, `VSUBR ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBR atomic atomic       { (!lnum, `SUBR (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SBC lval atomic atomic carry              { (!lnum, `SBC ($2, $3, $4, $5)) }
   | lhs EQOP SBC atomic atomic carry          { (!lnum, `SBC (`LVPLAIN $1, $4, $5, $6)) }
