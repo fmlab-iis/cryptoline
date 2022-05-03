@@ -71,7 +71,5 @@ let args =
                         variable_ordering := parse_variable_ordering str
                       with Not_found ->
                         failwith ("Unknown variable ordering: " ^ str))),
-     mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]));
-    ("-w", Int (fun i -> if i > 0 then wordsize := i else failwith "The specified wordsize should be positive."),
-     mk_arg_desc(["WORDSIZE"; "Set the word size (default is " ^ string_of_int !wordsize ^ ")."]))
+     mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]))
   ]

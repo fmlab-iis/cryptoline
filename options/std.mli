@@ -24,8 +24,6 @@ val default_algebra_solver : algebra_solver
 val default_range_solver : string
 (** the default range solver *)
 
-val wordsize : int ref
-
 val boolector_path : string ref
 val z3_path : string ref
 val mathsat_path : string ref

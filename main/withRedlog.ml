@@ -7,9 +7,7 @@ open Verify.Std
 open Parsers.Std
 
 let args = [
-    ("-no_carry_constraint", Clear carry_constraint, "\t Do not add carry constraints");
-    ("-w", Int (fun i -> if i > 0 then wordsize := i else failwith "The specified wordsize should be positive."),
-     "WORDSIZE\t\t Set the word size (default is " ^ string_of_int !wordsize ^ ")");
+    ("-no_carry_constraint", Clear carry_constraint, "\t Do not add carry constraints")
   ]
 
 let usage = "usage: output_redlog FILE"

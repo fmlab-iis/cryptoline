@@ -1418,9 +1418,7 @@ proc:
       let n = $4 cm in
       if SM.mem v cm
       then raise_at lno ("Redefined constant: " ^ v)
-      else
-        let _ = if v = "wordsize" then Options.Std.wordsize := Z.to_int n in
-        (fm, SM.add v n cm)
+      else (fm, SM.add v n cm)
   }
 ;
 

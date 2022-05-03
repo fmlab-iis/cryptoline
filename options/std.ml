@@ -18,8 +18,6 @@ let default_range_solver = "boolector"
 
 let default_algebra_solver = Singular
 
-let wordsize = ref 64
-
 let z3_path = ref "z3"
 let boolector_path = ref "boolector"
 let mathsat_path = ref "mathsat"

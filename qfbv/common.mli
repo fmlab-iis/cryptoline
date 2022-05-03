@@ -52,7 +52,7 @@ and bexp =
   | Conj of bexp * bexp
   | Disj of bexp * bexp
 
-class btor_manager : int ->
+class btor_manager :
   object
     method addstmt : string -> unit
     method getstmts : string list

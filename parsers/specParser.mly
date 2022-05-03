@@ -4,7 +4,6 @@
    * No well-formedness is checked.
    *)
 
-  open Options.Std
   open Ast.Cryptoline
   open Common
 
@@ -523,28 +522,36 @@ rexp:
                                                     | hd::_tl -> rmuls (size_of_rexp hd) es }
   | ULIMBS const LSQUARE rexps RSQUARE            { let w = Z.to_int $2 in
                                                     let es = $4 in
-                                                    let tw = !wordsize * (List.length es) in
-                                                    let es = List.map (fun e -> Ruext (!wordsize, e, tw - !wordsize)) es in
-                                                    let rec helper i es =
-                                                      match es with
-                                                      | [] -> Rconst (tw, Z.zero)
-                                                      | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-                                                      | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
-                                                    let res = helper 0 es in
-                                                    res }
+                                                    let tw = List.fold_left (fun w1 w2 -> max w1 w2)
+                                                                              0
+                                                                              (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let es = List.map (fun e ->
+                                                                          let ew = size_of_rexp e in
+                                                                          Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                      let res = helper 0 es in
+                                                      res }
   | SLIMBS const LSQUARE rexps RSQUARE            { let w = Z.to_int $2 in
                                                     let es = $4 in
-                                                    let last = List.length es - 1 in
-                                                    let tw = !wordsize * (List.length es) in
-                                                    let es = List.mapi (fun i e -> if i == last then Rsext (!wordsize, e, tw - !wordsize)
-                                                                                   else Ruext (!wordsize, e, tw - !wordsize)) es in
-                                                    let rec helper i es =
-                                                      match es with
-                                                      | [] -> Rconst (tw, Z.zero)
-                                                      | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-                                                      | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
-                                                    let res = helper 0 es in
-                                                    res }
+                                                    let tw = List.fold_left (fun w1 w2 -> max w1 w2)
+                                                                              0
+                                                                              (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let last = List.length es - 1 in
+                                                      let es = List.mapi (fun i e ->
+                                                                            let ew = size_of_rexp e in
+                                                                            if i == last then Rsext (ew, e, tw - ew)
+                                                                            else Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                      let res = helper 0 es in
+                                                      res }
   | rexp ADDOP rexp                               { let e1 = $1 in
                                                     let e2 = $3 in
                                                     let w1 = size_of_rexp e1 in

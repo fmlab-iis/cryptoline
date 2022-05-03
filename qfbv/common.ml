@@ -310,7 +310,7 @@ module WN : OrderedType with type t = (int * Z.t) =
 
 module WNMap : Map.S with type key = (int * Z.t) = Map.Make(WN)
 
-class btor_manager (_wordsize : int) =
+class btor_manager =
 object(self)
   (** the ID of the next Btor variable *)
   val mutable v = 0

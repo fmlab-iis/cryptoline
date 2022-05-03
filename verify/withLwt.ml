@@ -826,7 +826,6 @@ let run_cli_vsafety id timeout idx instr ifile =
                           [!cli_path;
                            "-c vsafety";
                            "-instr " ^ string_of_int idx;
-                           "-w " ^ string_of_int !wordsize;
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
@@ -975,7 +974,6 @@ let run_cli_vespec header s =
   let cmd = String.concat " "
                           [!cli_path;
                            "-c vespec";
-                           "-w " ^ string_of_int !wordsize;
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
@@ -1073,7 +1071,6 @@ let run_cli_vrspec header s =
   let cmd = String.concat " "
                           [!cli_path;
                            "-c vrspec";
-                           "-w " ^ string_of_int !wordsize;
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");

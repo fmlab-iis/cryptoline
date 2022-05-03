@@ -92,7 +92,7 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
     try
       let%lwt _ =
         if !use_btor
-        then btor_write_input (new btor_manager !wordsize) ifile fs
+        then btor_write_input (new btor_manager) ifile fs
         else smtlib2_write_input ifile fs in
       let%lwt _ =
         match timeout with
