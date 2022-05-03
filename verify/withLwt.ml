@@ -723,7 +723,7 @@ let verify_eassert vgen s hashopt =
     verify_program (res, pending) s.espre [] s.esprog in
   apply_to_cuts_lwt !verify_eacuts verify_spec delivered_helper true [] (cut_espec (espec_of_spec s))
 
-let verify_rassert _vgen s hashopt =
+let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let delivered_helper = (&&) in

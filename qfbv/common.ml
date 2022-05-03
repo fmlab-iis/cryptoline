@@ -54,6 +54,11 @@ and bexp =
   | Conj of bexp * bexp
   | Disj of bexp * bexp
 
+let rec split_bexp e =
+  match e with
+  | Conj (e1, e2) -> (split_bexp e1)@(split_bexp e2)
+  | _ -> [e]
+
 let is_atomic t =
   match t with
   | Var _ | Const _ -> true

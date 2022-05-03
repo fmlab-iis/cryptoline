@@ -1,6 +1,75 @@
 
 (** This module provides options of CryptoLine. *)
 
+
+(** {1 General Options} *)
+
+val apply_slicing : bool ref
+(** [true] to apply slicing in verifying specifications *)
+
+val verify_program_safety : bool ref
+(** [true] to verify program safety *)
+
+val verify_epost : bool ref
+(** [true] to verify algebraic postconditions *)
+
+val verify_rpost : bool ref
+(** [true] to verify range postconditions *)
+
+val verify_eassertion : bool ref
+(** [true] to verify algebraic assertions *)
+
+val verify_rassertion : bool ref
+(** [true] to verify range assertions *)
+
+val verify_ecuts : (int list) option ref
+(** limit the algebraic cut conditions to be verified in the specified algebraic cuts *)
+
+val verify_rcuts : (int list) option ref
+(** limit the range cut conditions to be verified in the specified range cuts *)
+
+val verify_eacuts : (int list) option ref
+(** limit the algebraic assertions to be verified in the specified algebraic cuts *)
+
+val verify_racuts : (int list) option ref
+(** limit the range assertions to be verified in the specified range cuts *)
+
+val verify_scuts : (int list) option ref
+(** limit the safety conditions to be verified in the specified range cuts *)
+
+val incremental_safety : bool ref
+(** [true] to verify safety incrementally, i.e. one instruction by one instruction *)
+
+val incremental_safety_timeout : int ref
+(** The timeout in incremental safety verification. The range solver may time
+    out when verifying the safety condition of an instruction. In this case, the
+    range solver will verify the safety condition again with an increased
+    timeout. *)
+
+val jobs : int ref
+(** number of concurrent jobs to be used *)
+
+val use_cli : bool ref
+(** [true] to use fork and the command-line interface of CryptoLine instead of Lwt *)
+
+val cli_path : string ref
+(** the path to the command-line interface of CryptoLine *)
+
+val rename_local : bool ref
+(** [true] to rename local variables when inlining a call to a procedure *)
+
+val auto_cast : bool ref
+(** [true] to automatically cast variables with {!ast.Cryptoline.Icast} when necessary *)
+
+val auto_cast_preserve_value : bool ref
+(** [true] to automatically cast variables with {!ast.Cryptoline.Ivpc} when necessary *)
+
+val cryptoline_filename_extension : string
+(** the filename extension of a CryptoLine program *)
+
+
+(** {1 Algebra-Specific Options} *)
+
 type algebra_solver =
   | Singular                 (** {{:https://www.singular.uni-kl.de}Singular} *)
   | Sage                     (** {{:https://www.sagemath.org}Sage} *)
@@ -21,90 +90,110 @@ type variable_order =
 val default_algebra_solver : algebra_solver
 (** the default algebra solver *)
 
+val algebra_solver : algebra_solver ref
+(** the algebra solver to be used *)
+
+val algebra_solver_args : string ref
+(** additional arguments passed to the algebra solver *)
+
+val string_of_algebra_solver : algebra_solver -> string
+(** string representation of an algebra solver *)
+
+val singular_path : string ref
+(** the path to Singular *)
+
+val sage_path : string ref
+(** the path to Sage *)
+
+val magma_path : string ref
+(** the path to magma *)
+
+val mathematica_path : string ref
+(** the path to mathematica *)
+
+val macaulay2_path : string ref
+(** the path to macaulay2 *)
+
+val maple_path : string ref
+(** the path to maple *)
+
+val apply_rewriting : bool ref
+(** [true] to apply rewriting (which replaces variables with expressions) in verifying algebraic specifications *)
+
+val two_phase_rewriting : bool ref
+(** [true] to apply two-phase rewriting in verifying algebraic specifications *)
+
+val polys_rewrite_replace_eexp : bool ref
+(** [true] to apply expression rewriting (which replaces expressions with expressions) in verifying algebraic specifications *)
+
+val carry_constraint : bool ref
+(** [true] to add constraints for carries in verifying algebraic specifications *)
+
+val variable_ordering : variable_order ref
+(** the variable order to be used in the computation of Groebner basis *)
+
+val string_of_variable_ordering : variable_order -> string
+(** the string representation of variable orders *)
+
+val parse_variable_ordering : string -> variable_order
+(** parse a variable order from its string representation *)
+
+
+(** {1 Range-Specific Options} *)
+
 val default_range_solver : string
 (** the default range solver *)
 
-val boolector_path : string ref
-val z3_path : string ref
-val mathsat_path : string ref
-val stp_path : string ref
-val minisat_path : string ref
-val cryptominisat_path : string ref
-
 val range_solver : string ref
+(** the path to the range solver *)
+
 val range_solver_args : string ref
+(** the arguments passed to the range solver *)
 
 val use_btor : bool ref
+(** [true] to use BTOR format instead of SMTLIB format *)
 
-val singular_path : string ref
-val sage_path : string ref
-val magma_path : string ref
-val mathematica_path : string ref
-val macaulay2_path : string ref
-val maple_path : string ref
-
-val algebra_solver : algebra_solver ref
-val algebra_solver_args : string ref
-val string_of_algebra_solver : algebra_solver -> string
-
-val apply_rewriting : bool ref
-val polys_rewrite_replace_eexp : bool ref
-val apply_slicing : bool ref
-
-val variable_ordering : variable_order ref
-val string_of_variable_ordering : variable_order -> string
-val parse_variable_ordering : string -> variable_order
-
-val verify_program_safety : bool ref
-val verify_epost : bool ref
-val verify_rpost : bool ref
-val verify_eassertion : bool ref
-val verify_rassertion : bool ref
-val verify_ecuts : (int list) option ref
-val verify_rcuts : (int list) option ref
-val verify_eacuts : (int list) option ref
-val verify_racuts : (int list) option ref
-val verify_scuts : (int list) option ref
-val incremental_safety : bool ref
-val incremental_safety_timeout : int ref
-
-val carry_constraint : bool ref
-
-val verbose : bool ref
-
-val unix : string -> unit
-
-val logfile : string ref
-
-val trace : string -> unit
-
-val fail : string -> 'a
-
-val string_of_running_time : float -> float -> string
-
-val vprint : string -> unit
-val vprintln : string -> unit
-
-val jobs : int ref
-
-val use_cli : bool ref
-val cli_path : string ref
-
-(* Rename local variables when inlining a call to a procedure. *)
-val rename_local : bool ref
-
-val auto_cast : bool ref
-val auto_cast_preserve_value : bool ref
-val typing_file : (string option) ref
 val use_binary_repr : bool ref
-
-val keep_temp_files : bool ref
-val tmpdir : string option ref
-val tmpfile : string -> string -> string
-val cleanup : string list -> unit
-
-val cryptoline_filename_extension : string
+(** [true] to use binary representation in SMTLIB outputs and hexadecimal representation otherwise *)
 
 val native_smtlib_expn_operator : string option ref
+(** the native exponential operator supported by the chosen SMT solver *)
 
-val two_phase_rewriting : bool ref
+
+(** {1 Logging} *)
+
+val verbose : bool ref
+(** [true] to print verbose messages *)
+
+val logfile : string ref
+(** the file to write log messages to *)
+
+val unix : string -> unit
+(** run an Unix command *)
+
+val trace : string -> unit
+(** write a message and an ending newline to the log file *)
+
+val fail : string -> 'a
+(** write a message to the log file and then fail with the message *)
+
+val string_of_running_time : float -> float -> string
+(** [string_of_running_time st ed] returns the string representation of the running time from the starting time [st] to the stop time [ed]. *)
+
+val vprint : string -> unit
+(** [vprint s] prints the string [s] if {!verbose} is [true] *)
+
+val vprintln : string -> unit
+(** [vprint s] prints the string [s] with an ending newline if {!verbose} is [true] *)
+
+val keep_temp_files : bool ref
+(** [true] to keep temporary files *)
+
+val tmpdir : string option ref
+(** the directory where the temporary files are stored *)
+
+val tmpfile : string -> string -> string
+(** [tmpfile prefix suffix] suggests a filename with prefix [prefix] and suffix [suffix]. *)
+
+val cleanup : string list -> unit
+(** [cleanup [f1; ...; fn]] removes temporary files [f1], ..., and [fn]. *)

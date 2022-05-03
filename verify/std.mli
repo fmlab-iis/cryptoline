@@ -1,47 +1,81 @@
 
+(** This module provides functions for the verification of specifications in SSA. *)
+
 open Ast.Cryptoline
 
-(*
-type 'a gen = More of ('a * (unit -> 'a gen))
-type var_gen = unit -> var gen
- *)
-type 'a gen = 'a Common.gen
-type var_gen = Common.var_gen
 
-val make_vgen : string -> int -> var_gen
-val vgen_of_spec : spec -> var_gen
-val vgen_of_espec : espec -> var_gen
-val vgen_of_rspec : rspec -> var_gen
+(** {1 Top-level Verification Functions} *)
 
-(* Returns outputs to redlog for the verification of an espec in SSA. *)
-val redlog_of_espec : espec -> string
-
-(* Verifies the safety of a spec in SSA. *)
 val verify_safety : spec -> VS.t atomichash_t option -> bool
-(*
- * Verify the safety of the n-th instruction in a program in SSA.
- * Raise TimeoutException if the SMT solver timed out.
+(** [verify_safety s o] is [true] if the safety conditions of the specification
+    [s] in SSA are verified successfully. Depending on {!Options.Std.jobs},
+    either {!verify_safety_inc} or {!WithLwt.verify_safety_inc} is invoked. *)
+
+val verify_spec : spec -> bool
+(** [verify_spec s] is [true] if the specification [s] is valid. SSA
+    transformation, normalization, safety verification, assertion verification,
+    algebraic specification verification, and range specification verification
+    are performed in this function. Depending on {!Options.Std.jobs}, sequential
+    verification functions in this module or parallel verification functions in
+    {!WithLwt} are invoked. *)
+
+
+(** {1 Sequential Verification Functions} *)
+
+val verify_safety_inc :
+  int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
+  (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option ->
+  Common.round_result
+(** [verify_safety_inc t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
+    sequentially verifies the safety conditions [e1; ...; en] of the program [p]
+    under the precondition [f]. [t] is the timeout. *)
+
+val verify_assert : Common.var_gen -> spec -> VS.t atomichash_t option -> bool
+(**
+   [verify_assert gen s o] sequentially verifies all assertions of the
+   specification [s] in SSA. Note that this function does not consider
+   {!Options.Std.verify_eacuts} and {!Options.Std.verify_racuts}.
  *)
+
+val verify_eassert : Common.var_gen -> spec -> VS.t atomichash_t option -> bool
+(** [verify_eassert g s o] sequentially verifies all algebraic assertions of the
+   specification [s] in SSA. {!Options.Std.verify_eacuts} is considered in this
+   function. *)
+
+val verify_rassert : spec -> VS.t atomichash_t option -> bool
+(** [verify_rassert s o] sequentially verifies all range assertions of the
+   specification [s] in SSA. {!Options.Std.verify_racuts} is considered in this
+   function. *)
+
+val verify_espec : Common.var_gen -> espec -> VS.t atomichash_t option -> bool
+(** [verify_espec g s o] sequentially verifies the algebraic specification [s]
+    in SSA. *)
+
+val verify_rspec : rspec -> VS.t atomichash_t option -> bool
+(** [verify_rspec s o] sequentially verifies the range specification [s]
+    in SSA. *)
+
+
+(** {1 Low-level Verification Functions} *)
+
 val verify_instruction_safety : int -> rbexp -> program -> int ->
                                 VS.t atomichash_t option ->
                                 Common.round_result
-
-(*
- * Verifies assertions of a specification in SSA without considering
- * verify_eacuts and verify_racuts.
+(**
+   [verify_instruction_safety t f p i o] verifies the safety condition of the
+   i-th instruction of the program [p] in SSA under the precondition [f]. [t]
+   is the timeout.
+   @raise TimeoutException if the range solver times out.
  *)
-val verify_assert : var_gen -> spec -> VS.t atomichash_t option -> bool
 
-(* Verifies an algebraic spec in SSA. *)
-val verify_espec : var_gen -> espec -> VS.t atomichash_t option -> bool
-(* Verifies an algebraic spec in SSA. The spec should only contain one atomic predicate. *)
-val verify_espec_single_conjunct : var_gen -> espec ->
+val verify_espec_single_conjunct : Common.var_gen -> espec ->
                                    VS.t atomichash_t option -> bool
+(** [verify_espec_single_conjunct g s o] is [true] if the algebraic
+    specification [s] in SSA is valid. Note that the specification [s] must
+    not contain any cut and its postcondition must be an atomic predicate. *)
 
-(* Verifies a range spec in SSA. *)
-val verify_rspec : rspec -> VS.t atomichash_t option -> bool
-(* Verifies a range spec in SSA. The spec should only contain one atomic predicate. *)
 val verify_rspec_single_conjunct : rspec -> VS.t atomichash_t option -> bool
-
-(* Verifies a spec. *)
-val verify_spec : spec -> bool
+(** [verify_rspec_single_conjunct s o] is [true] if the range specification [s]
+    in SSA is valid. Note that the specification [s] must not contain any
+    cut and its postcondition must be an atomic predicate. *)

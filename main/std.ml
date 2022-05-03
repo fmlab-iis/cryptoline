@@ -61,8 +61,6 @@ let args = [
      Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
     ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by coq-cryptoline."]));
-    ("-typing_file", String (fun f -> Options.Std.typing_file := Some f),
-     Common.mk_arg_desc([""; "Predefined typing in parsing untyped programs."]));
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));

@@ -1,12 +1,11 @@
 
 open Ast.Cryptoline
 open Qfbv.Common
-open Qfbv.Std
 open Options.Std
 
 type round_result =
-  Solved of result
-| Unfinished of (int * instr * bexp) list
+  Solved of Qfbv.Common.result
+| Unfinished of (int * instr * Qfbv.Common.bexp) list
 
 type 'a gen = More of ('a * (unit -> 'a gen))
 type var_gen = unit -> string gen
@@ -14,6 +13,12 @@ type var_gen = unit -> string gen
 let gen_var gen =
   match gen() with
   | More (v, cont) -> (v, cont)
+
+let rec make_vgen v i = fun () -> More (v ^ "_" ^ string_of_int i, make_vgen v (i + 1))
+
+let vgen_of_spec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_spec s) SS.empty)) 0
+let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_rspec s) SS.empty)) 0
+let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
 
 
 (** Conversion from range specifications to QFBV. *)
@@ -73,11 +78,6 @@ let rec bexp_rbexp e =
   | Rneg e -> Lneg (bexp_rbexp e)
   | Rand (e1, e2) -> Conj (bexp_rbexp e1, bexp_rbexp e2)
   | Ror (e1, e2) -> Disj (bexp_rbexp e1, bexp_rbexp e2)
-
-let rec split_bexp e =
-  match e with
-  | Conj (e1, e2) -> (split_bexp e1)@(split_bexp e2)
-  | _ -> [e]
 
 let exp_add ?extend:(ext=false) w a1 a2 =
   if ext then
@@ -1638,3 +1638,63 @@ let smtlib_espec vgen es =
        (smtlib_assert (smtlib_not g));
        "(check-sat)"
      ])
+
+
+    (***)
+
+
+let redlog_of_espec es =
+  let eqn_of_eexp e =
+    let redlog_string_of_eunop op =
+      match op with
+      | Eneg -> "-" in
+    let redlog_string_of_ebinop op =
+      match op with
+      | Eadd -> "+"
+      | Esub -> "-"
+      | Emul -> "*"
+      | Epow -> "^" in
+    let rec redlog_string_of_eexp e =
+      match e with
+      | Evar v -> string_of_var v
+      | Econst n -> Z.to_string n
+      | Eunop (op, e) -> redlog_string_of_eunop op ^ " (" ^ redlog_string_of_eexp e ^ ")"
+      | Ebinop (op, e1, e2) -> "(" ^ redlog_string_of_eexp e1 ^ ") " ^ redlog_string_of_ebinop op ^ " (" ^ redlog_string_of_eexp e2 ^ ")" in
+    (* Change "c*(c-1)=0" to "c=0 or c=1". *)
+    (*
+      match e with
+    | BveBinop (BveMul, BveVar v, BveBinop (BveSub, BveVar v', BveConst c)) when v == v' && eq_big_int c (unit_big_int) -> "(" ^ v ^ " = 0 or " ^ v ^ " = 1)"
+    | _ -> redlog_string_of_eexp e ^ " = 0" *)
+    redlog_string_of_eexp e ^ " = 0" in
+  let vgen = vgen_of_espec es in
+  let (vgen, zssa) = bv2z_espec vgen es in
+  let (vgen, premises) =
+    let (vgen, _, pre_ps) =
+      polys_of_ebexp vgen zssa.ppre in
+    let (vgen, prog_ps) =
+      List.fold_left
+        (fun (vgen, res) e ->
+          let (vgen, _, ps) = polys_of_ebexp vgen e in
+          (vgen, res@ps)
+        ) (vgen, []) zssa.pprog in
+    (vgen, pre_ps@prog_ps) in
+  let (_vgen, tmps, premises, posts) =
+    let (premises, post) = rewrite_assignments_ebexp premises zssa.ppost in
+    let (vgen, tmps, posts) = polys_of_ebexp vgen post in
+    (vgen, tmps, premises, posts) in
+  let phi =
+    let conj es = String.concat " and " (List.map eqn_of_eexp es) in
+    match premises, tmps with
+    | [], [] -> conj posts
+    | [], _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, " ^ conj posts ^ ")"
+    | _, [] -> "(" ^ conj premises ^ ") impl (" ^ conj posts ^ ")"
+    | _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, (" ^ conj premises ^ ") impl (" ^ conj posts ^ "))"
+  in
+  String.concat "\n" [ "load_package redlog;";
+                       "rlset Z;";
+                       "phi := " ^ phi ^ ";";
+                       "rlwqe phi;" ]
+
+let redlog_of_espec es =
+  let ess = cut_espec es in
+  String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))

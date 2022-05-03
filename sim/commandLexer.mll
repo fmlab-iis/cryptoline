@@ -1,4 +1,7 @@
 {
+
+  (** A lexer for the commands in the simulator. *)
+
   open CommandParser
   exception Eof
 

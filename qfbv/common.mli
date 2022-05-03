@@ -1,56 +1,81 @@
 
 open Ast.Cryptoline
 
-type result = Sat | Unsat | Unknown
-exception TimeoutException
 
-(** QFBV *)
+(** This modules provides QF_BV. *)
+
+type result = Sat | Unsat | Unknown (* *)
+(** the result of solving a QF_BV query *)
+
+exception TimeoutException
+(** raise when the range solver times out in solving a QF_BV query *)
 
 type exp =
-  | Var of var
-  | Const of size * Z.t
-  | Not of size * exp
-  | And of size * exp * exp
-  | Or of size * exp * exp
-  | Xor of size * exp * exp
-  | Neg of size * exp
-  | Add of size * exp * exp
-  | Sub of size * exp * exp
-  | Mul of size * exp * exp
-  | Mod of size * exp * exp
-  | Srem of size * exp * exp
-  | Smod of size * exp * exp
-  | Shl of size * exp * exp
-  | Lshr of size * exp * exp
-  | Ashr of size * exp * exp
-  | Concat of size * size * exp * exp   (* Concat (wh, wl, vh, vl) *)
-  | Extract of size * int * int * exp   (* Extract (size_of_exp, i, j, e) where i >= j *)
-  | Slice of size * int * int * exp     (* Slice (w1, w2, w3, exp), w1: the width before the slice, w2: the width of the slice, w3: the width after the slice *)
-  | High of size * size * exp           (* High (lo, hi, exp) *)
-  | Low of size * size * exp            (* Low (lo, hi, exp) *)
-  | ZeroExtend of size * int * exp      (* ZeroExtend (size_of_exp, bit_to_extend, exp) *)
-  | SignExtend of size * int * exp      (* SignExtend (size_of_exp, bit_to_extend, exp) *)
-  | Ite of size * bexp * exp * exp
+  | Var of var                          (** variable *)
+  | Const of size * Z.t                 (** constant *)
+  | Not of size * exp                   (** bit-wise NOT *)
+  | And of size * exp * exp             (** bit-wise AND *)
+  | Or of size * exp * exp              (** bit-wise OR *)
+  | Xor of size * exp * exp             (** bit-wise XOR *)
+  | Neg of size * exp                   (** negation *)
+  | Add of size * exp * exp             (** addition *)
+  | Sub of size * exp * exp             (** subtraction *)
+  | Mul of size * exp * exp             (** multiplication *)
+  | Mod of size * exp * exp             (** unsigned mod *)
+  | Srem of size * exp * exp            (** 2's complement signed remainder (sign follows dividend) *)
+  | Smod of size * exp * exp            (** 2's complement signed remainder (sign follows divisor) *)
+  | Shl of size * exp * exp             (** left shift *)
+  | Lshr of size * exp * exp            (** logical right shift *)
+  | Ashr of size * exp * exp            (** arithmetic right shift *)
+  | Concat of size * size * exp * exp   (** [Concat (wh, wl, vh, vl)] concatenates bit-vectors [vh] and [vl]. *)
+  | Extract of size * int * int * exp   (** [Extract (size_of_exp, i, j, e)] extracts bits of [e] from position [i] down to position [j] where i >= j .*)
+  | Slice of size * int * int * exp     (** [Slice (w1, w2, w3, exp)] extracts a slice of the bit-vector [exp] where
+                                            [w1] is the width before the slice, [w2] is the width of the slice, and
+                                            [w3] is the width after the slice. *)
+  | High of size * size * exp           (** [High (lo, hi, exp)] extracts [hi] high bits of [exp] *)
+  | Low of size * size * exp            (** [Low (lo, hi, exp)] extracts [lo] low bits of [exp] *)
+  | ZeroExtend of size * int * exp      (** [ZeroExtend (size_of_exp, bit_to_extend, exp)] applies unsigned extension to [exp] *)
+  | SignExtend of size * int * exp      (** [SignExtend (size_of_exp, bit_to_extend, exp)] applies signed extension to [exp] *)
+  | Ite of size * bexp * exp * exp      (** if-then-else *) (* *)
+(** QF_BV expressions *)
+
 and bexp =
-  | True
-  | Ult of size * exp * exp
-  | Ule of size * exp * exp
-  | Ugt of size * exp * exp
-  | Uge of size * exp * exp
-  | Slt of size * exp * exp
-  | Sle of size * exp * exp
-  | Sgt of size * exp * exp
-  | Sge of size * exp * exp
-  | Eq of size * exp * exp
-  | Uaddo of size * exp * exp
-  | Usubo of size * exp * exp
-  | Umulo of size * exp * exp
-  | Saddo of size * exp * exp
-  | Ssubo of size * exp * exp
-  | Smulo of size * exp * exp
-  | Lneg of bexp
-  | Conj of bexp * bexp
-  | Disj of bexp * bexp
+  | True                                (** true *)
+  | Ult of size * exp * exp             (** unsigned less than *)
+  | Ule of size * exp * exp             (** unsigned less than or equal to *)
+  | Ugt of size * exp * exp             (** unsigned greater than *)
+  | Uge of size * exp * exp             (** unsigned greater than or equal to *)
+  | Slt of size * exp * exp             (** signed less than *)
+  | Sle of size * exp * exp             (** signed less than or equal to *)
+  | Sgt of size * exp * exp             (** signed greater than *)
+  | Sge of size * exp * exp             (** signed greater than or equal to *)
+  | Eq of size * exp * exp              (** equality *)
+  | Uaddo of size * exp * exp           (** unsigned addition overflow *)
+  | Usubo of size * exp * exp           (** unsigned subtraction underflow *)
+  | Umulo of size * exp * exp           (** unsigned multiplication overflow *)
+  | Saddo of size * exp * exp           (** signed addition overflow *)
+  | Ssubo of size * exp * exp           (** signed subtraction underflow *)
+  | Smulo of size * exp * exp           (** signed multiplication overflow *)
+  | Lneg of bexp                        (** logical negation *)
+  | Conj of bexp * bexp                 (** conjunction *)
+  | Disj of bexp * bexp                 (** disjunction *) (* *)
+(** QF_BV predicates *)
+
+val string_of_exp : exp -> string
+(** string representation of a QF_BV expression *)
+
+val string_of_bexp : bexp -> string
+(** string representation of a QF_BV predicate *)
+
+val vars_exp : exp -> VS.t
+(** variables in a QF_BV expression *)
+
+val vars_bexp : bexp -> VS.t
+(** variables in a QF_BV predicate *)
+
+val split_bexp : bexp -> bexp list
+(** Split the top-level conjunctions of a QF_BV predicate. *)
+
 
 class btor_manager :
   object
@@ -100,13 +125,13 @@ class btor_manager :
     method newvar : int
     method setvar : Ast.Cryptoline.VM.key -> int -> unit
   end
-
-val string_of_exp : exp -> string
-val string_of_bexp : bexp -> string
+(** a manager used to generate BTOR files *)
 
 val smtlib2_imp_check_sat : bexp list -> string
-val btor_imp_check_sat : btor_manager -> bexp list -> string
-val cnf_imp_check_sat : out_channel -> bexp list -> unit
+(** [smtlib2_imp_check_sat [e1; e2; ...; en]] returns a query in SMTLIB format. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)
 
-val vars_exp : exp -> VS.t
-val vars_bexp : bexp -> VS.t
+val btor_imp_check_sat : btor_manager -> bexp list -> string
+(** [btor_imp_check_sat m [e1; e2; ...; en]] returns a query in BTOR format. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)
+
+val cnf_imp_check_sat : out_channel -> bexp list -> unit
+(** [cnf_imp_check_sat ch [e1; e2; ...; en]] writes a query in DIMACS format to [ch]. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)

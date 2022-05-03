@@ -3,7 +3,7 @@ open Arg
 open Options.Std
 open Ast.Cryptoline
 open Typecheck.Std
-open Verify.Std
+open Verify.Common
 open Parsers.Std
 
 let args = [

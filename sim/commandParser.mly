@@ -1,5 +1,7 @@
 %{
 
+  (** A parser for the commands in the simulator. *)
+
   open Command
 
   exception ParseError of string

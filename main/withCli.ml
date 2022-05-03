@@ -49,7 +49,7 @@ let anon file =
   | VerifyESpec ->
      let spec = from_typecheck_espec (espec_from_file file) in
      let spec = normalize_espec spec in
-     let vgen = Verify.Std.vgen_of_espec spec in
+     let vgen = Verify.Common.vgen_of_espec spec in
      let res = Verify.Std.verify_espec_single_conjunct vgen spec None in
      print_endline (string_of_bool res)
   | VerifyRSpec ->
