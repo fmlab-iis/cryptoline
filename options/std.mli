@@ -1,22 +1,28 @@
 
+(** This module provides options of CryptoLine. *)
 
 type algebra_solver =
-  | Singular
-  | Sage
-  | Magma
-  | Mathematica
-  | Macaulay2
-  | Maple
-  | SMTSolver of string
+  | Singular                 (** {{:https://www.singular.uni-kl.de}Singular} *)
+  | Sage                     (** {{:https://www.sagemath.org}Sage} *)
+  | Magma                    (** {{:http://magma.maths.usyd.edu.au/magma/}Magma} *)
+  | Mathematica              (** {{:https://www.wolfram.com/mathematica/}Mathematica} *)
+  | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
+  | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
+  | SMTSolver of string      (** [SMTSolver s] is the SMT solver [s] that supports UFNIA. *) (* *)
+(** supported algebra solvers *)
 
 type variable_order =
   | LexOrder
   | AppearingOrder
   | RevLexOrder
   | RevAppearingOrder
+(** variable order in computing Groebner basis *)
+
+val default_algebra_solver : algebra_solver
+(** the default algebra solver *)
 
 val default_range_solver : string
-val default_algebra_solver : algebra_solver
+(** the default range solver *)
 
 val wordsize : int ref
 

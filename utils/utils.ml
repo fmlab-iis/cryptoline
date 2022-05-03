@@ -1,4 +1,11 @@
 
+(** Strings *)
+
+let split_on_char_nonempty char str = List.filter (fun s -> String.length s <> 0) (String.split_on_char char str)
+
+
+(** Ranges *)
+
 exception InvalidRange of string
 
 type range = int * int
@@ -12,8 +19,6 @@ let make_range i j =
 let in_range n (i, j) = i <= n && n <= j
 
 let flatten_range (i, j) = List.init (j - i + 1) (fun k -> k + i)
-
-let split_on_char_nonempty char str = List.filter (fun s -> String.length s <> 0) (String.split_on_char char str)
 
 let parse_range str =
   let error_msg = "Invalid range `" ^ str ^ "`. A range should be in the format `n` or `n:m` where n <= m." in

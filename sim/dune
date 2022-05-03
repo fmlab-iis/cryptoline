@@ -1,5 +1,5 @@
 (library
-  (name        simulator)
+  (name        sim)
   (libraries   options utils ast nBits)
   (flags       (:standard -w -3))
   (public_name cryptoline.sim)

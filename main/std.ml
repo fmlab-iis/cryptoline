@@ -5,6 +5,7 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 open Utils
+open Sim
 
 type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
 
