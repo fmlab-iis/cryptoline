@@ -1,10 +1,18 @@
 
+(*
+  This module provides a simulator. The simulator may run interactively.
+  To extend the commands in the interactive mode with a new command CMD:
+  - Define [exec_CMD] which executes the command.
+  - Define [command_CMD] of the type [shellManager command] which describes the new command.
+  - Invoke [register_command command_CMD] to register the new command.
+*)
+
 open Ast.Cryptoline
 open NBits
-open Command
 open Utils
 
-let make_map vars vals = List.fold_left2 (fun m x v -> VM.add x v m) VM.empty vars vals
+
+(** Auxiliary Functions *)
 
 let string_of_var_with_value x v =
   let is_signed = var_is_signed x in
@@ -30,6 +38,11 @@ let to_bit bs =
   | _ -> failwith("Failed to convert a bit vector of size greater than 1 to one bit")
 
 let of_bit b = from_bool 1 b
+
+let in_ranges n rs = List.exists (in_range n) rs
+
+
+(** Simulation of an Instruction *)
 
 let simulate_instr m i =
   match i with
@@ -202,24 +215,88 @@ let simulate_instr m i =
   | Icut _ -> m
   | Ighost _ -> m
 
-let in_ranges n rs = List.exists (in_range n) rs
 
-let simulate ?steps:(steps=(-1)) ?dumps:(dumps=[]) m p =
-  let _ = print_endline ("Initial:") in
-  let _ = dump_map m in
-  let _ = print_newline () in
-  let (m, _) = List.fold_left (
-                   fun (m, step) i ->
-                   if steps < 0 || step < steps then let _ = print_endline ("Instruction #" ^ string_of_int step ^ ": " ^ string_of_instr i) in
-                                                     let m' = simulate_instr m i in
-                                                     let _ = if in_ranges step dumps then (dump_map m'; print_newline ()) in
-                                                     (m', step + 1)
-                   else (m, step)
-                 ) (m, 0) p in
-  let _ = print_newline () in
-  let _ = print_endline ("Final:") in
-  let _ = dump_map m in
-  ()
+(** Options *)
+
+(* raised with a message if some argument is invalid *)
+exception InvalidArgument of string
+
+let num_prev_instrs_to_print = ref 5
+
+let num_next_instrs_to_print = ref 5
+
+type option_spec =
+  OInt of (int -> unit)
+| OBool of (bool -> unit)
+
+type option_kind =
+  {
+    oname : string;          (** name of the option *)
+    odesc : string;          (** the description the option *)
+    ospec : option_spec;     (** specification of the option *)
+    oprint : unit -> unit    (** print the current value of the option *)
+  }
+
+let option_num_prev_instrs_to_print =
+  {
+    oname = "num_prev_instrs_to_print";
+    odesc = "The number of instructions before the current program location to print.";
+    ospec = OInt (fun n -> num_prev_instrs_to_print := n);
+    oprint = fun _ -> print_endline ("num_prev_instrs_to_print = " ^ string_of_int !num_prev_instrs_to_print)
+  }
+
+let option_num_next_instrs_to_print =
+  {
+    oname = "num_next_instrs_to_print";
+    odesc = "The number of instructions after the current program location to print.";
+    ospec = OInt (fun n -> num_next_instrs_to_print := n);
+    oprint = fun _ -> print_endline ("num_next_instrs_to_print = " ^ string_of_int !num_next_instrs_to_print)
+  }
+
+let options = Hashtbl.create 10
+
+let find_option name = Hashtbl.find options name
+
+let register_option o = Hashtbl.replace options o.oname o
+
+let get_options () =
+  let m = Hashtbl.fold (fun _ o res -> SM.add o.oname o res) options SM.empty in
+  let os_rev = SM.fold (fun _ o res -> o::res) m [] in
+  List.rev os_rev
+
+let _ = List.iter register_option [option_num_prev_instrs_to_print; option_num_next_instrs_to_print]
+
+(* Convert an argument to an integer. Raise InvalidArgument if the argument is not a valid integer. *)
+let convert_to_int arg =
+  try int_of_string arg
+  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid integer."))
+
+(* Convert an argument to a Boolean. Raise InvalidArgument if the argument is not a valid Boolean. *)
+let convert_to_bool arg =
+  try bool_of_string arg
+  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid Boolean."))
+
+(* Parse an option with its new values. If the input arguments is empty, print all available options.
+   Raise InvalidArgument if there is an error in value parsing. *)
+let parse_options args =
+  match args with
+  | name::args ->
+     begin
+       try
+         let o = find_option name in
+         match o.ospec with
+         | OInt f -> (match args with
+                      | n::[] -> f (convert_to_int n)
+                      | _ -> print_endline("The option " ^ o.oname ^ " requires an integer argument."))
+         | OBool f -> (match args with
+                       | n::[] -> f (convert_to_bool n)
+                       | _ -> print_endline("The option " ^ o.oname ^ " requires a Boolean argument."))
+       with Not_found -> print_endline ("There is no option " ^ name ^ ".")
+     end
+  | _ -> List.iter (fun o -> print_string "# "; print_endline o.odesc; o.oprint(); print_endline "") (get_options ())
+
+
+(** Manager for Interactive Simulation *)
 
 exception NoMoreInstr
 exception VarNotFound
@@ -228,8 +305,6 @@ exception ValueNotFound
 let print_indexed_instr (k, i) = print_endline ("Instr #" ^ string_of_int k ^ ": " ^ string_of_instr i)
 
 class shellManager = fun m p ->
-  let max_prev_to_print = 5 in
-  let max_next_to_print = 5 in
   let add_instr_id p = List.mapi (fun i instr -> (i, instr)) p in
   let add_var_to_table v t = SM.add (string_of_var v) v t in
   let construct_var_table m = VM.fold (fun x _ t -> add_var_to_table x t) m SM.empty in
@@ -307,6 +382,8 @@ class shellManager = fun m p ->
           else res
         ) t VS.empty
 
+    method get_history = stack
+
     method get_map =
       match stack with
       | (_, m, _)::_ -> m
@@ -339,26 +416,28 @@ class shellManager = fun m p ->
     method unwatch_var v = watched <- VS.remove v watched
 
     method find_instrs str =
-      let r = Str.regexp_string str in
-      let rec helper res ip =
-        match ip with
-        | [] -> List.rev res
-        | ((_, i) as hd)::tl -> (try
-                           let _ = (Str.search_forward r (string_of_instr i) 0) in
-                           helper (hd::res) tl
-                         with Not_found ->
-                           helper res tl) in
-      helper [] ip
+      if str = "" then []
+      else
+        let r = Str.regexp_string str in
+        let rec helper res ip =
+          match ip with
+          | [] -> List.rev res
+          | ((_, i) as hd)::tl -> (try
+                                     let _ = (Str.search_forward r (string_of_instr i) 0) in
+                                     helper (hd::res) tl
+                                   with Not_found ->
+                                     helper res tl) in
+        helper [] ip
 
     method print_program =
       match stack with
-      | (_, _, p)::past -> let past = NBits.take (min max_prev_to_print (List.length past)) past in
+      | (_, _, p)::past -> let past = NBits.take (min !num_prev_instrs_to_print (List.length past)) past in
                            let past = List.flatten (List.map
                                                       (fun (_, _, p) ->
                                                         match p with
                                                         | i::_ -> [i]
                                                         | _ -> []) past) in
-                           let post = NBits.take (min max_next_to_print (List.length p)) p in
+                           let post = NBits.take (min !num_next_instrs_to_print (List.length p)) p in
                            let _ = List.iter print_indexed_instr (List.rev past) in
                            let _ = print_endline ("->") in
                            let _ = List.iter print_indexed_instr post in
@@ -375,8 +454,417 @@ class shellManager = fun m p ->
         ) watched
   end
 
+
+(** Commands for Interactive Simulation *)
+
+exception ArgumentRequired
+exception TooManyArguments
+
+let highlight s = "\027[1m" ^ s ^ "\027[0m"
+
+type argument = string
+
+type 'a command = { cname : string;
+                    calias : string list;
+                    cdesc : string;
+                    chelp : string;
+                    cexec : 'a -> argument list -> 'a }
+
+let commands = Hashtbl.create 10
+
+let find_command name = Hashtbl.find commands name
+
+let register_command cmd =
+  List.iter (fun name -> Hashtbl.replace commands name cmd) (cmd.cname::cmd.calias)
+
+let get_commands () =
+  let m = Hashtbl.fold (fun _ cmd res -> SM.add cmd.cname cmd res) commands SM.empty in
+  let cmds_rev = SM.fold (fun _ cmd res -> cmd::res) m [] in
+  List.rev cmds_rev
+
+let parse_args_int1 ?default args =
+  match args with
+  | [] -> (match default with
+           | None -> raise ArgumentRequired
+           | Some d -> d)
+  | hd::[] -> convert_to_int hd
+  | _ -> raise TooManyArguments
+
+let parse_args_string1 ?default args =
+  match args with
+  | [] -> (match default with
+           | None -> raise ArgumentRequired
+           | Some d -> d)
+  | hd::[] -> hd
+  | _ -> raise TooManyArguments
+
+let parse_args_string1_int1 ?sdef ?idef args =
+  match args with
+  | [] -> (match sdef, idef with
+           | Some s, Some i -> (s, i)
+           | _, _ -> raise ArgumentRequired)
+  | s::[] -> (match idef with
+               | None -> raise ArgumentRequired
+               | Some i -> (s, i))
+  | s::istr::[] -> let i = convert_to_int istr in
+                   (s, i)
+  | _ -> raise TooManyArguments
+
+let parse_args_command1 args =
+  match args with
+  | [] -> raise ArgumentRequired
+  | n::[] -> (try find_command n
+              with Not_found -> raise (InvalidArgument ("Command " ^ n ^ " is not found.")))
+  | _ -> raise TooManyArguments
+
+let exec_exit () = exit 0
+
+let exec_run m = m#run; m#print_program
+
+let exec_next m n =
+  try
+    ignore(m#next n); m#print_program
+  with
+    NoMoreInstr -> print_endline ("No more instruction to be executed.")
+
+let exec_previous m n =
+  try
+    ignore(m#prev n); m#print_program
+  with
+    NoMoreInstr -> print_endline ("No more instruction to be reversed.")
+
+let exec_goto m n =
+  if n < 0 then print_endline ("Invalid program location.")
+  else (ignore(m#goto n); m#print_program)
+
+let exec_find m pattern =
+  let instrs = m#find_instrs pattern in
+  List.iter print_indexed_instr instrs
+
+let print_command_help c = print_endline c.chelp; print_endline ""
+
+let exec_help ?cmd () =
+  let cmds =
+    match cmd with
+    | Some c -> [c]
+    | None -> get_commands() in
+  List.iter print_command_help cmds
+
+let exec_print m regexp args =
+  let print_var xn =
+    try
+      let xs =
+        if regexp then m#get_vars_by_pattern xn
+        else VS.singleton (m#get_var_by_name xn) in
+      VS.iter (fun x ->
+          try
+            let v = m#get_value x in
+            print_endline (string_of_var_with_value x v)
+          with ValueNotFound -> print_endline ("Value of " ^ string_of_var x ^ " is not found.")
+        ) xs
+    with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+  (match args with
+   | [] -> m#print_program
+   | _ -> List.iter print_var args)
+
+let exec_watch m regexp args =
+  let watch_var xn =
+    try
+      let xs =
+        if regexp then m#get_vars_by_pattern xn
+        else VS.singleton (m#get_var_by_name xn) in
+      VS.iter (fun v -> m#watch_var v; print_endline (string_of_var v ^ ": Watched")) xs
+    with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+  (match args with
+   | [] -> m#print_watched
+   | _ -> List.iter watch_var args)
+
+let exec_unwatch m regexp args =
+  let unwatch_var xn =
+    try
+      let xs =
+        if regexp then m#get_vars_by_pattern xn
+        else VS.singleton (m#get_var_by_name xn) in
+      VS.iter (fun v -> m#unwatch_var v; print_endline (string_of_var v ^ ": Unwatched")) xs
+    with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+  List.iter unwatch_var args
+
+let exec_dump m = dump_map (m#get_map)
+
+let exec_depend m var i =
+  let history = List.filter (fun (_, _, ps) -> match ps with
+                                               | (j, _)::_ -> j >= i
+                                               | _ -> false) m#get_history in
+  match history with
+  | [] -> ()
+  | (_, vm, _)::tl -> let (vm, vars) = List.fold_left (
+                                           fun (_, vars) (_, vm_i, ps_i) ->
+                                           match ps_i with
+                                           | (_, i)::_ -> let vars' = if is_annotation i then vars
+                                                                      else let lvs = lvs_instr i in
+                                                                           if VS.disjoint vars lvs then vars
+                                                                           else VS.union (VS.diff vars lvs) (rvs_instr i) in
+                                                          (vm_i, vars')
+                                           | _ -> assert(false)
+                                         ) (vm, VS.singleton var) tl in
+                      VS.iter (
+                          fun x ->
+                          try
+                            print_endline (string_of_var_with_value x (VM.find x vm))
+                          with Not_found ->
+                            print_endline (string_of_var x ^ ": Uninitialized")
+                        ) vars
+
+let exec_slice m var i =
+  let history = List.filter (fun (_, _, ps) -> match ps with
+                                               | (j, _)::_ -> j >= i
+                                               | _ -> false) m#get_history in
+  let (instrs, _) = List.fold_left (
+                        fun (instrs, vars) (_, _, ps_i) ->
+                        match ps_i with
+                        | ((_, i) as hd)::_ -> if is_annotation i then (instrs, vars)
+                                               else let lvs = lvs_instr i in
+                                                    if VS.disjoint vars lvs then (instrs, vars)
+                                                    else (hd::instrs, VS.union (VS.diff vars lvs) (rvs_instr i))
+                        | _ -> assert(false)
+                      ) ([], VS.singleton var) history in
+  List.iter print_indexed_instr instrs
+
+let command_exit = {
+    cname = "exit";
+    calias = ["quit"; "q"];
+    cdesc = "Quit interactive mode.";
+    chelp = String.concat "\n" [highlight("exit/quit/q"); "\t\t\tQuit interactive mode.";];
+    cexec = fun _ _ -> exec_exit()
+  }
+
+let command_run = {
+    cname = "run";
+    calias = ["r"];
+    cdesc = "Run until the end of the program.";
+    chelp = String.concat "\n" [highlight("run/r"); "\t\t\tRun the program."];
+    cexec = fun m _ -> let _ = exec_run m in
+                       m
+  }
+
+let command_next = {
+    cname = "next";
+    calias = ["n"];
+    cdesc = "Run the next N instruction(s).";
+    chelp = String.concat "\n" [highlight("next/n [N]"); "\t\t\tRun the next N instructions."];
+    cexec = fun m args -> let _ =
+                            try
+                              let n = parse_args_int1 ~default:1 args in
+                              exec_next m n
+                            with
+                              InvalidArgument msg -> print_endline msg
+                            | TooManyArguments -> print_endline("This command accepts at most one integer argument.") in
+                          m
+  }
+
+let command_previous = {
+    cname = "previous";
+    calias = ["prev"; "v"];
+    cdesc = "Undo the previous N instruction(s).";
+    chelp = String.concat "\n" [highlight("previous/prev/v [N]"); "\t\t\tUndo the previous N instructions."];
+    cexec = fun m args -> let _ =
+                            try
+                              let n = parse_args_int1 ~default:1 args in
+                              exec_previous m n
+                            with
+                              InvalidArgument msg -> print_endline msg
+                            | TooManyArguments -> print_endline("This command accepts at most one integer argument.") in
+                          m
+  }
+
+let command_goto = {
+    cname = "goto";
+    calias = ["g"];
+    cdesc = "Run until the N-th instruction is reached.";
+    chelp = String.concat "\n" [highlight("goto/g N"); "\t\t\tRun until the N-th instruction is reached."];
+    cexec = fun m args -> let _ =
+                            try
+                              let n = parse_args_int1 args in
+                              exec_goto m n
+                            with InvalidArgument msg -> print_endline msg
+                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one integer argument.") in
+                          m
+  }
+
+let command_find = {
+    cname = "find";
+    calias = ["f"];
+    cdesc = "Search for instructions.";
+    chelp = String.concat "\n" [highlight("find/f STR"); "\t\t\tSearch for instructions."];
+    cexec = fun m args -> let _ =
+                            try
+                              let pattern = parse_args_string1 args in
+                              exec_find m pattern
+                            with ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one double-quoted string argument.") in
+                          m
+  }
+
+let command_print = {
+    cname = "print";
+    calias = ["p"];
+    cdesc = "Print the instructions near the current program location or print values of specified variables.";
+    chelp = String.concat "\n" [highlight("print/p [VAR VAR ...]"); "\t\t\tPrint the instructions near the current program"; "\t\t\tlocation or print values of specified variables."];
+    cexec = fun m args -> let _ = exec_print m false args in
+                          m
+  }
+
+let command_rprint = {
+    cname = "rprint";
+    calias = ["rp"];
+    cdesc = "Print the instructions near the current program location or print values of variables that match one of the specified patterns.";
+    chelp = String.concat "\n" [highlight("rprint/rp [PATTERN PATTERN ...]"); "\t\t\tPrint the instructions near the current program"; "\t\t\tlocation or print values of variables that match one"; "\t\t\tof the specified patterns."];
+    cexec = fun m args -> let _ = exec_print m true args in
+                          m
+  }
+
+let command_watch = {
+    cname = "watch";
+    calias = ["w"];
+    cdesc = "Print values of variables in the watch list or add variables to the watch list.";
+    chelp = String.concat "\n" [highlight("watch/w [VAR VAR ...]"); "\t\t\tPrint values of variables in the watch list or add"; "\t\t\tvariables to the watch list."];
+    cexec = fun m args -> let _ = exec_watch m false args in
+                          m
+  }
+
+let command_rwatch = {
+    cname = "rwatch";
+    calias = ["rw"];
+    cdesc = "Print values of variables in the watch list or add variables matching one of the specified patterns to the watch list.";
+    chelp = String.concat "\n" [highlight("rwatch/rw [PATTERN PATTERN ...]"); "\t\t\tPrint values of variables in the watch list or add"; "\t\t\tvariables matching one of the specified patterns to"; "\t\t\tthe watch list."];
+    cexec = fun m args -> let _ = exec_watch m true args in
+                          m
+  }
+
+let command_unwatch = {
+    cname = "unwatch";
+    calias = ["uw"];
+    cdesc = "Remove variables from the watch list.";
+    chelp = String.concat "\n" [highlight("unwatch/uw [VAR VAR ...]"); "\t\t\tRemove variables from the watch list."];
+    cexec = fun m args -> let _ = exec_unwatch m false args in
+                          m
+  }
+
+let command_runwatch = {
+    cname = "runwatch";
+    calias = ["ruw"];
+    cdesc = "Remove variables matching one of the specified patterns from the watch list.";
+    chelp = String.concat "\n" [highlight("runwatch/ruw [PATTERN PATTERN ...]"); "\t\t\tRemove variables matching one of the specified patterns"; "\t\t\tfrom the watch list."];
+    cexec = fun m args -> let _ = exec_unwatch m true args in
+                          m
+  }
+
+let command_dump = {
+    cname = "dump";
+    calias = ["d"];
+    cdesc = "Print values of all variables.";
+    chelp = String.concat "\n" [highlight("dump/d"); "\t\t\tPrint values of all variables."];
+    cexec = fun m _ -> let _ = exec_dump m in
+                       m
+  }
+
+let command_set = {
+    cname = "set";
+    calias = ["s"];
+    cdesc = "Set an option.";
+    chelp = String.concat "\n" [highlight("set/s [NAME [VALUE VALUE ...]]"); "\t\t\tSet an option or print options."];
+    cexec = fun m args -> let _ =
+                            try parse_options args
+                            with InvalidArgument msg -> print_endline msg in
+                          m
+  }
+
+let command_depend = {
+    cname = "depend";
+    calias = [];
+    cdesc = "Print dependency of a variable.";
+    chelp = String.concat "\n" [highlight("depend VAR [N]"); "\t\t\tPrint dependent variables right before the N-th"; "\t\t\t(default is 0-th) instruction together with their"; "\t\t\tvalues."];
+    cexec = fun m args -> let _ =
+                            try
+                              let (vname, n) = parse_args_string1_int1 ~idef:0 args in
+                              let _ =
+                                try
+                                  let var = m#get_var_by_name vname in
+                                  exec_depend m var n
+                                with VarNotFound -> print_endline ("Variable " ^ vname ^ " is not found.") in
+                              ()
+                            with InvalidArgument msg -> print_endline msg
+                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one string argument followed by one integer argument.") in
+                          m
+  }
+
+let command_slice = {
+    cname = "slice";
+    calias = [];
+    cdesc = "Print a sliced program that computes the value of a variable.";
+    chelp = String.concat "\n" [highlight("slice VAR [N]"); "\t\t\tPrint a sliced program after the N-th (default is 0-th)"; "\t\t\tinstruction. The program computes the value of a"; "\t\t\tspecified variable at the current program location."];
+    cexec = fun m args -> let _ =
+                            try
+                              let (vname, n) = parse_args_string1_int1 ~idef:0 args in
+                              let _ =
+                                try
+                                  let var = m#get_var_by_name vname in
+                                  exec_slice m var n
+                                with VarNotFound -> print_endline ("Variable " ^ vname ^ " is not found.") in
+                              ()
+                            with InvalidArgument msg -> print_endline msg
+                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one string argument followed by one integer argument.") in
+                          m
+  }
+
+let command_help = {
+    cname = "help";
+    calias = ["h"; "?"];
+    cdesc = "Print the help message.";
+    chelp = String.concat "\n" [highlight("help/h/? [COMMAND]"); "\t\t\tPrint the help message for all commands or the"; "\t\t\tspecified command."];
+    cexec = fun m args -> let _ =
+                            try
+                              let cmd = parse_args_command1 args in
+                              exec_help ~cmd:cmd ()
+                            with ArgumentRequired -> exec_help ()
+                               | InvalidArgument msg -> print_endline msg
+                               | TooManyArguments -> print_endline("This command accepts at most one string argument.") in
+                          m
+  }
+
+let _ = List.iter register_command [
+            command_exit; command_run; command_next; command_previous; command_goto;
+            command_find; command_print; command_rprint; command_watch; command_rwatch;
+            command_unwatch; command_runwatch; command_dump; command_set; command_depend;
+            command_slice; command_help
+          ]
+
+
+(** Top-level Functions for Simulation *)
+
 exception InvalidCommand of string
 
+(* Create a map from variables to values. *)
+let make_map vars vals = List.fold_left2 (fun m x v -> VM.add x v m) VM.empty vars vals
+
+(* Simulate a program. *)
+let simulate ?steps:(steps=(-1)) ?dumps:(dumps=[]) m p =
+  let _ = print_endline ("Initial:") in
+  let _ = dump_map m in
+  let _ = print_newline () in
+  let (m, _) = List.fold_left (
+                   fun (m, step) i ->
+                   if steps < 0 || step < steps then let _ = print_endline ("Instruction #" ^ string_of_int step ^ ": " ^ string_of_instr i) in
+                                                     let m' = simulate_instr m i in
+                                                     let _ = if in_ranges step dumps then (dump_map m'; print_newline ()) in
+                                                     (m', step + 1)
+                   else (m, step)
+                 ) (m, 0) p in
+  let _ = print_newline () in
+  let _ = print_endline ("Final:") in
+  let _ = dump_map m in
+  ()
+
+(* Open an interactive shell. *)
 let shell m p =
   let manager = new shellManager m p in
   let prompt () =
@@ -390,76 +878,15 @@ let shell m p =
   let parse_command str =
     try
       CommandParser.command CommandLexer.token (Lexing.from_string str)
-    with _ ->
-      raise (InvalidCommand str) in
-  let run_command cmd =
-    match cmd with
-    (* Quit debugger *)
-    | CExit -> exit 0
-    (* Run the remaining program *)
-    | CRun -> manager#run; manager#print_program
-    (* Execute the next instruction *)
-    | CNext n -> (try
-                    ignore(manager#next n); manager#print_program
-                  with NoMoreInstr ->
-                    print_endline ("No more instruction to be executed."))
-    (* Undo the previous instruction *)
-    | CPrevious n -> (try
-                        ignore(manager#prev n); manager#print_program
-                      with NoMoreInstr ->
-                        print_endline ("No more instruction to be reversed."))
-    (* Go to a specific instruction *)
-    | CGoto n -> if n < 0 then print_endline ("Invalid program location.")
-                 else (ignore(manager#goto n); manager#print_program)
-    (* Find instructions. *)
-    | CFind instr_str -> let instrs = manager#find_instrs instr_str in
-                         List.iter print_indexed_instr instrs
-    (* Print current program location or values of variables *)
-    | CPrint (use_regexp, args) -> let print_var xn =
-                                     try
-                                       let xs =
-                                         if use_regexp then manager#get_vars_by_pattern xn
-                                         else VS.singleton (manager#get_var_by_name xn) in
-                                       VS.iter (fun x ->
-                                           try
-                                             let v = manager#get_value x in
-                                             print_endline (string_of_var_with_value x v)
-                                           with ValueNotFound -> print_endline ("Value of " ^ string_of_var x ^ " is not found.")
-                                         ) xs
-                                     with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                                   (match args with
-                                    | [] -> manager#print_program
-                                    | _ -> List.iter print_var args)
-    (* Print watched variables or watch/unwatch variables *)
-    | CWatch (use_regexp, args) -> let watch_var xn =
-                                     try
-                                       let xs =
-                                         if use_regexp then manager#get_vars_by_pattern xn
-                                         else VS.singleton (manager#get_var_by_name xn) in
-                                       VS.iter (fun v -> manager#watch_var v; print_endline (string_of_var v ^ ": Watched")) xs
-                                     with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                                   (match args with
-                                    | [] -> manager#print_watched
-                                    | _ -> List.iter watch_var args)
-    | CUnwatch (use_regexp, args) -> let unwatch_var xn =
-                                       try
-                                         let xs =
-                                           if use_regexp then manager#get_vars_by_pattern xn
-                                           else VS.singleton (manager#get_var_by_name xn) in
-                                         VS.iter (fun v -> manager#unwatch_var v; print_endline (string_of_var v ^ ": Unwatched")) xs
-                                       with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
-                                     List.iter unwatch_var args
-    (* Dump memory *)
-    | CDump -> dump_map (manager#get_map)
-    (* Print help message *)
-    | CHelp -> print_endline(Command.command_help()) in
+    with _ -> raise (InvalidCommand str) in
   let process_command cmd_str =
     let cmd_str = String.trim cmd_str in
     if String.length cmd_str = 0 then ()
     else
+      let (name, args) = (parse_command cmd_str) in
       try
-        run_command (parse_command cmd_str)
-      with (InvalidCommand str) ->
-        print_endline ("Invalid command: " ^ str)
+        let cmd = find_command name in
+        ignore(cmd.cexec manager args)
+      with Not_found -> print_endline ("Command " ^ name ^ " is not found.")
   in
   Stream.iter process_command (prompt())

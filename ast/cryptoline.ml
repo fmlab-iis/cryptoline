@@ -1305,6 +1305,11 @@ let is_cut i =
   | Icut _ -> true
   | _ -> false
 
+let is_annotation i =
+  match i with
+  | Iassert _ | Iassume _ | Ighost _ | Icut _ -> true
+  | _ -> false
+
 module StringElem : OrderedType with type t = string =
   struct
     type t = string

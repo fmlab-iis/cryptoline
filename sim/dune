@@ -1,7 +1,7 @@
 (library
   (name        sim)
   (libraries   options utils ast nBits)
-  (flags       (:standard -w -3))
+  (flags       (:standard -w -3-37))
   (public_name cryptoline.sim)
 )
 

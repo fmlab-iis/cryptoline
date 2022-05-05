@@ -574,6 +574,9 @@ val is_assume : instr -> bool
 val is_cut : instr -> bool
 (** [is_cut i] if [i] is a cut. *)
 
+val is_annotation : instr -> bool
+(** [is_annotation i] if [i] is an annotation such as assertions. *)
+
 module SS : Set.S with type elt = string
 (** set of strings *)
 
