@@ -225,6 +225,8 @@ let num_prev_instrs_to_print = ref 5
 
 let num_next_instrs_to_print = ref 5
 
+let apply_assignment_rewriting = ref false
+
 type option_spec =
   OInt of (int -> unit)
 | OBool of (bool -> unit)
@@ -253,6 +255,14 @@ let option_num_next_instrs_to_print =
     oprint = fun _ -> print_endline ("num_next_instrs_to_print = " ^ string_of_int !num_next_instrs_to_print)
   }
 
+let option_rewrite_assignments =
+  {
+    oname = "rewrite_assignments";
+    odesc = "Rewrite assignments for the slice command.";
+    ospec = OBool (fun b -> apply_assignment_rewriting := b);
+    oprint = fun _ -> print_endline ("rewrite_assignments = " ^ string_of_bool !apply_assignment_rewriting)
+  }
+
 let options = Hashtbl.create 10
 
 let find_option name = Hashtbl.find options name
@@ -264,7 +274,7 @@ let get_options () =
   let os_rev = SM.fold (fun _ o res -> o::res) m [] in
   List.rev os_rev
 
-let _ = List.iter register_option [option_num_prev_instrs_to_print; option_num_next_instrs_to_print]
+let _ = List.iter register_option [option_num_prev_instrs_to_print; option_num_next_instrs_to_print; option_rewrite_assignments]
 
 (* Convert an argument to an integer. Raise InvalidArgument if the argument is not a valid integer. *)
 let convert_to_int arg =
@@ -619,16 +629,25 @@ let exec_slice m var i =
   let history = List.filter (fun (_, _, ps) -> match ps with
                                                | (j, _)::_ -> j >= i
                                                | _ -> false) m#get_history in
-  let (instrs, _) = List.fold_left (
-                        fun (instrs, vars) (_, _, ps_i) ->
-                        match ps_i with
-                        | ((_, i) as hd)::_ -> if is_annotation i then (instrs, vars)
-                                               else let lvs = lvs_instr i in
-                                                    if VS.disjoint vars lvs then (instrs, vars)
-                                                    else (hd::instrs, VS.union (VS.diff vars lvs) (rvs_instr i))
-                        | _ -> assert(false)
-                      ) ([], VS.singleton var) history in
-  List.iter print_indexed_instr instrs
+  let (relevant_instrs, _) = List.fold_left (
+                                 fun (instrs, vars) (_, _, ps_i) ->
+                                 match ps_i with
+                                 | ((_, i) as hd)::_ -> if is_annotation i then (instrs, vars)
+                                                        else let lvs = lvs_instr i in
+                                                             if VS.disjoint vars lvs then (instrs, vars)
+                                                             else (hd::instrs, VS.union (VS.diff vars lvs) (rvs_instr i))
+                                 | _ -> assert(false)
+                               ) ([], VS.singleton var) history in
+  if !apply_assignment_rewriting then let (_, ssa) = ssa_program VM.empty (snd (List.split relevant_instrs)) in
+                                      match List.rev ssa with
+                                      | last::ssa_rev -> let (am1, em1, rm1, p1) = get_subst_maps (List.rev ssa_rev) in
+                                                         let (am2, em2, rm2, p2) = get_subst_maps_vpc p1 in
+                                                         let choice _ x _ = Some x in
+                                                         subst_program (VM.union choice am1 am2) (VM.union choice em1 em2) (VM.union choice rm1 rm2) (List.rev (last::(List.rev p2)))
+                                                         |> dessa_program
+                                                         |> List.iter (fun i -> print_endline (string_of_instr i))
+                                      | _ -> ()
+  else List.iter print_indexed_instr relevant_instrs
 
 let command_exit = {
     cname = "exit";

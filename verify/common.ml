@@ -1107,7 +1107,7 @@ let rewrite_assignments ideal p moduli =
   let add_varsets polys =
     List.rev (List.rev_map (fun poly -> (poly, vids_eexp poly)) polys) in
   let subst_poly_vs (v, e) (poly, vs) =
-    if IS.mem v.vid vs then (subst_eexp [(v, e)] poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
+    if IS.mem v.vid vs then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
     else (poly, vs) in
   let subst_poly_vss (v, e) poly_vss =
     List.rev (List.rev_map (subst_poly_vs (v, e)) poly_vss) in
@@ -1141,7 +1141,7 @@ let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * eexp * ee
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
   let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, p, ms) -> ((post, p, ms), vids_eexp p)) (List.rev post_p_ms_list) in
   let subst_poly_vs (v, e) (poly, vs) = if IS.mem v.vid vs
-                                        then (subst_eexp [(v, e)] poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
+                                        then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
                                         else (poly, vs) in
   let subst_apoly_vs (v, e) ((poly, annot), vs) = let (poly', vs') = subst_poly_vs (v, e) (poly, vs) in
                                                   ((poly', annot), vs') in
@@ -1218,9 +1218,10 @@ let rewrite_assignments_ebexp ideal p =
     | hd::tl ->
        (match is_assignment hd with
         | None -> do_rewrite (hd::finished) tl p
-        | Some (v, e) -> do_rewrite (List.rev (List.rev_map (subst_eexp [(v, e)]) finished))
-                                    (List.rev (List.rev_map (subst_eexp [(v, e)]) tl))
-                                    (subst_ebexp [(v, e)] p)) in
+        | Some (v, e) -> let em = VM.singleton v e in
+                         do_rewrite (List.rev (List.rev_map (subst_eexp em) finished))
+                           (List.rev (List.rev_map (subst_eexp em) tl))
+                           (subst_ebexp em p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
@@ -1640,8 +1641,7 @@ let smtlib_espec vgen es =
      ])
 
 
-    (***)
-
+(** For redlog *)
 
 let redlog_of_espec es =
   let eqn_of_eexp e =

@@ -574,6 +574,12 @@ val is_assume : instr -> bool
 val is_cut : instr -> bool
 (** [is_cut i] if [i] is a cut. *)
 
+val is_ecut : instr -> bool
+(** [is_ecut i] if [i] is an ecut. *)
+
+val is_rcut : instr -> bool
+(** [is_rcut i] if [i] is a rcut. *)
+
 val is_annotation : instr -> bool
 (** [is_annotation i] if [i] is an annotation such as assertions. *)
 
@@ -803,44 +809,86 @@ val vids_rspec : rspec -> IS.t
 
 (** {1 Substitution} *)
 
-val subst_eexp : (var * eexp) list -> eexp -> eexp
-(** [subst_eexp [(v1, e1); ...; (vn, en)] e] replaces [v1], ..., and [vn] in [e] respectively with [e1], ..., and [en]. *)
+val amap_trans : atomic VM.t -> atomic VM.t
+(** Define v -> v' if v is mapped to Avar v'. Define v -> c if v is mapped to Aconst (_, c).
+    [amaps_trans am] returns [am'] such that v -> v' in [am'] if
+    1. v -> ... -> v' in [am] and  v' is not in [am], or
+    2. v -> ... -> c in [am]. *)
+
+val emap_trans : eexp VM.t -> eexp VM.t
+(** Define v -> v' if v is mapped to Evar v'. Define v -> c if v is mapped to Econst c.
+    [emaps_trans em] returns [em'] such that v -> v' in [em'] if
+    1. v -> ... -> v' in [em] and  v' is not in [em], or
+    2. v -> ... -> c in [em]. *)
+
+val rmap_trans : rexp VM.t -> rexp VM.t
+(** Define v -> v' if v is mapped to Rvar v'. Define v -> c if v is mapped to Rconst (_, c).
+    [rmaps_trans rm] returns [rm'] such that v -> v' in [rm'] if
+    1. v -> ... -> v' in [rm] and  v' is not in [rm], or
+    2. v -> ... -> c in [rm]. *)
+
+val emap_of_amap : atomic VM.t -> eexp VM.t
+(** [emap_of_amap am] convert all atomics in [am] to eexp. *)
+
+val rmap_of_amap : atomic VM.t -> rexp VM.t
+(** [rmap_of_amap am] convert all atomics in [am] to rexp. *)
+
+val eexp_of_atomic : atomic -> eexp
+(** Convert an atomic to an eexp. *)
+
+val rexp_of_atomic : atomic -> rexp
+(** Convert an atomic to a rexp. *)
+
+val get_subst_maps : program -> atomic VM.t * eexp VM.t * rexp VM.t * program
+(** Return substitution maps from assignments in a program. *)
+
+val get_subst_maps_vpc : program -> atomic VM.t * eexp VM.t * rexp VM.t * program
+(** Return substitution maps from value-preserved casting in a program. *)
+
+val subst_maps_of_list : (var * atomic) list -> atomic VM.t * eexp VM.t * rexp VM.t
+(** Convert a list of (v, a) pairs to substitution maps where v is a variable to be replaced by the atomic a. *)
+
+val subst_eexp : eexp VM.t -> eexp -> eexp
+(** [subst_eexp em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+
+val subst_rexp : rexp VM.t -> rexp -> rexp
+(** [subst_rexp rm e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+
+val subst_ebexp : eexp VM.t -> ebexp -> ebexp
+(** [subst_ebexp em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+
+val subst_rbexp : rexp VM.t -> rbexp -> rbexp
+(** [subst_rbexp em e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+
+val subst_bexp : eexp VM.t -> rexp VM.t -> bexp -> bexp
+(** [subst_bexp em rm e] replaces variables in the algebraic predicate of [e]
+    by the corresponding algebraic expressions in [em] and replaces variables
+    in the range predicate of [e] by the corresponding range expressions in
+    [em]. *)
+
+val subst_lval : atomic VM.t -> var -> var
+(** [subst_lval am v] replaces the lval [v] by the variable in the corresponding
+    atomic in [am] if the corresponding atomic is a variable, and does nothing
+    otherwise. *)
+
+val subst_atomic : atomic VM.t -> atomic -> atomic
+(** [subst_atomic am a] replaces variables in [a] by the corresponding atomics in am. *)
+
+val subst_instr : atomic VM.t -> eexp VM.t -> rexp VM.t -> instr -> instr
+(** [subst_instr am em rm i] replaces variables in [i] based on [am], [em], and
+    [rm]. It is not necessary that a variable is mapped to the same variable or
+    constant in [am], [em], and [rm]. *)
+
+val subst_program : atomic VM.t -> eexp VM.t -> rexp VM.t -> program -> program
+(** [subst_program am em rm p] replaces variables in [p] based on [am], [em],
+    and [rm]. *)
+
+val subst_lined_program : atomic VM.t -> eexp VM.t -> rexp VM.t -> lined_program -> lined_program
+(** [subst_lined_program am em rm p] replaces variables in [p] based on [am],
+    [em], and [rm]. *)
 
 val replace_eexp : (eexp * eexp) list -> eexp -> eexp
 (** [replace_eexp [(p1, r1); ...; (pn, rn)] e] replaces [p1], ..., and [pn] in [e] respectively with [r1], ..., and [rn]. *)
-
-val subst_rexp : (var * rexp) list -> rexp -> rexp
-(** [subst_rexp [(v1, e1); ...; (vn, en)] e] replaces [v1], ..., and [vn] in [e] respectively with [e1], ..., and [en]. *)
-
-val subst_ebexp : (var * eexp) list -> ebexp -> ebexp
-(** [subst_ebexp [(v1, e1); ...; (vn, en)] e] replaces [v1], ..., and [vn] in [e] respectively with [e1], ..., and [en]. *)
-
-val subst_rbexp : (var * rexp) list -> rbexp -> rbexp
-(** [subst_rbexp [(v1, e1); ...; (vn, en)] e] replaces [v1], ..., and [vn] in [e] respectively with [e1], ..., and [en]. *)
-
-val subst_bexp : (var * eexp) list -> (var * rexp) list -> bexp -> bexp
-(** [subst_eexp [(v1, e1); ...; (vn, en)] [(u1, r1); ...; (un, rn)] e] replaces [v1], ..., [vn], [u1], ..., and [un] in [e] respectively with [e1], ..., [en], [r1], ..., and [rn]. *)
-
-val subst_lval : (var * atomic) list -> var -> var
-(** [subst_lval [(v1, a1); ...; (vn, an)] v] replaces [v] with [u] where [ai = Avar u] and [vi = v]. *)
-
-val subst_atomic : (var * atomic) list -> atomic -> atomic
-(** [subst_atomic [(v1, a1); ...; (vn, an)] a] replaces [v1], ..., and [vn] in [a] respectively with [a1], ..., and [an]. *)
-
-val subst_instr : (var * atomic) list -> instr -> instr
-(** [subst_instr [(v1, a1); ...; (vn, an)] i] replaces [v1], ..., and [vn] in [i] respectively with [a1], ..., and [an]. *)
-
-val subst_program : (var * atomic) list -> program -> program
-(** [subst_program [(v1, a1); ...; (vn, an)] p] replaces [v1], ..., and [vn] in [p] respectively with [a1], ..., and [an]. *)
-
-val subst_lined_program : (var * atomic) list -> lined_program -> lined_program
-(** [subst_lined_program [(v1, a1); ...; (vn, an)] p] replaces [v1], ..., and [vn] in [p] respectively with [a1], ..., and [an]. *)
-
-val pats_to_epats : (var * atomic) list -> (var * eexp) list
-(** [pats_to_epats [(v1, a1); ...; (vn, an)]] converts the atomics [a1], ..., and [an] to algebraic expressions. *)
-
-val pats_to_rpats : (var * atomic) list -> (var * rexp) list
-(** [pats_to_rpats [(v1, a1); ...; (vn, an)]] converts the atomics [a1], ..., and [an] to range expressions. *)
 
 
 (** {1 Static Single Assignment (SSA)} *)
@@ -879,6 +927,12 @@ val ssa_program : int VM.t -> program -> int VM.t * program
 
 val ssa_spec : spec -> spec
 (** [ssa_spec m s] updates the SSA indices of variables in [s] according to [m]. *)
+
+val dessa_program : program -> program
+(** [dessa_program p] remove SSA indices from the variables in the program [p]. *)
+
+val dessa_spec : spec -> spec
+(** [dessa_spec s] remove SSA indices from the variables in the specification [s]. *)
 
 
 (** {1 Cuts} *)
