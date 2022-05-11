@@ -28,7 +28,7 @@ been used to verify cryptographic assembly programs in \openssl and
 \blst, \pqclean, and \pqmfour.
 
 In this tutorial, we explain notable features of \cryptoline through
-two running examples from x86\_64 implementations for NIST P-256 curve
+two running examples from \xeightysix implementations for NIST P-256 curve
 in \openssl. Specifically, NIST P-256 curve uses the finite field
 $\mZ_{p256}$ where $p256$ is
 \[
@@ -39,7 +39,7 @@ We will verify the addition (\texttt{ecp\_nistz256\_add})
 and Montegomery multiplication (\texttt{ecp\_nistz256\_mul\_montx})
 over the field $\mZ_{p256}$ from \texttt{crypto/ec/asm} in \openssl.
 All \cryptoline codes can be found in
-\texttt{examples/openss/ecp\_nistz256/x86\_64} from the \cryptoline
+\texttt{examples/openss/ecp\_nistz256/\xeightysix} from the \cryptoline
 distribution. 
 
 \section{\cryptoline Overview}
@@ -145,13 +145,367 @@ Verifying algebraic specification:      [OK]            0.107180 seconds
 Verification result:                    [OK]            7.452392 seconds 
 \end{verbatim}
 
+\section{Running Examples from \openssl}
+
+The \cryptoline verification tool is a model checker. That is, it
+checks specified properties about models. To verify cryptographic
+programs with \cryptoline, we need to write a model for the program
+and specify properties about the model. In this tutorial, we will
+verify the \xeightysix assembly subroutines \texttt{ecp\_nistz256\_add}
+and \texttt{\_\_ecp\_nistz256\_mul\_montx} from
+\texttt{ecp\_nistz256-x86\_64.pl} in \texttt{crypto/ec/asm} from
+\openssl. The subroutine \texttt{ecp\_nistz256\_add} takes two inputs
+$a$ and $b$ from the field $\mZ_{p256}$, computes their sum $c \equiv
+a + b \mod p256$, and stores $c$ in memory. The API for
+\texttt{\_\_ecp\_nistz256\_mul\_montx} takes two inputs $a, b$ from
+$\mZ_{p256}$, computes their Montgomery product $c \equiv a \times b
+\times 2^{-256} \mod p256$, and stores $c$ in memory. They are used by
+\openssl on \xeightysix by default. We will see important features of
+\cryptoline in these running examples.
+
+\subsection{\nistzadd}
+
+The easiest way to construct accurate \cryptoline models is by
+extracting traces from execution. To do so, we need to build an
+executable binary for the cryptographic program under
+verification. Let us write a simple C program which calls the two
+assembly subroutines.
+\begin{verbatim}
+#include <stdint.h>
+#define P256_LIMBS 4
+
+typedef uint64_t BN_ULONG;
+
+/* Modular add: res = a+b mod P   */
+void ecp_nistz256_add(BN_ULONG res[P256_LIMBS],
+                      const BN_ULONG a[P256_LIMBS],
+                      const BN_ULONG b[P256_LIMBS]);
+/* Montgomery mul: res = a*b*2^-256 mod P */
+void ecp_nistz256_mul_mont(BN_ULONG res[P256_LIMBS],
+                           const BN_ULONG a[P256_LIMBS],
+                           const BN_ULONG b[P256_LIMBS]);
+
+int main (void) {
+  BN_ULONG a[P256_LIMBS], b[P256_LIMBS], r[P256_LIMBS];
+  
+  /* Modular add: res = a+b mod P   */
+  ecp_nistz256_add(r, a, b);
+  /* Montgomery mul: res = a*b*2^-256 mod P */
+  ecp_nistz256_mul_mont(r, a, b);
+
+  return 0;
+}
+\end{verbatim}
+
+An executable binary can be built with the following command
+(\texttt{libcrypto.a} is from \openssl):
+\begin{verbatim}
+$ gcc -o top top.c libcrypto.a
+\end{verbatim}
+
+\cryptoline provides the \python script \itrace to extract execution
+traces from \gdb. Write \cryptolinehome for the root directory of
+\cryptoline. The execution trace of \nistzadd is extracted with the
+following command:
+\begin{verbatim}
+$ $(CL_HOME)/scripts/itrace.py top ecp_nistz256_add ecp_nistz256_add.gas
+\end{verbatim}
+The first argument is the name of the executable binary \texttt{top},
+the second argument is the name of the subroutine \nistzadd, and the
+third argument is the name of the output file
+(\nistzaddgas). The content of \nistzaddgas looks like
+\begin{verbatim}
+ecp_nistz256_add:
+# %rdi = 0x7fffffffda00
+# %rsi = 0x7fffffffd9c0
+# %rdx = 0x7fffffffd9e0
+# %rcx = 0x7fffffffd9c0
+# %r8  = 0x555555580c70
+# %r9  = 0x7ffef3ff00000000
+	#! -> SP = 0x7fffffffd9b8
+	push   %r12                       #! EA = L0x7fffffffd9b0; ...
+	push   %r13                       #! EA = L0x7fffffffd9a8; ...
+	mov    (%rsi),%r8                 #! EA = L0x7fffffffd9c0; ...
+	xor    %r13,%r13                  #! PC = 0x55555557c327
+	mov    0x8(%rsi),%r9              #! EA = L0x7fffffffd9c8; ...
+	mov    0x10(%rsi),%r10            #! EA = L0x7fffffffd9d0; ...
+	mov    0x18(%rsi),%r11            #! EA = L0x7fffffffd9d8; ...
+	lea    -0x33d(%rip),%rsi          # 0x55555557c000 ...
+	add    (%rdx),%r8                 #! EA = L0x7fffffffd9e0; ...
+	adc    0x8(%rdx),%r9              #! EA = L0x7fffffffd9e8; ...
+        ...
+\end{verbatim}
+The script \itrace shows the register contents when \nistzadd is
+called. By calling convention, \texttt{\%rdi}, \texttt{\%rsi}, and
+\texttt{\%rdx} contains the values of the first three arguments to
+\nistzadd. In this case, we see the pointers \texttt{r[]},
+\texttt{a[]}, and \texttt{b[]} are \texttt{0x7fffffffda00}, 
+\texttt{0x7fffffffd9c0}, and \texttt{0x7fffffffd9e0}
+respectively. For each instruction, \itrace moreover reports the
+effective address of its argument (\texttt{EA}), the value stored in
+the address (\texttt{Value}), and the program counter (\texttt{PC}). 
+The \itrace script is necessarily architecture-dependent. It currently
+supports ARM, MIPS, RISC-V, and x86. It can also connect to remote
+\gdb through a serial port. It has been used to extract traces from
+ARM Cortex-M4 development boards.
+
+Our next step is to convert \xeightysix instructions to corresponding
+\cryptoline commands. \cryptoline provides the \python script \tozdsl
+to convert instructions by writing translation rules. Translation
+rules are specified in the beginning of execution traces
+(\nistzaddgas). They must start with \texttt{\#\!}. For \tozdsl,
+strings prefixed by \texttt{\%\%} are matched differently. We start
+with rules for such strings:
+\begin{verbatim}
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+\end{verbatim}
+The left hand side denotes the string in the trace to be matched. The
+right hand side denotes how to rewrite the match strings. The notations
+\texttt{\$1c}, \texttt{\$2c}, and so on match constants. The first six
+rules rewrite memory references to \texttt{\%\%EA}. The last four
+rules add an additional \texttt{\%} to registers.
+
+For each \xeightysix instruction in \nistzaddgas, a translation rule is
+needed for convertion. Instructions starting with \texttt{\#} will be
+skipped. Let us look at the rule for the \xeightysix \texttt{xor} instruction:
+\begin{verbatim}
+#! xor $1v, $1v -> mov $1v 0@uint64
+\end{verbatim}
+The left hand side denotes the pattern in the trace to be matched. The
+right hand side denotes how to rewrite the matched pattern. The strings
+prefixed with \texttt{\%\%} are matched by \texttt{\$1v},
+\texttt{\$2v}, and so on. The \xeightysix instructions from the trace
+separate arguments by \texttt{,}. They moreover write sources before
+destinations. The \cryptoline commands however write destinations
+before sources. In this rule, the same register appears in both
+arguments to the \texttt{xor} instruction. The register is set to
+zero effectively. The rule thus sets the \cryptoline variable to
+\texttt{0@uint64}. Note that all constants in \cryptoline must be
+given a type. The notation \texttt{0@uint64} denotes the constant zero
+of the unsigned 64-bit integer type.
+
+Our next rules are for the \xeightysix \texttt{mov} instruction:
+\begin{verbatim}
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+\end{verbatim}
+The string \texttt{\%\%EA} is matched by \texttt{\$1ea},
+\texttt{\$2ea}, and so on. Recall that \itrace reports the effective
+address appeared in each instruction. The script \tozdsl will also
+rewrite each matched \texttt{\%\%EA} to the corresponding effective
+address. In \cryptoline, there is no memory model. All memory stores
+are modeled by \cryptoline variables. By convention, the memory store
+with the address \texttt{\textit{addr}} are modeled by the variable 
+\texttt{L\textit{addr}}. Using effective addresses as variable names
+allows us to avoid tedious address computation. It greatly simplifies
+our model construnction. Our rules simply swap the order of source and
+destination.
+
+The rules for arithmetic instructions are also strightforward:
+\begin{verbatim}
+#! add $1ea, $2v -> adds carry $2v $2v $1ea
+#! adc $1ea, $2v -> adcs carry $2v $2v $1ea carry
+#! adc \$0x0, $1v -> adc $1v $1v 0@uint64 carry
+#! sub $1ea, $2v -> subb carry $2v $2v $1ea
+#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea carry
+#! sbb \$0x0, $1v -> sbbs carry $1v $1v 0@uint64 carry
+\end{verbatim}
+In \cryptoline commands, all arguments are explicit. Consider, for
+instance, the \xeightysix \texttt{add} instruction. It puts the sum of the
+two arguments in the destination \emph{and} sets the carry flag
+implicitly. In \cryptoline, two commands are provided for addition:
+\texttt{add} updates the destination with the sum of sources;
+\texttt{adds} updates the destination with the sume of sources
+\emph{and} the destination flag with carry. In our rules, the
+\cryptoline variable \texttt{carry} denotes the carry flag. We
+therefore use the \texttt{adds} and \texttt{adcs} for the \xeightysix
+\texttt{add} and \texttt{adc} instructions respectively. Finally,
+\cryptoline provides subtraction commands for carry or borrow
+flags. The \texttt{subb} commands updates the destination with the
+difference of sources and the destination flag with \emph{borrow}; the
+\texttt{subc} commands updates the destination with the difference of
+sources and the destination flag with \emph{carry}. In \xeightysix, the
+\texttt{sub} instruction updates the carry flag with borrow. Our rule
+hence uses the \cryptoline \texttt{subb} command.
+
+Our last rule is for the \xeightysix \texttt{cmovb} instruction:
+\begin{verbatim}
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+\end{verbatim}
+The instruction sets the destination to the value of source if the
+carry flag is true. The \cryptoline command \texttt{cmov} sets the
+destination to the value of the first source if the source flag is
+true; it sets the destination to the value of the second source
+otherwise.
+
+After putting all translation rules in the beginning of \nistzaddgas,
+the \xeightysix trace can be converted to a \cryptoline model with
+following command:
+\begin{verbatim}
+$ $(CL_HOME)/script/to_zdsl.py ecp_nistz256_add.gas > ecp_nistz256_add.cl
+\end{verbatim}
+
+The content of \nistzaddcl looks like:
+\begin{verbatim}
+proc main (L0x55555557c000, ...) =
+{
+  true
+  &&
+  true
+}
+
+(* #! -> SP = 0x7fffffffd9b8 *)
+#! 0x7fffffffd9b8 = 0x7fffffffd9b8;
+(* #push   %r12                     #! ...                       *)
+#push   %%r12                       #! ...
+(* #push   %r13                     #! ...                       *)
+#push   %%r13                       #! ...
+(* mov    (%rsi),%r8                #! EA = L0x7fffffffd9c0; ... *)
+mov r8 L0x7fffffffd9c0;
+(* xor    %r13,%r13                 #! PC = 0x55555557c327 *)
+mov r13 0@uint64;
+...
+(* #repz retq                       #! PC = 0x55555557c39c *)
+#repz retq                          #! ...
+
+{
+  true
+  &&
+  true
+}
+\end{verbatim}
+The notation \texttt{proc main (...) =} denotes the main subroutine in
+\cryptoline. The arguments to the main subroutine are the
+uninitialized variables reported by \tozdsl. In this case, they are
+memory stores for input arguments and constants used in \nistzadd. The
+expression in the brackets \texttt{true \&\& true} denote the
+pre-condition. It is followed by \cryptoline commands for \xeightysix
+instructions. Each \xeightysix instruction is put in \cryptoline
+comments prefixed by \texttt{\#} or enclosed by \texttt{(*} and
+\texttt{*)}. It is then followed by the \cryptoline command generated
+with the translation rules. Finally, the expression in the ending
+brackets \texttt{true \&\& true} denotes the post-condition.
+
+Let us first make arguments more readable by replacing the main
+subroutine declaration with:
+\begin{verbatim}
+proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
+           uint64 b0, uint64 b1, uint64 b2, uint64 b3,
+           uint64 m0, uint64 m1, uint64 m2, uint64 m3) =
+\end{verbatim}
+We will use \texttt{a}'s and \texttt{b}'s for the two input elements
+and \texttt{m}'s for the modulo $p256$. The pre-condition for the main
+subroutine is
+\begin{verbatim}
+{
+  true
+  &&
+  and [ m0 = 0xffffffffffffffff@64, m1 = 0x00000000ffffffff@64,
+        m2 = 0x0000000000000000@64, m3 = 0xffffffff00000001@64,
+        limbs 64 [a0, a1, a2, a3] <u limbs 64 [m0, m1, m2, m3],
+        limbs 64 [b0, b1, b2, b3] <u limbs 64 [m0, m1, m2, m3]
+  ]
+}
+\end{verbatim}
+Recall that two different engines are employed in \cryptoline. In
+order to differentiate properties passed to different engines, all
+\cryptoline properties are of the form \texttt{\textit{P} \&\&
+\textit{Q}}: \textit{P} is passed to CAS's and \textit{Q} is to SMT
+solvers. For \nistzadd, the SMT-based engine suffices because it does
+not involve non-linear computation. Our pre-condition simply passes
+\texttt{true} to the CAS-based engine. For the SMT-based engine, the
+pre-condition assumes \texttt{m}'s to be the modulo $p256$. The field
+elements \texttt{a}'s and \texttt{b}'s moreover are less than $p256$
+in the unsigned representation. The expression $\mathtt{limbs}\ n\
+[a_0, a_1, \ldots, a_m]$ is short for
+\[
+  a_0\times 2^{0\times n}+a_1\times 2^{1\times n}+\cdots+a_m\times
+  2^{m\times n}.
+\]
+
+Our next step is to put input field elements and constants to
+correspond memory stores. By consulting \nistzaddgas, we add the
+following \cryptoline commands after the pre-condition:
+\begin{verbatim}
+mov L0x7fffffffd9c0 a0; mov L0x7fffffffd9c8 a1;
+mov L0x7fffffffd9d0 a2; mov L0x7fffffffd9d8 a3;
+
+mov L0x7fffffffd9e0 b0; mov L0x7fffffffd9e8 b1;
+mov L0x7fffffffd9f0 b2; mov L0x7fffffffd9f8 b3;
+
+mov L0x55555557c000 0xffffffffffffffff@uint64;
+mov L0x55555557c008 0x00000000ffffffff@uint64;
+mov L0x55555557c010 0x0000000000000000@uint64;
+mov L0x55555557c018 0xffffffff00000001@uint64;
+\end{verbatim}
+
+At the end of \nistzaddcl, we copy the result from memory stores by
+the following command:
+\begin{verbatim}
+mov c0 L0x7fffffffda00; mov c1 L0x7fffffffda08;
+mov c2 L0x7fffffffda10; mov c3 L0x7fffffffda18;
+\end{verbatim}
+
+Finally, we specify the post-condition for the SMT-based engine:
+\begin{verbatim}
+{
+  true && 
+  and [ eqmod limbs 64 [c0, c1, c2, c3, 0@64]
+              limbs 64 [a0, a1, a2, a3, 0@64] + 
+              limbs 64 [b0, b1, b2, b3, 0@64]
+              limbs 64 [m0, m1, m2, m3, 0@64],
+        limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3] ]
+}
+\end{verbatim}
+The post-condition states that the output field element \texttt{c}'s
+is congruent to the sum of input field elements modulo $p256$, and the
+output field element is less than the modulo in the unsigned
+representation. Note that the congruence is computed with $5\times
+64=320$ bits instead of $256$ bits.
+
+We are ready to verify our \cryptoline model for \nistzadd. Try
+\begin{verbatim}
+$(CL_HOME)/cv.exe -v -isafety ecp_nistz256_add.cl
+\end{verbatim}
+The transcript is shown below:
+\begin{verbatim}
+Parsing Cryptoline file:                [OK]            0.001247 seconds
+Checking well-formedness:               [OK]            0.000218 seconds
+Transforming to SSA form:               [OK]            0.000105 seconds
+Normalizing specification:              [OK]            0.000097 seconds
+Rewriting assignments:                  [OK]            0.000122 seconds
+Verifying program safety:
+         Cut 0
+             Round 1 (1 safety conditions, timeout = 300 seconds)
+                 Safety condition #0    [OK]
+         Overall                        [OK]            0.044187 seconds
+Verifying range specification:          [OK]            2.203067 seconds
+Rewriting value-preserved casting:      [OK]            0.000023 seconds
+Verifying algebraic specification:      [OK]            0.000412 seconds
+Verification result:                    [OK]            2.249944 seconds
+\end{verbatim}
+
+Congratulations! You have verified the \xeightysix \nistzadd
+subroutine in \openssl successfully. As we have seen, \cryptoline
+provides useful scripts for model construction. They are not perfect
+and still require human intervention. Some practices will help
+verifiers get familiar with the verification flow.
+
+\exercise Construct a model for \texttt{ecp\_nistz256\_sub} in 
+\texttt{ecp\_nistz256-x86\_64.pl} and verify it.
 
 
-\section{\nistzadd in \openssl}
-
-
-
-\section{\nistzmul in \openssl}
+\subsection{\nistzmul}
 
 
 \end{document}
