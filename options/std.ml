@@ -18,16 +18,8 @@ let default_range_solver = "boolector"
 
 let default_algebra_solver = Singular
 
-let wordsize = ref 64
-
-let z3_path = ref "z3"
-let boolector_path = ref "boolector"
-let mathsat_path = ref "mathsat"
-let stp_path = ref "stp"
-let minisat_path = ref "minisat"
-let cryptominisat_path = ref "cryptominisat5"
-
 let range_solver = ref default_range_solver
+
 let range_solver_args = ref ""
 
 let use_btor = ref false
@@ -118,7 +110,6 @@ let rename_local = ref false
 
 let auto_cast = ref false
 let auto_cast_preserve_value = ref false
-let typing_file = ref None
 let use_binary_repr = ref false
 
 let keep_temp_files = ref false
@@ -133,3 +124,5 @@ let cleanup files =
 let cryptoline_filename_extension = ".cl"
 
 let native_smtlib_expn_operator = ref None
+
+let two_phase_rewriting = ref true

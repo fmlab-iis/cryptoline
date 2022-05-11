@@ -5,17 +5,6 @@ open Qfbv.Common
 open Qfbv.Std
 open Common
 
-type 'a gen = 'a Common.gen
-type var_gen = Common.var_gen
-
-(** export functions *)
-
-let rec make_vgen v i = fun () -> More (v ^ "_" ^ string_of_int i, make_vgen v (i + 1))
-
-let vgen_of_spec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_spec s) SS.empty)) 0
-let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_rspec s) SS.empty)) 0
-let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
-
 (*
  * `apply_to_cuts ids vf def combine cuts` applies verifiction function vf to cuts with ID specified in ids.
  * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
@@ -264,7 +253,7 @@ let write_mathematica_input ifile vars gen p =
 let write_macaulay2_input ifile vars gen p =
   let input_text =
     let (vars, gen, p, default_generator) =
-      let dummy_var = mkvar "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
+      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
       let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
       if no_var_in_generator then
         (dummy_var::vars,
@@ -497,8 +486,7 @@ let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   verify_rspec_with_cuts hashopt s
 
-let verify_espec_single_conjunct_ideal vgen s =
-  let (_, entailments) = polys_of_espec vgen s in
+let verify_entailments entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
@@ -507,6 +495,10 @@ let verify_espec_single_conjunct_ideal vgen s =
         else let _ = trace ("Try #1") in is_in_ideal vars ideal p
       )
       else res) true entailments
+
+let verify_espec_single_conjunct_ideal vgen s =
+  let (_, entailments) = polys_of_espec vgen s in
+  verify_entailments entailments
 
 let verify_espec_single_conjunct_smt solver vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
@@ -540,12 +532,26 @@ let verify_espec_single_conjunct vgen s hashopt =
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let rec verify_espec_without_cuts hashopt vgen cid s =
-  match s.espost with
-  | Eand (e1, e2) ->
-     verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-       verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-  | _ -> verify_espec_single_conjunct vgen s hashopt
+let verify_espec_without_cuts hashopt vgen cid s =
+  if !Options.Std.two_phase_rewriting then
+    let s = remove_trivial_epost s in
+    if s.espost = Etrue then true
+    else
+      let (s, sliced) =
+        match s.espost with
+        | Eand _ -> (s, false)
+        | _ -> (slice_espec_ssa s None, true) in
+      (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
+      let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+      verify_entailments entailments
+  else
+    let rec verify_ands hashopt vgen cid s =
+      match s.espost with
+      | Eand (e1, e2) ->
+         verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
+           verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
+      | _ -> verify_espec_single_conjunct vgen s hashopt in
+    verify_ands hashopt vgen cid s
 
 let verify_espec_with_cuts hashopt vgen s =
   apply_to_cuts !verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
@@ -570,7 +576,7 @@ let verify_eassert vgen s hashopt =
   let verify cid s = verify cid s.espre [] s.esprog in
   apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
 
-let verify_rassert _vgen s hashopt =
+let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let rec verify cid rpre rvisited p =
@@ -605,62 +611,6 @@ let verify_assert vgen s hashopt =
     | Icut (ecuts, rcuts)::tl -> verify (ecut_id + 1, rcut_id + 1) (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
     | hd::tl -> verify (ecut_id, rcut_id) (epre, rpre) (hd::evisited, hd::rvisited) tl in
   verify (0, 0) (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
-
-let redlog_of_espec es =
-  let eqn_of_eexp e =
-    let redlog_string_of_eunop op =
-      match op with
-      | Eneg -> "-" in
-    let redlog_string_of_ebinop op =
-      match op with
-      | Eadd -> "+"
-      | Esub -> "-"
-      | Emul -> "*"
-      | Epow -> "^" in
-    let rec redlog_string_of_eexp e =
-      match e with
-      | Evar v -> string_of_var v
-      | Econst n -> Z.to_string n
-      | Eunop (op, e) -> redlog_string_of_eunop op ^ " (" ^ redlog_string_of_eexp e ^ ")"
-      | Ebinop (op, e1, e2) -> "(" ^ redlog_string_of_eexp e1 ^ ") " ^ redlog_string_of_ebinop op ^ " (" ^ redlog_string_of_eexp e2 ^ ")" in
-    (* Change "c*(c-1)=0" to "c=0 or c=1". *)
-    (*
-      match e with
-    | BveBinop (BveMul, BveVar v, BveBinop (BveSub, BveVar v', BveConst c)) when v == v' && eq_big_int c (unit_big_int) -> "(" ^ v ^ " = 0 or " ^ v ^ " = 1)"
-    | _ -> redlog_string_of_eexp e ^ " = 0" *)
-    redlog_string_of_eexp e ^ " = 0" in
-  let vgen = vgen_of_espec es in
-  let (vgen, zssa) = bv2z_espec vgen es in
-  let (vgen, premises) =
-    let (vgen, _, pre_ps) =
-      polys_of_ebexp vgen zssa.ppre in
-    let (vgen, prog_ps) =
-      List.fold_left
-        (fun (vgen, res) e ->
-          let (vgen, _, ps) = polys_of_ebexp vgen e in
-          (vgen, res@ps)
-        ) (vgen, []) zssa.pprog in
-    (vgen, pre_ps@prog_ps) in
-  let (_vgen, tmps, premises, posts) =
-    let (premises, post) = rewrite_assignments_ebexp premises zssa.ppost in
-    let (vgen, tmps, posts) = polys_of_ebexp vgen post in
-    (vgen, tmps, premises, posts) in
-  let phi =
-    let conj es = String.concat " and " (List.map eqn_of_eexp es) in
-    match premises, tmps with
-    | [], [] -> conj posts
-    | [], _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, " ^ conj posts ^ ")"
-    | _, [] -> "(" ^ conj premises ^ ") impl (" ^ conj posts ^ ")"
-    | _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, (" ^ conj premises ^ ") impl (" ^ conj posts ^ "))"
-  in
-  String.concat "\n" [ "load_package redlog;";
-                       "rlset Z;";
-                       "phi := " ^ phi ^ ";";
-                       "rlwqe phi;" ]
-
-let redlog_of_espec es =
-  let ess = cut_espec es in
-  String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
 
 (* The main verification process *)
 let verify_spec s =
@@ -728,9 +678,9 @@ let verify_spec s =
     let _ = vprint "Verifying range assertions:\t\t" in
     let b = if !jobs > 1 then
               (if !Options.Std.use_cli then WithLwt.verify_rassert_cli s
-               else WithLwt.verify_rassert vgen s hashopt)
+               else WithLwt.verify_rassert s hashopt)
             else
-              verify_rassert vgen s hashopt in
+              verify_rassert s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     (b, s, hashopt) in

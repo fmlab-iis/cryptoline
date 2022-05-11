@@ -3,6 +3,9 @@ open Set
 
 exception IndexOutOfBound of int
 
+
+(** Auxiliary Functions *)
+
 let z_two = Z.of_int 2
 
 let _eq_symbol = "="
@@ -30,7 +33,6 @@ let conj_assoc = LeftAssoc
 let disj_assoc = LeftAssoc
 let _unused_assoc = RightAssoc
 
-
 let apply_to_some f ox =
   match ox with
   | None -> None
@@ -47,8 +49,6 @@ let map_fst f pairs =
 let map_snd f pairs =
   List.map (fun (e1, e2) -> (e1, f e2)) pairs
 
-(* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
-let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
 
 (** Types *)
 
@@ -62,80 +62,86 @@ let uint_t w = Tuint w
 let int_t w = Tsint w
 let bit_t = Tuint 1
 
-let string_of_typ ty =
-  match ty with
-  | Tuint w -> "uint" ^ string_of_int w
-  | Tsint w -> "int" ^ string_of_int w
 let size_of_typ ty =
   match ty with
   | Tuint w -> w
   | Tsint w -> w
+
 let min_of_typ ty =
   match ty with
   | Tuint _w -> Z.zero
   | Tsint w -> Z.neg (Z.pow z_two (w - 1))
+
 let max_of_typ ty =
   match ty with
   | Tuint w -> Z.sub (Z.pow z_two w) Z.one
   | Tsint w -> Z.sub (Z.pow z_two (w - 1)) Z.one
+
+let typ_is_unsigned ty =
+  match ty with
+  | Tsint _ -> false
+  | Tuint _ -> true
+
 let typ_is_signed ty =
   match ty with
   | Tsint _ -> true
   | Tuint _ -> false
+
 let typ_to_signed ty =
   match ty with
   | Tuint w -> Tsint w
   | Tsint _w -> ty
+
 let typ_to_unsigned ty =
   match ty with
   | Tuint _w -> ty
   | Tsint w -> Tuint w
 
 
-
-(** Variables with SSA index taken into consideration *)
+(** Variables *)
 
 type var =
   {
-    vname : string;     (* name of the variable *)
-    vtyp : typ;         (* type of the variable *)
-    vsidx : int         (* SSA index of the variable *)
+    vname : string;     (** name of the variable *)
+    vtyp  : typ;        (** type of the variable *)
+    vsidx : int;        (** SSA index of the variable *)
+    mutable vid : int;  (** variable ID *)
   }
+
+let uninitialized_vid = -1
+let global_next_vid = ref 0
+
+let incr_global_next_vid () =
+  let res = !global_next_vid in
+  let _ = incr global_next_vid in
+  res
 
 let invalid_sidx i = i < 0
 let default_non_ssa_idx = -1
-(*
- * The string representation of a variable with SSA index taken into consideration
- * If the argument labeled with vtyp is true, the variable type is also output.
- *)
-let string_of_var ?typ:(typ=false) v =
-  let str =
-    if invalid_sidx v.vsidx then v.vname
-    else v.vname ^ "_" ^ string_of_int v.vsidx in
-  if typ then str ^ typ_delim ^ string_of_typ v.vtyp
-  else str
+
 let size_of_var v = size_of_typ v.vtyp
+
 let typ_of_var v = v.vtyp
+
 (* Two variables are equal if
  * - they have the same name and
  * - their SSA indices are equal.
  *)
 let eq_var v1 v2 = v1.vname = v2.vname && v1.vsidx = v2.vsidx
+
 let cmp_var v1 v2 =
   let c = Pervasives.compare v1.vname v2.vname in
   if c = 0 then Pervasives.compare v1.vsidx v2.vsidx
   else c
 let mem_var v vs = List.exists (fun u -> eq_var u v) vs
-let mkvar vn vt = { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx }
-let var_is_uint v =
-  match v.vtyp with
-  | Tuint _ -> true
-  | _ -> false
-let var_is_sint v =
-  match v.vtyp with
-  | Tsint _ -> true
-  | _ -> false
+
+let mkvar ?(newvid=false) vn vt =
+  let i = if newvid then incr_global_next_vid ()
+          else uninitialized_vid in
+  { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx; vid = i }
+
 let var_is_bit v = v.vtyp = bit_t
+let var_is_unsigned v = typ_is_unsigned v.vtyp
 let var_is_signed v = typ_is_signed v.vtyp
 
 module VarElem : OrderedType with type t = var =
@@ -145,11 +151,6 @@ module VarElem : OrderedType with type t = var =
   end
 module VS = Set.Make(VarElem)
 module VM = Map.Make(VarElem)
-
-
-let vs_disjoint vs1 vs2 = VS.is_empty (VS.inter vs1 vs2)
-let string_of_vs ?typ:(typ=false) vs = String.concat ", " (List.map (fun v -> string_of_var ~typ:typ v) (VS.elements vs))
-
 
 
 (** Operators *)
@@ -190,71 +191,6 @@ type rcmpop =
   | Rsle
   | Rsgt
   | Rsge
-
-let string_of_eunop op =
-  match op with
-  | Eneg -> "neg"
-
-let symbol_of_eunop op =
-  match op with
-  | Eneg -> "-"
-
-let string_of_ebinop op =
-  match op with
-  | Eadd -> "add"
-  | Esub -> "sub"
-  | Emul -> "mul"
-  | Epow -> "pow"
-
-let symbol_of_ebinop op =
-  match op with
-  | Eadd -> add_symbol
-  | Esub -> sub_symbol
-  | Emul -> mul_symbol
-  | Epow -> pow_symbol
-
-let string_of_rcmpop op =
-  match op with
-  | Rult -> "ult"
-  | Rule -> "ule"
-  | Rugt -> "ugt"
-  | Ruge -> "uge"
-  | Rslt -> "slt"
-  | Rsle -> "sle"
-  | Rsgt -> "sgt"
-  | Rsge -> "sge"
-
-let symbol_of_rcmpop op =
-  match op with
-  | Rult -> ult_symbol
-  | Rule -> ule_symbol
-  | Rugt -> ugt_symbol
-  | Ruge -> uge_symbol
-  | Rslt -> slt_symbol
-  | Rsle -> sle_symbol
-  | Rsgt -> sgt_symbol
-  | Rsge -> sge_symbol
-
-let string_of_runop op =
-  match op with
-  | Rnegb -> "neg"
-  | Rnotb -> "not"
-
-let string_of_rbinop op =
-  match op with
-  | Radd -> "add"
-  | Rsub -> "sub"
-  | Rmul -> "mul"
-  | Rumod -> "umod"
-  | Rsrem -> "srem"
-  | Rsmod -> "smod"
-  | Randb -> "and"
-  | Rorb -> "or"
-  | Rxorb -> "xor"
-  | Rshl -> "shl"
-  | Rlshr -> "lshr"
-  | Rashr -> "ashr"
-
 
 
 (** Algebraic Expressions *)
@@ -433,85 +369,6 @@ let is_eexp_atomic e =
   | Evar _ | Econst _ -> true
   | _ -> false
 
-let rec string_of_eexp ?typ:(typ=false) e =
-  match e with
-  | Evar v -> string_of_var ~typ:typ v
-  | Econst n -> string_of_const n
-  | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atomic e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
-  | Ebinop (op, e1, e2) ->
-     (if eexp_ebinop_open e1 op then string_of_eexp ~typ:typ e1 else "(" ^ string_of_eexp ~typ:typ e1 ^ ")")
-     ^ " " ^ symbol_of_ebinop op ^ " "
-     ^ (if ebinop_eexp_open op e2 then string_of_eexp ~typ:typ e2 else "(" ^ string_of_eexp ~typ:typ e2 ^ ")")
-
-let rec vars_eexp e =
-  match e with
-  | Evar x -> VS.singleton x
-  | Econst _ -> VS.empty
-  | Eunop (_, e) -> vars_eexp e
-  | Ebinop (_, e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
-
-let rec _subst_eexp v r e =
-  match e with
-  | Evar x when eq_var x v -> r
-  | Eunop (op, e) -> Eunop (op, _subst_eexp v r e)
-  | Ebinop (op, e1, e2) -> Ebinop (op, _subst_eexp v r e1, _subst_eexp v r e2)
-  | _ -> e
-
-let rec subst_evar pats v =
-  match pats with
-  | [] -> Evar v
-  | (x, r)::_tl when eq_var v x -> r
-  | _::tl -> subst_evar tl v
-
-let rec subst_eexp pats e =
-  match e with
-  | Evar v -> subst_evar pats v
-  | Econst _n -> e
-  | Eunop (op, e) -> Eunop (op, subst_eexp pats e)
-  | Ebinop (op, e1, e2) -> Ebinop (op, subst_eexp pats e1, subst_eexp pats e2)
-
-(* hash cons substitution *)
-(*
-let subst_eexp pats e =
-  let tbl = Hashtbl.create 23 in
-  let _ = List.iter (fun (v, r) -> Hashtbl.add tbl (Evar v) r) pats in
-  let rec subst_eexp_helper todo =
-    match todo with
-    | [] -> Hashtbl.find tbl e
-    | hd::tl ->
-       match hd with
-       | Eunop (op, e) ->
-          (try
-             let _ = Hashtbl.add tbl hd (Eunop (op, Hashtbl.find tbl e)) in
-             subst_eexp_helper tl
-           with Not_found -> subst_eexp_helper (e::todo))
-       | Ebinop (op, e1, e2) ->
-          (try
-             let e1_new = Hashtbl.find tbl e1 in
-             (try
-                let e2_new = Hashtbl.find tbl e2 in
-                let _ = Hashtbl.add tbl hd (Ebinop (op, e1_new, e2_new)) in
-                subst_eexp_helper tl
-              with Not_found -> subst_eexp_helper (e2::todo))
-           with Not_found -> subst_eexp_helper (e1::todo))
-       | _ ->
-          let _ = if Hashtbl.mem tbl hd then ()
-                  else Hashtbl.add tbl hd hd in
-          subst_eexp_helper tl in
-  subst_eexp_helper [e]
- *)
-  
-let rec replace_eexp pats e =
-  try
-    snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats)
-  with Not_found ->
-    begin
-      match e with
-      | Eunop (op, e) -> Eunop (op, replace_eexp pats e)
-      | Ebinop (op, e1, e2) -> Ebinop (op, replace_eexp pats e1, replace_eexp pats e2)
-      | _ -> e
-    end
-
 let rec subs_eexp e =
   EES.add e (match e with
              | Evar _ -> EES.empty
@@ -550,7 +407,6 @@ let size_of_rexp e =
 
 let rvar v = Rvar v
 let rconst w n = Rconst (w, n)
-let rposz w n = Rconst (w, n)
 let rnegb w e = Runop (w, Rnegb, e)
 let rnotb w e = Runop (w, Rnotb, e)
 let radd w e1 e2 = Rbinop (w, Radd, e1, e2)
@@ -588,15 +444,6 @@ let is_rexp_atomic e =
   | Rvar _ | Rconst _ -> true
   | _ -> false
 
-let rec string_of_rexp ?typ:(typ=false) e =
-  match e with
-  | Rvar v -> string_of_var ~typ:typ v
-  | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
-  | Runop (_w, op, e) -> string_of_runop op ^ " " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")")
-  | Rbinop (_w, op, e1, e2) -> string_of_rbinop op ^ " (" ^ string_of_rexp ~typ:typ e1 ^ ") (" ^ string_of_rexp ~typ:typ e2 ^ ")"
-  | Ruext (_w, e, i) -> "uext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
-  | Rsext (_w, e, i) -> "sext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
-
 let rec eq_rexp e1 e2 =
   match e1, e2 with
   | Rvar v1, Rvar v2 -> eq_var v1 v2
@@ -606,31 +453,6 @@ let rec eq_rexp e1 e2 =
   | Ruext (w1, e1, n1), Ruext (w2, e2, n2)
     | Rsext (w1, e1, n1), Rsext (w2, e2, n2) -> w1 = w2 && eq_rexp e1 e2 && n1 = n2
   | _, _ -> false
-
-let rec vars_rexp e =
-  match e with
-  | Rvar x -> VS.singleton x
-  | Rconst _ -> VS.empty
-  | Runop (_, _, e) -> vars_rexp e
-  | Rbinop (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
-  | Ruext (_, e, _)
-  | Rsext (_, e, _) -> vars_rexp e
-
-let rec subst_rvar pats v =
-  match pats with
-  | [] -> Rvar v
-  | (x, r)::_tl when v = x -> r
-  | _::tl -> subst_rvar tl v
-
-let rec subst_rexp pats e =
-  match e with
-  | Rvar v -> subst_rvar pats v
-  | Rconst (_w, _n) -> e
-  | Runop (w, op, e) -> Runop (w, op, subst_rexp pats e)
-  | Rbinop (w, op, e1, e2) -> Rbinop (w, op, subst_rexp pats e1, subst_rexp pats e2)
-  | Ruext (w, e, i) -> Ruext (w, subst_rexp pats e, i)
-  | Rsext (w, e, i) -> Rsext (w, subst_rexp pats e, i)
-
 
 
 (** Algebraic Predicates *)
@@ -663,22 +485,6 @@ let rec split_eand e =
   | Eand (e1, e2) -> (split_eand e1)@(split_eand e2)
   | _ -> [e]
 
-let rec string_of_ebexp ?typ:(typ=false) e =
-  match e with
-  | Etrue -> "true"
-  | Eeq (e1, e2) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
-  | Eeqmod (e1, e2, ms) ->
-     string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
-     ^ (match ms with
-        | [] -> ""
-        | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
-        | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
-  | Eand (e1, e2) ->
-     let es = split_eand e in
-     match es with
-     | _::_::[] -> string_of_ebexp ~typ:typ e1 ^ " /\\ " ^ string_of_ebexp ~typ:typ e2
-     | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_ebexp ~typ:typ e) es) ^ "]"
-
 let rec eq_ebexp e1 e2 =
   match e1, e2 with
   | Etrue, Etrue -> true
@@ -687,27 +493,12 @@ let rec eq_ebexp e1 e2 =
   | Eand (e1a, e1b), Eand (e2a, e2b) -> eq_ebexp e1a e2a && eq_ebexp e1b e2b
   | _, _ -> false
 
-let rec vars_ebexp e =
-  match e with
-  | Etrue -> VS.empty
-  | Eeq (e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
-  | Eeqmod (e1, e2, ps) -> VS.union (vars_eexp e1) (List.fold_left (fun vs p -> VS.union vs (vars_eexp p)) (vars_eexp e2) ps)
-  | Eand (e1, e2) -> VS.union (vars_ebexp e1) (vars_ebexp e2)
-
-let rec subst_ebexp pats e =
-  match e with
-  | Etrue -> e
-  | Eeq (e1, e2) -> Eeq (subst_eexp pats e1, subst_eexp pats e2)
-  | Eeqmod (e1, e2, ms) -> Eeqmod (subst_eexp pats e1, subst_eexp pats e2, List.rev (List.rev_map (subst_eexp pats) ms))
-  | Eand (e1, e2) -> Eand (subst_ebexp pats e1, subst_ebexp pats e2)
-
 let rec simplify_ebexp e =
   match e with
   | Eeq (e1, e2) -> Eeq (simplify_eexp e1, simplify_eexp e2)
   | Eeqmod (e1, e2, ms) -> Eeqmod (simplify_eexp e1, simplify_eexp e2, List.rev (List.rev_map simplify_eexp ms))
   | Eand (e, Etrue) | Eand (Etrue, e) -> simplify_ebexp e
   | _ -> e
-
 
 
 (** Range Predicates *)
@@ -803,25 +594,6 @@ let rbexp_is_ror e =
   | Ror _ -> true
   | _ -> false
 
-let rec string_of_rbexp ?typ:(typ=false) e =
-  match e with
-  | Rtrue -> "true"
-  | Req (_w, e1, e2) -> string_of_rexp ~typ:typ e1 ^ " = " ^ string_of_rexp ~typ:typ e2
-  | Rcmp (_w, op, e1, e2) -> string_of_rexp ~typ:typ e1 ^ " " ^ symbol_of_rcmpop op ^ " " ^ string_of_rexp ~typ:typ e2
-  | Rneg e -> "~ (" ^ string_of_rbexp ~typ:typ e ^ ")"
-  | Rand (e1, e2) ->
-     let es = split_rand e in
-     (match es with
-      | _::_::[] -> (if rbexp_is_ror e1 then "(" ^ string_of_rbexp ~typ:typ e1 ^ ")" else string_of_rbexp ~typ:typ e1)
-                    ^ " /\\ "
-                    ^ (if rbexp_is_ror e2 then "(" ^ string_of_rbexp ~typ:typ e2 ^ ")" else string_of_rbexp ~typ:typ e2)
-      | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]")
-  | Ror (e1, e2) ->
-     let es = split_ror e in
-     match es with
-     | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2
-     | _ -> "or [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
-
 let rec eq_rbexp e1 e2 =
   match e1, e2 with
   | Rtrue, Rtrue -> true
@@ -831,25 +603,6 @@ let rec eq_rbexp e1 e2 =
   | Rand (e1a, e1b), Rand (e2a, e2b)
     | Ror (e1a, e1b), Ror (e2a, e2b) -> eq_rbexp e1a e2a && eq_rbexp e1b e2b
   | _, _ -> false
-
-let rec vars_rbexp e =
-  match e with
-  | Rtrue -> VS.empty
-  | Req (_, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
-  | Rcmp (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
-  | Rneg e -> vars_rbexp e
-  | Rand (e1, e2)
-  | Ror (e1, e2) -> VS.union (vars_rbexp e1) (vars_rbexp e2)
-
-let rec subst_rbexp pats e =
-  match e with
-  | Rtrue -> e
-  | Req (w, e1, e2) -> Req (w, subst_rexp pats e1, subst_rexp pats e2)
-  | Rcmp (w, op, e1, e2) -> Rcmp (w, op, subst_rexp pats e1, subst_rexp pats e2)
-  | Rneg e -> Rneg (subst_rbexp pats e)
-  | Rand (e1, e2) -> Rand (subst_rbexp pats e1, subst_rbexp pats e2)
-  | Ror (e1, e2) -> Ror (subst_rbexp pats e1, subst_rbexp pats e2)
-
 
 
 (** Predicates *)
@@ -863,11 +616,7 @@ let btrue = (Etrue, Rtrue)
 let eqn_bexp e = fst e
 let rng_bexp e = snd e
 
-let band e1 e2 =
-  match e1, e2 with
-  | (Etrue, Rtrue), (ee, re)
-  | (ee, re), (Etrue, Rtrue) -> (ee, re)
-  | (ee1, re1), (ee2, re2) -> (eand ee1 ee2, rand re1 re2)
+let band (e1, r1) (e2, r2) = (eand e1 e2, rand r1 r2)
 
 (*let bvands es = List.fold_left (fun res e -> bvand e res) bvTrue es*)
 let bands es =
@@ -876,17 +625,7 @@ let bands es =
   | RightAssoc -> List.fold_left (fun res e -> band e res) btrue es
 let bands2 es rs = (eands es, rands rs)
 
-let string_of_bexp ?typ:(typ=false) e =
-  match e with
-  | (ee, re) -> string_of_ebexp ~typ:typ ee ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp ~typ:typ re
-
 let eq_bexp e1 e2 = eq_ebexp (eqn_bexp e1) (eqn_bexp e2) && eq_rbexp (rng_bexp e1) (rng_bexp e2)
-
-let vars_bexp e =
-  VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
-
-let subst_bexp epats rpats e = (subst_ebexp epats (eqn_bexp e), subst_rbexp rpats (rng_bexp e))
-
 
 
 (** Instructions *)
@@ -992,6 +731,317 @@ let const_of_atomic a =
 
 let atomic_is_signed a = typ_is_signed (typ_of_atomic a)
 
+let eq_atomic a1 a2 =
+  match a1, a2 with
+  | Avar v1, Avar v2 -> eq_var v1 v2
+  | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
+  | _, _ -> false
+
+let is_assert i =
+  match i with
+  | Iassert _ -> true
+  | _ -> false
+
+let is_assume i =
+  match i with
+  | Iassume _ -> true
+  | _ -> false
+
+let is_cut i =
+  match i with
+  | Icut _ -> true
+  | _ -> false
+
+(* Test if the instruction is a cut over algebra properties *)
+let is_ecut i =
+  match i with
+  | Icut (_::_, _) -> true
+  | _ -> false
+
+(* Test if the instruction is a cut over range properties *)
+let is_rcut i =
+  match i with
+  | Icut (_, _::_) -> true
+  | _ -> false
+
+let is_annotation i =
+  match i with
+  | Iassert _ | Iassume _ | Ighost _ | Icut _ -> true
+  | _ -> false
+
+module StringElem : OrderedType with type t = string =
+  struct
+    type t = string
+    let compare = Pervasives.compare
+  end
+module SS = Set.Make(StringElem)
+module SM = Map.Make(StringElem)
+
+(* Generate a new name. *)
+let new_name ?prefix:prefix names =
+  let prefix =
+    (match prefix with
+     | None -> "tmp"
+     | Some name -> name) ^ string_of_int (Random.int 1000000000) in
+  if SS.mem prefix names then
+    let i = ref 0 in
+    let name = ref (prefix ^ string_of_int !i) in
+    let _ =
+      while SS.mem !name names do
+        i := !i + 1;
+        name := prefix ^ string_of_int !i
+      done in
+    !name
+  else prefix
+
+(* Find all required algebraic predicates in instrs according to pwss. *)
+let eprove_with_filter pwss (pre, cuts_rev, instrs) =
+  let extract_ebexps instrs =
+    let extractor i =
+      match i with
+        Icut (ecuts, _) -> fst (List.split ecuts)
+      | Iassume e -> [eqn_bexp e]
+      | Ighost (_, e) -> [eqn_bexp e]
+      | _ -> [] in
+    List.flatten (List.map extractor instrs) in
+  let filter_of_pws pws =
+    match pws with
+      Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
+    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+  let filter =
+    let filters = List.map filter_of_pws pwss in
+    fun i -> List.exists (fun f -> f i) filters in
+  let ebexps = extract_ebexps (List.filter filter instrs) in
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_bexps = extract_ebexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss then
+    pre::(List.rev_append cuts_bexps ebexps)
+  else List.rev_append cuts_bexps ebexps
+
+(* Find all required range predicates in instrs according to pwss. *)
+let rprove_with_filter pwss (pre, cuts_rev, instrs) =
+  let extract_rbexps instrs =
+    let extractor i =
+      match i with
+        Icut (_, rcuts) -> fst (List.split rcuts)
+      | Iassume e -> [rng_bexp e]
+      | Ighost (_, e) -> [rng_bexp e]
+      | _ -> [] in
+    List.flatten (List.map extractor instrs) in
+  let filter_of_pws pws =
+    match pws with
+      Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
+    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+  let filter =
+    let filters = List.map filter_of_pws pwss in
+    fun i -> List.exists (fun f -> f i) filters in
+  let rbexps = extract_rbexps (List.filter filter instrs) in
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_rbexps = extract_rbexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss
+  then pre::(List.rev_append cuts_rbexps rbexps)
+  else List.rev_append cuts_rbexps rbexps
+
+
+(** Specifications *)
+
+type spec =
+  { spre : bexp;
+    sprog : program;
+    spost : bexp;
+    sepwss : prove_with_spec list;
+    srpwss : prove_with_spec list }
+
+type espec =
+  { espre : ebexp;
+    esprog : program;
+    espost : ebexp;
+    espwss : prove_with_spec list }
+
+type rspec =
+  { rspre : rbexp;
+    rsprog : program;
+    rspost : rbexp;
+    rspwss : prove_with_spec list }
+
+let espec_of_spec s =
+  { espre = eqn_bexp s.spre;
+    esprog = s.sprog;
+    espost = eqn_bexp s.spost;
+    espwss = s.sepwss }
+
+let rspec_of_spec s =
+  { rspre = rng_bexp s.spre;
+    rsprog = s.sprog;
+    rspost = rng_bexp s.spost;
+    rspwss = s.srpwss }
+
+
+(** String Outputs *)
+
+(* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
+let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
+
+let string_of_typ ty =
+  match ty with
+  | Tuint w -> "uint" ^ string_of_int w
+  | Tsint w -> "int" ^ string_of_int w
+
+(*
+ * The string representation of a variable with SSA index taken into consideration
+ * If the argument labeled with vtyp is true, the variable type is also output.
+ *)
+let string_of_var ?typ:(typ=false) v =
+  let str =
+    if invalid_sidx v.vsidx then v.vname
+    else v.vname ^ "_" ^ string_of_int v.vsidx in
+  if typ then str ^ typ_delim ^ string_of_typ v.vtyp
+  else str
+
+let string_of_vs ?typ:(typ=false) vs = String.concat ", " (List.map (fun v -> string_of_var ~typ:typ v) (VS.elements vs))
+
+let string_of_eunop op =
+  match op with
+  | Eneg -> "neg"
+
+let symbol_of_eunop op =
+  match op with
+  | Eneg -> "-"
+
+let string_of_ebinop op =
+  match op with
+  | Eadd -> "add"
+  | Esub -> "sub"
+  | Emul -> "mul"
+  | Epow -> "pow"
+
+let symbol_of_ebinop op =
+  match op with
+  | Eadd -> add_symbol
+  | Esub -> sub_symbol
+  | Emul -> mul_symbol
+  | Epow -> pow_symbol
+
+let string_of_rcmpop op =
+  match op with
+  | Rult -> "ult"
+  | Rule -> "ule"
+  | Rugt -> "ugt"
+  | Ruge -> "uge"
+  | Rslt -> "slt"
+  | Rsle -> "sle"
+  | Rsgt -> "sgt"
+  | Rsge -> "sge"
+
+let symbol_of_rcmpop op =
+  match op with
+  | Rult -> ult_symbol
+  | Rule -> ule_symbol
+  | Rugt -> ugt_symbol
+  | Ruge -> uge_symbol
+  | Rslt -> slt_symbol
+  | Rsle -> sle_symbol
+  | Rsgt -> sgt_symbol
+  | Rsge -> sge_symbol
+
+let string_of_runop op =
+  match op with
+  | Rnegb -> "neg"
+  | Rnotb -> "not"
+
+let string_of_rbinop op =
+  match op with
+  | Radd -> "add"
+  | Rsub -> "sub"
+  | Rmul -> "mul"
+  | Rumod -> "umod"
+  | Rsrem -> "srem"
+  | Rsmod -> "smod"
+  | Randb -> "and"
+  | Rorb -> "or"
+  | Rxorb -> "xor"
+  | Rshl -> "shl"
+  | Rlshr -> "lshr"
+  | Rashr -> "ashr"
+
+let rec string_of_eexp ?typ:(typ=false) e =
+  match e with
+  | Evar v -> string_of_var ~typ:typ v
+  | Econst n -> string_of_const n
+  | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atomic e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op then string_of_eexp ~typ:typ e1 else "(" ^ string_of_eexp ~typ:typ e1 ^ ")")
+     ^ " " ^ symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2 then string_of_eexp ~typ:typ e2 else "(" ^ string_of_eexp ~typ:typ e2 ^ ")")
+
+let rec string_of_rexp ?typ:(typ=false) e =
+  match e with
+  | Rvar v -> string_of_var ~typ:typ v
+  | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
+  | Runop (_w, op, e) -> string_of_runop op ^ " " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")")
+  | Rbinop (_w, op, e1, e2) -> string_of_rbinop op ^ " (" ^ string_of_rexp ~typ:typ e1 ^ ") (" ^ string_of_rexp ~typ:typ e2 ^ ")"
+  | Ruext (_w, e, i) -> "uext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
+  | Rsext (_w, e, i) -> "sext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
+
+let rec string_of_ebexp ?typ:(typ=false) e =
+  match e with
+  | Etrue -> "true"
+  | Eeq (e1, e2) -> string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
+  | Eeqmod (e1, e2, ms) ->
+     string_of_eexp ~typ:typ e1 ^ " = " ^ string_of_eexp ~typ:typ e2
+     ^ (match ms with
+        | [] -> ""
+        | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
+        | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
+  | Eand (e1, e2) ->
+     let es = split_eand e in
+     match es with
+     | _::_::[] -> string_of_ebexp ~typ:typ e1 ^ " /\\ " ^ string_of_ebexp ~typ:typ e2
+     | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_ebexp ~typ:typ e) es) ^ "]"
+
+let rec string_of_rbexp ?typ:(typ=false) e =
+  match e with
+  | Rtrue -> "true"
+  | Req (_w, e1, e2) -> string_of_rexp ~typ:typ e1 ^ " = " ^ string_of_rexp ~typ:typ e2
+  | Rcmp (_w, op, e1, e2) -> string_of_rexp ~typ:typ e1 ^ " " ^ symbol_of_rcmpop op ^ " " ^ string_of_rexp ~typ:typ e2
+  | Rneg e -> "~ (" ^ string_of_rbexp ~typ:typ e ^ ")"
+  | Rand (e1, e2) ->
+     let es = split_rand e in
+     (match es with
+      | _::_::[] -> (if rbexp_is_ror e1 then "(" ^ string_of_rbexp ~typ:typ e1 ^ ")" else string_of_rbexp ~typ:typ e1)
+                    ^ " /\\ "
+                    ^ (if rbexp_is_ror e2 then "(" ^ string_of_rbexp ~typ:typ e2 ^ ")" else string_of_rbexp ~typ:typ e2)
+      | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]")
+  | Ror (e1, e2) ->
+     let es = split_ror e in
+     match es with
+     | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2
+     | _ -> "or [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
+
+let string_of_bexp ?typ:(typ=false) e =
+  match e with
+  | (ee, re) -> string_of_ebexp ~typ:typ ee ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp ~typ:typ re
+
 let string_of_prove_with_spec ps =
   match ps with
     Precondition -> "precondition"
@@ -1080,11 +1130,86 @@ let string_of_program ?insert_nop:(insert=true) ?typ:(typ=false) p =
     | _ -> p in
   String.concat "\n" (List.map (fun i -> string_of_instr ~typ:typ i) p)
 
-let eq_atomic a1 a2 =
-  match a1, a2 with
-  | Avar v1, Avar v2 -> eq_var v1 v2
-  | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
-  | _, _ -> false
+let string_of_spec ?typ:(typ=false) s =
+  if s.sepwss = [] && s.srpwss = [] then
+    "{ " ^ string_of_bexp ~typ:typ (s.spre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.sprog) ^ "\n"
+    ^ "{ " ^ string_of_bexp ~typ:typ (s.spost) ^ " }"
+  else
+    "{ " ^ string_of_bexp ~typ:typ (s.spre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.sprog) ^ "\n"
+    ^ "{ "
+    ^ string_of_ebexp ~typ:typ (eqn_bexp s.spost)
+    ^ (if s.sepwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.sepwss ^ "]")
+    ^ " " ^ bexp_separator ^ " "
+    ^ string_of_rbexp ~typ:typ (rng_bexp s.spost)
+    ^ (if s.srpwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.srpwss ^ "]")
+    ^ " }"
+
+let string_of_espec ?typ:(typ=false) s =
+  if s.espwss = [] then
+    "{ " ^ string_of_ebexp ~typ:typ (s.espre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.esprog) ^ "\n"
+    ^ "{ " ^ string_of_ebexp ~typ:typ (s.espost) ^ " }"
+  else
+    "{ " ^ string_of_ebexp ~typ:typ (s.espre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.esprog) ^ "\n"
+    ^ "{ "
+    ^ string_of_ebexp ~typ:typ (s.espost)
+    ^ (if s.espwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.espwss ^ "]")
+    ^ " }"
+
+let string_of_rspec ?typ:(typ=false) s =
+  if s.rspwss = [] then
+    "{ " ^ string_of_rbexp ~typ:typ (s.rspre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.rsprog) ^ "\n"
+    ^ "{ " ^ string_of_rbexp ~typ:typ (s.rspost) ^ " }"
+  else
+    "{ " ^ string_of_rbexp ~typ:typ (s.rspre) ^ " }\n"
+    ^ string_of_program ~typ:typ (s.rsprog) ^ "\n"
+    ^ "{ "
+    ^ string_of_rbexp ~typ:typ (s.rspost)
+    ^ (if s.rspwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.rspwss ^ "]")
+    ^ " }"
+
+
+(** Variable Sets *)
+
+
+let rec vars_eexp e =
+  match e with
+  | Evar x -> VS.singleton x
+  | Econst _ -> VS.empty
+  | Eunop (_, e) -> vars_eexp e
+  | Ebinop (_, e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
+
+let rec vars_rexp e =
+  match e with
+  | Rvar x -> VS.singleton x
+  | Rconst _ -> VS.empty
+  | Runop (_, _, e) -> vars_rexp e
+  | Rbinop (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
+  | Ruext (_, e, _)
+  | Rsext (_, e, _) -> vars_rexp e
+
+let rec vars_ebexp e =
+  match e with
+  | Etrue -> VS.empty
+  | Eeq (e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
+  | Eeqmod (e1, e2, ps) -> VS.union (vars_eexp e1) (List.fold_left (fun vs p -> VS.union vs (vars_eexp p)) (vars_eexp e2) ps)
+  | Eand (e1, e2) -> VS.union (vars_ebexp e1) (vars_ebexp e2)
+
+let rec vars_rbexp e =
+  match e with
+  | Rtrue -> VS.empty
+  | Req (_, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
+  | Rcmp (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
+  | Rneg e -> vars_rbexp e
+  | Rand (e1, e2)
+  | Ror (e1, e2) -> VS.union (vars_rbexp e1) (vars_rbexp e2)
+
+let vars_bexp e =
+  VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
 
 let vars_atomic a =
   match a with
@@ -1281,521 +1406,254 @@ let lcarries_instr i =
 
 let lcarries_program p = List.fold_left (fun res i -> VS.union (lcarries_instr i) res) VS.empty p
 
-module StringElem : OrderedType with type t = string =
-  struct
-    type t = string
-    let compare = Pervasives.compare
-  end
-module SS = Set.Make(StringElem)
-module SM = Map.Make(StringElem)
-
-(* Generate a new name. *)
-let new_name ?prefix:prefix names =
-  let prefix =
-    (match prefix with
-     | None -> "tmp"
-     | Some name -> name) ^ string_of_int (Random.int 1000000000) in
-  if SS.mem prefix names then
-    let i = ref 0 in
-    let name = ref (prefix ^ string_of_int !i) in
-    let _ =
-      while SS.mem !name names do
-        i := !i + 1;
-        name := prefix ^ string_of_int !i
-      done in
-    !name
-  else prefix
-
-let rec subst_lval pats lv =
-  match pats with
-  | [] -> lv
-  | (x, r)::tl ->
-     if eq_var lv x then
-       match r with
-       | Avar v -> v
-       | Aconst (_ty, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
-     else
-       subst_lval tl lv
-
-let rec subst_atomic pats a =
-  match pats, a with
-  | _, Aconst _ -> a
-  | [], _ -> a
-  | (x, r)::_tl, Avar v when eq_var v x -> r
-  | _::tl, _ -> subst_atomic tl a
-
-let rec pats_to_epats pats =
-  match pats with
-  | [] -> []
-  | (x, r)::tl ->
-     (x, match r with
-         | Avar v -> Evar v
-         | Aconst (_ty, n) -> Econst n)::(pats_to_epats tl)
-
-let rec pats_to_rpats pats =
-  match pats with
-  | [] -> []
-  | (x, r)::tl ->
-     (x, match r with
-         | Avar v -> Rvar v
-         | Aconst (ty, n) -> Rconst (size_of_typ ty, n))::(pats_to_rpats tl)
-
-let subst_instr pats i =
-  match i with
-  | Imov (v, a) -> Imov (subst_lval pats v, subst_atomic pats a)
-  | Ishl (v, a, n) -> Ishl (subst_lval pats v, subst_atomic pats a, n)
-  | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval pats vh, subst_lval pats vl, subst_atomic pats a1, subst_atomic pats a2, n)
-  | Inondet v -> Inondet (subst_lval pats v)
-  | Icmov (v, c, a1, a2) -> Icmov (subst_lval pats v, subst_atomic pats c, subst_atomic pats a1, subst_atomic pats a2)
-  | Inop -> Inop
-  | Iadd (v, a1, a2) -> Iadd (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Iadds (c, v, a1, a2) -> Iadds (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Iaddr (c, v, a1, a2) -> Iaddr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Iadc (v, a1, a2, y) -> Iadc (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Iadcs (c, v, a1, a2, y) -> Iadcs (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Iadcr (c, v, a1, a2, y) -> Iadcr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isub (v, a1, a2) -> Isub (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Isubc (c, v, a1, a2) -> Isubc (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Isubb (c, v, a1, a2) -> Isubb (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Isubr (c, v, a1, a2) -> Isubr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Isbc (v, a1, a2, y) -> Isbc (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isbcs (c, v, a1, a2, y) -> Isbcs (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isbcr (c, v, a1, a2, y) -> Isbcr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isbb (v, a1, a2, y) -> Isbb (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isbbs (c, v, a1, a2, y) -> Isbbs (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Isbbr (c, v, a1, a2, y) -> Isbbr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2, subst_atomic pats y)
-  | Imul (v, a1, a2) -> Imul (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Imuls (c, v, a1, a2) -> Imuls (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Imulr (c, v, a1, a2) -> Imulr (subst_lval pats c, subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Imull (vh, vl, a1, a2) -> Imull (subst_lval pats vh, subst_lval pats vl, subst_atomic pats a1, subst_atomic pats a2)
-  | Imulj (v, a1, a2) -> Imulj (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Isplit (vh, vl, a, n) -> Isplit (subst_lval pats vh, subst_lval pats vl, subst_atomic pats a, n)
-  | Iand (v, a1, a2) -> Iand (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Ior (v, a1, a2) -> Ior (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Ixor (v, a1, a2) -> Ixor (subst_lval pats v, subst_atomic pats a1, subst_atomic pats a2)
-  | Inot (v, a) -> Inot (subst_lval pats v, subst_atomic pats a)
-  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval pats) od, subst_lval pats v, subst_atomic pats a)
-  | Ivpc (v, a) -> Ivpc (subst_lval pats v, subst_atomic pats a)
-  | Ijoin (v, ah, al) -> Ijoin (subst_lval pats v, subst_atomic pats ah, subst_atomic pats al)
-  | Iassert e -> Iassert (subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
-  | Iassume e -> Iassume (subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
-  | Icut (ecuts, rcuts) -> Icut (map_fst (fun e -> subst_ebexp (pats_to_epats pats) e) ecuts, map_fst (fun e -> subst_rbexp (pats_to_rpats pats) e) rcuts)
-  | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval pats) (VS.elements vs)), subst_bexp (pats_to_epats pats) (pats_to_rpats pats) e)
-
-let subst_program pats p = List.map (subst_instr pats) p
-let subst_lined_program pats p =
-  List.map (fun (lno, i) -> lno, subst_instr pats i) p
-
-module AtomicHashType =
-  struct
-    type t = atomic
-    let equal = eq_atomic
-    let hash = Hashtbl.hash
-  end
-
-module AtomicHashtbl = Hashtbl.Make (AtomicHashType)
-
-type 'a atomichash_t = 'a AtomicHashtbl.t
-                  
-(* substitution with hash table *)
-
-let rec subst_eexp_hash esubst_hash e =
-  match e with
-  | Evar v -> if AtomicHashtbl.mem esubst_hash (Avar v) then
-                AtomicHashtbl.find esubst_hash (Avar v)
-              else e
-  | Econst _n -> e
-  | Eunop (op, e) -> Eunop (op, subst_eexp_hash esubst_hash e)
-  | Ebinop (op, e1, e2) ->
-     Ebinop (op,
-             subst_eexp_hash esubst_hash e1,
-             subst_eexp_hash esubst_hash e2)
-
-let rec subst_ebexp_hash esubst_hash e =
-  match e with
-  | Etrue -> e
-  | Eeq (e1, e2) ->
-     Eeq (subst_eexp_hash esubst_hash e1,
-          subst_eexp_hash esubst_hash e2)
-  | Eeqmod (e1, e2, ms) ->
-     Eeqmod (subst_eexp_hash esubst_hash e1,
-             subst_eexp_hash esubst_hash e2,
-             List.rev (List.rev_map (subst_eexp_hash esubst_hash) ms))
-  | Eand (e1, e2) ->
-     Eand (subst_ebexp_hash esubst_hash e1,
-           subst_ebexp_hash esubst_hash e2)
-
-let rec subst_rexp_hash rsubst_hash e =
-  match e with
-  | Rvar v -> if AtomicHashtbl.mem rsubst_hash (Avar v) then
-                AtomicHashtbl.find rsubst_hash (Avar v)
-              else e
-  | Rconst (_w, _n) -> e
-  | Runop (w, op, e) -> Runop (w, op, subst_rexp_hash rsubst_hash e)
-  | Rbinop (w, op, e1, e2) ->
-     Rbinop (w, op, subst_rexp_hash rsubst_hash e1,
-                    subst_rexp_hash rsubst_hash e2)
-  | Ruext (w, e, i) -> Ruext (w, subst_rexp_hash rsubst_hash e, i)
-  | Rsext (w, e, i) -> Rsext (w, subst_rexp_hash rsubst_hash e, i)
-
-let rec subst_rbexp_hash rsubst_hash e =
-  match e with
-  | Rtrue -> e
-  | Req (w, e1, e2) ->
-     Req (w, subst_rexp_hash rsubst_hash e1,
-             subst_rexp_hash rsubst_hash e2)
-  | Rcmp (w, op, e1, e2) ->
-     Rcmp (w, op, subst_rexp_hash rsubst_hash e1,
-                  subst_rexp_hash rsubst_hash e2)
-  | Rneg e -> Rneg (subst_rbexp_hash rsubst_hash e)
-  | Rand (e1, e2) ->
-     Rand (subst_rbexp_hash rsubst_hash e1,
-           subst_rbexp_hash rsubst_hash e2)
-  | Ror (e1, e2) ->
-     Ror (subst_rbexp_hash rsubst_hash e1,
-          subst_rbexp_hash rsubst_hash e2)
-                     
-let subst_bexp_hash esubst_hash rsubst_hash e =
-  (subst_ebexp_hash esubst_hash (eqn_bexp e),
-   subst_rbexp_hash rsubst_hash (rng_bexp e))
-
-let subst_lval_hash subst_hash lv =
-  if AtomicHashtbl.mem subst_hash (Avar lv) then
-    match AtomicHashtbl.find subst_hash (Avar lv) with
-    | Avar v -> v
-    | Aconst (_ty, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
-  else lv                           
-
-let subst_atomic_hash subst_hash a =
-  match a with
-  | Aconst _ -> a
-  | Avar _ -> if AtomicHashtbl.mem subst_hash a then
-                AtomicHashtbl.find subst_hash a
-              else a
-
-let subst_instr_hash psubst_hash esubst_hash rsubst_hash i =
-  match i with
-  | Imov (v, a) ->
-     Imov (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a)
-  | Ishl (v, a, n) ->
-     Ishl (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a, n)
-  | Icshl (vh, vl, a1, a2, n) ->
-     Icshl (subst_lval_hash psubst_hash vh,
-            subst_lval_hash psubst_hash vl,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2, n)
-  | Inondet v -> Inondet (subst_lval_hash psubst_hash v)
-  | Icmov (v, c, a1, a2) ->
-     Icmov (subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash c,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Inop -> Inop
-  | Iadd (v, a1, a2) ->
-     Iadd (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2)
-  | Iadds (c, v, a1, a2) ->
-     Iadds (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Iaddr (c, v, a1, a2) ->
-     Iaddr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Iadc (v, a1, a2, y) ->
-     Iadc (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2,
-           subst_atomic_hash psubst_hash y)
-  | Iadcs (c, v, a1, a2, y) ->
-     Iadcs (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Iadcr (c, v, a1, a2, y) ->
-     Iadcr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Isub (v, a1, a2) ->
-     Isub (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2)
-  | Isubc (c, v, a1, a2) ->
-     Isubc (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Isubb (c, v, a1, a2) ->
-     Isubb (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Isubr (c, v, a1, a2) ->
-     Isubr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Isbc (v, a1, a2, y) ->
-     Isbc (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2,
-           subst_atomic_hash psubst_hash y)
-  | Isbcs (c, v, a1, a2, y) ->
-     Isbcs (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Isbcr (c, v, a1, a2, y) ->
-     Isbcr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Isbb (v, a1, a2, y) ->
-     Isbb (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2,
-           subst_atomic_hash psubst_hash y)
-  | Isbbs (c, v, a1, a2, y) ->
-     Isbbs (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Isbbr (c, v, a1, a2, y) ->
-     Isbbr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2,
-            subst_atomic_hash psubst_hash y)
-  | Imul (v, a1, a2) ->
-     Imul (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2)
-  | Imuls (c, v, a1, a2) ->
-     Imuls (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Imulr (c, v, a1, a2) ->
-     Imulr (subst_lval_hash psubst_hash c,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Imull (vh, vl, a1, a2) ->
-     Imull (subst_lval_hash psubst_hash vh,
-            subst_lval_hash psubst_hash vl,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Imulj (v, a1, a2) ->
-     Imulj (subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a1,
-            subst_atomic_hash psubst_hash a2)
-  | Isplit (vh, vl, a, n) ->
-     Isplit (subst_lval_hash psubst_hash vh,
-             subst_lval_hash psubst_hash vl,
-             subst_atomic_hash psubst_hash a, n)
-  | Iand (v, a1, a2) ->
-     Iand (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2)
-  | Ior (v, a1, a2) ->
-     Ior (subst_lval_hash psubst_hash v,
-          subst_atomic_hash psubst_hash a1,
-          subst_atomic_hash psubst_hash a2)
-  | Ixor (v, a1, a2) ->
-     Ixor (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a1,
-           subst_atomic_hash psubst_hash a2)
-  | Inot (v, a) ->
-     Inot (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a)
-  | Icast (od, v, a) ->
-     Icast (apply_to_some (subst_lval_hash psubst_hash) od,
-            subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash a)
-  | Ivpc (v, a) ->
-     Ivpc (subst_lval_hash psubst_hash v,
-           subst_atomic_hash psubst_hash a)
-  | Ijoin (v, ah, al) ->
-     Ijoin (subst_lval_hash psubst_hash v,
-            subst_atomic_hash psubst_hash ah,
-            subst_atomic_hash psubst_hash al)
-  | Iassert e ->
-     Iassert (subst_bexp_hash esubst_hash rsubst_hash e)
-  | Iassume e ->
-     Iassume (subst_bexp_hash esubst_hash rsubst_hash e)
-  | Icut (ecuts, rcuts) ->
-     Icut (map_fst (fun e -> subst_ebexp_hash esubst_hash e) ecuts,
-           map_fst (fun e -> subst_rbexp_hash rsubst_hash e) rcuts)
-  | Ighost (vs, e) ->
-     Ighost (VS.of_list (List.map (subst_lval_hash psubst_hash) (VS.elements vs)), subst_bexp_hash esubst_hash rsubst_hash e)
-
-let subst_program_hash psubst_hash esubst_hash rsubst_hash p =
-  List.rev_map (subst_instr_hash psubst_hash esubst_hash rsubst_hash)
-    (List.rev p)
-
-(* Find all required algebraic predicates in instrs according to pwss. *)
-let eprove_with_filter pwss (pre, cuts_rev, instrs) =
-  let extract_ebexps instrs =
-    let extractor i =
-      match i with
-        Icut (ecuts, _) -> fst (List.split ecuts)
-      | Iassume e -> [eqn_bexp e]
-      | Ighost (_, e) -> [eqn_bexp e]
-      | _ -> [] in
-    List.flatten (List.map extractor instrs) in
-  let filter_of_pws pws =
-    match pws with
-      Precondition -> (fun _i -> false)
-    | Cuts _ -> (fun _ -> false)
-    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
-    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
-  let filter =
-    let filters = List.map filter_of_pws pwss in
-    fun i -> List.exists (fun f -> f i) filters in
-  let ebexps = extract_ebexps (List.filter filter instrs) in
-  let cut_idxs =
-    let idxss = List.rev_map
-                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
-                  pwss in
-    List.flatten idxss in
-  let needed_cutss =
-    List.mapi (fun i cut ->
-        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
-  let cuts_bexps = extract_ebexps (List.flatten needed_cutss) in
-  if List.mem Precondition pwss then
-    pre::(List.rev_append cuts_bexps ebexps)
-  else List.rev_append cuts_bexps ebexps
-
-(* Find all required range predicates in instrs according to pwss. *)
-let rprove_with_filter pwss (pre, cuts_rev, instrs) =
-  let extract_rbexps instrs =
-    let extractor i =
-      match i with
-        Icut (_, rcuts) -> fst (List.split rcuts)
-      | Iassume e -> [rng_bexp e]
-      | Ighost (_, e) -> [rng_bexp e]
-      | _ -> [] in
-    List.flatten (List.map extractor instrs) in
-  let filter_of_pws pws =
-    match pws with
-      Precondition -> (fun _i -> false)
-    | Cuts _ -> (fun _ -> false)
-    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
-    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
-  let filter =
-    let filters = List.map filter_of_pws pwss in
-    fun i -> List.exists (fun f -> f i) filters in
-  let rbexps = extract_rbexps (List.filter filter instrs) in
-  let cut_idxs =
-    let idxss = List.rev_map
-                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
-                  pwss in
-    List.flatten idxss in
-  let needed_cutss =
-    List.mapi (fun i cut ->
-        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
-  let cuts_rbexps = extract_rbexps (List.flatten needed_cutss) in
-  if List.mem Precondition pwss
-  then pre::(List.rev_append cuts_rbexps rbexps)
-  else List.rev_append cuts_rbexps rbexps
-
-
-
-(** Specifications *)
-
-type spec =
-  { spre : bexp;
-    sprog : program;
-    spost : bexp;
-    sepwss : prove_with_spec list;
-    srpwss : prove_with_spec list }
-
-type espec =
-  { espre : ebexp;
-    esprog : program;
-    espost : ebexp;
-    espwss : prove_with_spec list }
-
-type rspec =
-  { rspre : rbexp;
-    rsprog : program;
-    rspost : rbexp;
-    rspwss : prove_with_spec list }
-
 let vars_spec s = VS.union (vars_bexp s.spre) (VS.union (vars_program s.sprog) (vars_bexp s.spost))
 let vars_espec s = VS.union (vars_ebexp s.espre) (VS.union (vars_program s.esprog) (vars_ebexp s.espost))
 let vars_rspec s = VS.union (vars_rbexp s.rspre) (VS.union (vars_program s.rsprog) (vars_rbexp s.rspost))
 
-let espec_of_spec s =
-  { espre = eqn_bexp s.spre;
-    esprog = s.sprog;
-    espost = eqn_bexp s.spost;
-    espwss = s.sepwss }
 
-let rspec_of_spec s =
-  { rspre = rng_bexp s.spre;
-    rsprog = s.sprog;
-    rspost = rng_bexp s.spost;
-    rspwss = s.srpwss }
+(** Variable ID Sets *)
 
-let string_of_spec ?typ:(typ=false) s =
-  if s.sepwss = [] && s.srpwss = [] then
-    "{ " ^ string_of_bexp ~typ:typ (s.spre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.sprog) ^ "\n"
-    ^ "{ " ^ string_of_bexp ~typ:typ (s.spost) ^ " }"
-  else
-    "{ " ^ string_of_bexp ~typ:typ (s.spre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.sprog) ^ "\n"
-    ^ "{ "
-    ^ string_of_ebexp ~typ:typ (eqn_bexp s.spost)
-    ^ (if s.sepwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.sepwss ^ "]")
-    ^ " " ^ bexp_separator ^ " "
-    ^ string_of_rbexp ~typ:typ (rng_bexp s.spost)
-    ^ (if s.srpwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.srpwss ^ "]")
-    ^ " }"
+module IS = Set.Make(Int)
 
-let string_of_espec ?typ:(typ=false) s =
-  if s.espwss = [] then
-    "{ " ^ string_of_ebexp ~typ:typ (s.espre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.esprog) ^ "\n"
-    ^ "{ " ^ string_of_ebexp ~typ:typ (s.espost) ^ " }"
-  else
-    "{ " ^ string_of_ebexp ~typ:typ (s.espre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.esprog) ^ "\n"
-    ^ "{ "
-    ^ string_of_ebexp ~typ:typ (s.espost)
-    ^ (if s.espwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.espwss ^ "]")
-    ^ " }"
+let union_iss iss = List.fold_left IS.union IS.empty iss
 
-let string_of_rspec ?typ:(typ=false) s =
-  if s.rspwss = [] then
-    "{ " ^ string_of_rbexp ~typ:typ (s.rspre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.rsprog) ^ "\n"
-    ^ "{ " ^ string_of_rbexp ~typ:typ (s.rspost) ^ " }"
-  else
-    "{ " ^ string_of_rbexp ~typ:typ (s.rspre) ^ " }\n"
-    ^ string_of_program ~typ:typ (s.rsprog) ^ "\n"
-    ^ "{ "
-    ^ string_of_rbexp ~typ:typ (s.rspost)
-    ^ (if s.rspwss = [] then "" else " prove with [" ^ string_of_prove_with_specs s.rspwss ^ "]")
-    ^ " }"
+let vids_of_vs vs = VS.fold (fun v s -> IS.add v.vid s) vs IS.empty
+
+let rec vids_eexp e =
+  match e with
+  | Evar x -> IS.singleton x.vid
+  | Econst _ -> IS.empty
+  | Eunop (_, e) -> vids_eexp e
+  | Ebinop (_, e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
+
+let rec vids_ebexp e =
+  match e with
+  | Etrue -> IS.empty
+  | Eeq (e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
+  | Eeqmod (e1, e2, ps) -> List.fold_left IS.union (IS.union (vids_eexp e1) (vids_eexp e2)) (List.map vids_eexp ps)
+  | Eand (e1, e2) -> IS.union (vids_ebexp e1) (vids_ebexp e2)
+
+let rec vids_rexp e =
+  match e with
+  | Rvar x -> IS.singleton x.vid
+  | Rconst _ -> IS.empty
+  | Runop (_, _, e) -> vids_rexp e
+  | Rbinop (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
+  | Ruext (_, e, _)
+  | Rsext (_, e, _) -> vids_rexp e
+
+let rec vids_rbexp e =
+  match e with
+  | Rtrue -> IS.empty
+  | Req (_, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
+  | Rcmp (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
+  | Rneg e -> vids_rbexp e
+  | Rand (e1, e2)
+  | Ror (e1, e2) -> IS.union (vids_rbexp e1) (vids_rbexp e2)
+
+let vids_bexp e = IS.union (vids_ebexp (eqn_bexp e)) (vids_rbexp (rng_bexp e))
+
+let vids_atomic a =
+  match a with
+  | Avar v -> IS.singleton v.vid
+  | _ -> IS.empty
+
+let vids_instr i =
+  match i with
+  | Imov (v, a)
+    | Ishl (v, a, _) -> IS.add v.vid (vids_atomic a)
+  | Iadd (v, a1, a2)
+    | Isub (v, a1, a2)
+    | Imul (v, a1, a2)
+    | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2))
+    | Iadc (v, a1, a2, c)
+    | Isbc (v, a1, a2, c)
+    | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c))
+    | Iadds (c, v, a1, a2)
+    | Iaddr (c, v, a1, a2)
+    | Isubc (c, v, a1, a2)
+    | Isubb (c, v, a1, a2)
+    | Isubr (c, v, a1, a2)
+    | Imuls (c, v, a1, a2)
+    | Imulr (c, v, a1, a2) ->
+     IS.add c.vid (IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2)))
+  | Iadcs (c, v, a1, a2, y)
+    | Iadcr (c, v, a1, a2, y)
+    | Isbcr (c, v, a1, a2, y)
+    | Isbcs (c, v, a1, a2, y)
+    | Isbbr (c, v, a1, a2, y)
+    | Isbbs (c, v, a1, a2, y) ->
+     IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic y)))
+  | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atomic a))
+  | Imull (vh, vl, a1, a2)
+    | Icshl (vh, vl, a1, a2, _) ->
+     IS.add vh.vid (IS.add vl.vid (IS.union (vids_atomic a1) (vids_atomic a2)))
+  | Inondet v -> IS.singleton v.vid
+  | Icmov (v, c, a1, a2) -> IS.add v.vid (IS.union (vids_atomic c) (IS.union (vids_atomic a1) (vids_atomic a2)))
+  | Inop -> IS.empty
+  | Iand (v, a1, a2)
+    | Ior (v, a1, a2)
+    | Ixor (v, a1, a2) ->  IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2))
+  | Inot (v, a) -> IS.add v.vid (vids_atomic a)
+  | Icast (od, v, a) ->
+     (match od with
+      | None -> IS.add v.vid (vids_atomic a)
+      | Some d -> IS.add d.vid (IS.add v.vid (vids_atomic a)))
+  | Ivpc (v, a) -> IS.add v.vid (vids_atomic a)
+  | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atomic ah) (vids_atomic al))
+  | Iassert e
+  | Iassume e -> vids_bexp e
+  | Icut (ecuts, rcuts) ->
+     let evars = List.map vids_ebexp (fst (List.split ecuts)) in
+     let rvars = List.map vids_rbexp (fst (List.split rcuts)) in
+     IS.union (List.fold_left IS.union IS.empty evars) (List.fold_left IS.union IS.empty rvars)
+  | Ighost (vs, e) -> IS.union (vids_of_vs vs) (vids_bexp e)
+
+let vids_program p = List.fold_left (fun res i -> IS.union (vids_instr i) res) IS.empty p
+
+let lvids_instr i =
+  match i with
+  | Imov (v, _) -> IS.singleton v.vid
+  | Iadd (v, _, _) -> IS.singleton v.vid
+  | Iadds (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Iaddr (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Iadc (v, _, _, _) -> IS.singleton v.vid
+  | Iadcs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Iadcr (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isub (v, _, _) -> IS.singleton v.vid
+  | Isubc (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isubb (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isubr (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isbc (v, _, _, _) -> IS.singleton v.vid
+  | Isbcs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isbcr (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isbb (v, _, _, _) -> IS.singleton v.vid
+  | Isbbs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Isbbr (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Imul (v, _, _) -> IS.singleton v.vid
+  | Imuls (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Imulr (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
+  | Imull (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Imulj (v, _, _) -> IS.singleton v.vid
+  | Ishl (v, _, _) -> IS.singleton v.vid
+  | Isplit (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Inondet v -> IS.singleton v.vid
+  | Icmov (v, _, _, _) -> IS.singleton v.vid
+  | Inop -> IS.empty
+  | Iand (v, _, _)
+  | Ior (v, _, _)
+  | Ixor (v, _, _)
+  | Inot (v, _) -> IS.singleton v.vid
+  | Icast (_, v, _) -> IS.singleton v.vid
+  | Ivpc (v, _) -> IS.singleton v.vid
+  | Ijoin (v, _, _) -> IS.singleton v.vid
+  | Iassert _
+  | Iassume _
+  | Icut _
+  | Ighost _ -> IS.empty
+
+let lvids_program p = List.fold_left (fun res i -> IS.union (lvids_instr i) res) IS.empty p
+
+let rvids_instr i =
+  match i with
+  | Imov (_, a) -> vids_atomic a
+  | Iadd (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Iadds (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Iaddr (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Iadc (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Iadcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Iadcr (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isub (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Isubc (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Isubb (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Isubr (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Isbc (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isbcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isbcr (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isbb (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isbbs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Isbbr (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
+  | Imul (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Imuls (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Imulr (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Imull (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Imulj (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Ishl (_, a, _) -> vids_atomic a
+  | Isplit (_, _, a, _) -> vids_atomic a
+  | Icshl (_, _, a1, a2, _) ->
+     IS.union (vids_atomic a1) (vids_atomic a2)
+  | Inondet _ -> IS.empty
+  | Icmov (_, c, a1, a2) -> IS.union (vids_atomic c) (IS.union (vids_atomic a1) (vids_atomic a2))
+  | Inop -> IS.empty
+  | Iand (_, a1, a2)
+    | Ior (_, a1, a2)
+    | Ixor (_, a1, a2) ->  IS.union (vids_atomic a1) (vids_atomic a2)
+  | Inot (_, a) -> vids_atomic a
+  | Icast (_, _, a) -> vids_atomic a
+  | Ivpc (_, a) -> vids_atomic a
+  | Ijoin (_, ah, al) -> IS.union (vids_atomic ah) (vids_atomic al)
+  | Iassert e
+  | Iassume e -> vids_bexp e
+  | Icut (ecuts, rcuts) ->
+     let evars = List.map vids_ebexp (fst (List.split ecuts)) in
+     let rvars = List.map vids_rbexp (fst (List.split rcuts)) in
+     IS.union (List.fold_left IS.union IS.empty evars) (List.fold_left IS.union IS.empty rvars)
+  | Ighost (_, e) -> vids_bexp e
+
+let rvids_program p = List.fold_left (fun res i -> IS.union (rvids_instr i) res) IS.empty p
+
+(* Assigned carry variables. Bit variables are considered carry variables. *)
+let lcids_instr i =
+  match i with
+  | Imov (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Iadd (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Iadds (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Iaddr (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Iadc (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Iadcs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Iadcr (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isub (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Isubc (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isubb (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isubr (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isbc (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Isbcs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isbcr (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isbb (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Isbbs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Isbbr (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Imul (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Imuls (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Imulr (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Imull _
+  | Imulj _
+  | Ishl _
+  | Isplit _
+  | Icshl _ -> IS.empty
+  | Inondet v -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Icmov (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Inop -> IS.empty
+  | Iand (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Ior (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Ixor (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Inot (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Icast (_, v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Ivpc (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Ijoin _
+  | Iassert _
+  | Iassume _
+  | Icut _
+  | Ighost _ -> IS.empty
+
+let lcids_program p = List.fold_left (fun res i -> IS.union (lcids_instr i) res) IS.empty p
+
+let vids_spec s = union_iss [vids_bexp s.spre; vids_program s.sprog; vids_bexp s.spost]
+let vids_espec s = union_iss [vids_ebexp s.espre; vids_program s.esprog; vids_ebexp s.espost]
+let vids_rspec s = union_iss [vids_rbexp s.rspre; vids_program s.rsprog; vids_rbexp s.rspost]
 
 
-
-(** Static single assignment *)
+(** Static Single Assignment (SSA) *)
 
 let initial_sidx = 0
 let first_assigned_sidx = 1
@@ -1812,7 +1670,11 @@ let upd_sidx v m =
   with Not_found ->
     VM.add v first_assigned_sidx m
 
-let mksvar vn vt vi = { vname = vn; vtyp = vt; vsidx = vi }
+let mksvar ?(newvid=false) vn vt vi =
+  let i = if newvid then incr_global_next_vid ()
+          else uninitialized_vid in
+  { vname = vn; vtyp = vt; vsidx = vi; vid = i }
+
 let ssa_var m v = mksvar v.vname v.vtyp (get_sidx v m)
 
 let ssa_atomic m a =
@@ -2069,7 +1931,6 @@ let ssa_spec s =
   { spre = f; sprog = p; spost = g; sepwss = s.sepwss; srpwss = s.srpwss }
 
 
-
 (** Cut *)
 
 (*
@@ -2135,96 +1996,202 @@ let cut_rspec rs =
   List.rev (helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
 
 
+(** Substitution *)
+
+let eexp_of_atomic a =
+  match a with
+  | Avar v -> Evar v
+  | Aconst (_, n) -> Econst n
+
+let rexp_of_atomic a =
+  match a with
+  | Avar v -> Rvar v
+  | Aconst (ty, n) -> Rconst (size_of_typ ty, n)
+
+let rec amap_find_transitive v am =
+  if VM.mem v am then match VM.find v am with
+                      | Avar v' -> amap_find_transitive v' am
+                      | _ as a -> a
+  else Avar v
+
+let rec emap_find_transitive v em =
+  if VM.mem v em then match VM.find v em with
+                      | Evar v' -> emap_find_transitive v' em
+                      | _ as e -> e
+  else Evar v
+
+let rec rmap_find_transitive v rm =
+  if VM.mem v rm then match VM.find v rm with
+                      | Rvar v' -> rmap_find_transitive v' rm
+                      | _ as e -> e
+  else Rvar v
+
+let amap_trans am = VM.fold (fun v _ res -> VM.add v (amap_find_transitive v am) res) am VM.empty
+
+let emap_trans em = VM.fold (fun v _ res -> VM.add v (emap_find_transitive v em) res) em VM.empty
+
+let rmap_trans rm = VM.fold (fun v _ res -> VM.add v (rmap_find_transitive v rm) res) rm VM.empty
+
+let emap_of_amap am = VM.fold (fun v a em -> VM.add v (eexp_of_atomic a) em) am VM.empty
+
+let rmap_of_amap am = VM.fold (fun v a rm -> VM.add v (rexp_of_atomic a) rm) am VM.empty
+
+let get_subst_maps p =
+  let rec helper (am, not_assignments) p_rev =
+    match p_rev with
+    | [] -> (amap_trans am, not_assignments)
+    | Imov (v, a)::tl -> helper (VM.add v a am, not_assignments) tl
+    | hd::tl -> helper (am, hd::not_assignments) tl in
+  let (am, p') = helper (VM.empty, []) (List.rev p) in
+  (am, emap_of_amap am, rmap_of_amap am, p')
+
+let get_subst_maps_vpc p =
+  let rec helper (am, not_assignments) p_rev =
+    match p_rev with
+    | [] -> (amap_trans am, not_assignments)
+    | Ivpc (v, a)::tl -> helper (VM.add v a am, not_assignments) tl
+    | hd::tl -> helper (am, hd::not_assignments) tl in
+  let (am, p') = helper (VM.empty, []) (List.rev p) in
+  (am, emap_of_amap am, rmap_of_amap am, p')
+
+let subst_maps_of_list vas =
+  List.fold_left (fun (am, em, rm) (v, a) -> (VM.add v a am, VM.add v (eexp_of_atomic a) em, VM.add v (rexp_of_atomic a) rm)) (VM.empty, VM.empty, VM.empty) vas
+
+let rec subst_eexp em e =
+  match e with
+  | Evar v -> if VM.mem v em then VM.find v em
+              else e
+  | Econst _ -> e
+  | Eunop (op, e) -> Eunop (op, subst_eexp em e)
+  | Ebinop (op, e1, e2) -> Ebinop (op, subst_eexp em e1, subst_eexp em e2)
+
+let rec subst_rexp rm e =
+  match e with
+  | Rvar v -> if VM.mem v rm then VM.find v rm
+              else e
+  | Rconst _ -> e
+  | Runop (w, op, e) -> Runop (w, op, subst_rexp rm e)
+  | Rbinop (w, op, e1, e2) -> Rbinop (w, op, subst_rexp rm e1, subst_rexp rm e2)
+  | Ruext (w, e, i) -> Ruext (w, subst_rexp rm e, i)
+  | Rsext (w, e, i) -> Rsext (w, subst_rexp rm e, i)
+
+let rec subst_ebexp em e =
+  match e with
+  | Etrue -> e
+  | Eeq (e1, e2) -> Eeq (subst_eexp em e1, subst_eexp em e2)
+  | Eeqmod (e1, e2, ms) -> Eeqmod (subst_eexp em e1, subst_eexp em e2, List.rev (List.rev_map (subst_eexp em) ms))
+  | Eand (e1, e2) -> Eand (subst_ebexp em e1, subst_ebexp em e2)
+
+let rec subst_rbexp rm e =
+  match e with
+  | Rtrue -> e
+  | Req (w, e1, e2) -> Req (w, subst_rexp rm e1, subst_rexp rm e2)
+  | Rcmp (w, op, e1, e2) -> Rcmp (w, op, subst_rexp rm e1, subst_rexp rm e2)
+  | Rneg e -> Rneg (subst_rbexp rm e)
+  | Rand (e1, e2) -> Rand (subst_rbexp rm e1, subst_rbexp rm e2)
+  | Ror (e1, e2) -> Ror (subst_rbexp rm e1, subst_rbexp rm e2)
+
+let subst_bexp em rm e = (subst_ebexp em (eqn_bexp e), subst_rbexp rm (rng_bexp e))
+
+let subst_lval am lv =
+  if VM.mem lv am then match VM.find lv am with
+                       | Avar v -> v
+                       | Aconst (_, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
+  else lv
+
+let subst_atomic am a =
+  match a with
+  | Avar v -> if VM.mem v am then VM.find v am
+              else a
+  | Aconst _ -> a
+
+let subst_instr am em rm i =
+  match i with
+  | Imov (v, a) -> Imov (subst_lval am v, subst_atomic am a)
+  | Ishl (v, a, n) -> Ishl (subst_lval am v, subst_atomic am a, n)
+  | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2, n)
+  | Inondet v -> Inondet (subst_lval am v)
+  | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atomic am c, subst_atomic am a1, subst_atomic am a2)
+  | Inop -> Inop
+  | Iadd (v, a1, a2) -> Iadd (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Iadds (c, v, a1, a2) -> Iadds (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Iaddr (c, v, a1, a2) -> Iaddr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Iadc (v, a1, a2, y) -> Iadc (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Iadcs (c, v, a1, a2, y) -> Iadcs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Iadcr (c, v, a1, a2, y) -> Iadcr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isub (v, a1, a2) -> Isub (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Isubc (c, v, a1, a2) -> Isubc (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Isubb (c, v, a1, a2) -> Isubb (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Isubr (c, v, a1, a2) -> Isubr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Isbc (v, a1, a2, y) -> Isbc (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isbcs (c, v, a1, a2, y) -> Isbcs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isbcr (c, v, a1, a2, y) -> Isbcr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isbb (v, a1, a2, y) -> Isbb (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isbbs (c, v, a1, a2, y) -> Isbbs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Isbbr (c, v, a1, a2, y) -> Isbbr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
+  | Imul (v, a1, a2) -> Imul (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Imuls (c, v, a1, a2) -> Imuls (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Imulr (c, v, a1, a2) -> Imulr (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2)
+  | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atomic am a, n)
+  | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
+  | Inot (v, a) -> Inot (subst_lval am v, subst_atomic am a)
+  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atomic am a)
+  | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atomic am a)
+  | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atomic am ah, subst_atomic am al)
+  | Iassert e -> Iassert (subst_bexp em rm e)
+  | Iassume e -> Iassume (subst_bexp em rm e)
+  | Icut (ecuts, rcuts) -> Icut (map_fst (fun e -> subst_ebexp em e) ecuts, map_fst (fun e -> subst_rbexp rm e) rcuts)
+  | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
+
+let subst_program am em rm p = List.map (subst_instr am em rm) p
+
+let subst_lined_program am em rm p = List.map (fun (lno, i) -> lno, subst_instr am em rm i) p
+
+let rec replace_eexp pats e =
+  try
+    snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats)
+  with Not_found ->
+    begin
+      match e with
+      | Eunop (op, e) -> Eunop (op, replace_eexp pats e)
+      | Ebinop (op, e1, e2) -> Ebinop (op, replace_eexp pats e1, replace_eexp pats e2)
+      | _ -> e
+    end
+
 
 (** Assignment rewriting for SSA programs *)
 
-let _rewrite_mov_ssa_spec_orig spec =
-  let rewrite_mov (prog, post) instr =
-    match instr with
-    | Imov (v, Avar v') -> (subst_program [(v, Avar v')] prog, subst_bexp [(v, Evar v')] [(v, Rvar v')] post)
-    | Imov (v, Aconst (ty, n)) -> (subst_program [(v, Aconst (ty, n))] prog, subst_bexp [(v, Econst n)] [(v, Rconst (size_of_typ ty, n))] post)
-    | _ -> (instr::prog, post) in
-  let (prog', post') = List.fold_left rewrite_mov ([], spec.spost) (List.rev spec.sprog) in
-  { spre = spec.spre; sprog = prog'; spost = post'; sepwss = spec.sepwss; srpwss = spec.srpwss }
-
-(* The following function uses AtomicHashtbl for substitution
- * patterns. It consists of two phases. In phase 1, each "mov v a"
- * instruction is stored in subst_revhash with key a mapping to v. In
- * phase 2, substitution hashes (psubsts, esubsts, rsubsts) are built
- * from sub_revhash and apply to program.
- * Auxiliary substituion functions (subst_program_hash,
- * subst_bexp_hash, subst_ebexp_hash, subst_eexp_hash,
- * subst_rbexp_hash, subst_rexp_hash) are also added.
- *)
-  
 let rewrite_mov_ssa_spec spec =
-  let find_and_remove_old_substs subst_revhash v =
-    let old_substs = 
-      if AtomicHashtbl.mem subst_revhash (Avar v) then
-        AtomicHashtbl.find_all subst_revhash (Avar v)
-      else [] in
-    let _ = List.iter
-              (fun _ -> AtomicHashtbl.remove subst_revhash (Avar v))
-              old_substs in
-    old_substs in
-  let rec collect_revhash rev_prog (subst_revhash, prog') =
-    match rev_prog with
-    | [] -> (subst_revhash, prog')
-    | inst::rev_prog' ->
-       (match inst with
-        | Imov (v, Avar v') ->
-           let old_substs =
-             find_and_remove_old_substs subst_revhash v in
-           let _ = List.iter (AtomicHashtbl.add subst_revhash (Avar v'))
-                     (v::old_substs) in
-           collect_revhash rev_prog' (subst_revhash, prog')
-        | Imov (v, Aconst (ty, n)) ->
-           let old_substs =
-             find_and_remove_old_substs subst_revhash v in
-           let _ =
-             List.iter (AtomicHashtbl.add subst_revhash (Aconst (ty, n)))
-                          (v::old_substs) in
-           collect_revhash rev_prog' (subst_revhash, prog')
-        | _ -> collect_revhash rev_prog' (subst_revhash, inst::prog')) in
-  let (psubst_revhash, prog') =
-    collect_revhash (List.rev spec.sprog) (AtomicHashtbl.create 103, []) in
-  let psubsts =
-    let hash = AtomicHashtbl.create 103 in
-    let _ = AtomicHashtbl.iter
-              (fun k v -> AtomicHashtbl.add hash (Avar v) k)
-              psubst_revhash in
-    hash in
-  let (esubsts, rsubsts) =
-    let ehash = AtomicHashtbl.create 103 in
-    let rhash = AtomicHashtbl.create 103 in
-    let _ = AtomicHashtbl.iter (fun k v ->
-                match k with
-                | Avar v' ->
-                   (AtomicHashtbl.add ehash (Avar v) (Evar v');
-                    AtomicHashtbl.add rhash (Avar v) (Rvar v'))
-                | Aconst (ty, n) ->
-                   (AtomicHashtbl.add ehash (Avar v) (Econst n);
-                    AtomicHashtbl.add rhash (Avar v)
-                      (Rconst ((size_of_typ ty), n))))
-              psubst_revhash in
-    (ehash, rhash) in
+  let (am, em, rm, prog') = get_subst_maps spec.sprog in
   { spre = spec.spre;
-    sprog = subst_program_hash psubsts esubsts rsubsts prog';
-    spost = subst_bexp_hash esubsts rsubsts spec.spost;
+    sprog = subst_program am em rm prog';
+    spost = subst_bexp em rm spec.spost;
     sepwss = spec.sepwss; srpwss = spec.srpwss }
-        
-let rewrite_vpc_ssa_spec spec =
-  let rewrite_vpc (prog, post) instr =
-    match instr with
-    | Ivpc (v, Avar v') -> (subst_program [(v, Avar v')] prog, subst_bexp [(v, Evar v')] [(v, Rvar v')] post)
-    | Ivpc (v, Aconst (ty, n)) -> (subst_program [(v, Aconst (ty, n))] prog, subst_bexp [(v, Econst n)] [(v, Rconst (size_of_typ ty, n))] post)
-    | _ -> (instr::prog, post) in
-  let (prog', post') = List.fold_left rewrite_vpc ([], spec.spost) (List.rev spec.sprog) in
-  { spre = spec.spre; sprog = prog'; spost = post'; sepwss = spec.sepwss; srpwss = spec.srpwss }
 
+let rewrite_vpc_ssa_spec spec =
+ let (am, em, rm, prog') = get_subst_maps_vpc spec.sprog in
+  { spre = spec.spre;
+    sprog = subst_program am em rm prog';
+    spost = subst_bexp em rm spec.spost;
+    sepwss = spec.sepwss; srpwss = spec.srpwss }
 
 
 (** Slicing *)
+
+module AtomicHashType =
+  struct
+    type t = atomic
+    let equal = eq_atomic
+    let hash = Hashtbl.hash
+  end
+
+module AtomicHashtbl = Hashtbl.Make (AtomicHashType)
+
+type 'a atomichash_t = 'a AtomicHashtbl.t
 
 let rec vars_sat_rec b f vars es =
   match es with
@@ -2236,26 +2203,49 @@ let rec vars_sat b f vars es =
   if VS.cardinal vars' > VS.cardinal vars then vars_sat b f vars' es
   else vars'
 let eexp_vars_sat vars es =
-  vars_sat (fun vars e -> vs_disjoint vars (vars_eexp e))
+  vars_sat (fun vars e -> VS.disjoint vars (vars_eexp e))
            (fun vars e -> VS.union vars (vars_eexp e)) vars es
 let ebexp_vars_sat vars e =
-  vars_sat (fun vars e -> vs_disjoint vars (vars_ebexp e))
+  vars_sat (fun vars e -> VS.disjoint vars (vars_ebexp e))
            (fun vars e -> VS.union vars (vars_ebexp e)) vars (split_eand e)
 let rbexp_vars_sat vars e =
-  vars_sat (fun vars e -> vs_disjoint vars (vars_rbexp e))
+  vars_sat (fun vars e -> VS.disjoint vars (vars_rbexp e))
            (fun vars e -> VS.union vars (vars_rbexp e)) vars (split_rand e)
 let bexp_vars_sat vars e =
   let vars1 = ebexp_vars_sat vars (eqn_bexp e) in
   let vars2 = rbexp_vars_sat vars1 (rng_bexp e) in
   vars2
 
+let rec vids_sat_rec b f vars es =
+  match es with
+  | [] -> vars
+  | hd::tl -> if b vars hd then vids_sat_rec b f vars tl
+              else vids_sat_rec b f (f vars hd) tl
+let rec vids_sat b f vars es =
+  let vars' = vids_sat_rec b f vars es in
+  if IS.cardinal vars' > IS.cardinal vars then vids_sat b f vars' es
+  else vars'
+let eexp_vids_sat vars es =
+  vids_sat (fun vars e -> IS.disjoint vars (vids_eexp e))
+           (fun vars e -> IS.union vars (vids_eexp e)) vars es
+let ebexp_vids_sat vars e =
+  vids_sat (fun vars e -> IS.disjoint vars (vids_ebexp e))
+           (fun vars e -> IS.union vars (vids_ebexp e)) vars (split_eand e)
+let rbexp_vids_sat vars e =
+  vids_sat (fun vars e -> IS.disjoint vars (vids_rbexp e))
+           (fun vars e -> IS.union vars (vids_rbexp e)) vars (split_rand e)
+let bexp_vids_sat vars e =
+  let vars1 = ebexp_vids_sat vars (eqn_bexp e) in
+  let vars2 = rbexp_vids_sat vars1 (rng_bexp e) in
+  vars2
+
 let rec slice_ebexp vars e =
   match e with
   | Etrue -> e
-  | Eeq (e1, e2) -> if vs_disjoint vars (vars_eexp e1) && vs_disjoint vars (vars_eexp e2) then Etrue
-                      else e
-  | Eeqmod (e1, e2, ps) -> if vs_disjoint vars (vars_eexp e1) && vs_disjoint vars (vars_eexp e2) && (List.for_all (vs_disjoint vars) (List.rev (List.rev_map vars_eexp ps))) then Etrue
-                            else e
+  | Eeq (e1, e2) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) then Etrue
+                    else e
+  | Eeqmod (e1, e2, ps) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) && (List.for_all (VS.disjoint vars) (List.rev (List.rev_map vars_eexp ps))) then Etrue
+                           else e
   | Eand (e1, e2) ->
      begin
        match slice_ebexp vars e1, slice_ebexp vars e2 with
@@ -2268,12 +2258,12 @@ let rec slice_ebexp vars e =
 let rec slice_rbexp vars e =
   match e with
   | Rtrue -> e
-  | Req (_w, e1, e2) -> if vs_disjoint vars (vars_rexp e1) && vs_disjoint vars (vars_rexp e2) then Rtrue
-                         else e
-  | Rcmp (_w, _op, e1, e2) -> if vs_disjoint vars (vars_rexp e1) && vs_disjoint vars (vars_rexp e2) then Rtrue
+  | Req (_w, e1, e2) -> if VS.disjoint vars (vars_rexp e1) && VS.disjoint vars (vars_rexp e2) then Rtrue
+                        else e
+  | Rcmp (_w, _op, e1, e2) -> if VS.disjoint vars (vars_rexp e1) && VS.disjoint vars (vars_rexp e2) then Rtrue
                               else e
-  | Rneg e' -> if vs_disjoint vars (vars_rbexp e') then Rtrue
-                 else e
+  | Rneg e' -> if VS.disjoint vars (vars_rbexp e') then Rtrue
+               else e
   | Rand (e1, e2) ->
      begin
        match slice_rbexp vars e1, slice_rbexp vars e2 with
@@ -2282,8 +2272,8 @@ let rec slice_rbexp vars e =
        | Rtrue, e2 -> e2
        | e1, e2 -> Rand (e1, e2)
      end
-  | Ror (e1, e2) -> if vs_disjoint vars (vars_rbexp e1) && vs_disjoint vars (vars_rbexp e2) then Rtrue
-                      else e
+  | Ror (e1, e2) -> if VS.disjoint vars (vars_rbexp e1) && VS.disjoint vars (vars_rbexp e2) then Rtrue
+                    else e
 
 let slice_bexp vars e = (slice_ebexp vars (eqn_bexp e), slice_rbexp vars (rng_bexp e))
 
@@ -2292,7 +2282,7 @@ let find_dep_vars dep_hash v =
     AtomicHashtbl.find dep_hash (Avar v)
   else
     VS.empty
-                      
+
 let mk_var_dep_hash p =
   let dep_hash = AtomicHashtbl.create 103 in
   let update_dep_hash lvs rvs v =
@@ -2308,7 +2298,7 @@ let mk_var_dep_hash p =
     VS.iter (update_dep_hash lvs rvs) lvs in
   let _ = List.iter helper p in
   dep_hash
-  
+
 (*
  * Slice a program according to a specified initial set of variables.
  * The set of variables will be increased during slicing.
@@ -2334,12 +2324,12 @@ let slice_program vars p =
          match hd with
          | Iassert _e -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
-                         helper (VS.union vars (vars_bexp e')) (if e' = btrue then res else Iassume e'::res) tl
+                        helper (VS.union vars (vars_bexp e')) (if e' = btrue then res else Iassume e'::res) tl
          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
-         | Ighost (vs, e) -> if vs_disjoint vars vs then helper vars res tl
+         | Ighost (vs, e) -> if VS.disjoint vars vs then helper vars res tl
                               else helper (VS.union vars (vars_bexp e)) (hd::res) tl
          | _ ->
-            if vs_disjoint (lvs_instr hd) vars then helper vars res tl
+            if VS.disjoint (lvs_instr hd) vars then helper vars res tl
             else helper (VS.union vars (rvs_instr hd)) (hd::res) tl
        end in
   helper vars [] (List.rev p)
@@ -2375,12 +2365,12 @@ let slice_program_ssa vars p =
          match hd with
          | Iassert _e -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
-                         helper vars (if e' = btrue then res else Iassume e'::res) tl
+                        helper vars (if e' = btrue then res else Iassume e'::res) tl
          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
          | Ighost (vs, e) -> let e' = slice_bexp vars e in
-                              helper vars (if e' = btrue then res else Ighost (vs, e')::res) tl
+                             helper vars (if e' = btrue then res else Ighost (vs, e')::res) tl
          | _ ->
-            if vs_disjoint (lvs_instr hd) vars then helper vars res tl
+            if VS.disjoint (lvs_instr hd) vars then helper vars res tl
             else helper vars (hd::res) tl
        end in
   helper vars [] (List.rev p)
@@ -2391,7 +2381,7 @@ let program_vars_sat vars p_rev =
                           | Iassume _ -> false
                           | Icut _ -> failwith ("A program with Icut cannot be sliced.")
                           | Ighost _ -> false
-                          | _ -> vs_disjoint vars (lvs_instr i))
+                          | _ -> VS.disjoint vars (lvs_instr i))
            (fun vars i -> match i with
                           | Iassert _ -> failwith "Iassert should not appear in program_vars_sat"
                           | Iassume e -> bexp_vars_sat vars e
@@ -2404,6 +2394,27 @@ let rec program_pre_vars_sat vars pre_vars_sat pre p_rev =
   let vars' = program_vars_sat vars p_rev in
   let vars' = pre_vars_sat vars' pre in
   if VS.cardinal vars' > VS.cardinal vars then program_pre_vars_sat vars' pre_vars_sat pre p_rev
+  else vars'
+
+let program_vids_sat vars p_rev =
+  vids_sat (fun vars i -> match i with
+                          | Iassert _ -> true
+                          | Iassume _ -> false
+                          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
+                          | Ighost _ -> false
+                          | _ -> IS.disjoint vars (lvids_instr i))
+           (fun vars i -> match i with
+                          | Iassert _ -> failwith "Iassert should not appear in program_vars_sat"
+                          | Iassume e -> bexp_vids_sat vars e
+                          | Icut _ -> failwith "Icut should not appear in program_vars_sat"
+                          | Ighost (_vs, e) -> bexp_vids_sat vars e
+                          | _ -> IS.union vars (vids_instr i))
+           vars p_rev
+
+let rec program_pre_vids_sat vars pre_vids_sat pre p_rev =
+  let vars' = program_vids_sat vars p_rev in
+  let vars' = pre_vids_sat vars' pre in
+  if IS.cardinal vars' > IS.cardinal vars then program_pre_vids_sat vars' pre_vids_sat pre p_rev
   else vars'
 
 (*
@@ -2460,8 +2471,7 @@ let slice_rspec_ssa s hashopt =
   { rspre = pre; rsprog = p; rspost = s.rspost; rspwss = s.rspwss }
 
 
-
-(* Auto-casting *)
+(** Auto-casting *)
 
 let auto_cast_name = "auto_cast"
 
@@ -2624,7 +2634,6 @@ let auto_cast_program ?preserve:(preserve=false) p =
     | hd::tl -> let casted = auto_cast_instr ~preserve:preserve t hd in
                 helper t (res@casted) tl in
   helper (vt, ct) [] p
-
 
 
 (** Visitors *)
@@ -2949,10 +2958,6 @@ let separate_assertions s =
 
 (* Move assertions to postcondition. Assume the input specification is in SSA form. *)
 let move_asserts s =
-  let is_assert i =
-    match i with
-    | Iassert _ -> true
-    | _ -> false in
   let bexp_of_assert i =
     match i with
     | Iassert e -> e
@@ -2973,23 +2978,116 @@ let spec_to_coq_cryptoline s =
   List.map move_asserts (cut_spec (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec ssa else ssa))
 
 
-(* Test if the instruction is a cut over algebra properties *)
-let is_ecut i =
-  match i with
-  | Icut (_::_, _) -> true
-  | _ -> false
+(** Normalization *)
 
-(* Test if the instruction is a cut over range properties *)
-let is_rcut i =
-  match i with
-  | Icut (_, _::_) -> true
-  | _ -> false
+let update_variable_id_var m v =
+  let (m', i) = try (m, VM.find v m)
+                with Not_found -> let i = incr_global_next_vid () in
+                                  let m' = VM.add v i m in
+                                  (m', i) in
+  let _ = v.vid <- i in
+  m'
 
+let rec update_variable_id_eexp m e =
+  match e with
+  | Evar v -> update_variable_id_var m v
+  | Econst _ -> m
+  | Eunop (_, e) -> update_variable_id_eexp m e
+  | Ebinop (_, e1, e2) -> update_variable_id_eexp (update_variable_id_eexp m e1) e2
+
+let rec update_variable_id_ebexp m e =
+  match e with
+  | Etrue -> m
+  | Eeq (e1, e2) -> update_variable_id_eexp (update_variable_id_eexp m e1) e2
+  | Eeqmod (e1, e2, es) -> List.fold_left update_variable_id_eexp (update_variable_id_eexp (update_variable_id_eexp m e1) e2) es
+  | Eand (e1, e2) -> update_variable_id_ebexp (update_variable_id_ebexp m e1) e2
+
+let rec update_variable_id_rexp m e =
+  match e with
+  | Rvar v -> update_variable_id_var m v
+  | Rconst _ -> m
+  | Runop (_, _, e) -> update_variable_id_rexp m e
+  | Rbinop (_, _, e1, e2) -> update_variable_id_rexp (update_variable_id_rexp m e1) e2
+  | Ruext (_, e, _)
+  | Rsext (_, e, _) -> update_variable_id_rexp m e
+
+let rec update_variable_id_rbexp m e =
+  match e with
+  | Rtrue -> m
+  | Req (_, e1, e2)
+  | Rcmp (_, _, e1, e2) -> update_variable_id_rexp (update_variable_id_rexp m e1) e2
+  | Rneg e -> update_variable_id_rbexp m e
+  | Rand (e1, e2)
+  | Ror (e1, e2) -> update_variable_id_rbexp (update_variable_id_rbexp m e1) e2
+
+let update_variable_id_bexp m (e, r) = update_variable_id_rbexp (update_variable_id_ebexp m e) r
+
+let update_variable_id_atomic m a =
+  match a with
+  | Avar v -> update_variable_id_var m v
+  | Aconst _ -> m
+
+let update_variable_id_atomics m atomics = List.fold_left update_variable_id_atomic m atomics
+
+let update_variable_id_instr m i =
+  match i with
+  | Imov (v, a)
+  | Ishl (v, a, _) -> update_variable_id_atomics m [Avar v; a]
+  | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
+  | Inondet v -> update_variable_id_var m v
+  | Icmov (v, c, a1, a2) -> update_variable_id_atomics m [Avar v; c; a1; a2]
+  | Inop -> m
+  | Inot (v, a) -> update_variable_id_atomics m [Avar v; a]
+  | Iadd (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Iadds (c, v, a1, a2)
+  | Iaddr (c, v, a1, a2) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2]
+  | Iadc (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
+  | Iadcs (c, v, a1, a2, y)
+  | Iadcr (c, v, a1, a2, y) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2; y]
+  | Isub (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Isubc (c, v, a1, a2) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2]
+  | Isubb (b, v, a1, a2) -> update_variable_id_atomics m [Avar b; Avar v; a1; a2]
+  | Isubr (c, v, a1, a2) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2]
+  | Isbc (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
+  | Isbcs (c, v, a1, a2, y)
+  | Isbcr (c, v, a1, a2, y) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2; y]
+  | Isbb (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
+  | Isbbs (b, v, a1, a2, y)
+  | Isbbr (b, v, a1, a2, y) -> update_variable_id_atomics m [Avar b; Avar v; a1; a2; y]
+  | Imul (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Imuls (vh, vl, a1, a2)
+  | Imulr (vh, vl, a1, a2)
+  | Imull (vh, vl, a1, a2) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
+  | Imulj (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Isplit (vh, vl, a, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a]
+  | Iand (v, a1, a2)
+  | Ior (v, a1, a2)
+  | Ixor (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Icast (od, v, a) ->
+     let m' =
+       match od with
+       | Some v -> update_variable_id_var m v
+       | None -> m in
+     update_variable_id_atomics m' [Avar v; a]
+  | Ivpc (v, a) -> update_variable_id_atomics m [Avar v; a]
+  | Ijoin (v, ah, al) -> update_variable_id_atomics m [Avar v; ah; al]
+  | Iassert e
+  | Iassume e -> update_variable_id_bexp m e
+  | Icut (es, rs) -> List.fold_left update_variable_id_rbexp (List.fold_left update_variable_id_ebexp m (fst (List.split es))) (fst (List.split rs))
+  | Ighost (vs, e) -> update_variable_id_bexp (VS.fold (fun v m -> update_variable_id_var m v) vs m) e
+
+let update_variable_id_program m p = List.fold_left update_variable_id_instr m p
+
+let update_variable_id_spec m s = update_variable_id_bexp (update_variable_id_program (update_variable_id_bexp m (s.spre)) s.sprog) s.spost
+
+let update_variable_id_espec m s = update_variable_id_ebexp (update_variable_id_program (update_variable_id_ebexp m (s.espre)) s.esprog) s.espost
+
+let update_variable_id_rspec m s = update_variable_id_rbexp (update_variable_id_program (update_variable_id_rbexp m (s.rspre)) s.rsprog) s.rspost
 
 (*
  * Normalize an index. If `n - 1` is the maximal index.
  * `normal n i` is `i` if i is non-negative.
- * `normal n i` is `n + 1` if i is negative.
+ * `normal n i` is `n + i` if i is negative.
  *)
 let normalize_index num id =
   let res =
@@ -3033,11 +3131,17 @@ let normalize_program ?num_ecuts ?num_rcuts p =
     List.map update_instruction p in
   normalize_prove_with p
 
-(*
- * Normalize spec. After normalization:
- * - All indices in prove-with clauses are positive.
+(**
+   [normalize_spec s] normalizes a specification [s]. The followings are
+   guaranteed after normalization:
+   - Variables IDs are updated.
+   - All indices in prove-with clauses are positive.
+   @param s a specification
+   @return a normalized specification of [s]
  *)
 let normalize_spec s =
+  (* Update variable IDs. *)
+  let _ = update_variable_id_spec VM.empty s in
   (* Note that postcondition is always the last cut. *)
   let (num_ecuts, num_rcuts) = (List.length (List.filter is_ecut s.sprog) + 1, List.length (List.filter is_rcut s.sprog) + 1) in
   let np = normalize_program ~num_ecuts:num_ecuts ~num_rcuts:num_rcuts s.sprog in
@@ -3055,3 +3159,189 @@ let normalize_spec s =
     spost = s.spost;
     sepwss = nepwss;
     srpwss = nrpwss }
+
+(**
+   [normalize_espec s] normalizes an algebraic specification. The followings are
+   guaranteed after normalization:
+   - Variables IDs are updated.
+   - All indices in prove-with clauses are positive.
+   @param s an algebraic specification
+   @return a normalized specification of [s]
+ *)
+let normalize_espec s =
+  (* Update variable IDs. *)
+  let _ = update_variable_id_espec VM.empty s in
+  (* Note that postcondition is always the last cut. *)
+  let (num_ecuts, num_rcuts) = (List.length (List.filter is_ecut s.esprog) + 1, 0) in
+  let np = normalize_program ~num_ecuts:num_ecuts ~num_rcuts:num_rcuts s.esprog in
+  let nepwss =
+    try
+      List.map (normalize_pws num_ecuts) s.espwss
+    with IndexOutOfBound id ->
+      failwith("Index out of bound in algebraic postcondition: " ^ string_of_int id) in
+  { espre = s.espre;
+    esprog = np;
+    espost = s.espost;
+    espwss = nepwss }
+
+(**
+   [normalize_rspec s] normalizes a range specification. The followings are
+   guaranteed after normalization:
+   - Variables IDs are updated.
+   - All indices in prove-with clauses are positive.
+   @param s a range specification
+   @return a normalized specification of [s]
+ *)
+let normalize_rspec s =
+  (* Update variable IDs. *)
+  let _ = update_variable_id_rspec VM.empty s in
+  (* Note that postcondition is always the last cut. *)
+  let (num_ecuts, num_rcuts) = (0, List.length (List.filter is_rcut s.rsprog) + 1) in
+  let np = normalize_program ~num_ecuts:num_ecuts ~num_rcuts:num_rcuts s.rsprog in
+  let nrpwss =
+    try
+      List.map (normalize_pws num_rcuts) s.rspwss
+    with IndexOutOfBound id ->
+      failwith("Index out of bound in range postcondition: " ^ string_of_int id) in
+  { rspre = s.rspre;
+    rsprog = np;
+    rspost = s.rspost;
+    rspwss = nrpwss }
+
+
+(** Trivial Specification *)
+
+let assumes_of_program p =
+  List.fold_left (fun res i -> match i with
+                               | Iassume e -> e::res
+                               | _ -> res) [] (List.rev p)
+
+let eassumes_of_program p = fst (List.split (assumes_of_program p))
+let rassumes_of_program p = snd (List.split (assumes_of_program p))
+
+(* Returns true if espost appears in espre. *)
+let rec espre_implies_espost espre espost =
+  match espre with
+  | Eand (e0, e1) ->
+     espre_implies_espost e0 espost ||
+       espre_implies_espost e1 espost
+  | _ -> eq_ebexp espre espost
+
+let rec rspre_implies_rspost re se  =
+  match re with
+  | Rand (re0, re1) ->
+     rspre_implies_rspost re0 se || rspre_implies_rspost re1 se
+  | _ -> re = se
+
+let is_epost_trivial epre eassumes epost =
+  (epost = Etrue) || (List.exists (fun epre -> espre_implies_espost epre epost) (epre::eassumes))
+
+let is_rpost_trivial rpre rassumes rpost =
+  (rpost = Rtrue) || (List.exists (fun rpre -> rspre_implies_rspost rpre rpost) (rpre::rassumes))
+
+let rspost_in_assumes prog rspost =
+  List.exists (fun inst ->
+      match inst with
+      | Iassume (_, r) -> rspre_implies_rspost r rspost
+      | _ -> false) prog
+
+(* Returns true if espost appears in some assume instruction in prog. *)
+let espost_in_assumes prog espost =
+  List.exists (fun inst ->
+      match inst with
+      | Iassume (e, _) -> espre_implies_espost e espost
+      | _ -> false) prog
+
+let is_espec_trivial s =
+  (s.espost = Etrue)
+  || (espre_implies_espost s.espre s.espost)
+  || (espost_in_assumes s.esprog s.espost)
+
+let is_rspec_trivial s =
+  (s.rspost = Rtrue)
+  || (rspre_implies_rspost s.rspre s.rspost)
+  || (rspost_in_assumes s.rsprog s.rspost)
+
+let remove_trivial_epost s =
+  let eassumes = eassumes_of_program s.esprog in
+  let rec remove_trivial e =
+    match e with
+    | Etrue -> []
+    | Eand (e1, e2) -> (remove_trivial e1)@(remove_trivial e2)
+    | _ -> if is_epost_trivial s.espre eassumes e then []
+           else [e] in
+  { espre = s.espre;
+    esprog = s.esprog;
+    espost = eands (remove_trivial s.espost);
+    espwss = s.espwss }
+
+let remove_trivial_rpost s =
+  let rassumes = rassumes_of_program s.rsprog in
+  let rec remove_trivial e =
+    match e with
+    | Rtrue -> []
+    | Rand (e1, e2) -> (remove_trivial e1)@(remove_trivial e2)
+    | Ror (e1, e2) -> if is_rpost_trivial s.rspre rassumes e1 || is_rpost_trivial s.rspre rassumes e2 then []
+                      else [e]
+    | _ -> if is_rpost_trivial s.rspre rassumes e then []
+           else [e] in
+  { rspre = s.rspre;
+    rsprog = s.rsprog;
+    rspost = rands (remove_trivial s.rspost);
+    rspwss = s.rspwss }
+
+let rec split_espec_post s =
+  match s.espost with
+  | Eand (e1, e2) ->
+     let res1 = split_espec_post { espre = s.espre; esprog = s.esprog;
+                                espost = e1; espwss = s.espwss } in
+     let res2 = split_espec_post { espre = s.espre; esprog = s.esprog;
+                                espost = e2; espwss = s.espwss } in
+     res1@res2
+  | _ -> [s]
+
+let rec split_rspec_post s =
+  match s.rspost with
+  | Rand (e1, e2) ->
+     let res1 = split_rspec_post { rspre = s.rspre; rsprog = s.rsprog;
+                                rspost = e1; rspwss = s.rspwss } in
+     let res2 = split_rspec_post { rspre = s.rspre; rsprog = s.rsprog;
+                                rspost = e2; rspwss = s.rspwss } in
+     res1@res2
+  | _ -> [s]
+
+
+(** deSSA *)
+
+class dessa_visitor : visitor =
+object (* (self) *)
+  method vspec _ = DoChildren
+  method vprogram _ = DoChildren
+  method vlined_program _ = DoChildren
+  method vinstr _ = DoChildren
+  method vbexp _ = DoChildren
+  method vebexp _ = DoChildren
+  method vrbexp _ = DoChildren
+  method veexp _ = DoChildren
+  method vrexp _ = DoChildren
+  method vatomic _ = DoChildren
+  method vaconst _ = DoChildren
+  method veconst _ = DoChildren
+  method vrconst _ = DoChildren
+  method vvar v = ChangeTo {
+                      vname = v.vname;
+                      vtyp = v.vtyp;
+                      vsidx = default_non_ssa_idx;
+                      vid = v.vid
+                    }
+end
+
+let dessa_visitor = new dessa_visitor
+
+let dessa_program p = let p = visit_program dessa_visitor p in
+                      let _ = update_variable_id_program VM.empty p in
+                      p
+
+let dessa_spec s = let s = visit_spec dessa_visitor s in
+                   let _ = update_variable_id_spec VM.empty s in
+                   s

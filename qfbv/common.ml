@@ -54,6 +54,11 @@ and bexp =
   | Conj of bexp * bexp
   | Disj of bexp * bexp
 
+let rec split_bexp e =
+  match e with
+  | Conj (e1, e2) -> (split_bexp e1)@(split_bexp e2)
+  | _ -> [e]
+
 let is_atomic t =
   match t with
   | Var _ | Const _ -> true
@@ -310,7 +315,7 @@ module WN : OrderedType with type t = (int * Z.t) =
 
 module WNMap : Map.S with type key = (int * Z.t) = Map.Make(WN)
 
-class btor_manager (_wordsize : int) =
+class btor_manager =
 object(self)
   (** the ID of the next Btor variable *)
   val mutable v = 0

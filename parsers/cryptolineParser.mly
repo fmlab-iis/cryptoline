@@ -1097,14 +1097,15 @@
         if List.length undefined > 0 then
           raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
       in
-      let p = subst_lined_program pats fbody in
+      let (am, em, rm) = subst_maps_of_list pats in
+      let p = subst_lined_program am em rm fbody in
       (* Update variable types *)
       let subst_varmap vm =
         (*
          * subst_lval fails if the corresponding actual parameter of a formal parameter is a constant.
          * In this case, no variable type will be updated.
          *)
-        VS.of_list (List.flatten (List.map (fun v -> try [subst_lval pats v] with _ -> []) (VS.elements vm))) in
+        VS.of_list (List.flatten (List.map (fun v -> try [subst_lval am v] with _ -> []) (VS.elements vm))) in
       let update_varset vs vsp =
         (* To update variable types, we need to remove variables with new types first. *)
         VS.union (VS.diff vs vsp) vsp in
@@ -1418,9 +1419,7 @@ proc:
       let n = $4 cm in
       if SM.mem v cm
       then raise_at lno ("Redefined constant: " ^ v)
-      else
-        let _ = if v = "wordsize" then Options.Std.wordsize := Z.to_int n in
-        (fm, SM.add v n cm)
+      else (fm, SM.add v n cm)
   }
 ;
 

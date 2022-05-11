@@ -1,19 +1,5 @@
-(* open Big_int *)
-(* open Set *)
 open Options.Std
-(* open Ast.Cryptoline *)
 open Common
-(* open Lwt.Infix *)
-
-type result = Common.result
-
-type exp = Common.exp
-
-type bexp = Common.bexp
-
-let string_of_exp = Common.string_of_exp
-let string_of_bexp = Common.string_of_bexp
-
 
 let smtlib2_write_input file es =
   let input_text = smtlib2_imp_check_sat es in
@@ -97,7 +83,7 @@ let solve_simp ?timeout:timeout fs =
     try
       let _ =
         if !use_btor
-        then btor_write_input (new btor_manager !wordsize) ifile fs
+        then btor_write_input (new btor_manager) ifile fs
         else smtlib2_write_input ifile fs in
       let _ =
         match timeout with

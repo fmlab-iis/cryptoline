@@ -1,6 +1,7 @@
 (library
   (name        verify)
   (preprocess  (pps lwt_ppx))
-  (libraries   options ast qfbv)
+  (libraries   options ast qfbv utils)
   (flags       (:standard -w -3))
+  (public_name cryptoline.verify)
 )

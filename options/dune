@@ -2,4 +2,5 @@
   (name        options)
   (preprocess  (pps lwt_ppx))
   (libraries   lwt.unix lwt)
+  (public_name cryptoline.options)
 )

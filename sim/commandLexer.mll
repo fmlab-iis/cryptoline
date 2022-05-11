@@ -1,43 +1,9 @@
 {
+
+  (** A lexer for the commands in the simulator. *)
+
   open CommandParser
   exception Eof
-
-  let keywords = Hashtbl.create 100
-  let _ = List.iter (fun (keyword, token) -> Hashtbl.replace keywords keyword token)
-            [
-              (********** Instructions **********)
-              "exit"                       , EXIT;
-              "quit"                       , EXIT;
-              "q"                          , EXIT;
-              "run"                        , RUN;
-              "r"                          , RUN;
-              "next"                       , NEXT;
-              "n"                          , NEXT;
-              "previous"                   , PREVIOUS;
-              "prev"                       , PREVIOUS;
-              "v"                          , PREVIOUS;
-              "goto"                       , GOTO;
-              "g"                          , GOTO;
-              "find"                       , FIND;
-              "f"                          , FIND;
-              "print"                      , PRINT;
-              "p"                          , PRINT;
-              "rprint"                     , REGEXP_PRINT;
-              "rp"                         , REGEXP_PRINT;
-              "watch"                      , WATCH;
-              "w"                          , WATCH;
-              "rwatch"                     , REGEXP_WATCH;
-              "rw"                         , REGEXP_WATCH;
-              "unwatch"                    , UNWATCH;
-              "uw"                         , UNWATCH;
-              "runwatch"                   , REGEXP_UNWATCH;
-              "ruw"                        , REGEXP_UNWATCH;
-              "dump"                       , DUMP;
-              "d"                          , DUMP;
-              "help"                       , HELP;
-              "h"                          , HELP;
-              "?"                          , HELP
-            ]
 
   let string_buff = Buffer.create 256
 
@@ -59,10 +25,7 @@ rule token = parse
   | '"'                                 { Buffer.clear string_buff;
                                           string lexbuf;
                                           ARG (Buffer.contents string_buff) }
-  | [^ ' ' '\t' '"']+ as id             { try
-                                            Hashtbl.find keywords id
-                                          with Not_found ->
-                                            ARG id }
+  | [^ ' ' '\t' '"']+ as id             { ARG id }
   | eof                                 { EOF }
 
 and string = parse
