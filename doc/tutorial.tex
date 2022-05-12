@@ -3,6 +3,7 @@
 \usepackage{xspace}
 \usepackage{amssymb,amsmath,amsfonts,amsthm}
 \usepackage{url}
+\usepackage[margin=1.25in]{geometry}
 %\usepackage{tabularray}
 
 \input{macro}
@@ -164,6 +165,8 @@ $\mZ_{p256}$, computes their Montgomery product $c \equiv a \times b
 \cryptoline in these running examples.
 
 \subsection{\nistzadd}
+
+\subsubsection{Model Construction}
 
 The easiest way to construct accurate \cryptoline models is by
 extracting traces from execution. To do so, we need to build an
@@ -473,6 +476,8 @@ output field element is less than the modulo in the unsigned
 representation. Note that the congruence is computed with $5\times
 64=320$ bits instead of $256$ bits.
 
+\subsubsection{Verification}
+
 We are ready to verify our \cryptoline model for \nistzadd. Try
 \begin{verbatim}
 $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_add.cl
@@ -504,9 +509,230 @@ verifiers get familiar with the verification flow.
 \exercise Construct a model for \texttt{ecp\_nistz256\_sub} in 
 \texttt{ecp\_nistz256-x86\_64.pl} and verify it.
 
-
 \subsection{\nistzmul}
 
+Our next example is to verify the assembly subroutine \nistzmul from
+\openssl.\footnote{Depending on the 
+\xeightysix microarchitecture, the assembly subroutine \nistzmul
+has two implementations: \texttt{\_\_ecp\_nistz256\_mul\_montx} and
+\texttt{\_\_ecp\_nistz256\_mul\_montq}. We will verify
+\texttt{\_\_ecp\_nistz256\_mul\_montx} here.} The assembly subroutine
+takes two field elements $a$ and $b$ in $\mZ_{p256}$ as inputs,
+computes their Montgomery product $c$, and store $c$ in
+memory. Mathematically, the inputs and output satisfy the following
+modular equation:
+\[
+c \equiv a \times b \times 2^{-256} \mod p256, \textmd{
+  equivalently}, 
+c \times 2^{256} \equiv a \times b \mod p256
+\]
 
+\subsubsection{Model Construction}
+
+The executable binary
+\texttt{top} built in the first example also calls the assembly
+subroutine. The trace for \nistzmul can be extracted by \itrace with
+the same binary:
+\begin{verbatim}
+$ $(CL_HOME)/scripts/itrace.py top ecp_nistz256_mul_mont ecp_nistz256_mul_mont.gas
+\end{verbatim}
+
+The trace \nistzmulgas looks like the following:
+\begin{verbatim}
+ecp_nistz256_mul_mont:
+# %rdi = 0x7fffffffd9f0
+# %rsi = 0x7fffffffd9b0
+# %rdx = 0x7fffffffd9d0
+# %rcx = 0x7fffffffd9b0
+# %r8  = 0x-9
+# %r9  = 0xfffffffe
+	#! -> SP = 0x7fffffffd9a8
+	mov    $0x80100,%ecx            #! PC = 0x55555557d1e0
+	and    0x5e35(%rip),%ecx        # ...
+	push   %rbp                     #! EA = L0x7fffffffd9a0; ...
+	push   %rbx                     #! EA = L0x7fffffffd998; ...
+        ...
+\end{verbatim}
+By calling convention, we know the input field elements are stored at
+\texttt{0x7fffffffd9b0} and \texttt{0x7fffffffd9d0}; the output is
+stored at \texttt{0x7fffffffd9f0}. The subroutine uses more
+registers. Unsurprisingly, we need additional translation rules for
+memory addresses and registers.
+\begin{verbatim}
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! -$1c(%rip) = %%EA
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %eax = %%eax
+\end{verbatim}
+
+Many translation rules for \xeightysix instructions can be
+re-used. They are listed below:
+\begin{verbatim}
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+\end{verbatim}
+
+Three rules are modified slightly. They are:
+\begin{verbatim}
+#! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+#! adc $1c, $2v -> adc $2v $2v $1c@uint64 carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+\end{verbatim}
+The \xeightysix \texttt{xor} instruction actually clears carry and
+overflow flags. This is not modeled previously but needed in
+\nistzmul, so the rule is modified accordingly. The string
+\texttt{\\n} represents a line break. In \nistzmul, more
+constant literals are used. We therefore use \texttt{\$1c} to match
+constants in the rules for \texttt{adc} and \texttt{sbb}.
+
+Two addtional addition instructions are used in \nistzmul. The
+\texttt{adcx} and \texttt{adox} instructions compute the sum with the
+carry and overflow flags as carry respectively. Their translation
+rules are similar to those for \texttt{adc}:
+\begin{verbatim}
+#! adcx $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adox $1v, $2v -> adcs overflow $2v $2v $1v overflow
+\end{verbatim}
+
+The \xeightysix \texttt{mulx} computes the product of the \texttt{rdx}
+register and the source. The 128-bit product is then stored in the
+destinations. The \cryptoline \texttt{mull} command computes the
+product of the last two arguments, stores the more significant half
+in the first argument and the less significant half in the second. We
+thus use the following rule for \texttt{mulx}:
+\begin{verbatim}
+#! mulx $1v, $2v, $3v -> mull $3v $2v rdx $1v
+\end{verbatim}
+
+Finally, the \xeightysix instruction \texttt{shlx \textit{r}
+  \textit{s} \texttt{d}} and \texttt{shrx \textit{r} \textit{s}
+  \textit{d}} shifts the value of \texttt{\textit{s}} to the left and
+right respectively by the value in \texttt{\textit{r}}. The shifted
+result is stored in \texttt{\textit{d}}. In \cryptoline, the
+\texttt{shl \textit{d} \textit{s} \textit{c}} shifts the value of
+\texttt{\textit{s}} by the constant \texttt{\textit{c}} bits to the
+left. The \texttt{split \textit{h} \textit{l} \textit{s} \textit{c}}
+command splits \texttt{\textit{s}} by the constant \texttt{\textit{c}}
+into two parts: the lowest \texttt{\textit{c}} bits are stored in
+\texttt{\textit{l}} and other bits are stored in \texttt{\textit{h}}.
+It is tempting to use the following rules:
+\begin{verbatim}
+#! shlx $1v, $2v, $3v -> shl $3v $2v $1v
+#! shrx $1v, $2v, $3v -> split $3v dc $2v $1v
+\end{verbatim}
+There is a problem in these rules. The \texttt{shl} and
+\texttt{split} commands only allow constant shifting and splitting. We
+need to change the variable \texttt{\$1v} to a constant. After
+examining \nistzmul, we see the first argument of all \texttt{shlx}
+and \texttt{shrx} instructions is always \texttt{\%r14}. Moreover,
+\texttt{\%r14} is set to \texttt{\$0x20} and never changed. We can ask
+\cryptoline to check the value of \texttt{\$1v} is always 32 and then
+use 32 as the shifting and splitting constant. The \cryptoline
+\texttt{assert \textit{P} \&\& \textit{Q}} command checks both
+\texttt{\textit{P}} and \texttt{\textit{Q}} must be true. The
+verification fails if any of \texttt{\textit{P}} or
+\texttt{\textit{Q}} can be false. Consider the following rules:
+\begin{verbatim}
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nshl $3v $2v 32
+#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32
+\end{verbatim}
+The \texttt{assert \$1v=32 \&\& true} command ensures \texttt{\$1v}
+must be 32 at this location. If so, we use the constant 32 instead of
+the variable \texttt{\$1v}. Note that we ask an external CAS to check
+if \texttt{\$1v} is equal 32. If you would like to use the SMT-based
+engine, use \texttt{assert true \&\& \$1v=32@64} instead.
+
+We are ready to apply the translation rules. After commenting out
+irrelevant instructions in trace, use the following command:
+\begin{verbatim}
+$ $(CL_HOME)/scripts/to_zdsl.py ecp_nistz256_mul_mont.gas > ecp_nistz256_mul_mont.cl
+\end{verbatim}
+
+It remains to declare input parameters and specify properties about
+\nistzmul. The declaration and pre-condition are similar to \nistzadd:
+\begin{verbatim}
+proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
+           uint64 b0, uint64 b1, uint64 b2, uint64 b3,
+           uint64 m0, uint64 m1, uint64 m2, uint64 m3) =
+{
+  and [ m0 = 0xffffffffffffffff, m1 = 0x00000000ffffffff,
+        m2 = 0x0000000000000000, m3 = 0xffffffff00000001 ]
+  &&
+  and [ m0 = 0xffffffffffffffff@64, m1 = 0x00000000ffffffff@64,
+        m2 = 0x0000000000000000@64, m3 = 0xffffffff00000001@64,
+        limbs 64 [a0, a1, a2, a3] <u limbs 64 [m0, m1, m2, m3],
+        limbs 64 [b0, b1, b2, b3] <u limbs 64 [m0, m1, m2, m3]
+  ]
+}
+\end{verbatim}
+Note that the modulo \texttt{m}'s appear in both parts of
+pre-condition. Since we will use the CAS-based engine, we need to tell
+the engine about \texttt{m}'s. Simiarly, we initialize memory stores
+with input parameters and constants.
+\begin{verbatim}
+mov L0x7fffffffd9b0 a0; mov L0x7fffffffd9b8 a1;
+mov L0x7fffffffd9c0 a2; mov L0x7fffffffd9c8 a3;
+
+mov L0x7fffffffd9d0 b0; mov L0x7fffffffd9d8 b1;
+mov L0x7fffffffd9e0 b2; mov L0x7fffffffd9e8 b3;
+
+mov L0x55555557c000 0xffffffffffffffff@uint64;
+mov L0x55555557c008 0x00000000ffffffff@uint64;
+mov L0x55555557c010 0x0000000000000000@uint64;
+mov L0x55555557c018 0xffffffff00000001@uint64;
+\end{verbatim}
+
+At the end of \nistzmulcl, the results \texttt{c}'s are obtained from
+memory stores.
+\begin{verbatim}
+mov c0 L0x7fffffffd9f0; mov c1 L0x7fffffffd9f8;
+mov c2 L0x7fffffffda00; mov c3 L0x7fffffffda08;
+\end{verbatim}
+And we use the following post-condition:
+\begin{verbatim}
+{
+  eqmod limbs 64 [0, 0, 0, 0, c0, c1, c2, c3]
+        limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3]
+        limbs 64 [m0, m1, m2, m3]
+&&
+  limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
+}
+\end{verbatim}
+In the post-condition, we ask the CAS-based engine to verify $c \times
+2^{256} \equiv a \times b \mod p256$. For the range check $c < p256$,
+we employs the SMT-based engine.
+
+\subsubsection{Verification}
+
+We are ready to verify our model. Type
+\begin{verbatim}
+$ $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
+\end{verbatim}
+
+However, \cryptoline reports safety errors. 
+
+
+\begin{verbatim}
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit dc $3v $2v 32;\nshl $3v $3v 32
+#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32
+\end{verbatim}
 \end{document}
 
