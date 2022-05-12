@@ -12,13 +12,121 @@ open NBits
 open Utils
 
 
+(** Options *)
+
+(* raised with a message if some argument is invalid *)
+exception InvalidArgument of string
+
+let num_prev_instrs_to_print = ref 5
+
+let num_next_instrs_to_print = ref 5
+
+let apply_assignment_rewriting = ref false
+
+let print_hexadecimal = ref false
+
+type option_spec =
+  OInt of (int -> unit)
+| OBool of (bool -> unit)
+
+type option_kind =
+  {
+    oname : string;          (** name of the option *)
+    odesc : string;          (** the description the option *)
+    ospec : option_spec;     (** specification of the option *)
+    oprint : unit -> unit    (** print the current value of the option *)
+  }
+
+let option_num_prev_instrs_to_print =
+  {
+    oname = "num_prev_instrs_to_print";
+    odesc = "The number of instructions before the current program location to print.";
+    ospec = OInt (fun n -> num_prev_instrs_to_print := n);
+    oprint = fun _ -> print_endline ("num_prev_instrs_to_print = " ^ string_of_int !num_prev_instrs_to_print)
+  }
+
+let option_num_next_instrs_to_print =
+  {
+    oname = "num_next_instrs_to_print";
+    odesc = "The number of instructions after the current program location to print.";
+    ospec = OInt (fun n -> num_next_instrs_to_print := n);
+    oprint = fun _ -> print_endline ("num_next_instrs_to_print = " ^ string_of_int !num_next_instrs_to_print)
+  }
+
+let option_rewrite_assignments =
+  {
+    oname = "rewrite_assignments";
+    odesc = "Rewrite assignments for the slice command.";
+    ospec = OBool (fun b -> apply_assignment_rewriting := b);
+    oprint = fun _ -> print_endline ("rewrite_assignments = " ^ string_of_bool !apply_assignment_rewriting)
+  }
+
+let option_print_hexadecimal =
+  let name = "print_hexadecimal" in
+  let option = print_hexadecimal in
+  let desc = "Print variable values in hexadecimal." in
+  {
+    oname = name;
+    odesc = desc;
+    ospec = OBool (fun b -> option := b);
+    oprint = fun _ -> print_endline (name ^ " = " ^ string_of_bool !option)
+  }
+
+let options = Hashtbl.create 10
+
+let find_option name = Hashtbl.find options name
+
+let register_option o = Hashtbl.replace options o.oname o
+
+let get_options () =
+  let m = Hashtbl.fold (fun _ o res -> SM.add o.oname o res) options SM.empty in
+  let os_rev = SM.fold (fun _ o res -> o::res) m [] in
+  List.rev os_rev
+
+let _ = List.iter register_option [
+            option_num_prev_instrs_to_print; option_num_next_instrs_to_print;
+            option_rewrite_assignments; option_print_hexadecimal
+          ]
+
+(* Convert an argument to an integer. Raise InvalidArgument if the argument is not a valid integer. *)
+let convert_to_int arg =
+  try int_of_string arg
+  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid integer."))
+
+(* Convert an argument to a Boolean. Raise InvalidArgument if the argument is not a valid Boolean. *)
+let convert_to_bool arg =
+  try bool_of_string arg
+  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid Boolean."))
+
+(* Parse an option with its new values. If the input arguments is empty, print all available options.
+   Raise InvalidArgument if there is an error in value parsing. *)
+let parse_options args =
+  match args with
+  | name::args ->
+     begin
+       try
+         let o = find_option name in
+         match o.ospec with
+         | OInt f -> (match args with
+                      | n::[] -> f (convert_to_int n)
+                      | _ -> print_endline("The option " ^ o.oname ^ " requires an integer argument."))
+         | OBool f -> (match args with
+                       | n::[] -> f (convert_to_bool n)
+                       | _ -> print_endline("The option " ^ o.oname ^ " requires a Boolean argument."))
+       with Not_found -> print_endline ("There is no option " ^ name ^ ".")
+     end
+  | _ -> List.iter (fun o -> print_string "# "; print_endline o.odesc; o.oprint(); print_endline "") (get_options ())
+
+
 (** Auxiliary Functions *)
 
 let string_of_var_with_value x v =
   let is_signed = var_is_signed x in
-  let eval = if is_signed then signed else unsigned in
-  string_of_var x ^ ": " ^ string_of_bits v
-  ^ " (" ^ (if is_signed then "signed " else "unsigned ") ^ Z.to_string (eval v) ^ ")"
+  let bits_value = if !print_hexadecimal then "0x" ^ String.concat "" (List.map Char.escaped (to_hex v))
+                   else "0b" ^ string_of_bits v in
+  let int_value = Z.to_string ((if is_signed then signed else unsigned) v) in
+  string_of_var x ^ ": " ^ bits_value
+  ^ " (" ^ (if is_signed then "signed " else "unsigned ") ^ int_value ^ ")"
 
 let dump_map m =
   VM.iter (fun x v -> print_endline (string_of_var_with_value x v)) m
@@ -215,95 +323,6 @@ let simulate_instr m i =
   | Icut _ -> m
   | Ighost _ -> m
 
-
-(** Options *)
-
-(* raised with a message if some argument is invalid *)
-exception InvalidArgument of string
-
-let num_prev_instrs_to_print = ref 5
-
-let num_next_instrs_to_print = ref 5
-
-let apply_assignment_rewriting = ref false
-
-type option_spec =
-  OInt of (int -> unit)
-| OBool of (bool -> unit)
-
-type option_kind =
-  {
-    oname : string;          (** name of the option *)
-    odesc : string;          (** the description the option *)
-    ospec : option_spec;     (** specification of the option *)
-    oprint : unit -> unit    (** print the current value of the option *)
-  }
-
-let option_num_prev_instrs_to_print =
-  {
-    oname = "num_prev_instrs_to_print";
-    odesc = "The number of instructions before the current program location to print.";
-    ospec = OInt (fun n -> num_prev_instrs_to_print := n);
-    oprint = fun _ -> print_endline ("num_prev_instrs_to_print = " ^ string_of_int !num_prev_instrs_to_print)
-  }
-
-let option_num_next_instrs_to_print =
-  {
-    oname = "num_next_instrs_to_print";
-    odesc = "The number of instructions after the current program location to print.";
-    ospec = OInt (fun n -> num_next_instrs_to_print := n);
-    oprint = fun _ -> print_endline ("num_next_instrs_to_print = " ^ string_of_int !num_next_instrs_to_print)
-  }
-
-let option_rewrite_assignments =
-  {
-    oname = "rewrite_assignments";
-    odesc = "Rewrite assignments for the slice command.";
-    ospec = OBool (fun b -> apply_assignment_rewriting := b);
-    oprint = fun _ -> print_endline ("rewrite_assignments = " ^ string_of_bool !apply_assignment_rewriting)
-  }
-
-let options = Hashtbl.create 10
-
-let find_option name = Hashtbl.find options name
-
-let register_option o = Hashtbl.replace options o.oname o
-
-let get_options () =
-  let m = Hashtbl.fold (fun _ o res -> SM.add o.oname o res) options SM.empty in
-  let os_rev = SM.fold (fun _ o res -> o::res) m [] in
-  List.rev os_rev
-
-let _ = List.iter register_option [option_num_prev_instrs_to_print; option_num_next_instrs_to_print; option_rewrite_assignments]
-
-(* Convert an argument to an integer. Raise InvalidArgument if the argument is not a valid integer. *)
-let convert_to_int arg =
-  try int_of_string arg
-  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid integer."))
-
-(* Convert an argument to a Boolean. Raise InvalidArgument if the argument is not a valid Boolean. *)
-let convert_to_bool arg =
-  try bool_of_string arg
-  with Failure _ -> raise (InvalidArgument (arg ^ " is not a valid Boolean."))
-
-(* Parse an option with its new values. If the input arguments is empty, print all available options.
-   Raise InvalidArgument if there is an error in value parsing. *)
-let parse_options args =
-  match args with
-  | name::args ->
-     begin
-       try
-         let o = find_option name in
-         match o.ospec with
-         | OInt f -> (match args with
-                      | n::[] -> f (convert_to_int n)
-                      | _ -> print_endline("The option " ^ o.oname ^ " requires an integer argument."))
-         | OBool f -> (match args with
-                       | n::[] -> f (convert_to_bool n)
-                       | _ -> print_endline("The option " ^ o.oname ^ " requires a Boolean argument."))
-       with Not_found -> print_endline ("There is no option " ^ name ^ ".")
-     end
-  | _ -> List.iter (fun o -> print_string "# "; print_endline o.odesc; o.oprint(); print_endline "") (get_options ())
 
 
 (** Manager for Interactive Simulation *)

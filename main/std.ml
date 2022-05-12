@@ -7,7 +7,7 @@ open Parsers.Std
 open Utils
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation
 
 let action = ref Verify
 
@@ -18,6 +18,8 @@ let initial_values_string = ref ""
 let simulation_steps = ref (-1)
 
 let simulation_dumps_string = ref ""
+
+let interactive_simulation = ref false
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast,
@@ -52,13 +54,14 @@ let args = [
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["     Print data flow in SSA as a DOT graph."]));
-    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s),
-     Common.mk_arg_desc(["args"; "Run debugger with specified input arguments (comma separated)."]));
+    ("-interactive", Set interactive_simulation,
+     Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
     ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
      Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
+    ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["\t  Print hexadecimal variable values in simulation."]));
     ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by coq-cryptoline."]));
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
@@ -226,13 +229,8 @@ let anon file =
      let (vs, s) = parse_and_check file in
      let vals = parse_initial_values vs in
      let m = Simulator.make_map vs vals in
-     Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
-  | Debugger ->
-     let _ = Random.self_init () in
-     let (vs, s) = parse_and_check file in
-     let vals = parse_initial_values vs in
-     let m = Simulator.make_map vs vals in
-     Simulator.shell m s.sprog
+     if !interactive_simulation then Simulator.shell m s.sprog
+     else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
 
 
 (*
