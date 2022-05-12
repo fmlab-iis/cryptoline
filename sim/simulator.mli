@@ -5,6 +5,12 @@ open NBits
 open Ast.Cryptoline
 open Utils
 
+(** {1 Options} *)
+
+val print_hexadecimal : bool ref
+(** [true] to print variable values in hexadecimal *)
+
+
 (** {1 Interactive Commands} *)
 
 exception NoMoreInstr
