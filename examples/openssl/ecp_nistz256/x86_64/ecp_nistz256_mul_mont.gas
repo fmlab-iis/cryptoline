@@ -1,4 +1,38 @@
-ecp_nistz256_mul_mont:
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! -$1c(%rip) = %%EA
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %eax = %%eax
+
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adc $1c, $2v -> adc $2v $2v $1c@uint64 carry
+#! adcx $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adox $1v, $2v -> adcs overflow $2v $2v $1v overflow
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mulx $1v, $2v, $3v -> mull $3v $2v rdx $1v
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit dc $3v $2v 32;\nshl $3v $3v 32
+#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32
+#! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+
+#ecp_nistz256_mul_mont:
 # %rdi = 0x7fffffffd9f0
 # %rsi = 0x7fffffffd9b0
 # %rdx = 0x7fffffffd9d0
@@ -6,23 +40,23 @@ ecp_nistz256_mul_mont:
 # %r8  = 0x-9
 # %r9  = 0xfffffffe
 	#! -> SP = 0x7fffffffd9a8
-	mov    $0x80100,%ecx                            #! PC = 0x55555557d1e0
-	and    0x5e35(%rip),%ecx        # 0x555555583020 <OPENSSL_ia32cap_P+8>#! EA = L0x555555583020; Value = 0x00000018d39efffb; PC = 0x55555557d1e5
-	push   %rbp                                     #! EA = L0x7fffffffd9a0; PC = 0x55555557d1eb
-	push   %rbx                                     #! EA = L0x7fffffffd998; PC = 0x55555557d1ec
-	push   %r12                                     #! EA = L0x7fffffffd990; PC = 0x55555557d1ed
-	push   %r13                                     #! EA = L0x7fffffffd988; PC = 0x55555557d1ef
-	push   %r14                                     #! EA = L0x7fffffffd980; PC = 0x55555557d1f1
-	push   %r15                                     #! EA = L0x7fffffffd978; PC = 0x55555557d1f3
-	cmp    $0x80100,%ecx                            #! PC = 0x55555557d1f5
+	#mov    $0x80100,%ecx                            #! PC = 0x55555557d1e0
+	#and    0x5e35(%rip),%ecx        # 0x555555583020 <OPENSSL_ia32cap_P+8>#! EA = L0x555555583020; Value = 0x00000018d39efffb; PC = 0x55555557d1e5
+	#push   %rbp                                     #! EA = L0x7fffffffd9a0; PC = 0x55555557d1eb
+	#push   %rbx                                     #! EA = L0x7fffffffd998; PC = 0x55555557d1ec
+	#push   %r12                                     #! EA = L0x7fffffffd990; PC = 0x55555557d1ed
+	#push   %r13                                     #! EA = L0x7fffffffd988; PC = 0x55555557d1ef
+	#push   %r14                                     #! EA = L0x7fffffffd980; PC = 0x55555557d1f1
+	#push   %r15                                     #! EA = L0x7fffffffd978; PC = 0x55555557d1f3
+	#cmp    $0x80100,%ecx                            #! PC = 0x55555557d1f5
 	#je     0x55555557d220 <ecp_nistz256_mul_mont+64>#! PC = 0x55555557d1fb
-	mov    %rdx,%rbx                                #! PC = 0x55555557d220
+	#mov    %rdx,%rbx                                #! PC = 0x55555557d220
 	mov    (%rdx),%rdx                              #! EA = L0x7fffffffd9d0; Value = 0x0000555555582d98; PC = 0x55555557d223
 	mov    (%rsi),%r9                               #! EA = L0x7fffffffd9b0; Value = 0x0000000000000008; PC = 0x55555557d226
 	mov    0x8(%rsi),%r10                           #! EA = L0x7fffffffd9b8; Value = 0x0000000000000001; PC = 0x55555557d229
 	mov    0x10(%rsi),%r11                          #! EA = L0x7fffffffd9c0; Value = 0x00007fffffffdb18; PC = 0x55555557d22d
 	mov    0x18(%rsi),%r12                          #! EA = L0x7fffffffd9c8; Value = 0x00007fffffffdb28; PC = 0x55555557d231
-	lea    -0x80(%rsi),%rsi                         #! PC = 0x55555557d235
+	#lea    -0x80(%rsi),%rsi                         #! PC = 0x55555557d235
 	#callq  0x55555557d700 <__ecp_nistz256_mul_montx>#! PC = 0x55555557d239
 	#! -> SP = 0x7fffffffd970
 	mulx   %r9,%r8,%r9                              #! PC = 0x55555557d700
@@ -144,12 +178,12 @@ ecp_nistz256_mul_mont:
 	mov    %r9,0x18(%rdi)                           #! EA = L0x7fffffffda08; PC = 0x55555557d93d
 	#! <- SP = 0x7fffffffd970
 	#repz retq                                      #! PC = 0x55555557d941
-	mov    (%rsp),%r15                              #! EA = L0x7fffffffd978; Value = 0x0000000000000000; PC = 0x55555557d23e
-	mov    0x8(%rsp),%r14                           #! EA = L0x7fffffffd980; Value = 0x0000000000000000; PC = 0x55555557d242
-	mov    0x10(%rsp),%r13                          #! EA = L0x7fffffffd988; Value = 0x00007fffffffdb10; PC = 0x55555557d247
-	mov    0x18(%rsp),%r12                          #! EA = L0x7fffffffd990; Value = 0x0000555555556000; PC = 0x55555557d24c
-	mov    0x20(%rsp),%rbx                          #! EA = L0x7fffffffd998; Value = 0x0000555555580c70; PC = 0x55555557d251
-	mov    0x28(%rsp),%rbp                          #! EA = L0x7fffffffd9a0; Value = 0x00007fffffffda20; PC = 0x55555557d256
-	lea    0x30(%rsp),%rsp                          #! PC = 0x55555557d25b
+	#mov    (%rsp),%r15                              #! EA = L0x7fffffffd978; Value = 0x0000000000000000; PC = 0x55555557d23e
+	#mov    0x8(%rsp),%r14                           #! EA = L0x7fffffffd980; Value = 0x0000000000000000; PC = 0x55555557d242
+	#mov    0x10(%rsp),%r13                          #! EA = L0x7fffffffd988; Value = 0x00007fffffffdb10; PC = 0x55555557d247
+	#mov    0x18(%rsp),%r12                          #! EA = L0x7fffffffd990; Value = 0x0000555555556000; PC = 0x55555557d24c
+	#mov    0x20(%rsp),%rbx                          #! EA = L0x7fffffffd998; Value = 0x0000555555580c70; PC = 0x55555557d251
+	#mov    0x28(%rsp),%rbp                          #! EA = L0x7fffffffd9a0; Value = 0x00007fffffffda20; PC = 0x55555557d256
+	#lea    0x30(%rsp),%rsp                          #! PC = 0x55555557d25b
 	#! <- SP = 0x7fffffffd9a8
 	#repz retq                                      #! PC = 0x55555557d260
