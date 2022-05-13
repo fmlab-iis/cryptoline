@@ -660,6 +660,63 @@ the variable \texttt{\$1v}. Note that we ask an external CAS to check
 if \texttt{\$1v} is equal 32. If you would like to use the SMT-based
 engine, use \texttt{assert true \&\& \$1v=32@64} instead.
 
+\todo{fill gap.}
+To explain what safety conditions are, recall that \cryptoline employs
+two different engines. Every \cryptoline command therefore has two
+different interpretations: one for the SMT-based, the other for the
+CAS-base engine. The \texttt{shl \textit{d} \textit{s} \textit{c}}
+command is interpreted as the logical left shift in bit-vector theory
+in the SMT-based engine. It is interpreted by the equation 
+\texttt{\textit{d}} = \texttt{\textit{s}} $\times$
+$2^{\texttt{\textit{c}}}$ in the CAS-based engine. Two different
+interpretations need to be related, otherwise their results may differ
+unexpectedly. To relate both interpretations of \texttt{shl},
+\cryptoline checks safety conditions to see if information
+might be lost in the command. For \texttt{shl}, the safety condition
+is that only zeros are shifted out. Thus both interpretations
+coincide. In \nistzmul, this is not the case. We need to translate the
+\xeightysix \texttt{shlx} instruction differently to avoid the safety
+condition failure.
+
+Let us go back to \nistzmulgas. Consider the following rule for
+\texttt{shlx}:
+\begin{verbatim}
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit ddc $3v $2v 32;\nshl $3v $3v 32
+\end{verbatim}
+After check \texttt{\$1v} is 32, it splits \texttt{\$2v} into two. The
+high 32-bit value is stored in \texttt{ddc}. The low 32-bit value in
+\texttt{\$2v} is then shifted to the left by 32 bits. 
+
+With the new rule for \texttt{shlx}, the first pair of \texttt{shlx}
+and \texttt{shrx} in \nistzmul is translated to the following
+\cryptoline fragment:
+\begin{verbatim}
+(* shlx   %r14,%r8,%rbp              #! PC = 0x55555557d72e *)
+assert r14=32 && true;
+split ddc rbp r8 32;
+shl rbp rbp 32;
+(* adc    %rcx,%r11                  #! PC = 0x55555557d733 *)
+adcs carry r11 r11 rcx carry;
+(* shrx   %r14,%r8,%rcx              #! PC = 0x55555557d736 *)
+assert r14=32 && true;
+split rcx dc r8 32;
+\end{verbatim}
+The \texttt{shlx} instruction puts the low 32-bit of \texttt{r8} in
+\texttt{rbp}. Then \texttt{shrx} puts the high 32-bit of \texttt{r8}
+in \texttt{rcx}. In the \cryptoline fragment, the variable
+\texttt{ddc} is in fact equal to \texttt{rcx}. Let us change the rule
+for \texttt{shrx} to check it. Consider the following rule:
+\begin{verbatim}
+#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32;\nassert true 
+&& $3v=ddc;\nassume $3v=ddc && true
+\end{verbatim}
+After obtaining \texttt{\$3v}, the new rule asks the SMT-based engine
+to check if \texttt{\$3v} is equal to \texttt{ddc}. The equation is
+then passed to the CAS-based engine by the \cryptoline \texttt{assume}
+command. This is a common technique to pass information between
+engines. We ask one engine to verify a property with \texttt{assert},
+and then pass the property to the other engine with \texttt{assume}.
+
 We are ready to apply the translation rules. After commenting out
 irrelevant instructions in trace, use the following command:
 \begin{verbatim}
@@ -700,6 +757,43 @@ mov L0x55555557c010 0x0000000000000000@uint64;
 mov L0x55555557c018 0xffffffff00000001@uint64;
 \end{verbatim}
 
+
+Another useful information to pass from the SMT-based to the CAS-based
+engines is addition carries. When carries propogate along long
+additions, the last carry is almost always zero. Such information is
+easily inferred with the SMT-based engine. In \nistzmul, two threads
+of long additions are computed interleavingly. One uses the
+\xeightysix \texttt{adcx} instruction and the other uses
+\texttt{adox}. There are three pairs of interleaving long
+additions. At the end of each pair, we annotate \nistzmulcl with the
+following commands:
+\begin{verbatim}
+(* NOTE: can't carry *)
+assert true && and [carry=0@1,overflow=0@1];
+assume and [carry=0,overflow=0] && true;
+\end{verbatim}
+Here, we ask the SMT-based engine to verify both carry and overflow
+are zeros, and then pass the information to the CAS-baesd engine.
+
+
+\begin{verbatim}
+ghost r12o@uint64, r13o@uint64, r8o@uint64, r9o@uint64, r10o@uint64 :
+      and [r12o=r12, r13o=r13, r8o=r8, r9o=r9, r10o=r10]
+   && and [r12o=r12, r13o=r13, r8o=r8, r9o=r9, r10o=r10];
+\end{verbatim}
+
+
+\begin{verbatim}
+(* NOTE: final reduction *)
+assert true &&
+       eqmod limbs 64 [r12, r13, r8, r9, 0@64]
+             limbs 64 [r12o, r13o, r8o, r9o, r10o]
+             limbs 64 [m0, m1, m2, m3, 0@64];
+assume eqmod limbs 64 [r12, r13, r8, r9, 0]
+             limbs 64 [r12o, r13o, r8o, r9o, r10o]
+             limbs 64 [m0, m1, m2, m3, 0] && true;
+\end{verbatim}
+
 At the end of \nistzmulcl, the results \texttt{c}'s are obtained from
 memory stores.
 \begin{verbatim}
@@ -727,40 +821,6 @@ We are ready to verify our model. Type
 $ $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
 \end{verbatim}
 
-However, \cryptoline reports safety condition 0 fails. If we look at
-the log file \texttt{cryptoline.log}, we find the safety condition 0
-is as follows.
-\begin{verbatim}
-= Verifying safety condition =
-
-ID: 0
-Instruction: shl rbp_2 r8_1 32;
-\end{verbatim}
-To explain what safety conditions are, recall that \cryptoline employs
-two different engines. Every \cryptoline command therefore has two
-different interpretations: one for the SMT-based, the other for the
-CAS-base engine. The \texttt{shl \textit{d} \textit{s} \textit{c}}
-command is interpreted as the logical left shift in bit-vector theory
-in the SMT-based engine. It is interpreted by the equation 
-\texttt{\textit{d}} = \texttt{\textit{s}} $\times$
-$2^{\texttt{\textit{c}}}$ in the CAS-based engine. Two different
-interpretations need to be related, otherwise their results may differ
-unexpectedly. To relate both interpretations of \texttt{shl},
-\cryptoline checks safety conditions to see if information
-might be lost in the command. For \texttt{shl}, the safety condition
-is that only zeros are shifted out. Thus both interpretations
-coincide. In \nistzmul, this is not the case. We need to translate the
-\xeightysix \texttt{shlx} instruction differently to avoid the safety
-condition failure.
-
-Let us go back to \nistzmulgas. Consider the following rule for
-\texttt{shlx}:
-\begin{verbatim}
-#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit ddc $3v $2v 32;\nshl $3v $3v 32
-\end{verbatim}
-After check \texttt{\$1v} is 32, it splits \texttt{\$2v} into two. The
-high 32-bit value is stored in \texttt{ddc}. The low 32-bit value in
-\texttt{\$2v} is then shifted to the left by 32 bits. 
 
 \end{document}
 
