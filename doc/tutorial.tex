@@ -727,12 +727,40 @@ We are ready to verify our model. Type
 $ $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
 \end{verbatim}
 
-However, \cryptoline reports safety errors. 
-
-
+However, \cryptoline reports safety condition 0 fails. If we look at
+the log file \texttt{cryptoline.log}, we find the safety condition 0
+is as follows.
 \begin{verbatim}
-#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit dc $3v $2v 32;\nshl $3v $3v 32
-#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32
+= Verifying safety condition =
+
+ID: 0
+Instruction: shl rbp_2 r8_1 32;
 \end{verbatim}
+To explain what safety conditions are, recall that \cryptoline employs
+two different engines. Every \cryptoline command therefore has two
+different interpretations: one for the SMT-based, the other for the
+CAS-base engine. The \texttt{shl \textit{d} \textit{s} \textit{c}}
+command is interpreted as the logical left shift in bit-vector theory
+in the SMT-based engine. It is interpreted by the equation 
+\texttt{\textit{d}} = \texttt{\textit{s}} $\times$
+$2^{\texttt{\textit{c}}}$ in the CAS-based engine. Two different
+interpretations need to be related, otherwise their results may differ
+unexpectedly. To relate both interpretations of \texttt{shl},
+\cryptoline checks safety conditions to see if information
+might be lost in the command. For \texttt{shl}, the safety condition
+is that only zeros are shifted out. Thus both interpretations
+coincide. In \nistzmul, this is not the case. We need to translate the
+\xeightysix \texttt{shlx} instruction differently to avoid the safety
+condition failure.
+
+Let us go back to \nistzmulgas. Consider the following rule for
+\texttt{shlx}:
+\begin{verbatim}
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit ddc $3v $2v 32;\nshl $3v $3v 32
+\end{verbatim}
+After check \texttt{\$1v} is 32, it splits \texttt{\$2v} into two. The
+high 32-bit value is stored in \texttt{ddc}. The low 32-bit value in
+\texttt{\$2v} is then shifted to the left by 32 bits. 
+
 \end{document}
 
