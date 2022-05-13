@@ -1139,7 +1139,7 @@ let rewrite_assignments ideal p moduli =
  *)
 let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * eexp * eexp list) list) moduli =
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
-  let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, p, ms) -> ((post, p, ms), vids_eexp p)) (List.rev post_p_ms_list) in
+  let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, p, ms) -> ((post, p, ms), (vids_eexp p, (List.map vids_eexp ms)))) (List.rev post_p_ms_list) in
   let subst_poly_vs (v, e) (poly, vs) = if IS.mem v.vid vs
                                         then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
                                         else (poly, vs) in
@@ -1148,8 +1148,10 @@ let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * eexp * ee
   let subst_apoly_vss (v, e) apoly_vss = List.rev (List.rev_map (subst_apoly_vs (v, e)) apoly_vss) in
   let subst_post_p_ms_vs_list (v, e) post_p_ms_vs_list =
     List.rev_map
-      (fun ((post, p, ms), vs) -> let (p', vs') = subst_poly_vs (v, e) (p, vs) in
-                                  ((post, p', ms), vs'))
+      (fun ((post, p, ms), (vs, ms_vs)) -> let (p', vs') = subst_poly_vs (v, e) (p, vs) in
+                                           let ms_ms_vs' = List.map2 (fun m m_vs -> subst_poly_vs (v, e) (m, m_vs)) ms ms_vs in
+                                           let (ms', ms_vs') = List.split ms_ms_vs' in
+                                           ((post, p', ms'), (vs', ms_vs')))
       (List.rev post_p_ms_vs_list) in
   let rec do_rewrite finished_aps_vs_rev ideal_aps_vs post_p_ms_vs_list =
     match ideal_aps_vs with
@@ -1398,9 +1400,9 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
       List.rev (List.rev_map
                   (fun (post, p, ms) ->
                     let sliced_ideal_aps =
-                     if !Options.Std.apply_slicing && not sliced then
-                       let vids = program_pre_vids_sat (vids_ebexp post) ebexp_vids_sat s.espre (List.rev s.esprog) in
-                       slice_entailments ideal_aps vids
+                      if !Options.Std.apply_slicing && not sliced then
+                        let vids = program_pre_vids_sat (vids_ebexp post) ebexp_vids_sat s.espre (List.rev s.esprog) in
+                        slice_entailments ideal_aps vids
                       else ideal_aps in
                     match ms with
                     | [] -> (* skip rewriting in this case *)
