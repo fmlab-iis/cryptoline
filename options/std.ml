@@ -125,4 +125,4 @@ let cryptoline_filename_extension = ".cl"
 
 let native_smtlib_expn_operator = ref None
 
-let two_phase_rewriting = ref true
+let two_phase_rewriting = ref false
