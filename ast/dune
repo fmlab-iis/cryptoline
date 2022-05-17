@@ -1,6 +1,6 @@
 (library
   (name        ast)
-  (libraries   options zarith)
+  (libraries   options zarith utils)
   (flags       (:standard -w -3))
   (public_name cryptoline.ast)
 )

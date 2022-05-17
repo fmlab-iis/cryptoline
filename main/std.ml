@@ -11,7 +11,7 @@ type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlo
 
 let action = ref Verify
 
-let save_coq_cryptoline_filename = ref ""
+let save_coqcryptoline_filename = ref ""
 
 let initial_values_string = ref ""
 
@@ -62,8 +62,8 @@ let args = [
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
      Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
     ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["\t  Print hexadecimal variable values in simulation."]));
-    ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
-     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by coq-cryptoline."]));
+    ("-save_coqcryptoline", String (fun str -> let _ = save_coqcryptoline_filename := str in action := SaveCoqCryptoline),
+     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by CoqCryptoLine."]));
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
@@ -207,7 +207,7 @@ let anon file =
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
        ^ string_of_spec s in
-     let nth_name id = !save_coq_cryptoline_filename ^ "_" ^ string_of_int id in
+     let nth_name id = !save_coqcryptoline_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
        let rec helper i =
          let fn = nth_name sid ^ "_" ^ string_of_int i ^ cryptoline_filename_extension in

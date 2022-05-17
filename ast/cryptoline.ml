@@ -2982,14 +2982,14 @@ let infer_input_variables s =
   let vars_defined = VS.union (lvs_program s.sprog) (gvs_program s.sprog) in
   VS.union (vars_bexp s.spre) (VS.diff vars_used vars_defined)
 
-(* Change all ghost instructions to assume instructions. Ghost variables then become input variables. *)
+(* Change all ghost instructions to assume instructions. *)
 let ghost_to_assume s =
   let helper i =
     match i with
-    | Ighost (_, e) -> Iassume e
-    | _ -> i in
+    | Ighost (vs, e) -> List.rev ((Iassume e)::(VS.fold (fun v instrs_rev -> (Inondet v)::instrs_rev) vs []))
+    | _ -> [i] in
   { spre = s.spre;
-    sprog  = List.map helper s.sprog;
+    sprog  = Utils.tflatten (List.rev_map helper (List.rev s.sprog));
     spost = s.spost;
     sepwss = s.sepwss;
     srpwss = s.srpwss }

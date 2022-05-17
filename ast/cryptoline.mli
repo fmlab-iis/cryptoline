@@ -1289,7 +1289,7 @@ val infer_input_variables : spec -> VS.t
 (** Infer the input variables of a specification. *)
 
 val ghost_to_assume : spec -> spec
-(** Change all ghost instructions to assume instructions. Ghost variables then become input variables. *)
+(** Change all ghost instructions to assume instructions. *)
 
 val spec_to_coq_cryptoline : spec -> spec list
 (**
