@@ -743,6 +743,12 @@ val lcarries_instr : instr -> VS.t
 val lcarries_program : program -> VS.t
 (** [lvs_program p] is the set of carries with new values written in the program [p]. *)
 
+val gvs_instr : instr -> VS.t
+(** [gvs_instr i] is the set of ghost variables defined in the instruction [i]. *)
+
+val gvs_program : program -> VS.t
+(** [gvs_program p] is the set of ghost variables defined in the program [p]. *)
+
 val vars_spec : spec -> VS.t
 (** [vars_spec s] is the set of variables in the specification [s]. *)
 
@@ -1281,6 +1287,9 @@ val move_asserts : spec -> spec
 
 val infer_input_variables : spec -> VS.t
 (** Infer the input variables of a specification. *)
+
+val ghost_to_assume : spec -> spec
+(** Change all ghost instructions to assume instructions. Ghost variables then become input variables. *)
 
 val spec_to_coq_cryptoline : spec -> spec list
 (**

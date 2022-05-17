@@ -1406,6 +1406,13 @@ let lcarries_instr i =
 
 let lcarries_program p = List.fold_left (fun res i -> VS.union (lcarries_instr i) res) VS.empty p
 
+let gvs_instr i =
+  match i with
+  | Ighost (vs, _) -> vs
+  | _ -> VS.empty
+
+let gvs_program p = List.fold_left (fun res i -> VS.union res (gvs_instr i)) VS.empty p
+
 let vars_spec s = VS.union (vars_bexp s.spre) (VS.union (vars_program s.sprog) (vars_bexp s.spost))
 let vars_espec s = VS.union (vars_ebexp s.espre) (VS.union (vars_program s.esprog) (vars_ebexp s.espost))
 let vars_rspec s = VS.union (vars_rbexp s.rspre) (VS.union (vars_program s.rsprog) (vars_rbexp s.rspost))
@@ -2971,11 +2978,28 @@ let move_asserts s =
     srpwss = s.srpwss }
 
 let infer_input_variables s =
-  VS.union (vars_bexp s.spre) (VS.diff (VS.union (vars_program s.sprog) (vars_bexp s.spost)) (lvs_program s.sprog))
+  let vars_used = VS.union (vars_program s.sprog) (vars_bexp s.spost) in
+  let vars_defined = VS.union (lvs_program s.sprog) (gvs_program s.sprog) in
+  VS.union (vars_bexp s.spre) (VS.diff vars_used vars_defined)
+
+(* Change all ghost instructions to assume instructions. Ghost variables then become input variables. *)
+let ghost_to_assume s =
+  let helper i =
+    match i with
+    | Ighost (_, e) -> Iassume e
+    | _ -> i in
+  { spre = s.spre;
+    sprog  = List.map helper s.sprog;
+    spost = s.spost;
+    sepwss = s.sepwss;
+    srpwss = s.srpwss }
 
 let spec_to_coq_cryptoline s =
-  let ssa = ssa_spec s in
-  List.map move_asserts (cut_spec (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec ssa else ssa))
+  (ssa_spec s)
+  |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+  |> ghost_to_assume
+  |> cut_spec
+  |> List.map move_asserts
 
 
 (** Normalization *)
