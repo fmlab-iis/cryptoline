@@ -3,6 +3,7 @@
 \usepackage{xspace}
 \usepackage{amssymb,amsmath,amsfonts,amsthm}
 \usepackage{url}
+\usepackage{subcaption}
 \usepackage[margin=1.25in]{geometry}
 %\usepackage{tabularray}
 
@@ -211,7 +212,7 @@ traces from \gdb. Write \cryptolinehome for the root directory of
 \cryptoline. The execution trace of \nistzadd is extracted with the
 following command:
 \begin{verbatim}
-$ $(CL_HOME)/scripts/itrace.py top ecp_nistz256_add ecp_nistz256_add.gas
+$ $CL_HOME/scripts/itrace.py top ecp_nistz256_add ecp_nistz256_add.gas
 \end{verbatim}
 The first argument is the name of the executable binary \texttt{top},
 the second argument is the name of the subroutine \nistzadd, and the
@@ -355,7 +356,7 @@ After putting all translation rules in the beginning of \nistzaddgas,
 the \xeightysix trace can be converted to a \cryptoline model with
 following command:
 \begin{verbatim}
-$ $(CL_HOME)/script/to_zdsl.py ecp_nistz256_add.gas > ecp_nistz256_add.cl
+$ $CL_HOME/script/to_zdsl.py ecp_nistz256_add.gas > ecp_nistz256_add.cl
 \end{verbatim}
 
 The content of \nistzaddcl looks like:
@@ -480,7 +481,7 @@ representation. Note that the congruence is computed with $5\times
 
 We are ready to verify our \cryptoline model for \nistzadd. Try
 \begin{verbatim}
-$(CL_HOME)/cv.exe -v -isafety ecp_nistz256_add.cl
+$ $CL_HOME/cv.exe -v -isafety ecp_nistz256_add.cl
 \end{verbatim}
 The transcript is shown below:
 \begin{verbatim}
@@ -534,7 +535,7 @@ The executable binary
 subroutine. The trace for \nistzmul can be extracted by \itrace with
 the same binary:
 \begin{verbatim}
-$ $(CL_HOME)/scripts/itrace.py top ecp_nistz256_mul_mont ecp_nistz256_mul_mont.gas
+$ $CL_HOME/scripts/itrace.py top ecp_nistz256_mul_mont ecp_nistz256_mul_mont.gas
 \end{verbatim}
 
 The trace \nistzmulgas looks like the following:
@@ -714,7 +715,7 @@ and then pass the property to the other engine with \texttt{assume}.
 We are ready to apply the translation rules. After commenting out
 irrelevant instructions in trace, use the following command:
 \begin{verbatim}
-$ $(CL_HOME)/scripts/to_zdsl.py ecp_nistz256_mul_mont.gas > ecp_nistz256_mul_mont.cl
+$ $CL_HOME/scripts/to_zdsl.py ecp_nistz256_mul_mont.gas > ecp_nistz256_mul_mont.cl
 \end{verbatim}
 
 It remains to declare input parameters and specify properties about
@@ -776,7 +777,7 @@ we employs the SMT-based engine.
 
 We are ready to verify our model. Type
 \begin{verbatim}
-$ $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
+$ $CL_HOME/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
 \end{verbatim}
 
 \cryptoline reports the algebraic specification fails. We will add
@@ -836,8 +837,131 @@ information is then passed to the CAS-based engine in
 Using the following command, \cryptoline reports \nistzmul
 is verified:
 \begin{verbatim}
-$ $(CL_HOME)/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
+$ $CL_HOME/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
 \end{verbatim}
+
+\exercise Construct a model for \texttt{ecp\_nistz256\_sqr\_mont} in 
+\texttt{ecp\_nistz256-x86\_64.pl} and verify it.
+
+\subsection{Compositional Reasoning with \texttt{cut}}
+
+The \nistzmul subroutine computes in two phases. The first phase
+computes the Montgomery product and stores it in five registers
+\texttt{r12}, \texttt{r13}, \texttt{r8}, \texttt{r9}, and
+\texttt{r10}. The second phase reduces the Montgomery product by
+modulo $p256$ and stores the final result in four registers
+\texttt{r12}, \texttt{r13}, \texttt{r8}, and \texttt{r9}. Since the
+two phases appear to be independent, they may be verified
+independently. 
+
+The \cryptoline \texttt{cut \textit{P} \&\& \textit{Q}} command
+provides a simple mechanism to divide a verification task by
+parts. Consider the \cryptoline model in
+Figure~\ref{figure:cut:original}. The \texttt{cut} command effectively
+splits the model into three parts shown in Figure~\ref{figure:cut:i}
+to \ref{figure:cut:ii}. Observe that \texttt{P1 \&\& Q1} is the
+post-condition in Figure~\ref{figure:cut:i} but the pre-condition in
+Figure~\ref{figure:cut:ii}. Similarly, \texttt{P2 \&\& Q2} is the
+post-condition in Figure~\ref{figure:cut:ii} but the pre-condition in
+Figure~\ref{figure:cut:iii}. \cryptoline reports successful
+verification when all three parts are verified successfully.
+Informally, \texttt{P1 \&\& Q1} is established and then assumed to
+verify \texttt{P2 \&\& Q2}. \texttt{P2 \&\& Q2} is then assumed to
+prove \texttt{P3 \&\& Q3}. If we know how to divide a large
+cryptographic prgram into phases, the \texttt{cut} command allows us
+to verify the program by parts.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}{.24\columnwidth}
+\begin{verbatim}
+proc main (...) =
+{ P0 && Q0 }
+(* Phase I *)
+cut P1 && Q1;
+(* Phase II *)
+cut P2 && Q2:
+(* Phase III *)
+{ P3 && Q3 }
+\end{verbatim}
+  \caption{Original}
+  \label{figure:cut:original}
+  \end{subfigure}
+  \begin{subfigure}{.24\columnwidth}
+\begin{verbatim}
+proc main0 (...) =
+{ P0 && Q0 }
+(* Phase I *)
+{ P1 && Q1 }
+
+
+
+
+\end{verbatim}
+  \caption{Part I}
+  \label{figure:cut:i}
+  \end{subfigure}
+  \begin{subfigure}{.24\columnwidth}
+\begin{verbatim}
+proc main1 (...) =
+{ P1 && Q1 }
+(* Phase II *)
+{ P2 && Q2 }
+
+
+
+
+\end{verbatim}
+  \caption{Part II}
+  \label{figure:cut:ii}
+  \end{subfigure}
+  \begin{subfigure}{.24\columnwidth}
+\begin{verbatim}
+proc main2 (...) =
+{ P2 && Q2 }
+(* Phase III *)
+{ P3 && Q3 }
+
+
+
+
+\end{verbatim}
+  \caption{Part III}
+  \label{figure:cut:iii}
+  \end{subfigure}
+  \caption{The \cryptoline \texttt{cut} Command}
+  \label{figure:cut}
+\end{figure}
+
+Back to \nistzmul, it is natural to divide the subroutine by its two
+phases. Let us add the following command just before the
+\texttt{ghost} declaration:
+\begin{verbatim}
+cut eqmod limbs 64 [0, 0, 0, 0, r12, r13, r8, r9, r10]
+          (limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3])
+          limbs 64 [m0, m1, m2, m3] &&
+    and [limbs 64 [r12, r13, r8, r9, r10] <u
+         2@320 * limbs 64 [m0, m1, m2, m3, 0@64],
+         m0 = 0xffffffffffffffff@64, m1 = 0x00000000ffffffff@64,
+         m2 = 0x0000000000000000@64, m3 = 0xffffffff00000001@64,
+         r14=0x00000000ffffffff@64, r15=0xffffffff00000001@64,
+         r12=rbx, r13=rdx];
+\end{verbatim}
+The \texttt{cut} command states the Montgomery product is stored in
+the five registers \texttt{r12}, \texttt{r13}, \texttt{r8},
+\texttt{r9}, and \texttt{r10} and the product is less than twice of
+the modulo. The remaining equations collect necessary assumptions to
+verify the reduction modulo $p256$.
+
+With the simple modification, we can verify \nistzmulcl again:
+\begin{verbatim}
+$ $CL_HOME/cv.exe -v -isafety ecp_nistz256_mul_mont.cl
+\end{verbatim}
+On Raspberry Pi 4 (1.8GHz ARM Cortex-A72 with 8GB RAM), the model
+without \texttt{cut} is verified in 153 seconds. In contrast, the
+model with \texttt{cut} is verified in 52 seconds. The \texttt{cut}
+command can significantly reduce the verification time if used
+propertly.
 
 \end{document}
 
