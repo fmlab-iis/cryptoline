@@ -1,5 +1,6 @@
 
 open Set
+open NBits
 
 exception IndexOutOfBound of int
 
@@ -2994,12 +2995,281 @@ let ghost_to_assume s =
     sepwss = s.sepwss;
     srpwss = s.srpwss }
 
-let spec_to_coq_cryptoline s =
+let spec_to_coqcryptoline s =
   (ssa_spec s)
   |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
   |> ghost_to_assume
   |> cut_spec
-  |> List.map move_asserts
+  |> List.rev_map move_asserts
+  |> List.rev
+
+
+(** Convert specifications to BvCryptoLine format. *)
+
+exception UnsupportedException of string
+exception EvaluationException of string
+
+let rec is_eexp_over_const e =
+  match e with
+  | Evar _ -> false
+  | Econst _ -> true
+  | Eunop (_, e) -> is_eexp_over_const e
+  | Ebinop (_, e1, e2) -> (is_eexp_over_const e1) && (is_eexp_over_const e2)
+let rec eval_eexp_const e =
+  match e with
+  | Evar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
+  | Econst n -> n
+  | Eunop (op, e) -> let v = eval_eexp_const e in
+                     (match op with
+                      | Eneg -> Z.neg v)
+  | Ebinop (op, e1, e2) -> let v1 = eval_eexp_const e1 in
+                           let v2 = eval_eexp_const e2 in
+                           (match op with
+                            | Eadd -> Z.add v1 v2
+                            | Esub -> Z.sub v1 v2
+                            | Emul -> Z.mul v1 v2
+                            | Epow -> Z.pow v1 (Z.to_int v2))
+let rec is_rexp_over_const e =
+  match e with
+  | Rvar _ -> false
+  | Rconst _ -> true
+  | Runop (_, _, e) -> is_rexp_over_const e
+  | Rbinop (_, _, e1, e2) -> (is_rexp_over_const e1) && (is_rexp_over_const e2)
+  | Ruext (_, e, _)
+    | Rsext (_, e, _) -> is_rexp_over_const e
+let rec eval_rexp_const e =
+  match e with
+  | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
+  | Rconst (w, n) -> bits_of_z w n
+  | Runop (_, op, e) -> let v = eval_rexp_const e in
+                        (match op with
+                         | Rnegb -> negB v
+                         | Rnotb -> invB v)
+  | Rbinop (_, op, e1, e2) -> let v1 = eval_rexp_const e1 in
+                              let v2 = eval_rexp_const e2 in
+                              (match op with
+                               | Radd -> addB v1 v2
+                               | Rsub -> subB v1 v2
+                               | Rmul -> mulB v1 v2
+                               | Rumod -> uremB v1 v2
+                               | Rsrem -> sremB v1 v2
+                               | Rsmod -> smodB v1 v2
+                               | Randb -> andB v1 v2
+                               | Rorb -> orB v1 v2
+                               | Rxorb -> xorB v1 v2
+                               | Rshl -> shlBB v1 v2
+                               | Rlshr -> shrBB v1 v2
+                               | Rashr -> sarBB v1 v2)
+  | Ruext (_, e, i) -> let v = eval_rexp_const e in
+                       zext i v
+  | Rsext (_, e, i) -> let v = eval_rexp_const e in
+                       sext i v
+let bvcryptoline_of_var v = string_of_var v
+let bvcryptoline_of_eunop op =
+  match op with
+  | Eneg -> "bveneg"
+let bvcryptoline_of_ebinop op =
+  match op with
+  | Eadd -> "bveadd"
+  | Esub -> "bvesub"
+  | Emul -> "bvemul"
+  | Epow -> raise (UnsupportedException "Exponential operator is not supported by BvCryptoLine.")
+let rec bvcryptoline_of_eexp e =
+  match e with
+  | Evar v -> Printf.sprintf "(bvevar %s)" (bvcryptoline_of_var v)
+  | Econst n -> Printf.sprintf "(bveconst %s%%Z)" (Z.to_string n)
+  | Eunop (op, e) -> Printf.sprintf "(%s %s)" (bvcryptoline_of_eunop op) (bvcryptoline_of_eexp e)
+  | Ebinop (Epow, e1, e2) when (is_eexp_over_const e1) && (is_eexp_over_const e2) ->
+     let v = eval_eexp_const e in
+     bvcryptoline_of_eexp (Econst v)
+  | Ebinop (Epow, e1, e2) when (is_eexp_over_const e2) ->
+     let n = eval_eexp_const e2 in
+     bvcryptoline_of_eexp (emuls (List.init (Z.to_int n) (fun _ -> e1)))
+  | Ebinop (op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_ebinop op) (bvcryptoline_of_eexp e1) (bvcryptoline_of_eexp e2)
+let rec bvcryptoline_of_ebexp e =
+  match e with
+  | Etrue -> "bveTrue"
+  | Eeq (e1, e2) -> Printf.sprintf "(bveEq %s %s)" (bvcryptoline_of_eexp e1) (bvcryptoline_of_eexp e2)
+  | Eeqmod (e1, e2, ms) ->
+     begin
+       match ms with
+       | [] -> bvcryptoline_of_ebexp (Eeq (e1, e2))
+       | m::[] -> Printf.sprintf "(bveEqMod %s %s %s)" (bvcryptoline_of_eexp e1) (bvcryptoline_of_eexp e2) (bvcryptoline_of_eexp m)
+       | _ -> raise (UnsupportedException "Multi-moduli is not supported by BvCryptoLine.")
+     end
+  | Eand (e1, e2) -> Printf.sprintf "(bveAnd %s %s)" (bvcryptoline_of_ebexp e1) (bvcryptoline_of_ebexp e2)
+let bvcryptoline_of_runop op =
+  match op with
+  | Rnegb -> raise (UnsupportedException "Two's complement negation is not supported by BvCryptoLine.")
+  | Rnotb -> raise (UnsupportedException "Bit-wise NOT is not supported by BvCryptoLine.")
+let bvcryptoline_of_rbinop op =
+  match op with
+  | Radd -> "bvradd"
+  | Rsub -> "bvrsub"
+  | Rmul -> "bvrmul"
+  | Rumod -> raise (UnsupportedException "The unsigned modulo operation over range expressions is not supported by BvCryptoLine.")
+  | Rsrem -> raise (UnsupportedException "The 2's complement signed remainder operation over range expressions is not supported by BvCryptoLine.")
+  | Rsmod -> raise (UnsupportedException "The 2's complement signed remainder operation over range expressions is not supported by BvCryptoLine.")
+  | Randb -> raise (UnsupportedException "The bit-wise AND operation over range expressions is not supported by BvCryptoLine.")
+  | Rorb -> raise (UnsupportedException "The bit-wise OR operation over range expressions is not supported by BvCryptoLine.")
+  | Rxorb -> raise (UnsupportedException "The bit-wise XOR operation over range expressions is not supported by BvCryptoLine.")
+  | Rshl -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
+  | Rlshr -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
+  | Rashr -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
+let bvcryptoline_of_rcmpop op =
+  match op with
+  | Rult -> "bvult"
+  | Rule -> "bvule"
+  | Rugt -> "bvugt"
+  | Ruge -> "bvuge"
+  | Rslt -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
+  | Rsle -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
+  | Rsgt -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
+  | Rsge -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
+let rec bvcryptoline_of_rexp e =
+  match e with
+  | Rvar v -> Printf.sprintf "(bvrvar %s)" (bvcryptoline_of_var v)
+  | Rconst (_, n) -> if Z.lt n Z.zero then raise (UnsupportedException ("Only unsigned values are supported by BvCryptoLine"))
+                     else Printf.sprintf "(bvrposz %s%%Z)" (Z.to_string n)
+  | Runop (_, op, e) -> Printf.sprintf "(%s %s)" (bvcryptoline_of_runop op) (bvcryptoline_of_rexp e)
+  | Rbinop (_, op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_rbinop op) (bvcryptoline_of_rexp e1) (bvcryptoline_of_rexp e2)
+  | Ruext (_, e, i) -> Printf.sprintf "(bvrExt _ %s %d)" (bvcryptoline_of_rexp e) i
+  | Rsext _ -> raise (UnsupportedException "Signed extension is not supported by BvCryptoLine.")
+let rec bvcryptoline_of_rbexp e =
+  match e with
+  | Rtrue -> "bvrTrue"
+  | Req (w, e1, e2) -> bvcryptoline_of_rbexp (Rand (Rcmp (w, Rule, e1, e2), Rcmp (w, Ruge, e1, e2)))
+  | Rcmp (_, op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_rcmpop op) (bvcryptoline_of_rexp e1) (bvcryptoline_of_rexp e2)
+  | Rneg _ -> raise (UnsupportedException "Negation over range predicates is not supported by BvCryptoLine.")
+  | Rand (e1, e2) -> Printf.sprintf "(bvrand %s %s)" (bvcryptoline_of_rbexp e1) (bvcryptoline_of_rbexp e2)
+  | Ror (e1, e2) -> Printf.sprintf "(bvror %s %s)" (bvcryptoline_of_rbexp e1) (bvcryptoline_of_rbexp e2)
+let bvcryptoline_of_bexp (e, r) =
+  Printf.sprintf "bvands2 [:: %s ] [:: %s ]"
+    (e |> split_eand |> List.map bvcryptoline_of_ebexp |> String.concat "; ")
+    (r |> split_rand |> List.map bvcryptoline_of_rbexp |> String.concat "; ")
+let bvcryptoline_of_atomic a =
+  match a with
+  | Avar v -> Printf.sprintf "(bvVar %s)" (bvcryptoline_of_var v)
+  | Aconst (_, n) -> Printf.sprintf "(bvConst (fromPosZ %s%%Z))" (Z.to_string n)
+let bvcryptoline_of_instr i =
+  match i with
+  | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a)
+  | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %d)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a) (Z.to_int n)
+  | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (Z.to_int n)
+  | Inondet _ -> raise (UnsupportedException "Instruction nondet is not supported by BvCryptoLine.")
+  | Icmov _ -> raise (UnsupportedException "Instruction cmov is not supported by BvCryptoLine.")
+  | Inop -> raise (UnsupportedException "Instruction nop is not supported by BvCryptoLine.")
+  | Iadd (v, a1, a2) -> Printf.sprintf "(bvAdd %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Iadds (c, v, a1, a2) -> Printf.sprintf "(bvAddC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Iaddr _ -> raise (UnsupportedException "Instruction addr is not supported by BvCryptoLine.")
+  | Iadc (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdc %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Iadc (_, _, _, (Aconst _)) -> raise (UnsupportedException ("Adding a carry constant in adc is not supported by BvCryptoLine."))
+  | Iadcs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdcC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Iadcs (_, _, _, _, (Aconst _)) -> raise (UnsupportedException ("Adding a carry constant in adcs is not supported by BvCryptoLine."))
+  | Iadcr _ -> raise (UnsupportedException "Instruction adcr is not supported by BvCryptoLine.")
+  | Isub (v, a1, a2) -> Printf.sprintf "(bvSub %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Isubc _ -> raise (UnsupportedException "Instruction subc is not supported by BvCryptoLine.")
+  | Isubb (c, v, a1, a2) -> Printf.sprintf "(bvSubC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Isubr _ -> raise (UnsupportedException "Instruction subr is not supported by BvCryptoLine.")
+  | Isbc _ -> raise (UnsupportedException "Instruction sbc is not supported by BvCryptoLine.")
+  | Isbcs _ -> raise (UnsupportedException "Instruction sbcs is not supported by BvCryptoLine.")
+  | Isbcr _ -> raise (UnsupportedException "Instruction sbcr is not supported by BvCryptoLine.")
+  | Isbb (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbb %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Isbb (_, _, _, (Aconst _)) -> raise (UnsupportedException ("Subtracting a borrow constant in sbb is not supported by BvCryptoLine."))
+  | Isbbs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbbC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Isbbs (_, _, _, _, (Aconst _)) -> raise (UnsupportedException ("Subtracting a borrow constant in sbbs is not supported by BvCryptoLine."))
+  | Isbbr _ -> raise (UnsupportedException "Instruction sbbr is not supported by BvCryptoLine.")
+  | Imul (v, a1, a2) -> Printf.sprintf "(bvMul %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Imuls _ -> raise (UnsupportedException "Instruction muls is not supported by BvCryptoLine.")
+  | Imulr _ -> raise (UnsupportedException "Instruction mulr is not supported by BvCryptoLine.")
+  | Imull (vh, vl, a1, a2) -> Printf.sprintf "(bvMulf %s %s %s %s)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Imulj _ -> raise (UnsupportedException "Instruction mulj is not supported by BvCryptoLine.")
+  | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a) (Z.to_int n)
+  (* Instructions that cannot be translated to polynomials *)
+  | Iand _ -> raise (UnsupportedException "Instruction and is not supported by BvCryptoLine.")
+  | Ior _ -> raise (UnsupportedException "Instruction or is not supported by BvCryptoLine.")
+  | Ixor _ -> raise (UnsupportedException "Instruction xor is not supported by BvCryptoLine.")
+  | Inot _ -> raise (UnsupportedException "Instruction not is not supported by BvCryptoLine.")
+  (* Type conversions *)
+  | Icast _ -> raise (UnsupportedException "Instruction cast is not supported by BvCryptoLine.")
+  | Ivpc _ -> raise (UnsupportedException "Instruction vpc is not supported by BvCryptoLine.")
+  | Ijoin _ -> raise (UnsupportedException "Instruction join is not supported by BvCryptoLine.")
+  (* Specifications *)
+  | Iassert _ -> raise (UnsupportedException "Instruction assert is not supported by BvCryptoLine.")
+  | Iassume _ -> raise (UnsupportedException "Instruction assume is not supported by BvCryptoLine.")
+  | Icut _ -> raise (UnsupportedException "Instruction cut is not supported by BvCryptoLine.")
+  | Ighost _ -> raise (UnsupportedException "Instruction ghost is not supported by BvCryptoLine.")
+let bvcryptoline_of_program p = Printf.sprintf "[::\n%s\n]" (List.map bvcryptoline_of_instr p |> String.concat ";\n")
+let spec_to_bvcryptoline s =
+  let let_var_in i v = Printf.sprintf "let %s := %d in" (bvcryptoline_of_var v) i in
+  let preamble =
+    "From Coq Require Import ZArith.\n"
+    ^ "From mathcomp Require Import ssreflect ssrbool ssrnat seq.\n"
+    ^ "From Common Require Import Var Bits.\n"
+    ^ "From mQhasm Require Import bvDSL bvVerify Options zVerify.\n"
+    ^ "Set Implicit Arguments.\n"
+    ^ "Unset Strict Implicit.\n"
+    ^ "Import Prenex Implicits.\n"
+    ^ "Open Scope N_scope.\n"
+    ^ "Open Scope bvdsl_scope." in
+  let define_inputs vs =
+    "Definition input_variables :=\n"
+    ^ String.concat "\n" (List.mapi let_var_in vs)
+    ^ "\n"
+    ^ "VSLemmas.OP.P.of_list [:: " ^ String.concat "; " (List.map bvcryptoline_of_var vs) ^ " ]." in
+  let define_spec vs s =
+    let define_vars vs = String.concat "\n" (List.mapi let_var_in vs) in
+    let define_precondition e = Printf.sprintf "let precondition := \n%s in" (bvcryptoline_of_bexp e) in
+    let define_program p = Printf.sprintf "let program := \n%s in" (bvcryptoline_of_program p) in
+    let define_postcondition e = Printf.sprintf "let postcondition := \n%s in" (bvcryptoline_of_bexp e) in
+    String.concat "\n" [
+        "Definition specification :=";
+        (define_vars vs);
+        (define_precondition s.spre);
+        (define_program s.sprog);
+        (define_postcondition s.spost);
+        "{| spre := precondition;";
+        "   sprog := program;";
+        "   spost := postcondition |}."
+      ] in
+  let define_lemma =
+    String.concat "\n" [
+        "Lemma specification_is_valid : valid_bvspec (input_variables, specification).";
+        "Proof.";
+        "  time \"valid_specification\" verify_bvspec.";
+        "Qed."
+      ] in
+  let footer = "Close Scope bvdsl_scope.\n"
+               ^ "Close Scope N_scope." in
+  let helper s =
+    let (inputs, others) = let ins = infer_input_variables s in
+                           (VS.elements ins, VS.elements (VS.diff (vars_spec s) ins)) in
+    let all_vars = List.rev_append (List.rev inputs) others in
+    String.concat "\n" [
+        preamble;
+        "";
+        define_inputs inputs;
+        "";
+        define_spec all_vars s;
+        "";
+        define_lemma;
+        "";
+        footer
+      ] in
+  let _ = let vars = vars_spec s in
+          if VS.exists var_is_signed vars then raise (UnsupportedException ("Signed variables are not supported by BvCryptoLine."))
+          else let vars' = VS.diff vars (lcarries_program s.sprog) in
+               try
+                 let w = size_of_var (VS.choose vars') in
+                 if VS.exists (fun v -> size_of_var v <> w) vars' then raise (UnsupportedException ("Variables of different widths are not supported by BvCryptoLine."))
+               with Not_found ->
+                 () in
+  (ssa_spec s)
+  |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+  |> ghost_to_assume
+  |> cut_spec
+  |> List.rev_map move_asserts
+  |> List.rev_map helper
 
 
 (** Normalization *)

@@ -7,11 +7,13 @@ open Parsers.Std
 open Utils
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | SaveBvCryptoline | Simulation
 
 let action = ref Verify
 
 let save_coqcryptoline_filename = ref ""
+
+let save_bvcryptoline_filename = ref ""
 
 let initial_values_string = ref ""
 
@@ -20,6 +22,8 @@ let simulation_steps = ref (-1)
 let simulation_dumps_string = ref ""
 
 let interactive_simulation = ref false
+
+let coq_filename_extension = ".v"
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast,
@@ -64,6 +68,8 @@ let args = [
     ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["\t  Print hexadecimal variable values in simulation."]));
     ("-save_coqcryptoline", String (fun str -> let _ = save_coqcryptoline_filename := str in action := SaveCoqCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by CoqCryptoLine."]));
+    ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
+     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
@@ -222,8 +228,26 @@ let anon file =
        let _ = close_out ch in
        () in
      let (_, s) = parse_and_check file in
-     let coq_specs = spec_to_coq_cryptoline s in
+     let coq_specs = spec_to_coqcryptoline s in
      List.iteri output coq_specs
+  | SaveBvCryptoline ->
+     let nth_name id = !save_bvcryptoline_filename ^ "_" ^ string_of_int id in
+     let suggest_name sid =
+       let rec helper i =
+         let fn = nth_name sid ^ "_" ^ string_of_int i ^ coq_filename_extension in
+         if Sys.file_exists fn then helper (i + 1)
+         else fn in
+       let fn = nth_name sid ^ coq_filename_extension in
+       if Sys.file_exists fn then helper 0
+       else fn in
+     let output sid s =
+       let ch = open_out (suggest_name sid) in
+       let _ = output_string ch s in
+       let _ = close_out ch in
+       () in
+     let (_, s) = parse_and_check file in
+     let bvspecs = spec_to_bvcryptoline s in
+     List.iteri output bvspecs
   | Simulation ->
      let _ = Random.self_init () in
      let (vs, s) = parse_and_check file in

@@ -183,6 +183,8 @@ val index : int -> char list -> char list -> int option
 
 val findex : int -> char list -> char list -> int
 
+val ssr_have : 'a1 -> ('a1 -> 'a2) -> 'a2
+
 val addb : bool -> bool -> bool
 
 val is_left : bool -> bool
@@ -526,3 +528,5 @@ val sdivB' : bits -> bits -> bits * bits
 val sdivB : bits -> bits -> bits
 
 val sremB : bits -> bits -> bits
+
+val smodB : bits -> bits -> bits

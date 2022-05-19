@@ -1,4 +1,6 @@
 
+open NBits
+
 (** Abstract syntax tree of CryptoLine *)
 
 
@@ -1291,8 +1293,27 @@ val infer_input_variables : spec -> VS.t
 val ghost_to_assume : spec -> spec
 (** Change all ghost instructions to assume instructions. *)
 
-val spec_to_coq_cryptoline : spec -> spec list
+val spec_to_coqcryptoline : spec -> spec list
 (**
    Convert a specification to a list of specifications recognized by
    CoqCryptoLine.
 *)
+
+val spec_to_bvcryptoline : spec -> string list
+(** Convert a specification to a list of specification in BvCryptoLine format. *)
+
+exception EvaluationException of string
+
+val is_eexp_over_const : eexp -> bool
+(** [is_eexp_over_const e] is [true] if [e] is an expression over constants. *)
+
+val is_rexp_over_const : rexp -> bool
+(** [is_rexp_over_const e] is [true] if [e] is an expression over constants. *)
+
+val eval_eexp_const : eexp -> Z.t
+(** [eval_eexp_const e] evaluates [e] if [is_eexp_over_const e] is [true], and
+    raises {!EvaluationException} otherwise. *)
+
+val eval_rexp_const : rexp -> bits
+(** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
+    raises {!EvaluationException} otherwise. *)
