@@ -113,9 +113,9 @@ adcs carry r11 r11 rcx carry;
 assert r14=32 && true;
 split rcx dc r8 32;
 
-(* NOTE: relate rcx, rbp *)
-assert true && rdx=ddc*((2**32)@64)+dc;
-assume rdx=ddc*2**32+dc && true;
+(* NOTE: relate rcx, ddc *)
+assert true && rcx=ddc;
+assume rcx=ddc && true;
 
 (* adc    $0x0,%r12                                #! PC = 0x55555557d73b *)
 adc r12 r12 0x0@uint64 carry;
@@ -179,9 +179,9 @@ adcs overflow r13 r13 rbp overflow;
 assert r14=32 && true;
 split rbp dc r9 32;
 
-(* NOTE: relate rcx, rbp *)
-assert true && rdx=ddc*(2**32)@64+dc;
-assume rdx=ddc*2**32+dc && true;
+(* NOTE: relate rbp, ddc *)
+assert true && rbp=ddc;
+assume rbp=ddc && true;
 
 (* adcx   %r8,%r13                                 #! PC = 0x55555557d7bc *)
 adcs carry r13 r13 r8 carry;
@@ -254,9 +254,9 @@ adcs overflow r8 r8 rbp overflow;
 assert r14=32 && true;
 split rbp dc r10 32;
 
-(* NOTE: relate rcx, rbp *)
-assert true && rdx=ddc*(2**32)@64+dc;
-assume rdx=ddc*(2**32)+dc && true;
+(* NOTE: relate rbp, ddc *)
+assert true && rbp=ddc;
+assume rbp=ddc && true;
 
 (* adcx   %r9,%r8                                  #! PC = 0x55555557d849 *)
 adcs carry r8 r8 r9 carry;
@@ -321,9 +321,9 @@ adcs overflow r9 r9 rbp overflow;
 assert r14=32 && true;
 split rbp dc r11 32;
 
-(* NOTE: relate rcx, rbp *)
-assert true && rdx=ddc*(2**32)@64+dc;
-assume rdx=ddc*2**32+dc && true;
+(* NOTE: relate rbp, ddc *)
+assert true && rbp=ddc;
+assume rbp=ddc && true;
 
 (* adcx   %r10,%r9                                 #! PC = 0x55555557d8d6 *)
 adcs carry r9 r9 r10 carry;
