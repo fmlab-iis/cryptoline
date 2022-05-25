@@ -1,42 +1,42 @@
-(* quine: -v -isafety -jobs 10 -no_carry_constraint -slicing -qfbv_args '-SE minisat' mul_fp.cl
-Parsing Cryptoline file:                [OK]            0.010091 seconds
-Checking well-formedness:               [OK]            0.000705 seconds
-Transforming to SSA form:               [OK]            0.000362 seconds
-Rewriting assignments:                  [OK]            0.006556 seconds
-Verifying program safety:               [OK]            0.000111 seconds
-Verifying range assertions:             [OK]            49.409785 seconds
-Verifying range specification:          [OK]            0.040302 seconds
-Rewriting value-preserved casting:      [OK]            0.000072 seconds
-Verifying algebraic assertions:         [OK]            1.829067 seconds
-Verifying algebraic specification:      [OK]            4.586621 seconds
-Verification result:                    [OK]            55.884440 seconds
+(* quine: -v mul_fp.cl
+Parsing Cryptoline file:                [OK]            0.009508 seconds
+Checking well-formedness:               [OK]            0.001370 seconds
+Transforming to SSA form:               [OK]            0.000383 seconds
+Normalizing specification:              [OK]            0.000939 seconds
+Rewriting assignments:                  [OK]            0.000463 seconds
+Verifying program safety:               [OK]            0.056042 seconds
+Verifying range assertions:             [OK]            203.079328 seconds
+Verifying range specification:          [OK]            10.421470 seconds
+Rewriting value-preserved casting:      [OK]            0.000227 seconds
+Verifying algebraic assertions:         [OK]            1.842367 seconds
+Verifying algebraic specification:      [OK]            4.861713 seconds
+Verification result:                    [OK]            220.274825 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5, uint64 n0) =
 {
-  and 	[
-	 m0 = 0xb9feffffffffaaab,
-         m1 = 0x1eabfffeb153ffff,
-         m2 = 0x6730d2a0f6b0f624,
-         m3 = 0x64774b84f38512bf,
-         m4 = 0x4b1ba7b6434bacd7,
-         m5 = 0x1a0111ea397fe69a,
-    	 eqmod m0 1 2,
-    	 eqmod (1 + m0 * n0) 0 (2**64)
-  ]
+  and[
+	  m0 = 0xb9feffffffffaaab,
+      m1 = 0x1eabfffeb153ffff,
+      m2 = 0x6730d2a0f6b0f624,
+      m3 = 0x64774b84f38512bf,
+      m4 = 0x4b1ba7b6434bacd7,
+      m5 = 0x1a0111ea397fe69a,
+      eqmod m0 1 2,
+      eqmod (1 + m0 * n0) 0 (2**64)
+    ]
   &&
-  and
-	[
-	 m0 = 0xb9feffffffffaaab@64,
-	 m1 = 0x1eabfffeb153ffff@64,
-	 m2 = 0x6730d2a0f6b0f624@64,
-	 m3 = 0x64774b84f38512bf@64,
-	 m4 = 0x4b1ba7b6434bacd7@64,
-	 m5 = 0x1a0111ea397fe69a@64,
-	 eqmod m0 (1@64) (2@64),
-    	 add 1@64 (mul m0 n0) = 0@64,
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+  and[
+	  m0 = 0xb9feffffffffaaab@64,
+	  m1 = 0x1eabfffeb153ffff@64,
+	  m2 = 0x6730d2a0f6b0f624@64,
+	  m3 = 0x64774b84f38512bf@64,
+	  m4 = 0x4b1ba7b6434bacd7@64,
+	  m5 = 0x1a0111ea397fe69a@64,
+	  eqmod m0 (1@64) (2@64),
+      add 1@64 (mul m0 n0) = 0@64,
+      limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
   	]
 }
 
@@ -1354,16 +1354,14 @@ mov q4 r10;
 mov q5 r11;
 mov q6 r12;
 
+(*
 assert true && or[q6 = 0@64, q6 = 1@64];
 assert true && (limbs 64 [q0, q1, q2, q3, q4, q5, q6] <u 2@448 * (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]));
 assume true && (limbs 64 [q0, q1, q2, q3, q4, q5, q6] <u 2@448 * (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]));
 assert eqmod (limbs 64 [0, 0, 0, 0, 0, 0, q0, q1, q2, q3, q4, q5, q6])
              ((limbs 64 [x0, x1, x2, x3, x4, x5]) * (limbs 64 [y0, y1, y2, y3, y4, y5]))
              (limbs 64 [m0, m1, m2, m3, m4, m5]) && true;
-assume true && eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6]) * 2@448
-               ((limbs 64 [x0, x1, x2, x3, x4, x5, 0@64]) * (limbs 64 [y0, y1, y2, y3, y4, y5, 0@64]))
-               (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]);
-
+*)
 
 (* sub    (%rcx),%r14                              #! EA = L0x5555555658e0; Value = 0xb9feffffffffaaab; PC = 0x93824992276070 *)
 subb carry r14 r14 L0x5555555658e0;
@@ -1441,6 +1439,6 @@ assume eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
         ((limbs 64 [x0, x1, x2, x3, x4, x5]) * (limbs 64 [y0, y1, y2, y3, y4, y5]))
         (limbs 64 [m0, m1, m2, m3, m4, m5])
 &&
-  true
+  limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
 }
 

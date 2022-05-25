@@ -1,39 +1,39 @@
-(* quine: -v -isafety -jobs 10 -no_carry_constraint -slicing -qfbv_args '-SE minisat' -btor blst_fr_mul-x86_64.cl
-Parsing Cryptoline file:                [OK]            0.004155 seconds
-Checking well-formedness:               [OK]            0.001263 seconds
-Transforming to SSA form:               [OK]            0.000182 seconds
-Rewriting assignments:                  [OK]            0.000877 seconds
-Verifying program safety:               [OK]            0.000082 seconds
-Verifying range assertions:             [OK]            9.034683 seconds
-Verifying range specification:          [OK]            0.032861 seconds
-Rewriting value-preserved casting:      [OK]            0.000025 seconds
-Verifying algebraic assertions:         [OK]            0.303649 seconds
-Verifying algebraic specification:      [OK]            0.180102 seconds
-Verification result:                    [OK]            9.558413 seconds
+(* quine: -v blst_fr_mul-x86_64.cl
+Parsing Cryptoline file:                [OK]            0.005606 seconds
+Checking well-formedness:               [OK]            0.001184 seconds
+Transforming to SSA form:               [OK]            0.000159 seconds
+Normalizing specification:              [OK]            0.000243 seconds
+Rewriting assignments:                  [OK]            0.000438 seconds
+Verifying program safety:               [OK]            0.036882 seconds
+Verifying range assertions:             [OK]            56.611873 seconds
+Verifying range specification:          [OK]            3.081746 seconds
+Rewriting value-preserved casting:      [OK]            0.000086 seconds
+Verifying algebraic assertions:         [OK]            0.387876 seconds
+Verifying algebraic specification:      [OK]            0.204256 seconds
+Verification result:                    [OK]            60.330921 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 n0) =
 {
-  and 	[
-	 m0 = 0xffffffff00000001,
-	 m1 = 0x53bda402fffe5bfe,
-	 m2 = 0x3339d80809a1d805,
-	 m3 = 0x73eda753299d7d48,
-    	 eqmod m0 1 2,
-    	 eqmod (1 + m0 * n0) 0 (2**64)
+  and[
+	  m0 = 0xffffffff00000001,
+	  m1 = 0x53bda402fffe5bfe,
+	  m2 = 0x3339d80809a1d805,
+	  m3 = 0x73eda753299d7d48,
+      eqmod m0 1 2,
+      eqmod (1 + m0 * n0) 0 (2**64)
   ]
   &&
-  and
-	[
-	 m0 = 0xffffffff00000001@64,
-	 m1 = 0x53bda402fffe5bfe@64,
-	 m2 = 0x3339d80809a1d805@64,
-	 m3 = 0x73eda753299d7d48@64,
-	 eqmod m0 (1@64) (2@64),
-    	 add 1@64 (mul m0 n0) = 0@64,
-    	 limbs 64 [x0, x1, x2, x3] <u limbs 64 [m0, m1, m2, m3],
-    	 limbs 64 [y0, y1, y2, y3] <u limbs 64 [m0, m1, m2, m3]
-  	]
+  and[
+	  m0 = 0xffffffff00000001@64,
+	  m1 = 0x53bda402fffe5bfe@64,
+	  m2 = 0x3339d80809a1d805@64,
+	  m3 = 0x73eda753299d7d48@64,
+	  eqmod m0 (1@64) (2@64),
+      add 1@64 (mul m0 n0) = 0@64,
+      limbs 64 [x0, x1, x2, x3] <u limbs 64 [m0, m1, m2, m3],
+      limbs 64 [y0, y1, y2, y3] <u limbs 64 [m0, m1, m2, m3]
+  ]
 }
 
 mov L0x7fffffffdb30 x0;
@@ -91,7 +91,9 @@ assume carry = 0 && true;
 mov r10 rax;
 (* imul   %r8,%rax                                 #! PC = 0x93824992311943 *)
 umull dontcare rax r8 rax;
+
 mov OF 0@uint1;
+
 (* xor    %r15,%r15                                #! PC = 0x93824992311947 *)
 mov r15 0@uint64;
 (* mulx   0x80(%rsi),%rbp,%r9                      #! EA = L0x7fffffffdb30; Value = 0x000009c0000009c0; PC = 0x93824992311950 *)
@@ -470,6 +472,6 @@ assume eqmod (limbs 64 [q0, q1, q2, q3, q4])
         ((limbs 64 [x0, x1, x2, x3]) * (limbs 64 [y0, y1, y2, y3]))
         (limbs 64 [m0, m1, m2, m3])
 &&
-  true
+  limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
 }
 

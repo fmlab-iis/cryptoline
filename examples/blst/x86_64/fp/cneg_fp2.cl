@@ -1,4 +1,4 @@
-(* quine:  -v -isafety -jobs 10 -btor -no_carry_constraint cneg_fp2.cl
+(* quine: -v cneg_fp2.cl
 Parsing Cryptoline file:                [OK]            0.003581 seconds
 Checking well-formedness:               [OK]            0.000917 seconds
 Transforming to SSA form:               [OK]            0.000269 seconds
@@ -10,23 +10,21 @@ Verifying algebraic specification:      [OK]            0.000158 seconds
 Verification result:                    [OK]            2.614757 seconds
 *)
 
-
-
-proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 a0, uint64 a1, uint64 a2, uint64 a3, uint64 a4, uint64 a5, uint64 b0, uint64 b1, uint64 b2, uint64 b3, uint64 b4, uint64 b5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5, uint64 flag, uint1 V1, uint1 V2, uint1 V3, uint1 V4) =
+proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5, uint64 flag) =
 {
   true
   &&
   and
-        [
+     [
 	 m0 = 0xb9feffffffffaaab@64,
 	 m1 = 0x1eabfffeb153ffff@64,
 	 m2 = 0x6730d2a0f6b0f624@64,
 	 m3 = 0x64774b84f38512bf@64,
 	 m4 = 0x4b1ba7b6434bacd7@64,
 	 m5 = 0x1a0111ea397fe69a@64,
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [a0, a1, a2, a3, a4, a5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
-        ]
+     limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+     ]
 }
 
 mov L0x7fffffffd9f0 flag;
@@ -38,12 +36,12 @@ mov L0x7fffffffdb68 x3;
 mov L0x7fffffffdb70 x4;
 mov L0x7fffffffdb78 x5;
 
-mov L0x7fffffffdb80 a0;
-mov L0x7fffffffdb88 a1;
-mov L0x7fffffffdb90 a2;
-mov L0x7fffffffdb98 a3;
-mov L0x7fffffffdba0 a4;
-mov L0x7fffffffdba8 a5;
+mov L0x7fffffffdb80 y0;
+mov L0x7fffffffdb88 y1;
+mov L0x7fffffffdb90 y2;
+mov L0x7fffffffdb98 y3;
+mov L0x7fffffffdba0 y4;
+mov L0x7fffffffdba8 y5;
 
 (* prime *)
 mov L0x55555556e4c0 m0;
@@ -81,12 +79,10 @@ mov rsi 0xffffffffffffffff@uint64;
 or rdx@uint64 r12 rdx;
 (* or     %r13,%rdx                                #! PC = 0x93824992309148 *)
 or rdx@uint64 r13 rdx;
-mov nZF rdx;
 (* mov    (%rcx),%r14                              #! EA = L0x55555556e4c0; Value = 0xb9feffffffffaaab; PC = 0x93824992309151 *)
 mov r14 L0x55555556e4c0;
 
-mov ZF V1;
-assume ZF * nZF = 0 && or[ and[ZF = 0@1, nZF >u 0@64], and[ZF = 1@1, nZF = 0@64]];
+subc ZF dontcare 0@uint64 rdx;
 
 (* cmovne %rsi,%rdx                                #! PC = 0x93824992309154 *)
 cmov rdx ZF rdx rsi;
@@ -128,10 +124,8 @@ sbbs carry rbp rbp r12 carry;
 sbbs carry rsi rsi r13 carry;
 (* or     %rcx,%rcx                                #! PC = 0x93824992309218 *)
 or rcx@uint64 rcx rcx;
-mov nZF rcx;
 
-mov ZF V2;
-assume ZF * nZF = 0 && or[ and[ZF = 0@1, nZF >u 0@64], and[ZF = 1@1, nZF = 0@64]];
+subc ZF dontcare 0@uint64 rcx;
 
 (* cmove  %r8,%r14                                 #! PC = 0x93824992309221 *)
 cmov r14 ZF r8 r14;
@@ -185,12 +179,10 @@ mov rsi 0xffffffffffffffff@uint64;
 or rdx@uint64 r12 rdx;
 (* or     %r13,%rdx                                #! PC = 0x93824992309148 *)
 or rdx@uint64 r13 rdx;
-mov nZF rdx;
 (* mov    (%rcx),%r14                              #! EA = L0x55555556e4c0; Value = 0xb9feffffffffaaab; PC = 0x93824992309151 *)
 mov r14 L0x55555556e4c0;
 
-mov ZF V3;
-assume ZF * nZF = 0 && or[ and[ZF = 0@1, nZF >u 0@64], and[ZF = 1@1, nZF = 0@64]];
+subc ZF dontcare 0@uint64 rdx;
 
 (* cmovne %rsi,%rdx                                #! PC = 0x93824992309154 *)
 cmov rdx ZF rdx rsi;
@@ -232,10 +224,8 @@ sbbs carry rbp rbp r12 carry;
 sbbs carry rsi rsi r13 carry;
 (* or     %rcx,%rcx                                #! PC = 0x93824992309218 *)
 or rcx@uint64 rcx rcx;
-mov nZF rcx;
 
-mov ZF V4;
-assume ZF * nZF = 0 && or[ and[ZF = 0@1, nZF >u 0@64], and[ZF = 1@1, nZF = 0@64]];
+subc ZF dontcare 0@uint64 rcx;
 
 (* cmove  %r8,%r14                                 #! PC = 0x93824992309221 *)
 cmov r14 ZF r8 r14;
@@ -284,41 +274,38 @@ mov d5 L0x7fffffffdb48;
  or[
     and[
    	flag >u (0@64),
-	eqmod
-  	(
-   	((limbs 64 [c0, c1, c2, c3, c4, c5])
-    	+
-   	(limbs 64 [x0, x1, x2, x3, x4, x5])
-   	)
-  	)
 
+	eqmod
+    ((limbs 64 [c0, c1, c2, c3, c4, c5])
+     +
+     (limbs 64 [x0, x1, x2, x3, x4, x5]))
   	0@384
+  	(limbs 64 [m0, m1, m2, m3, m4, m5]),
 
-  	(limbs 64 [m0, m1, m2, m3, m4, m5])
-  	,
 	eqmod
-  	(
    	((limbs 64 [d0, d1, d2, d3, d4, d5])
-    	+
-   	(limbs 64 [a0, a1, a2, a3, a4, a5])
-   	)
-  	)
-
+     +
+   	 (limbs 64 [y0, y1, y2, y3, y4, y5]))
   	0@384
+  	(limbs 64 [m0, m1, m2, m3, m4, m5]),
 
-  	(limbs 64 [m0, m1, m2, m3, m4, m5])
+    limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+    limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
 	]
    ,
     and[
-   	flag = (0@64)
-	,
+   	flag = (0@64),
+
 	eq 
 	(limbs 64 [c0, c1, c2, c3, c4, c5])
-	(limbs 64 [x0, x1, x2, x3, x4, x5])
-	,
+	(limbs 64 [x0, x1, x2, x3, x4, x5]),
+
 	eq 
 	(limbs 64 [d0, d1, d2, d3, d4, d5])
-	(limbs 64 [a0, a1, a2, a3, a4, a5])
+	(limbs 64 [y0, y1, y2, y3, y4, y5]),
+    
+    limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+    limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
 	]
    ]
 }

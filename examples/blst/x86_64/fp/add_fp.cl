@@ -22,8 +22,8 @@ proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uin
 	 m3 = 0x64774b84f38512bf@64,
 	 m4 = 0x4b1ba7b6434bacd7@64,
 	 m5 = 0x1a0111ea397fe69a@64,
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+     limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
   	]
 }
 
@@ -86,7 +86,7 @@ mov carryA carry;
 mov rbx r11;
 
 (* Explicitly define rdx here, rdx can be anything *)
-mov rdx 0@uint64;
+nondet rdx@uint64;
 
 (* sbb    %rdx,%rdx                                #! PC = 0x93824992307358 *)
 sbbs carry rdx rdx rdx carry;
