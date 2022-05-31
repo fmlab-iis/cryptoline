@@ -1317,3 +1317,12 @@ val eval_eexp_const : eexp -> Z.t
 val eval_rexp_const : rexp -> bits
 (** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
     raises {!EvaluationException} otherwise. *)
+
+val remove_cut_spec : spec -> spec
+(** Remove all cuts in a specification. *)
+
+val remove_ecut_spec : spec -> spec
+(** Remove all algebraic cuts in a specification. *)
+
+val remove_rcut_spec : spec -> spec
+(** Remove all range cuts in a specification. *)

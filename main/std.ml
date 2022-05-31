@@ -7,7 +7,7 @@ open Parsers.Std
 open Utils
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | SaveBvCryptoline | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | SaveCoqCryptoline | SaveBvCryptoline | Simulation
 
 let action = ref Verify
 
@@ -24,6 +24,14 @@ let simulation_dumps_string = ref ""
 let interactive_simulation = ref false
 
 let coq_filename_extension = ".v"
+
+let apply_move_assert = ref false
+
+let apply_remove_cuts = ref false
+
+let apply_remove_ecuts = ref false
+
+let apply_remove_rcuts = ref false
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast,
@@ -52,20 +60,23 @@ let args = [
      Common.mk_arg_desc([""; "Disable verification of program safety."]));
     ("-jobs", Int (fun j -> jobs := j),
      Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
-    ("-ma", Unit (fun () -> action := MoveAssert), Common.mk_arg_desc(["\t     Convert to SSA and move assertions to post-condition."]));
+    ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use"; "with -pssa."]));
     ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
-    ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["     Print data flow in SSA as a DOT graph."]));
+    ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
     ("-interactive", Set interactive_simulation,
      Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
+    ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
+    ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
+    ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
     ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
      Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
-    ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["\t  Print hexadecimal variable values in simulation."]));
+    ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["  Print hexadecimal variable values in simulation."]));
     ("-save_coqcryptoline", String (fun str -> let _ = save_coqcryptoline_filename := str in action := SaveCoqCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by CoqCryptoLine."]));
     ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
@@ -189,7 +200,13 @@ let anon file =
   | PrintSSA ->
      let (vs, s) = parse_and_check file in
      let vs = List.map (ssa_var VM.empty) vs in
-     let s = ssa_spec s in
+     let init_spec = ssa_spec s in
+     let post_processes = (if !apply_move_assert then [move_asserts] else [])
+                          @(if !apply_remove_cuts then [remove_cut_spec] else [])
+                          @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
+                          @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
+     in
+     let s = List.fold_left (|>) init_spec post_processes in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec s)
   | PrintESpec ->
@@ -202,13 +219,6 @@ let anon file =
      let (_, s) = parse_and_check file in
      let s = ssa_spec s in
      print_data_flow s.sprog stdout
-  | MoveAssert ->
-     let (vs, s) = parse_and_check file in
-     let vs = List.map (ssa_var VM.empty) vs in
-     let ssa = ssa_spec s in
-     let moved = move_asserts ssa in
-     print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec moved)
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"

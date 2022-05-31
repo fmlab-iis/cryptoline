@@ -3639,3 +3639,49 @@ let dessa_program p = let p = visit_program dessa_visitor p in
 let dessa_spec s = let s = visit_spec dessa_visitor s in
                    let _ = update_variable_id_spec VM.empty s in
                    s
+
+(** Others *)
+
+let remove_cut_program p = List.filter (fun i -> not (is_cut i)) p
+
+let remove_ecut_program p = List.map
+                              (fun i ->
+                                match i with
+                                | Icut (_, rcuts) -> Icut ([], rcuts)
+                                | _ -> i) p
+
+let remove_rcut_program p = List.map
+                              (fun i ->
+                                match i with
+                                | Icut (ecuts, _) -> Icut (ecuts, [])
+                                | _ -> i) p
+
+let remove_cut_prove_with_list pwss =
+  let is_not_cut p =
+    match p with
+    | Precondition
+      | AllAssumes
+      | AllGhosts -> true
+    | _ -> false in
+  List.filter is_not_cut pwss
+
+let remove_cut_spec s =
+  { spre = s.spre;
+    sprog = remove_cut_program s.sprog;
+    spost = s.spost;
+    sepwss = remove_cut_prove_with_list s.sepwss;
+    srpwss = remove_cut_prove_with_list s.srpwss }
+
+let remove_ecut_spec s =
+  { spre = s.spre;
+    sprog = remove_ecut_program s.sprog;
+    spost = s.spost;
+    sepwss = remove_cut_prove_with_list s.sepwss;
+    srpwss = s.srpwss }
+
+let remove_rcut_spec s =
+  { spre = s.spre;
+    sprog = remove_rcut_program s.sprog;
+    spost = s.spost;
+    sepwss = s.sepwss;
+    srpwss = remove_cut_prove_with_list s.srpwss }
