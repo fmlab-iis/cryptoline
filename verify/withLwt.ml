@@ -90,10 +90,9 @@ let verify_safety_inc timeout f prog qs hashopt =
                   "ID: " ^ string_of_int id ^ "\n"
                   ^ "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
-    let%lwt solve_res = solve_simp ~timeout:timeout ~header:header (fp@[q]) in
     let%lwt res =
       try%lwt
-            match solve_res with
+            match%lwt solve_simp ~timeout:timeout ~header:header (fp@[q]) with
             | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
             | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
             | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
