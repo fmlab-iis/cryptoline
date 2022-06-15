@@ -5,12 +5,15 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 open Utils
+open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | MoveAssert | SaveCoqCryptoline | Simulation | Debugger
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | SaveCoqCryptoline | SaveBvCryptoline | Simulation
 
 let action = ref Verify
 
-let save_coq_cryptoline_filename = ref ""
+let save_coqcryptoline_filename = ref ""
+
+let save_bvcryptoline_filename = ref ""
 
 let initial_values_string = ref ""
 
@@ -18,45 +21,84 @@ let simulation_steps = ref (-1)
 
 let simulation_dumps_string = ref ""
 
+let interactive_simulation = ref false
+
+let coq_filename_extension = ".v"
+
+let apply_move_assert = ref false
+
+let apply_remove_cuts = ref false
+
+let apply_remove_ecuts = ref false
+
+let apply_remove_rcuts = ref false
+
 let args = [
-    ("-autocast", Set Options.Std.auto_cast, " Automatically cast variables when parsing untyped programs\n");
-    ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true), "  Automatically cast variables when parsing untyped programs\n");
-    ("-cli", Set Options.Std.use_cli, "\t     Use CLI to run verification tasks (when # of jobs > 1)\n");
-    ("-cli_path", String (fun str -> Options.Std.cli_path := str), "PATH\n\t     Set the path to CLI\n");
-    ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false), "\n\t     Disable verification of all algebra properties\n");
-    ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false), "\n\t     Disable verification of all range properties (excluding safety)\n");
-    ("-disable_assertion", Unit (fun () -> verify_eassertion := false; verify_rassertion := false), "\n\t     Disable verification of all assertions\n");
-    ("-disable_eassertion", Clear verify_eassertion, "\n\t     Disable verification of algebraic assertions\n");
-    ("-disable_rassertion", Clear verify_rassertion, "\n\t     Disable verification of range assertions\n");
-    ("-disable_epost", Clear verify_epost, "\n\t     Disable verification of algebraic postconditions (including cuts)\n");
-    ("-disable_rpost", Clear verify_rpost, "\n\t     Disable verification of range postconditions (including cuts)\n");
-    ("-disable_safety", Clear verify_program_safety, "\n\t     Disable verification of program safety\n");
+    ("-autocast", Set Options.Std.auto_cast,
+     Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
+    ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),
+     Common.mk_arg_desc(["  Automatically cast variables when parsing untyped programs."]));
+    ("-cli", Set Options.Std.use_cli,
+     Common.mk_arg_desc(["\t     Use CLI to run verification tasks (when # of jobs > 1)."]));
+    ("-cli_path", String (fun str -> Options.Std.cli_path := str),
+     Common.mk_arg_desc(["PATH"; "Set the path to CLI."]));
+    ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false),
+     Common.mk_arg_desc([""; "Disable verification of all algebra properties."]));
+    ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false),
+     Common.mk_arg_desc([""; "Disable verification of all range properties (excluding safety)."]));
+    ("-disable_assertion", Unit (fun () -> verify_eassertion := false; verify_rassertion := false),
+     Common.mk_arg_desc([""; "Disable verification of all assertions."]));
+    ("-disable_eassertion", Clear verify_eassertion,
+     Common.mk_arg_desc([""; "Disable verification of algebraic assertions."]));
+    ("-disable_rassertion", Clear verify_rassertion,
+     Common.mk_arg_desc([""; "Disable verification of range assertions."]));
+    ("-disable_epost", Clear verify_epost,
+     Common.mk_arg_desc([""; "Disable verification of algebraic postconditions (including cuts)."]));
+    ("-disable_rpost", Clear verify_rpost,
+     Common.mk_arg_desc([""; "Disable verification of range postconditions (including cuts)."]));
+    ("-disable_safety", Clear verify_program_safety,
+     Common.mk_arg_desc([""; "Disable verification of program safety."]));
     ("-jobs", Int (fun j -> jobs := j),
-     "N    Set number of jobs (default = 4)\n");
-    ("-ma", Unit (fun () -> action := MoveAssert), "\t     Convert to SSA and move assertions to post-condition");
-    ("-p", Unit (fun () -> action := Parse), "\t     Print the parsed specification\n");
-    ("-pespec", Unit (fun () -> action := PrintESpec), "   Print the parsed algebraic specification\n");
-    ("-prspec", Unit (fun () -> action := PrintRSpec), "   Print the parsed range specification\n");
-    ("-pssa", Unit (fun () -> action := PrintSSA), "     Print the parsed specification in SSA\n");
-    ("-pdflow", Unit (fun () -> action := PrintDataFlow), "     Print data flow in SSA as a DOT graph\n");
-    ("-debugger", String (fun s -> action := Debugger; initial_values_string := s), "args\n\t     Run debugger with specified input arguments (comma separated)\n");
-    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), "      Simulate the parsed specification\n");
-    ("-sim_steps", Int (fun n -> simulation_steps := n), "\n\t     Stop simulate after the specified number of steps \n");
-    ("-sim_dumps", String (fun s -> simulation_dumps_string := s), "\n\t     Dump variable tables for the specified ranges of steps \n");
-    ("-save_coq_cryptoline", String (fun str -> let _ = save_coq_cryptoline_filename := str in action := SaveCoqCryptoline),
-     "FILENAME\n\t     Save the specification in the format acceptable by coq-cryptoline\n");
-    ("-typing_file", String (fun f -> Options.Std.typing_file := Some f), "\n\t     Predefined typing in parsing untyped programs\n");
-    ("-v", Set verbose, "\t     Display verbose messages\n");
+     Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
+    ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use"; "with -pssa."]));
+    ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
+    ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
+    ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
+    ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
+    ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
+    ("-interactive", Set interactive_simulation,
+     Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
+    ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
+    ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
+    ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
+    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
+    ("-sim_steps", Int (fun n -> simulation_steps := n),
+     Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
+    ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
+     Common.mk_arg_desc([""; "Dump variable tables for the specified ranges of steps."]));
+    ("-sim_hex", Set Simulator.print_hexadecimal, Common.mk_arg_desc(["  Print hexadecimal variable values in simulation."]));
+    ("-save_coqcryptoline", String (fun str -> let _ = save_coqcryptoline_filename := str in action := SaveCoqCryptoline),
+     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by CoqCryptoLine."]));
+    ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
+     Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
+    ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified algebraic cuts (comma separated). The indices\n\t     start with 0. The algebraic postcondition is the last cut.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
     ("-veacuts", String (fun str -> verify_eacuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified algebraic assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the algebraic assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic assertions before the specified";
+                         "cuts (comma separated). The indices For each i in the specified"; "indices, the algebraic assertions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]));
     ("-vrcuts", String (fun str -> verify_rcuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified range cuts (comma separated). The indices\n\t     start with 0. The range postcondition is the last cut.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified range cuts (comma separated). The indices";
+                         "start with 0. The range postcondition is the last cut."]));
     ("-vracuts", String (fun str -> verify_racuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify the specified range assertions before the specified\n\t     cuts (comma separated). The indices For each i in the specified\n\t     indices, the range assertions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n");
+     Common.mk_arg_desc(["INDICES"; "Verify the specified range assertions before the specified";
+                         "cuts (comma separated). The indices For each i in the specified"; "indices, the range assertions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]));
     ("-vscuts", String (fun str -> verify_scuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
-     "INDICES\n\t     Verify safety of instructions before the specified cuts (comma\n\t     separated). The indices start with 0. For each i in the specified\n\t     indices, the safety of instructions between the (i-1)-th cut (or\n\t     the precondition if i = 0) and the i-th cut will be checked.\n")
+     Common.mk_arg_desc(["INDICES"; "Verify safety of instructions before the specified cuts (comma";
+                         "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
+                         "the precondition if i = 0) and the i-th cut will be checked."]))
   ]@Common.args
 let args = List.sort Pervasives.compare args
 
@@ -158,7 +200,13 @@ let anon file =
   | PrintSSA ->
      let (vs, s) = parse_and_check file in
      let vs = List.map (ssa_var VM.empty) vs in
-     let s = ssa_spec s in
+     let init_spec = ssa_spec s in
+     let post_processes = (if !apply_move_assert then [move_asserts] else [])
+                          @(if !apply_remove_cuts then [remove_cut_spec] else [])
+                          @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
+                          @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
+     in
+     let s = List.fold_left (|>) init_spec post_processes in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec s)
   | PrintESpec ->
@@ -171,18 +219,11 @@ let anon file =
      let (_, s) = parse_and_check file in
      let s = ssa_spec s in
      print_data_flow s.sprog stdout
-  | MoveAssert ->
-     let (vs, s) = parse_and_check file in
-     let vs = List.map (ssa_var VM.empty) vs in
-     let ssa = ssa_spec s in
-     let moved = move_asserts ssa in
-     print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec moved)
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
        ^ string_of_spec s in
-     let nth_name id = !save_coq_cryptoline_filename ^ "_" ^ string_of_int id in
+     let nth_name id = !save_coqcryptoline_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
        let rec helper i =
          let fn = nth_name sid ^ "_" ^ string_of_int i ^ cryptoline_filename_extension in
@@ -197,20 +238,33 @@ let anon file =
        let _ = close_out ch in
        () in
      let (_, s) = parse_and_check file in
-     let coq_specs = spec_to_coq_cryptoline s in
+     let coq_specs = spec_to_coqcryptoline s in
      List.iteri output coq_specs
+  | SaveBvCryptoline ->
+     let nth_name id = !save_bvcryptoline_filename ^ "_" ^ string_of_int id in
+     let suggest_name sid =
+       let rec helper i =
+         let fn = nth_name sid ^ "_" ^ string_of_int i ^ coq_filename_extension in
+         if Sys.file_exists fn then helper (i + 1)
+         else fn in
+       let fn = nth_name sid ^ coq_filename_extension in
+       if Sys.file_exists fn then helper 0
+       else fn in
+     let output sid s =
+       let ch = open_out (suggest_name sid) in
+       let _ = output_string ch s in
+       let _ = close_out ch in
+       () in
+     let (_, s) = parse_and_check file in
+     let bvspecs = spec_to_bvcryptoline s in
+     List.iteri output bvspecs
   | Simulation ->
      let _ = Random.self_init () in
      let (vs, s) = parse_and_check file in
      let vals = parse_initial_values vs in
      let m = Simulator.make_map vs vals in
-     Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
-  | Debugger ->
-     let _ = Random.self_init () in
-     let (vs, s) = parse_and_check file in
-     let vals = parse_initial_values vs in
-     let m = Simulator.make_map vs vals in
-     Simulator.shell m s.sprog
+     if !interactive_simulation then Simulator.shell m s.sprog
+     else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
 
 
 (*

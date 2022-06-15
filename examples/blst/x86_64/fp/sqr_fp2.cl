@@ -1,14 +1,71 @@
-proc main (EA, L0x55555556e4c0, L0x55555556e4c8, L0x55555556e4d0, L0x55555556e4d8, L0x55555556e4e0, L0x55555556e4e8, L0x7fffffffd980, L0x7fffffffd990, L0x7fffffffdb50, L0x7fffffffdb58, L0x7fffffffdb60, L0x7fffffffdb68, L0x7fffffffdb70, L0x7fffffffdb78, L0x7fffffffdb80, L0x7fffffffdb88, L0x7fffffffdb90, L0x7fffffffdb98, L0x7fffffffdba0, L0x7fffffffdba8, __add_mod_384, __mulq_mont_384, __sub_mod_384, callq, endbr64, lea, leaveq, movabs, movq, rdi, rdx, repz, retq, rsp, subb, uint64, xmm0) =
+(* quine: -v -jobs 10 sqr_fp2.cl
+Parsing Cryptoline file:                [OK]            0.018660 seconds
+Checking well-formedness:               [OK]            0.002071 seconds
+Transforming to SSA form:               [OK]            0.001129 seconds
+Normalizing specification:              [OK]            0.001959 seconds
+Rewriting assignments:                  [OK]            0.002688 seconds
+Verifying program safety:               [OK]            0.170586 seconds
+Verifying range assertions:             [OK]            361.037916 seconds
+Verifying range specification:          [OK]            14.182793 seconds
+Rewriting value-preserved casting:      [OK]            0.001402 seconds
+Verifying algebraic assertions:         [OK]            21.489470 seconds
+Verifying algebraic specification:      [OK]            79.375154 seconds
+Verification result:                    [OK]            476.285170 seconds
+*)
+proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5, uint64 n0, uint64 I) =
 {
-  true
+  and[
+	  m0 = 0xb9feffffffffaaab,
+      m1 = 0x1eabfffeb153ffff,
+      m2 = 0x6730d2a0f6b0f624,
+      m3 = 0x64774b84f38512bf,
+      m4 = 0x4b1ba7b6434bacd7,
+      m5 = 0x1a0111ea397fe69a,
+      eqmod m0 1 2,
+      eqmod (1 + m0 * n0) 0 (2**64)
+    ]
   &&
-  true
+  and[
+	  m0 = 0xb9feffffffffaaab@64,
+	  m1 = 0x1eabfffeb153ffff@64,
+	  m2 = 0x6730d2a0f6b0f624@64,
+	  m3 = 0x64774b84f38512bf@64,
+	  m4 = 0x4b1ba7b6434bacd7@64,
+	  m5 = 0x1a0111ea397fe69a@64,
+	  eqmod m0 (1@64) (2@64),
+      add 1@64 (mul m0 n0) = 0@64,
+      limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+  	]
 }
 
-(* movabs $0x89f3fffcfffcfffd,%rdx                 #! PC = 0x93824992242710 *)
-movabs $0x89f3fffcfffcfffd,%%rdx                 #! 0x93824992242710 = 0x93824992242710;
-(* mov    %rdx,%rcx                                #! PC = 0x93824992312089 *)
-mov rcx rdx;
+mov L0x7fffffffdb50 x0;
+mov L0x7fffffffdb58 x1;
+mov L0x7fffffffdb60 x2;
+mov L0x7fffffffdb68 x3;
+mov L0x7fffffffdb70 x4;
+mov L0x7fffffffdb78 x5;
+
+mov L0x7fffffffdb80 y0;
+mov L0x7fffffffdb88 y1;
+mov L0x7fffffffdb90 y2;
+mov L0x7fffffffdb98 y3;
+mov L0x7fffffffdba0 y4;
+mov L0x7fffffffdba8 y5;
+
+mov L0x7fffffffd980 n0;
+
+(* prime *)
+mov L0x55555556e4c0 m0;
+mov L0x55555556e4c8 m1;
+mov L0x55555556e4d0 m2;
+mov L0x55555556e4d8 m3;
+mov L0x55555556e4e0 m4;
+mov L0x55555556e4e8 m5;
+
+nondet rdx@uint64;
+nondet L0x7fffffffd990@uint64;
+
 (* #callq  0x5555555678a0 <__add_mod_384>          #! PC = 0x93824992312111 *)
 #callq  0x5555555678a0 <__add_mod_384>          #! 0x93824992312111 = 0x93824992312111;
 (* mov    (%rsi),%r8                               #! EA = L0x7fffffffdb50; Value = 0x000009c0000009c0; PC = 0x93824992311460 *)
@@ -89,6 +146,26 @@ mov L0x7fffffffd9c0 r12;
 mov L0x7fffffffd9c8 r13;
 (* #repz retq                                      #! PC = 0x93824992311601 *)
 #repz retq                                      #! 0x93824992311601 = 0x93824992311601;
+
+mov c0 L0x7fffffffd9a0;
+mov c1 L0x7fffffffd9a8;
+mov c2 L0x7fffffffd9b0;
+mov c3 L0x7fffffffd9b8;
+mov c4 L0x7fffffffd9c0;
+mov c5 L0x7fffffffd9c8;
+
+assert true && and[eqmod
+                   limbs 64 [c0, c1, c2, c3, c4, c5]
+                   limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+                   limbs 64 [m0, m1, m2, m3, m4, m5],
+                   limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+                   ];
+assume and[eqmod
+           limbs 64 [c0, c1, c2, c3, c4, c5]
+           limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+           limbs 64 [m0, m1, m2, m3, m4, m5]
+           ] && true;
+
 (* mov    0x10(%rsp),%rsi                          #! EA = L0x7fffffffd990; Value = 0x00007fffffffdb50; PC = 0x93824992312116 *)
 mov rsi L0x7fffffffd990;
 (* #lea    0x30(%rsi),%rdx                          #! PC = 0x93824992312121 *)
@@ -133,6 +210,7 @@ sbbs carry r12 r12 L0x7fffffffdba0 carry;
 mov rbp L0x55555556e4e0;
 (* sbb    0x28(%rdx),%r13                          #! EA = L0x7fffffffdba8; Value = 0x0000000000000000; PC = 0x93824992311681 *)
 sbbs carry r13 r13 L0x7fffffffdba8 carry;
+mov carryA carry;
 (* mov    0x28(%rcx),%rsi                          #! EA = L0x55555556e4e8; Value = 0x1a0111ea397fe69a; PC = 0x93824992311685 *)
 mov rsi L0x55555556e4e8;
 (* sbb    %rdx,%rdx                                #! PC = 0x93824992311689 *)
@@ -149,6 +227,16 @@ and rbx@uint64 rdx rbx;
 and rbp@uint64 rdx rbp;
 (* and    %rdx,%rsi                                #! PC = 0x93824992311707 *)
 and rsi@uint64 rdx rsi;
+
+assert true && or [
+		   and [(carryA = 0@1), (r14 = 0@64), (r15 = 0@64), (rax = 0@64), (rbx = 0@64), (rbp = 0@64), (rsi = 0@64)]
+		       , 
+		   and [(carryA = 1@1), (r14 = m0), (r15 = m1), (rax = m2), (rbx = m3), (rbp = m4), (rsi = m5)]
+		];
+
+assume (carryA * (limbs 64 [r14, r15, rax, rbx, rbp, rsi] - limbs 64 [m0, m1, m2, m3, m4, m5]) = 0) && true;
+assume ((carryA - 1) * (limbs 64 [r14, r15, rax, rbx, rbp, rsi]) = 0) && true;
+
 (* add    %r14,%r8                                 #! PC = 0x93824992311710 *)
 adds carry r8 r14 r8;
 (* adc    %r15,%r9                                 #! PC = 0x93824992311713 *)
@@ -169,10 +257,91 @@ adcs carry r12 rbp r12 carry;
 mov L0x7fffffffd9e8 r11;
 (* adc    %rsi,%r13                                #! PC = 0x93824992311740 *)
 adcs carry r13 rsi r13 carry;
+mov carryB carry;
+assert true && carryA = carryB;
+assume carryA = carryB && true;
 (* mov    %r12,0x20(%rdi)                          #! EA = L0x7fffffffd9f0; PC = 0x93824992311743 *)
 mov L0x7fffffffd9f0 r12;
 (* mov    %r13,0x28(%rdi)                          #! EA = L0x7fffffffd9f8; PC = 0x93824992311747 *)
 mov L0x7fffffffd9f8 r13;
+
+
+mov d0 L0x7fffffffd9d0;
+mov d1 L0x7fffffffd9d8;
+mov d2 L0x7fffffffd9e0;
+mov d3 L0x7fffffffd9e8;
+mov d4 L0x7fffffffd9f0;
+mov d5 L0x7fffffffd9f8;
+
+assert and[eqmod
+           limbs 64 [d0, d1, d2, d3, d4, d5]
+           limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+           limbs 64 [m0, m1, m2, m3, m4, m5]
+           ] &&
+       limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5];
+
+assume true &&
+       and[eqmod
+           limbs 64 [d0, d1, d2, d3, d4, d5]
+           limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+           limbs 64 [m0, m1, m2, m3, m4, m5]];
+
+cut and[m0 = 0xb9feffffffffaaab,
+        m1 = 0x1eabfffeb153ffff,
+        m2 = 0x6730d2a0f6b0f624,
+        m3 = 0x64774b84f38512bf,
+        m4 = 0x4b1ba7b6434bacd7,
+        m5 = 0x1a0111ea397fe69a,
+        eqmod (1 + m0 * n0) 0 (2**64),
+
+        L0x7fffffffdb50 = x0, L0x7fffffffdb58 = x1, L0x7fffffffdb60 = x2,
+        L0x7fffffffdb68 = x3, L0x7fffffffdb70 = x4, L0x7fffffffdb78 = x5,
+ 
+        L0x7fffffffdb80 = y0, L0x7fffffffdb88 = y1, L0x7fffffffdb90 = y2,
+        L0x7fffffffdb98 = y3, L0x7fffffffdba0 = y4, L0x7fffffffdba8 = y5,
+
+        L0x55555556e4c0 = m0, L0x55555556e4c8 = m1, L0x55555556e4d0 = m2,
+        L0x55555556e4d8 = m3, L0x55555556e4e0 = m4, L0x55555556e4e8 = m5,
+
+        L0x7fffffffd980 = n0,
+        
+        eqmod
+        limbs 64 [c0, c1, c2, c3, c4, c5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+        eqmod
+        limbs 64 [d0, d1, d2, d3, d4, d5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5]
+
+        ] &&
+    and[m0 = 0xb9feffffffffaaab@64,
+        m1 = 0x1eabfffeb153ffff@64,
+        m2 = 0x6730d2a0f6b0f624@64,
+        m3 = 0x64774b84f38512bf@64,
+        m4 = 0x4b1ba7b6434bacd7@64,
+        m5 = 0x1a0111ea397fe69a@64,
+        add 1@64 (mul m0 n0) = 0@64,
+
+        L0x55555556e4c0 = m0, L0x55555556e4c8 = m1, L0x55555556e4d0 = m2,
+        L0x55555556e4d8 = m3, L0x55555556e4e0 = m4, L0x55555556e4e8 = m5,
+
+        L0x7fffffffd980 = n0,
+
+        eqmod
+        limbs 64 [c0, c1, c2, c3, c4, c5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+        eqmod
+        limbs 64 [d0, d1, d2, d3, d4, d5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+
+        limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5]];
+
 (* #repz retq                                      #! PC = 0x93824992311751 *)
 #repz retq                                      #! 0x93824992311751 = 0x93824992311751;
 (* mov    0x10(%rsp),%rsi                          #! EA = L0x7fffffffd990; Value = 0x00007fffffffdb50; PC = 0x93824992312135 *)
@@ -192,7 +361,7 @@ mov r13 L0x7fffffffdb68;
 (* #callq  0x555555568c80 <__mulq_mont_384>        #! PC = 0x93824992312163 *)
 #callq  0x555555568c80 <__mulq_mont_384>        #! 0x93824992312163 = 0x93824992312163;
 (* endbr64                                         #! PC = 0x93824992316544 *)
-endbr64                                         #! 0x93824992316544 = 0x93824992316544;
+#endbr64                                         #! 0x93824992316544 = 0x93824992316544;
 (* mov    %rax,%rdi                                #! PC = 0x93824992316548 *)
 mov rdi rax;
 (* mul    %r14                                     #! PC = 0x93824992316551 *)
@@ -273,10 +442,19 @@ mov r14 rdx;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992316660 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r8,%rax                                 #! PC = 0x93824992316663 *)
 mov rax r8;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992316666 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992316669 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r9                                 #! PC = 0x93824992316673 *)
@@ -481,10 +659,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992316944 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r9,%rax                                 #! PC = 0x93824992316947 *)
 mov rax r9;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992316950 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992316953 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r10                                #! PC = 0x93824992316957 *)
@@ -689,10 +876,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317228 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r10,%rax                                #! PC = 0x93824992317231 *)
 mov rax r10;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317234 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317237 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r11                                #! PC = 0x93824992317241 *)
@@ -897,10 +1093,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317512 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r11,%rax                                #! PC = 0x93824992317515 *)
 mov rax r11;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317518 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317521 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r12                                #! PC = 0x93824992317525 *)
@@ -1105,10 +1310,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317796 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r12,%rax                                #! PC = 0x93824992317799 *)
 mov rax r12;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317802 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317805 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r13                                #! PC = 0x93824992317809 *)
@@ -1313,10 +1527,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992318080 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r13,%rax                                #! PC = 0x93824992318083 *)
 mov rax r13;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992318086 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992318089 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r14                                #! PC = 0x93824992318093 *)
@@ -1407,8 +1630,27 @@ adcs carry r11 rdx r11 carry;
 adcs carry r12 0@uint64 r12 carry;
 assert true && carry = 0@1;
 assume carry = 0 && true;
+
+
+mov q0 r14;
+mov q1 r15;
+mov q2 r8;
+mov q3 r9;
+mov q4 r10;
+mov q5 r11;
+mov q6 r12;
+
+assert eqmod (limbs 64 [0, 0, 0, 0, 0, 0, q0, q1, q2, q3, q4, q5, q6])
+             ((limbs 64 [x0, x1, x2, x3, x4, x5]) * (limbs 64 [y0, y1, y2, y3, y4, y5]))
+             (limbs 64 [m0, m1, m2, m3, m4, m5]) && true;
+assume true && eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6]) * const 448 (2*384)
+               ((limbs 64 [x0, x1, x2, x3, x4, x5, 0@64]) * (limbs 64 [y0, y1, y2, y3, y4, y5, 0@64]))
+               (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]);
+
+
+
 (* movq   %xmm0,%rdi                               #! PC = 0x93824992318209 *)
-movq   %xmm0,%%rdi                               #! 0x93824992318209 = 0x93824992318209;
+#movq   %xmm0,%%rdi                               #! 0x93824992318209 = 0x93824992318209;
 (* sub    (%rcx),%r14                              #! EA = L0x55555556e4c0; Value = 0xb9feffffffffaaab; PC = 0x93824992318214 *)
 subb carry r14 r14 L0x55555556e4c0;
 (* mov    %r15,%rdx                                #! PC = 0x93824992318217 *)
@@ -1459,6 +1701,25 @@ mov L0x7fffffffdb10 r10;
 mov L0x7fffffffdb18 r11;
 (* #repz retq                                      #! PC = 0x93824992318303 *)
 #repz retq                                      #! 0x93824992318303 = 0x93824992318303;
+
+mov e0 L0x7fffffffdaf0;
+mov e1 L0x7fffffffdaf8;
+mov e2 L0x7fffffffdb00;
+mov e3 L0x7fffffffdb08;
+mov e4 L0x7fffffffdb10;
+mov e5 L0x7fffffffdb18;
+
+assert true &&
+       eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
+             (limbs 64 [e0, e1, e2, e3, e4, e5, 0@64])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]);
+
+assume eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
+             (limbs 64 [e0, e1, e2, e3, e4, e5, 0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0]) && true;
+
+assert true && limbs 64 [e0, e1, e2, e3, e4, e5] <u limbs 64 [m0, m1, m2, m3, m4, m5];
+
 (* add    %r14,%r14                                #! PC = 0x93824992312168 *)
 adds carry r14 r14 r14;
 (* adc    %r15,%r15                                #! PC = 0x93824992312171 *)
@@ -1523,6 +1784,82 @@ mov L0x7fffffffdb38 r9;
 mov L0x7fffffffdb40 r10;
 (* mov    %r11,0x58(%rdi)                          #! EA = L0x7fffffffdb48; PC = 0x93824992312278 *)
 mov L0x7fffffffdb48 r11;
+
+mov f0 L0x7fffffffdb20;
+mov f1 L0x7fffffffdb28;
+mov f2 L0x7fffffffdb30;
+mov f3 L0x7fffffffdb38;
+mov f4 L0x7fffffffdb40;
+mov f5 L0x7fffffffdb48;
+
+assert true &&
+       eqmod (limbs 64 [e0, e1, e2, e3, e4, e5, 0@64] * const 448 2)
+             (limbs 64 [f0, f1, f2, f3, f4, f5, 0@64])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]);
+
+assume eqmod (limbs 64 [e0, e1, e2, e3, e4, e5, 0] * 2)
+             (limbs 64 [f0, f1, f2, f3, f4, f5, 0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0]) && true;
+
+assert true && limbs 64 [f0, f1, f2, f3, f4, f5] <u limbs 64 [m0, m1, m2, m3, m4, m5];
+
+cut and[m0 = 0xb9feffffffffaaab,
+        m1 = 0x1eabfffeb153ffff,
+        m2 = 0x6730d2a0f6b0f624,
+        m3 = 0x64774b84f38512bf,
+        m4 = 0x4b1ba7b6434bacd7,
+        m5 = 0x1a0111ea397fe69a,
+        eqmod (1 + m0 * n0) 0 (2**64),
+
+        L0x55555556e4c0 = m0, L0x55555556e4c8 = m1, L0x55555556e4d0 = m2,
+        L0x55555556e4d8 = m3, L0x55555556e4e0 = m4, L0x55555556e4e8 = m5,
+
+        L0x7fffffffd980 = n0,
+        
+        eqmod
+        limbs 64 [c0, c1, c2, c3, c4, c5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+        eqmod
+        limbs 64 [d0, d1, d2, d3, d4, d5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+
+        eqmod
+        limbs 64 [f0, f1, f2, f3, f4, f5] * (2**383)
+        limbs 64 [x0, x1, x2, x3, x4, x5] * limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5]
+        ] &&
+    and[m0 = 0xb9feffffffffaaab@64,
+        m1 = 0x1eabfffeb153ffff@64,
+        m2 = 0x6730d2a0f6b0f624@64,
+        m3 = 0x64774b84f38512bf@64,
+        m4 = 0x4b1ba7b6434bacd7@64,
+        m5 = 0x1a0111ea397fe69a@64,
+        add 1@64 (mul m0 n0) = 0@64,
+
+        L0x55555556e4c0 = m0, L0x55555556e4c8 = m1, L0x55555556e4d0 = m2,
+        L0x55555556e4d8 = m3, L0x55555556e4e0 = m4, L0x55555556e4e8 = m5,
+
+        L0x7fffffffd980 = n0,
+
+        eqmod
+        limbs 64 [c0, c1, c2, c3, c4, c5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+        eqmod
+        limbs 64 [d0, d1, d2, d3, d4, d5]
+        limbs 64 [x0, x1, x2, x3, x4, x5] - limbs 64 [y0, y1, y2, y3, y4, y5]
+        limbs 64 [m0, m1, m2, m3, m4, m5],
+
+        limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+        limbs 64 [d0, d1, d2, d3, d4, d5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+
+        limbs 64 [f0, f1, f2, f3, f4, f5] <u limbs 64 [m0, m1, m2, m3, m4, m5]];
+
+
 (* #lea    0x20(%rsp),%rsi                          #! PC = 0x93824992312282 *)
 #lea    %%EA,%%rsi                          #! 0x93824992312282 = 0x93824992312282;
 (* #lea    0x50(%rsp),%rbx                          #! PC = 0x93824992312287 *)
@@ -1540,7 +1877,7 @@ mov r13 L0x7fffffffd9b8;
 (* #callq  0x555555568c80 <__mulq_mont_384>        #! PC = 0x93824992312317 *)
 #callq  0x555555568c80 <__mulq_mont_384>        #! 0x93824992312317 = 0x93824992312317;
 (* endbr64                                         #! PC = 0x93824992316544 *)
-endbr64                                         #! 0x93824992316544 = 0x93824992316544;
+#endbr64                                         #! 0x93824992316544 = 0x93824992316544;
 (* mov    %rax,%rdi                                #! PC = 0x93824992316548 *)
 mov rdi rax;
 (* mul    %r14                                     #! PC = 0x93824992316551 *)
@@ -1621,10 +1958,19 @@ mov r14 rdx;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992316660 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r8,%rax                                 #! PC = 0x93824992316663 *)
 mov rax r8;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992316666 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992316669 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r9                                 #! PC = 0x93824992316673 *)
@@ -1829,10 +2175,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992316944 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r9,%rax                                 #! PC = 0x93824992316947 *)
 mov rax r9;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992316950 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992316953 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r10                                #! PC = 0x93824992316957 *)
@@ -2037,10 +2392,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317228 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r10,%rax                                #! PC = 0x93824992317231 *)
 mov rax r10;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317234 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317237 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r11                                #! PC = 0x93824992317241 *)
@@ -2245,10 +2609,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317512 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r11,%rax                                #! PC = 0x93824992317515 *)
 mov rax r11;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317518 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317521 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r12                                #! PC = 0x93824992317525 *)
@@ -2453,10 +2826,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992317796 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r12,%rax                                #! PC = 0x93824992317799 *)
 mov rax r12;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992317802 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992317805 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r13                                #! PC = 0x93824992317809 *)
@@ -2661,10 +3043,19 @@ assume carry = 0 && true;
 umull rdx rax L0x55555556e4c0 rax;
 (* add    %rax,%rbp                                #! PC = 0x93824992318080 *)
 adds carry rbp rax rbp;
+
+(* NOTE: Montgomery reduction *)
+assert eqmod rbp 0 (2**64) && true;
+assume rbp = 0 && rbp = 0@64;
+
 (* mov    %r13,%rax                                #! PC = 0x93824992318083 *)
 mov rax r13;
 (* adc    %rdx,%rbp                                #! PC = 0x93824992318086 *)
 adcs carry rbp rdx rbp carry;
+
+assert true && carry = 0@1;
+assume carry = 0 && true;
+
 (* mulq   0x8(%rcx)                                #! EA = L0x55555556e4c8; PC = 0x93824992318089 *)
 umull rdx rax L0x55555556e4c8 rax;
 (* add    %rax,%r14                                #! PC = 0x93824992318093 *)
@@ -2755,8 +3146,22 @@ adcs carry r11 rdx r11 carry;
 adcs carry r12 0@uint64 r12 carry;
 assert true && carry = 0@1;
 assume carry = 0 && true;
+
+mov q0 r14;
+mov q1 r15;
+mov q2 r8;
+mov q3 r9;
+mov q4 r10;
+mov q5 r11;
+mov q6 r12;
+
+assert eqmod (limbs 64 [0, 0, 0, 0, 0, 0, q0, q1, q2, q3, q4, q5, q6])
+             ((limbs 64 [c0, c1, c2, c3, c4, c5]) * (limbs 64 [d0, d1, d2, d3, d4, d5]))
+             (limbs 64 [m0, m1, m2, m3, m4, m5]) && true;
+
+
 (* movq   %xmm0,%rdi                               #! PC = 0x93824992318209 *)
-movq   %xmm0,%%rdi                               #! 0x93824992318209 = 0x93824992318209;
+#movq   %xmm0,%%rdi                               #! 0x93824992318209 = 0x93824992318209;
 (* sub    (%rcx),%r14                              #! EA = L0x55555556e4c0; Value = 0xb9feffffffffaaab; PC = 0x93824992318214 *)
 subb carry r14 r14 L0x55555556e4c0;
 (* mov    %r15,%rdx                                #! PC = 0x93824992318217 *)
@@ -2805,6 +3210,26 @@ mov L0x7fffffffdb08 r9;
 mov L0x7fffffffdb10 r10;
 (* mov    %r11,0x28(%rdi)                          #! EA = L0x7fffffffdb18; PC = 0x93824992318299 *)
 mov L0x7fffffffdb18 r11;
+
+mov e0 L0x7fffffffdaf0;
+mov e1 L0x7fffffffdaf8;
+mov e2 L0x7fffffffdb00;
+mov e3 L0x7fffffffdb08;
+mov e4 L0x7fffffffdb10;
+mov e5 L0x7fffffffdb18;
+
+assert true &&
+       eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
+             (limbs 64 [e0, e1, e2, e3, e4, e5, 0@64])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0@64]);
+
+assume eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
+             (limbs 64 [e0, e1, e2, e3, e4, e5, 0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, 0]) && true;
+
+assert true && limbs 64 [e0, e1, e2, e3, e4, e5] <u limbs 64 [m0, m1, m2, m3, m4, m5];
+
+
 (* #repz retq                                      #! PC = 0x93824992318303 *)
 #repz retq                                      #! 0x93824992318303 = 0x93824992318303;
 (* #lea    0x88(%rsp),%r8                           #! PC = 0x93824992312322 *)
@@ -2819,8 +3244,17 @@ mov L0x7fffffffdb18 r11;
 #retq                                           #! 0x93824992242748 = 0x93824992242748;
 
 {
-  true
+  and[eqmod
+      (limbs 64 [e0, e1, e2, e3, e4, e5] + limbs 64 [f0, f1, f2, f3, f4, f5] * I) * (2**384)
+
+      (limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5] * I) *
+      (limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5] * I)
+      
+      [limbs 64 [m0, m1, m2, m3, m4, m5], I * I + 1]
+      ]
   &&
-  true
+  and[limbs 64 [e0, e1, e2, e3, e4, e5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+      limbs 64 [f0, f1, f2, f3, f4, f5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+      ]
 }
 

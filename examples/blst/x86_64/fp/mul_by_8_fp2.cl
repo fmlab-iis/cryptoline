@@ -1,15 +1,16 @@
-(* quine:  -v -isafety -jobs 10 -btor -no_carry_constraint -slicing mul_by_8_fp2.cl
-Parsing Cryptoline file:                [OK]            0.005913 seconds
-Checking well-formedness:               [OK]            0.001045 seconds
-Transforming to SSA form:               [OK]            0.000169 seconds
-Rewriting assignments:                  [OK]            0.000898 seconds
-Verifying program safety:               [OK]            0.000081 seconds
-Verifying range assertions:             [OK]            2.637708 seconds
-Verifying range specification:          [OK]            0.033290 seconds
-Rewriting value-preserved casting:      [OK]            0.000018 seconds
-Verifying algebraic assertions:         [OK]            0.005136 seconds
-Verifying algebraic specification:      [OK]            0.090485 seconds
-Verification result:                    [OK]            2.775249 seconds
+(* quine: -v mul_by_8_fp2.cl
+Parsing Cryptoline file:                [OK]            0.005706 seconds
+Checking well-formedness:               [OK]            0.001076 seconds
+Transforming to SSA form:               [OK]            0.000171 seconds
+Normalizing specification:              [OK]            0.000249 seconds
+Rewriting assignments:                  [OK]            0.000489 seconds
+Verifying program safety:               [OK]            0.035169 seconds
+Verifying range assertions:             [OK]            0.403938 seconds
+Verifying range specification:          [OK]            0.673359 seconds
+Rewriting value-preserved casting:      [OK]            0.000060 seconds
+Verifying algebraic assertions:         [OK]            0.000565 seconds
+Verifying algebraic specification:      [OK]            0.098016 seconds
+Verification result:                    [OK]            1.219367 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5) =
@@ -18,8 +19,14 @@ proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uin
   &&
   and
 	[
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+	 m0 = 0xb9feffffffffaaab@64,
+	 m1 = 0x1eabfffeb153ffff@64,
+	 m2 = 0x6730d2a0f6b0f624@64,
+	 m3 = 0x64774b84f38512bf@64,
+	 m4 = 0x4b1ba7b6434bacd7@64,
+	 m5 = 0x1a0111ea397fe69a@64,
+   	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+   	 limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
   	]
 }
 
@@ -83,7 +90,7 @@ mov carryA carry;
 mov rbx r11;
 
 (* Explicitly define rdx here, rdx can be anything *)
-mov rdx 0@uint64;
+nondet rdx@uint64;
 
 (* sbb    %rdx,%rdx                                #! PC = 0x93824992307842 *)
 sbbs carry rdx rdx rdx carry;
@@ -500,5 +507,10 @@ mov L0x7fffffffdb48 r13;
       (limbs 64 [m0, m1, m2, m3, m4, m5])
  ]
   && 
-  true
+ and[
+     limbs 64 [L0x7fffffffdaf0, L0x7fffffffdaf8, L0x7fffffffdb00, L0x7fffffffdb08, L0x7fffffffdb10, L0x7fffffffdb18] <u
+     limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [L0x7fffffffdb20, L0x7fffffffdb28, L0x7fffffffdb30, L0x7fffffffdb38, L0x7fffffffdb40, L0x7fffffffdb48] <u
+     limbs 64 [m0, m1, m2, m3, m4, m5]
+ ]
 }

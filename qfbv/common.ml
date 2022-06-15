@@ -54,6 +54,11 @@ and bexp =
   | Conj of bexp * bexp
   | Disj of bexp * bexp
 
+let rec split_bexp e =
+  match e with
+  | Conj (e1, e2) -> (split_bexp e1)@(split_bexp e2)
+  | _ -> [e]
+
 let is_atomic t =
   match t with
   | Var _ | Const _ -> true
@@ -310,7 +315,7 @@ module WN : OrderedType with type t = (int * Z.t) =
 
 module WNMap : Map.S with type key = (int * Z.t) = Map.Make(WN)
 
-class btor_manager (_wordsize : int) =
+class btor_manager =
 object(self)
   (** the ID of the next Btor variable *)
   val mutable v = 0
@@ -1377,14 +1382,14 @@ let cnf_imp_check_sat ch es =
                                     let (cs, p) = bb#bit_blast_bexp p in
                                     (cs@@clauses, p::premises)) ([], []) premises in
     let t2 = Unix.gettimeofday() in
-    let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let _ = trace ("Execution time of Bit-blasting premises: " ^ string_of_running_time t1 t2) in
     (clauses_p, premises) in
   let (clauses_g, goal) =
     let t1 = Unix.gettimeofday() in
     let _ = trace "Bit-blasting goal" in
     let (clauses_g, goal) = bb#bit_blast_bexp goal in
     let t2 = Unix.gettimeofday() in
-    let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let _ = trace ("Execution time of Bit-blasting goal: " ^ string_of_running_time t1 t2) in
     (clauses_g, goal) in
   let clauses = (bb#prelude)@@clauses_p@@(List.map (fun p -> [p]) premises)@@clauses_g@@(bb#not_atom goal) in
   let _ = trace "Finished making clauses" in

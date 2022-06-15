@@ -1,41 +1,41 @@
-(* quine: -v -isafety -jobs 10 -no_carry_constraint -slicing -qfbv_args '-SE minisat' sqr_fp.cl
-Parsing Cryptoline file:                [OK]            0.008061 seconds
-Checking well-formedness:               [OK]            0.001293 seconds
-Transforming to SSA form:               [OK]            0.000375 seconds
-Rewriting assignments:                  [OK]            0.004846 seconds
-Verifying program safety:               [OK]            0.000137 seconds
-Verifying range assertions:             [OK]            77.478086 seconds
-Verifying range specification:          [OK]            0.038067 seconds
-Rewriting value-preserved casting:      [OK]            0.000053 seconds
-Verifying algebraic assertions:         [OK]            1.698730 seconds
-Verifying algebraic specification:      [OK]            4.141010 seconds
-Verification result:                    [OK]            83.371355 seconds
+(* quine: -v -jobs 10 sqr_fp.cl
+Parsing Cryptoline file:                [OK]            0.010320 seconds
+Checking well-formedness:               [OK]            0.000622 seconds
+Transforming to SSA form:               [OK]            0.000320 seconds
+Normalizing specification:              [OK]            0.000573 seconds
+Rewriting assignments:                  [OK]            0.000533 seconds
+Verifying program safety:               [OK]            0.050193 seconds
+Verifying range assertions:             [OK]            815.536515 seconds
+Verifying range specification:          [OK]            6.719404 seconds
+Rewriting value-preserved casting:      [OK]            0.000185 seconds
+Verifying algebraic assertions:         [OK]            1.748937 seconds
+Verifying algebraic specification:      [OK]            4.734990 seconds
+Verification result:                    [OK]            828.803407 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5, uint64 n0) =
 {
-  and 	[
-	 m0 = 0xb9feffffffffaaab,
-         m1 = 0x1eabfffeb153ffff,
-         m2 = 0x6730d2a0f6b0f624,
-         m3 = 0x64774b84f38512bf,
-         m4 = 0x4b1ba7b6434bacd7,
-         m5 = 0x1a0111ea397fe69a,
-    	 eqmod m0 1 2,
-    	 eqmod (1 + m0 * n0) 0 (2**64)
-  ]
+  and[
+	  m0 = 0xb9feffffffffaaab,
+      m1 = 0x1eabfffeb153ffff,
+      m2 = 0x6730d2a0f6b0f624,
+      m3 = 0x64774b84f38512bf,
+      m4 = 0x4b1ba7b6434bacd7,
+      m5 = 0x1a0111ea397fe69a,
+      eqmod m0 1 2,
+      eqmod (1 + m0 * n0) 0 (2**64)
+    ]
   &&
-  and
-	[
-	 m0 = 0xb9feffffffffaaab@64,
-	 m1 = 0x1eabfffeb153ffff@64,
-	 m2 = 0x6730d2a0f6b0f624@64,
-	 m3 = 0x64774b84f38512bf@64,
-	 m4 = 0x4b1ba7b6434bacd7@64,
-	 m5 = 0x1a0111ea397fe69a@64,
-	 eqmod m0 (1@64) (2@64),
-    	 add 1@64 (mul m0 n0) = 0@64,
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+  and[
+	  m0 = 0xb9feffffffffaaab@64,
+	  m1 = 0x1eabfffeb153ffff@64,
+	  m2 = 0x6730d2a0f6b0f624@64,
+	  m3 = 0x64774b84f38512bf@64,
+	  m4 = 0x4b1ba7b6434bacd7@64,
+	  m5 = 0x1a0111ea397fe69a@64,
+	  eqmod m0 (1@64) (2@64),
+      add 1@64 (mul m0 n0) = 0@64,
+      limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
   	]
 }
 
@@ -1273,6 +1273,6 @@ assume eqmod (limbs 64 [q0, q1, q2, q3, q4, q5, q6])
         ((limbs 64 [x0, x1, x2, x3, x4, x5]) * (limbs 64 [x0, x1, x2, x3, x4, x5]))
         (limbs 64 [m0, m1, m2, m3, m4, m5])
 &&
-  true
+  limbs 64 [c0, c1, c2, c3, c4, c5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
 }
 

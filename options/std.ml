@@ -1,11 +1,12 @@
 
-type algebra_system =
+type algebra_solver =
   | Singular
   | Sage
   | Magma
   | Mathematica
   | Macaulay2
   | Maple
+  | SMTSolver of string
 
 type variable_order =
   | LexOrder
@@ -13,21 +14,13 @@ type variable_order =
   | RevLexOrder
   | RevAppearingOrder
 
-let default_solver = "boolector"
+let default_range_solver = "boolector"
 
-let default_algebra = Singular
+let default_algebra_solver = Singular
 
-let wordsize = ref 64
+let range_solver = ref default_range_solver
 
-let z3_path = ref "z3"
-let boolector_path = ref "boolector"
-let mathsat_path = ref "mathsat"
-let stp_path = ref "stp"
-let minisat_path = ref "minisat"
-let cryptominisat_path = ref "cryptominisat5"
-
-let smt_solver = ref default_solver
-let smt_args = ref ""
+let range_solver_args = ref ""
 
 let use_btor = ref false
 
@@ -38,9 +31,9 @@ let mathematica_path = ref "wolframscript"
 let macaulay2_path = ref "M2"
 let maple_path = ref "maple"
 
-let algebra_system = ref default_algebra
-let algebra_args = ref ""
-let string_of_algebra_system s =
+let algebra_solver = ref default_algebra_solver
+let algebra_solver_args = ref ""
+let string_of_algebra_solver s =
   match s with
   | Singular -> "singular"
   | Magma -> "magma"
@@ -48,6 +41,7 @@ let string_of_algebra_system s =
   | Mathematica -> "mathematica"
   | Macaulay2 -> "macaulay2"
   | Maple -> "maple"
+  | SMTSolver solver -> "smt:" ^ solver
 
 let apply_rewriting = ref true
 let polys_rewrite_replace_eexp = ref false
@@ -116,7 +110,6 @@ let rename_local = ref false
 
 let auto_cast = ref false
 let auto_cast_preserve_value = ref false
-let typing_file = ref None
 let use_binary_repr = ref false
 
 let keep_temp_files = ref false
@@ -129,3 +122,7 @@ let cleanup files =
   if not !keep_temp_files then List.iter Unix.unlink files
 
 let cryptoline_filename_extension = ".cl"
+
+let native_smtlib_expn_operator = ref None
+
+let two_phase_rewriting = ref false

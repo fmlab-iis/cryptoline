@@ -1,6 +1,42 @@
 
 import math
 
+ecut_counter = 0
+rcut_counter = 0
+
+def print_cut_helper (cut_name, condition = '') :
+    print ('{0} {1}'.format (cut_name, condition),
+           end = '' if condition == '' else ';\n')
+
+def print_ecut (condition = ''):
+    global ecut_counter
+    print ('\n(**************** CUT {0:3}, - *****************)\n'.
+           format (ecut_counter))
+    print_cut_helper ('ecut', condition)
+    ecut_counter += 1
+    
+def print_rcut (condition = ''):
+    global rcut_counter
+    print ('\n(**************** CUT -, {0:3} *****************)\n'.
+           format (rcut_counter))
+    print_cut_helper ('rcut', condition)
+    rcut_counter += 1
+    
+def print_cut (condition = ''):
+    global ecut_counter
+    global rcut_counter
+    print ('\n(**************** CUT {0:3}, {1:3} *****************)\n'.
+           format (ecut_counter, rcut_counter))
+    print_cut_helper ('cut', condition)
+    ecut_counter += 1
+    rcut_counter += 1
+    
+def get_ecut_counter () :
+    return (ecut_counter - 1)
+
+def get_rcut_counter () :
+    return (rcut_counter - 1)
+
 def num_to_bits (n, w):
     r = []
     for i in range (w):

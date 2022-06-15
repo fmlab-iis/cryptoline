@@ -5,17 +5,6 @@ open Qfbv.Common
 open Qfbv.Std
 open Common
 
-type 'a gen = 'a Common.gen
-type var_gen = Common.var_gen
-
-(** export functions *)
-
-let rec make_vgen v i = fun () -> More (v ^ "_" ^ string_of_int i, make_vgen v (i + 1))
-
-let vgen_of_spec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_spec s) SS.empty)) 0
-let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_rspec s) SS.empty)) 0
-let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
-
 (*
  * `apply_to_cuts ids vf def combine cuts` applies verifiction function vf to cuts with ID specified in ids.
  * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
@@ -81,20 +70,25 @@ let verify_safety_inc timeout f p qs hashopt =
       Solved Sat
     | Solved Unknown -> (res, revp, p)
     | _ ->
-       try
-         let _ = trace ("= Verifying safety condition =") in
-         let _ = trace ("ID: " ^ string_of_int id ^ "\n"
-                        ^ "Instruction: " ^ string_of_instr i) in
-         let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
-         let (revp', p') = find_program_prefix i revp p in
-         let fp = safety_assumptions f (List.rev revp') q hashopt in
-         match solve_simp ~timeout:timeout (fp@[q]) with
-         | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
-         | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
-         | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
-       with TimeoutException ->
-         let _ = vprintln "[TIMEOUT]" in
-         (add_unsolved (id, i, q) res, revp, p) in
+       let t1 = Unix.gettimeofday() in
+       let res =
+         try
+           let _ = trace ("= Verifying safety condition =") in
+           let _ = trace ("ID: " ^ string_of_int id ^ "\n"
+                          ^ "Instruction: " ^ string_of_instr i) in
+           let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
+           let (revp', p') = find_program_prefix i revp p in
+           let fp = safety_assumptions f (List.rev revp') q hashopt in
+           match solve_simp ~timeout:timeout (fp@[q]) with
+           | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
+           | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
+           | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
+         with TimeoutException ->
+           let _ = vprintln "[TIMEOUT]" in
+           (add_unsolved (id, i, q) res, revp, p) in
+       let t2 = Unix.gettimeofday() in
+       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+       res in
   let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
 
@@ -141,9 +135,13 @@ let verify_safety s hashopt =
         | None -> assert false in
       res
     else
+      let t1 = Unix.gettimeofday() in
       let g = bexp_program_safe s.rsprog in
       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-      solve_simp (fp@[g]) = Unsat in
+      let res = solve_simp (fp@[g]) = Unsat in
+      let t2 = Unix.gettimeofday() in
+      let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+      res in
   let res = apply_to_cuts !verify_scuts verify_safety_without_cuts true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
@@ -255,7 +253,7 @@ let write_mathematica_input ifile vars gen p =
 let write_macaulay2_input ifile vars gen p =
   let input_text =
     let (vars, gen, p, default_generator) =
-      let dummy_var = mkvar "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
+      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
       let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
       if no_var_in_generator then
         (dummy_var::vars,
@@ -312,54 +310,54 @@ let write_maple_input ifile vars gen p =
 
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Singular: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Singular: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SINGULAR:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
 let run_sage ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!sage_path ^ " " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Sage: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Sage: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SAGE:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
 let run_magma ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Magma: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Magma: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAGMA:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
 let run_mathematica ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Mathematica: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MATHEMATICA:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
 let run_macaulay2 ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Macaulay2: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MACAULAY2:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
 
 let run_maple ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Maple: " ^ string_of_float (t2 -. t1) ^ " seconds");
+  trace ("Execution time of Maple: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAPLE:";
   unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
   trace ""
@@ -425,7 +423,7 @@ let is_in_ideal vars ideal p =
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
   let res =
-    match !algebra_system with
+    match !algebra_solver with
     | Singular ->
        let _ = write_singular_input ifile vars ideal p in
        let _ = run_singular ifile ofile in
@@ -458,35 +456,19 @@ let is_in_ideal vars ideal p =
        let _ = run_maple ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
+    | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
   in
   let _ = cleanup [ifile; ofile] in
   res
 
 let verify_rspec_single_conjunct s hashopt =
-  let rec rbexp_implies_rspost re se  =
-    match re with
-    | Rand (re0, re1) ->
-       rbexp_implies_rspost re0 se || rbexp_implies_rspost re1 se
-    | _ -> re = se in
-  let rpost_in_assumes prog rspost =
-    List.exists (fun inst ->
-        match inst with
-        | Iassume (_, r) -> rbexp_implies_rspost r rspost
-        | _ -> false) prog in
   let verify_one s =
-    if rpost_in_assumes s.rsprog s.rspost then
-      true
-    else
-      let f = bexp_rbexp s.rspre in
-      let p = bexp_program s.rsprog in
-      let g = bexp_rbexp s.rspost in
-      let gs = split_bexp g in
-      List.for_all
-        (fun g ->
-          let _ = trace ("range condition: " ^ string_of_bexp g) in
-          solve_simp (f::p@[g]) = Unsat)
-        gs in
-  s.rspost = Rtrue ||
+    let f = bexp_rbexp s.rspre in
+    let p = bexp_program s.rsprog in
+    let g = bexp_rbexp s.rspost in
+    let _ = trace ("range condition: " ^ string_of_bexp g) in
+    solve_simp (f::p@[g]) = Unsat in
+  is_rspec_trivial s ||
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
@@ -504,34 +486,72 @@ let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   verify_rspec_with_cuts hashopt s
 
+let verify_entailments entailments =
+  List.fold_left
+    (fun res (post, vars, ideal, p) ->
+      if res then (
+        let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
+        if let _ = trace ("Try #0") in is_in_ideal vars [] p then true
+        else let _ = trace ("Try #1") in is_in_ideal vars ideal p
+      )
+      else res) true entailments
+
+let verify_espec_single_conjunct_ideal vgen s =
+  let (_, entailments) = polys_of_espec vgen s in
+  verify_entailments entailments
+
+let verify_espec_single_conjunct_smt solver vgen s =
+  let (_, smtlib) = smtlib_espec vgen s in
+  let ifile = tmpfile "inputfgb_" ".smt2" in
+  let ofile = tmpfile "outputfgb_" "" in
+  let _ = trace ("algebraic condition: " ^ string_of_ebexp s.espost) in
+  let _ =
+    let ch = open_out ifile in
+    let _ = output_string ch smtlib; close_out ch in
+    trace "INPUT TO SMT Solver:";
+    unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile);
+    trace "" in
+  let _ =
+    let t1 = Unix.gettimeofday() in
+    let _ = unix (solver ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+    let t2 = Unix.gettimeofday() in
+    trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2);
+    trace "OUTPUT FROM SMT SOLVER:";
+    unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+    trace "" in
+  let res = read_one_line ofile = "unsat" in
+  let _ = cleanup [ifile; ofile] in
+  res
+
 let verify_espec_single_conjunct vgen s hashopt =
-  let rec espre_implies_espost espre espost =
-    match espre with
-    | Eand (e0, e1) ->
-       espre_implies_espost e0 espost ||
-         espre_implies_espost e1 espost
-    | _ -> espre = espost in
-  let verify_one vgen s =
-    let (_, entailments) = polys_of_espec vgen s in
-    List.fold_left
-      (fun res (post, vars, ideal, p) ->
-        if res then (
-          let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
-          if let _ = trace ("Try #0") in is_in_ideal vars [] p then true
-          else let _ = trace ("Try #1") in is_in_ideal vars ideal p
-        )
-        else res) true entailments in
-  s.espost = Etrue ||
-  espre_implies_espost s.espre s.espost ||
+  let verify_one =
+    match !algebra_solver with
+    | SMTSolver solver -> verify_espec_single_conjunct_smt solver
+    | _ -> verify_espec_single_conjunct_ideal in
+  is_espec_trivial s ||
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let rec verify_espec_without_cuts hashopt vgen cid s =
-  match s.espost with
-  | Eand (e1, e2) ->
-     verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-       verify_espec_without_cuts hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-  | _ -> verify_espec_single_conjunct vgen s hashopt
+let verify_espec_without_cuts hashopt vgen cid s =
+  if !Options.Std.two_phase_rewriting then
+    let s = remove_trivial_epost s in
+    if s.espost = Etrue then true
+    else
+      let (s, sliced) =
+        match s.espost with
+        | Eand _ -> (s, false)
+        | _ -> (slice_espec_ssa s None, true) in
+      (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
+      let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+      verify_entailments entailments
+  else
+    let rec verify_ands hashopt vgen cid s =
+      match s.espost with
+      | Eand (e1, e2) ->
+         verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
+           verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
+      | _ -> verify_espec_single_conjunct vgen s hashopt in
+    verify_ands hashopt vgen cid s
 
 let verify_espec_with_cuts hashopt vgen s =
   apply_to_cuts !verify_ecuts (verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
@@ -556,7 +576,7 @@ let verify_eassert vgen s hashopt =
   let verify cid s = verify cid s.espre [] s.esprog in
   apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
 
-let verify_rassert _vgen s hashopt =
+let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
   let rec verify cid rpre rvisited p =
@@ -591,62 +611,6 @@ let verify_assert vgen s hashopt =
     | Icut (ecuts, rcuts)::tl -> verify (ecut_id + 1, rcut_id + 1) (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
     | hd::tl -> verify (ecut_id, rcut_id) (epre, rpre) (hd::evisited, hd::rvisited) tl in
   verify (0, 0) (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
-
-let redlog_of_espec es =
-  let eqn_of_eexp e =
-    let redlog_string_of_eunop op =
-      match op with
-      | Eneg -> "-" in
-    let redlog_string_of_ebinop op =
-      match op with
-      | Eadd -> "+"
-      | Esub -> "-"
-      | Emul -> "*"
-      | Epow -> "^" in
-    let rec redlog_string_of_eexp e =
-      match e with
-      | Evar v -> string_of_var v
-      | Econst n -> Z.to_string n
-      | Eunop (op, e) -> redlog_string_of_eunop op ^ " (" ^ redlog_string_of_eexp e ^ ")"
-      | Ebinop (op, e1, e2) -> "(" ^ redlog_string_of_eexp e1 ^ ") " ^ redlog_string_of_ebinop op ^ " (" ^ redlog_string_of_eexp e2 ^ ")" in
-    (* Change "c*(c-1)=0" to "c=0 or c=1". *)
-    (*
-      match e with
-    | BveBinop (BveMul, BveVar v, BveBinop (BveSub, BveVar v', BveConst c)) when v == v' && eq_big_int c (unit_big_int) -> "(" ^ v ^ " = 0 or " ^ v ^ " = 1)"
-    | _ -> redlog_string_of_eexp e ^ " = 0" *)
-    redlog_string_of_eexp e ^ " = 0" in
-  let vgen = vgen_of_espec es in
-  let (vgen, zssa) = bv2z_espec vgen es in
-  let (vgen, premises) =
-    let (vgen, _, pre_ps) =
-      polys_of_ebexp vgen zssa.ppre in
-    let (vgen, prog_ps) =
-      List.fold_left
-        (fun (vgen, res) e ->
-          let (vgen, _, ps) = polys_of_ebexp vgen e in
-          (vgen, res@ps)
-        ) (vgen, []) zssa.pprog in
-    (vgen, pre_ps@prog_ps) in
-  let (_vgen, tmps, premises, posts) =
-    let (premises, post) = rewrite_assignments_ebexp premises zssa.ppost in
-    let (vgen, tmps, posts) = polys_of_ebexp vgen post in
-    (vgen, tmps, premises, posts) in
-  let phi =
-    let conj es = String.concat " and " (List.map eqn_of_eexp es) in
-    match premises, tmps with
-    | [], [] -> conj posts
-    | [], _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, " ^ conj posts ^ ")"
-    | _, [] -> "(" ^ conj premises ^ ") impl (" ^ conj posts ^ ")"
-    | _ -> "ex({" ^ String.concat ", " (List.map string_of_var tmps) ^ "}, (" ^ conj premises ^ ") impl (" ^ conj posts ^ "))"
-  in
-  String.concat "\n" [ "load_package redlog;";
-                       "rlset Z;";
-                       "phi := " ^ phi ^ ";";
-                       "rlwqe phi;" ]
-
-let redlog_of_espec es =
-  let ess = cut_espec es in
-  String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
 
 (* The main verification process *)
 let verify_spec s =
@@ -714,9 +678,9 @@ let verify_spec s =
     let _ = vprint "Verifying range assertions:\t\t" in
     let b = if !jobs > 1 then
               (if !Options.Std.use_cli then WithLwt.verify_rassert_cli s
-               else WithLwt.verify_rassert vgen s hashopt)
+               else WithLwt.verify_rassert s hashopt)
             else
-              verify_rassert vgen s hashopt in
+              verify_rassert s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     (b, s, hashopt) in

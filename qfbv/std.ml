@@ -1,19 +1,5 @@
-(* open Big_int *)
-(* open Set *)
 open Options.Std
-(* open Ast.Cryptoline *)
 open Common
-(* open Lwt.Infix *)
-
-type result = Common.result
-
-type exp = Common.exp
-
-type bexp = Common.bexp
-
-let string_of_exp = Common.string_of_exp
-let string_of_bexp = Common.string_of_bexp
-
 
 let smtlib2_write_input file es =
   let input_text = smtlib2_imp_check_sat es in
@@ -35,7 +21,7 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
   let mk_task task =
     let t1 = Unix.gettimeofday() in
     let cmd =
-      !smt_solver ^ " " ^ !smt_args ^ " "
+      !range_solver ^ " " ^ !range_solver_args ^ " "
       ^ "\"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2> \"" ^ errfile ^ "\"" in
     let%lwt _ =
       match timeout with
@@ -48,10 +34,10 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
                      Lwt.return (Unix.WSIGNALED Sys.sigalrm) in
     let t2 = Unix.gettimeofday() in
     let%lwt _ = Options.WithLwt.log_lock () in
-    let%lwt _ = Options.WithLwt.trace ("Run " ^ !smt_solver ^ " with command: " ^ cmd) in
-    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !smt_solver ^ ": " ^ string_of_float (t2 -. t1) ^ " seconds") in
+    let%lwt _ = Options.WithLwt.trace ("Run " ^ !range_solver ^ " with command: " ^ cmd) in
+    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_running_time t1 t2) in
     let%lwt _ = Options.WithLwt.trace
-                  ("OUTPUT FROM " ^ !smt_solver ^ ":") in
+                  ("OUTPUT FROM " ^ !range_solver ^ ":") in
     let%lwt _ = Options.WithLwt.unix
                   ("cat " ^ ofile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.unix
@@ -97,7 +83,7 @@ let solve_simp ?timeout:timeout fs =
     try
       let _ =
         if !use_btor
-        then btor_write_input (new btor_manager !wordsize) ifile fs
+        then btor_write_input (new btor_manager) ifile fs
         else smtlib2_write_input ifile fs in
       let _ =
         match timeout with

@@ -42,9 +42,21 @@ INPUT_NUM = 256
 ANS_BASE = 0x7fffffffbb20 # (L0x7fffffffbb20 ~ L0x7fffffffbd1e)
 ANS_NUM = 256
 LEVEL3_TWIST = [62, 4236, 4600, 5805, 217, 7145, 738, 1115]
+LEVEL3_TWIST_INV = [1115, 738, 7145, 217, 5805, 4600, 4236, 62]
 LEVEL7_TWIST = [1, 1213, 7154, 7098, 1366, 2648, 2132, 2446]
+LEVEL7_TWIST_INV = [1, 1925, 7098, 7154, 2446, 2132, 2648, 1366]
 POLY_NAME = "inp_poly"
 POLY_VAR = "x"
+FIRST_ECUT_LEVEL = 4   # max 5
+SPLIT_ECUTS = [
+    True, # level 0
+    True, # level 1
+    True, # level 2
+    True, # level 3
+    True, # level 4
+    True, # level 5
+    True  # level 6
+    ]
 
 INIT_RANGES_7681 = [
     4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199, 4318, 4318, 4199, 4199
@@ -127,7 +139,7 @@ def make_eqmod(poly_name, poly_mult, ymms, coefs, mods, mon_per_line=4):
         "eqmod",
         "  {1}({0} * {0})".format(poly_name, "" if poly_mult == 1 else (str(poly_mult) + " * ")),
         "  (",
-        " +\n".join(join_chunks(["{0}*({1}**{2})".format(ymms[i], coefs[i], i) for i in range(len(ymms))], " + ", mon_per_line, indent=4)),
+        " +\n".join(join_chunks([ymms[i] if i == 0 else "{0}*({1}**{2})".format(ymms[i], coefs[i], i) for i in range(len(ymms))], " + ", mon_per_line, indent=4)),
         "  )",
         "  [{}]".format(", ".join(mods))
     ])
@@ -148,15 +160,30 @@ def str_ghost(typed_vars, easserts, rasserts):
              "];"
            ])
 
+def get_algebra(args, expn, mon_per_line=4):
+    return [
+        make_eqmod(poly_name, poly_mult, ymms, [POLY_VAR if poly_var_mult == 1 else "({0}*{1})".format(poly_var_mult, POLY_VAR)] * len(ymms),
+                       [str(P), "{0} - ({1})".format(POLY_VAR, m) if expn == 1 else "{0}**{2} - ({1})".format(POLY_VAR, m, expn)],
+                       mon_per_line) for (poly_name, poly_mult, poly_var_mult, ymms, m) in args
+    ]
+
+def str_algebra(args, expn, mon_per_line=4):
+    return ",\n".join(get_algebra(args, expn, mon_per_line))
+
 def str_main_args ():
     return "\n".join([
         "(* parameters *)\n",
-        ",\n".join(join_chunks(["sint16 f{:03d}".format(i) for i in range(INPUT_NUM)], ", ", 4))])
+        f"{POLY_VAR}@sint16,",
+        ",\n".join(join_chunks([f"{POLY_NAME}{i}@sint16" for i in range(256)], ", ", 8)) + ",",
+        ",\n".join(join_chunks(["sint16 f{:03d}".format(i) for i in range(INPUT_NUM)], ", ", 8))])
 
 def str_precondition_algebra ():
     return "\n".join([
         "(* algebraic precondition *)\n",
-        "true"])
+        "and [",
+        ",\n".join(join_chunks(["{0}{1}*{0}{1} = f{2:03d}".format(POLY_NAME, i + off*128, i%8*16 + i//8 + off*128) for off in range(2) for i in range(128)], ", ", 4)),
+        "]"
+        ])
 
 def str_precondition_range ():
     return "\n".join([
@@ -292,24 +319,6 @@ def str_twiddles ():
         res.append("\n".join(join_chunks(["mov L0x{:x} ({:6d})@sint16;".format(base + 2*i, arr[i]) for i in range (len(arr))], " ", 4)))
     return "\n".join(res)
 
-def str_init_poly_var():
-    return ("ghost {}@sint16 : true && true;").format(POLY_VAR)
-
-def str_init_poly(off):
-    return str_ghost([("{0}{1}".format(POLY_NAME, i + off*128), "sint16") for i in range(128)],
-                     ["{0}{1} * {0}{1} = {2}".format(POLY_NAME, i + off*128, "L0x{:x}".format(INPUT_BASE + (i%8*16 + i//8 + off*128)*2)) for i in range(128)],
-                     [])
-
-def get_algebra(args, expn, mon_per_line=4):
-    return [
-        make_eqmod(poly_name, poly_mult, ymms, [POLY_VAR] * len(ymms),
-                       [str(P), "{0} - ({1})".format(POLY_VAR, m) if expn == 1 else "{0}**{2} - ({1})".format(POLY_VAR, m, expn)],
-                       mon_per_line) for (poly_name, poly_mult, ymms, m) in args
-    ]
-
-def str_algebra(args, expn, mon_per_line=4):
-    return ",\n".join(get_algebra(args, expn, mon_per_line))
-
 def str_assertions(pairs):
     equalities = []
     for (ymm1, ymm2) in pairs:
@@ -321,14 +330,13 @@ level = 0
 off = 0
 ecut_id = 0
 rcut_id = 0
-level5_ecut_ids = [[], []]
-level6_ecut_ids = [[], []]
+level0t6_ecut_ids = [[[], []], [[], []], [[], []], [[], []], [[], []], [[], []], [[], []]]
 level6_rcut_ids = []
 level7_ecut_ids = []
 level7_rcut_ids = []
 
 def print_instr(instr):
-    global level, off, ecut_id, rcut_id, level5_ecut_ids, level6_ecut_ids, level6_rcut_ids, level7_ecut_ids, level7_rcut_ids
+    global level, off, ecut_id, rcut_id, level0t6_ecut_ids, level6_rcut_ids, level7_ecut_ids, level7_rcut_ids
 
     # ========== Level 0 ==========
     if instr.startswith("(* vmovdqa 0x40(%rsi),%ymm6"):
@@ -337,25 +345,41 @@ def print_instr(instr):
         print(str_assertions([(7, 12), (11, 13)]))
     elif instr.startswith("(* vpaddw %ymm6,%ymm14,%ymm4") and level == 0:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        # # Verified
-        # print("assert")
-        # print("and [")
-        # print(str_algebra(
-        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
-        #            2**(level+1),
-        #            make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][(i%8)//2], i//8, 1),
-        #            get_ntt_mod_level3to7(2, i%4)) for i in range(128)],
-        #     expn=1))
-        # print("] && true;\n")
-        #
-        print("\n(* rcut {0} *)\n".format(rcut_id))
-        print("rcut and [")
-        print(str_range(
+        algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       "{0}*{1}".format(str(LEVEL3_TWIST_INV[(i//32)+4*off]), str(LEVEL7_TWIST_INV[(i//4)%8])),
+                       make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][(i%8)//2], i//8, 1),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1)
+        ranges = str_range(
             ziplist(flatten([make_ymms([[14, 5], [6, 7], [15, 9], [10, 11]][i%4], i//4, 1) for i in range(64)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
+        if FIRST_ECUT_LEVEL <= level:
+            ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -378,26 +402,48 @@ def print_instr(instr):
         print(str_assertions([(11, 14)]))
     elif instr.startswith("(* vpsubw %ymm6,%ymm7,%ymm12") and level == 1:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        # # Verified
-        # level1_algebras = str_algebra(
-        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
-        #                2**(level+1),
-        #                make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][((i//4)%8)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
-        #     expn=1)
-        # print("assert")
-        # print("and [")
-        # print(level1_algebras)
-        # print("] && true;\n")
-        #
-        print("\n(* rcut {0} *)\n".format(rcut_id))
-        print("rcut and [")
-        print(str_range(
+        algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       str(LEVEL3_TWIST_INV[(i//32)+4*off]),
+                       make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][((i//4)%8)], i//32 * 4, 4),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1)
+        ranges = str_range(
             ziplist(flatten([make_ymms([[4], [5], [6], [7], [8], [13], [10], [11]][i%8], i//8 * 4, 4) for i in range(32)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL < level:
+            print("cut")
+            if SPLIT_ECUTS[level - 1]:
+                print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+            else:
+                print(",\n".join(algebras))
+            print("&& and [")
+        elif FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
+        if FIRST_ECUT_LEVEL <= level:
+            ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -406,26 +452,48 @@ def print_instr(instr):
         print(str_assertions([(7, 12), (13, 9), (11, 14)]))
     elif instr.startswith("(* vpsubw %ymm8,%ymm10,%ymm12") and level == 2:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        # # Verified
-        # level2_algebras = str_algebra(
-        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
-        #                2**(level+1),
-        #                make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][((i//8)%4)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
-        #     expn=1)
-        # print("assert")
-        # print("and [")
-        # print(level2_algebras)
-        # print("] && true;\n")
-        #
-        print("\n(* rcut {0} *)\n".format(rcut_id))
-        print("rcut and [")
-        print(str_range(
+        algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       str(LEVEL3_TWIST_INV[(i//32)+4*off]),
+                       make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][((i//8)%4)], i//32 * 4, 4),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1)
+        ranges = str_range(
             ziplist(flatten([make_ymms([[15, 5], [6, 7], [8, 9], [10, 11]][i%4], i//4 * 4, 4) for i in range(16)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL < level:
+            print("cut")
+            if SPLIT_ECUTS[level - 1]:
+                print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+            else:
+                print(",\n".join(algebras))
+            print("&& and [")
+        elif FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
+        if FIRST_ECUT_LEVEL <= level:
+            ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -434,25 +502,48 @@ def print_instr(instr):
         print(str_assertions([(10, 12), (11, 13)]))
     elif instr.startswith("(* vmovdqa 0x80(%rdx),%ymm13") and level == 3:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        # # Verified
-        # level3_algebras = str_algebra(
-        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
-        #                2**(level+1),
-        #                make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][((i//16)%2)], i//32 * 4, 4),
-        #                modP(LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
-        #     expn=1)
-        # print("assert and [")
-        # print(level3_algebras)
-        # print("] && true;\n")
-        #
-        print("\n(* rcut {0} *)\n".format(rcut_id))
-        print("rcut and [")
-        print(str_range(
+        algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       str(LEVEL3_TWIST_INV[(i//32)+4*off]),
+                       make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][((i//16)%2)], i//32 * 4, 4),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1)
+        ranges = str_range(
             ziplist(flatten([make_ymms([[4, 15, 6, 7], [8, 9, 10, 11]][i%2], i//2 * 4, 4) for i in range(8)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL < level:
+            print("cut")
+            if SPLIT_ECUTS[level - 1]:
+                print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+            else:
+                print(",\n".join(algebras))
+            print("&& and [")
+        elif FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
+        if FIRST_ECUT_LEVEL <= level:
+            ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -477,26 +568,49 @@ def print_instr(instr):
         print(str_assertions([(11, 7)]))
     elif (instr.startswith("(* vpermq $0x4e,0x200(%rdx),%ymm2") or instr.startswith("(* vpermq $0x4e,0x180(%rdx),%ymm2")) and level == 4:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        # # Verified
-        # level4_algebras = str_algebra(
-        #     args=[("{0}{1}".format(POLY_NAME, i + off*128),
-        #                2**(level+1),
-        #                make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][((i//32)%2)], i//64 * 8, 8),
-        #                modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
-        #     expn=1,
-        #     mon_per_line=8)
-        # print("assert and [")
-        # print(level4_algebras)
-        # print("] && true;\n")
-        #
-        print("\n(* rcut {0} *)\n".format(rcut_id))
-        print("rcut and [")
-        print(str_range(
+        algebras = get_algebra(
+            args=[("{0}{1}".format(POLY_NAME, i + off*128),
+                       2**(level+1),
+                       1,
+                       make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][((i//32)%2)], i//64 * 8, 8),
+                       modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
+            expn=1,
+            mon_per_line=8)
+        ranges = str_range(
             ziplist(flatten([make_ymms([[3, 5, 7, 9], [4, 6, 8, 10]][i%2], i//2 * 8, 8) for i in range(4)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL < level:
+            print("cut")
+            if SPLIT_ECUTS[level - 1]:
+                print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+            else:
+                print(",\n".join(algebras))
+            print("&& and [")
+        elif FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
+        if FIRST_ECUT_LEVEL <= level:
+            ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -505,32 +619,49 @@ def print_instr(instr):
         print(str_assertions([(4, 12), (6, 13), (8, 14), (10, 15)]))
     elif (instr.startswith("(* vmovdqa 0x1c0(%rdx),%ymm2") or instr.startswith("(* vmovdqa 0x140(%rdx),%ymm2")) and level == 5:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
-        print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
-        level5_summary_ecut_id = ecut_id
-        level5_algebras = get_algebra(
+        algebras = get_algebra(
             args=[("{0}{1}".format(POLY_NAME, i + off*128),
                        2**(level+1),
+                       1,
                        make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i//64], 0, 16),
                        modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
             expn=1,
             mon_per_line=16)
-        print("cut and [")
-        print(",\n".join(level5_algebras))
-        print("] && and [")
-        print(str_range(
+        ranges = str_range(
             ziplist(flatten([make_ymms([[11, 3, 7, 4], [5, 9, 6, 10]][i], 0, 16) for i in range(2)]), RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        summary_ecut_id = ecut_id
+        if FIRST_ECUT_LEVEL <= level:
+            print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+        else:
+            print("\n(* rcut {0} *)\n".format(rcut_id))
+        if FIRST_ECUT_LEVEL < level:
+            print("cut")
+            if SPLIT_ECUTS[level - 1]:
+                print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+            else:
+                print(",\n".join(algebras))
+            print("&& and [")
+        elif FIRST_ECUT_LEVEL == level:
+            print("cut and [")
+            print(",\n".join(algebras))
+            print("]{0} && and [".format("" if off == 0 else " prove with [precondition]"))
+        else:
+            print("rcut and [")
+        print(ranges)
         print("];\n")
-        ecut_id = ecut_id + 1
-        rcut_id = rcut_id + 1
-        for i in range(128):
-            print("\n(* ecut {0} *)\n".format(ecut_id))
-            print("ecut")
-            print(level5_algebras[i])
-            print("prove with [cuts [{0}]];\n".format(level5_summary_ecut_id))
-            level5_ecut_ids[off].append(ecut_id)
+        if FIRST_ECUT_LEVEL <= level:
             ecut_id = ecut_id + 1
+        rcut_id = rcut_id + 1
+        if FIRST_ECUT_LEVEL <= level and SPLIT_ECUTS[level]:
+            for i in range(128):
+                print("\n(* ecut {0} *)\n".format(ecut_id))
+                print("ecut")
+                print(algebras[i])
+                print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+                level0t6_ecut_ids[level][off].append(ecut_id)
+                ecut_id = ecut_id + 1
         level = level + 1
         print_comment("===== Start of level {}, off {} =====".format(level, off))
 
@@ -544,38 +675,42 @@ def print_instr(instr):
     elif (instr.startswith("(* vmovdqa 0x140(%rsi),%ymm6") or instr.startswith("(* vmovdqa (%rdi),%ymm4")) and level == 6:
         print_comment("===== End of Level {}, off {} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
-        level6_summary_ecut_id = ecut_id
-        level6_rcut_ids.append(rcut_id)
-        level6_algebras = get_algebra(
+        algebras = get_algebra(
             args=[("{0}{1}".format(POLY_NAME, i + off*128),
                        2**(level+1),
+                       1,
                        ["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)],
                        modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for i in range(128)],
             expn=1,
             mon_per_line=32)
-        print("cut")
-        print(",\n".join(["{0} prove with [cuts [{1}]]".format(level6_algebras[i], level5_ecut_ids[off][i]) for i in range(128)]))
-        print("&& and [")
-        print(str_range(
+        ranges = str_range(
             ziplist(["L0x{:x}".format(ANS_BASE + 2 * (j + off*128)) for j in range(128)], RANGES_7681[level][(off*128):(off*128+128)]),
             "<=s",
-            "<=s"))
+            "<=s")
+        level6_rcut_ids.append(rcut_id)
+        summary_ecut_id = ecut_id
+        print("cut")
+        if SPLIT_ECUTS[level - 1]:
+            print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i], level0t6_ecut_ids[level - 1][off][i]) for i in range(128)]))
+        else:
+            print(",\n".join(algebras))
+        print("&& and [")
+        print(ranges)
         print("];\n")
         ecut_id = ecut_id + 1
         rcut_id = rcut_id + 1
         for i in range(128):
             print("\n(* ecut {0} *)\n".format(ecut_id))
             print("ecut")
-            print(level6_algebras[i])
-            print("prove with [cuts [{0}]];\n".format(level6_summary_ecut_id))
-            level6_ecut_ids[off].append(ecut_id)
+            print(algebras[i])
+            print("prove with [cuts [{0}]];\n".format(summary_ecut_id))
+            level0t6_ecut_ids[level][off].append(ecut_id)
             ecut_id = ecut_id + 1
         if off == 0:
             print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
             print("cut true && and [")
             print(",\n".join(join_chunks(["(-{0})@16 <=s f{1:03d}, f{1:03d} <=s {0}@16".format(INIT_RANGES_7681[i+128], i%8*16 + i//8 + 128) for i in range(128)], ", ", 4)))
             print("] prove with [precondition];\n")
-            print(str_init_poly(off=1))
             ecut_id = ecut_id + 1
             rcut_id = rcut_id + 1
         if off == 1:
@@ -601,22 +736,24 @@ def print_instr(instr):
             print_comment("===== Start of Level {}, off {} =====".format(level, off))
         elif off == 2:
             print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
-            level7_ecut_ids.append(ecut_id)
-            level7_rcut_ids.append(rcut_id)
-            level7_algebras = get_algebra(
+            algebras = get_algebra(
                 args=[("{0}{1}".format(POLY_NAME, i + off*128),
                            2**(level+1),
+                           1,
                            ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
                            modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
                            expn=1,
                 mon_per_line=64)
-            print("cut")
-            print(",\n".join(["{0} prove with [cuts [{1}]]".format(level7_algebras[i+off*128], level6_ecut_ids[off][i]) for off in range(2) for i in range(128)]))
-            print("&& and [")
-            print(str_range(
+            ranges = str_range(
                 ziplist(["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)], RANGES_7681[level]),
                 "<=s",
-                "<=s"))
+                "<=s")
+            level7_ecut_ids.append(ecut_id)
+            level7_rcut_ids.append(rcut_id)
+            print("cut")
+            print(",\n".join(["{0} prove with [cuts [{1}]]".format(algebras[i+off*128], level0t6_ecut_ids[level - 1][off][i]) for off in range(2) for i in range(128)]))
+            print("&& and [")
+            print(ranges)
             print("];\n")
             ecut_id = ecut_id + 1
             rcut_id = rcut_id + 1
@@ -624,23 +761,25 @@ def print_instr(instr):
     print(instr)
 
 def str_post():
-    level7_algebras = get_algebra(
+    algebras = get_algebra(
         args=[("{0}{1}".format(POLY_NAME, i + off*128),
                    2**(level+1),
+                   1,
                    ["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)],
                    modP(LEVEL3_TWIST[i//32 + off*4] * LEVEL7_TWIST[(i//4)%8] * get_ntt_mod_level3to7(2, i%4), P)) for off in range(2) for i in range(128)],
                    expn=1,
         mon_per_line=64)
+    ranges = str_range(ziplist(["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)], RANGES_7681[level]),
+                      "<=s",
+                      "<=s")
     return "\n".join([
         "\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id),
         "{",
         "and [",
-        ",\n".join(level7_algebras),
-        "] prove with [cuts {0}] && and [".format(level7_ecut_ids),
-        str_range(ziplist(["L0x{:x}".format(ANS_BASE + 2 * j) for j in range(256)], RANGES_7681[level]),
-                      "<=s",
-                      "<=s"),
-        "] prove with [cuts {0}]".format(level7_rcut_ids),
+        ",\n".join(algebras),
+        "] && and [",
+        ranges,
+        "]",
         "}"
     ])
 
@@ -663,8 +802,6 @@ def main():
         print(str_inits())
         print(str_twiddles())
         print()
-        print(str_init_poly_var())
-        print(str_init_poly(off=0))
         # ========== program ==========
         print("\n\n#===== program start =====\n\n")
         for line in f.readlines():

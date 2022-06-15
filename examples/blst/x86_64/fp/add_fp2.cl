@@ -1,15 +1,16 @@
-(* quine: -v -isafety -jobs 10 -btor -no_carry_constraint add_fp2.cl
-Parsing Cryptoline file:                [OK]            0.002848 seconds
-Checking well-formedness:               [OK]            0.000435 seconds
-Transforming to SSA form:               [OK]            0.000183 seconds
-Rewriting assignments:                  [OK]            0.001074 seconds
-Verifying program safety:               [OK]            0.000118 seconds
-Verifying range assertions:             [OK]            0.741093 seconds
-Verifying range specification:          [OK]            0.038848 seconds
-Rewriting value-preserved casting:      [OK]            0.000014 seconds
-Verifying algebraic assertions:         [OK]            0.002981 seconds
-Verifying algebraic specification:      [OK]            0.070303 seconds
-Verification result:                    [OK]            0.858512 seconds
+(* quine: -v add_fp2.cl
+Parsing Cryptoline file:                [OK]            0.003625 seconds
+Checking well-formedness:               [OK]            0.000990 seconds
+Transforming to SSA form:               [OK]            0.000206 seconds
+Normalizing specification:              [OK]            0.000215 seconds
+Rewriting assignments:                  [OK]            0.000150 seconds
+Verifying program safety:               [OK]            0.032094 seconds
+Verifying range assertions:             [OK]            0.186728 seconds
+Verifying range specification:          [OK]            3.548427 seconds
+Rewriting value-preserved casting:      [OK]            0.000056 seconds
+Verifying algebraic assertions:         [OK]            0.000435 seconds
+Verifying algebraic specification:      [OK]            0.080511 seconds
+Verification result:                    [OK]            3.855008 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 a0, uint64 a1, uint64 a2, uint64 a3, uint64 a4, uint64 a5, uint64 b0, uint64 b1, uint64 b2, uint64 b3, uint64 b4, uint64 b5, uint64 m0, uint64 m1, uint64 m2, uint64 m3, uint64 m4, uint64 m5) =
@@ -17,11 +18,16 @@ proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uin
   true
   &&
   and
-	[
-    	 limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [a0, a1, a2, a3, a4, a5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
-    	 limbs 64 [b0, b1, b2, b3, b4, b5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
+	[m0 = 0xb9feffffffffaaab@64,
+     m1 = 0x1eabfffeb153ffff@64,
+     m2 = 0x6730d2a0f6b0f624@64,
+     m3 = 0x64774b84f38512bf@64,
+     m4 = 0x4b1ba7b6434bacd7@64,
+     m5 = 0x1a0111ea397fe69a@64,
+     limbs 64 [x0, x1, x2, x3, x4, x5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [y0, y1, y2, y3, y4, y5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [a0, a1, a2, a3, a4, a5] <u limbs 64 [m0, m1, m2, m3, m4, m5],
+     limbs 64 [b0, b1, b2, b3, b4, b5] <u limbs 64 [m0, m1, m2, m3, m4, m5]
   	]
 }
 
@@ -100,7 +106,7 @@ mov carryA carry;
 mov rbx r11;
 
 (* Explicitly define rdx here, rdx can be anything *)
-mov rdx 0@uint64;
+nondet rdx@uint64;
 
 (* sbb    %rdx,%rdx                                #! PC = 0x93824992307358 *)
 sbbs carry rdx rdx rdx carry;
@@ -271,5 +277,20 @@ mov L0x7fffffffdb18 r13;
 	(limbs 64 [m0, m1, m2, m3, m4, m5])
  ]
   &&
-  true
+ and [eqmod
+  	  (limbs 64 [x0, x1, x2, x3, x4, x5] + limbs 64 [y0, y1, y2, y3, y4, y5])
+      (limbs 64 [L0x7fffffffdb20, L0x7fffffffdb28, L0x7fffffffdb30, L0x7fffffffdb38, L0x7fffffffdb40, L0x7fffffffdb48])
+      (limbs 64 [m0, m1, m2, m3, m4, m5])
+      ,
+      eqmod
+      (limbs 64 [a0, a1, a2, a3, a4, a5] + limbs 64 [b0, b1, b2, b3, b4, b5])
+      (limbs 64 [L0x7fffffffdaf0, L0x7fffffffdaf8, L0x7fffffffdb00, L0x7fffffffdb08, L0x7fffffffdb10, L0x7fffffffdb18])
+      (limbs 64 [m0, m1, m2, m3, m4, m5]),
+
+      (limbs 64 [L0x7fffffffdb20, L0x7fffffffdb28, L0x7fffffffdb30, L0x7fffffffdb38, L0x7fffffffdb40, L0x7fffffffdb48]) <u
+      (limbs 64 [m0, m1, m2, m3, m4, m5]),
+
+      (limbs 64 [L0x7fffffffdb20, L0x7fffffffdb28, L0x7fffffffdb30, L0x7fffffffdb38, L0x7fffffffdb40, L0x7fffffffdb48]) <u
+      (limbs 64 [m0, m1, m2, m3, m4, m5])
+ ]
 }

@@ -2,4 +2,5 @@
   (name        typecheck)
   (libraries   ast)
   (flags       (:standard -w -3))
+  (public_name cryptoline.typecheck)
 )

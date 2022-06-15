@@ -52,7 +52,7 @@
 #	sub    $0x10,%rsp                               #! PC = 0x93824992242698
 #	mov    %rdi,-0x8(%rbp)                          #! EA = L0x7fffffffda48; PC = 0x93824992242702
 #	mov    %rsi,-0x10(%rbp)                         #! EA = L0x7fffffffda40; PC = 0x93824992242706
-	movabs $0x89f3fffcfffcfffd,%rdx                 #! PC = 0x93824992242710
+#	movabs $0x89f3fffcfffcfffd,%rdx                 #! PC = 0x93824992242710
 #	mov    -0x10(%rbp),%rsi                         #! EA = L0x7fffffffda40; Value = 0x00007fffffffdb50; PC = 0x93824992242720
 #	mov    -0x8(%rbp),%rax                          #! EA = L0x7fffffffda48; Value = 0x00007fffffffdaf0; PC = 0x93824992242724
 #	mov    %rdx,%rcx                                #! PC = 0x93824992242728
@@ -68,7 +68,7 @@
 #	push   %r15                                     #! PC = 0x93824992312076
 #	sub    $0x88,%rsp                               #! PC = 0x93824992312078
 #	mov    %rcx,(%rsp)                              #! EA = L0x7fffffffd980; PC = 0x93824992312085
-	mov    %rdx,%rcx                                #! PC = 0x93824992312089
+#	mov    %rdx,%rcx                                #! PC = 0x93824992312089
 #	mov    %rsi,0x10(%rsp)                          #! EA = L0x7fffffffd990; PC = 0x93824992312092
 #	movq   %rdi,%xmm0                               #! PC = 0x93824992312097
 #	#lea    0x30(%rsi),%rdx                          #! PC = 0x93824992312102

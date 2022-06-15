@@ -1,11 +1,40 @@
-__asm_ntt:
+#! [r$1c, #-$2c] = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! r1! = EA
+#! r$1c = %%r$1c
+#! s$1c = %%s$1c
+#! lr = %%lr
+
+#! add $1v, $2v -> add $1v $1v $2v
+#! addw $1v, %%r0, \#$2c ; $3c -> adds dc $1v r0 $2c@uint32
+#! addw $1v, %%r0, \#$2c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r0, \#$2c ; $3c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r0, \#$2c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r1, \#$2c -> adds dc $1v r0 $2c@uint32
+#! cmp.w $1v, $2v -> (* cmp.w $1v, $2v *)nop
+#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr.w $1v, $2ea -> mov $1v $2ea
+#! mul.w $1v, $2v, %%r2 -> mull dontcare $1v $2v r2; cast $1v@sint32 $1v
+#! smlal $1v, $2v, $3v, %%r3 -> smull tmpml_h tmpml_l $3v r3;\nadds carry $1v $1v tmpml_l; adc $2v $2v tmpml_h carry;\nassert eqmod $1v 0 (2**32) && true;\nassume $1v = 0 && true
+#! smlal $1v, $2v, $3v, $4v -> smull tmpml_h tmpml_l $3v $4v;\nadds carry $1v $1v tmpml_l; adc $2v $2v tmpml_h carry
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v
+#! str.w $1v, $2ea -> mov $2ea $1v
+#! sub.w $1v, $2v, $3v, lsl \#1 -> shl tmpx2 $3v 1; sub $1v $2v tmpx2
+#! vldmia $1ea, {%%s4-%%s18} -> mov  s4 $1ea[+0]; mov  s5 $1ea[+4]; mov  s6 $1ea[+8]; mov  s7 $1ea[+12];\nmov  s8 $1ea[+16]; mov  s9 $1ea[+20]; mov s10 $1ea[+24]; mov s11 $1ea[+28];\nmov s12 $1ea[+32]; mov s13 $1ea[+36]; mov s14 $1ea[+40]; mov s15 $1ea[+44];\nmov s16 $1ea[+48]; mov s17 $1ea[+52]; mov s18 $1ea[+56]
+#! vmov $1v, $2v, $3v, $4v -> mov $1v $3v; mov $2v $4v
+#! vmov $1v, $2v -> mov $1v $2v
+
+#__asm_ntt:
 # r0 = 0x20014898
 # r1 = 0x80631f8
 # r2 = 0x47d3cabf
 # r3 = 0x335ac1
 	#! -> SP = 0x20014890
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x80384c0
-	vpush	{s16-s31}                                 #! PC = 0x80384c4
+	#stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}#! EA = L0x20014890; PC = 0x80384c0
+	#vpush	{s16-s31}                                 #! PC = 0x80384c4
 	add.w	r1, r1, #12                               #! PC = 0x80384c8
 	vmov	s1, r1                                     #! PC = 0x80384cc
 	vmov	r1, s1                                     #! PC = 0x80384d0
@@ -23317,7 +23346,7 @@ __asm_ntt:
 	vmov	r12, s2                                    #! PC = 0x8038ad8
 	cmp.w	r0, r12                                   #! PC = 0x8038adc
 	#bne.w	0x803876c <_2_3_4_5>                     #! PC = 0x8038ae0
-	vpop	{s16-s31}                                  #! PC = 0x8038ae4
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x8038ae8
-	mov	r0, r7                                      #! PC = 0x8003a3e
-	str	r5, [sp, #0]                                #! EA = L0x20014890; PC = 0x8003a40
+	#vpop	{s16-s31}                                  #! PC = 0x8038ae4
+	#ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, r12, pc}#! EA = L0x20014868; Value = 0x20014898; PC = 0x8038ae8
+	#mov	r0, r7                                      #! PC = 0x8003a3e
+	#str	r5, [sp, #0]                                #! EA = L0x20014890; PC = 0x8003a40

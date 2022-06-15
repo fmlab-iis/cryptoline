@@ -1,26 +1,26 @@
-(* quine: -v -isafety -jobs 10 -no_carry_constraint -slicing -btor blst_fr_lshift-x86_64.cl
-Parsing Cryptoline file:                [OK]            0.001215 seconds
-Checking well-formedness:               [OK]            0.000256 seconds
-Transforming to SSA form:               [OK]            0.000125 seconds
-Rewriting assignments:                  [OK]            0.000209 seconds
-Verifying program safety:               [OK]            0.001262 seconds
-Verifying range specification:          [OK]            0.226598 seconds
-Rewriting value-preserved casting:      [OK]            0.000010 seconds
-Verifying algebraic specification:      [OK]            0.000097 seconds
-Verification result:                    [OK]            0.230194 seconds
+(* quine: -v blst_fr_lshift-x86_64.cl
+Parsing Cryptoline file:                [OK]            0.001281 seconds
+Checking well-formedness:               [OK]            0.000263 seconds
+Transforming to SSA form:               [OK]            0.000121 seconds
+Normalizing specification:              [OK]            0.000129 seconds
+Rewriting assignments:                  [OK]            0.000144 seconds
+Verifying program safety:               [OK]            0.054972 seconds
+Verifying range specification:          [OK]            0.380625 seconds
+Rewriting value-preserved casting:      [OK]            0.000021 seconds
+Verifying algebraic specification:      [OK]            0.000376 seconds
+Verification result:                    [OK]            0.438432 seconds
 *)
 
 proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 m0, uint64 m1, uint64 m2, uint64 m3) =
 {
   true
   &&
-  and
-	[
-	 m0 = 0xffffffff00000001@64,
-	 m1 = 0x53bda402fffe5bfe@64,
-	 m2 = 0x3339d80809a1d805@64,
-	 m3 = 0x73eda753299d7d48@64,
-    	 limbs 64 [x0, x1, x2, x3] <u limbs 64 [m0, m1, m2, m3]
+  and[
+	  m0 = 0xffffffff00000001@64,
+	  m1 = 0x53bda402fffe5bfe@64,
+	  m2 = 0x3339d80809a1d805@64,
+	  m3 = 0x73eda753299d7d48@64,
+      limbs 64 [x0, x1, x2, x3] <u limbs 64 [m0, m1, m2, m3]
   	]
 }
 
@@ -62,7 +62,7 @@ mov rsi r9;
 adcs carry r11 r11 r11 carry;
 
 (* Explicitly define r12 here, r12 can be anything *)
-mov r12 0@uint64;
+nondet r12@uint64;
 
 (* sbb    %r12,%r12                                #! PC = 0x93824992306070 *)
 sbbs carry r12 r12 r12 carry;
@@ -113,13 +113,12 @@ mov c3 L0x7fffffffdb88;
 {
   true
   &&
-  eqmod
-  	(limbs 64 [x0, x1, x2, x3] 
-	 *
-	 2@256)
+  and[eqmod
+  	  limbs 64 [x0, x1, x2, x3] * 2@256
+	  limbs 64 [c0, c1, c2, c3]
+	  limbs 64 [m0, m1, m2, m3],
 
-	(limbs 64 [c0, c1, c2, c3])
-	
-	(limbs 64 [m0, m1, m2, m3])
+      limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
+      ]
 }
 
