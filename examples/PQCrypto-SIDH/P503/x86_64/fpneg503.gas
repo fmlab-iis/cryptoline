@@ -1,3 +1,44 @@
+#! $1c(%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! $1c(%rip) = %%EA
+#! (%rdx) = %%EA
+#! (%rdi) = %%EA
+#! (%rsi) = %%EA
+#! (%rip) = %%EA
+#! %rax = %%rax
+#! %rdx = %%rdx
+#! %rcx = %%rcx
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %edx = %%edx
+#! %r$1c = %%r$1c
+#! %cl = %%cl
+
+#! fpneg503: -> nop
+#! endbr64 .* -> nop
+#! push .* -> nop
+#! pop .* -> nop
+#! xor %%r9d, %%r9d -> mov r9 0@uint64
+#! xor %%r11d, %%r11d -> mov r11 0@uint64
+#! xor %%edx, %%edx -> mov rdx 0@uint64
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v -> mov $2v $1v
+#! add $1ea, $2v -> adds carry $2v $2v $1ea
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+#! adc $1ea, $2v -> adcs carry $2v $2v $1ea carry
+#! adc $1v, $2v -> adcs carry $2v $2v $1v@uint64 carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! and $1v, $2v -> and uint64 $2v $1v $2v
+#! shr $1c, $2v -> split $2v dontcare $2v $1c
+
 fpneg503:
 # %rdi = 0x7fffffffdd60
 # %rsi = 0x7fffffffdd60
