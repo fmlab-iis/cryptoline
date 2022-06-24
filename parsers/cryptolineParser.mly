@@ -1884,11 +1884,14 @@ eexp:
   | eexp POWOP const                              { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
                                                       let i = $3 cm in
+                                                      (* there are examples that have extremely large exponents *)
+                                                      (*
                                                       match e with
                                                       | Econst n ->
                                                          let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
                                                          Econst c
                                                       | _ ->
+                                                      *)
                                                          if Z.equal i Z.zero then Econst Z.one
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
@@ -1919,11 +1922,14 @@ eexp_no_unary:
   | eexp_no_unary POWOP const                     { fun cm vm ym gm ->
                                                       let e = $1 cm vm ym gm in
                                                       let i = $3 cm in
+                                                      (* there are examples that have extremely large exponents *)
+                                                      (*
                                                       match e with
                                                       | Econst n ->
                                                          let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
                                                          Econst c
                                                       | _ ->
+                                                      *)
                                                          if Z.equal i Z.zero then Econst Z.one
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)

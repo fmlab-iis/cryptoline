@@ -321,7 +321,7 @@ let limbs r es = limbs_rec r 0 es
 let limbs r es =
   let mons = List.mapi (fun i e ->
                  if i = 0 then e
-                 else emul e (econst (e2pow (i * r)))) es in
+                 else emul e (epow (econst z_two) (econst (Z.mul (Z.of_int i) (Z.of_int r))))) es in
   match add_assoc with
   | LeftAssoc -> eadds mons
   | RightAssoc -> eadds (List.rev mons)
@@ -1129,7 +1129,7 @@ let string_of_program ?insert_nop:(insert=true) ?typ:(typ=false) p =
     | [] -> if insert then [Inop]
             else p
     | _ -> p in
-  String.concat "\n" (List.map (fun i -> string_of_instr ~typ:typ i) p)
+  String.concat "\n" (List.rev_map (fun i -> string_of_instr ~typ:typ i) (List.rev p))
 
 let string_of_spec ?typ:(typ=false) s =
   if s.sepwss = [] && s.srpwss = [] then
