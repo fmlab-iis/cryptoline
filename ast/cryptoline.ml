@@ -3422,7 +3422,7 @@ let normalize_program ?num_ecuts ?num_rcuts p =
             failwith("Index out of bound in " ^ string_of_instr i ^ ": " ^ string_of_int id)
          )
       | _ -> i in
-    List.map update_instruction p in
+    List.rev_map update_instruction (List.rev p) in
   normalize_prove_with p
 
 (**
