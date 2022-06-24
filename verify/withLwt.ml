@@ -295,25 +295,30 @@ let write_macaulay2_input ifile vars gen p =
   Lwt.return_unit
 
 let write_maple_input ifile vars gen p =
+  let const_gen =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
+    let const_gen =
+      let t = Hashtbl.create 10 in
+      let _ = List.iter (fun c -> Hashtbl.replace t c c) (List.map eval_eexp_const const_gen) in
+      Hashtbl.fold (fun k _ r -> k::r) t [] in
+    match const_gen with
+    | [] -> Econst Z.zero
+    | c::[] -> Econst c
+    | _ -> failwith("Multi-moduli is not supported when using maple.") in
   let input_text =
     let varseq =
       match vars with
       | [] -> "x"
       | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
     "interface(prettyprint=0):\n"
     ^ "with(PolynomialIdeals):\n"
     ^ "with(Groebner):\n"
     ^ "Ord := plex(" ^ varseq ^ "):\n"
-    ^ "B := [" ^ generator ^ "]:\n"
     ^ "g := " ^ poly ^ ":\n"
-    ^ "if member(g, B) then\n"
-    ^ "  res := true\n"
-    ^ "else\n"
-    ^ "  J := PolynomialIdeal(B):\n"
-    ^ "  res := IdealMembership(g, J):\n"
-    ^ "end if:\n"
+    ^ "J := PolynomialIdeal([], characteristic=" ^ magma_of_eexp const_gen ^ "):\n"
+    ^ "res := IdealMembership(g, J):\n"
     ^ "res;\n"
     ^ "quit:\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
