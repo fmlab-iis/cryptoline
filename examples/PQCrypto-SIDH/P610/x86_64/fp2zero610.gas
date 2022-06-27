@@ -1,0 +1,22 @@
+fp2zero610:
+# %rdi = 0x7fffffffd330
+# %rsi = 0x7fffffffd510
+# %rdx = 0x-1
+# %rcx = 0x-33066e454282faff
+# %r8  = 0x35cf7e8a091ff357
+# %r9  = 0x64ab65f421884a55
+	#! -> SP = 0x7fffffffd238
+	endbr64                                         #! PC = 0x555555558630
+	vpxor  %xmm0,%xmm0,%xmm0                        #! PC = 0x555555558634
+	vmovups %xmm0,(%rdi)                            #! EA = L0x7fffffffd330; PC = 0x555555558638
+	vmovups %xmm0,0x10(%rdi)                        #! EA = L0x7fffffffd340; PC = 0x55555555863c
+	vmovups %xmm0,0x20(%rdi)                        #! EA = L0x7fffffffd350; PC = 0x555555558641
+	vmovups %xmm0,0x30(%rdi)                        #! EA = L0x7fffffffd360; PC = 0x555555558646
+	vmovups %xmm0,0x40(%rdi)                        #! EA = L0x7fffffffd370; PC = 0x55555555864b
+	vmovups %xmm0,0x50(%rdi)                        #! EA = L0x7fffffffd380; PC = 0x555555558650
+	vmovups %xmm0,0x60(%rdi)                        #! EA = L0x7fffffffd390; PC = 0x555555558655
+	vmovups %xmm0,0x70(%rdi)                        #! EA = L0x7fffffffd3a0; PC = 0x55555555865a
+	vmovups %xmm0,0x80(%rdi)                        #! EA = L0x7fffffffd3b0; PC = 0x55555555865f
+	vmovups %xmm0,0x90(%rdi)                        #! EA = L0x7fffffffd3c0; PC = 0x555555558667
+	#! <- SP = 0x7fffffffd238
+	#retq                                           #! PC = 0x55555555866f

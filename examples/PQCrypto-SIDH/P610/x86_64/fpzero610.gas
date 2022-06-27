@@ -1,0 +1,17 @@
+fpzero610:
+# %rdi = 0x7fffffffd6a0
+# %rsi = 0x7fffffffd790
+# %rdx = 0x-1
+# %rcx = 0x64eb2582
+# %r8  = 0x-376d1ce8c3ad2383
+# %r9  = 0x0
+	#! -> SP = 0x7fffffffd5f8
+	endbr64                                         #! PC = 0x555555558320
+	vpxor  %xmm0,%xmm0,%xmm0                        #! PC = 0x555555558324
+	vmovups %xmm0,(%rdi)                            #! EA = L0x7fffffffd6a0; PC = 0x555555558328
+	vmovups %xmm0,0x10(%rdi)                        #! EA = L0x7fffffffd6b0; PC = 0x55555555832c
+	vmovups %xmm0,0x20(%rdi)                        #! EA = L0x7fffffffd6c0; PC = 0x555555558331
+	vmovups %xmm0,0x30(%rdi)                        #! EA = L0x7fffffffd6d0; PC = 0x555555558336
+	vmovups %xmm0,0x40(%rdi)                        #! EA = L0x7fffffffd6e0; PC = 0x55555555833b
+	#! <- SP = 0x7fffffffd5f8
+	#retq                                           #! PC = 0x555555558340
