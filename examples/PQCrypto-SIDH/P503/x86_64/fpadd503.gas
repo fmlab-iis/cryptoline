@@ -31,7 +31,7 @@
 #! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
 #! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
 #! and $1v, $2v -> and uint64 $2v $1v $2v
-#! setb %%cl -> mov carry_setb carry;\nand uint64 rcx rcx 0xFFFFFFFFFFFFFFFE@uint64;\nadc rcx rcx 0@uint64 carry
+#! setb %%cl -> and uint64 rcx rcx 0xFFFFFFFFFFFFFF00@uint64;\nadc rcx rcx 0@uint64 carry
 #! bt \$0x0, %%rcx -> split dontcare carry rcx 1;\nvpc carry@uint1 carry
 
 fpadd503:

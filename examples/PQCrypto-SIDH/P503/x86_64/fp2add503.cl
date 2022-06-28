@@ -1,23 +1,22 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fp2add503.cl
-Parsing Cryptoline file:		[OK]		0.004651 seconds
-Checking well-formedness:		[OK]		0.001819 seconds
-Transforming to SSA form:		[OK]		0.000327 seconds
-Normalizing specification:		[OK]		0.000390 seconds
-Rewriting assignments:			[OK]		0.000483 seconds
+Parsing Cryptoline file:		[OK]		0.004776 seconds
+Checking well-formedness:		[OK]		0.001764 seconds
+Transforming to SSA form:		[OK]		0.000133 seconds
+Normalizing specification:		[OK]		0.000146 seconds
+Rewriting assignments:			[OK]		0.000179 seconds
 Verifying program safety:
 	 Cut 0
 	     Round 1 (4 safety conditions, timeout = 14400 seconds)
 		 Safety condition #1	[OK]
 		 Safety condition #3	[OK]
-		 Safety condition #2	[OK]
 		 Safety condition #0	[OK]
-	 Overall			[OK]		0.179414 seconds
-Verifying range specification:		[OK]		9.763476 seconds
-Rewriting value-preserved casting:	[OK]		0.000076 seconds
-Verifying algebraic specification:	[OK]		0.000363 seconds
-Verification result:			[OK]		9.951585 seconds
+		 Safety condition #2	[OK]
+	 Overall			[OK]		0.185415 seconds
+Verifying range specification:		[OK]		9.700134 seconds
+Rewriting value-preserved casting:	[OK]		0.000114 seconds
+Verifying algebraic specification:	[OK]		0.000449 seconds
+Verification result:			[OK]		9.893554 seconds
 *)
-
 
 (*
 const uint64_t p503[NWORDS64_FIELD]              = { 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xABFFFFFFFFFFFFFF,
@@ -224,8 +223,7 @@ mov L0x7fffffffdb30 r10;
 (* mov    %r11,0x18(%rdx)                          #! EA = L0x7fffffffdb38; PC = 0x5555555626a2 *)
 mov L0x7fffffffdb38 r11;
 (* setb   %cl                                      #! PC = 0x5555555626a6 *)
-mov carry_setb carry;
-and uint64 rcx rcx 0xFFFFFFFFFFFFFFFE@uint64;
+and uint64 rcx rcx 0xFFFFFFFFFFFFFF00@uint64;
 adc rcx rcx 0@uint64 carry;
 (* mov    0x6d70(%rip),%r8        # 0x555555569420 <p503x2+32>#! EA = L0x555555569420; Value = 0x2610b7b44423cf41; PC = 0x5555555626a9 *)
 mov r8 L0x555555569420;
@@ -365,8 +363,7 @@ mov L0x7fffffffdb70 r10;
 (* mov    %r11,0x18(%rdx)                          #! EA = L0x7fffffffdb78; PC = 0x5555555626a2 *)
 mov L0x7fffffffdb78 r11;
 (* setb   %cl                                      #! PC = 0x5555555626a6 *)
-mov carry_setb carry;
-and uint64 rcx rcx 0xFFFFFFFFFFFFFFFE@uint64;
+and uint64 rcx rcx 0xFFFFFFFFFFFFFF00@uint64;
 adc rcx rcx 0@uint64 carry;
 (* mov    0x6d70(%rip),%r8        # 0x555555569420 <p503x2+32>#! EA = L0x555555569420; Value = 0x2610b7b44423cf41; PC = 0x5555555626a9 *)
 mov r8 L0x555555569420;
@@ -457,4 +454,3 @@ mov c17 L0x7fffffffdb98;
                           $p503_4@64, $p503_5@64, $p503_6@64, $p503_7@64 ] - 1@512)
   ]
 }
-

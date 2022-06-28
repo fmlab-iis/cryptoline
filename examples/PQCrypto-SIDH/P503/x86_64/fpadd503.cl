@@ -1,21 +1,20 @@
-(* on frege: -v -jobs 24 -isafety fpadd503.cl
-Parsing Cryptoline file:		[OK]		0.002402 seconds
-Checking well-formedness:		[OK]		0.000493 seconds
-Transforming to SSA form:		[OK]		0.000243 seconds
-Normalizing specification:		[OK]		0.000242 seconds
-Rewriting assignments:			[OK]		0.000316 seconds
+(* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fpadd503.cl
+Parsing Cryptoline file:		[OK]		0.002497 seconds
+Checking well-formedness:		[OK]		0.000530 seconds
+Transforming to SSA form:		[OK]		0.000260 seconds
+Normalizing specification:		[OK]		0.000272 seconds
+Rewriting assignments:			[OK]		0.000340 seconds
 Verifying program safety:
 	 Cut 0
-	     Round 1 (2 safety conditions, timeout = 300 seconds)
+	     Round 1 (2 safety conditions, timeout = 14400 seconds)
 		 Safety condition #1	[OK]
 		 Safety condition #0	[OK]
-	 Overall			[OK]		0.150816 seconds
-Verifying range specification:		[OK]		9.900199 seconds
-Rewriting value-preserved casting:	[OK]		0.000041 seconds
-Verifying algebraic specification:	[OK]		0.000371 seconds
-Verification result:			[OK]		10.055644 seconds
+	 Overall			[OK]		0.155808 seconds
+Verifying range specification:		[OK]		9.541460 seconds
+Rewriting value-preserved casting:	[OK]		0.000042 seconds
+Verifying algebraic specification:	[OK]		0.000315 seconds
+Verification result:			[OK]		9.702127 seconds
 *)
-
 
 (*
 const uint64_t p503[NWORDS64_FIELD]              = { 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF, 0xABFFFFFFFFFFFFFF,
@@ -184,8 +183,7 @@ mov L0x7fffffffdd70 r10;
 (* mov    %r11,0x18(%rdx)                          #! EA = L0x7fffffffdd78; PC = 0x5555555626a2 *)
 mov L0x7fffffffdd78 r11;
 (* setb   %cl                                      #! PC = 0x5555555626a6 *)
-mov carry_setb carry;
-and uint64 rcx rcx 0xFFFFFFFFFFFFFFFE@uint64;
+and uint64 rcx rcx 0xFFFFFFFFFFFFFF00@uint64;
 adc rcx rcx 0@uint64 carry;
 (* mov    0x6d70(%rip),%r8        # 0x555555569420 <p503x2+32>#! EA = L0x555555569420; Value = 0x2610b7b44423cf41; PC = 0x5555555626a9 *)
 mov r8 L0x555555569420;
@@ -256,4 +254,3 @@ mov c7 L0x7fffffffdd98;
                           $p503_4@64, $p503_5@64, $p503_6@64, $p503_7@64 ] - 1@512)
   ]
 }
-
