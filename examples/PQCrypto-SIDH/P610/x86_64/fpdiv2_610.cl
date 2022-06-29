@@ -59,12 +59,9 @@ mov L0x55555556de98 $p610_7@uint64;
 mov L0x55555556dea0 $p610_8@uint64;
 mov L0x55555556dea8 $p610_9@uint64;
 
-nondet r11@uint64;
-nondet r9@uint64;
 nondet rdi@uint64;
 nondet rsi@uint64;
 nondet rsp@uint64;
-nondet u@uint64;
 
 (* ===== Program ===== *)
 
