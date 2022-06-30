@@ -850,7 +850,7 @@ sbcs carry x25 x25 x11 carry;
 (* sbc	x28, x28, xzr                               #! PC = 0xaaaaaaab622c *)
 sbcs dontcare x28 x28 0@uint64 carry;
 
-(* NOTE: cannot carry *)
+(* NOTE: must carry *)
 (* TODO: assert true && dontcare = 1@1; *)
 assume dontcare = 1 && true;
 
