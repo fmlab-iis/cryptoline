@@ -220,23 +220,17 @@ let illformed_instr_reason vs cs gs lno i =
       | Imul (v, a1, a2) ->
        [defined_atomics [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Iadds (c, v, a1, a2)
-      | Iaddr (c, v, a1, a2)
       | Isubc (c, v, a1, a2)
       | Isubb (c, v, a1, a2)
-      | Isubr (c, v, a1, a2)
-      | Imuls (c, v, a1, a2)
-      | Imulr (c, v, a1, a2) ->
+      | Imuls (c, v, a1, a2) ->
        [check_diff_lvs lno c v; defined_atomics [a1; a2]; check_bit_var lno c; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Iadc (v, a1, a2, y)
       | Isbc (v, a1, a2, y)
       | Isbb (v, a1, a2, y) ->
        [defined_atomics [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
     | Iadcs (c, v, a1, a2, y)
-      | Iadcr (c, v, a1, a2, y)
       | Isbcs (c, v, a1, a2, y)
-      | Isbcr (c, v, a1, a2, y)
-      | Isbbs (c, v, a1, a2, y)
-      | Isbbr (c, v, a1, a2, y) ->
+      | Isbbs (c, v, a1, a2, y) ->
        [check_diff_lvs lno c v; defined_atomics [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
     | Imull (vh, vl, a1, a2) ->
        [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atomics [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]

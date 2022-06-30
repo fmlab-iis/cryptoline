@@ -210,11 +210,6 @@ let bexp_adds c v a1 a2 =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_add ~extend:true w a1 a2)),
      Eq (w, exp_var v, Low (w, 1, exp_add ~extend:true w a1 a2)))
-let bexp_addr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_add ~extend:false w a1 a2))
 let bexp_adc v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_adc ~extend:false w a1 a2 y)
@@ -223,11 +218,6 @@ let bexp_adcs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_adc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_adc ~extend:true w a1 a2 y)))
-let bexp_adcr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_adc ~extend:false w a1 a2 y))
 let bexp_sub v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
@@ -241,11 +231,6 @@ let bexp_subb c v a1 a2 =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_subb ~extend:true w a1 a2)),
      Eq (w, exp_var v, Low (w, 1, exp_subb ~extend:true w a1 a2)))
-let bexp_subr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_subb ~extend:false w a1 a2))
 let bexp_sbc v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_sbc ~extend:false w a1 a2 y)
@@ -254,11 +239,6 @@ let bexp_sbcs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_sbc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbc ~extend:true w a1 a2 y)))
-let bexp_sbcr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_sbc ~extend:false w a1 a2 y))
 let bexp_sbb v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_sbb ~extend:false w a1 a2 y)
@@ -267,11 +247,6 @@ let bexp_sbbs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_sbb ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbb ~extend:true w a1 a2 y)))
-let bexp_sbbr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_sbb ~extend:false w a1 a2 y))
 let bexp_mul v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
@@ -301,11 +276,6 @@ let bexp_muls c v a1 a2 =
         Eq (w,
             exp_var v,
             Low (w, w, exp_smul ~extend:true w a1 a2)))
-let bexp_mulr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_umul ~extend:false w a1 a2))
 let bexp_mull vh vl a1 a2 =
   match vh.vtyp with
   | Tuint w ->
@@ -425,23 +395,17 @@ let bexp_instr i =
   | Inop -> True
   | Iadd (v, a1, a2) -> bexp_add v a1 a2
   | Iadds (c, v, a1, a2) -> bexp_adds c v a1 a2
-  | Iaddr (c, v, a1, a2) -> bexp_addr c v a1 a2
   | Iadc (v, a1, a2, y) -> bexp_adc v a1 a2 y
   | Iadcs (c, v, a1, a2, y) -> bexp_adcs c v a1 a2 y
-  | Iadcr (c, v, a1, a2, y) -> bexp_adcr c v a1 a2 y
   | Isub (v, a1, a2) -> bexp_sub v a1 a2
   | Isubc (c, v, a1, a2) -> bexp_subc c v a1 a2
   | Isubb (c, v, a1, a2) -> bexp_subb c v a1 a2
-  | Isubr (c, v, a1, a2) -> bexp_subr c v a1 a2
   | Isbc (v, a1, a2, y) -> bexp_sbc v a1 a2 y
   | Isbcs (c, v, a1, a2, y) -> bexp_sbcs c v a1 a2 y
-  | Isbcr (c, v, a1, a2, y) -> bexp_sbcr c v a1 a2 y
   | Isbb (v, a1, a2, y) -> bexp_sbb v a1 a2 y
   | Isbbs (c, v, a1, a2, y) -> bexp_sbbs c v a1 a2 y
-  | Isbbr (c, v, a1, a2, y) -> bexp_sbbr c v a1 a2 y
   | Imul (v, a1, a2) -> bexp_mul v a1 a2
   | Imuls (c, v, a1, a2) -> bexp_muls c v a1 a2
-  | Imulr (c, v, a1, a2) -> bexp_mulr c v a1 a2
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
@@ -597,10 +561,6 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint _w -> True
       | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
-  | Iaddr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadd_safe w a1 a2
-      | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
   | Iadc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_uadc_safe w a1 a2 y
@@ -608,10 +568,6 @@ let bexp_instr_safe i =
   | Iadcs (_, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint _w -> True
-      | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
-  | Iadcr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadc_safe w a1 a2 y
       | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
   | Isub (v, a1, a2) ->
      (match v.vtyp with
@@ -625,10 +581,6 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint _w -> True
       | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usub_safe w a1 a2
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
   | Isbc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_usbc_safe w a1 a2 y
@@ -636,10 +588,6 @@ let bexp_instr_safe i =
   | Isbcs (_, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
-  | Isbcr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbc_safe w a1 a2 y
       | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
   | Isbb (v, a1, a2, y) ->
      (match v.vtyp with
@@ -649,19 +597,11 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint _w -> True
       | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
-  | Isbbr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbb_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
   | Imul (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_umul_safe w a1 a2
       | Tsint w -> bexp_atomic_smul_safe w a1 a2)
   | Imuls (_, _, _a1, _a2) -> True
-  | Imulr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_umul_safe w a1 a2
-      | Tsint w -> bexp_atomic_smul_safe w a1 a2)
   | Imull _
     | Imulj _ -> True
   | Isplit _ -> True
@@ -796,9 +736,6 @@ let bv2z_instr vgen i =
       | Tuint w -> (vgen, [bv2z_split c v (eadd (bv2z_atomic a1) (bv2z_atomic a2)) w]
                           @(carry_constr c))
       | Tsint _ -> (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2))]))
-  | Iaddr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.one)])
   | Iadc (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
   | Iadcs (c, v, a1, a2, y) ->
@@ -806,9 +743,6 @@ let bv2z_instr vgen i =
       | Tuint w -> (vgen, [bv2z_split c v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) w]
                           @(carry_constr c))
       | Tsint _ -> (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
-  | Iadcr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y));
-             bv2z_assign c (econst Z.zero)])
   | Isub (v, a1, a2) ->
      (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))])
   | Isubc (c, v, a1, a2) ->
@@ -821,9 +755,6 @@ let bv2z_instr vgen i =
       | Tuint w -> (vgen, [bv2z_join (evar v) (evar c) (esub (bv2z_atomic a1) (bv2z_atomic a2)) w]
                           @(carry_constr c))
       | Tsint _w -> (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
-  | Isubr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.zero)])
   | Isbc (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))])
   | Isbcs (c, v, a1, a2, y) ->
@@ -832,9 +763,6 @@ let bv2z_instr vgen i =
          (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y))) w]
                 @(carry_constr c))
       | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))]))
-  | Isbcr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)));
-             bv2z_assign c (econst Z.zero)])
   | Isbb (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
   | Isbbs (c, v, a1, a2, y) ->
@@ -842,16 +770,10 @@ let bv2z_instr vgen i =
       | Tuint w -> (vgen, [bv2z_join (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) (eneg (evar c)) (evar v) w]
                           @(carry_constr c))
       | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
-  | Isbbr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y));
-             bv2z_assign c (econst Z.zero)])
   | Imul (v, a1, a2) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
   | Imuls (_c, v, a1, a2) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))]) (* how to set c? *)
-  | Imulr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.zero)])
   | Imull (vh, vl, a1, a2) ->
      let w = size_of_var vl in
      (vgen, [bv2z_split vh vl (emul (bv2z_atomic a1) (bv2z_atomic a2)) w])

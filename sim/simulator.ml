@@ -184,10 +184,6 @@ let simulate_instr m i =
      let bs2 = value_of_atomic m a2 in
      let (cb, bs) = adcB false bs1 bs2 in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Iaddr (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     VM.add c (of_bit false) (VM.add v (addB bs1 bs2) m)
   | Iadc (v, a1, a2, y) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
@@ -200,12 +196,6 @@ let simulate_instr m i =
      let by = to_bit (value_of_atomic m y) in
      let (cb, bs) = adcB by bs1 bs2 in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Iadcr (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = adcB by bs1 bs2 in
-     VM.add c (of_bit false) (VM.add v bs m)
   | Isub (v, a1, a2) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
@@ -220,10 +210,6 @@ let simulate_instr m i =
      let bs2 = value_of_atomic m a2 in
      let (bb, bs) = sbbB false bs1 bs2 in
      VM.add b (of_bit bb) (VM.add v bs m)
-  | Isubr (b, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     VM.add b (of_bit false) (VM.add v (subB bs1 bs2) m)
   | Isbc (v, a1, a2, y) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
@@ -236,12 +222,6 @@ let simulate_instr m i =
      let by = to_bit (value_of_atomic m y) in
      let (cb, bs) = adcB by bs1 (invB bs2) in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Isbcr (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = adcB by bs1 (invB bs2) in
-     VM.add c (of_bit false) (VM.add v bs m)
   | Isbb (v, a1, a2, y) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
@@ -254,12 +234,6 @@ let simulate_instr m i =
      let by = to_bit (value_of_atomic m y) in
      let (bb, bs) = sbbB by bs1 bs2 in
      VM.add b (of_bit bb) (VM.add v bs m)
-  | Isbbr (b, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = sbbB by bs1 bs2 in
-     VM.add b (of_bit false) (VM.add v bs m)
   | Imul (v, a1, a2) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
@@ -269,11 +243,6 @@ let simulate_instr m i =
      let bs2 = value_of_atomic m a2 in
      let (bsh, bsl) = (if atomic_is_signed a1 then smullB else umullB) bs1 bs2 in
      VM.add c (of_bit (not (is_zero bsh))) (VM.add v bsl m)
-  | Imulr (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let (_, bsl) = (if atomic_is_signed a1 then smullB else umullB) bs1 bs2 in
-     VM.add c (of_bit false) (VM.add v bsl m)
   | Imull (vh, vl, a1, a2) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in
