@@ -1,4 +1,20 @@
-fpneg503:
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+
+#! adrp $1v, $2c -> nop
+#! cmp $1v, $2v -> subs carry dontcare $1v $2v
+#! csetm $1v, cc // cc = lo, ul, last -> cmov $1v carry 0@uint64 0xffffffffffffffff@uint64
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! lsr $1v, $2v, \#63 -> split $1v dontcare $2v 63
+#! sbc $1v, $2v, xzr -> sbcs dontcare $1v $2v 0@uint64 carry
+#! sub $1v, $2v, $3v -> subs dontcare $1v $2v $3v
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! str $1v, $2ea -> mov $2ea $1v
+
+#fpneg503:
 # x0 = 0xffffffffe838
 # x1 = 0xffffffffe838
 # x2 = 0xffffffffe780
