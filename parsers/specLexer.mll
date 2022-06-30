@@ -65,6 +65,7 @@
               "smulj"                      , SMULJ;
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
+              "shls"                       , SHLS;
               "cshl"                       , CSHL;
               "set"                        , SET;
               "clear"                      , CLEAR;

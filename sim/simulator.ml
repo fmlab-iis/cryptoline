@@ -159,6 +159,10 @@ let simulate_instr m i =
      let n = Z.to_int n in
      let bs = value_of_atomic m a in
      VM.add v (shlB n bs) m
+  | Ishls (l, v, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atomic m a in
+     VM.add l (high n bs) (VM.add v (shlB n bs) m)
   | Icshl (vh, vl, a1, a2, n) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in

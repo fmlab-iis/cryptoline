@@ -215,6 +215,7 @@ let illformed_instr_reason vs cs gs lno i =
     match i with
     | Imov (v, a) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
     | Ishl (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishls (l, v, a, _) -> [defined_atomic a; check_same_sign [Avar l; Avar v]; check_same_typ lno [Avar v; a]; const_in_range [a]]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
       | Imul (v, a1, a2) ->

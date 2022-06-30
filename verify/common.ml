@@ -187,6 +187,11 @@ let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atomic a)
 let bexp_shl v a p =
   let w = size_of_var v in
   Eq (w, exp_var v, Shl (w, exp_atomic a, Const (w, p)))
+let bexp_shls l v a p =
+  let w = size_of_var v in
+  Conj
+    (Eq (Z.to_int p, exp_var l, High (w - Z.to_int p, Z.to_int p, exp_atomic a)),
+     Eq (w, exp_var v, Shl (w, exp_atomic a, Const (w, p))))
 let bexp_cshl vh vl a1 a2 p =
   let w = size_of_var vh in
   Conj
@@ -389,6 +394,7 @@ let bexp_instr i =
   match i with
   | Imov (v, a) -> bexp_mov v a
   | Ishl (v, a, p) -> bexp_shl v a p
+  | Ishls (l, v, a, p) -> bexp_shls l v a p
   | Icshl (vh, vl, a1, a2, p) -> bexp_cshl vh vl a1 a2 p
   | Inondet _ -> True
   | Icmov (v, c, a1, a2) -> bexp_cmov v c a1 a2
@@ -546,6 +552,7 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atomic_ushl_safe w a n
       | Tsint w -> bexp_atomic_sshl_safe w a n)
+  | Ishls _ -> True
   | Icshl (vh, _, a1, a2, n) ->
      (match vh.vtyp with
       | Tuint w -> bexp_atomic_ucshl_safe w a1 a2 n
@@ -713,6 +720,19 @@ let bv2z_instr vgen i =
   | Imov (v, a) -> (vgen, [bv2z_assign v (bv2z_atomic a)])
   | Ishl (v, a, n) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a) (econst (e2pow (Z.to_int n))))])
+  | Ishls (l, v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> (vgen, [eeq
+                             (eadd (evar v) (emul (evar l) (econst (e2pow w))))
+                             (emul (bv2z_atomic a) (econst (e2pow (Z.to_int n))))
+                   ])
+      | Tsint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadds [evar v; emul (evar discarded) (econst (e2pow w)); emul (evar l) (econst (e2pow w))])
+                             (emul (bv2z_atomic a) (econst (e2pow (Z.to_int n))))
+                   ])
+     )
   | Icshl (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
      (vgen, [bv2z_split

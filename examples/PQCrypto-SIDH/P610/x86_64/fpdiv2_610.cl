@@ -1,16 +1,24 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fpdiv2_610.cl
-Parsing Cryptoline file:		[OK]		0.007612 seconds
-Checking well-formedness:		[OK]		0.001597 seconds
-Transforming to SSA form:		[OK]		0.000317 seconds
-Normalizing specification:		[OK]		0.000394 seconds
-Rewriting assignments:			[OK]		0.000191 seconds
-Verifying program safety:		[OK]		0.415097 seconds
-Verifying range assertions:		[OK]		0.075274 seconds
-Verifying range specification:		[OK]		3.645145 seconds
-Rewriting value-preserved casting:	[OK]		0.000150 seconds
-Verifying algebraic assertions:		[OK]		0.000557 seconds
-Verifying algebraic specification:	[OK]		0.000414 seconds
-Verification result:			[OK]		4.147410 seconds
+Parsing Cryptoline file:		[OK]		0.004752 seconds
+Checking well-formedness:		[OK]		0.001601 seconds
+Transforming to SSA form:		[OK]		0.000123 seconds
+Normalizing specification:		[OK]		0.000156 seconds
+Rewriting assignments:			[OK]		0.000188 seconds
+Verifying program safety:
+	 Cut 0
+	     Round 1 (5 safety conditions, timeout = 14400 seconds)
+		 Safety condition #1	[OK]
+		 Safety condition #0	[OK]
+		 Safety condition #2	[OK]
+		 Safety condition #3	[OK]
+		 Safety condition #4	[OK]
+	 Overall			[OK]		0.144112 seconds
+Verifying range assertions:		[OK]		0.071193 seconds
+Verifying range specification:		[OK]		3.751010 seconds
+Rewriting value-preserved casting:	[OK]		0.000094 seconds
+Verifying algebraic assertions:		[OK]		0.000404 seconds
+Verifying algebraic specification:	[OK]		0.000325 seconds
+Verification result:			[OK]		3.974389 seconds
 *)
 
 const p610_0 = 0xFFFFFFFFFFFFFFFF
@@ -357,14 +365,10 @@ split ymm0_1 dontcare L0x7fffffffb5a8 0x1;
 split ymm0_2 dontcare L0x7fffffffb5b0 0x1;
 split ymm0_3 dontcare L0x7fffffffb5b8 0x1;
 (* vpsllq $0x3f,0x8(%rax),%ymm1                    #! EA = L0x7fffffffb5a8; Value = 0x0000000000000000; PC = 0x555555559717 *)
-split dontcare ymm1_0 L0x7fffffffb5a8 (64 - 0x3f);
-split dontcare ymm1_1 L0x7fffffffb5b0 (64 - 0x3f);
-split dontcare ymm1_2 L0x7fffffffb5b8 (64 - 0x3f);
-split dontcare ymm1_3 L0x7fffffffb5c0 (64 - 0x3f);
-shl ymm1_0 ymm1_0 0x3f;
-shl ymm1_1 ymm1_1 0x3f;
-shl ymm1_2 ymm1_2 0x3f;
-shl ymm1_3 ymm1_3 0x3f;
+shls dontcare ymm1_0 L0x7fffffffb5a8 0x3f;
+shls dontcare ymm1_1 L0x7fffffffb5b0 0x3f;
+shls dontcare ymm1_2 L0x7fffffffb5b8 0x3f;
+shls dontcare ymm1_3 L0x7fffffffb5c0 0x3f;
 (* add    $0x20,%rax                               #! PC = 0x555555559722 *)
 adds carry rax rax 0x20@uint64;
 (* vpxor  %ymm1,%ymm0,%ymm0                        #! PC = 0x555555559726 *)
@@ -385,14 +389,10 @@ split ymm0_1 dontcare L0x7fffffffb5c8 0x1;
 split ymm0_2 dontcare L0x7fffffffb5d0 0x1;
 split ymm0_3 dontcare L0x7fffffffb5d8 0x1;
 (* vpsllq $0x3f,0x8(%rax),%ymm1                    #! EA = L0x7fffffffb5c8; Value = 0x6cce15e9438bd1fc; PC = 0x555555559717 *)
-split dontcare ymm1_0 L0x7fffffffb5c8 (64 - 0x3f);
-split dontcare ymm1_1 L0x7fffffffb5d0 (64 - 0x3f);
-split dontcare ymm1_2 L0x7fffffffb5d8 (64 - 0x3f);
-split dontcare ymm1_3 L0x7fffffffb5e0 (64 - 0x3f);
-shl ymm1_0 ymm1_0 0x3f;
-shl ymm1_1 ymm1_1 0x3f;
-shl ymm1_2 ymm1_2 0x3f;
-shl ymm1_3 ymm1_3 0x3f;
+shls dontcare ymm1_0 L0x7fffffffb5c8 0x3f;
+shls dontcare ymm1_1 L0x7fffffffb5d0 0x3f;
+shls dontcare ymm1_2 L0x7fffffffb5d8 0x3f;
+shls dontcare ymm1_3 L0x7fffffffb5e0 0x3f;
 (* add    $0x20,%rax                               #! PC = 0x555555559722 *)
 adds carry rax rax 0x20@uint64;
 (* vpxor  %ymm1,%ymm0,%ymm0                        #! PC = 0x555555559726 *)

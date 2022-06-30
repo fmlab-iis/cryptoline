@@ -69,6 +69,7 @@
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
               "lsl"                        , SHL;
+              "shls"                       , SHLS;
               "cshl"                       , CSHL;
               "clsl"                       , CSHL;
               "set"                        , SET;
