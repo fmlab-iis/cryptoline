@@ -3047,7 +3047,7 @@ let bvcryptoline_of_instr i =
   match i with
   | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a)
   | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %d)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a) (Z.to_int n)
-  | Ishls (l, v, a, n) -> raise (UnsupportedException "Instruction shls is not supported by BvCryptoLine.")
+  | Ishls _ -> raise (UnsupportedException "Instruction shls is not supported by BvCryptoLine.")
   | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (Z.to_int n)
   | Inondet _ -> raise (UnsupportedException "Instruction nondet is not supported by BvCryptoLine.")
   | Icmov _ -> raise (UnsupportedException "Instruction cmov is not supported by BvCryptoLine.")
