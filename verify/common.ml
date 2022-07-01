@@ -590,7 +590,7 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atomic_umul_safe w a1 a2
       | Tsint w -> bexp_atomic_smul_safe w a1 a2)
-  | Imuls (_, _, _a1, _a2) -> True
+  | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
   | Isplit _ -> True
@@ -792,8 +792,10 @@ let bv2z_instr vgen i =
          (vgen, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
   | Imul (v, a1, a2) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
-  | Imuls (_c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))]) (* how to set c? *)
+  | Imuls (_, v, a1, a2) ->
+     let (d, vgen) = gen_var vgen in
+     let d = mkvar ~newvid:true d (typ_of_var v) in
+     (vgen, [eeq (limbs (size_of_var v) [evar v; evar d]) (emul (bv2z_atomic a1) (bv2z_atomic a2))])
   | Imull (vh, vl, a1, a2) ->
      let w = size_of_var vl in
      (vgen, [bv2z_split vh vl (emul (bv2z_atomic a1) (bv2z_atomic a2)) w])

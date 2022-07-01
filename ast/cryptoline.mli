@@ -641,11 +641,17 @@ type instr =
                              {- Algebra: v = a1 × a2 with soundness conditions:
                              {ul {- Unsigned: ~ umulo a1 a2}
                                  {- Signed: ~ smulo a1 a2}}}}
+   - [Imuls (c, v, a1, a2)]: Assign [v] the half multiplication of [a1] and [a2] and set the carry flag.
+                             {ul {- Type: [v], [a1], and [a2] have the same type.}
+                                 {- QF_BV:
+                                 {ul {- Unsigned: v = mul a1 a2, c = ite (high (size a1) (mul (uext (size a1) a1) (uext (size a1) a2)) = 0) 0 1}
+                                     {- Signed: v = mul a1 a2, c = ite (sext (size a1) (low (size a1) m) = m) 0 1, where m = mul (sext (size a1) a1) (sext (size a1) a2)}}}
+                                 {- Algebra: d × 2{^size a1} + v = a1 * a2}}
    - [Imull (vh, vl, a1, a2)]: Store the full multiplication of [a1] and [a2] in [vh] (high) and [vl] (low).
                                {ul {- Type: [vh], [a1], and [a2] have the same type. [vl] is unsigned. [vh] and [vl] have the same size.}
                                    {- QF_BV:
-                                   {ul {- Unsigned: vh = high (size a1) (mul (zext (size a1) a1) (zext (size a1) a2)), vl = low (size a1) (mul (zext (size a1) a1) (zext (size a1) a2))}
-                                       {- Signed: vh = high (size a1) (mul (sext (size a1) a1) (sext (size a1) a2)), vl = low (size a1) (mul (sext (size a1) a1) (sext (size a1) a2))}}}
+                                   {ul {- Unsigned: vh = high (size a1) m, vl = low (size a1) m, where m = mul (zext (size a1) a1) (zext (size a1) a2)}
+                                       {- Signed: vh = high (size a1) m, vl = low (size a1) m, where m = mul (sext (size a1) a1) (sext (size a1) a2)}}}
                                    {- Algebra: vh × 2{^size a1} + vl = a1 * a2}}
    - [Imulj (v, a1, a2)]: Store the full multiplication of [a1] and [a2] in [v].
                           {ul {- Type: [a1] and [a2] have the same type. [v] and [a1] have the same sign. Size of [v] is the sum of the size of [a1] and the size of [a2].}
