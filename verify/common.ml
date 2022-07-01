@@ -564,46 +564,28 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atomic_uadd_safe w a1 a2
       | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
-  | Iadds (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
+  | Iadds _ -> True
   | Iadc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_uadc_safe w a1 a2 y
       | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
-  | Iadcs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
+  | Iadcs _ -> True
   | Isub (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_usub_safe w a1 a2
       | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubc (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubb (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
+  | Isubc _ -> True
+  | Isubb _ -> True
   | Isbc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_usbc_safe w a1 a2 y
       | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
-  | Isbcs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
+  | Isbcs _ -> True
   | Isbb (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_usbb_safe w a1 a2 y
       | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
-  | Isbbs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
+  | Isbbs _ -> True
   | Imul (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atomic_umul_safe w a1 a2
@@ -755,26 +737,38 @@ let bv2z_instr vgen i =
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_split c v (eadd (bv2z_atomic a1) (bv2z_atomic a2)) w]
                           @(carry_constr c))
-      | Tsint _ -> (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atomic a1) (bv2z_atomic a2))]))
   | Iadc (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
   | Iadcs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_split c v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) w]
                           @(carry_constr c))
-      | Tsint _ -> (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
   | Isub (v, a1, a2) ->
      (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))])
   | Isubc (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atomic a1) (bv2z_atomic a2)) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
   | Isubb (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_join (evar v) (evar c) (esub (bv2z_atomic a1) (bv2z_atomic a2)) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
   | Isbc (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))])
   | Isbcs (c, v, a1, a2, y) ->
@@ -782,14 +776,20 @@ let bv2z_instr vgen i =
       | Tuint w ->
          (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y))) w]
                 @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))]))
   | Isbb (v, a1, a2, y) ->
      (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
   | Isbbs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> (vgen, [bv2z_join (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) (eneg (evar c)) (evar v) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
   | Imul (v, a1, a2) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
   | Imuls (_c, v, a1, a2) ->

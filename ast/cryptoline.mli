@@ -574,7 +574,9 @@ type instr =
    - [Iadds (c, v, a1, a2)]: Assign [v] the sum of [a1] and [a2] and set the carry flag [c].
                              {ul {- Type: [v], [a1], and [a2] have the same type. [c] is a bit.}
                                  {- QF_BV: v = add a1 a2, c = high 1 (add (zext 1 a1) (zext 1 a2))}
-                                 {- Algebra: c × 2{^size a1} + v = a1 + a2}}
+                                 {- Algebra:
+                                 {ul {- Unsigned: c × 2{^size a1} + v = a1 + a2}
+                                     {- Signed: d × 2{^size a1} + v = a1 + a2 for some fresh d}}}}
    - [Iadc (v, a1, a2, y)]: Assign [v] the sum of [a1], [a2], and [y].
                             {ul {- Type: [v], [a1], and [a2] have the same type. [y] is a bit.}
                                 {- QF_BV: v = add (add a1 a2) (zext (size a1 - 1) y)}
@@ -584,7 +586,9 @@ type instr =
    - [Iadcs (c, v, a1, a2, y)]: Assign [v] the sum of [a1], [a2], and [y], and set the carry flag [c].
                                 {ul {- Type: [v], [a1], and [a2] have the same type. [c] and [y] are bits.}
                                     {- QF_BV: v = add (add a1 a2) (zext (size a1 - 1) y), c = high 1 (add (add (zext 1 a1) (zext 1 a2)) (zext (size a1) y))}
-                                    {- Algebra: c × 2{^size a1} + v = a1 + a2 + y}}
+                                    {- Algebra:
+                                    {ul {- Unsigned: c × 2{^size a1} + v = a1 + a2 + y}
+                                        {- Signed: d × 2{^size a1} + v = a1 + a2 + y for some fresh d}}}}
    - [Isub (v, a1, a2)]: Assign [v] the subtraction of [a2] from [a1].
                          {ul {- Type: [v], [a1], and [a2] have the same type.}
                              {- QF_BV: v = sub a1 a2}
