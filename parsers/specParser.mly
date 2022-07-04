@@ -25,7 +25,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT
-%token SHL SHLS SHR SHRS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
@@ -106,6 +106,8 @@ instr:
   | SHLS lval lval atomic const                   { [min_int, Ishls ($2, $3, $4, $5)] }
   | SHR lval atomic const                         { [min_int, Ishr ($2, $3, $4)] }
   | SHRS lval lval atomic const                   { [min_int, Ishrs ($2, $3, $4, $5)] }
+  | SAR lval atomic const                         { [min_int, Isar ($2, $3, $4)] }
+  | SARS lval lval atomic const                   { [min_int, Isars ($2, $3, $4, $5)] }
   | CSHL lval lval atomic atomic const            { [min_int, Icshl ($2, $3, $4, $5, $6)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
   | CMOV lval carry atomic atomic                 { [min_int, Icmov ($2, $3, $4, $5)] }

@@ -220,6 +220,8 @@ let illformed_instr_reason vs cs gs lno i =
     | Ishls (l, v, a, n) -> [defined_atomic a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]]
     | Ishr (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
     | Ishrs (v, l, a, n) -> [defined_atomic a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
+    | Isar (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Isars (v, l, a, n) -> [defined_atomic a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
       | Imul (v, a1, a2) ->

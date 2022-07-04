@@ -1,23 +1,23 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fpdiv2_610.cl
-Parsing Cryptoline file:		[OK]		0.005039 seconds
-Checking well-formedness:		[OK]		0.001622 seconds
-Transforming to SSA form:		[OK]		0.000121 seconds
-Normalizing specification:		[OK]		0.000157 seconds
-Rewriting assignments:			[OK]		0.000188 seconds
+Parsing Cryptoline file:		[OK]		0.005026 seconds
+Checking well-formedness:		[OK]		0.001641 seconds
+Transforming to SSA form:		[OK]		0.000323 seconds
+Normalizing specification:		[OK]		0.000415 seconds
+Rewriting assignments:			[OK]		0.000489 seconds
 Verifying program safety:
 	 Cut 0
 	     Round 1 (4 safety conditions, timeout = 14400 seconds)
-		 Safety condition #2	[OK]
-		 Safety condition #1	[OK]
 		 Safety condition #0	[OK]
+		 Safety condition #1	[OK]
+		 Safety condition #2	[OK]
 		 Safety condition #3	[OK]
-	 Overall			[OK]		0.110915 seconds
-Verifying range assertions:		[OK]		0.066771 seconds
-Verifying range specification:		[OK]		3.678912 seconds
-Rewriting value-preserved casting:	[OK]		0.000073 seconds
-Verifying algebraic assertions:		[OK]		0.000294 seconds
-Verifying algebraic specification:	[OK]		0.000212 seconds
-Verification result:			[OK]		3.864837 seconds
+	 Overall			[OK]		0.126185 seconds
+Verifying range assertions:		[OK]		0.073992 seconds
+Verifying range specification:		[OK]		3.692385 seconds
+Rewriting value-preserved casting:	[OK]		0.000097 seconds
+Verifying algebraic assertions:		[OK]		0.000430 seconds
+Verifying algebraic specification:	[OK]		0.000372 seconds
+Verification result:			[OK]		3.901955 seconds
 *)
 
 const p610_0 = 0xFFFFFFFFFFFFFFFF
@@ -350,7 +350,7 @@ and rdx@uint64 rcx 0x00000000FFFFFFFF@uint64;
 (* shr    $0x2,%edx                                #! PC = 0x5555555596fc *)
 and edx@uint64 rdx 0x00000000FFFFFFFF@uint64;
 vpc edx@uint32 edx;
-split edx dontcare edx 0x2;
+shrs edx dontcare edx 0x2;
 vpc rdx@uint64 edx;
 (* shl    $0x5,%rdx                                #! PC = 0x5555555596ff *)
 shl rdx rdx 0x5;
@@ -359,10 +359,10 @@ mov rax rdi;
 (* add    %rdi,%rdx                                #! PC = 0x555555559706 *)
 adds carry rdx rdx rdi;
 (* vpsrlq $0x1,(%rax),%ymm0                        #! EA = L0x7fffffffb5a0; Value = 0x0000000338664730; PC = 0x555555559710 *)
-split ymm0_0 dontcare L0x7fffffffb5a0 0x1;
-split ymm0_1 dontcare L0x7fffffffb5a8 0x1;
-split ymm0_2 dontcare L0x7fffffffb5b0 0x1;
-split ymm0_3 dontcare L0x7fffffffb5b8 0x1;
+shrs ymm0_0 dontcare L0x7fffffffb5a0 0x1;
+shrs ymm0_1 dontcare L0x7fffffffb5a8 0x1;
+shrs ymm0_2 dontcare L0x7fffffffb5b0 0x1;
+shrs ymm0_3 dontcare L0x7fffffffb5b8 0x1;
 (* vpsllq $0x3f,0x8(%rax),%ymm1                    #! EA = L0x7fffffffb5a8; Value = 0x0000000000000000; PC = 0x555555559717 *)
 shls dontcare ymm1_0 L0x7fffffffb5a8 0x3f;
 shls dontcare ymm1_1 L0x7fffffffb5b0 0x3f;
@@ -383,10 +383,10 @@ mov L0x7fffffffb5b8 ymm0_3;
 (* #jne    0x555555559710 <mp_shiftr1+48>          #! PC = 0x555555559734 *)
 #jne    0x555555559710 <mp_shiftr1+48>          #! 0x555555559734 = 0x555555559734;
 (* vpsrlq $0x1,(%rax),%ymm0                        #! EA = L0x7fffffffb5c0; Value = 0xd1a0000000000000; PC = 0x555555559710 *)
-split ymm0_0 dontcare L0x7fffffffb5c0 0x1;
-split ymm0_1 dontcare L0x7fffffffb5c8 0x1;
-split ymm0_2 dontcare L0x7fffffffb5d0 0x1;
-split ymm0_3 dontcare L0x7fffffffb5d8 0x1;
+shrs ymm0_0 dontcare L0x7fffffffb5c0 0x1;
+shrs ymm0_1 dontcare L0x7fffffffb5c8 0x1;
+shrs ymm0_2 dontcare L0x7fffffffb5d0 0x1;
+shrs ymm0_3 dontcare L0x7fffffffb5d8 0x1;
 (* vpsllq $0x3f,0x8(%rax),%ymm1                    #! EA = L0x7fffffffb5c8; Value = 0x6cce15e9438bd1fc; PC = 0x555555559717 *)
 shls dontcare ymm1_0 L0x7fffffffb5c8 0x3f;
 shls dontcare ymm1_1 L0x7fffffffb5d0 0x3f;

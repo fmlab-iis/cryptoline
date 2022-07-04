@@ -68,6 +68,8 @@
               "shls"                       , SHLS;
               "shr"                        , SHR;
               "shrs"                       , SHRS;
+              "sar"                        , SAR;
+              "sars"                       , SARS;
               "cshl"                       , CSHL;
               "set"                        , SET;
               "clear"                      , CLEAR;

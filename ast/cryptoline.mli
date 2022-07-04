@@ -486,6 +486,8 @@ type instr =
   | Ishls of var * var * atomic * Z.t             (** Left shift *)
   | Ishr of var * atomic * Z.t                    (** Logical right shift *)
   | Ishrs of var * var * atomic * Z.t             (** Logical right shift *)
+  | Isar of var * atomic * Z.t                    (** Arithmetic right shift *)
+  | Isars of var * var * atomic * Z.t             (** Arithmetic right shift *)
   | Icshl of var * var * atomic * atomic * Z.t    (** Concatenated left shift *)
   | Inondet of var                                (** Nondeterministic assignment *)
   | Icmov of var * atomic * atomic * atomic       (** Conditional assignment *)
@@ -546,11 +548,23 @@ type instr =
                            {ul {- Unsigned: low n a = 0}
                                {- Signed: low n a = 0, high 1 a = 0}}}}
    - [Ishrs (v, l, a, n)]: Shift [a] right logically by [n] and store the result in [v]. Bits shifted out are stored in [l].
-                           {ul {- Type: [l] is unsigned of size [n]. [v] and [a] have the same type.}
+                           {ul {- Type: [v] and [a] have the same type. [l] is unsigned of size [n]}
                                {- QF_BV: v = lshr a n, l = low n a}
                                {- Algebra:
                                {ul {- Unsigned: v × 2{^n} + l = a}
                                    {- Signed: d × 2{^size a} + v × 2{^n} + l = a for some fresh d}}}}
+   - [Isar (v, a, n)]: Shift [a] right arithmetically by [n].
+                       {ul {- Type: [v] and [a] have the same type.}
+                           {- QF_BV: v = ashr a n}
+                           {- Algebra: v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
+                           {ul {- Unsigned: low n a = 0, high 1 a = 0}
+                               {- Signed: low n a = 0}}}}
+   - [Isars (v, l, a, n)]: Shift [a] right arithmetically by [n] and store the result in [v]. Bits shifted out are stored in [l].
+                           {ul {- Type: [v] and [a] have the same type. [l] is unsigned of size [n].}
+                               {- QF_BV: v = ashr a n, l = low n a}
+                               {- Algebra:
+                               {ul {- Unsigned: d × 2{^size a - n} + v × 2{^n} + l = a for some fresh d}
+                                   {- Signed: v × 2{^n} + l = a}}}}
    - [Icshl (vh, vl, a1, a2, n)]: Concatenate [a1] (high) and [a2] (low), shift the concatenation left by [n], store the high bits in [vh], and store the low bits (logically) shifted right by [n] in [vl].
                                   {ul {- Type: [vh] and [a1] have the same type. [vl] and [a2] are unsigned. [vh], [vl], [a1], and [a2] have the same size.}
                                       {- QF_BV: vh = high (size a1) (shl n (concat a1 a2)), vl = shr n (low (size a1) (shl n (concat a1 a2)))}

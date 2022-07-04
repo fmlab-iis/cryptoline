@@ -35,7 +35,7 @@
 #! mov $1c, %%r11d -> and r11@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
 #! sub $1c, %esi -> and esi@uint64 rsi 0x00000000FFFFFFFF@uint64;\nvpc esi@uint32 esi;\nsubb carry esi esi $1c@uint32;\nvpc rsi@uint64 esi
 #! dec %ecx -> and ecx@uint64 rcx 0x00000000FFFFFFFF@uint64;\nvpc ecx@uint32 ecx;\nsubb dontcare ecx ecx 1@uint32;\nvpc rcx@uint64 ecx
-#! shr $1c, %edx -> and edx@uint64 rdx 0x00000000FFFFFFFF@uint64;\nvpc edx@uint32 edx;\nsplit edx dontcare edx $1c;\nvpc rdx@uint64 edx
+#! shr $1c, %edx -> and edx@uint64 rdx 0x00000000FFFFFFFF@uint64;\nvpc edx@uint32 edx;\nshrs edx dontcare edx $1c;\nvpc rdx@uint64 edx
 #! xor %%r9d, %%r9d -> mov r9 0@uint64
 #! xor %%r11d, %%r11d -> mov r11 0@uint64
 #! xor %ebx, %ebx -> mov rbx 0@uint64
@@ -60,7 +60,7 @@
 #! neg $1v -> subb dontcare $1v 0@uint64 $1v
 #! shl $1c, $2v -> shl $2v $2v $1c
 #! vmovdqu64 $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+8] $1ymm_1;\nmov $2ea[+16] $1ymm_2;\nmov $2ea[+24] $1ymm_3
-#! vpsrlq $1c, $2ea, $3ymm -> split $3ymm_0 dontcare $2ea $1c;\nsplit $3ymm_1 dontcare $2ea[+8] $1c;\nsplit $3ymm_2 dontcare $2ea[+16] $1c;\nsplit $3ymm_3 dontcare $2ea[+24] $1c
+#! vpsrlq $1c, $2ea, $3ymm -> shrs $3ymm_0 dontcare $2ea $1c;\nshrs $3ymm_1 dontcare $2ea[+8] $1c;\nshrs $3ymm_2 dontcare $2ea[+16] $1c;\nshrs $3ymm_3 dontcare $2ea[+24] $1c
 #! vpsllq $1c, $2ea, $3ymm -> shls dontcare $3ymm_0 $2ea $1c;\nshls dontcare $3ymm_1 $2ea[+8] $1c;\nshls dontcare $3ymm_2 $2ea[+16] $1c;\nshls dontcare $3ymm_3 $2ea[+24] $1c
 #! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint64 $1ymm_0 $2ymm_0;\nxor $3ymm_1@uint64 $1ymm_1 $2ymm_1;\nxor $3ymm_2@uint64 $1ymm_2 $2ymm_2;\nxor $3ymm_3@uint64 $1ymm_3 $2ymm_3
 #! vzeroupper -> mov ymm0_2 0@uint64;\nmov ymm0_3 0@uint64;\nmov ymm1_2 0@uint64;\nmov ymm1_3 0@uint64

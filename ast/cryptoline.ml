@@ -653,6 +653,8 @@ type instr =
   | Ishls of var * var * atomic * Z.t             (** Left shift *)
   | Ishr of var * atomic * Z.t                    (** Logical right shift *)
   | Ishrs of var * var * atomic * Z.t             (** Logical right shift *)
+  | Isar of var * atomic * Z.t                    (** Arithmetic right shift *)
+  | Isars of var * var * atomic * Z.t             (** Arithmetic right shift *)
   | Icshl of var * var * atomic * atomic * Z.t    (** Concatenated left shift *)
   | Inondet of var                                (** Nondeterministic assignment *)
   | Icmov of var * atomic * atomic * atomic       (** Conditional assignment *)
@@ -1068,6 +1070,8 @@ let string_of_instr ?typ:(typ=false) i =
   | Ishls (l, v, a, n) -> "shls " ^ vstr l ^ " " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Ishr (v, a, n) -> "shr " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Ishrs (v, l, a, n) -> "shrs " ^ vstr v ^ " " ^ vstr l ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Isar (v, a, n) -> "sar " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Isars (v, l, a, n) -> "sars " ^ vstr v ^ " " ^ vstr l ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Icshl (vh, vl, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Inondet v -> "nondet " ^ string_of_var ~typ:true v
   | Icmov (v, c, a1, a2) -> "cmov " ^ vstr v ^ " " ^ astr c ^ " " ^ astr a1 ^ " " ^ astr a2
@@ -1213,9 +1217,11 @@ let vars_instr i =
   match i with
   | Imov (v, a)
     | Ishl (v, a, _)
-    | Ishr (v, a, _) -> VS.add v (vars_atomic a)
+    | Ishr (v, a, _)
+    | Isar (v, a, _) -> VS.add v (vars_atomic a)
   | Ishls (l, v, a, _)
-    | Ishrs (v, l, a, _) -> VS.add l (VS.add v (vars_atomic a))
+    | Ishrs (v, l, a, _)
+    | Isars (v, l, a, _) -> VS.add l (VS.add v (vars_atomic a))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
@@ -1281,6 +1287,8 @@ let lvs_instr i =
   | Ishls (l, v, _, _) -> VS.add l (VS.singleton v)
   | Ishr (v, _, _) -> VS.singleton v
   | Ishrs (v, l, _, _) -> VS.add l (VS.singleton v)
+  | Isar (v, _, _) -> VS.singleton v
+  | Isars (v, l, _, _) -> VS.add l (VS.singleton v)
   | Isplit (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
   | Icshl (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
   | Inondet v -> VS.singleton v
@@ -1322,6 +1330,8 @@ let rvs_instr i =
   | Ishls (_, _, a, _) -> vars_atomic a
   | Ishr (_, a, _) -> vars_atomic a
   | Ishrs (_, _, a, _) -> vars_atomic a
+  | Isar (_, a, _) -> vars_atomic a
+  | Isars (_, _, a, _) -> vars_atomic a
   | Isplit (_, _, a, _) -> vars_atomic a
   | Icshl (_, _, a1, a2, _) ->
      VS.union (vars_atomic a1) (vars_atomic a2)
@@ -1368,6 +1378,8 @@ let lcarries_instr i =
   | Ishls _
   | Ishr _
   | Ishrs _
+  | Isar _
+  | Isars _
   | Isplit _
   | Icshl _ -> VS.empty
   | Inondet v -> if var_is_bit v then VS.singleton v else VS.empty
@@ -1450,9 +1462,11 @@ let vids_instr i =
   match i with
   | Imov (v, a)
     | Ishl (v, a, _)
-    | Ishr (v, a, _) -> IS.add v.vid (vids_atomic a)
+    | Ishr (v, a, _)
+    | Isar (v, a, _) -> IS.add v.vid (vids_atomic a)
   | Ishls (l, v, a, _)
-    | Ishrs (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atomic a))
+    | Ishrs (v, l, a, _)
+    | Isars (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atomic a))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
@@ -1518,6 +1532,8 @@ let lvids_instr i =
   | Ishls (l, v, _, _) -> IS.add l.vid (IS.singleton v.vid)
   | Ishr (v, _, _) -> IS.singleton v.vid
   | Ishrs (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
+  | Isar (v, _, _) -> IS.singleton v.vid
+  | Isars (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
   | Isplit (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Inondet v -> IS.singleton v.vid
@@ -1559,6 +1575,8 @@ let rvids_instr i =
   | Ishls (_, _, a, _) -> vids_atomic a
   | Ishr (_, a, _) -> vids_atomic a
   | Ishrs (_, _, a, _) -> vids_atomic a
+  | Isar (_, a, _) -> vids_atomic a
+  | Isars (_, _, a, _) -> vids_atomic a
   | Isplit (_, _, a, _) -> vids_atomic a
   | Icshl (_, _, a1, a2, _) ->
      IS.union (vids_atomic a1) (vids_atomic a2)
@@ -1605,6 +1623,8 @@ let lcids_instr i =
   | Ishls _
   | Ishr _
   | Ishrs _
+  | Isar _
+  | Isars _
   | Isplit _
   | Icshl _ -> IS.empty
   | Inondet v -> if var_is_bit v then IS.singleton v.vid else IS.empty
@@ -1716,6 +1736,15 @@ let ssa_instr m i =
      let mv = upd_sidx v m in
      let ml = upd_sidx l mv in
      (ml, Ishrs (ssa_var mv v, ssa_var ml l, a, n))
+  | Isar (v, a, n) ->
+     let a = ssa_atomic m a in
+     let m = upd_sidx v m in
+     (m, Isar (ssa_var m v, a, n))
+  | Isars (v, l, a, n) ->
+     let a = ssa_atomic m a in
+     let mv = upd_sidx v m in
+     let ml = upd_sidx l mv in
+     (ml, Isars (ssa_var mv v, ssa_var ml l, a, n))
   | Icshl (vh, vl, a1, a2, n) ->
      let a1 = ssa_atomic m a1 in
      let a2 = ssa_atomic m a2 in
@@ -2063,6 +2092,8 @@ let subst_instr am em rm i =
   | Ishls (l, v, a, n) -> Ishls (subst_lval am l, subst_lval am v, subst_atomic am a, n)
   | Ishr (v, a, n) -> Ishr (subst_lval am v, subst_atomic am a, n)
   | Ishrs (v, l, a, n) -> Ishrs (subst_lval am v, subst_lval am l, subst_atomic am a, n)
+  | Isar (v, a, n) -> Isar (subst_lval am v, subst_atomic am a, n)
+  | Isars (v, l, a, n) -> Isars (subst_lval am v, subst_lval am l, subst_atomic am a, n)
   | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2, n)
   | Inondet v -> Inondet (subst_lval am v)
   | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atomic am c, subst_atomic am a1, subst_atomic am a2)
@@ -2467,6 +2498,10 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
                       casts@[Ishr (v, a, n)]
   | Ishrs (v, l, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
                           casts@[Ishrs (v, l, a, n)]
+  | Isar (v, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+                      casts@[Isar (v, a, n)]
+  | Isars (v, l, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+                          casts@[Isars (v, l, a, n)]
   | Icshl (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t vh.vtyp a1 in
                                  let (casts2, a2) = auto_cast_atomic ~preserve:preserve t vl.vtyp a2 in
                                  casts1@casts2@[Icshl (vh, vl, a1, a2, n)]
@@ -2757,6 +2792,8 @@ let visit_instr visitor i =
         | Ishls (l, v, a, n) -> Ishls (visit_var visitor l, visit_var visitor v, visit_atomic visitor a, n)
         | Ishr (v, a, n) -> Ishr (visit_var visitor v, visit_atomic visitor a, n)
         | Ishrs (v, l, a, n) -> Ishrs (visit_var visitor v, visit_var visitor l, visit_atomic visitor a, n)
+        | Isar (v, a, n) -> Isar (visit_var visitor v, visit_atomic visitor a, n)
+        | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atomic visitor a, n)
         | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a1, visit_atomic visitor a2, n)
         | Inondet v -> Inondet (visit_var visitor v)
         | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, c, visit_atomic visitor a1, visit_atomic visitor a2)
@@ -3080,6 +3117,8 @@ let bvcryptoline_of_instr i =
   | Ishls _ -> raise (UnsupportedException "Instruction shls is not supported by BvCryptoLine.")
   | Ishr _ -> raise (UnsupportedException "Instruction shr is not supported by BvCryptoLine.")
   | Ishrs _ -> raise (UnsupportedException "Instruction shrs is not supported by BvCryptoLine.")
+  | Isar _ -> raise (UnsupportedException "Instruction sar is not supported by BvCryptoLine.")
+  | Isars _ -> raise (UnsupportedException "Instruction sars is not supported by BvCryptoLine.")
   | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (Z.to_int n)
   | Inondet _ -> raise (UnsupportedException "Instruction nondet is not supported by BvCryptoLine.")
   | Icmov _ -> raise (UnsupportedException "Instruction cmov is not supported by BvCryptoLine.")
@@ -3249,6 +3288,8 @@ let update_variable_id_instr m i =
   | Ishls (l, v, a, _) -> update_variable_id_atomics m [Avar l; Avar v; a]
   | Ishr (v, a, _) -> update_variable_id_atomics m [Avar v; a]
   | Ishrs (v, l, a, _) -> update_variable_id_atomics m [Avar v; Avar l; a]
+  | Isar (v, a, _) -> update_variable_id_atomics m [Avar v; a]
+  | Isars (v, l, a, _) -> update_variable_id_atomics m [Avar v; Avar l; a]
   | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
   | Inondet v -> update_variable_id_var m v
   | Icmov (v, c, a1, a2) -> update_variable_id_atomics m [Avar v; c; a1; a2]
