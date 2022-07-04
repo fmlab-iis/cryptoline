@@ -265,6 +265,35 @@
       in
       (vm, ym, gm, [lno, Ishls (l, v, a, n)])
 
+  let parse_ishr_at lno dest src num =
+    fun _fm cm vm ym gm ->
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let ty = typ_of_atomic a in
+      let n = num cm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
+      let _ =
+        let w = size_of_var v in
+        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+          raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+      in
+      (vm, ym, gm, [lno, Ishr (v, a, n)])
+
+  let parse_ishrs_at lno dest lost src num =
+    fun _fm cm vm ym gm ->
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let ty = typ_of_atomic a in
+      let n = num cm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
+      let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
+      let _ =
+        let w = size_of_var v in
+        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+          raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+      in
+      (vm, ym, gm, [lno, Ishrs (v, l, a, n)])
+
   let parse_cshl_at lno destH destL src1 src2 num =
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
@@ -966,6 +995,10 @@
          parse_ishl_at lno dest src num fm cm vm ym gm
       | `SHLS (`LVPLAIN lost, `LVPLAIN dest, src, num) ->
          parse_ishls_at lno lost dest src num fm cm vm ym gm
+      | `SHR (`LVPLAIN dest, src, num) ->
+         parse_ishr_at lno dest src num fm cm vm ym gm
+      | `SHRS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
+         parse_ishrs_at lno dest lost src num fm cm vm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
          parse_cshl_at lno destH destL src1 src2 num fm cm vm ym gm
       | `SET (`LVCARRY dest) ->
@@ -1123,7 +1156,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT
-%token SHL SHLS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1147,7 +1180,7 @@
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
-%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SAR
+%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR
 %nonassoc EQ EQMOD
 %nonassoc UMINUS
 
@@ -1317,6 +1350,10 @@ instr:
   | lhs EQOP SHL atomic const                 { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | SHLS lval lval atomic const               { (!lnum, `SHLS ($2, $3, $4, $5)) }
   | lhs lhs EQOP SHLS atomic const            { (!lnum, `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | SHR lval atomic const                     { (!lnum, `SHR ($2, $3, $4)) }
+  | lhs EQOP SHR atomic const                 { (!lnum, `SHR (`LVPLAIN $1, $4, $5)) }
+  | SHRS lval lval atomic const               { (!lnum, `SHRS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SHRS atomic const            { (!lnum, `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP CSHL atomic atomic const { (!lnum, `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
   | SET lcarry                                { (!lnum, `SET $2) }
@@ -1491,6 +1528,8 @@ instr:
   | SSPLIT error                              { raise_at !lnum ("Bad ssplit instruction") }
   | SHL error                                 { raise_at !lnum ("Bad shl instruction") }
   | SHLS error                                { raise_at !lnum ("Bad shls instruction") }
+  | SHR error                                 { raise_at !lnum ("Bad shr instruction") }
+  | SHRS error                                { raise_at !lnum ("Bad shrs instruction") }
   | CSHL error                                { raise_at !lnum ("Bad cshl instruction") }
   | NONDET error                              { raise_at !lnum ("Bad nondet instruction") }
   | CALL ID LPAR error                        { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }

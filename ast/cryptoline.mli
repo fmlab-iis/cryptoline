@@ -481,51 +481,46 @@ type atomic =
 (** atomics *)
 
 type instr =
-  | Imov of var * atomic                          (** Assignment. [Imov (v, a)]: v = a. *)
-  | Ishl of var * atomic * Z.t                    (** Left shift. [Ishl (v, a, n)]: v = a2{^ n}, overflow is forbidden. *)
-  | Ishls of var * var * atomic * Z.t             (** Ishls (l, v, a, n): l denotes the lost bits *)
-  | Icshl of var * var * atomic * atomic * Z.t    (** Concatenated left shift. [Icshl (vh, vl, a1, a2, n)] concatenates [a1] (high) and [a2] (low),
-                                                      shifts the concatenation to the left by [n], and then stores the high part and the low
-                                                      part of the concatenation respectively to [vh] and [vl]. *)
-  | Inondet of var                                (** Nondeterministic assignment. [Inondet v]: v = a nondeterministic value. *)
-  | Icmov of var * atomic * atomic * atomic       (** Conditional assignment. [Icmov (v, c, a1, a2)]: if c then v = a1 else v = a2. *)
-  | Inop                                          (** No-op. [Inop]: does nothing. *)
-  | Inot of var * atomic                          (** Bit-wise NOT. [Inot (v, a)]: v = not(a), the one's complement of a. *)
-  | Iadd of var * atomic * atomic                 (** Addition. [Iadd (v, a1, a2)]: v = a1 + a2, overflow is forbidden. *)
-  | Iadds of var * var * atomic * atomic          (** Add and set carry. [Iadds (c, v, a1, a2)]: v = a1 + a2, c = carry flag. *)
-  | Iadc of var * atomic * atomic * atomic        (** Addition with carry. [Iadc (v, a1, a2, y)]: v = a1 + a2 + y, overflow is forbidden. *)
-  | Iadcs of var * var * atomic * atomic * atomic (** Addition with carry and set carry. [Iadcs (c, v, a1, a2, y)]: v = a1 + a2 + y, c = carry flag. *)
-  | Isub of var * atomic * atomic                 (** Subtraction. [Isub (v, a1, a2)]: v = a1 + not(a2) + 1, overflow is forbidden. *)
-  | Isubc of var * var * atomic * atomic          (** Subtract and set carry. [Isubc (c, v, a1, a2)]: v = a1 + not(a2) + 1, c = carry flag. *)
-  | Isubb of var * var * atomic * atomic          (** Subtract and set borrow. [Isubb (b, v, a1, a2)]: v = a1 - a2, b = borrow flag. *)
-  | Isbc of var * atomic * atomic * atomic        (** Subtract with carry. [Isbc (v, a1, a2, y)]: v = a1 + not(a2) + y. *)
-  | Isbcs of var * var * atomic * atomic * atomic (** Subtract with carry and set carry. [Isbcs (c, v, a1, a2, y)]: v = a1 + not(a2) + y, c = carry flag. *)
-  | Isbb of var * atomic * atomic * atomic        (** Subtract with borrow. [Isbb (v, a1, a2, y)]: v = a1 - a2 - y. *)
-  | Isbbs of var * var * atomic * atomic * atomic (** Subtract with borrow and set borrow. [Isbbs (b, v, a1, a2, y)]: v = a1 - a2 - y, b = borrow flag. *)
-  | Imul of var * atomic * atomic                 (** Half-multiplication. [Imul (v, a1, a2)]: v = a1 * a2, overflow is forbidden. *)
+  | Imov of var * atomic                          (** Assignment *)
+  | Ishl of var * atomic * Z.t                    (** Left shift *)
+  | Ishls of var * var * atomic * Z.t             (** Left shift *)
+  | Ishr of var * atomic * Z.t                    (** Logical right shift *)
+  | Ishrs of var * var * atomic * Z.t             (** Logical right shift *)
+  | Icshl of var * var * atomic * atomic * Z.t    (** Concatenated left shift *)
+  | Inondet of var                                (** Nondeterministic assignment *)
+  | Icmov of var * atomic * atomic * atomic       (** Conditional assignment *)
+  | Inop                                          (** No-op *)
+  | Inot of var * atomic                          (** Bit-wise NOT *)
+  | Iadd of var * atomic * atomic                 (** Add *)
+  | Iadds of var * var * atomic * atomic          (** Add and set carry *)
+  | Iadc of var * atomic * atomic * atomic        (** Add with carry. *)
+  | Iadcs of var * var * atomic * atomic * atomic (** Add with carry and set carry *)
+  | Isub of var * atomic * atomic                 (** Subtract *)
+  | Isubc of var * var * atomic * atomic          (** Subtract and set carry *)
+  | Isubb of var * var * atomic * atomic          (** Subtract and set borrow *)
+  | Isbc of var * atomic * atomic * atomic        (** Subtract with carry *)
+  | Isbcs of var * var * atomic * atomic * atomic (** Subtract with carry and set carry *)
+  | Isbb of var * atomic * atomic * atomic        (** Subtract with borrow *)
+  | Isbbs of var * var * atomic * atomic * atomic (** Subtract with borrow and set borrow *)
+  | Imul of var * atomic * atomic                 (** Half-multiplication *)
   | Imuls of var * var * atomic * atomic          (** Half-multiply and set carry. *)
-  | Imull of var * var * atomic * atomic          (** Full-multiplication. [Imull (vh, vl, a1, a2)]: [vh] and [vl] are respectively the high part and
-                                                      the low part of the full multiplication [a1 * a2]. *)
-  | Imulj of var * atomic * atomic                (** Full-multiplication. [Iumulj (v, a1, a2)]: [v] is the full multiplication of [a1 * a2], which is
-                                                      equivalent to [Iumull (vh, vl, a1, a2); Join (v, vh, vl)]. *)
-  | Isplit of var * var * atomic * Z.t            (** Split. [Isplit (vh, vl, a, n)]: [vh] is the high (w - n) bits (signed extended to w bits) of [a]
-                                                      and [vl] is the low n bits (zero extended to w bits) of [a] where w is the bit-width of [a]. *)
+  | Imull of var * var * atomic * atomic          (** Full-multiplication *)
+  | Imulj of var * atomic * atomic                (** Full-multiplication *)
+  | Isplit of var * var * atomic * Z.t            (** Split *)
   (* Instructions that cannot be translated to polynomials *)
-  | Iand of var * atomic * atomic                 (** Bit-wise AND. [Iand (v, a1, a2)]: [v] is the bitwise AND of [a1] and [a2]. *)
-  | Ior of var * atomic * atomic                  (** Bit-wise OR. [Ior (v, a1, a2)]: [v] is the bitwise OR of [a1] and [a2]. *)
-  | Ixor of var * atomic * atomic                 (** Bit-wise XOR. [Ixor (v, a1, a2)]: [v] is the bitwise XOR of [a1] and [a2]. *)
+  | Iand of var * atomic * atomic                 (** Bit-wise AND *)
+  | Ior of var * atomic * atomic                  (** Bit-wise OR *)
+  | Ixor of var * atomic * atomic                 (** Bit-wise XOR *)
   (* Type conversions *)
-  | Icast of var option * var * atomic            (** Casting. [Icast (od, v, a)]: [v] is the value of [a] represented by the type of [v],
-                                                     [od] is a value used to compute the difference between [a] and [v], the meaning depends on
-                                                     the signs of [a] and [v]. *)
-  | Ivpc of var * atomic                          (** Value-preserving casting. [Ivpc (v, a)]: [v = a]. *)
-  | Ijoin of var * atomic * atomic                (** Join. [Ijoin (v, ah, al)]: v = ah * 2{^ w} + al where w is the bit-width of al. *)
+  | Icast of var option * var * atomic            (** Casting *)
+  | Ivpc of var * atomic                          (** Value-preserving casting *)
+  | Ijoin of var * atomic * atomic                (** Join *)
   (* Specifications *)
-  | Iassert of bexp                               (** Assertion. *)
-  | Iassume of bexp                               (** Assumption. *)
+  | Iassert of bexp                               (** Assertion *)
+  | Iassume of bexp                               (** Assumption *)
   | Icut of (ebexp * prove_with_spec list) list * (rbexp * prove_with_spec list) list
                                                   (** Cuts *)
-  | Ighost of VS.t * bexp                         (** Ghost variables. *) (* *)
+  | Ighost of VS.t * bexp                         (** Ghost variables *) (* *)
 (**
    Instructions.
    - [Imov (v, a)]: Assign [v] the value of [a].
@@ -544,6 +539,18 @@ type instr =
                                {- Algebra:
                                {ul {- Unsigned: l × 2{^size a} + v = a × 2{^n}}
                                    {- Signed: l × 2{^size a} + d × 2{^size a} + v = a × 2{^n} for some fresh variable d (due to casting v to signed)}}}}
+   - [Ishr (v, a, n)]: Shift [a] right logically by [n] and store the result in [v].
+                       {ul {- Type: [v] and [a] have the same type.}
+                           {- QF_BV: v = lshr a n}
+                           {- Algebra: v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
+                           {ul {- Unsigned: low n a = 0}
+                               {- Signed: low n a = 0, high 1 a = 0}}}}
+   - [Ishrs (v, l, a, n)]: Shift [a] right logically by [n] and store the result in [v]. Bits shifted out are stored in [l].
+                           {ul {- Type: [l] is unsigned of size [n]. [v] and [a] have the same type.}
+                               {- QF_BV: v = lshr a n, l = low n a}
+                               {- Algebra:
+                               {ul {- Unsigned: v × 2{^n} + l = a}
+                                   {- Signed: d × 2{^size a} + v × 2{^n} + l = a for some fresh d}}}}
    - [Icshl (vh, vl, a1, a2, n)]: Concatenate [a1] (high) and [a2] (low), shift the concatenation left by [n], store the high bits in [vh], and store the low bits (logically) shifted right by [n] in [vl].
                                   {ul {- Type: [vh] and [a1] have the same type. [vl] and [a2] are unsigned. [vh], [vl], [a1], and [a2] have the same size.}
                                       {- QF_BV: vh = high (size a1) (shl n (concat a1 a2)), vl = shr n (low (size a1) (shl n (concat a1 a2)))}
@@ -653,7 +660,7 @@ type instr =
                                    {ul {- Unsigned: vh = high (size a1) m, vl = low (size a1) m, where m = mul (zext (size a1) a1) (zext (size a1) a2)}
                                        {- Signed: vh = high (size a1) m, vl = low (size a1) m, where m = mul (sext (size a1) a1) (sext (size a1) a2)}}}
                                    {- Algebra: vh × 2{^size a1} + vl = a1 * a2}}
-   - [Imulj (v, a1, a2)]: Store the full multiplication of [a1] and [a2] in [v].
+   - [Imulj (v, a1, a2)]: Store the full multiplication of [a1] and [a2] in [v]. [Imulj (v, a1, a2)] is equivalent to [Imull (vh, vl, a1, a2); Ijoin (v, vh, vl)].
                           {ul {- Type: [a1] and [a2] have the same type. [v] and [a1] have the same sign. Size of [v] is the sum of the size of [a1] and the size of [a2].}
                               {- QF_BV:
                               {ul {- Unsigned: v = mul (zext (size a1) a1) (zext (size a1) a2)}

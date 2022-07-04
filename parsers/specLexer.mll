@@ -66,6 +66,8 @@
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
               "shls"                       , SHLS;
+              "shr"                        , SHR;
+              "shrs"                       , SHRS;
               "cshl"                       , CSHL;
               "set"                        , SET;
               "clear"                      , CLEAR;

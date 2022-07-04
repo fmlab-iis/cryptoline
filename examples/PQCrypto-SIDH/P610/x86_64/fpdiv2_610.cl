@@ -1,24 +1,23 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fpdiv2_610.cl
-Parsing Cryptoline file:		[OK]		0.004752 seconds
-Checking well-formedness:		[OK]		0.001601 seconds
-Transforming to SSA form:		[OK]		0.000123 seconds
-Normalizing specification:		[OK]		0.000156 seconds
+Parsing Cryptoline file:		[OK]		0.005039 seconds
+Checking well-formedness:		[OK]		0.001622 seconds
+Transforming to SSA form:		[OK]		0.000121 seconds
+Normalizing specification:		[OK]		0.000157 seconds
 Rewriting assignments:			[OK]		0.000188 seconds
 Verifying program safety:
 	 Cut 0
-	     Round 1 (5 safety conditions, timeout = 14400 seconds)
+	     Round 1 (4 safety conditions, timeout = 14400 seconds)
+		 Safety condition #2	[OK]
 		 Safety condition #1	[OK]
 		 Safety condition #0	[OK]
-		 Safety condition #2	[OK]
 		 Safety condition #3	[OK]
-		 Safety condition #4	[OK]
-	 Overall			[OK]		0.144112 seconds
-Verifying range assertions:		[OK]		0.071193 seconds
-Verifying range specification:		[OK]		3.751010 seconds
-Rewriting value-preserved casting:	[OK]		0.000094 seconds
-Verifying algebraic assertions:		[OK]		0.000404 seconds
-Verifying algebraic specification:	[OK]		0.000325 seconds
-Verification result:			[OK]		3.974389 seconds
+	 Overall			[OK]		0.110915 seconds
+Verifying range assertions:		[OK]		0.066771 seconds
+Verifying range specification:		[OK]		3.678912 seconds
+Rewriting value-preserved casting:	[OK]		0.000073 seconds
+Verifying algebraic assertions:		[OK]		0.000294 seconds
+Verifying algebraic specification:	[OK]		0.000212 seconds
+Verification result:			[OK]		3.864837 seconds
 *)
 
 const p610_0 = 0xFFFFFFFFFFFFFFFF
@@ -429,13 +428,12 @@ and r11@uint64 0x1@uint64 0x00000000FFFFFFFF@uint64;
 and rbx@uint64 0x3f@uint64 0x00000000FFFFFFFF@uint64;
 (* shlx   %rbx,(%r8),%rsi                          #! EA = L0x7fffffffb5e8; Value = 0x0000000844a74b20; PC = 0x555555559764 *)
 assert true && rbx = 63@64;
-split dontcare rsi L0x7fffffffb5e8 1;
-shl rsi rsi 63;
+shls dontcare rsi L0x7fffffffb5e8 63;
 (* mov    %rax,%r9                                 #! PC = 0x555555559769 *)
 mov r9 rax;
 (* shrx   %r11,(%r10),%rax                         #! EA = L0x7fffffffb5e0; Value = 0x9b481374316579ee; PC = 0x55555555976c *)
 assert true && r11 = 1@64;
-split rax dontcare L0x7fffffffb5e0 1;
+shrs rax dontcare L0x7fffffffb5e0 1;
 (* xor    %rsi,%rax                                #! PC = 0x555555559771 *)
 xor rax@uint64 rsi rax;
 (* mov    %rax,(%r10)                              #! EA = L0x7fffffffb5e0; PC = 0x555555559774 *)
@@ -445,7 +443,7 @@ mov L0x7fffffffb5e0 rax;
 (* mov    %ecx,%ecx                                #! PC = 0x5555555597b1 *)
 and rcx@uint64 rcx 0x00000000FFFFFFFF@uint64;
 (* shrq   (%rdi)                                   #! EA = L0x7fffffffb5e8; PC = 0x5555555597b8 *)
-split L0x7fffffffb5e8 dontcare L0x7fffffffb5e8 1;
+shrs L0x7fffffffb5e8 dontcare L0x7fffffffb5e8 1;
 (* #! <- SP = 0x7fffffffb518 *)
 #! 0x7fffffffb518 = 0x7fffffffb518;
 (* #retq                                           #! PC = 0x5555555597bc *)

@@ -70,6 +70,8 @@
               "shl"                        , SHL;
               "lsl"                        , SHL;
               "shls"                       , SHLS;
+              "shr"                        , SHR;
+              "shrs"                       , SHRS;
               "cshl"                       , CSHL;
               "clsl"                       , CSHL;
               "set"                        , SET;

@@ -63,6 +63,8 @@ let check_typ_sign signed name ty =
   | Tuint _ -> if signed then Some (name ^ " should be signed but is unsigned") else None
   | Tsint _ -> if not signed then Some (name ^ " should be unsigned but is signed") else None
 let check_var_sign signed v = check_typ_sign signed (string_of_var v) v.vtyp
+let check_var_size size v = if size_of_var v = size then None
+                            else Some ("Size of " ^ string_of_var v ^ " should be " ^ string_of_int size)
 let check_atomic_sign signed a = check_typ_sign signed (string_of_atomic a) (typ_of_atomic a)
 
 let check_unsigned_var v  = check_var_sign false v
@@ -215,7 +217,9 @@ let illformed_instr_reason vs cs gs lno i =
     match i with
     | Imov (v, a) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
     | Ishl (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishls (l, v, a, _) -> [defined_atomic a; check_same_sign [Avar l; Avar v]; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishls (l, v, a, n) -> [defined_atomic a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishr (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishrs (v, l, a, n) -> [defined_atomic a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
       | Imul (v, a1, a2) ->
