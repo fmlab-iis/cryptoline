@@ -335,6 +335,27 @@
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       (vm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
 
+  let parse_cshr_at lno destH destL src1 src2 num =
+    fun _fm cm vm ym gm ->
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let ty = typ_of_atomic a1 in
+      let n = num cm in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
+      (vm, ym, gm, [lno, Icshr (vh, vl, a1, a2, n)])
+
+  let parse_cshrs_at lno destH destL lostL src1 src2 num =
+    fun _fm cm vm ym gm ->
+      let a1 = resolve_atomic_with lno src1 cm vm ym gm in
+      let a2 = resolve_atomic_with lno src2 cm vm ym gm in
+      let ty = typ_of_atomic a1 in
+      let n = num cm in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
+      let (vm, ym, gm, l) = resolve_lv_with lno lostL cm vm ym gm (Some (Tuint (Z.to_int n))) in
+      (vm, ym, gm, [lno, Icshrs (vh, vl, l, a1, a2, n)])
+
   let parse_set_at lno dest =
     fun _fm cm vm ym gm ->
       let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
@@ -1076,6 +1097,10 @@
          parse_isars_at lno dest lost src num fm cm vm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
          parse_cshl_at lno destH destL src1 src2 num fm cm vm ym gm
+      | `CSHR (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
+         parse_cshr_at lno destH destL src1 src2 num fm cm vm ym gm
+      | `CSHRS (`LVPLAIN destH, `LVPLAIN destL, `LVPLAIN lostL, src1, src2, num) ->
+         parse_cshrs_at lno destH destL lostL src1 src2 num fm cm vm ym gm
       | `SET (`LVCARRY dest) ->
          parse_set_at lno dest fm cm vm ym gm
       | `CLEAR (`LVCARRY dest) ->
@@ -1237,7 +1262,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1441,6 +1466,11 @@ instr:
   | lhs lhs EQOP SARS atomic const            { (!lnum, `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | CSHL lval lval atomic atomic const        { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP CSHL atomic atomic const { (!lnum, `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHR lval lval atomic atomic const        { (!lnum, `CSHR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHR atomic atomic const { (!lnum, `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHRS lval lval lval atomic atomic const  { (!lnum, `CSHRS ($2, $3, $4, $5, $6, $7)) }
+  | lhs DOT lhs DOT lhs EQOP CSHRS atomic atomic const
+                                              { (!lnum, `CSHRS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
   | SET lcarry                                { (!lnum, `SET $2) }
   | CLEAR lcarry                              { (!lnum, `CLEAR $2) }
   | NONDET lval                               { (!lnum, `NONDET $2) }
@@ -1627,6 +1657,8 @@ instr:
   | SAR error                                 { raise_at !lnum ("Bad sar instruction") }
   | SARS error                                { raise_at !lnum ("Bad sars instruction") }
   | CSHL error                                { raise_at !lnum ("Bad cshl instruction") }
+  | CSHR error                                { raise_at !lnum ("Bad cshr instruction") }
+  | CSHRS error                               { raise_at !lnum ("Bad cshrs instruction") }
   | NONDET error                              { raise_at !lnum ("Bad nondet instruction") }
   | CALL ID LPAR error                        { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
   | CALL error                                { raise_at !lnum ("Bad call instruction") }

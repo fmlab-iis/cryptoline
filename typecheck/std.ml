@@ -254,6 +254,10 @@ let illformed_instr_reason vs cs gs lno i =
        [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atomic a) (Z.to_int n); defined_atomic a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
     | Icshl (vh, vl, a1, a2, _) ->
        [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
+    | Icshr (vh, vl, a1, a2, _) ->
+       [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
+    | Icshrs (vh, vl, l, a1, a2, n) ->
+       [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]]
     | Inondet _ -> []
     | Icmov (v, c, a1, a2) ->
        [defined_carry c; defined_atomics [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]

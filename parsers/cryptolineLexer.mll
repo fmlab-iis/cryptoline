@@ -76,6 +76,8 @@
               "sars"                       , SARS;
               "cshl"                       , CSHL;
               "clsl"                       , CSHL;
+              "cshr"                       , CSHR;
+              "cshrs"                      , CSHRS;
               "set"                        , SET;
               "clear"                      , CLEAR;
               "nondet"                     , NONDET;

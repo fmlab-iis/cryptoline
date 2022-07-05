@@ -185,6 +185,19 @@ let simulate_instr m i =
      let n = Z.to_int n in
      let shifted = shlB n (cat bs2 bs1) in
      VM.add vh (high (size bs1) shifted) (VM.add vl (shrB n (low (size bs2) shifted)) m)
+  | Icshr (vh, vl, a1, a2, n) ->
+     let bs1 = value_of_atomic m a1 in
+     let bs2 = value_of_atomic m a2 in
+     let n = Z.to_int n in
+     let shifted = shrB n (cat bs2 bs1) in
+     VM.add vh (high (size bs1) shifted) (VM.add vl (low (size bs2) shifted) m)
+  | Icshrs (vh, vl, l, a1, a2, n) ->
+     let bs1 = value_of_atomic m a1 in
+     let bs2 = value_of_atomic m a2 in
+     let n = Z.to_int n in
+     let shifted = shrB n (cat bs2 bs1) in
+     let shifted_out = low n bs2 in
+     VM.add vh (high (size bs1) shifted) (VM.add vl (low (size bs2) shifted) (VM.add l shifted_out m))
   | Inondet v -> VM.add v (List.init (size_of_var v) (fun _ -> Random.bool())) m
   | Icmov (v, c, a1, a2) ->
      let cs = value_of_atomic m c in

@@ -222,6 +222,21 @@ let bexp_cshl vh vl a1 a2 p =
          Lshr (w,
                Low (w, w, exp_cshl w a1 a2 p),
                Const (w, p))))
+let bexp_cshr vh vl a1 a2 p =
+  let w = size_of_var vh in
+  let ip = Z.to_int p in
+  Conj
+    ((Eq (w, exp_var vh, Lshr (w, exp_atomic a1, Const (w, p)))),
+     (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atomic a1), High (ip, w - ip, exp_atomic a2)))))
+let bexp_cshrs vh vl l a1 a2 p =
+  let w = size_of_var vh in
+  let ip = Z.to_int p in
+  Conj
+    (Conj
+       ((Eq (w, exp_var vh, Lshr (w, exp_atomic a1, Const (w, p)))),
+        (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atomic a1), High (ip, w - ip, exp_atomic a2))))),
+     (Eq (ip, exp_var l, Low (ip, w - ip, exp_atomic a2))))
+
 let bexp_cmov v c a1 a2 =
   let w = size_of_var v in
   let cond = Eq (1, exp_atomic c, exp_const 1 Z.one) in
@@ -425,6 +440,8 @@ let bexp_instr i =
   | Isar (v, a, p) -> bexp_sar v a p
   | Isars (v, l, a, p) -> bexp_sars v l a p
   | Icshl (vh, vl, a1, a2, p) -> bexp_cshl vh vl a1 a2 p
+  | Icshr (vh, vl, a1, a2, p) -> bexp_cshr vh vl a1 a2 p
+  | Icshrs (vh, vl, l, a1, a2, p) -> bexp_cshrs vh vl l a1 a2 p
   | Inondet _ -> True
   | Icmov (v, c, a1, a2) -> bexp_cmov v c a1 a2
   | Inop -> True
@@ -576,6 +593,19 @@ let bexp_atomic_scshl_safe w a1 _a2 n =
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
      bexp_atomic_sshl_safe w a1 n)
 
+let bexp_atomic_ucshr_safe w _a1 a2 n =
+  let ni = Z.to_int n in
+  Conj
+    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+     Eq (ni, Low (ni, w - ni, exp_atomic a2), Const (ni, Z.zero)))
+
+let bexp_atomic_scshr_safe w a1 a2 n =
+  let ni = Z.to_int n in
+  Conj
+    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+     Conj (Eq (ni, Low (ni, w - ni, exp_atomic a2), Const (ni, Z.zero)),
+           Eq (1, High (w - 1, 1, exp_atomic a1), Const (1, Z.zero))))
+
 let bexp_vpc_safe v a =
   match v.vtyp, typ_of_atomic a with
   | Tuint wv, Tuint wa ->
@@ -621,6 +651,11 @@ let bexp_instr_safe i =
      (match vh.vtyp with
       | Tuint w -> bexp_atomic_ucshl_safe w a1 a2 n
       | Tsint w -> bexp_atomic_scshl_safe w a1 a2 n)
+  | Icshr (vh, _, a1, a2, n) ->
+     (match vh.vtyp with
+      | Tuint w -> bexp_atomic_ucshr_safe w a1 a2 n
+      | Tsint w -> bexp_atomic_scshr_safe w a1 a2 n)
+  | Icshrs _ -> True
   | Inondet _ -> True
   | Icmov _ -> True
   | Inop -> True
@@ -812,6 +847,22 @@ let bv2z_instr vgen i =
                vh vl
                (eadd (emul (bv2z_atomic a1) (econst (e2pow w))) (bv2z_atomic a2))
                (w - (Z.to_int n))])
+  | Icshr (vh, vl, a1, a2, n) ->
+     let w = size_of_var vh in
+     let n = Z.to_int n in
+     (vgen, [eeq
+               (emul (limbs w [evar vl; evar vh]) (econst (e2pow n)))
+               (limbs w [bv2z_atomic a2; bv2z_atomic a1])])
+  | Icshrs (vh, vl, l, a1, a2, n) ->
+     (match vh.vtyp with
+      | Tuint w -> (vgen, [eeq
+                             (eadd (emul (limbs w [evar vl; evar vh]) (econst (e2pow (Z.to_int n)))) (evar l))
+                             (limbs w [bv2z_atomic a2; bv2z_atomic a1])])
+      | Tsint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow (Z.to_int n))); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
+                             (limbs w [bv2z_atomic a2; bv2z_atomic a1])]))
   | Inondet v ->
      if var_is_bit v then (vgen, carry_constr v)
      else (vgen, [])
