@@ -675,7 +675,8 @@ type instr =
   | Imuls of var * var * atomic * atomic          (** Half-multiply and set carry. *)
   | Imull of var * var * atomic * atomic          (** Full-multiplication *)
   | Imulj of var * atomic * atomic                (** Full-multiplication *)
-  | Isplit of var * var * atomic * Z.t            (** Split *)
+  | Isplit of var * var * atomic * Z.t            (** Split and extend *)
+  | Ispl of var * var * atomic * Z.t              (** Split without extension *)
   (* Instructions that cannot be translated to polynomials *)
   | Iand of var * atomic * atomic                 (** Bit-wise AND *)
   | Ior of var * atomic * atomic                  (** Bit-wise OR *)
@@ -1092,6 +1093,7 @@ let string_of_instr ?typ:(typ=false) i =
   | Imull (vh, vl, a1, a2) -> "mull " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2
   | Imulj (v, a1, a2) -> "mulj " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Isplit (vh, vl, a, n) -> "split " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Ispl (vh, vl, a, n) -> "spl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   (* Instructions that cannot be translated to polynomials *)
   | Iand (v, a1, a2) -> "and " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Ior (v, a1, a2) -> "or " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
@@ -1239,6 +1241,7 @@ let vars_instr i =
     | Isbbs (c, v, a1, a2, y) ->
      VS.add c (VS.add v (VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic y)))
   | Isplit (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atomic a))
+  | Ispl (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atomic a))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _) ->
      VS.add vh (VS.add vl (VS.union (vars_atomic a1) (vars_atomic a2)))
@@ -1290,6 +1293,7 @@ let lvs_instr i =
   | Isar (v, _, _) -> VS.singleton v
   | Isars (v, l, _, _) -> VS.add l (VS.singleton v)
   | Isplit (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
+  | Ispl (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
   | Icshl (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
   | Inondet v -> VS.singleton v
   | Icmov (v, _, _, _) -> VS.singleton v
@@ -1333,6 +1337,7 @@ let rvs_instr i =
   | Isar (_, a, _) -> vars_atomic a
   | Isars (_, _, a, _) -> vars_atomic a
   | Isplit (_, _, a, _) -> vars_atomic a
+  | Ispl (_, _, a, _) -> vars_atomic a
   | Icshl (_, _, a1, a2, _) ->
      VS.union (vars_atomic a1) (vars_atomic a2)
   | Inondet _ -> VS.empty
@@ -1381,6 +1386,7 @@ let lcarries_instr i =
   | Isar _
   | Isars _
   | Isplit _
+  | Ispl _
   | Icshl _ -> VS.empty
   | Inondet v -> if var_is_bit v then VS.singleton v else VS.empty
   | Icmov (v, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
@@ -1484,6 +1490,7 @@ let vids_instr i =
     | Isbbs (c, v, a1, a2, y) ->
      IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic y)))
   | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atomic a))
+  | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atomic a))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _) ->
      IS.add vh.vid (IS.add vl.vid (IS.union (vids_atomic a1) (vids_atomic a2)))
@@ -1535,6 +1542,7 @@ let lvids_instr i =
   | Isar (v, _, _) -> IS.singleton v.vid
   | Isars (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
   | Isplit (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Ispl (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Inondet v -> IS.singleton v.vid
   | Icmov (v, _, _, _) -> IS.singleton v.vid
@@ -1578,6 +1586,7 @@ let rvids_instr i =
   | Isar (_, a, _) -> vids_atomic a
   | Isars (_, _, a, _) -> vids_atomic a
   | Isplit (_, _, a, _) -> vids_atomic a
+  | Ispl (_, _, a, _) -> vids_atomic a
   | Icshl (_, _, a1, a2, _) ->
      IS.union (vids_atomic a1) (vids_atomic a2)
   | Inondet _ -> IS.empty
@@ -1626,6 +1635,7 @@ let lcids_instr i =
   | Isar _
   | Isars _
   | Isplit _
+  | Ispl _
   | Icshl _ -> IS.empty
   | Inondet v -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Icmov (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
@@ -1855,6 +1865,11 @@ let ssa_instr m i =
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Isplit (ssa_var mh vh, ssa_var ml vl, a, n))
+  | Ispl (vh, vl, a, n) ->
+     let a = ssa_atomic m a in
+     let ml = upd_sidx vl m in
+     let mh = upd_sidx vh ml in
+     (mh, Ispl (ssa_var mh vh, ssa_var ml vl, a, n))
   | Iand (v, a1, a2) ->
      let a1 = ssa_atomic m a1 in
      let a2 = ssa_atomic m a2 in
@@ -2114,6 +2129,7 @@ let subst_instr am em rm i =
   | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2)
   | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
   | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atomic am a, n)
+  | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atomic am a, n)
   | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
   | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
   | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
@@ -2564,6 +2580,8 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
                          casts1@casts2@[Imulj (v, a1, a2)]
   | Isplit (vh, vl, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t vh.vtyp a in
                              casts@[Isplit (vh, vl, a, n)]
+  | Ispl (vh, vl, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t vh.vtyp a in
+                           casts@[Ispl (vh, vl, a, n)]
   (* Instructions that cannot be translated to polynomials *)
   | Iand (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
                         let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
@@ -2814,6 +2832,7 @@ let visit_instr visitor i =
         | Imull (vh, vl, a1, a2) -> Imull (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a1, visit_atomic visitor a2)
         | Imulj (v, a1, a2) -> Imulj (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
         | Isplit (vh, vl, a, n) -> Isplit (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a, n)
+        | Ispl (vh, vl, a, n) -> Ispl (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a, n)
         (* Instructions that cannot be translated to polynomials *)
         | Iand (v, a1, a2) -> Iand (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
         | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
@@ -3143,6 +3162,7 @@ let bvcryptoline_of_instr i =
   | Imull (vh, vl, a1, a2) -> Printf.sprintf "(bvMulf %s %s %s %s)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
   | Imulj _ -> raise (UnsupportedException "Instruction mulj is not supported by BvCryptoLine.")
   | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a) (Z.to_int n)
+  | Ispl _ -> raise (UnsupportedException "Instruction spl is not supported by BvCryptoLine.")
   (* Instructions that cannot be translated to polynomials *)
   | Iand _ -> raise (UnsupportedException "Instruction and is not supported by BvCryptoLine.")
   | Ior _ -> raise (UnsupportedException "Instruction or is not supported by BvCryptoLine.")
@@ -3311,6 +3331,7 @@ let update_variable_id_instr m i =
   | Imull (vh, vl, a1, a2) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
   | Imulj (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
   | Isplit (vh, vl, a, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a]
+  | Ispl (vh, vl, a, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a]
   | Iand (v, a1, a2)
   | Ior (v, a1, a2)
   | Ixor (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]

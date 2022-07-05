@@ -278,6 +278,11 @@ let simulate_instr m i =
      let n = Z.to_int n in
      let (bsh, bsl) = (if atomic_is_signed a then ssplB else usplB) bs n in
      VM.add vh bsh (VM.add vl bsl m)
+  | Ispl (vh, vl, a, n) ->
+     let bs = value_of_atomic m a in
+     let n = Z.to_int n in
+     let (bsh, bsl) = (high (size_of_atomic a - n) bs, low n bs) in
+     VM.add vh bsh (VM.add vl bsl m)
   | Iand (v, a1, a2) ->
      let bs1 = value_of_atomic m a1 in
      let bs2 = value_of_atomic m a2 in

@@ -508,7 +508,8 @@ type instr =
   | Imuls of var * var * atomic * atomic          (** Half-multiply and set carry. *)
   | Imull of var * var * atomic * atomic          (** Full-multiplication *)
   | Imulj of var * atomic * atomic                (** Full-multiplication *)
-  | Isplit of var * var * atomic * Z.t            (** Split *)
+  | Isplit of var * var * atomic * Z.t            (** Split and extend *)
+  | Ispl of var * var * atomic * Z.t              (** Split without extension *)
   (* Instructions that cannot be translated to polynomials *)
   | Iand of var * atomic * atomic                 (** Bit-wise AND *)
   | Ior of var * atomic * atomic                  (** Bit-wise OR *)
@@ -680,12 +681,16 @@ type instr =
                               {ul {- Unsigned: v = mul (zext (size a1) a1) (zext (size a1) a2)}
                                   {- Signed: v = mul (sext (size a1) a1) (sext (size a1) a2)}}}
                               {- Algebra: v = a1 × a2}}
-   - [Isplit (vh, vl, a, n)]: Split [a] at position [n], store the high bits in [vh], and store the low bits in [vl].
+   - [Isplit (vh, vl, a, n)]: Split [a] at position [n], store the high bits (extended according to the type of [a]) in [vh], and store the (zero-extended) low bits in [vl].
                               {ul {- Type: [vh] and [a] have the same type. [vl] is unsigned. [vl] and [vh] have the same size.}
                                   {- QF_BV:
                                   {ul {- Unsigned: vh = zext n (high (size a - n) a), vl = zext (size a - n) (low n a)}
                                       {- Signed: vh = sext n (high (size a - n) a), vl = zext (size a - n) (low n a)}}}
                                   {- Algebra: vh × 2{^n} + vl = a}}
+   - [Ispl (vh, vl, a, n)]: Split [a] at position [n], store the high bits in [vh], and store the low bits in [vl].
+                            {ul {- Type: [vh] and [a] have the same sign. [vl] is unsigned. [vh] and [vl] are of sizes (size - n) and n respectively.}
+                                {- QF_BV: vh = high (size a - n) a, vl = low n a}
+                                {- Algebra: vh × 2{^n} + vl = a}}
    - [Iand (v, a1, a2)]: Assign [v] the bit-wise AND of [a1] and [a2].
                          {ul {- Type: [v], [a1], and [a2] can be any type.}
                              {- QF_BV: v = and a1 a2}

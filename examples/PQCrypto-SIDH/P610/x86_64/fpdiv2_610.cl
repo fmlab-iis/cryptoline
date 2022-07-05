@@ -1,23 +1,20 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fpdiv2_610.cl
-Parsing Cryptoline file:		[OK]		0.005026 seconds
-Checking well-formedness:		[OK]		0.001641 seconds
-Transforming to SSA form:		[OK]		0.000323 seconds
-Normalizing specification:		[OK]		0.000415 seconds
-Rewriting assignments:			[OK]		0.000489 seconds
+Parsing Cryptoline file:		[OK]		0.005306 seconds
+Checking well-formedness:		[OK]		0.001717 seconds
+Transforming to SSA form:		[OK]		0.000315 seconds
+Normalizing specification:		[OK]		0.000422 seconds
+Rewriting assignments:			[OK]		0.000265 seconds
 Verifying program safety:
 	 Cut 0
-	     Round 1 (4 safety conditions, timeout = 14400 seconds)
+	     Round 1 (1 safety conditions, timeout = 14400 seconds)
 		 Safety condition #0	[OK]
-		 Safety condition #1	[OK]
-		 Safety condition #2	[OK]
-		 Safety condition #3	[OK]
-	 Overall			[OK]		0.126185 seconds
-Verifying range assertions:		[OK]		0.073992 seconds
-Verifying range specification:		[OK]		3.692385 seconds
-Rewriting value-preserved casting:	[OK]		0.000097 seconds
-Verifying algebraic assertions:		[OK]		0.000430 seconds
-Verifying algebraic specification:	[OK]		0.000372 seconds
-Verification result:			[OK]		3.901955 seconds
+	 Overall			[OK]		0.037463 seconds
+Verifying range assertions:		[OK]		0.069717 seconds
+Verifying range specification:		[OK]		3.728928 seconds
+Rewriting value-preserved casting:	[OK]		0.000103 seconds
+Verifying algebraic assertions:		[OK]		0.000446 seconds
+Verifying algebraic specification:	[OK]		0.000328 seconds
+Verification result:			[OK]		3.845652 seconds
 *)
 
 const p610_0 = 0xFFFFFFFFFFFFFFFF
@@ -332,15 +329,13 @@ and rsi@uint64 0xa@uint64 0x00000000FFFFFFFF@uint64;
 (* mov    %esi,%ecx                                #! PC = 0x5555555596e4 *)
 and rcx@uint64 rsi 0x00000000FFFFFFFF@uint64;
 (* dec    %ecx                                     #! PC = 0x5555555596e6 *)
-and ecx@uint64 rcx 0x00000000FFFFFFFF@uint64;
-vpc ecx@uint32 ecx;
+spl dontcare ecx rcx 32;
 subb dontcare ecx ecx 1@uint32;
 vpc rcx@uint64 ecx;
 (* #je     0x5555555597c9 <mp_shiftr1+233>         #! PC = 0x5555555596e8 *)
 #je     0x5555555597c9 <mp_shiftr1+233>         #! 0x5555555596e8 = 0x5555555596e8;
 (* sub    $0x2,%esi                                #! PC = 0x5555555596ee *)
-and esi@uint64 rsi 0x00000000FFFFFFFF@uint64;
-vpc esi@uint32 esi;
+spl dontcare esi rsi 32;
 subb carry esi esi 0x2@uint32;
 vpc rsi@uint64 esi;
 (* #jbe    0x5555555597d0 <mp_shiftr1+240>         #! PC = 0x5555555596f4 *)
@@ -348,8 +343,7 @@ vpc rsi@uint64 esi;
 (* mov    %ecx,%edx                                #! PC = 0x5555555596fa *)
 and rdx@uint64 rcx 0x00000000FFFFFFFF@uint64;
 (* shr    $0x2,%edx                                #! PC = 0x5555555596fc *)
-and edx@uint64 rdx 0x00000000FFFFFFFF@uint64;
-vpc edx@uint32 edx;
+spl dontcare edx rdx 32;
 shrs edx dontcare edx 0x2;
 vpc rdx@uint64 edx;
 (* shl    $0x5,%rdx                                #! PC = 0x5555555596ff *)

@@ -339,6 +339,12 @@ let bexp_split vh vl a p =
         Eq (w,
             exp_var vl,
             ZeroExtend (p, w - p, Low (p, w - p, exp_atomic a))))
+let bexp_spl vh vl a p =
+  let p = Z.to_int p in
+  let w = size_of_atomic a in
+  Conj
+    ((Eq (w - p, exp_var vh, High (p, w - p, exp_atomic a))),
+     (Eq (p, exp_var vl, Low (p, w - p, exp_atomic a))))
 let bexp_and v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, And (w, exp_atomic a1, exp_atomic a2))
@@ -438,6 +444,7 @@ let bexp_instr i =
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
+  | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
   | Iand (v, a1, a2) -> bexp_and v a1 a2
   | Ior (v, a1, a2) -> bexp_or v a1 a2
   | Ixor (v, a1, a2) -> bexp_xor v a1 a2
@@ -651,6 +658,7 @@ let bexp_instr_safe i =
   | Imull _
     | Imulj _ -> True
   | Isplit _ -> True
+  | Ispl _ -> True
   | Iand _ -> True
   | Ior _ -> True
   | Ixor _ -> True
@@ -885,6 +893,7 @@ let bv2z_instr vgen i =
   | Imulj (v, a1, a2) ->
      (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
   | Isplit (vh, vl, a, n) -> (vgen, [bv2z_split vh vl (bv2z_atomic a) (Z.to_int n)])
+  | Ispl (vh, vl, a, n) -> (vgen, [bv2z_split vh vl (bv2z_atomic a) (Z.to_int n)])
   | Iand _
     | Ior _
     | Ixor _ -> (vgen, [])

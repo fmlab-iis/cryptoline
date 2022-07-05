@@ -33,9 +33,9 @@
 #! mov $1c, %ebx -> and rbx@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
 #! mov $1c, %esi -> and rsi@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
 #! mov $1c, %%r11d -> and r11@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
-#! sub $1c, %esi -> and esi@uint64 rsi 0x00000000FFFFFFFF@uint64;\nvpc esi@uint32 esi;\nsubb carry esi esi $1c@uint32;\nvpc rsi@uint64 esi
-#! dec %ecx -> and ecx@uint64 rcx 0x00000000FFFFFFFF@uint64;\nvpc ecx@uint32 ecx;\nsubb dontcare ecx ecx 1@uint32;\nvpc rcx@uint64 ecx
-#! shr $1c, %edx -> and edx@uint64 rdx 0x00000000FFFFFFFF@uint64;\nvpc edx@uint32 edx;\nshrs edx dontcare edx $1c;\nvpc rdx@uint64 edx
+#! sub $1c, %esi -> spl dontcare esi rsi 32;\nsubb carry esi esi $1c@uint32;\nvpc rsi@uint64 esi
+#! dec %ecx -> spl dontcare ecx rcx 32;\nsubb dontcare ecx ecx 1@uint32;\nvpc rcx@uint64 ecx
+#! shr $1c, %edx -> spl dontcare edx rdx 32;\nshrs edx dontcare edx $1c;\nvpc rdx@uint64 edx
 #! xor %%r9d, %%r9d -> mov r9 0@uint64
 #! xor %%r11d, %%r11d -> mov r11 0@uint64
 #! xor %ebx, %ebx -> mov rbx 0@uint64

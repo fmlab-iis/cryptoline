@@ -58,23 +58,23 @@ cmov x15 odd x15 x11;
 (* csel	x3, x3, xzr, ne  // ne = any               #! PC = 0x274877978972 *)
 cmov x3 odd x3 0@uint64;
 (* extr	x8, x13, x12, #1                           #! PC = 0x274877978976 *)
-spl x12h dontcare x12 1;
-spl dontcare x13l x13 1;
+split x12h dontcare x12 1;
+split dontcare x13l x13 1;
 shl x13l x13l 63;
 add x8 x13l x12h;
 (* extr	x9, x14, x13, #1                           #! PC = 0x274877978980 *)
-spl x13h dontcare x13 1;
-spl dontcare x14l x14 1;
+split x13h dontcare x13 1;
+split dontcare x14l x14 1;
 shl x14l x14l 63;
 add x9 x14l x13h;
 (* extr	x10, x15, x14, #1                          #! PC = 0x274877978984 *)
-spl x14h dontcare x14 1;
-spl dontcare x15l x15 1;
+split x14h dontcare x14 1;
+split dontcare x15l x15 1;
 shl x15l x15l 63;
 add x10 x15l x14h;
 (* extr	x11, x3, x15, #1                           #! PC = 0x274877978988 *)
-spl x15h dontcare x15 1;
-spl dontcare x3l x3 1;
+split x15h dontcare x15 1;
+split dontcare x3l x3 1;
 shl x3l x3l 63;
 add x11 x3l x15h;
 

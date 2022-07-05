@@ -29,6 +29,7 @@
               "muls"                       , MULS;
               "mull"                       , MULL;
               "mulj"                       , MULJ;
+              "spl"                        , SPL;
               "split"                      , SPLIT;
               "uadd"                       , UADD;
               "uadds"                      , UADDS;
@@ -46,6 +47,7 @@
               "umuls"                      , UMULS;
               "umull"                      , UMULL;
               "umulj"                      , UMULJ;
+              "uspl"                       , USPL;
               "usplit"                     , USPLIT;
               "sadd"                       , SADD;
               "sadds"                      , SADDS;
@@ -63,6 +65,7 @@
               "smuls"                      , SMULS;
               "smull"                      , SMULL;
               "smulj"                      , SMULJ;
+              "sspl"                       , SSPL;
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
               "shls"                       , SHLS;

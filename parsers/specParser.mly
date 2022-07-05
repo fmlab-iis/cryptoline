@@ -22,9 +22,9 @@
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
-%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT
-%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT
-%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT
+%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
+%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
+%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
 %token SHL SHLS SHR SHRS SAR SARS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
@@ -127,6 +127,7 @@ instr:
   | MULL lval lval atomic atomic                  { [min_int, Imull ($2, $3, $4, $5)] }
   | MULJ lval atomic atomic                       { [min_int, Imulj ($2, $3, $4)] }
   | SPLIT lval lval atomic const                  { [min_int, Isplit ($2, $3, $4, $5)] }
+  | SPL lval lval atomic const                    { [min_int, Ispl ($2, $3, $4, $5)] }
   | AND lval atomic atomic                        { [min_int, Iand ($2, $3, $4)] }
   | OR lval atomic atomic                         { [min_int, Ior ($2, $3, $4)] }
   | NOT lval atomic                               { [min_int, Inot ($2, $3)] }

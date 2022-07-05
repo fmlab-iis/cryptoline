@@ -510,6 +510,20 @@
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
 
+  let parse_spl_at lno destH destL src num =
+    fun _fm cm vm ym gm ->
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
+      let ty = typ_of_atomic a in
+      let w = size_of_typ ty in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (typ_to_size ty (w - Z.to_int n))) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
+      let _ =
+        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+          raise_at lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+      in
+      (vm, ym, gm, [lno, Ispl (vh, vl, a, n)])
+
   let parse_uadd_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
       let a1 = resolve_atomic_with lno src1 cm vm ym gm in
@@ -658,6 +672,20 @@
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+
+  let parse_uspl_at lno destH destL src num =
+    fun _fm cm vm ym gm ->
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
+      let ty = typ_to_unsigned (typ_of_atomic a) in
+      let w = size_of_typ ty in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (Tuint (w - Z.to_int n))) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
+      let _ =
+        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+      in
+      (vm, ym, gm, [lno, Ispl (vh, vl, a, n)])
 
   let parse_sadd_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
@@ -809,6 +837,20 @@
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
       (vm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+
+  let parse_sspl_at lno destH destL src num =
+    fun _fm cm vm ym gm ->
+      let a = resolve_atomic_with lno src cm vm ym gm in
+      let n = num cm in
+      let ty = typ_to_signed (typ_of_atomic a) in
+      let w = size_of_typ ty in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (Tsint (w - Z.to_int n))) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
+      let _ =
+        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+      in
+      (vm, ym, gm, [lno, Ispl (vh, vl, a, n)])
 
   let parse_and_at lno dest src1 src2 =
     fun _fm cm vm ym gm ->
@@ -1074,6 +1116,8 @@
          parse_mulj_at lno dest src1 src2 fm cm vm ym gm
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_split_at lno destH destL src num fm cm vm ym gm
+      | `SPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_spl_at lno destH destL src num fm cm vm ym gm
       | `UADD (`LVPLAIN dest, src1, src2) ->
          parse_uadd_at lno dest src1 src2 fm cm vm ym gm
       | `UADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1106,6 +1150,8 @@
          parse_umulj_at lno dest src1 src2 fm cm vm ym gm
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_usplit_at lno destH destL src num fm cm vm ym gm
+      | `USPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_uspl_at lno destH destL src num fm cm vm ym gm
       | `SADD (`LVPLAIN dest, src1, src2) ->
          parse_sadd_at lno dest src1 src2 fm cm vm ym gm
       | `SADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
@@ -1138,6 +1184,8 @@
          parse_smulj_at lno dest src1 src2 fm cm vm ym gm
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_ssplit_at lno destH destL src num fm cm vm ym gm
+      | `SSPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
+         parse_sspl_at lno destH destL src num fm cm vm ym gm
       | `AND (`LVPLAIN dest, src1, src2) ->
          parse_and_at lno dest src1 src2 fm cm vm ym gm
       | `OR (`LVPLAIN dest, src1, src2) ->
@@ -1186,9 +1234,9 @@
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
-%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT
-%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT
-%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT
+%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
+%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
+%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
 %token SHL SHLS SHR SHRS SAR SARS CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
@@ -1430,6 +1478,8 @@ instr:
   | lhs EQOP MULJ atomic atomic               { (!lnum, `MULJ (`LVPLAIN $1, $4, $5)) }
   | SPLIT lval lval atomic const              { (!lnum, `SPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SPLIT atomic const       { (!lnum, `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SPL lval lval atomic const                { (!lnum, `SPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPL atomic const         { (!lnum, `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | UADD lval atomic atomic                   { (!lnum, `UADD ($2, $3, $4)) }
   | lhs EQOP UADD atomic atomic               { (!lnum, `UADD (`LVPLAIN $1, $4, $5)) }
   | UADDS lcarry lval atomic atomic           { (!lnum, `UADDS ($2, $3, $4, $5)) }
@@ -1462,6 +1512,8 @@ instr:
   | lhs EQOP UMULJ atomic atomic              { (!lnum, `UMULJ (`LVPLAIN $1, $4, $5)) }
   | USPLIT lval lval atomic const             { (!lnum, `USPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP USPLIT atomic const      { (!lnum, `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | USPL lval lval atomic const               { (!lnum, `USPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPL atomic const        { (!lnum, `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SADD lval atomic atomic                   { (!lnum, `SADD ($2, $3, $4)) }
   | lhs EQOP SADD atomic atomic               { (!lnum, `SADD (`LVPLAIN $1, $4, $5)) }
   | SADDS lcarry lval atomic atomic           { (!lnum, `SADDS ($2, $3, $4, $5)) }
@@ -1494,6 +1546,8 @@ instr:
   | lhs EQOP SMULJ atomic atomic              { (!lnum, `SMULJ (`LVPLAIN $1, $4, $5)) }
   | SSPLIT lval lval atomic const             { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SSPLIT atomic const      { (!lnum, `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SSPL lval lval atomic const               { (!lnum, `SSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPL atomic const        { (!lnum, `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | AND lval atomic atomic                    { (!lnum, `AND ($2, $3, $4)) }
   | lhs EQOP AND atomic atomic                { (!lnum, `AND (`LVPLAIN $1, $4, $5)) }
   | OR lval atomic atomic                     { (!lnum, `OR ($2, $3, $4)) }
@@ -1535,6 +1589,7 @@ instr:
   | MUL error                                 { raise_at !lnum ("Bad mul instruction") }
   | MULL error                                { raise_at !lnum ("Bad mull instruction") }
   | SPLIT error                               { raise_at !lnum ("Bad split instruction") }
+  | SPL error                                 { raise_at !lnum ("Bad spl instruction") }
   | UADD error                                { raise_at !lnum ("Bad uadd instruction") }
   | UADDS error                               { raise_at !lnum ("Bad uadds instruction") }
   | UADC error                                { raise_at !lnum ("Bad uadc instruction") }
@@ -1549,6 +1604,7 @@ instr:
   | UMUL error                                { raise_at !lnum ("Bad umul instruction") }
   | UMULL error                               { raise_at !lnum ("Bad umull instruction") }
   | USPLIT error                              { raise_at !lnum ("Bad usplit instruction") }
+  | USPL error                                { raise_at !lnum ("Bad uspl instruction") }
   | SADD error                                { raise_at !lnum ("Bad sadd instruction") }
   | SADDS error                               { raise_at !lnum ("Bad sadds instruction") }
   | SADC error                                { raise_at !lnum ("Bad sadc instruction") }
@@ -1563,6 +1619,7 @@ instr:
   | SMUL error                                { raise_at !lnum ("Bad smul instruction") }
   | SMULL error                               { raise_at !lnum ("Bad smull instruction") }
   | SSPLIT error                              { raise_at !lnum ("Bad ssplit instruction") }
+  | SSPL error                                { raise_at !lnum ("Bad sspl instruction") }
   | SHL error                                 { raise_at !lnum ("Bad shl instruction") }
   | SHLS error                                { raise_at !lnum ("Bad shls instruction") }
   | SHR error                                 { raise_at !lnum ("Bad shr instruction") }

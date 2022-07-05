@@ -141,6 +141,11 @@ let check_split_lvs lno vh vl =
                                        ^ " should be the same at line " ^ (string_of_int lno))
   | _, Tsint _ -> Some ("The low part of a split is always unsigned at line " ^ (string_of_int lno))
 
+let check_spl_lvs lno vh vl w n =
+  if size_of_var vh != w - n then Some ("The size of the variable " ^ string_of_var vh ^ " should be " ^ string_of_int (w - n) ^ " at line " ^ string_of_int lno)
+  else if size_of_var vl != n then Some ("The size of the variable " ^ string_of_var vl ^ " should be " ^ string_of_int n ^ " at line " ^ string_of_int lno)
+  else None
+
 let check_mulj_size lno v a1 a2 =
   let sv = size_of_var v in
   let sa1 = size_of_atomic a1 in
@@ -245,6 +250,8 @@ let illformed_instr_reason vs cs gs lno i =
        [defined_atomics [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
     | Isplit (vh, vl, a, _) ->
        [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atomic a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
+    | Ispl (vh, vl, a, n) ->
+       [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atomic a) (Z.to_int n); defined_atomic a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
     | Icshl (vh, vl, a1, a2, _) ->
        [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
     | Inondet _ -> []
