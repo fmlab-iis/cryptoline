@@ -143,6 +143,7 @@
 
 let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
+let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
@@ -226,6 +227,10 @@ token = parse
   | "int" ((number+) as w)         { upd_cnum lexbuf; SINT (int_of_string w) }
   | "bit"                          { upd_cnum lexbuf; BIT }
   (* Numbers *)
+  | "0b" ((bin+) as bin)           {
+                                     let _ = upd_cnum lexbuf in
+                                     NUM (Z.of_string_base 2 bin)
+                                   }
   | "0x" ((hex+) as hex)           {
                                      let _ = upd_cnum lexbuf in
                                      NUM (Z.of_string_base 16 hex)
