@@ -15,6 +15,8 @@ let save_coqcryptoline_filename = ref ""
 
 let save_bvcryptoline_filename = ref ""
 
+let initial_values_string_none = "none"
+
 let initial_values_string = ref ""
 
 let simulation_steps = ref (-1)
@@ -71,7 +73,7 @@ let args = [
     ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
     ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
     ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
-    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
+    ("-sim INPUTS", String (fun s -> action := Simulation; initial_values_string := if s = initial_values_string_none then "" else s), Common.mk_arg_desc([""; "Simulate the parsed specification starting with a list of initial"; "input values (comma separated), which should be \"none\" if the"; "specification has no input variable."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
