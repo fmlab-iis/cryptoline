@@ -1,3 +1,79 @@
+#! (%rdi,%rax,$1c) = %%EA
+#! $1c(%rax) = %%EA
+#! $1c(%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! $1c(%rip) = %%EA
+#! (%rax) = %%EA
+#! (%rdx) = %%EA
+#! (%rdi) = %%EA
+#! (%rsi) = %%EA
+#! (%rip) = %%EA
+#! (%%r8) = %%EA
+#! (%%r9) = %%EA
+#! (%%r10) = %%EA
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+#! %rbp = %%rbp
+#! %r$1c = %%r$1c
+#! %cl = %%cl
+#! %ymm$1c = %%ymm$1c
+
+#! fpdiv2_751: -> nop
+#! endbr64 .* -> nop
+#! push .* -> nop
+#! pop .* -> nop
+#! mov %edx, %eax -> and rax@uint64 rdx 0x00000000FFFFFFFF@uint64
+#! mov %esi, %ecx -> and rcx@uint64 rsi 0x00000000FFFFFFFF@uint64
+#! mov %ecx, %edx -> and rdx@uint64 rcx 0x00000000FFFFFFFF@uint64
+#! mov %ecx, %ecx -> and rcx@uint64 rcx 0x00000000FFFFFFFF@uint64
+#! mov $1c, %ebx -> and rbx@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
+#! mov $1c, %esi -> and rsi@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
+#! mov $1c, %%r11d -> and r11@uint64 $1c@uint64 0x00000000FFFFFFFF@uint64
+#! sub $1c, %esi -> spl dontcare esi rsi 32;\nsubb carry esi esi $1c@uint32;\nvpc rsi@uint64 esi
+#! dec %ecx -> spl dontcare ecx rcx 32;\nsubb dontcare ecx ecx 1@uint32;\nvpc rcx@uint64 ecx
+#! shr $1c, %edx -> spl dontcare edx rdx 32;\nshrs edx dontcare edx $1c;\nvpc rdx@uint64 edx
+#! xor %%r9d, %%r9d -> mov r9 0@uint64
+#! xor %%r11d, %%r11d -> mov r11 0@uint64
+#! xor %ebx, %ebx -> mov rbx 0@uint64
+#! and $1c, %edx -> and rdx@uint64 rdx 0x00000000FFFFFFFF@uint64;\nand rdx@uint64 rdx $1c@uint64
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! add $1ea, $2v -> adds carry $2v $2v $1ea
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+#! adc $1ea, $2v -> adcs carry $2v $2v $1ea carry
+#! adc $1v, $2v -> adcs carry $2v $2v $1v@uint64 carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! and $1v, $2v -> and uint64 $2v $1v $2v
+#! neg $1v -> subb dontcare $1v 0@uint64 $1v
+#! shl $1c, $2v -> shls dontcare $2v $2v $1c
+#! vmovdqu64 $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+8] $1ymm_1;\nmov $2ea[+16] $1ymm_2;\nmov $2ea[+24] $1ymm_3
+#! vpsrlq $1c, $2ea, $3ymm -> shrs $3ymm_0 dontcare $2ea $1c;\nshrs $3ymm_1 dontcare $2ea[+8] $1c;\nshrs $3ymm_2 dontcare $2ea[+16] $1c;\nshrs $3ymm_3 dontcare $2ea[+24] $1c
+#! vpsllq $1c, $2ea, $3ymm -> shls dontcare $3ymm_0 $2ea $1c;\nshls dontcare $3ymm_1 $2ea[+8] $1c;\nshls dontcare $3ymm_2 $2ea[+16] $1c;\nshls dontcare $3ymm_3 $2ea[+24] $1c
+#! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint64 $1ymm_0 $2ymm_0;\nxor $3ymm_1@uint64 $1ymm_1 $2ymm_1;\nxor $3ymm_2@uint64 $1ymm_2 $2ymm_2;\nxor $3ymm_3@uint64 $1ymm_3 $2ymm_3
+#! vzeroupper -> mov ymm0_2 0@uint64;\nmov ymm0_3 0@uint64;\nmov ymm1_2 0@uint64;\nmov ymm1_3 0@uint64
+#! shlx $1v, $2ea, $3v -> assert true && $1v = 63@64;\nshls dontcare $3v $2ea 63
+#! shrx $1v, $2ea, $3v -> assert true && $1v = 1@64;\nshrs $3v dontcare $2ea 1
+#! shrq $1ea -> shrs $1ea dontcare $1ea 1
+#! cmp .* -> nop
+#! test .* -> nop
+#! lea .* -> nop
+#! nopl .* -> nop
+
 fpdiv2_751:
 # %rdi = 0x7fffffffba40
 # %rsi = 0x7fffffffba40
