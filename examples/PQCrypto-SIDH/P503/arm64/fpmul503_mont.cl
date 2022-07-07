@@ -1,4 +1,5 @@
-(* NOTE: incomplete, several carries cannot be verified *)
+(* NOTE: incomplete, 9 carries cannot be verified *)
+(*       possible error when storing x25 before adding carry. see FIX *)
 (* quine:  -v -isafety -jobs 24 -slicing -no_carry_constraint fpmul503_mont.cl
 Parsing Cryptoline file:                [OK]            0.013677 seconds
 Checking well-formedness:               [OK]            0.002244 seconds
@@ -163,11 +164,7 @@ adcs carry x29 x6 x10 carry;
 mov x17 L0xffffffffe968;
 mov x18 L0xffffffffe970;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab5f48 *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare=0@1;
-assume dontcare=0 && true;
+adc x7 0@uint64 0@uint64 carry;
 
 (* NOTE: summary *)
 ghost carryAL@uint64: carryAL = x7 && carryAL = x7;
@@ -192,11 +189,7 @@ adcs carry x13 x13 x17 carry;
 (* adcs	x14, x14, x18                              #! PC = 0xaaaaaaab5f64 *)
 adcs carry x14 x14 x18 carry;
 (* adc	x8, xzr, xzr                                #! PC = 0xaaaaaaab5f68 *)
-adcs dontcare x8 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x8 0@uint64 0@uint64 carry;
 
 (* NOTE: summary *)
 ghost carryBL@uint64 : carryBL = x8 && carryBL = x8;
@@ -253,11 +246,7 @@ adcs carry x17 x17 x21 carry;
 mov L0xffffffffe668 x26;
 mov L0xffffffffe670 x27;
 (* adc	x18, x18, x22                               #! PC = 0xaaaaaaab5fa4 *)
-adcs dontcare x18 x18 x22 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x18 x18 x22 carry;
 
 ghost x26o@uint64, x27o@uint64, x28o@uint64, x29o@uint64,
       x11o@uint64, x12o@uint64, x13o@uint64, x14o@uint64 :
@@ -273,11 +262,7 @@ adds carry x26 x26 x28;
 (* adcs	x27, x27, x29                              #! PC = 0xaaaaaaab5fac *)
 adcs carry x27 x27 x29 carry;
 (* adc	x24, xzr, xzr                               #! PC = 0xaaaaaaab5fb0 *)
-adcs dontcare x24 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x24 0@uint64 0@uint64 carry;
 
 assert limbs 64 [x26, x27, x24] =
        limbs 64 [x26o, x27o] + limbs 64 [x28o, x29o] && true;
@@ -287,11 +272,7 @@ adds carry x22 x11 x13;
 (* adcs	x25, x12, x14                              #! PC = 0xaaaaaaab5fb8 *)
 adcs carry x25 x12 x14 carry;
 (* adc	x23, xzr, xzr                               #! PC = 0xaaaaaaab5fbc *)
-adcs dontcare x23 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 0@uint64 0@uint64 carry;
 
 assert limbs 64 [x22, x25, x23] =
        limbs 64 [x11o, x12o] + limbs 64 [x13o, x14o] && true;
@@ -341,11 +322,7 @@ adcs carry x9 x21 x9 carry;
 (* umulh	x21, x26, x22                             #! PC = 0xaaaaaaab5ff0 *)
 mov x21 Hx26x22;
 (* adc	x24, x24, xzr                               #! PC = 0xaaaaaaab5ff4 *)
-adcs dontcare x24 x24 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x24 x24 0@uint64 carry;
 
 (* NOTE: MUL128_COMBA_CUT START *)
 
@@ -356,11 +333,7 @@ mov x22 Hx27x22;
 (* adds	x19, x19, x21                              #! PC = 0xaaaaaaab6000 *)
 adds carry x19 x19 x21;
 (* adc	x20, x20, xzr                               #! PC = 0xaaaaaaab6004 *)
-adcs dontcare x20 x20 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x20 x20 0@uint64 carry;
 
 (* mul	x23, x27, x25                               #! PC = 0xaaaaaaab6008 *)
 mull Hx27x25 x23 x27 x25;
@@ -371,20 +344,11 @@ adds carry x19 x19 x26;
 (* adcs	x20, x20, x22                              #! PC = 0xaaaaaaab6014 *)
 adcs carry x20 x20 x22 carry;
 (* adc	x21, xzr, xzr                               #! PC = 0xaaaaaaab6018 *)
-adcs dontcare x21 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x21 0@uint64 0@uint64 carry;
 (* adds	x20, x20, x23                              #! PC = 0xaaaaaaab601c *)
 adds carry x20 x20 x23;
 (* adc	x21, x21, x25                               #! PC = 0xaaaaaaab6020 *)
-adcs dontcare x21 x21 x25 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x21 x21 x25 carry;
 
 (* NOTE: MUL128_COMBA_CUT END *)
 
@@ -408,11 +372,7 @@ mull x23 x8 x26 x11;
 (* mull Hx26x12 x9 x26 x12; *)
 mull x25 x9 x26 x12;
 (* adc	x24, x24, xzr                               #! PC = 0xaaaaaaab6040 *)
-adcs dontcare x24 x24 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x24 x24 0@uint64 carry;
 
 (* NOTE: (AH+AL)*(BH+BL) *)
 assert limbs 64 [x10, x19, x20, x21, x24] =
@@ -428,12 +388,7 @@ mov x11 Hx27x11;
 (* adds	x9, x9, x23                                #! PC = 0xaaaaaaab604c *)
 adds carry x9 x9 x23;
 (* adc	x25, x25, xzr                               #! PC = 0xaaaaaaab6050 *)
-adcs dontcare x25 x25 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x25 x25 0@uint64 carry;
 (* mul	x22, x27, x12                               #! PC = 0xaaaaaaab6054 *)
 mull Hx27x12 x22 x27 x12;
 (* umulh	x12, x27, x12                             #! PC = 0xaaaaaaab6058 *)
@@ -443,20 +398,12 @@ adds carry x9 x9 x26;
 (* adcs	x25, x25, x11                              #! PC = 0xaaaaaaab6060 *)
 adcs carry x25 x25 x11 carry;
 (* adc	x23, xzr, xzr                               #! PC = 0xaaaaaaab6064 *)
-adcs dontcare x23 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 0@uint64 0@uint64 carry;
 
 (* adds	x25, x25, x22                              #! PC = 0xaaaaaaab6068 *)
 adds carry x25 x25 x22;
 (* adc	x23, x23, x12                               #! PC = 0xaaaaaaab606c *)
-adcs dontcare x23 x23 x12 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 x23 x12 carry;
 
 (* NOTE: MUL128_COMBA_CUT END *)
 
@@ -481,11 +428,11 @@ mov x22 Hx28x14;
 (* sbcs	x21, x21, x23                              #! PC = 0xaaaaaaab608c *)
 sbcs carry x21 x21 x23 carry;
 (* sbc	x24, x24, xzr                               #! PC = 0xaaaaaaab6090 *)
-sbcs dontcare x24 x24 0@uint64 carry;
+sbcs docare x24 x24 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* NOTE: (AH+AL)*(BH+BL) - AL*BL *)
 assert limbs 64 [x10, x19, x20, x21, x24] =
@@ -502,12 +449,7 @@ mov x13 Hx29x13;
 (* adds	x27, x27, x11                              #! PC = 0xaaaaaaab609c *)
 adds carry x27 x27 x11;
 (* adc	x22, x22, xzr                               #! PC = 0xaaaaaaab60a0 *)
-adcs dontcare x22 x22 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x22 x22 0@uint64 carry;
 (* mul	x12, x29, x14                               #! PC = 0xaaaaaaab60a4 *)
 mull Hx29x14 x12 x29 x14;
 (* umulh	x14, x29, x14                             #! PC = 0xaaaaaaab60a8 *)
@@ -517,20 +459,11 @@ adds carry x27 x27 x28;
 (* adcs	x22, x22, x13                              #! PC = 0xaaaaaaab60b0 *)
 adcs carry x22 x22 x13 carry;
 (* adc	x11, xzr, xzr                               #! PC = 0xaaaaaaab60b4 *)
-adcs dontcare x11 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x11 0@uint64 0@uint64 carry;
 (* adds	x22, x22, x12                              #! PC = 0xaaaaaaab60b8 *)
 adds carry x22 x22 x12;
 (* adc	x11, x11, x14                               #! PC = 0xaaaaaaab60bc *)
-adcs dontcare x11 x11 x14 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x11 x11 x14 carry;
 
 (* NOTE: MUL128_COMBA_CUT END *)
 
@@ -547,11 +480,11 @@ sbcs carry x20 x20 x22 carry;
 (* sbcs	x21, x21, x11                              #! PC = 0xaaaaaaab60cc *)
 sbcs carry x21 x21 x11 carry;
 (* sbc	x24, x24, xzr                               #! PC = 0xaaaaaaab60d0 *)
-sbcs dontcare x24 x24 0@uint64 carry;
+sbcs docare x24 x24 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* NOTE: AH*BL + AL*BH *)
 assert limbs 64 [x10, x19, x20, x21, x24] =
@@ -569,11 +502,11 @@ adcs carry x21 x21 x27 carry;
 (* adcs	x22, x24, x22                              #! PC = 0xaaaaaaab60e4 *)
 adcs carry x22 x24 x22 carry;
 (* adc	x23, x11, xzr                               #! PC = 0xaaaaaaab60e8 *)
-adcs dontcare x23 x11 0@uint64 carry;
+adcs docare x23 x11 0@uint64 carry;
 
 (* NOTE: cannot carry *)
-(* TODO: assert true && dontcare = 0@1; *)
-assume dontcare = 0 && true;
+(* TODO: assert true && docare = 0@1; *)
+assume docare = 0 && true;
 
 (* NOTE: MUL256_KARATSUBA_COMBA END *)
 
@@ -610,23 +543,13 @@ adds carry x3 x3 x5;
 (* adcs	x4, x4, x6                                 #! PC = 0xaaaaaaab6108 *)
 adcs carry x4 x4 x6 carry;
 (* adc	x28, xzr, xzr                               #! PC = 0xaaaaaaab610c *)
-adcs dontcare x28 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 0@uint64 0@uint64 carry;
 (* adds	x26, x11, x13                              #! PC = 0xaaaaaaab6110 *)
 adds carry x26 x11 x13;
 (* adcs	x29, x12, x14                              #! PC = 0xaaaaaaab6114 *)
 adcs carry x29 x12 x14 carry;
 (* adc	x27, xzr, xzr                               #! PC = 0xaaaaaaab6118 *)
-adcs dontcare x27 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x27 0@uint64 0@uint64 carry;
 (* neg	x22, x28                                    #! PC = 0xaaaaaaab611c *)
 subc dontcare x22 0@uint64 x28;
 (* neg	x23, x27                                    #! PC = 0xaaaaaaab6120 *)
@@ -673,12 +596,7 @@ adcs carry x21 x25 x21 carry;
 (* umulh	x25, x3, x26                              #! PC = 0xaaaaaaab614c *)
 mov x25 Hx3x26;
 (* adc	x28, x28, xzr                               #! PC = 0xaaaaaaab6150 *)
-adcs dontcare x28 x28 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 x28 0@uint64 carry;
 (* mul	x3, x4, x26                                 #! PC = 0xaaaaaaab6154 *)
 mull Hx4x26 x3 x4 x26;
 (* umulh	x26, x4, x26                              #! PC = 0xaaaaaaab6158 *)
@@ -686,12 +604,7 @@ mov x26 Hx4x26;
 (* adds	x23, x23, x25                              #! PC = 0xaaaaaaab615c *)
 adds carry x23 x23 x25;
 (* adc	x24, x24, xzr                               #! PC = 0xaaaaaaab6160 *)
-adcs dontcare x24 x24 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x24 x24 0@uint64 carry;
 (* mul	x27, x4, x29                                #! PC = 0xaaaaaaab6164 *)
 mull Hx4x29 x27 x4 x29;
 (* umulh	x29, x4, x29                              #! PC = 0xaaaaaaab6168 *)
@@ -701,21 +614,11 @@ adds carry x23 x23 x3;
 (* adcs	x24, x24, x26                              #! PC = 0xaaaaaaab6170 *)
 adcs carry x24 x24 x26 carry;
 (* adc	x25, xzr, xzr                               #! PC = 0xaaaaaaab6174 *)
-adcs dontcare x25 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x25 0@uint64 0@uint64 carry;
 (* adds	x24, x24, x27                              #! PC = 0xaaaaaaab6178 *)
 adds carry x24 x24 x27;
 (* adc	x25, x25, x29                               #! PC = 0xaaaaaaab617c *)
-adcs dontcare x25 x25 x29 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x25 x25 x29 carry;
 (* ldp	x3, x4, [x0]                                #! EA = L0xffffffffe8f8; Value = 0x3171ab91449d48d0; PC = 0xaaaaaaab6180 *)
 mov x3 L0xffffffffe8f8;
 mov x4 L0xffffffffe900;
@@ -736,12 +639,7 @@ mull x27 x20 x3 x11;
 (* mull Hx3x12 x21 x3 x12; *)
 mull x29 x21 x3 x12;
 (* adc	x28, x28, xzr                               #! PC = 0xaaaaaaab619c *)
-adcs dontcare x28 x28 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 x28 0@uint64 carry;
 (* mul	x3, x4, x11                                 #! PC = 0xaaaaaaab61a0 *)
 mull Hx4x11 x3 x4 x11;
 (* umulh	x11, x4, x11                              #! PC = 0xaaaaaaab61a4 *)
@@ -749,12 +647,7 @@ mov x11 Hx4x11;
 (* adds	x21, x21, x27                              #! PC = 0xaaaaaaab61a8 *)
 adds carry x21 x21 x27;
 (* adc	x29, x29, xzr                               #! PC = 0xaaaaaaab61ac *)
-adcs dontcare x29 x29 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x29 x29 0@uint64 carry;
 (* mul	x26, x4, x12                                #! PC = 0xaaaaaaab61b0 *)
 mull Hx4x12 x26 x4 x12;
 (* umulh	x12, x4, x12                              #! PC = 0xaaaaaaab61b4 *)
@@ -764,21 +657,11 @@ adds carry x21 x21 x3;
 (* adcs	x29, x29, x11                              #! PC = 0xaaaaaaab61bc *)
 adcs carry x29 x29 x11 carry;
 (* adc	x27, xzr, xzr                               #! PC = 0xaaaaaaab61c0 *)
-adcs dontcare x27 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x27 0@uint64 0@uint64 carry;
 (* adds	x29, x29, x26                              #! PC = 0xaaaaaaab61c4 *)
 adds carry x29 x29 x26;
 (* adc	x27, x27, x12                               #! PC = 0xaaaaaaab61c8 *)
-adcs dontcare x27 x27 x12 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x27 x27 x12 carry;
 (* mul	x3, x5, x13                                 #! PC = 0xaaaaaaab61cc *)
 mull Hx5x13 x3 x5 x13;
 (* umulh	x11, x5, x13                              #! PC = 0xaaaaaaab61d0 *)
@@ -796,11 +679,11 @@ mov x26 Hx5x14;
 (* sbcs	x25, x25, x27                              #! PC = 0xaaaaaaab61e8 *)
 sbcs carry x25 x25 x27 carry;
 (* sbc	x28, x28, xzr                               #! PC = 0xaaaaaaab61ec *)
-sbcs dontcare x28 x28 0@uint64 carry;
+sbcs docare x28 x28 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* mul	x5, x6, x13                                 #! PC = 0xaaaaaaab61f0 *)
 mull Hx6x13 x5 x6 x13;
@@ -809,12 +692,7 @@ mov x13 Hx6x13;
 (* adds	x4, x4, x11                                #! PC = 0xaaaaaaab61f8 *)
 adds carry x4 x4 x11;
 (* adc	x26, x26, xzr                               #! PC = 0xaaaaaaab61fc *)
-adcs dontcare x26 x26 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x26 x26 0@uint64 carry;
 (* mul	x12, x6, x14                                #! PC = 0xaaaaaaab6200 *)
 mull Hx6x14 x12 x6 x14;
 (* umulh	x14, x6, x14                              #! PC = 0xaaaaaaab6204 *)
@@ -824,21 +702,11 @@ adds carry x4 x4 x5;
 (* adcs	x26, x26, x13                              #! PC = 0xaaaaaaab620c *)
 adcs carry x26 x26 x13 carry;
 (* adc	x11, xzr, xzr                               #! PC = 0xaaaaaaab6210 *)
-adcs dontcare x11 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x11 0@uint64 0@uint64 carry;
 (* adds	x26, x26, x12                              #! PC = 0xaaaaaaab6214 *)
 adds carry x26 x26 x12;
 (* adc	x11, x11, x14                               #! PC = 0xaaaaaaab6218 *)
-adcs dontcare x11 x11 x14 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x11 x11 x14 carry;
 (* subs	x22, x22, x3                               #! PC = 0xaaaaaaab621c *)
 subc carry x22 x22 x3;
 (* sbcs	x23, x23, x4                               #! PC = 0xaaaaaaab6220 *)
@@ -848,11 +716,11 @@ sbcs carry x24 x24 x26 carry;
 (* sbcs	x25, x25, x11                              #! PC = 0xaaaaaaab6228 *)
 sbcs carry x25 x25 x11 carry;
 (* sbc	x28, x28, xzr                               #! PC = 0xaaaaaaab622c *)
-sbcs dontcare x28 x28 0@uint64 carry;
+sbcs docare x28 x28 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* adds	x22, x22, x29                              #! PC = 0xaaaaaaab6230 *)
 adds carry x22 x22 x29;
@@ -865,11 +733,11 @@ adcs carry x25 x25 x4 carry;
 (* adcs	x26, x28, x26                              #! PC = 0xaaaaaaab6240 *)
 adcs carry x26 x28 x26 carry;
 (* adc	x27, x11, xzr                               #! PC = 0xaaaaaaab6244 *)
-adcs dontcare x27 x11 0@uint64 carry;
+adcs docare x27 x11 0@uint64 carry;
 
 (* NOTE: cannot carry *)
-(* TODO: assert true && dontcare = 0@1; *)
-assume dontcare = 0 && true;
+(* TODO: assert true && docare = 0@1; *)
+assume docare = 0 && true;
 
 (* NOTE: MUL256_KARATSUBA_COMBA END *)
 
@@ -936,23 +804,13 @@ adds carry x3 x3 x5;
 (* adcs	x4, x4, x6                                 #! PC = 0xaaaaaaab628c *)
 adcs carry x4 x4 x6 carry;
 (* adc	x28, xzr, xzr                               #! PC = 0xaaaaaaab6290 *)
-adcs dontcare x28 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 0@uint64 0@uint64 carry;
 (* adds	x1, x11, x13                               #! PC = 0xaaaaaaab6294 *)
 adds carry x1 x11 x13;
 (* adcs	x29, x12, x14                              #! PC = 0xaaaaaaab6298 *)
 adcs carry x29 x12 x14 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab629c *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* neg	x22, x28                                    #! PC = 0xaaaaaaab62a0 *)
 subc dontcare x22 0@uint64 x28;
 (* neg	x23, x7                                     #! PC = 0xaaaaaaab62a4 *)
@@ -999,12 +857,7 @@ adcs carry x21 x25 x21 carry;
 (* umulh	x25, x3, x1                               #! PC = 0xaaaaaaab62d0 *)
 mov x25 Hx3x1;
 (* adc	x28, x28, xzr                               #! PC = 0xaaaaaaab62d4 *)
-adcs dontcare x28 x28 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 x28 0@uint64 carry;
 (* mul	x3, x4, x1                                  #! PC = 0xaaaaaaab62d8 *)
 mull Hx4x1 x3 x4 x1;
 (* umulh	x1, x4, x1                                #! PC = 0xaaaaaaab62dc *)
@@ -1012,12 +865,7 @@ mov x1 Hx4x1;
 (* adds	x23, x23, x25                              #! PC = 0xaaaaaaab62e0 *)
 adds carry x23 x23 x25;
 (* adc	x24, x24, xzr                               #! PC = 0xaaaaaaab62e4 *)
-adcs dontcare x24 x24 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x24 x24 0@uint64 carry;
 (* mul	x7, x4, x29                                 #! PC = 0xaaaaaaab62e8 *)
 mull Hx4x29 x7 x4 x29;
 (* umulh	x29, x4, x29                              #! PC = 0xaaaaaaab62ec *)
@@ -1027,21 +875,11 @@ adds carry x23 x23 x3;
 (* adcs	x24, x24, x1                               #! PC = 0xaaaaaaab62f4 *)
 adcs carry x24 x24 x1 carry;
 (* adc	x25, xzr, xzr                               #! PC = 0xaaaaaaab62f8 *)
-adcs dontcare x25 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x25 0@uint64 0@uint64 carry;
 (* adds	x24, x24, x7                               #! PC = 0xaaaaaaab62fc *)
 adds carry x24 x24 x7;
 (* adc	x25, x25, x29                               #! PC = 0xaaaaaaab6300 *)
-adcs dontcare x25 x25 x29 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x25 x25 x29 carry;
 (* ldp	x3, x4, [x0]                                #! EA = L0xffffffffe918; Value = 0x38ea5a3e499db4dc; PC = 0xaaaaaaab6304 *)
 mov x3 L0xffffffffe918;
 mov x4 L0xffffffffe920;
@@ -1062,12 +900,7 @@ mull x7 x20 x3 x11;
 (* mull Hx3x12 x21 x3 x12; *)
 mull x29 x21 x3 x12;
 (* adc	x28, x28, xzr                               #! PC = 0xaaaaaaab6320 *)
-adcs dontcare x28 x28 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x28 x28 0@uint64 carry;
 (* mul	x3, x4, x11                                 #! PC = 0xaaaaaaab6324 *)
 mull Hx4x11 x3 x4 x11;
 (* umulh	x11, x4, x11                              #! PC = 0xaaaaaaab6328 *)
@@ -1075,12 +908,7 @@ mov x11 Hx4x11;
 (* adds	x21, x21, x7                               #! PC = 0xaaaaaaab632c *)
 adds carry x21 x21 x7;
 (* adc	x29, x29, xzr                               #! PC = 0xaaaaaaab6330 *)
-adcs dontcare x29 x29 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x29 x29 0@uint64 carry;
 (* mul	x1, x4, x12                                 #! PC = 0xaaaaaaab6334 *)
 mull Hx4x12 x1 x4 x12;
 (* umulh	x12, x4, x12                              #! PC = 0xaaaaaaab6338 *)
@@ -1090,21 +918,11 @@ adds carry x21 x21 x3;
 (* adcs	x29, x29, x11                              #! PC = 0xaaaaaaab6340 *)
 adcs carry x29 x29 x11 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab6344 *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* adds	x29, x29, x1                               #! PC = 0xaaaaaaab6348 *)
 adds carry x29 x29 x1;
 (* adc	x7, x7, x12                                 #! PC = 0xaaaaaaab634c *)
-adcs dontcare x7 x7 x12 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 x7 x12 carry;
 (* mul	x3, x5, x13                                 #! PC = 0xaaaaaaab6350 *)
 mull Hx5x13 x3 x5 x13;
 (* umulh	x11, x5, x13                              #! PC = 0xaaaaaaab6354 *)
@@ -1122,11 +940,11 @@ mov x1 Hx5x14;
 (* sbcs	x25, x25, x7                               #! PC = 0xaaaaaaab636c *)
 sbcs carry x25 x25 x7 carry;
 (* sbc	x28, x28, xzr                               #! PC = 0xaaaaaaab6370 *)
-sbcs dontcare x28 x28 0@uint64 carry;
+sbcs docare x28 x28 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* mul	x5, x6, x13                                 #! PC = 0xaaaaaaab6374 *)
 mull Hx6x13 x5 x6 x13;
@@ -1135,12 +953,7 @@ mov x13 Hx6x13;
 (* adds	x4, x4, x11                                #! PC = 0xaaaaaaab637c *)
 adds carry x4 x4 x11;
 (* adc	x1, x1, xzr                                 #! PC = 0xaaaaaaab6380 *)
-adcs dontcare x1 x1 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x1 x1 0@uint64 carry;
 (* mul	x12, x6, x14                                #! PC = 0xaaaaaaab6384 *)
 mull Hx6x14 x12 x6 x14;
 (* umulh	x14, x6, x14                              #! PC = 0xaaaaaaab6388 *)
@@ -1150,21 +963,11 @@ adds carry x4 x4 x5;
 (* adcs	x1, x1, x13                                #! PC = 0xaaaaaaab6390 *)
 adcs carry x1 x1 x13 carry;
 (* adc	x11, xzr, xzr                               #! PC = 0xaaaaaaab6394 *)
-adcs dontcare x11 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x11 0@uint64 0@uint64 carry;
 (* adds	x1, x1, x12                                #! PC = 0xaaaaaaab6398 *)
 adds carry x1 x1 x12;
 (* adc	x11, x11, x14                               #! PC = 0xaaaaaaab639c *)
-adcs dontcare x11 x11 x14 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x11 x11 x14 carry;
 (* subs	x22, x22, x3                               #! PC = 0xaaaaaaab63a0 *)
 subc carry x22 x22 x3;
 (* sbcs	x23, x23, x4                               #! PC = 0xaaaaaaab63a4 *)
@@ -1174,11 +977,11 @@ sbcs carry x24 x24 x1 carry;
 (* sbcs	x25, x25, x11                              #! PC = 0xaaaaaaab63ac *)
 sbcs carry x25 x25 x11 carry;
 (* sbc	x28, x28, xzr                               #! PC = 0xaaaaaaab63b0 *)
-sbcs dontcare x28 x28 0@uint64 carry;
+sbcs docare x28 x28 0@uint64 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* adds	x22, x22, x29                              #! PC = 0xaaaaaaab63b4 *)
 adds carry x22 x22 x29;
@@ -1191,11 +994,7 @@ adcs carry x25 x25 x4 carry;
 (* adcs	x1, x28, x1                                #! PC = 0xaaaaaaab63c4 *)
 adcs carry x1 x28 x1 carry;
 (* adc	x7, x11, xzr                                #! PC = 0xaaaaaaab63c8 *)
-adcs dontcare x7 x11 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x7 x11 0@uint64 carry;
 
 (* NOTE: MUL256_KARATSUBA_COMBA END *)
 
@@ -1223,11 +1022,11 @@ sbcs carry x16 x16 x25 carry;
 (* sbcs	x17, x17, x1                               #! PC = 0xaaaaaaab63ec *)
 sbcs carry x17 x17 x1 carry;
 (* sbc	x18, x18, x7                                #! PC = 0xaaaaaaab63f0 *)
-sbcs dontcare x18 x18 x7 carry;
+sbcs docare x18 x18 x7 carry;
 
 (* NOTE: must carry *)
-(* TODO: assert true && dontcare = 1@1; *)
-assume dontcare = 1 && true;
+(* TODO: assert true && docare = 1@1; *)
+assume docare = 1 && true;
 
 (* adds	x8, x8, x3                                 #! PC = 0xaaaaaaab63f4 *)
 adds carry x8 x8 x3;
@@ -1269,46 +1068,28 @@ mov L0xffffffffe6c0 x18;
 (* adcs	x24, x24, xzr                              #! PC = 0xaaaaaaab6430 *)
 adcs carry x24 x24 0@uint64 carry;
 
-(* NOTE: cannot carry *)
-(* TODO:
-assert true && carry = 0@1;
-*)
-assume carry = 0 && true;
+(* NOTE: store x25 before adding carry? *)
+(* FIX *)
+(* adcs	x25, x25, xzr                              #! PC = 0xaaaaaaab6438 *)
+adcs carry x25 x25 0@uint64 carry;
 
 (* stp	x24, x25, [x2, #96]                         #! EA = L0xffffffffe6c8; PC = 0xaaaaaaab6434 *)
 mov L0xffffffffe6c8 x24;
 mov L0xffffffffe6d0 x25;
+(* ORIGINAL *)
 (* adcs	x25, x25, xzr                              #! PC = 0xaaaaaaab6438 *)
-adcs carry x25 x25 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-(* TODO:
-assert true && carry = 0@1;
-*)
-assume carry = 0 && true;
+(* adcs carry x25 x25 0@uint64 carry; *)
 
 (* ldp	x23, x24, [sp, #32]                         #! EA = L0xffffffffe600; Value = 0x0000ffffffffe8b8; PC = 0xaaaaaaab643c *)
 mov x23 L0xffffffffe600;
 mov x24 L0xffffffffe608;
 (* adcs	x1, x1, xzr                                #! PC = 0xaaaaaaab6440 *)
 adcs carry x1 x1 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-(* TODO:
-assert true && carry = 0@1;
-*)
-assume carry = 0 && true;
-
 (* ldp	x25, x26, [sp, #48]                         #! EA = L0xffffffffe610; Value = 0x0000ffffffffe8f8; PC = 0xaaaaaaab6444 *)
 mov x25 L0xffffffffe610;
 mov x26 L0xffffffffe618;
 (* adc	x7, x7, xzr                                 #! PC = 0xaaaaaaab6448 *)
-adcs dontcare x7 x7 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 x7 0@uint64 carry;
 (* stp	x1, x7, [x2, #112]                          #! EA = L0xffffffffe6d8; PC = 0xaaaaaaab644c *)
 mov L0xffffffffe6d8 x1;
 mov L0xffffffffe6e0 x7;
@@ -1399,12 +1180,7 @@ mov x29 Hx3x24;
 (* adds	x5, x5, x7                                 #! PC = 0xaaaaaaab64a0 *)
 adds carry x5 x5 x7;
 (* adc	x6, x6, xzr                                 #! PC = 0xaaaaaaab64a4 *)
-adcs dontcare x6 x6 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x6 x6 0@uint64 carry;
 (* mul	x30, x2, x26                                #! PC = 0xaaaaaaab64a8 *)
 mull Hx2x26 x30 x2 x26;
 (* umulh	x10, x2, x26                              #! PC = 0xaaaaaaab64ac *)
@@ -1414,12 +1190,7 @@ adds carry x5 x5 x28;
 (* adcs	x6, x6, x29                                #! PC = 0xaaaaaaab64b4 *)
 adcs carry x6 x6 x29 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab64b8 *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* mul	x28, x3, x25                                #! PC = 0xaaaaaaab64bc *)
 mull Hx3x25 x28 x3 x25;
 (* umulh	x29, x3, x25                              #! PC = 0xaaaaaaab64c0 *)
@@ -1429,12 +1200,7 @@ adds carry x6 x6 x30;
 (* adcs	x7, x7, x10                                #! PC = 0xaaaaaaab64c8 *)
 adcs carry x7 x7 x10 carry;
 (* adc	x8, xzr, xzr                                #! PC = 0xaaaaaaab64cc *)
-adcs dontcare x8 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 0@uint64 0@uint64 carry;
 (* mul	x30, x2, x27                                #! PC = 0xaaaaaaab64d0 *)
 mull Hx2x27 x30 x2 x27;
 (* umulh	x10, x2, x27                              #! PC = 0xaaaaaaab64d4 *)
@@ -1444,12 +1210,7 @@ adds carry x6 x6 x28;
 (* adcs	x7, x7, x29                                #! PC = 0xaaaaaaab64dc *)
 adcs carry x7 x7 x29 carry;
 (* adc	x8, x8, xzr                                 #! PC = 0xaaaaaaab64e0 *)
-adcs dontcare x8 x8 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 x8 0@uint64 carry;
 (* mul	x28, x3, x26                                #! PC = 0xaaaaaaab64e4 *)
 mull Hx3x26 x28 x3 x26;
 (* umulh	x29, x3, x26                              #! PC = 0xaaaaaaab64e8 *)
@@ -1459,12 +1220,7 @@ adds carry x7 x7 x30;
 (* adcs	x8, x8, x10                                #! PC = 0xaaaaaaab64f0 *)
 adcs carry x8 x8 x10 carry;
 (* adc	x9, xzr, xzr                                #! PC = 0xaaaaaaab64f4 *)
-adcs dontcare x9 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 0@uint64 0@uint64 carry;
 (* mul	x30, x3, x27                                #! PC = 0xaaaaaaab64f8 *)
 mull Hx3x27 x30 x3 x27;
 (* umulh	x10, x3, x27                              #! PC = 0xaaaaaaab64fc *)
@@ -1474,20 +1230,11 @@ adds carry x7 x7 x28;
 (* adcs	x8, x8, x29                                #! PC = 0xaaaaaaab6504 *)
 adcs carry x8 x8 x29 carry;
 (* adc	x9, x9, xzr                                 #! PC = 0xaaaaaaab6508 *)
-adcs dontcare x9 x9 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 0@uint64 carry;
 (* adds	x8, x8, x30                                #! PC = 0xaaaaaaab650c *)
 adds carry x8 x8 x30;
 (* adc	x9, x9, x10                                 #! PC = 0xaaaaaaab6510 *)
-adcs dontcare x9 x9 x10 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x9 x9 x10 carry;
 
 (* NOTE: (a1:a0)*(p503p1_nz_s8) *)
 assert limbs 64 [x4, x5, x6, x7, x8, x9] =
@@ -1584,11 +1331,7 @@ adcs carry x21 0@uint64 x21 carry;
 (* adcs	x22, xzr, x22                              #! PC = 0xaaaaaaab659c *)
 adcs carry x22 0@uint64 x22 carry;
 (* adc	x23, xzr, x23                               #! PC = 0xaaaaaaab65a0 *)
-adcs dontcare x23 0@uint64 x23 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
 assert eqmod limbs 64 [  0,   0,  x3, x11, x12, x13, x14, x15,
@@ -1608,12 +1351,7 @@ mov x29 Hx11x24;
 (* adds	x5, x5, x7                                 #! PC = 0xaaaaaaab65ac *)
 adds carry x5 x5 x7;
 (* adc	x6, x6, xzr                                 #! PC = 0xaaaaaaab65b0 *)
-adcs dontcare x6 x6 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x6 x6 0@uint64 carry;
 (* mul	x30, x3, x26                                #! PC = 0xaaaaaaab65b4 *)
 mull Hx3x26 x30 x3 x26;
 (* umulh	x10, x3, x26                              #! PC = 0xaaaaaaab65b8 *)
@@ -1623,12 +1361,7 @@ adds carry x5 x5 x28;
 (* adcs	x6, x6, x29                                #! PC = 0xaaaaaaab65c0 *)
 adcs carry x6 x6 x29 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab65c4 *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* mul	x28, x11, x25                               #! PC = 0xaaaaaaab65c8 *)
 mull Hx11x25 x28 x11 x25;
 (* umulh	x29, x11, x25                             #! PC = 0xaaaaaaab65cc *)
@@ -1638,12 +1371,7 @@ adds carry x6 x6 x30;
 (* adcs	x7, x7, x10                                #! PC = 0xaaaaaaab65d4 *)
 adcs carry x7 x7 x10 carry;
 (* adc	x8, xzr, xzr                                #! PC = 0xaaaaaaab65d8 *)
-adcs dontcare x8 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 0@uint64 0@uint64 carry;
 (* mul	x30, x3, x27                                #! PC = 0xaaaaaaab65dc *)
 mull Hx3x27 x30 x3 x27;
 (* umulh	x10, x3, x27                              #! PC = 0xaaaaaaab65e0 *)
@@ -1653,12 +1381,7 @@ adds carry x6 x6 x28;
 (* adcs	x7, x7, x29                                #! PC = 0xaaaaaaab65e8 *)
 adcs carry x7 x7 x29 carry;
 (* adc	x8, x8, xzr                                 #! PC = 0xaaaaaaab65ec *)
-adcs dontcare x8 x8 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 x8 0@uint64 carry;
 (* mul	x28, x11, x26                               #! PC = 0xaaaaaaab65f0 *)
 mull Hx11x26 x28 x11 x26;
 (* umulh	x29, x11, x26                             #! PC = 0xaaaaaaab65f4 *)
@@ -1668,12 +1391,7 @@ adds carry x7 x7 x30;
 (* adcs	x8, x8, x10                                #! PC = 0xaaaaaaab65fc *)
 adcs carry x8 x8 x10 carry;
 (* adc	x9, xzr, xzr                                #! PC = 0xaaaaaaab6600 *)
-adcs dontcare x9 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 0@uint64 0@uint64 carry;
 (* mul	x30, x11, x27                               #! PC = 0xaaaaaaab6604 *)
 mull Hx11x27 x30 x11 x27;
 (* umulh	x10, x11, x27                             #! PC = 0xaaaaaaab6608 *)
@@ -1683,21 +1401,11 @@ adds carry x7 x7 x28;
 (* adcs	x8, x8, x29                                #! PC = 0xaaaaaaab6610 *)
 adcs carry x8 x8 x29 carry;
 (* adc	x9, x9, xzr                                 #! PC = 0xaaaaaaab6614 *)
-adcs dontcare x9 x9 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 0@uint64 carry;
 (* adds	x8, x8, x30                                #! PC = 0xaaaaaaab6618 *)
 adds carry x8 x8 x30;
 (* adc	x9, x9, x10                                 #! PC = 0xaaaaaaab661c *)
-adcs dontcare x9 x9 x10 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab6620 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab6624 *)
@@ -1762,11 +1470,7 @@ adcs carry x21 0@uint64 x21 carry;
 (* adcs	x22, xzr, x22                              #! PC = 0xaaaaaaab6684 *)
 adcs carry x22 0@uint64 x22 carry;
 (* adc	x23, xzr, x23                               #! PC = 0xaaaaaaab6688 *)
-adcs dontcare x23 0@uint64 x23 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
 assert eqmod limbs 64 [  0,   0,   0,   0, x12, x13, x14, x15,
@@ -1786,12 +1490,7 @@ mov x29 Hx13x24;
 (* adds	x5, x5, x7                                 #! PC = 0xaaaaaaab6694 *)
 adds carry x5 x5 x7;
 (* adc	x6, x6, xzr                                 #! PC = 0xaaaaaaab6698 *)
-adcs dontcare x6 x6 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x6 x6 0@uint64 carry;
 (* mul	x30, x12, x26                               #! PC = 0xaaaaaaab669c *)
 mull Hx12x26 x30 x12 x26;
 (* umulh	x10, x12, x26                             #! PC = 0xaaaaaaab66a0 *)
@@ -1801,12 +1500,7 @@ adds carry x5 x5 x28;
 (* adcs	x6, x6, x29                                #! PC = 0xaaaaaaab66a8 *)
 adcs carry x6 x6 x29 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab66ac *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* mul	x28, x13, x25                               #! PC = 0xaaaaaaab66b0 *)
 mull Hx13x25 x28 x13 x25;
 (* umulh	x29, x13, x25                             #! PC = 0xaaaaaaab66b4 *)
@@ -1816,12 +1510,7 @@ adds carry x6 x6 x30;
 (* adcs	x7, x7, x10                                #! PC = 0xaaaaaaab66bc *)
 adcs carry x7 x7 x10 carry;
 (* adc	x8, xzr, xzr                                #! PC = 0xaaaaaaab66c0 *)
-adcs dontcare x8 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 0@uint64 0@uint64 carry;
 (* mul	x30, x12, x27                               #! PC = 0xaaaaaaab66c4 *)
 mull Hx12x27 x30 x12 x27;
 (* umulh	x10, x12, x27                             #! PC = 0xaaaaaaab66c8 *)
@@ -1831,12 +1520,7 @@ adds carry x6 x6 x28;
 (* adcs	x7, x7, x29                                #! PC = 0xaaaaaaab66d0 *)
 adcs carry x7 x7 x29 carry;
 (* adc	x8, x8, xzr                                 #! PC = 0xaaaaaaab66d4 *)
-adcs dontcare x8 x8 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 x8 0@uint64 carry;
 (* mul	x28, x13, x26                               #! PC = 0xaaaaaaab66d8 *)
 mull Hx13x26 x28 x13 x26;
 (* umulh	x29, x13, x26                             #! PC = 0xaaaaaaab66dc *)
@@ -1846,12 +1530,7 @@ adds carry x7 x7 x30;
 (* adcs	x8, x8, x10                                #! PC = 0xaaaaaaab66e4 *)
 adcs carry x8 x8 x10 carry;
 (* adc	x9, xzr, xzr                                #! PC = 0xaaaaaaab66e8 *)
-adcs dontcare x9 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 0@uint64 0@uint64 carry;
 (* mul	x30, x13, x27                               #! PC = 0xaaaaaaab66ec *)
 mull Hx13x27 x30 x13 x27;
 (* umulh	x10, x13, x27                             #! PC = 0xaaaaaaab66f0 *)
@@ -1861,21 +1540,11 @@ adds carry x7 x7 x28;
 (* adcs	x8, x8, x29                                #! PC = 0xaaaaaaab66f8 *)
 adcs carry x8 x8 x29 carry;
 (* adc	x9, x9, xzr                                 #! PC = 0xaaaaaaab66fc *)
-adcs dontcare x9 x9 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 0@uint64 carry;
 (* adds	x8, x8, x30                                #! PC = 0xaaaaaaab6700 *)
 adds carry x8 x8 x30;
 (* adc	x9, x9, x10                                 #! PC = 0xaaaaaaab6704 *)
-adcs dontcare x9 x9 x10 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab6708 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab670c *)
@@ -1936,11 +1605,7 @@ mov x6 Hx14x25;
 (* adcs	x22, xzr, x22                              #! PC = 0xaaaaaaab6764 *)
 adcs carry x22 0@uint64 x22 carry;
 (* adc	x23, xzr, x23                               #! PC = 0xaaaaaaab6768 *)
-adcs dontcare x23 0@uint64 x23 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
+adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
 assert eqmod limbs 64 [  0,   0,   0,   0,   0,   0, x14, x15,
@@ -1960,12 +1625,7 @@ mov x29 Hx15x24;
 (* adds	x5, x5, x7                                 #! PC = 0xaaaaaaab6774 *)
 adds carry x5 x5 x7;
 (* adc	x6, x6, xzr                                 #! PC = 0xaaaaaaab6778 *)
-adcs dontcare x6 x6 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x6 x6 0@uint64 carry;
 (* mul	x30, x14, x26                               #! PC = 0xaaaaaaab677c *)
 mull Hx14x26 x30 x14 x26;
 (* umulh	x10, x14, x26                             #! PC = 0xaaaaaaab6780 *)
@@ -1975,12 +1635,7 @@ adds carry x5 x5 x28;
 (* adcs	x6, x6, x29                                #! PC = 0xaaaaaaab6788 *)
 adcs carry x6 x6 x29 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xaaaaaaab678c *)
-adcs dontcare x7 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x7 0@uint64 0@uint64 carry;
 (* mul	x28, x15, x25                               #! PC = 0xaaaaaaab6790 *)
 mull Hx15x25 x28 x15 x25;
 (* umulh	x29, x15, x25                             #! PC = 0xaaaaaaab6794 *)
@@ -1990,12 +1645,7 @@ adds carry x6 x6 x30;
 (* adcs	x7, x7, x10                                #! PC = 0xaaaaaaab679c *)
 adcs carry x7 x7 x10 carry;
 (* adc	x8, xzr, xzr                                #! PC = 0xaaaaaaab67a0 *)
-adcs dontcare x8 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 0@uint64 0@uint64 carry;
 (* mul	x30, x14, x27                               #! PC = 0xaaaaaaab67a4 *)
 mull Hx14x27 x30 x14 x27;
 (* umulh	x10, x14, x27                             #! PC = 0xaaaaaaab67a8 *)
@@ -2005,12 +1655,7 @@ adds carry x6 x6 x28;
 (* adcs	x7, x7, x29                                #! PC = 0xaaaaaaab67b0 *)
 adcs carry x7 x7 x29 carry;
 (* adc	x8, x8, xzr                                 #! PC = 0xaaaaaaab67b4 *)
-adcs dontcare x8 x8 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x8 x8 0@uint64 carry;
 (* mul	x28, x15, x26                               #! PC = 0xaaaaaaab67b8 *)
 mull Hx15x26 x28 x15 x26;
 (* umulh	x29, x15, x26                             #! PC = 0xaaaaaaab67bc *)
@@ -2020,12 +1665,7 @@ adds carry x7 x7 x30;
 (* adcs	x8, x8, x10                                #! PC = 0xaaaaaaab67c4 *)
 adcs carry x8 x8 x10 carry;
 (* adc	x9, xzr, xzr                                #! PC = 0xaaaaaaab67c8 *)
-adcs dontcare x9 0@uint64 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 0@uint64 0@uint64 carry;
 (* mul	x30, x15, x27                               #! PC = 0xaaaaaaab67cc *)
 mull Hx15x27 x30 x15 x27;
 (* umulh	x10, x15, x27                             #! PC = 0xaaaaaaab67d0 *)
@@ -2035,21 +1675,11 @@ adds carry x7 x7 x28;
 (* adcs	x8, x8, x29                                #! PC = 0xaaaaaaab67d8 *)
 adcs carry x8 x8 x29 carry;
 (* adc	x9, x9, xzr                                 #! PC = 0xaaaaaaab67dc *)
-adcs dontcare x9 x9 0@uint64 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 0@uint64 carry;
 (* adds	x8, x8, x30                                #! PC = 0xaaaaaaab67e0 *)
 adds carry x8 x8 x30;
 (* adc	x9, x9, x10                                 #! PC = 0xaaaaaaab67e4 *)
-adcs dontcare x9 x9 x10 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab67e8 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab67ec *)
@@ -2119,12 +1749,7 @@ mov x20 L0xffffffffe5e8;
 (* adcs	x22, x9, x22                               #! PC = 0xaaaaaaab6848 *)
 adcs carry x22 x9 x22 carry;
 (* adc	x23, x10, x23                               #! PC = 0xaaaaaaab684c *)
-adcs dontcare x23 x10 x23 carry;
-
-(* NOTE: cannot carry *)
-assert true && dontcare = 0@1;
-assume dontcare = 0 && true;
-
+adc x23 x10 x23 carry;
 (* stp	x22, x23, [x1, #48]                         #! EA = L0xffffffffe9e8; PC = 0xaaaaaaab6850 *)
 mov L0xffffffffe9e8 x22;
 mov L0xffffffffe9f0 x23;
