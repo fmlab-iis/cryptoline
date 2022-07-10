@@ -9,10 +9,10 @@
 #! add $1v, %%sp, \#$2c -> adds dontcare $1v sp $2c@uint64
 #! add $1v, $1v, \#$2c -> adds dontcare $1v $1v $2c@uint64
 #! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
-#! adc $1v, $2v, $3v -> adcs dontcare $1v $2v $3v carry
-#! adc $1v, xzr, $3v -> adcs dontcare $1v 0@uint64 $3v carry
-#! adc $1v, $2v, xzr -> adcs dontcare $1v $2v 0@uint64 carry
-#! adc $1v, xzr, xzr -> adcs dontcare $1v 0@uint64 0@uint64 carry
+#! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! adc $1v, xzr, $3v -> adc $1v 0@uint64 $3v carry
+#! adc $1v, $2v, xzr -> adc $1v $2v 0@uint64 carry
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
 #! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
 #! adcs $1v, xzr, $3v -> adcs carry $1v 0@uint64 $3v carry
 #! adcs $1v, $2v, xzr -> adcs carry $1v $2v 0@uint64 carry
