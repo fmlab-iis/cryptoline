@@ -22,10 +22,10 @@
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
-%token ADD ADDS ADDR ADC ADCS ADCR SUB SUBC SUBB SUBR SBC SBCS SBCR SBB SBBS SBBR MUL MULS MULR MULL MULJ SPLIT
-%token UADD UADDS UADDR UADC UADCS UADCR USUB USUBC USUBB USUBR USBC USBCS USBCR USBB USBBS USBBR UMUL UMULS UMULR UMULL UMULJ USPLIT
-%token SADD SADDS SADDR SADC SADCS SADCR SSUB SSUBC SSUBB SSUBR SSBC SSBCS SSBCR SSBB SSBBS SSBBR SMUL SMULS SMULR SMULL SMULJ SSPLIT
-%token SHL CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
+%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
+%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
@@ -103,31 +103,33 @@ instrs:
 instr:
     MOV lval atomic                               { [min_int, Imov ($2, $3)] }
   | SHL lval atomic const                         { [min_int, Ishl ($2, $3, $4)] }
+  | SHLS lval lval atomic const                   { [min_int, Ishls ($2, $3, $4, $5)] }
+  | SHR lval atomic const                         { [min_int, Ishr ($2, $3, $4)] }
+  | SHRS lval lval atomic const                   { [min_int, Ishrs ($2, $3, $4, $5)] }
+  | SAR lval atomic const                         { [min_int, Isar ($2, $3, $4)] }
+  | SARS lval lval atomic const                   { [min_int, Isars ($2, $3, $4, $5)] }
   | CSHL lval lval atomic atomic const            { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | CSHR lval lval atomic atomic const            { [min_int, Icshr ($2, $3, $4, $5, $6)] }
+  | CSHRS lval lval lval atomic atomic const      { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
   | CMOV lval carry atomic atomic                 { [min_int, Icmov ($2, $3, $4, $5)] }
   | ADD lval atomic atomic                        { [min_int, Iadd ($2, $3, $4)] }
   | ADDS lcarry lval atomic atomic                { [min_int, Iadds ($2, $3, $4, $5)] }
-  | ADDR lcarry lval atomic atomic                { [min_int, Iaddr ($2, $3, $4, $5)] }
   | ADC lval atomic atomic carry                  { [min_int, Iadc ($2, $3, $4, $5)] }
   | ADCS lcarry lval atomic atomic carry          { [min_int, Iadcs ($2, $3, $4, $5, $6)] }
-  | ADCR lcarry lval atomic atomic carry          { [min_int, Iadcr ($2, $3, $4, $5, $6)] }
   | SUB lval atomic atomic                        { [min_int, Isub ($2, $3, $4)] }
   | SUBC lcarry lval atomic atomic                { [min_int, Isubc ($2, $3, $4, $5)] }
   | SUBB lcarry lval atomic atomic                { [min_int, Isubb ($2, $3, $4, $5)] }
-  | SUBR lcarry lval atomic atomic                { [min_int, Isubr ($2, $3, $4, $5)] }
   | SBC lval atomic atomic carry                  { [min_int, Isbc ($2, $3, $4, $5)] }
   | SBCS lcarry lval atomic atomic carry          { [min_int, Isbcs ($2, $3, $4, $5, $6)] }
-  | SBCR lcarry lval atomic atomic carry          { [min_int, Isbcr ($2, $3, $4, $5, $6)] }
   | SBB lval atomic atomic carry                  { [min_int, Isbb ($2, $3, $4, $5)] }
   | SBBS lcarry lval atomic atomic carry          { [min_int, Isbbs ($2, $3, $4, $5, $6)] }
-  | SBBR lcarry lval atomic atomic carry          { [min_int, Isbbr ($2, $3, $4, $5, $6)] }
   | MUL lval atomic atomic                        { [min_int, Imul ($2, $3, $4)] }
   | MULS lcarry lval atomic atomic                { [min_int, Imuls ($2, $3, $4, $5)] }
-  | MULR lcarry lval atomic atomic                { [min_int, Imulr ($2, $3, $4, $5)] }
   | MULL lval lval atomic atomic                  { [min_int, Imull ($2, $3, $4, $5)] }
   | MULJ lval atomic atomic                       { [min_int, Imulj ($2, $3, $4)] }
   | SPLIT lval lval atomic const                  { [min_int, Isplit ($2, $3, $4, $5)] }
+  | SPL lval lval atomic const                    { [min_int, Ispl ($2, $3, $4, $5)] }
   | AND lval atomic atomic                        { [min_int, Iand ($2, $3, $4)] }
   | OR lval atomic atomic                         { [min_int, Ior ($2, $3, $4)] }
   | NOT lval atomic                               { [min_int, Inot ($2, $3)] }

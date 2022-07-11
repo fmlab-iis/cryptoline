@@ -9,7 +9,7 @@
 #! tst $1v, #0x1 -> and odd@uint64 $1v 1@uint64;\ncast odd@uint1 odd
 #! csel $1v, $2v, $3v, ne  // ne = any -> cmov $1v odd $2v $3v
 #! csel $1v, $2v, xzr, ne  // ne = any -> cmov $1v odd $2v 0@uint64
-#! extr $1v, $2v, $3v, #1 -> spl $3v_h dontcare $3v 1;\nspl dontcare $2v_l $2v 1;\nshl $2v_l $2v_l 63;\nadd $1v $2v_l $3v_h
+#! extr $1v, $2v, $3v, #1 -> split $3v_h dontcare $3v 1;\nsplit dontcare $2v_l $2v 1;\nshl $2v_l $2v_l 63;\nadd $1v $2v_l $3v_h
 
 
 cshl $1v dontcare $2v $3v 63
