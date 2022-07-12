@@ -1,0 +1,17 @@
+fpzero610:
+# x0 = 0xffffffffe708
+# x1 = 0xffffffffe7f8
+# x2 = 0xffffffffffffffff
+# x3 = 0xe786b03d9dc5fef8
+# x4 = 0xe786b03d9dc5fef8
+# x5 = 0xc0bfd7fabea5ae5a
+# x6 = 0x25603938575f9671
+# x7 = 0x39fc51bb18cc0adc
+	#! -> SP = 0xffffffffe630
+	stp	xzr, xzr, [x0]                              #! EA = L0xffffffffe708; PC = 0xaaaaaaaade10
+	stp	xzr, xzr, [x0, #16]                         #! EA = L0xffffffffe718; PC = 0xaaaaaaaade14
+	stp	xzr, xzr, [x0, #32]                         #! EA = L0xffffffffe728; PC = 0xaaaaaaaade18
+	stp	xzr, xzr, [x0, #48]                         #! EA = L0xffffffffe738; PC = 0xaaaaaaaade1c
+	stp	xzr, xzr, [x0, #64]                         #! EA = L0xffffffffe748; PC = 0xaaaaaaaade20
+	#! <- SP = 0xffffffffe630
+	#ret                                            #! PC = 0xaaaaaaaade24

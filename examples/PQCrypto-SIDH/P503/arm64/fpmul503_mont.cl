@@ -1,18 +1,18 @@
 (* NOTE: incomplete, 9 carries cannot be verified *)
 (*       possible error when storing x25 before adding carry. see FIX *)
-(* quine:  -v -isafety -jobs 24 -slicing -no_carry_constraint fpmul503_mont.cl
-Parsing Cryptoline file:                [OK]            0.013677 seconds
-Checking well-formedness:               [OK]            0.002244 seconds
-Transforming to SSA form:               [OK]            0.000700 seconds
-Normalizing specification:              [OK]            0.000917 seconds
-Rewriting assignments:                  [OK]            0.001257 seconds
-Verifying program safety:               [OK]            2.639111 seconds
-Verifying range assertions:             [OK]            6.078543 seconds
-Verifying range specification:          [OK]            4.376452 seconds
-Rewriting value-preserved casting:      [OK]            0.000381 seconds
-Verifying algebraic assertions:         [OK]            1.266256 seconds
-Verifying algebraic specification:      [OK]            0.239514 seconds
-Verification result:                    [OK]            14.621013 seconds
+(* quine: -v -isafety -jobs 24 -slicing -no_carry_constraint -o fpmul503_mont.log fpmul503_mont.cl
+Parsing Cryptoline file:                [OK]            0.010690 seconds
+Checking well-formedness:               [OK]            0.001825 seconds
+Transforming to SSA form:               [OK]            0.001136 seconds
+Normalizing specification:              [OK]            0.001277 seconds
+Rewriting assignments:                  [OK]            0.000758 seconds
+Verifying program safety:               [OK]            9.715642 seconds
+Verifying range assertions:             [OK]            1.231857 seconds
+Verifying range specification:          [OK]            4.571310 seconds
+Rewriting value-preserved casting:      [OK]            0.000872 seconds
+Verifying algebraic assertions:         [OK]            1.466427 seconds
+Verifying algebraic specification:      [OK]            0.251448 seconds
+Verification result:                    [OK]            17.254428 seconds
 *)
 
 proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
