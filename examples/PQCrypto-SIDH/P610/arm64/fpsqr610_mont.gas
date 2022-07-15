@@ -1,4 +1,46 @@
-fpsqr610_mont:
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+#! [sp, #$1c] = %%EA
+#! [sp] = %%EA
+#! sp = %%sp
+
+#! adrp $1v, $2c -> nop
+#! add $1v, %%sp, \#$2c -> adds dontcare $1v sp $2c@uint64
+#! add $1v, $1v, \#$2c -> adds dontcare $1v $1v $2c@uint64
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! adc $1v, xzr, $3v -> adc $1v 0@uint64 $3v carry
+#! adc $1v, $2v, xzr -> adc $1v $2v 0@uint64 carry
+#! adc $1v, xzr, xzr -> adc $1v 0@uint64 0@uint64 carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! adcs $1v, xzr, $3v -> adcs carry $1v 0@uint64 $3v carry
+#! adcs $1v, $2v, xzr -> adcs carry $1v $2v 0@uint64 carry
+#! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! ldr $1v, $2c <p610p1_nz_s6\+$3c> -> mov $1v L$2c
+#! ldr $1v, $2c <p610p1_nz_s6> -> mov $1v L$2c
+#! lsl $1v, $2v, \#48 -> shl $1v L$2v 48
+#! orr $1v, $2v, $3v, lsr \#16 -> split H$3v L$3v $3v 16;\nadd $1v $2v H$3v
+#! orr $1v, xzr, $3v, lsr \#16 -> split $1v L$3v $3v 16
+#! mov $1v, \#$2c -> mov $1v $2c@uint64
+#! mov $1v, $2v -> mov $1v $2v
+#! mov w3, \#0xa // \#10 -> mov w3 0xa@uint64
+#! mul $1v, $2v, $3v -> mull H$2v$3v $1v $2v $3v
+#! umulh $1v, $2v, $3v -> mov $1v H$2v$3v
+#! neg $1v, $2v -> subc dontcare $1v 0@uint64 $2v
+#! sbc $1v, $2v, $3v -> sbcs dontcare $1v $2v $3v carry
+#! sbc $1v, $2v, xzr -> sbcs dontcare $1v $2v 0@uint64 carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs $1v, $2v, xzr -> sbcs carry $1v $2v 0@uint64 carry
+#! sub $1v, $1v, \#$2c -> subc dontcare $1v $1v $2c@uint64
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! stp xzr, xzr, $3ea -> mov $3ea 0@uint64;\nmov $3ea[+8] 0@uint64
+#! str $1v, $2ea -> mov $2ea $1v
+
+#fpsqr610_mont:
 # x0 = 0xffffffffe898
 # x1 = 0xffffffffe8e8
 # x2 = 0x0

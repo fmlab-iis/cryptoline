@@ -1,4 +1,27 @@
-fp2add610:
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+#! [sp, #$1c] = %%EA
+#! [sp], #$1c = %%EA
+#! sp = %%sp
+
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! add $1v, $2v, \#$3c -> adds dontcare $1v $2v $3c@uint64
+#! adc $1v, $2v, $3v -> adcs dontcare $1v $2v $3v carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2c <p610x2\+$3c> -> mov $1v L$2c
+#! ldr $1v, $2c <p610x2> -> mov $1v L$2c
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! mov $1v, $2v -> mov $1v $2v
+#! ngc $1v, xzr -> sbcs dontcare $1v 0@uint64 0@uint64 carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! str $1v, $2ea -> mov $2ea $1v
+
+#fp2add610:
 # x0 = 0xffffffffe2f8
 # x1 = 0xffffffffe398
 # x2 = 0xffffffffe4d8
