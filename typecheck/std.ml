@@ -37,12 +37,12 @@ let rec chain_reasons rs =
   | Some r::_tl -> Some r
   | _::tl -> chain_reasons tl
 
-let rec apply_check_to_atomics f atomics =
-  match atomics with
+let rec apply_check_to_atoms f atoms =
+  match atoms with
   | [] -> None
   | hd::tl ->
      (match f hd with
-      | None -> apply_check_to_atomics f tl
+      | None -> apply_check_to_atoms f tl
       | Some r -> Some r)
 
 let vars_lined_program p =
@@ -65,7 +65,7 @@ let check_typ_sign signed name ty =
 let check_var_sign signed v = check_typ_sign signed (string_of_var v) v.vtyp
 let check_var_size size v = if size_of_var v = size then None
                             else Some ("Size of " ^ string_of_var v ^ " should be " ^ string_of_int size)
-let check_atomic_sign signed a = check_typ_sign signed (string_of_atomic a) (typ_of_atomic a)
+let check_atom_sign signed a = check_typ_sign signed (string_of_atom a) (typ_of_atom a)
 
 let check_unsigned_var v  = check_var_sign false v
 let check_signed_var v  = check_var_sign true v
@@ -73,51 +73,51 @@ let check_bit_var lno c =
   if var_is_bit c then None
   else Some (string_of_var c ^ " should be a bit at line " ^ (string_of_int lno))
 
-let check_unsigned_atomic a = check_atomic_sign false a
-let check_signed_atomic a = check_atomic_sign true a
+let check_unsigned_atom a = check_atom_sign false a
+let check_signed_atom a = check_atom_sign true a
 
-let check_unsigned_atomics atomics = apply_check_to_atomics check_unsigned_atomic atomics
-let check_signed_atomics atomics = apply_check_to_atomics check_signed_atomic atomics
+let check_unsigned_atoms atoms = apply_check_to_atoms check_unsigned_atom atoms
+let check_signed_atoms atoms = apply_check_to_atoms check_signed_atom atoms
 
-let check_same_sign atomics =
-  let rec helper (a, signed) atomics =
-    match atomics with
+let check_same_sign atoms =
+  let rec helper (a, signed) atoms =
+    match atoms with
     | [] -> None
     | hd::tl ->
-       (match check_atomic_sign signed hd with
+       (match check_atom_sign signed hd with
         | None -> helper (a, signed) tl
-        | Some _ -> Some (string_of_atomic a ^ " and " ^ string_of_atomic hd ^ " should be both signed or both unsigned")) in
-  match atomics with
+        | Some _ -> Some (string_of_atom a ^ " and " ^ string_of_atom hd ^ " should be both signed or both unsigned")) in
+  match atoms with
   | [] -> None
-  | hd::tl -> helper (hd, atomic_is_signed hd) tl
+  | hd::tl -> helper (hd, atom_is_signed hd) tl
 
-let check_same_size lno atomics =
-  let rec helper (a, sa) atomics =
-    match atomics with
+let check_same_size lno atoms =
+  let rec helper (a, sa) atoms =
+    match atoms with
     | [] -> None
     | hd::tl ->
-       let shd = size_of_atomic hd in
+       let shd = size_of_atom hd in
        if sa = shd then helper (a, sa) tl
-       else Some ("The bit-width of " ^ string_of_atomic a ^ " (" ^ string_of_int sa ^ ")"
-                  ^ " and the bit-width of " ^ string_of_atomic hd ^ " (" ^ string_of_int shd ^ ") should be the same at line " ^ (string_of_int lno)) in
-  match atomics with
+       else Some ("The bit-width of " ^ string_of_atom a ^ " (" ^ string_of_int sa ^ ")"
+                  ^ " and the bit-width of " ^ string_of_atom hd ^ " (" ^ string_of_int shd ^ ") should be the same at line " ^ (string_of_int lno)) in
+  match atoms with
   | [] -> None
-  | hd::tl -> helper (hd, size_of_atomic hd) tl
+  | hd::tl -> helper (hd, size_of_atom hd) tl
 
-let rec check_same_typ lno atomics =
-  match atomics with
+let rec check_same_typ lno atoms =
+  match atoms with
   | [] -> None
   | _a::[] -> None
   | a1::a2::tl ->
-     let t1 = typ_of_atomic a1 in
-     let t2 = typ_of_atomic a2 in
+     let t1 = typ_of_atom a1 in
+     let t2 = typ_of_atom a2 in
      if t1 = t2 then check_same_typ lno (a1::tl)
-     else Some ("The type (" ^ string_of_typ t1 ^ ") of " ^ string_of_atomic a1
-                ^ " and the type (" ^ string_of_typ t2 ^ ") of " ^ string_of_atomic a2
+     else Some ("The type (" ^ string_of_typ t1 ^ ") of " ^ string_of_atom a1
+                ^ " and the type (" ^ string_of_typ t2 ^ ") of " ^ string_of_atom a2
                 ^ " should be the same at line " ^ (string_of_int lno))
 
-let check_unsigned_same_typ lno atomics = chain_reasons [check_unsigned_atomics atomics; check_same_typ lno atomics]
-let check_signed_same_typ lno atomics = chain_reasons [check_signed_atomics atomics; check_same_typ lno atomics]
+let check_unsigned_same_typ lno atoms = chain_reasons [check_unsigned_atoms atoms; check_same_typ lno atoms]
+let check_signed_same_typ lno atoms = chain_reasons [check_signed_atoms atoms; check_same_typ lno atoms]
 
 let check_diff_lvs lno v1 v2 =
   if eq_var v1 v2 then Some ("l-values should be different: " ^ string_of_var v1 ^ ", " ^ string_of_var v2 ^ " at line " ^ (string_of_int lno))
@@ -148,27 +148,27 @@ let check_spl_lvs lno vh vl w n =
 
 let check_mulj_size lno v a1 a2 =
   let sv = size_of_var v in
-  let sa1 = size_of_atomic a1 in
-  let sa2 = size_of_atomic a2 in
+  let sa1 = size_of_atom a1 in
+  let sa2 = size_of_atom a2 in
   if sv != sa1 + sa2 then
     Some ("The bit-width (" ^ string_of_int sv ^ ") of " ^ string_of_var v
-          ^ " should be the sum of the bit-widths of " ^ string_of_atomic a1 ^ " (" ^ string_of_int sa1 ^ ")"
-          ^ " and " ^ string_of_atomic a2 ^ " (" ^ string_of_int sa2 ^ ") at line " ^ (string_of_int lno))
+          ^ " should be the sum of the bit-widths of " ^ string_of_atom a1 ^ " (" ^ string_of_int sa1 ^ ")"
+          ^ " and " ^ string_of_atom a2 ^ " (" ^ string_of_int sa2 ^ ") at line " ^ (string_of_int lno))
   else
     None
 
 let check_join_size lno v ah al =
   let sv = size_of_var v in
-  let sh = size_of_atomic ah in
-  let sl = size_of_atomic al in
+  let sh = size_of_atom ah in
+  let sl = size_of_atom al in
   if sh != sl then
-    Some ("The bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atomic ah
-          ^ " and the bit-width (" ^ string_of_int sl ^  ") of " ^ string_of_atomic al
+    Some ("The bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atom ah
+          ^ " and the bit-width (" ^ string_of_int sl ^  ") of " ^ string_of_atom al
           ^ " should be the same at line " ^ (string_of_int lno))
   else if sv != sh + sl then
     Some ("The bit-width (" ^ string_of_int sv ^ ") of " ^ string_of_var v
-          ^ " should be the sum of the bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atomic ah
-          ^ " and the bit-width " ^ string_of_int sl ^ " of " ^ string_of_atomic al ^ " at line " ^ (string_of_int lno))
+          ^ " should be the sum of the bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atom ah
+          ^ " and the bit-width " ^ string_of_int sl ^ " of " ^ string_of_atom al ^ " at line " ^ (string_of_int lno))
   else
     None
 
@@ -181,8 +181,8 @@ let illformed_instr_reason vs cs gs lno i =
     if not (VS.subset vars vs) then
       Some ("Undefined variables: " ^ string_of_vs (VS.diff vars vs) ^ " at line " ^ (string_of_int lno))
     else None in
-  let defined_atomic a = defined_vars (vars_atomic a) in
-  let defined_atomics atomics = apply_check_to_atomics defined_atomic atomics in
+  let defined_atom a = defined_vars (vars_atom a) in
+  let defined_atoms atoms = apply_check_to_atoms defined_atom atoms in
   let defined_carry a =
     match a with
     | Avar y ->
@@ -212,67 +212,67 @@ let illformed_instr_reason vs cs gs lno i =
   let ghost_disjoint gvs =
     if not (VS.disjoint gvs vs) then Some ("Ghost variables cannot be program variables: " ^ string_of_vs (VS.inter gvs vs) ^ " at line " ^ (string_of_int lno))
     else None in
-  let const_in_range atomics =
+  let const_in_range atoms =
     let in_range a =
       match a with
       | Aconst (ty, n) -> check_const_range lno ty n
       | _ -> None in
-    apply_check_to_atomics in_range atomics in
+    apply_check_to_atoms in_range atoms in
   let reasons =
     match i with
-    | Imov (v, a) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishl (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishls (l, v, a, n) -> [defined_atomic a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishr (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishrs (v, l, a, n) -> [defined_atomic a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
-    | Isar (v, a, _) -> [defined_atomic a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Isars (v, l, a, n) -> [defined_atomic a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
+    | Imov (v, a) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishl (v, a, _) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishls (l, v, a, n) -> [defined_atom a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishr (v, a, _) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Ishrs (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
+    | Isar (v, a, _) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
+    | Isars (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
       | Imul (v, a1, a2) ->
-       [defined_atomics [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+       [defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Iadds (c, v, a1, a2)
       | Isubc (c, v, a1, a2)
       | Isubb (c, v, a1, a2)
       | Imuls (c, v, a1, a2) ->
-       [check_diff_lvs lno c v; defined_atomics [a1; a2]; check_bit_var lno c; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+       [check_diff_lvs lno c v; defined_atoms [a1; a2]; check_bit_var lno c; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Iadc (v, a1, a2, y)
       | Isbc (v, a1, a2, y)
       | Isbb (v, a1, a2, y) ->
-       [defined_atomics [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
+       [defined_atoms [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
     | Iadcs (c, v, a1, a2, y)
       | Isbcs (c, v, a1, a2, y)
       | Isbbs (c, v, a1, a2, y) ->
-       [check_diff_lvs lno c v; defined_atomics [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
+       [check_diff_lvs lno c v; defined_atoms [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
     | Imull (vh, vl, a1, a2) ->
-       [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atomics [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
+       [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atoms [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
     | Imulj (v, a1, a2) ->
-       [defined_atomics [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
+       [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
     | Isplit (vh, vl, a, _) ->
-       [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atomic a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
+       [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atom a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
     | Ispl (vh, vl, a, n) ->
-       [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atomic a) (Z.to_int n); defined_atomic a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
+       [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atom a) (Z.to_int n); defined_atom a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
     | Icshl (vh, vl, a1, a2, _) ->
-       [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
+       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
     | Icshr (vh, vl, a1, a2, _) ->
-       [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
+       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]]
     | Icshrs (vh, vl, l, a1, a2, n) ->
-       [check_diff_lvs lno vh vl; defined_atomics [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]]
+       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]]
     | Inondet _ -> []
     | Icmov (v, c, a1, a2) ->
-       [defined_carry c; defined_atomics [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
+       [defined_carry c; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
     | Inop -> []
     | Iand (v, a1, a2)
       | Ior (v, a1, a2)
       | Ixor (v, a1, a2) ->
-       [defined_atomics [a1; a2]; check_same_size lno [Avar v; a1; a2]; const_in_range [a1; a2]]
-    | Inot (v, a) -> [defined_atomic a; check_same_size lno [Avar v; a]; const_in_range [a]]
+       [defined_atoms [a1; a2]; check_same_size lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+    | Inot (v, a) -> [defined_atom a; check_same_size lno [Avar v; a]; const_in_range [a]]
     | Icast (od, _v, a) ->
        (match od with
-        | None -> [defined_atomic a; const_in_range [a]]
-        | Some d -> [defined_atomic a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
-    | Ivpc (_v, a) -> [defined_atomic a; const_in_range [a]]
-    | Ijoin (v, ah, al) -> [defined_atomics [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atomic al; check_join_size lno v ah al]
+        | None -> [defined_atom a; const_in_range [a]]
+        | Some d -> [defined_atom a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
+    | Ivpc (_v, a) -> [defined_atom a; const_in_range [a]]
+    | Ijoin (v, ah, al) -> [defined_atoms [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atom al; check_join_size lno v ah al]
     | Iassert e
       | Iassume e -> [defined_bexp e]
     | Icut (ecuts, rcuts) ->
