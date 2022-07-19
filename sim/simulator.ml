@@ -9,7 +9,7 @@
 
 open Ast.Cryptoline
 open NBits
-open Utils
+open Utils.Std
 
 
 (** Options *)

@@ -1,6 +1,6 @@
 (library
   (name        options)
   (preprocess  (pps lwt_ppx))
-  (libraries   lwt.unix lwt)
+  (libraries   utils lwt.unix lwt)
   (public_name cryptoline.options)
 )

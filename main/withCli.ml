@@ -17,10 +17,13 @@ let parse_action str =
 
 let instr_index = ref 0
 
+let id = ref 0
+
 let args =
   [
     ("-c", String (fun str -> parse_action str), "CMD\t\t Specify the command to be executed");
-    ("-instr", Int (fun i -> instr_index := i), "N\t\t Specify the n-th instruction in safety checking")
+    ("-instr", Int (fun i -> instr_index := i), "N\t\t Specify the n-th instruction in safety checking");
+    ("-id", Int (fun i -> id := i), "N\t\t Specify the ID of this action")
   ]@Common.args
 let args = List.sort Pervasives.compare args
 
@@ -61,7 +64,7 @@ let anon file =
      let spec = from_typecheck_rspec (rspec_from_file file) in
      let spec = normalize_rspec spec in
      try
-       (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout spec.rspre spec.rsprog !instr_index None with
+       (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
        | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
        | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
        | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"

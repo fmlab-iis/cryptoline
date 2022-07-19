@@ -1,5 +1,5 @@
 (library
   (name        main)
-  (libraries   str ast parsers typecheck options verify nBits sim)
+  (libraries   str utils ast parsers typecheck options verify nBits sim)
   (flags       (:standard -w -3))
 )

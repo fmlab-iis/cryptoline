@@ -63,9 +63,12 @@ val verify_rspec_cli : Ast.Cryptoline.rspec ->
 (** [verify_rspec_cli s o] parallelly verifies the range specification [s]
     in SSA. *)
 
-val verify_safety_cli : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> bool
-(** [verify_safety_cli f p] parallelly verifies the safety conditions of the
-    program [p] in SSA under the precondition [f]. *)
+val verify_safety_cli : int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> bool * int
+(** [verify_safety_cli i f p] parallelly verifies the safety conditions of the
+    program [p] in SSA under the precondition [f]. The first safety condition in
+    [p] is numbered by [i]. This function returns a pair [(b, j)] where [b]
+    indicates if the safety conditions in [p] are successfully verified and
+    [j] denotes the ID of the next safety condition. *)
 
 val verify_assert_cli : Ast.Cryptoline.spec -> bool
 (** [verify_assert_cli s] parallelly verifies all assertions of the

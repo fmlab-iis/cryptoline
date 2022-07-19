@@ -5,6 +5,7 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 open Utils
+open Utils.Std
 open Sim
 
 type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | SaveCoqCryptoline | SaveBvCryptoline | Simulation
@@ -34,6 +35,8 @@ let apply_remove_cuts = ref false
 let apply_remove_ecuts = ref false
 
 let apply_remove_rcuts = ref false
+
+let str_to_ids str = (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast,
@@ -84,23 +87,25 @@ let args = [
     ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
-    ("-vecuts", String (fun str -> verify_ecuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
+    ("-vecuts", String (fun str -> verify_ecuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
-    ("-veacuts", String (fun str -> verify_eacuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
+    ("-veacuts", String (fun str -> verify_eacuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the algebraic assertions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
-    ("-vrcuts", String (fun str -> verify_rcuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
+    ("-vrcuts", String (fun str -> verify_rcuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified range cuts (comma separated). The indices";
                          "start with 0. The range postcondition is the last cut."]));
-    ("-vracuts", String (fun str -> verify_racuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
+    ("-vracuts", String (fun str -> verify_racuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified range assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the range assertions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
-    ("-vscuts", String (fun str -> verify_scuts := Some ((Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten)),
+    ("-vscuts", String (fun str -> verify_scuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify safety of instructions before the specified cuts (comma";
                          "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
-                         "the precondition if i = 0) and the i-th cut will be checked."]))
+                         "the precondition if i = 0) and the i-th cut will be checked."]));
+     ("-vs", String (fun str -> verify_safety_ids := Some (str_to_ids str)),
+      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety."]))
   ]@Common.args
 let args = List.sort Pervasives.compare args
 

@@ -1,4 +1,6 @@
 
+open Utils
+
 type algebra_solver =
   | Singular
   | Sage
@@ -71,6 +73,11 @@ let verify_rcuts = ref None
 let verify_eacuts = ref None
 let verify_racuts = ref None
 let verify_scuts = ref None
+let verify_safety_ids = ref None
+let mem_hashset_opt so e =
+  match so with
+  | None -> true
+  | Some s -> Hashset.mem s e
 let incremental_safety = ref false
 let incremental_safety_timeout = ref 300
 

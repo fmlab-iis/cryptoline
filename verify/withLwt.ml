@@ -5,6 +5,7 @@ open Ast.Cryptoline
 open Qfbv.Common
 open Qfbv.WithLwt
 open Common
+open Utils
 (* open Lwt.Infix *)
 
 type task = unit -> bool Lwt.t
@@ -65,14 +66,14 @@ let add_to_pending continue_helper delivered_helper res pending tasks =
   helper res pending tasks
 
 let apply_to_cuts_lwt ids f delivered_helper res pending ss =
-  let ids = Option.map (List.map (normalize_index (List.length ss))) ids in
+  let ids = ids |> Option.map Hashset.to_list |> Option.map (List.map (normalize_index (List.length ss))) |> Option.map Hashset.of_list in
   let rec helper i (res, pending) ss =
     match ss with
     | [] -> finish_pending delivered_helper res pending
     | hd::tl ->
        begin
          match ids with
-         | Some ids when not (List.mem i ids) ->
+         | Some ids when not (Hashset.mem ids i) ->
             let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
             helper (i+1) (res, pending) tl
          | _ ->
@@ -87,7 +88,7 @@ let verify_safety_inc timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
     let t1 = Unix.gettimeofday() in
     let header = ["= Verifying safety condition =";
-                  "ID: " ^ string_of_int id ^ "\n"
+                  "Safety condition #" ^ string_of_int id ^ ":\n"
                   ^ "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
     let%lwt res =
@@ -826,6 +827,7 @@ let run_cli_vsafety id timeout idx instr ifile =
                           [!cli_path;
                            "-c vsafety";
                            "-instr " ^ string_of_int idx;
+                           "-id " ^ string_of_int id;
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
@@ -878,7 +880,7 @@ let run_cli_vsafety id timeout idx instr ifile =
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_cli f p =
+let verify_safety_cli sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = Rtrue; rspwss = []}); close_out ch in
@@ -921,12 +923,14 @@ let verify_safety_cli f p =
     | Unfinished qs', _ -> verify_rec qs' (Solved Unsat, pending')
     | _ -> let (res'', pending'') = work_on_pending delivered_helper res' pending' in
            verify_rec [] (res'', pending'') in
-  let add_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
-  let filter_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
-  let add_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (id, timeout, idx, i)) qs in
-  let res = verify_rec (List.rev (add_id (filter_true (add_index p)))) (Solved Unsat, []) in
+  let add_instr_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
+  let filter_out_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
+  let in_verify_safety_ids (id, _, _, _) = mem_hashset_opt !Options.Std.verify_safety_ids id in
+  let add_cond_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (sid + id, timeout, idx, i)) qs in
+  let all_safety_conds = add_instr_index p |> filter_out_true |> add_cond_id in
+  let res = verify_rec (all_safety_conds |> List.filter in_verify_safety_ids |> List.rev) (Solved Unsat, []) in
   let _ = cleanup [ifile] in
-  res
+  (res, sid + List.length all_safety_conds)
 
 (*
  * Verify a range or an algebraic specification using CLI to run verification tasks.
@@ -1177,24 +1181,22 @@ let verify_assert_cli s =
     | Iassert e::tl ->
        let verifiers = List.flatten [
                            begin
-                             match !verify_racuts with
-                             | Some cuts when not (List.mem ri cuts) -> []
-                             | _ ->
-                                (match rng_bexp e with
-                                 | Rtrue -> []
-                                 | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
-                                                     run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     split_rspec_post cut_rspec None])
+                             if mem_hashset_opt !verify_racuts ri then
+                               (match rng_bexp e with
+                                | Rtrue -> []
+                                | _ -> [fun () -> verify_spec_cli (mkrspec rpre (List.rev rvisited) (rng_bexp e))
+                                                    run_cli_vrspec (fun _cutno -> "== Range Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                    split_rspec_post cut_rspec None])
+                             else []
                            end;
                            begin
-                             match !verify_eacuts with
-                             | Some cuts when not (List.mem ei cuts) -> []
-                             | _ ->
-                                (match eqn_bexp e with
-                                 | Etrue -> []
-                                 | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
-                                                     run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
-                                                     split_espec_post cut_espec None])
+                             if mem_hashset_opt !verify_eacuts ei then
+                               (match eqn_bexp e with
+                                | Etrue -> []
+                                | _ -> [fun () -> verify_spec_cli (mkespec epre (List.rev evisited) (eqn_bexp e))
+                                                    run_cli_vespec (fun _cutno -> "== Algebraic Properties in Assertion " ^ Ast.Cryptoline.string_of_bexp e ^ " ==")
+                                                    split_espec_post cut_espec None])
+                             else []
                            end;
                            [fun () -> verify (ei, ri) (epre, rpre) (evisited, rvisited) tl]
                          ] in
