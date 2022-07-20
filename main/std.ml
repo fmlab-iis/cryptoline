@@ -15,6 +15,8 @@ let save_coqcryptoline_filename = ref ""
 
 let save_bvcryptoline_filename = ref ""
 
+let initial_values_string_none = "none"
+
 let initial_values_string = ref ""
 
 let simulation_steps = ref (-1)
@@ -71,7 +73,7 @@ let args = [
     ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
     ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
     ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
-    ("-sim", String (fun s -> action := Simulation; initial_values_string := s), Common.mk_arg_desc(["      Simulate the parsed specification."]));
+    ("-sim", String (fun s -> action := Simulation; initial_values_string := if s = initial_values_string_none then "" else s), Common.mk_arg_desc(["INPUTS"; "Simulate the parsed specification starting with a list of initial"; "input values (comma separated), which should be \"none\" if the"; "specification has no input variable."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
@@ -150,9 +152,12 @@ let parse_initial_values vars =
   List.map2 (
       fun x v ->
       let w = size_of_var x in
-      let bs = if Str.string_match (Str.regexp "0b([0-1]+)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
-               else if Str.string_match (Str.regexp "0x[0-9a-fA-F]+") v 0 then NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
+      let bs = if Str.string_match (Str.regexp "0b\\([0-1]+\\)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
+               else if Str.string_match (Str.regexp "0x\\([0-9a-fA-F]+\\)") v 0 then
+                 let _ = print_endline (Str.matched_group 1 v) in
+                 NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
                else let bs = NBits.bits_of_num v in
+                 let _ = print_endline ("Here") in
                     let negative = String.length v > 0 && String.get v 0 = '-' in
                     if negative then NBits.sext (w - List.length bs) bs
                     else NBits.zext (w - List.length bs) bs in

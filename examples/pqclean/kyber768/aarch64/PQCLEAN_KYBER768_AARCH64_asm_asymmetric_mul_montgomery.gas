@@ -1,0 +1,879 @@
+PQCLEAN_KYBER768_AARCH64_asm_asymmetric_mul_montgomery:
+# x0 = 0xffffffffc4f8
+# x1 = 0xffffffffbef8
+# x2 = 0xffffffffaff8
+# x3 = 0xaaaaaaabf960
+# x4 = 0xffffffffb8f8
+# x5 = 0xffffffffb7b8
+# x6 = 0xffffffffb7d8
+# x7 = 0xffffffffb7f8
+	#! -> SP = 0xffffffffaf80
+	sub	sp, sp, #0x90                               #! PC = 0xaaaaaaabc28c
+	stp	x19, x20, [sp]                              #! EA = L0xffffffffaef0; PC = 0xaaaaaaabc290
+	stp	x21, x22, [sp, #16]                         #! EA = L0xffffffffaf00; PC = 0xaaaaaaabc294
+	stp	x23, x24, [sp, #32]                         #! EA = L0xffffffffaf10; PC = 0xaaaaaaabc298
+	stp	x25, x26, [sp, #48]                         #! EA = L0xffffffffaf20; PC = 0xaaaaaaabc29c
+	stp	x27, x28, [sp, #64]                         #! EA = L0xffffffffaf30; PC = 0xaaaaaaabc2a0
+	stp	d8, d9, [sp, #80]                           #! EA = L0xffffffffaf40; PC = 0xaaaaaaabc2a4
+	stp	d10, d11, [sp, #96]                         #! EA = L0xffffffffaf50; PC = 0xaaaaaaabc2a8
+	stp	d12, d13, [sp, #112]                        #! EA = L0xffffffffaf60; PC = 0xaaaaaaabc2ac
+	stp	d14, d15, [sp, #128]                        #! EA = L0xffffffffaf70; PC = 0xaaaaaaabc2b0
+	ldrsh	w28, [x3]                                 #! EA = L0xaaaaaaabf960; Value = 0x7ff6fdf60cff0d01; PC = 0xaaaaaaabc2b4
+	ldrsh	w27, [x3, #2]                             #! EA = L0xaaaaaaabf962; Value = 0xd7dc7ff6fdf60cff; PC = 0xaaaaaaabc2b8
+	ldrsh	w26, [x3, #8]                             #! EA = L0xaaaaaaabf968; Value = 0x00000000fbecd7dc; PC = 0xaaaaaaabc2bc
+	ldrsh	w25, [x3, #10]                            #! EA = L0xaaaaaaabf96a; Value = 0x000000000000fbec; PC = 0xaaaaaaabc2c0
+	add	x11, x4, #0x0                               #! PC = 0xaaaaaaabc2c4
+	add	x4, x0, #0x200                              #! PC = 0xaaaaaaabc2c8
+	add	x5, x1, #0x200                              #! PC = 0xaaaaaaabc2cc
+	add	x6, x2, #0x100                              #! PC = 0xaaaaaaabc2d0
+	add	x8, x0, #0x400                              #! PC = 0xaaaaaaabc2d4
+	add	x9, x1, #0x400                              #! PC = 0xaaaaaaabc2d8
+	add	x10, x2, #0x200                             #! PC = 0xaaaaaaabc2dc
+	dup	v26.8h, w26                                 #! PC = 0xaaaaaaabc2e0
+	dup	v27.8h, w25                                 #! PC = 0xaaaaaaabc2e4
+	dup	v28.8h, w28                                 #! PC = 0xaaaaaaabc2e8
+	dup	v29.8h, w27                                 #! PC = 0xaaaaaaabc2ec
+	mov	x19, #0x10                  	// #16         #! PC = 0xaaaaaaabc2f0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc4f8; Value = 0x02d6099308f102cf; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbef8; Value = 0x01fb02f6fc610346; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffaff8; Value = 0x040bfb0905580376; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc6f8; Value = 0x0bfa01ae06440663; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc0f8; Value = 0x028803cc01f600e1; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb0f8; Value = 0xfa5fffaefbfbfa53; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc8f8; Value = 0x01ac010b03350324; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc2f8; Value = 0x0526fc2804a6fa47; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb1f8; Value = 0x040f057d03810100; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb8f8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc518; Value = 0x0911038702a702ca; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbf18; Value = 0x025e00be048dfebd; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb008; Value = 0xffb802140014fe64; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc718; Value = 0x018d0b1c0524006f; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc118; Value = 0xfbb5fb84fd12035e; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb108; Value = 0xfe2403e7057b028b; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc918; Value = 0x01f408d10a080398; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc318; Value = 0xfe25fe4d0537022c; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb208; Value = 0x04c7ffd7fa7d0623; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb918; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc538; Value = 0x0c6e0b19073009d7; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbf38; Value = 0xfab50240f9bb04af; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb018; Value = 0xfb830403f98dfbe2; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc738; Value = 0x0462006600570367; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc138; Value = 0x064ff9bbfd13fd71; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb118; Value = 0x0364024305ddffd0; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc938; Value = 0x054a03bf0b62047b; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc338; Value = 0xfffdfabe036901d9; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb218; Value = 0x02ff024f03820678; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb938; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc558; Value = 0x02e402ca04a60ae8; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbf58; Value = 0x0470fbbe0155fc46; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb028; Value = 0xfaf9fc6c004205b7; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc758; Value = 0x041c04bf04750212; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc158; Value = 0xfc6d02ab0475fcde; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb128; Value = 0xfe56fdf9fd4c0181; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc958; Value = 0x05ff0214006b00ec; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc358; Value = 0x046eff2effbdfe71; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb228; Value = 0x0131fdf5062afd33; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb958; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc578; Value = 0x087c0c3d074e082d; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbf78; Value = 0xfaecfcf8fddc00c6; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb038; Value = 0x026dfab90073fb9c; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc778; Value = 0x0b520c4a01b508dd; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc178; Value = 0xfd04fd12fc15fae9; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb138; Value = 0x05cc027efdddfeb4; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc978; Value = 0x0a8702b40300018d; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc378; Value = 0x004b04f50455fa50; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb238; Value = 0xfcb5fe8afb39043c; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb978; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc598; Value = 0x095901580bdd08a4; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbf98; Value = 0x05f00114faae022b; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb048; Value = 0xfb91fbebfbbb0456; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc798; Value = 0x074f00e8021f074d; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc198; Value = 0x036cf98c02bc060c; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb148; Value = 0xfd63fd14ffb204e0; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc998; Value = 0x08bd061e012504c4; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc398; Value = 0xfbb3faf8fbfbfba3; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb248; Value = 0x01bafbf4fe280128; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb998; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc5b8; Value = 0x04b40bfc091a006b; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbfb8; Value = 0xfa43fc98fcf2fc2c; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb058; Value = 0x045efb0404a10583; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc7b8; Value = 0x098a0007053509ca; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc1b8; Value = 0xfe87feeb003901cb; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb158; Value = 0x05b6027604690103; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc9b8; Value = 0x02f905ca0a370254; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc3b8; Value = 0x05abff5afcbd04f1; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb258; Value = 0xfcd5019afc60062b; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb9b8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc5d8; Value = 0x09310b6b0b9407ed; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbfd8; Value = 0x0184fe74002600dd; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb068; Value = 0xfbc1fe54fa6104c6; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc7d8; Value = 0x0c2c0bfa03d701ee; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc1d8; Value = 0xfec6023604420247; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb168; Value = 0xfd44f9ec01cd000a; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc9d8; Value = 0x05d20a1207e70964; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc3d8; Value = 0xf98af9aafa3303b6; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb268; Value = 0x010ffe630272004e; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb9d8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc5f8; Value = 0x0ae60c550542057b; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffbff8; Value = 0x00f0fdd9018f040d; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb078; Value = 0x0625fa59fd72fe12; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc7f8; Value = 0x061b074c049d0a78; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc1f8; Value = 0xfe47fbcdfa52fa1d; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb178; Value = 0x03f50665fdde0214; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffc9f8; Value = 0x0157031a02de0297; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc3f8; Value = 0xfb23ff56fa9bff73; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb278; Value = 0x0256fe270520fea1; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffb9f8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc618; Value = 0x0804086b059a0332; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc018; Value = 0x05e7f9bf02ce021d; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb088; Value = 0x0483fe9dfd49fe71; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc818; Value = 0x00d407d704ed0a15; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc218; Value = 0x01bf0666fc39012d; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb188; Value = 0xfaf80179fb6900ec; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffca18; Value = 0x0a1e029909a107f5; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc418; Value = 0xfc61024b0346ff58; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb288; Value = 0xfdec06400581052c; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffba18; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc638; Value = 0x054e09560bcd0ab4; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc038; Value = 0xfd130583ffbffb4b; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb098; Value = 0x0447fa79022c032e; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc838; Value = 0x08210a5902fc0ad3; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc238; Value = 0x030e04f6fda4fa94; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb198; Value = 0xfb19fc1c03d801bd; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffca38; Value = 0x013c02dc008a0680; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc438; Value = 0x0474006f047104c8; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb298; Value = 0x03bcfb13ffc000cc; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffba38; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc658; Value = 0x03b9099105e00223; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc058; Value = 0xfdecf98dff84f980; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb0a8; Value = 0xfc0e064b05adfd9a; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc858; Value = 0x08c805be074506c3; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc258; Value = 0x018afd66004afc18; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb1a8; Value = 0x026dfbf6fa7afb8f; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffca58; Value = 0x07a4045308b00932; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc458; Value = 0x037affa5fab6053a; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb2a8; Value = 0xfdee033dfde30398; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffba58; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc678; Value = 0x07a50af909a50a4a; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc078; Value = 0x0508059e0481fd23; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb0b8; Value = 0x04cefddf019d0229; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc878; Value = 0x0469091003930420; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc278; Value = 0xfbb0fb8f0398feb8; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb1b8; Value = 0xfe25fbfffe9efed9; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffca78; Value = 0x094308bd03920c7e; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc478; Value = 0xfa6603b3fbedfe69; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb2b8; Value = 0xfa44ffb7fe100653; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffba78; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc698; Value = 0x05e30350071f0610; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc098; Value = 0x02ccff38fb03fa69; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb0c8; Value = 0xfe49fafa0222fa1b; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc898; Value = 0x05a9012b088b0319; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc298; Value = 0x00c90466fa0d0406; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb1c8; Value = 0xfef201bdffd60116; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffca98; Value = 0x013103e1060a07b0; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc498; Value = 0x001f0400019300f2; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb2c8; Value = 0xfaaa056204a204cb; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffba98; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc6b8; Value = 0x05a109c80a700890; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc0b8; Value = 0x0383fd3f030bfcd8; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb0d8; Value = 0xfb48fa0effa3ff6b; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc8b8; Value = 0x0bb300840b9e045e; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc2b8; Value = 0x05160176045603fb; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb1d8; Value = 0x03b2fd85f9a5023e; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffcab8; Value = 0x085009f003340471; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc4b8; Value = 0xff85faa0fc16fc87; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb2d8; Value = 0x03f80385fb1efc02; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffbab8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ld2	{v0.8h, v1.8h}, [x0], #32                   #! EA = L0xffffffffc6d8; Value = 0x0c16043f02f4068a; PC = 0xaaaaaaabc2f4
+	ld2	{v2.8h, v3.8h}, [x1], #32                   #! EA = L0xffffffffc0d8; Value = 0xfa98fe7101d5ff70; PC = 0xaaaaaaabc2f8
+	ld1	{v5.8h}, [x2], #16                          #! EA = L0xffffffffb0e8; Value = 0x044404ce02c3036d; PC = 0xaaaaaaabc2fc
+	smull	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc300
+	smull2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc304
+	smull	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc308
+	smull2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc30c
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc310
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc314
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc318
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc31c
+	ld2	{v0.8h, v1.8h}, [x4], #32                   #! EA = L0xffffffffc8d8; Value = 0x0a310a2605c402ab; PC = 0xaaaaaaabc320
+	ld2	{v2.8h, v3.8h}, [x5], #32                   #! EA = L0xffffffffc2d8; Value = 0xfd8cfae5fc3d031a; PC = 0xaaaaaaabc324
+	ld1	{v5.8h}, [x6], #16                          #! EA = L0xffffffffb1e8; Value = 0x041df976008afb28; PC = 0xaaaaaaabc328
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc32c
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc330
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc334
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc338
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc33c
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc340
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc344
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc348
+	ld2	{v0.8h, v1.8h}, [x8], #32                   #! EA = L0xffffffffcad8; Value = 0x016308c7093900b5; PC = 0xaaaaaaabc34c
+	ld2	{v2.8h, v3.8h}, [x9], #32                   #! EA = L0xffffffffc4d8; Value = 0x041e03c8fb4ffd29; PC = 0xaaaaaaabc350
+	ld1	{v5.8h}, [x10], #16                         #! EA = L0xffffffffb2e8; Value = 0x00a7fd43ff58fd1b; PC = 0xaaaaaaabc354
+	smlal	v16.4s, v0.4h, v2.4h                      #! PC = 0xaaaaaaabc358
+	smlal2	v20.4s, v0.8h, v2.8h                     #! PC = 0xaaaaaaabc35c
+	smlal	v17.4s, v0.4h, v3.4h                      #! PC = 0xaaaaaaabc360
+	smlal2	v21.4s, v0.8h, v3.8h                     #! PC = 0xaaaaaaabc364
+	smlal	v16.4s, v1.4h, v5.4h                      #! PC = 0xaaaaaaabc368
+	smlal2	v20.4s, v1.8h, v5.8h                     #! PC = 0xaaaaaaabc36c
+	smlal	v17.4s, v1.4h, v2.4h                      #! PC = 0xaaaaaaabc370
+	smlal2	v21.4s, v1.8h, v2.8h                     #! PC = 0xaaaaaaabc374
+	uzp1	v0.8h, v16.8h, v20.8h                      #! PC = 0xaaaaaaabc378
+	uzp1	v1.8h, v17.8h, v21.8h                      #! PC = 0xaaaaaaabc37c
+	mul	v0.8h, v0.8h, v29.8h                        #! PC = 0xaaaaaaabc380
+	mul	v1.8h, v1.8h, v29.8h                        #! PC = 0xaaaaaaabc384
+	smlal	v16.4s, v0.4h, v28.4h                     #! PC = 0xaaaaaaabc388
+	smlal2	v20.4s, v0.8h, v28.8h                    #! PC = 0xaaaaaaabc38c
+	smlal	v17.4s, v1.4h, v28.4h                     #! PC = 0xaaaaaaabc390
+	smlal2	v21.4s, v1.8h, v28.8h                    #! PC = 0xaaaaaaabc394
+	uzp2	v24.8h, v16.8h, v20.8h                     #! PC = 0xaaaaaaabc398
+	uzp2	v25.8h, v17.8h, v21.8h                     #! PC = 0xaaaaaaabc39c
+	sqrdmulh	v16.8h, v24.8h, v26.8h                 #! PC = 0xaaaaaaabc3a0
+	sqrdmulh	v17.8h, v25.8h, v26.8h                 #! PC = 0xaaaaaaabc3a4
+	mul	v24.8h, v24.8h, v27.8h                      #! PC = 0xaaaaaaabc3a8
+	mul	v25.8h, v25.8h, v27.8h                      #! PC = 0xaaaaaaabc3ac
+	mls	v24.8h, v16.8h, v28.8h                      #! PC = 0xaaaaaaabc3b0
+	mls	v25.8h, v17.8h, v28.8h                      #! PC = 0xaaaaaaabc3b4
+	st2	{v24.8h, v25.8h}, [x11], #32                #! EA = L0xffffffffbad8; PC = 0xaaaaaaabc3b8
+	sub	x19, x19, #0x1                              #! PC = 0xaaaaaaabc3bc
+	#cbnz	x19, 0xaaaaaaabc2f4 <_asymmetric_mul_montgomery_loop>#! PC = 0xaaaaaaabc3c0
+	ldp	x19, x20, [sp]                              #! EA = L0xffffffffaef0; Value = 0x0000000000000001; PC = 0xaaaaaaabc3c4
+	ldp	x21, x22, [sp, #16]                         #! EA = L0xffffffffaf00; Value = 0x0000ffffffffbef8; PC = 0xaaaaaaabc3c8
+	ldp	x23, x24, [sp, #32]                         #! EA = L0xffffffffaf10; Value = 0x0000ffffffffd6f8; PC = 0xaaaaaaabc3cc
+	ldp	x25, x26, [sp, #48]                         #! EA = L0xffffffffaf20; Value = 0x0000ffffffffaff8; PC = 0xaaaaaaabc3d0
+	ldp	x27, x28, [sp, #64]                         #! EA = L0xffffffffaf30; Value = 0x0000aaaaaaabf960; PC = 0xaaaaaaabc3d4
+	ldp	d8, d9, [sp, #80]                           #! EA = L0xffffffffaf40; Value = 0x0000000000000000; PC = 0xaaaaaaabc3d8
+	ldp	d10, d11, [sp, #96]                         #! EA = L0xffffffffaf50; Value = 0x0000000000000000; PC = 0xaaaaaaabc3dc
+	ldp	d12, d13, [sp, #112]                        #! EA = L0xffffffffaf60; Value = 0x0000000000000000; PC = 0xaaaaaaabc3e0
+	ldp	d14, d15, [sp, #128]                        #! EA = L0xffffffffaf70; Value = 0x0000000000000000; PC = 0xaaaaaaabc3e4
+	add	sp, sp, #0x90                               #! PC = 0xaaaaaaabc3e8
+	#br	x30                                         #! PC = 0xaaaaaaabc3ec

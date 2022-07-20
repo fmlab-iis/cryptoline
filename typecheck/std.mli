@@ -19,7 +19,7 @@ type rspec =
     rsprog : lined_program;
     rspost : rbexp;
     rspwss : prove_with_spec list }
-  
+
 (** Well-formedness *)
 
 type ill_formed = IllPrecondition of bexp
@@ -30,20 +30,20 @@ val check_const_range : int -> typ -> Z.t -> string option
 val check_unsigned_var : var -> string option
 val check_signed_var : var -> string option
 val check_bit_var : int -> var -> string option
-val check_unsigned_atomic : atomic -> string option
-val check_signed_atomic : atomic -> string option
-val check_unsigned_atomics : atomic list -> string option
-val check_signed_atomics : atomic list -> string option
-val check_same_sign : atomic list -> string option
-val check_same_size : int -> atomic list -> string option
-val check_same_typ : int -> atomic list -> string option
-val check_unsigned_same_typ : int -> atomic list -> string option
-val check_signed_same_typ : int -> atomic list -> string option
+val check_unsigned_atom : atom -> string option
+val check_signed_atom : atom -> string option
+val check_unsigned_atoms : atom list -> string option
+val check_signed_atoms : atom list -> string option
+val check_same_sign : atom list -> string option
+val check_same_size : int -> atom list -> string option
+val check_same_typ : int -> atom list -> string option
+val check_unsigned_same_typ : int -> atom list -> string option
+val check_signed_same_typ : int -> atom list -> string option
 val check_diff_lvs : int -> var -> var -> string option
 val check_mull_lvs : int -> var -> var -> string option
 val check_split_lvs : int -> var -> var -> string option
-val check_mulj_size : int -> var -> atomic -> atomic -> string option
-val check_join_size : int -> var -> atomic -> atomic -> string option
+val check_mulj_size : int -> var -> atom -> atom -> string option
+val check_join_size : int -> var -> atom -> atom -> string option
 val illformed_instr_reason : VS.t -> VS.t -> VS.t -> int -> instr -> string option
 val illformed_program_reason : VS.t -> VS.t -> VS.t -> lined_program -> (instr * string) option
 val illformed_eexp_reason : VS.t -> eexp -> string option
@@ -61,4 +61,4 @@ val well_formed_spec : VS.t -> spec -> bool
 val from_typecheck_spec : spec -> Ast.Cryptoline.spec
 val from_typecheck_espec : espec -> Ast.Cryptoline.espec
 val from_typecheck_rspec : rspec -> Ast.Cryptoline.rspec
-                                      
+

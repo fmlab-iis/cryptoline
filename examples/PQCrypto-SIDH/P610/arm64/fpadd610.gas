@@ -1,0 +1,93 @@
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, $2v, $3v -> adcs dontcare $1v $2v $3v carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2c <p610x2\+$3c> -> mov $1v L$2c
+#! ldr $1v, $2c <p610x2> -> mov $1v L$2c
+#! ngc $1v, xzr -> sbcs dontcare $1v 0@uint64 0@uint64 carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+
+#fpadd610:
+# x0 = 0xffffffffc8f8
+# x1 = 0xffffffffc7b8
+# x2 = 0xffffffffc858
+# x3 = 0x9c20133d93df47d
+# x4 = 0xe8376b13987b88c9
+# x5 = 0x27bf6a760
+# x6 = 0xcf68e93ac633a446
+# x7 = 0xa6472ea971a9ad8c
+	#! -> SP = 0xffffffffc690
+	#b	0xaaaaaaab52d8 <fpadd610_asm>                #! PC = 0xaaaaaaab4d70
+	ldp	x3, x4, [x0]                                #! EA = L0xffffffffc8f8; Value = 0xb2b4da8d9a1742b9; PC = 0xaaaaaaab52d8
+	ldp	x5, x6, [x0, #16]                           #! EA = L0xffffffffc908; Value = 0x4a868149118116e8; PC = 0xaaaaaaab52dc
+	ldp	x13, x14, [x1]                              #! EA = L0xffffffffc7b8; Value = 0x4911a5045363c7cd; PC = 0xaaaaaaab52e0
+	ldp	x15, x16, [x1, #16]                         #! EA = L0xffffffffc7c8; Value = 0xb4b1d29af84fb938; PC = 0xaaaaaaab52e4
+	adds	x3, x3, x13                                #! PC = 0xaaaaaaab52e8
+	adcs	x4, x4, x14                                #! PC = 0xaaaaaaab52ec
+	adcs	x5, x5, x15                                #! PC = 0xaaaaaaab52f0
+	adcs	x6, x6, x16                                #! PC = 0xaaaaaaab52f4
+	ldp	x7, x8, [x0, #32]                           #! EA = L0xffffffffc918; Value = 0x48aa1aac456ccbdc; PC = 0xaaaaaaab52f8
+	ldp	x9, x10, [x0, #48]                          #! EA = L0xffffffffc928; Value = 0xfaa80c9a0d6e67f0; PC = 0xaaaaaaab52fc
+	ldp	x13, x14, [x1, #32]                         #! EA = L0xffffffffc7d8; Value = 0x09c20133d93df47d; PC = 0xaaaaaaab5300
+	ldp	x15, x16, [x1, #48]                         #! EA = L0xffffffffc7e8; Value = 0xfbf26d335727df6d; PC = 0xaaaaaaab5304
+	adcs	x7, x7, x13                                #! PC = 0xaaaaaaab5308
+	adcs	x8, x8, x14                                #! PC = 0xaaaaaaab530c
+	adcs	x9, x9, x15                                #! PC = 0xaaaaaaab5310
+	adcs	x10, x10, x16                              #! PC = 0xaaaaaaab5314
+	ldp	x11, x12, [x0, #64]                         #! EA = L0xffffffffc938; Value = 0xc16c1117ea6c4b97; PC = 0xaaaaaaab5318
+	ldp	x13, x14, [x1, #64]                         #! EA = L0xffffffffc7f8; Value = 0x5fc9f1ef86e15c95; PC = 0xaaaaaaab531c
+	adcs	x11, x11, x13                              #! PC = 0xaaaaaaab5320
+	adc	x12, x12, x14                               #! PC = 0xaaaaaaab5324
+	ldr	x0, 0xaaaaaaab5230 <p610x2>                 #! PC = 0xaaaaaaab5328
+	ldr	x1, 0xaaaaaaab5238 <p610x2+8>               #! PC = 0xaaaaaaab532c
+	ldr	x13, 0xaaaaaaab5240 <p610x2+16>             #! PC = 0xaaaaaaab5330
+	subs	x3, x3, x0                                 #! PC = 0xaaaaaaab5334
+	sbcs	x4, x4, x1                                 #! PC = 0xaaaaaaab5338
+	sbcs	x5, x5, x1                                 #! PC = 0xaaaaaaab533c
+	sbcs	x6, x6, x1                                 #! PC = 0xaaaaaaab5340
+	sbcs	x7, x7, x13                                #! PC = 0xaaaaaaab5344
+	ldr	x14, 0xaaaaaaab5248 <p610x2+24>             #! PC = 0xaaaaaaab5348
+	ldr	x15, 0xaaaaaaab5250 <p610x2+32>             #! PC = 0xaaaaaaab534c
+	ldr	x16, 0xaaaaaaab5258 <p610x2+40>             #! PC = 0xaaaaaaab5350
+	sbcs	x8, x8, x14                                #! PC = 0xaaaaaaab5354
+	sbcs	x9, x9, x15                                #! PC = 0xaaaaaaab5358
+	sbcs	x10, x10, x16                              #! PC = 0xaaaaaaab535c
+	ldr	x14, 0xaaaaaaab5260 <p610x2+48>             #! PC = 0xaaaaaaab5360
+	ldr	x15, 0xaaaaaaab5268 <p610x2+56>             #! PC = 0xaaaaaaab5364
+	sbcs	x11, x11, x14                              #! PC = 0xaaaaaaab5368
+	sbcs	x12, x12, x15                              #! PC = 0xaaaaaaab536c
+	ngc	x17, xzr                                    #! PC = 0xaaaaaaab5370
+	and	x0, x0, x17                                 #! PC = 0xaaaaaaab5374
+	and	x1, x1, x17                                 #! PC = 0xaaaaaaab5378
+	and	x13, x13, x17                               #! PC = 0xaaaaaaab537c
+	and	x14, x14, x17                               #! PC = 0xaaaaaaab5380
+	and	x15, x15, x17                               #! PC = 0xaaaaaaab5384
+	and	x16, x16, x17                               #! PC = 0xaaaaaaab5388
+	adds	x3, x3, x0                                 #! PC = 0xaaaaaaab538c
+	adcs	x4, x4, x1                                 #! PC = 0xaaaaaaab5390
+	adcs	x5, x5, x1                                 #! PC = 0xaaaaaaab5394
+	adcs	x6, x6, x1                                 #! PC = 0xaaaaaaab5398
+	adcs	x7, x7, x13                                #! PC = 0xaaaaaaab539c
+	ldr	x0, 0xaaaaaaab5248 <p610x2+24>              #! PC = 0xaaaaaaab53a0
+	ldr	x1, 0xaaaaaaab5250 <p610x2+32>              #! PC = 0xaaaaaaab53a4
+	and	x0, x0, x17                                 #! PC = 0xaaaaaaab53a8
+	and	x1, x1, x17                                 #! PC = 0xaaaaaaab53ac
+	adcs	x8, x8, x0                                 #! PC = 0xaaaaaaab53b0
+	adcs	x9, x9, x1                                 #! PC = 0xaaaaaaab53b4
+	adcs	x10, x10, x16                              #! PC = 0xaaaaaaab53b8
+	adcs	x11, x11, x14                              #! PC = 0xaaaaaaab53bc
+	adc	x12, x12, x15                               #! PC = 0xaaaaaaab53c0
+	stp	x3, x4, [x2]                                #! EA = L0xffffffffc858; PC = 0xaaaaaaab53c4
+	stp	x5, x6, [x2, #16]                           #! EA = L0xffffffffc868; PC = 0xaaaaaaab53c8
+	stp	x7, x8, [x2, #32]                           #! EA = L0xffffffffc878; PC = 0xaaaaaaab53cc
+	stp	x9, x10, [x2, #48]                          #! EA = L0xffffffffc888; PC = 0xaaaaaaab53d0
+	stp	x11, x12, [x2, #64]                         #! EA = L0xffffffffc898; PC = 0xaaaaaaab53d4
+	#! <- SP = 0xffffffffc690
+	#ret                                            #! PC = 0xaaaaaaab53d8

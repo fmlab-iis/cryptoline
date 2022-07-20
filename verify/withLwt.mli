@@ -8,7 +8,7 @@
 val verify_safety_inc :
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   Common.round_result
 (** [verify_safety_inc t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
     parallelly verifies the safety conditions [e1; ...; en] of the program [p]
@@ -16,7 +16,7 @@ val verify_safety_inc :
 
 val verify_assert :
   Common.var_gen -> Ast.Cryptoline.spec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (**
    [verify_assert gen s o] parallelly verifies all assertions of the
    specification [s] in SSA. Note that this function does not consider
@@ -25,27 +25,27 @@ val verify_assert :
 
 val verify_eassert :
   Common.var_gen -> Ast.Cryptoline.spec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** [verify_eassert g s o] parallelly verifies all algebraic assertions of the
    specification [s] in SSA. {!Options.Std.verify_eacuts} is considered in this
    function. *)
 
 val verify_rassert :
   Ast.Cryptoline.spec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** [verify_rassert s o] parallelly verifies all range assertions of the
    specification [s] in SSA. {!Options.Std.verify_racuts} is considered in this
    function. *)
 
 val verify_espec :
   Common.var_gen -> Ast.Cryptoline.espec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** [verify_espec g s o] parallelly verifies the algebraic specification [s]
     in SSA. *)
 
 val verify_rspec :
   Ast.Cryptoline.rspec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** [verify_rspec s o] parallelly verifies the range specification [s]
     in SSA. *)
 
@@ -59,7 +59,7 @@ val verify_espec_cli : Ast.Cryptoline.espec -> bool
     in SSA. *)
 
 val verify_rspec_cli : Ast.Cryptoline.rspec ->
-                       Ast.Cryptoline.VS.t Ast.Cryptoline.atomichash_t option -> bool
+                       Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** [verify_rspec_cli s o] parallelly verifies the range specification [s]
     in SSA. *)
 

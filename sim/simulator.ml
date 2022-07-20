@@ -131,7 +131,7 @@ let string_of_var_with_value x v =
 let dump_map m =
   VM.iter (fun x v -> print_endline (string_of_var_with_value x v)) m
 
-let value_of_atomic m a =
+let value_of_atom m a =
   match a with
   | Avar v ->
      begin
@@ -154,169 +154,176 @@ let in_ranges n rs = List.exists (in_range n) rs
 
 let simulate_instr m i =
   match i with
-  | Imov (v, a) -> VM.add v (value_of_atomic m a) m
+  | Imov (v, a) -> VM.add v (value_of_atom m a) m
   | Ishl (v, a, n) ->
      let n = Z.to_int n in
-     let bs = value_of_atomic m a in
+     let bs = value_of_atom m a in
      VM.add v (shlB n bs) m
+  | Ishls (l, v, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atom m a in
+     VM.add l (high n bs) (VM.add v (shlB n bs) m)
+  | Ishr (v, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atom m a in
+     VM.add v (shrB n bs) m
+  | Ishrs (v, l, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atom m a in
+     VM.add v (shrB n bs) (VM.add l (low n bs) m)
+  | Isar (v, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atom m a in
+     VM.add v (sarB n bs) m
+  | Isars (v, l, a, n) ->
+     let n = Z.to_int n in
+     let bs = value_of_atom m a in
+     VM.add v (sarB n bs) (VM.add l (low n bs) m)
   | Icshl (vh, vl, a1, a2, n) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      let n = Z.to_int n in
      let shifted = shlB n (cat bs2 bs1) in
      VM.add vh (high (size bs1) shifted) (VM.add vl (shrB n (low (size bs2) shifted)) m)
+  | Icshr (vh, vl, a1, a2, n) ->
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let n = Z.to_int n in
+     let shifted = shrB n (cat bs2 bs1) in
+     VM.add vh (high (size bs1) shifted) (VM.add vl (low (size bs2) shifted) m)
+  | Icshrs (vh, vl, l, a1, a2, n) ->
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let n = Z.to_int n in
+     let shifted = shrB n (cat bs2 bs1) in
+     let shifted_out = low n bs2 in
+     VM.add vh (high (size bs1) shifted) (VM.add vl (low (size bs2) shifted) (VM.add l shifted_out m))
   | Inondet v -> VM.add v (List.init (size_of_var v) (fun _ -> Random.bool())) m
   | Icmov (v, c, a1, a2) ->
-     let cs = value_of_atomic m c in
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let cs = value_of_atom m c in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (if to_bool cs then bs1 else bs2) m
   | Inop -> m
   | Inot (v, a) ->
-     let bs = value_of_atomic m a in
+     let bs = value_of_atom m a in
      VM.add v (invB bs) m
   | Iadd (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (addB bs1 bs2) m
   | Iadds (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      let (cb, bs) = adcB false bs1 bs2 in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Iaddr (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     VM.add c (of_bit false) (VM.add v (addB bs1 bs2) m)
   | Iadc (v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (_, bs) = adcB by bs1 bs2 in
      VM.add v bs m
   | Iadcs (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (cb, bs) = adcB by bs1 bs2 in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Iadcr (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = adcB by bs1 bs2 in
-     VM.add c (of_bit false) (VM.add v bs m)
   | Isub (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (subB bs1 bs2) m
   | Isubc (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      let (cb, bs) = adcB true bs1 (invB bs2) in
      VM.add c (of_bit cb) (VM.add v bs m)
   | Isubb (b, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      let (bb, bs) = sbbB false bs1 bs2 in
      VM.add b (of_bit bb) (VM.add v bs m)
-  | Isubr (b, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     VM.add b (of_bit false) (VM.add v (subB bs1 bs2) m)
   | Isbc (v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (_, bs) = adcB by bs1 (invB bs2) in
      VM.add v bs m
   | Isbcs (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (cb, bs) = adcB by bs1 (invB bs2) in
      VM.add c (of_bit cb) (VM.add v bs m)
-  | Isbcr (c, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = adcB by bs1 (invB bs2) in
-     VM.add c (of_bit false) (VM.add v bs m)
   | Isbb (v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (_, bs) = sbbB by bs1 bs2 in
      VM.add v bs m
   | Isbbs (b, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let by = to_bit (value_of_atom m y) in
      let (bb, bs) = sbbB by bs1 bs2 in
      VM.add b (of_bit bb) (VM.add v bs m)
-  | Isbbr (b, v, a1, a2, y) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let by = to_bit (value_of_atomic m y) in
-     let (_, bs) = sbbB by bs1 bs2 in
-     VM.add b (of_bit false) (VM.add v bs m)
   | Imul (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (mulB bs1 bs2) m
   | Imuls (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let (bsh, bsl) = (if atomic_is_signed a1 then smullB else umullB) bs1 bs2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let (bsh, bsl) = (if atom_is_signed a1 then smullB else umullB) bs1 bs2 in
      VM.add c (of_bit (not (is_zero bsh))) (VM.add v bsl m)
-  | Imulr (c, v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let (_, bsl) = (if atomic_is_signed a1 then smullB else umullB) bs1 bs2 in
-     VM.add c (of_bit false) (VM.add v bsl m)
   | Imull (vh, vl, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let (bsh, bsl) = (if atomic_is_signed a1 then smullB else umullB) bs1 bs2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let (bsh, bsl) = (if atom_is_signed a1 then smullB else umullB) bs1 bs2 in
      VM.add vh bsh (VM.add vl bsl m)
   | Imulj (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
-     let bs = (if atomic_is_signed a1 then smuljB else umuljB) bs1 bs2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     let bs = (if atom_is_signed a1 then smuljB else umuljB) bs1 bs2 in
      VM.add v bs m
   | Isplit (vh, vl, a, n) ->
-     let bs = value_of_atomic m a in
+     let bs = value_of_atom m a in
      let n = Z.to_int n in
-     let (bsh, bsl) = (if atomic_is_signed a then ssplB else usplB) bs n in
+     let (bsh, bsl) = (if atom_is_signed a then ssplB else usplB) bs n in
+     VM.add vh bsh (VM.add vl bsl m)
+  | Ispl (vh, vl, a, n) ->
+     let bs = value_of_atom m a in
+     let n = Z.to_int n in
+     let (bsh, bsl) = (high (size_of_atom a - n) bs, low n bs) in
      VM.add vh bsh (VM.add vl bsl m)
   | Iand (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (andB bs1 bs2) m
   | Ior (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (orB bs1 bs2) m
   | Ixor (v, a1, a2) ->
-     let bs1 = value_of_atomic m a1 in
-     let bs2 = value_of_atomic m a2 in
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
      VM.add v (xorB bs1 bs2) m
   | Icast (_od, v, a) ->
      (* TODO: update _od *)
-     let bs = value_of_atomic m a in
-     let ty = typ_of_atomic a in
+     let bs = value_of_atom m a in
+     let ty = typ_of_atom a in
      VM.add v ((match ty with
                 | Tuint _ -> ucastB
                 | Tsint _ -> scastB) bs (size_of_var v)) m
   | Ivpc (v, a) ->
-     let bs = value_of_atomic m a in
-     let ty = typ_of_atomic a in
+     let bs = value_of_atom m a in
+     let ty = typ_of_atom a in
      VM.add v ((match ty with
                 | Tuint _ -> ucastB
                 | Tsint _ -> scastB) bs (size_of_var v)) m
   | Ijoin (v, ah, al) ->
-     let bsh = value_of_atomic m ah in
-     let bsl = value_of_atomic m al in
+     let bsh = value_of_atom m ah in
+     let bsl = value_of_atom m al in
      VM.add v (cat bsl bsh) m
   | Iassert _ -> m
   | Iassume _ -> m

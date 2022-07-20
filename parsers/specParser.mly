@@ -22,10 +22,10 @@
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
-%token ADD ADDS ADDR ADC ADCS ADCR SUB SUBC SUBB SUBR SBC SBCS SBCR SBB SBBS SBBR MUL MULS MULR MULL MULJ SPLIT
-%token UADD UADDS UADDR UADC UADCS UADCR USUB USUBC USUBB USUBR USBC USBCS USBCR USBB USBBS USBBR UMUL UMULS UMULR UMULL UMULJ USPLIT
-%token SADD SADDS SADDR SADC SADCS SADCR SSUB SSUBC SSUBB SSUBR SSBC SSBCS SSBCR SSBB SSBBS SSBBR SMUL SMULS SMULR SMULL SMULJ SSPLIT
-%token SHL CSHL SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
+%token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
+%token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
@@ -101,41 +101,43 @@ instrs:
 ;
 
 instr:
-    MOV lval atomic                               { [min_int, Imov ($2, $3)] }
-  | SHL lval atomic const                         { [min_int, Ishl ($2, $3, $4)] }
-  | CSHL lval lval atomic atomic const            { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+    MOV lval atom                                 { [min_int, Imov ($2, $3)] }
+  | SHL lval atom const                           { [min_int, Ishl ($2, $3, $4)] }
+  | SHLS lval lval atom const                     { [min_int, Ishls ($2, $3, $4, $5)] }
+  | SHR lval atom const                           { [min_int, Ishr ($2, $3, $4)] }
+  | SHRS lval lval atom const                     { [min_int, Ishrs ($2, $3, $4, $5)] }
+  | SAR lval atom const                           { [min_int, Isar ($2, $3, $4)] }
+  | SARS lval lval atom const                     { [min_int, Isars ($2, $3, $4, $5)] }
+  | CSHL lval lval atom atom const                { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | CSHR lval lval atom atom const                { [min_int, Icshr ($2, $3, $4, $5, $6)] }
+  | CSHRS lval lval lval atom atom const          { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
-  | CMOV lval carry atomic atomic                 { [min_int, Icmov ($2, $3, $4, $5)] }
-  | ADD lval atomic atomic                        { [min_int, Iadd ($2, $3, $4)] }
-  | ADDS lcarry lval atomic atomic                { [min_int, Iadds ($2, $3, $4, $5)] }
-  | ADDR lcarry lval atomic atomic                { [min_int, Iaddr ($2, $3, $4, $5)] }
-  | ADC lval atomic atomic carry                  { [min_int, Iadc ($2, $3, $4, $5)] }
-  | ADCS lcarry lval atomic atomic carry          { [min_int, Iadcs ($2, $3, $4, $5, $6)] }
-  | ADCR lcarry lval atomic atomic carry          { [min_int, Iadcr ($2, $3, $4, $5, $6)] }
-  | SUB lval atomic atomic                        { [min_int, Isub ($2, $3, $4)] }
-  | SUBC lcarry lval atomic atomic                { [min_int, Isubc ($2, $3, $4, $5)] }
-  | SUBB lcarry lval atomic atomic                { [min_int, Isubb ($2, $3, $4, $5)] }
-  | SUBR lcarry lval atomic atomic                { [min_int, Isubr ($2, $3, $4, $5)] }
-  | SBC lval atomic atomic carry                  { [min_int, Isbc ($2, $3, $4, $5)] }
-  | SBCS lcarry lval atomic atomic carry          { [min_int, Isbcs ($2, $3, $4, $5, $6)] }
-  | SBCR lcarry lval atomic atomic carry          { [min_int, Isbcr ($2, $3, $4, $5, $6)] }
-  | SBB lval atomic atomic carry                  { [min_int, Isbb ($2, $3, $4, $5)] }
-  | SBBS lcarry lval atomic atomic carry          { [min_int, Isbbs ($2, $3, $4, $5, $6)] }
-  | SBBR lcarry lval atomic atomic carry          { [min_int, Isbbr ($2, $3, $4, $5, $6)] }
-  | MUL lval atomic atomic                        { [min_int, Imul ($2, $3, $4)] }
-  | MULS lcarry lval atomic atomic                { [min_int, Imuls ($2, $3, $4, $5)] }
-  | MULR lcarry lval atomic atomic                { [min_int, Imulr ($2, $3, $4, $5)] }
-  | MULL lval lval atomic atomic                  { [min_int, Imull ($2, $3, $4, $5)] }
-  | MULJ lval atomic atomic                       { [min_int, Imulj ($2, $3, $4)] }
-  | SPLIT lval lval atomic const                  { [min_int, Isplit ($2, $3, $4, $5)] }
-  | AND lval atomic atomic                        { [min_int, Iand ($2, $3, $4)] }
-  | OR lval atomic atomic                         { [min_int, Ior ($2, $3, $4)] }
-  | NOT lval atomic                               { [min_int, Inot ($2, $3)] }
-  | CAST lval_or_lcarry atomic                    { [min_int, Icast (None, $2, $3)] }
-  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atomic
+  | CMOV lval carry atom atom                     { [min_int, Icmov ($2, $3, $4, $5)] }
+  | ADD lval atom atom                            { [min_int, Iadd ($2, $3, $4)] }
+  | ADDS lcarry lval atom atom                    { [min_int, Iadds ($2, $3, $4, $5)] }
+  | ADC lval atom atom carry                      { [min_int, Iadc ($2, $3, $4, $5)] }
+  | ADCS lcarry lval atom atom carry              { [min_int, Iadcs ($2, $3, $4, $5, $6)] }
+  | SUB lval atom atom                            { [min_int, Isub ($2, $3, $4)] }
+  | SUBC lcarry lval atom atom                    { [min_int, Isubc ($2, $3, $4, $5)] }
+  | SUBB lcarry lval atom atom                    { [min_int, Isubb ($2, $3, $4, $5)] }
+  | SBC lval atom atom carry                      { [min_int, Isbc ($2, $3, $4, $5)] }
+  | SBCS lcarry lval atom atom carry              { [min_int, Isbcs ($2, $3, $4, $5, $6)] }
+  | SBB lval atom atom carry                      { [min_int, Isbb ($2, $3, $4, $5)] }
+  | SBBS lcarry lval atom atom carry              { [min_int, Isbbs ($2, $3, $4, $5, $6)] }
+  | MUL lval atom atom                            { [min_int, Imul ($2, $3, $4)] }
+  | MULS lcarry lval atom atom                    { [min_int, Imuls ($2, $3, $4, $5)] }
+  | MULL lval lval atom atom                      { [min_int, Imull ($2, $3, $4, $5)] }
+  | MULJ lval atom atom                           { [min_int, Imulj ($2, $3, $4)] }
+  | SPLIT lval lval atom const                    { [min_int, Isplit ($2, $3, $4, $5)] }
+  | SPL lval lval atom const                      { [min_int, Ispl ($2, $3, $4, $5)] }
+  | AND lval atom atom                            { [min_int, Iand ($2, $3, $4)] }
+  | OR lval atom atom                             { [min_int, Ior ($2, $3, $4)] }
+  | NOT lval atom                                 { [min_int, Inot ($2, $3)] }
+  | CAST lval_or_lcarry atom                      { [min_int, Icast (None, $2, $3)] }
+  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atom
                                                   { [min_int, Icast (Some $3, $5, $6)] }
-  | VPC lval_or_lcarry atomic                     { [min_int, Ivpc ($2, $3)] }
-  | JOIN lval atomic atomic                       { [min_int, Ijoin ($2, $3, $4)] }
+  | VPC lval_or_lcarry atom                       { [min_int, Ivpc ($2, $3)] }
+  | JOIN lval atom atom                           { [min_int, Ijoin ($2, $3, $4)] }
   | ASSERT bexp                                   { [min_int, Iassert ($2)] }
   | ASSUME bexp                                   { [min_int, Iassume ($2)] }
   | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Icut ([(e, epwss)], [(r, rpwss)])] }
@@ -183,21 +185,21 @@ bexp:
 ;
 
 ebexp:
-    ebexp_atomic LANDOP ebexp                     { Eand ($1, $3) }
-  | ebexp_atomic                                  { $1 }
+    ebexp_atom LANDOP ebexp                       { Eand ($1, $3) }
+  | ebexp_atom                                    { $1 }
 ;
 
-ebexp_atomic:
+ebexp_atom:
     TRUE                                          { etrue }
   | EQ eexp eexp_no_unary                         { Eeq ($2, $3) }
   | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, [ $4 ]) }
   /*
-   * Changing ebexp_atomic_without_eqmod to ebexp_atomic will induce shift/reduce conflicts.
+   * Changing ebexp_atom_without_eqmod to ebexp_atom will induce shift/reduce conflicts.
    * Example: bveand bvvar x = bvvar y (bvvar x = bvvar y)
    * When the parser reads "(", it does not know whether it should reduce "bvvar x = bvvar y"
-   * to ebexp_atomic or shift "(".
+   * to ebexp_atom or shift "(".
    */
-  | AND ebexp_atomic_without_eqmod ebexp_atomic   { Eand ($2, $3) }
+  | AND ebexp_atom_without_eqmod ebexp_atom       { Eand ($2, $3) }
   | LPAR ebexp RPAR                               { $2 }
   | eexp EQOP eexp eq_suffix                      { match $4 with
                                                     | None -> Eeq ($1, $3)
@@ -206,11 +208,11 @@ ebexp_atomic:
   | LANDOP LSQUARE ebexps RSQUARE                 { eands $3 }
 ;
 
-ebexp_atomic_without_eqmod:
+ebexp_atom_without_eqmod:
     TRUE                                          { etrue }
   | EQ eexp eexp_no_unary                         { Eeq ($2, $3) }
   | EQMOD eexp eexp_no_unary eexp_no_unary        { Eeqmod ($2, $3, [ $4 ]) }
-  | AND ebexp_atomic_without_eqmod ebexp_atomic_without_eqmod
+  | AND ebexp_atom_without_eqmod ebexp_atom_without_eqmod
                                                   { Eand ($2, $3) }
   | LPAR ebexp RPAR                               { $2 }
   | eexp EQOP eexp                                { Eeq ($1, $3) }
@@ -310,20 +312,20 @@ rbexp:
 ;
 
 rbexp_and:
-    rbexp_atomic LANDOP rbexp_and                 { Rand ($1, $3) }
-  | rbexp_atomic                                  { $1 }
+    rbexp_atom LANDOP rbexp_and                   { Rand ($1, $3) }
+  | rbexp_atom                                    { $1 }
 ;
 
-rbexp_atomic:
+rbexp_atom:
     TRUE                                          { Rtrue }
   | EQ rexp rexp                                  { let e1 = $2 in
                                                     let e2 = $3 in
                                                     let w1 = size_of_rexp e1 in
                                                     Req (w1, e1, e2) }
-  | NEG rbexp_atomic                              { Rneg $2 }
-  | NEGOP rbexp_atomic                            { Rneg $2 }
-  | AND rbexp_atomic_without_eqmod rbexp_atomic   { Rand ($2, $3) }
-  | OR rbexp_atomic_without_eqmod rbexp_atomic    { Ror ($2, $3) }
+  | NEG rbexp_atom                                { Rneg $2 }
+  | NEGOP rbexp_atom                              { Rneg $2 }
+  | AND rbexp_atom_without_eqmod rbexp_atom       { Rand ($2, $3) }
+  | OR rbexp_atom_without_eqmod rbexp_atom        { Ror ($2, $3) }
   | LPAR rbexp RPAR                               { $2 }
   /* Extensions */
   | rexp EQOP rexp req_suffix                     { let e1 = $1 in
@@ -371,16 +373,16 @@ rbexp_atomic:
                                                   }
 ;
 
-rbexp_atomic_without_eqmod:
+rbexp_atom_without_eqmod:
     TRUE                                          { Rtrue }
   | EQ rexp rexp                                  { let e1 = $2 in
                                                     let e2 = $3 in
                                                     let w1 = size_of_rexp e1 in
                                                     Req (w1, e1, e2) }
-  | NEG rbexp_atomic_without_eqmod                { Rneg $2 }
-  | AND rbexp_atomic_without_eqmod rbexp_atomic_without_eqmod
+  | NEG rbexp_atom_without_eqmod                  { Rneg $2 }
+  | AND rbexp_atom_without_eqmod rbexp_atom_without_eqmod
                                                   { Rand ($2, $3) }
-  | OR rbexp_atomic_without_eqmod rbexp_atomic_without_eqmod
+  | OR rbexp_atom_without_eqmod rbexp_atom_without_eqmod
                                                   { Ror ($2, $3) }
   | LPAR rbexp RPAR                               { $2 }
   /* Extensions */
@@ -597,11 +599,11 @@ lcarry:
 ;
 
 lval_or_lcarry:
-    ID AT typ                                       { mkvar $1 $3 }
-  | typ ID                                          { mkvar $2 $1 }
+    ID AT typ                                     { mkvar $1 $3 }
+  | typ ID                                        { mkvar $2 $1 }
 ;
 
-atomic:
+atom:
     const AT typ                                  { Aconst ($3, $1) }
   | typ const                                     { Aconst ($1, $2) }
   | defined_var                                   { Avar $1 }
@@ -618,8 +620,8 @@ gvars:
 ;
 
 gvar:
-    ID AT typ                                       { mkvar $1 $3 }
-  | typ ID                                          { mkvar $2 $1 }
+    ID AT typ                                     { mkvar $1 $3 }
+  | typ ID                                        { mkvar $2 $1 }
 ;
 
 const:
@@ -641,11 +643,11 @@ complex_const:
 ;
 
 carry:
-    atomic                                        { match $1 with
+    atom                                          { match $1 with
                                                     | Avar v -> if v.vtyp = bit_t then $1
-                                                                else failwith ("The type of a carry variable " ^ string_of_atomic $1 ^ " should be \"bit\"")
+                                                                else failwith ("The type of a carry variable " ^ string_of_atom $1 ^ " should be \"bit\"")
                                                     | Aconst (ty, _n) -> if ty = bit_t then $1
-                                                                        else failwith ("The type of a carry variable " ^ string_of_atomic $1 ^ " should be \"bit\"")
+                                                                        else failwith ("The type of a carry variable " ^ string_of_atom $1 ^ " should be \"bit\"")
                                                   }
 ;
 

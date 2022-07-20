@@ -1,0 +1,30 @@
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+
+#! stp xzr, xzr, $1ea -> mov $1ea 0@uint64;\nmov $1ea[+8] 0@uint64
+
+#fp2zero751:
+# x0 = 0xffffffffe238
+# x1 = 0xffffffffe478
+# x2 = 0xffffffffffffffff
+# x3 = 0xa442766d06fd569f
+# x4 = 0xa442766d06fd569f
+# x5 = 0xc1c89a4995a331c7
+# x6 = 0x3805965eaf36793f
+# x7 = 0x637496902c06d53e
+	#! -> SP = 0xffffffffe0f0
+	stp	xzr, xzr, [x0]                              #! EA = L0xffffffffe238; PC = 0xaaaaaaaae160
+	stp	xzr, xzr, [x0, #16]                         #! EA = L0xffffffffe248; PC = 0xaaaaaaaae164
+	stp	xzr, xzr, [x0, #32]                         #! EA = L0xffffffffe258; PC = 0xaaaaaaaae168
+	stp	xzr, xzr, [x0, #48]                         #! EA = L0xffffffffe268; PC = 0xaaaaaaaae16c
+	stp	xzr, xzr, [x0, #64]                         #! EA = L0xffffffffe278; PC = 0xaaaaaaaae170
+	stp	xzr, xzr, [x0, #80]                         #! EA = L0xffffffffe288; PC = 0xaaaaaaaae174
+	stp	xzr, xzr, [x0, #96]                         #! EA = L0xffffffffe298; PC = 0xaaaaaaaae178
+	stp	xzr, xzr, [x0, #112]                        #! EA = L0xffffffffe2a8; PC = 0xaaaaaaaae17c
+	stp	xzr, xzr, [x0, #128]                        #! EA = L0xffffffffe2b8; PC = 0xaaaaaaaae180
+	stp	xzr, xzr, [x0, #144]                        #! EA = L0xffffffffe2c8; PC = 0xaaaaaaaae184
+	stp	xzr, xzr, [x0, #160]                        #! EA = L0xffffffffe2d8; PC = 0xaaaaaaaae188
+	stp	xzr, xzr, [x0, #176]                        #! EA = L0xffffffffe2e8; PC = 0xaaaaaaaae18c
+	#! <- SP = 0xffffffffe0f0
+	#ret                                            #! PC = 0xaaaaaaaae190

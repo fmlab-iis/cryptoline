@@ -281,25 +281,26 @@ let write_macaulay2_input ifile vars gen p =
   trace ""
 
 let write_maple_input ifile vars gen p =
+  let const_gen =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
+    match const_gen with
+    | [] -> Econst Z.zero
+    | c::[] -> c
+    | _ -> failwith("Multi-moduli is not supported when using maple.") in
   let input_text =
     let varseq =
       match vars with
       | [] -> "x"
       | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
     "interface(prettyprint=0):\n"
     ^ "with(PolynomialIdeals):\n"
     ^ "with(Groebner):\n"
     ^ "Ord := plex(" ^ varseq ^ "):\n"
-    ^ "B := [" ^ generator ^ "]:\n"
     ^ "g := " ^ poly ^ ":\n"
-    ^ "if member(g, B) then\n"
-    ^ "  res := true\n"
-    ^ "else\n"
-    ^ "  J := PolynomialIdeal(B):\n"
-    ^ "  res := IdealMembership(g, J):\n"
-    ^ "end if:\n"
+    ^ "J := PolynomialIdeal([], characteristic=" ^ magma_of_eexp const_gen ^ "):\n"
+    ^ "res := IdealMembership(g, J):\n"
     ^ "res;\n"
     ^ "quit:\n" in
   let ch = open_out ifile in
@@ -707,8 +708,8 @@ let verify_spec s =
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     (b, s, hashopt) in
-  let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option
-                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list =
+  let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option
+                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option) list =
     [spec_to_ssa; normalize_spec]
     @(if !apply_rewriting then [rewrite_assignments] else [])
     (* @(if !apply_slicing then [build_var_dep_hash] else []) *)

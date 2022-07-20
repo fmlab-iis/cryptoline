@@ -1,0 +1,22 @@
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+
+#! stp xzr, xzr, $1ea -> mov $1ea 0@uint64;\nmov $1ea[+8] 0@uint64
+
+#fpzero503:
+# x0 = 0xffffffffe7b8
+# x1 = 0xffffffffe878
+# x2 = 0xffffffffffffffff
+# x3 = 0x5447e09314a8afda
+# x4 = 0x5447e09314a8afda
+# x5 = 0x5c353f9e94d59586
+# x6 = 0xf3a4b81fb76b09a9
+# x7 = 0x8923990822b0fb0b
+	#! -> SP = 0xffffffffe6f0
+	stp	xzr, xzr, [x0]                              #! EA = L0xffffffffe7b8; PC = 0xaaaaaaaadcc0
+	stp	xzr, xzr, [x0, #16]                         #! EA = L0xffffffffe7c8; PC = 0xaaaaaaaadcc4
+	stp	xzr, xzr, [x0, #32]                         #! EA = L0xffffffffe7d8; PC = 0xaaaaaaaadcc8
+	stp	xzr, xzr, [x0, #48]                         #! EA = L0xffffffffe7e8; PC = 0xaaaaaaaadccc
+	#! <- SP = 0xffffffffe6f0
+	#ret                                            #! PC = 0xaaaaaaaadcd0

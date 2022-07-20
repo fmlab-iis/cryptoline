@@ -27,13 +27,13 @@ let exp_var v = Var v
 
 let exp_const w n = Const (w, n)
 
-let exp_atomic a =
+let exp_atom a =
   match a with
   | Avar v -> exp_var v
   | Aconst (ty, n) -> exp_const (size_of_typ ty) n
 
 let exp_carry n c =
-  ZeroExtend (1, n - 1, exp_atomic c)
+  ZeroExtend (1, n - 1, exp_atom c)
 
 let rec exp_rexp e =
   match e with
@@ -65,16 +65,16 @@ let rec bexp_rbexp e =
   | Rtrue -> True
   | Req (w, e1, e2) -> Eq (w, exp_rexp e1, exp_rexp e2)
   | Rcmp (w, op, e1, e2) ->
-    (match op with
-     | Rult -> Ult (w, exp_rexp e1, exp_rexp e2)
-     | Rule -> Ule (w, exp_rexp e1, exp_rexp e2)
-     | Rugt -> Ugt (w, exp_rexp e1, exp_rexp e2)
-     | Ruge -> Uge (w, exp_rexp e1, exp_rexp e2)
-     | Rslt -> Slt (w, exp_rexp e1, exp_rexp e2)
-     | Rsle -> Sle (w, exp_rexp e1, exp_rexp e2)
-     | Rsgt -> Sgt (w, exp_rexp e1, exp_rexp e2)
-     | Rsge -> Sge (w, exp_rexp e1, exp_rexp e2)
-    )
+     (match op with
+      | Rult -> Ult (w, exp_rexp e1, exp_rexp e2)
+      | Rule -> Ule (w, exp_rexp e1, exp_rexp e2)
+      | Rugt -> Ugt (w, exp_rexp e1, exp_rexp e2)
+      | Ruge -> Uge (w, exp_rexp e1, exp_rexp e2)
+      | Rslt -> Slt (w, exp_rexp e1, exp_rexp e2)
+      | Rsle -> Sle (w, exp_rexp e1, exp_rexp e2)
+      | Rsgt -> Sgt (w, exp_rexp e1, exp_rexp e2)
+      | Rsge -> Sge (w, exp_rexp e1, exp_rexp e2)
+     )
   | Rneg e -> Lneg (bexp_rbexp e)
   | Rand (e1, e2) -> Conj (bexp_rbexp e1, bexp_rbexp e2)
   | Ror (e1, e2) -> Disj (bexp_rbexp e1, bexp_rbexp e2)
@@ -82,46 +82,46 @@ let rec bexp_rbexp e =
 let exp_add ?extend:(ext=false) w a1 a2 =
   if ext then
     Add (w + 1,
-         ZeroExtend (w, 1, exp_atomic a1),
-         ZeroExtend (w, 1, exp_atomic a2))
+         ZeroExtend (w, 1, exp_atom a1),
+         ZeroExtend (w, 1, exp_atom a2))
   else
-    Add (w, exp_atomic a1, exp_atomic a2)
+    Add (w, exp_atom a1, exp_atom a2)
 
 let exp_adc ?extend:(ext=false) w a1 a2 y =
   if ext then
     Add (w + 1,
          Add (w + 1,
-              ZeroExtend (w, 1, exp_atomic a1),
-              ZeroExtend (w, 1, exp_atomic a2)),
+              ZeroExtend (w, 1, exp_atom a1),
+              ZeroExtend (w, 1, exp_atom a2)),
          exp_carry (w + 1) y)
   else
     Add (w,
          Add (w,
-              exp_atomic a1,
-              exp_atomic a2),
+              exp_atom a1,
+              exp_atom a2),
          exp_carry w y)
 
 let exp_subc ?extend:(ext=false) w a1 a2 =
   if ext then
     Add(w + 1,
         Add (w + 1,
-             ZeroExtend (w, 1, exp_atomic a1),
-             ZeroExtend (w, 1, Not (w, exp_atomic a2))),
+             ZeroExtend (w, 1, exp_atom a1),
+             ZeroExtend (w, 1, Not (w, exp_atom a2))),
         Const (w + 1, Z.one))
   else
     Add(w,
         Add (w,
-             exp_atomic a1,
-             Not (w, exp_atomic a2)),
+             exp_atom a1,
+             Not (w, exp_atom a2)),
         Const (w, Z.one))
 
 let exp_subb ?extend:(ext=false) w a1 a2 =
   if ext then
     Sub (w + 1,
-         ZeroExtend (w, 1, exp_atomic a1),
-         ZeroExtend (w, 1, exp_atomic a2))
+         ZeroExtend (w, 1, exp_atom a1),
+         ZeroExtend (w, 1, exp_atom a2))
   else
-    Sub (w, exp_atomic a1, exp_atomic a2)
+    Sub (w, exp_atom a1, exp_atom a2)
 
 (*
  * b: borrow, c: carry
@@ -138,55 +138,79 @@ let exp_sbc ?extend:(ext=false) w a1 a2 y =
   if ext then
     Add (w + 1,
          Add (w + 1,
-              ZeroExtend (w, 1, exp_atomic a1),
-              ZeroExtend (w, 1, Not(w, exp_atomic a2))),
+              ZeroExtend (w, 1, exp_atom a1),
+              ZeroExtend (w, 1, Not(w, exp_atom a2))),
          exp_carry (w + 1) y)
   else
     Add (w,
          Add (w,
-              exp_atomic a1,
-              Not(w, exp_atomic a2)),
+              exp_atom a1,
+              Not(w, exp_atom a2)),
          exp_carry w y)
 
 let exp_sbb ?extend:(ext=false) w a1 a2 y =
   if ext then
     Sub (w + 1,
-         ZeroExtend (w, 1, exp_atomic a1),
+         ZeroExtend (w, 1, exp_atom a1),
          Add(w + 1,
-             ZeroExtend (w, 1, exp_atomic a2),
+             ZeroExtend (w, 1, exp_atom a2),
              exp_carry (w + 1) y))
   else
     Sub (w,
-         exp_atomic a1,
+         exp_atom a1,
          Add(w,
-             exp_atomic a2,
+             exp_atom a2,
              exp_carry w y))
 
 let exp_umul ?extend:(ext=false) w a1 a2 =
   if ext then
     Mul (w + w,
-         ZeroExtend (w, w, exp_atomic a1),
-         ZeroExtend (w, w, exp_atomic a2))
+         ZeroExtend (w, w, exp_atom a1),
+         ZeroExtend (w, w, exp_atom a2))
   else
-    Mul (w, exp_atomic a1, exp_atomic a2)
+    Mul (w, exp_atom a1, exp_atom a2)
 
 let exp_smul ?extend:(ext=false) w a1 a2 =
   if ext then
     Mul (w + w,
-         SignExtend (w, w, exp_atomic a1),
-         SignExtend (w, w, exp_atomic a2))
+         SignExtend (w, w, exp_atom a1),
+         SignExtend (w, w, exp_atom a2))
   else
-    Mul (w, exp_atomic a1, exp_atomic a2)
+    Mul (w, exp_atom a1, exp_atom a2)
 
 let exp_cshl w a1 a2 n =
   Shl (w + w,
-       Concat (w, w, exp_atomic a1, exp_atomic a2),
+       Concat (w, w, exp_atom a1, exp_atom a2),
        Const (w + w, n))
 
-let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atomic a)
+let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
 let bexp_shl v a p =
   let w = size_of_var v in
-  Eq (w, exp_var v, Shl (w, exp_atomic a, Const (w, p)))
+  Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p)))
+let bexp_shls l v a p =
+  let w = size_of_var v in
+  let ip = Z.to_int p in
+  Conj
+    (Eq (ip, exp_var l, High (w - ip, ip, exp_atom a)),
+     Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p))))
+let bexp_shr v a p =
+  let w = size_of_var v in
+  Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, p)))
+let bexp_shrs v l a p =
+  let w = size_of_var v in
+  let ip = Z.to_int p in
+  Conj
+    (Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, p))),
+     Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
+let bexp_sar v a p =
+  let w = size_of_var v in
+  Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, p)))
+let bexp_sars v l a p =
+  let w = size_of_var v in
+  let ip = Z.to_int p in
+  Conj
+    (Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, p))),
+     Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
 let bexp_cshl vh vl a1 a2 p =
   let w = size_of_var vh in
   Conj
@@ -198,10 +222,25 @@ let bexp_cshl vh vl a1 a2 p =
          Lshr (w,
                Low (w, w, exp_cshl w a1 a2 p),
                Const (w, p))))
+let bexp_cshr vh vl a1 a2 p =
+  let w = size_of_var vh in
+  let ip = Z.to_int p in
+  Conj
+    ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, p)))),
+     (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atom a1), High (ip, w - ip, exp_atom a2)))))
+let bexp_cshrs vh vl l a1 a2 p =
+  let w = size_of_var vh in
+  let ip = Z.to_int p in
+  Conj
+    (Conj
+       ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, p)))),
+        (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atom a1), High (ip, w - ip, exp_atom a2))))),
+     (Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a2))))
+
 let bexp_cmov v c a1 a2 =
   let w = size_of_var v in
-  let cond = Eq (1, exp_atomic c, exp_const 1 Z.one) in
-  Eq (w, exp_var v, Ite (w, cond, exp_atomic a1, exp_atomic a2))
+  let cond = Eq (1, exp_atom c, exp_const 1 Z.one) in
+  Eq (w, exp_var v, Ite (w, cond, exp_atom a1, exp_atom a2))
 let bexp_add v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_add ~extend:false w a1 a2)
@@ -210,11 +249,6 @@ let bexp_adds c v a1 a2 =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_add ~extend:true w a1 a2)),
      Eq (w, exp_var v, Low (w, 1, exp_add ~extend:true w a1 a2)))
-let bexp_addr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_add ~extend:false w a1 a2))
 let bexp_adc v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_adc ~extend:false w a1 a2 y)
@@ -223,11 +257,6 @@ let bexp_adcs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_adc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_adc ~extend:true w a1 a2 y)))
-let bexp_adcr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_adc ~extend:false w a1 a2 y))
 let bexp_sub v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
@@ -241,11 +270,6 @@ let bexp_subb c v a1 a2 =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_subb ~extend:true w a1 a2)),
      Eq (w, exp_var v, Low (w, 1, exp_subb ~extend:true w a1 a2)))
-let bexp_subr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_subb ~extend:false w a1 a2))
 let bexp_sbc v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_sbc ~extend:false w a1 a2 y)
@@ -254,11 +278,6 @@ let bexp_sbcs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_sbc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbc ~extend:true w a1 a2 y)))
-let bexp_sbcr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_sbc ~extend:false w a1 a2 y))
 let bexp_sbb v a1 a2 y =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_sbb ~extend:false w a1 a2 y)
@@ -267,11 +286,6 @@ let bexp_sbbs c v a1 a2 y =
   Conj
     (Eq (1, exp_var c, High (w, 1, exp_sbb ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbb ~extend:true w a1 a2 y)))
-let bexp_sbbr c v a1 a2 y =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_sbb ~extend:false w a1 a2 y))
 let bexp_mul v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
@@ -301,11 +315,6 @@ let bexp_muls c v a1 a2 =
         Eq (w,
             exp_var v,
             Low (w, w, exp_smul ~extend:true w a1 a2)))
-let bexp_mulr c v a1 a2 =
-  let w = size_of_var v in
-  Conj
-    (Eq (1, exp_var c, Const (1, Z.zero)),
-     Eq (w, exp_var v, exp_umul ~extend:false w a1 a2))
 let bexp_mull vh vl a1 a2 =
   match vh.vtyp with
   | Tuint w ->
@@ -333,74 +342,80 @@ let bexp_split vh vl a p =
      Conj
        (Eq (w,
             exp_var vh,
-            ZeroExtend (w - p, p, High (p, w - p, exp_atomic a))),
+            ZeroExtend (w - p, p, High (p, w - p, exp_atom a))),
         Eq (w,
             exp_var vl,
-            ZeroExtend (p, w - p, Low (p, w - p, exp_atomic a))))
+            ZeroExtend (p, w - p, Low (p, w - p, exp_atom a))))
   | Tsint w ->
      Conj
        (Eq (w,
             exp_var vh,
-            SignExtend (w - p, p, High (p, w - p, exp_atomic a))),
+            SignExtend (w - p, p, High (p, w - p, exp_atom a))),
         Eq (w,
             exp_var vl,
-            ZeroExtend (p, w - p, Low (p, w - p, exp_atomic a))))
+            ZeroExtend (p, w - p, Low (p, w - p, exp_atom a))))
+let bexp_spl vh vl a p =
+  let p = Z.to_int p in
+  let w = size_of_atom a in
+  Conj
+    ((Eq (w - p, exp_var vh, High (p, w - p, exp_atom a))),
+     (Eq (p, exp_var vl, Low (p, w - p, exp_atom a))))
 let bexp_and v a1 a2 =
   let w = size_of_var v in
-  Eq (w, exp_var v, And (w, exp_atomic a1, exp_atomic a2))
+  Eq (w, exp_var v, And (w, exp_atom a1, exp_atom a2))
 let bexp_or v a1 a2 =
   let w = size_of_var v in
-  Eq (w, exp_var v, Or (w, exp_atomic a1, exp_atomic a2))
+  Eq (w, exp_var v, Or (w, exp_atom a1, exp_atom a2))
 let bexp_xor v a1 a2 =
   let w = size_of_var v in
-  Eq (w, exp_var v, Xor (w, exp_atomic a1, exp_atomic a2))
+  Eq (w, exp_var v, Xor (w, exp_atom a1, exp_atom a2))
 let bexp_not v a =
   let w = size_of_var v in
-  Eq (w, exp_var v, Not (w, exp_atomic a))
+  Eq (w, exp_var v, Not (w, exp_atom a))
 (*
  * - Upcast: do signed or unsigned extension (depending on the source type), and then interpret depending on the destination type
  * - Downcast: discard the most significant bits that are not present in the destination type, and then interpret depending on the destination type
  *)
 let bexp_cast od v a =
   let bcast =
-    match v.vtyp, typ_of_atomic a with
+    match v.vtyp, typ_of_atom a with
     | Tuint wv, Tuint wa
       | Tsint wv, Tuint wa ->
-       if wv = wa then Eq (wv, exp_var v, exp_atomic a)
-       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atomic a))
-       else Eq (wv, exp_var v, ZeroExtend (wa, wv - wa, exp_atomic a))
+       if wv = wa then Eq (wv, exp_var v, exp_atom a)
+       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atom a))
+       else Eq (wv, exp_var v, ZeroExtend (wa, wv - wa, exp_atom a))
     | Tuint wv, Tsint wa
       | Tsint wv, Tsint wa ->
-       if wv = wa then Eq (wv, exp_var v, exp_atomic a)
-       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atomic a))
-       else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atomic a)) in
+       if wv = wa then Eq (wv, exp_var v, exp_atom a)
+       else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atom a))
+       else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atom a)) in
   let bextra =
     match od with
     | None -> None
     | Some d ->
-       (match v.vtyp, typ_of_atomic a with
+       (match v.vtyp, typ_of_atom a with
         | Tuint wv, Tuint wa ->
            if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
-           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atomic a)))
+           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atom a)))
         | Tuint wv, Tsint wa ->
-           if wv >= wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atomic a)))
-           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atomic a)))
+           if wv >= wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atom a)))
+           else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atom a)))
         | Tsint wv, Tuint wa ->
            if wv > wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
-           else if wv = wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atomic a)))
+           else if wv = wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atom a)))
            else Some (Eq (wa - wv + 1,
                           exp_var d,
                           Add (wa - wv + 1,
-                               ZeroExtend (wa - wv, 1, High (wv, wa - wv, exp_atomic a)), (* ZeroExtend is used to avoid overflow *)
-                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atomic a))) (* the sign bit of v *)
+                               ZeroExtend (wa - wv, 1, High (wv, wa - wv, exp_atom a)), (* ZeroExtend is used to avoid overflow *)
+                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
         | Tsint wv, Tsint wa ->
            if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
            else Some (Eq (wa - wv + 1,
                           exp_var d,
                           Add (wa - wv + 1,
-                               SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atomic a)), (* SignExtend is used to avoid overflow *)
-                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atomic a))) (* the sign bit of v *)
+                               SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atom a)), (* SignExtend is used to avoid overflow *)
+                               ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
        )
   in
@@ -413,38 +428,40 @@ let bexp_join v ah al =
   let w = size_of_var v in
   Eq (w,
       exp_var v,
-      Concat (size_of_atomic ah, size_of_atomic al, exp_atomic ah, exp_atomic al))
+      Concat (size_of_atom ah, size_of_atom al, exp_atom ah, exp_atom al))
 
 let bexp_instr i =
   match i with
   | Imov (v, a) -> bexp_mov v a
   | Ishl (v, a, p) -> bexp_shl v a p
+  | Ishls (l, v, a, p) -> bexp_shls l v a p
+  | Ishr (v, a, p) -> bexp_shr v a p
+  | Ishrs (v, l, a, p) -> bexp_shrs v l a p
+  | Isar (v, a, p) -> bexp_sar v a p
+  | Isars (v, l, a, p) -> bexp_sars v l a p
   | Icshl (vh, vl, a1, a2, p) -> bexp_cshl vh vl a1 a2 p
+  | Icshr (vh, vl, a1, a2, p) -> bexp_cshr vh vl a1 a2 p
+  | Icshrs (vh, vl, l, a1, a2, p) -> bexp_cshrs vh vl l a1 a2 p
   | Inondet _ -> True
   | Icmov (v, c, a1, a2) -> bexp_cmov v c a1 a2
   | Inop -> True
   | Iadd (v, a1, a2) -> bexp_add v a1 a2
   | Iadds (c, v, a1, a2) -> bexp_adds c v a1 a2
-  | Iaddr (c, v, a1, a2) -> bexp_addr c v a1 a2
   | Iadc (v, a1, a2, y) -> bexp_adc v a1 a2 y
   | Iadcs (c, v, a1, a2, y) -> bexp_adcs c v a1 a2 y
-  | Iadcr (c, v, a1, a2, y) -> bexp_adcr c v a1 a2 y
   | Isub (v, a1, a2) -> bexp_sub v a1 a2
   | Isubc (c, v, a1, a2) -> bexp_subc c v a1 a2
   | Isubb (c, v, a1, a2) -> bexp_subb c v a1 a2
-  | Isubr (c, v, a1, a2) -> bexp_subr c v a1 a2
   | Isbc (v, a1, a2, y) -> bexp_sbc v a1 a2 y
   | Isbcs (c, v, a1, a2, y) -> bexp_sbcs c v a1 a2 y
-  | Isbcr (c, v, a1, a2, y) -> bexp_sbcr c v a1 a2 y
   | Isbb (v, a1, a2, y) -> bexp_sbb v a1 a2 y
   | Isbbs (c, v, a1, a2, y) -> bexp_sbbs c v a1 a2 y
-  | Isbbr (c, v, a1, a2, y) -> bexp_sbbr c v a1 a2 y
   | Imul (v, a1, a2) -> bexp_mul v a1 a2
   | Imuls (c, v, a1, a2) -> bexp_muls c v a1 a2
-  | Imulr (c, v, a1, a2) -> bexp_mulr c v a1 a2
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
+  | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
   | Iand (v, a1, a2) -> bexp_and v a1 a2
   | Ior (v, a1, a2) -> bexp_or v a1 a2
   | Ixor (v, a1, a2) -> bexp_xor v a1 a2
@@ -464,207 +481,219 @@ let bexp_program p = List.rev (List.rev_map bexp_instr p)
 
 (** Conversion from program safety to QFBV *)
 
-let bexp_atomic_uadd_safe w a1 a2 =
-  Lneg (Uaddo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_uadd_safe w a1 a2 =
+  Lneg (Uaddo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_sadd_safe w a1 a2 =
-  Lneg (Saddo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_sadd_safe w a1 a2 =
+  Lneg (Saddo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_uadc_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_uadc_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let y = exp_carry w y in
   Conj
     (Lneg (Uaddo (w, a2, y)),
      Lneg (Uaddo (w, a1, Add (w, a2, y))))
 
-let bexp_atomic_sadc_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_sadc_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let y = exp_carry w y in
   Conj
     (Lneg (Saddo (w, a2, y)),
      Lneg (Saddo (w, a1, Add (w, a2, y))))
 
-let bexp_atomic_usub_safe w a1 a2 =
-  Lneg (Usubo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_usub_safe w a1 a2 =
+  Lneg (Usubo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_ssub_safe w a1 a2 =
-  Lneg (Ssubo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_ssub_safe w a1 a2 =
+  Lneg (Ssubo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_usbc_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_usbc_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let borrow = Sub (w, Const (w, Z.one), exp_carry w y) in
   Conj
     (Lneg (Uaddo (w, a2, borrow)),
      Lneg (Usubo (w, a1, Add (w, a2, borrow))))
 
-let bexp_atomic_ssbc_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_ssbc_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let borrow = Sub (w, Const (w, Z.one), exp_carry w y) in
   Conj
     (Lneg (Saddo (w, a2, borrow)),
      Lneg (Ssubo (w, a1, Add (w, a2, borrow))))
 
-let bexp_atomic_usbb_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_usbb_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let y = exp_carry w y in
   Conj
     (Lneg (Uaddo (w, a2, y)),
      Lneg (Usubo (w, a1, Add (w, a2, y))))
 
-let bexp_atomic_ssbb_safe w a1 a2 y =
-  let a1 = exp_atomic a1 in
-  let a2 = exp_atomic a2 in
+let bexp_atom_ssbb_safe w a1 a2 y =
+  let a1 = exp_atom a1 in
+  let a2 = exp_atom a2 in
   let y = exp_carry w y in
   Conj
     (Lneg (Saddo (w, a2, y)),
      Lneg (Ssubo (w, a1, Add (w, a2, y))))
 
-let bexp_atomic_umul_safe w a1 a2 =
-  Lneg (Umulo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_umul_safe w a1 a2 =
+  Lneg (Umulo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_smul_safe w a1 a2 =
-  Lneg (Smulo (w, exp_atomic a1, exp_atomic a2))
+let bexp_atom_smul_safe w a1 a2 =
+  Lneg (Smulo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atomic_ushl_safe w a n =
+let bexp_atom_ushl_safe w a n =
   let n = Z.to_int n in
   Eq (n,
-      High (w - n, n, exp_atomic a),
+      High (w - n, n, exp_atom a),
       Const (n, Z.zero))
 
-let bexp_atomic_sshl_safe w a n =
+let bexp_atom_sshl_safe w a n =
   let n = Z.to_int n in
   Eq (w,
-      SignExtend (w - n, n, Low (w - n, n, exp_atomic a)),
-      exp_atomic a)
+      SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
+      exp_atom a)
 
-let bexp_atomic_ucshl_safe w a1 _a2 n =
+let bexp_atom_ushr_safe w a n =
+  let n = Z.to_int n in
+  Eq (n,
+      Low (n, w - n, exp_atom a),
+      Const (n, Z.zero))
+
+let bexp_atom_sshr_safe w a n =
+  let n = Z.to_int n in
+  Conj
+    (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
+     Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
+
+let bexp_atom_usar_safe w a n =
+  let n = Z.to_int n in
+  Conj
+    (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
+     Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+
+let bexp_atom_ssar_safe w a n =
+  let n = Z.to_int n in
+  Eq (n,
+      Low (n, w - n, exp_atom a),
+      Const (n, Z.zero))
+
+let bexp_atom_ucshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atomic_ushl_safe w a1 n)
+     bexp_atom_ushl_safe w a1 n)
 
-let bexp_atomic_scshl_safe w a1 _a2 n =
+let bexp_atom_scshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atomic_sshl_safe w a1 n)
+     bexp_atom_sshl_safe w a1 n)
+
+let bexp_atom_ucshr_safe w _a1 a2 n =
+  let ni = Z.to_int n in
+  Conj
+    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+     Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Z.zero)))
+
+let bexp_atom_scshr_safe w a1 a2 n =
+  let ni = Z.to_int n in
+  Conj
+    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+     Conj (Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Z.zero)),
+           Eq (1, High (w - 1, 1, exp_atom a1), Const (1, Z.zero))))
 
 let bexp_vpc_safe v a =
-  match v.vtyp, typ_of_atomic a with
+  match v.vtyp, typ_of_atom a with
   | Tuint wv, Tuint wa ->
      if wv >= wa then True
      else Eq (wa - wv,
-              High (wv, wa - wv, exp_atomic a),
+              High (wv, wa - wv, exp_atom a),
               Const (wa - wv, Z.zero))
   | Tsint wv, Tuint wa ->
      if wv > wa then True
      else Eq (wa - wv + 1,
-              High (wv - 1, wa - wv + 1, exp_atomic a),
+              High (wv - 1, wa - wv + 1, exp_atom a),
               Const (wa - wv + 1, Z.zero))
   | Tuint wv, Tsint wa ->
-     if wv >= wa - 1 then Eq (1, High (wa - 1, 1, exp_atomic a), Const (1, Z.zero))
+     if wv >= wa - 1 then Eq (1, High (wa - 1, 1, exp_atom a), Const (1, Z.zero))
      else Eq (wa - wv,
-              High (wv, wa - wv, exp_atomic a),
+              High (wv, wa - wv, exp_atom a),
               Const (wa - wv, Z.zero))
   | Tsint wv, Tsint wa ->
      if wv >= wa then True
      else Eq (wa,
-              SignExtend (wv, wa - wv, Low (wv, wa - wv, exp_atomic a)),
-              exp_atomic a)
+              SignExtend (wv, wa - wv, Low (wv, wa - wv, exp_atom a)),
+              exp_atom a)
 
 let bexp_instr_safe i =
   match i with
   | Imov _ -> True
   | Ishl (v, a, n) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_ushl_safe w a n
-      | Tsint w -> bexp_atomic_sshl_safe w a n)
+      | Tuint w -> bexp_atom_ushl_safe w a n
+      | Tsint w -> bexp_atom_sshl_safe w a n)
+  | Ishls _ -> True
+  | Ishr (v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> bexp_atom_ushr_safe w a n
+      | Tsint w -> bexp_atom_sshr_safe w a n)
+  | Ishrs _ -> True
+  | Isar (v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> bexp_atom_usar_safe w a n
+      | Tsint w -> bexp_atom_ssar_safe w a n)
+  | Isars _ -> True
   | Icshl (vh, _, a1, a2, n) ->
      (match vh.vtyp with
-      | Tuint w -> bexp_atomic_ucshl_safe w a1 a2 n
-      | Tsint w -> bexp_atomic_scshl_safe w a1 a2 n)
+      | Tuint w -> bexp_atom_ucshl_safe w a1 a2 n
+      | Tsint w -> bexp_atom_scshl_safe w a1 a2 n)
+  | Icshr (vh, _, a1, a2, n) ->
+     (match vh.vtyp with
+      | Tuint w -> bexp_atom_ucshr_safe w a1 a2 n
+      | Tsint w -> bexp_atom_scshr_safe w a1 a2 n)
+  | Icshrs _ -> True
   | Inondet _ -> True
   | Icmov _ -> True
   | Inop -> True
   | Iadd (v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadd_safe w a1 a2
-      | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
-  | Iadds (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
-  | Iaddr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadd_safe w a1 a2
-      | Tsint w -> bexp_atomic_sadd_safe w a1 a2)
+      | Tuint w -> bexp_atom_uadd_safe w a1 a2
+      | Tsint w -> bexp_atom_sadd_safe w a1 a2)
+  | Iadds _ -> True
   | Iadc (v, a1, a2, y) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadc_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
-  | Iadcs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
-  | Iadcr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_uadc_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_sadc_safe w a1 a2 y)
+      | Tuint w -> bexp_atom_uadc_safe w a1 a2 y
+      | Tsint w -> bexp_atom_sadc_safe w a1 a2 y)
+  | Iadcs _ -> True
   | Isub (v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_usub_safe w a1 a2
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubc (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubb (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
-  | Isubr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usub_safe w a1 a2
-      | Tsint w -> bexp_atomic_ssub_safe w a1 a2)
+      | Tuint w -> bexp_atom_usub_safe w a1 a2
+      | Tsint w -> bexp_atom_ssub_safe w a1 a2)
+  | Isubc _ -> True
+  | Isubb _ -> True
   | Isbc (v, a1, a2, y) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbc_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
-  | Isbcs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
-  | Isbcr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbc_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_ssbc_safe w a1 a2 y)
+      | Tuint w -> bexp_atom_usbc_safe w a1 a2 y
+      | Tsint w -> bexp_atom_ssbc_safe w a1 a2 y)
+  | Isbcs _ -> True
   | Isbb (v, a1, a2, y) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbb_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
-  | Isbbs (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint _w -> True
-      | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
-  | Isbbr (_, v, a1, a2, y) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_usbb_safe w a1 a2 y
-      | Tsint w -> bexp_atomic_ssbb_safe w a1 a2 y)
+      | Tuint w -> bexp_atom_usbb_safe w a1 a2 y
+      | Tsint w -> bexp_atom_ssbb_safe w a1 a2 y)
+  | Isbbs _ -> True
   | Imul (v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> bexp_atomic_umul_safe w a1 a2
-      | Tsint w -> bexp_atomic_smul_safe w a1 a2)
-  | Imuls (_, _, _a1, _a2) -> True
-  | Imulr (_, v, a1, a2) ->
-     (match v.vtyp with
-      | Tuint w -> bexp_atomic_umul_safe w a1 a2
-      | Tsint w -> bexp_atomic_smul_safe w a1 a2)
+      | Tuint w -> bexp_atom_umul_safe w a1 a2
+      | Tsint w -> bexp_atom_smul_safe w a1 a2)
+  | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
   | Isplit _ -> True
+  | Ispl _ -> True
   | Iand _ -> True
   | Ior _ -> True
   | Ixor _ -> True
@@ -680,8 +709,8 @@ let bexp_instr_safe i =
 (* A safety condition to be verified is a tuple (id, instr, cond) *)
 let bexp_program_safe_conds p =
   List.mapi (fun id (i, e) -> (id, i, e))
-            (List.filter (fun (_i, e) -> e <> True)
-                         (List.map (fun i -> (i, bexp_instr_safe i)) p))
+    (List.filter (fun (_i, e) -> e <> True)
+       (List.map (fun i -> (i, bexp_instr_safe i)) p))
 
 let bexp_program_safe p =
   List.fold_left (fun res i -> Conj (res, bexp_instr_safe i)) True p
@@ -689,7 +718,7 @@ let bexp_program_safe p =
 
 (** Conversion from algebraic specification to polynomials. *)
 
-let bv2z_atomic a =
+let bv2z_atom a =
   match a with
   | Avar v -> Evar v
   | Aconst (_ty, n) -> Econst n
@@ -699,10 +728,10 @@ let bv2z_join e h l p = Eeq (eadd l (emul h (econst (e2pow p))), e)
 let bv2z_split vh vl e p = bv2z_join e (evar vh) (evar vl) p
 
 let bv2z_cast vgen ot v a =
-  match v.vtyp, typ_of_atomic a with
+  match v.vtyp, typ_of_atom a with
   | Tuint wv, Tuint wa ->
      if wv >= wa then
-       (vgen, [Eeq (evar v, bv2z_atomic a)])
+       (vgen, [Eeq (evar v, bv2z_atom a)])
      else
        let (discarded, vgen) =
          match ot with
@@ -711,7 +740,7 @@ let bv2z_cast vgen ot v a =
             let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
+       (vgen, [bv2z_split discarded v (bv2z_atom a) wv])
   | Tuint wv, Tsint wa ->
      (* a_sign and discarded have different meanings but the polynomial equation is equivalent. *)
      if wv >= wa then
@@ -722,7 +751,7 @@ let bv2z_cast vgen ot v a =
             let a_sign = mkvar ~newvid:true a_sign bit_t in
             (a_sign, vgen)
          | Some t -> (t, vgen) in
-       (vgen, [bv2z_join (evar v) (evar a_sign) (bv2z_atomic a) wv])
+       (vgen, [bv2z_join (evar v) (evar a_sign) (bv2z_atom a) wv])
      else
        let (discarded, vgen) =
          match ot with
@@ -731,10 +760,10 @@ let bv2z_cast vgen ot v a =
             let discarded = mkvar ~newvid:true discarded (int_t (wa - wv)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
+       (vgen, [bv2z_split discarded v (bv2z_atom a) wv])
   | Tsint wv, Tuint wa ->
      if wv > wa then
-       (vgen, [Eeq (evar v, bv2z_atomic a)])
+       (vgen, [Eeq (evar v, bv2z_atom a)])
      else
        let (discarded, vgen) =
          match ot with
@@ -743,10 +772,10 @@ let bv2z_cast vgen ot v a =
             let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv + 1)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
+       (vgen, [bv2z_split discarded v (bv2z_atom a) wv])
   | Tsint wv, Tsint wa ->
      if wv >= wa then
-       (vgen, [Eeq (evar v, bv2z_atomic a)])
+       (vgen, [Eeq (evar v, bv2z_atom a)])
      else
        let (discarded, vgen) =
          match ot with
@@ -755,9 +784,9 @@ let bv2z_cast vgen ot v a =
             let discarded = mkvar ~newvid:true discarded (int_t (wa - wv + 1)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, [bv2z_split discarded v (bv2z_atomic a) wv])
+       (vgen, [bv2z_split discarded v (bv2z_atom a) wv])
 
-let bv2z_vpc vgen v a = (vgen, [Eeq (evar v, bv2z_atomic a)])
+let bv2z_vpc vgen v a = (vgen, [Eeq (evar v, bv2z_atom a)])
 
 (* With c = c^2, we cannot prove c(c - 1) = 0 (mod 2^64). *)
 (* With c(c - 1) = 0, we can prove c(c - 1) = 0 (mod 2^64) but c(c - 1) will remain in the generator. *)
@@ -770,15 +799,70 @@ let bv2z_instr vgen i =
     then [bv2z_is_carry c]
     else [] in
   match i with
-  | Imov (v, a) -> (vgen, [bv2z_assign v (bv2z_atomic a)])
+  | Imov (v, a) -> (vgen, [bv2z_assign v (bv2z_atom a)])
   | Ishl (v, a, n) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a) (econst (e2pow (Z.to_int n))))])
+     (vgen, [bv2z_assign v (emul (bv2z_atom a) (econst (e2pow (Z.to_int n))))])
+  | Ishls (l, v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> (vgen, [eeq
+                             (eadd (evar v) (emul (evar l) (econst (e2pow w))))
+                             (emul (bv2z_atom a) (econst (e2pow (Z.to_int n))))
+                   ])
+      | Tsint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadds [evar v; emul (evar discarded) (econst (e2pow w)); emul (evar l) (econst (e2pow w))])
+                             (emul (bv2z_atom a) (econst (e2pow (Z.to_int n))))
+                   ])
+     )
+  | Ishr (v, a, n) ->
+     if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int n) in
+                             (vgen, [eeq (evar v) (econst a_shifted)])
+     else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int n)))) (bv2z_atom a)])
+  | Ishrs (v, l, a, n) ->
+     (match v.vtyp with
+      | Tuint _ -> (vgen, [eeq (limbs (Z.to_int n) [evar l; evar v]) (bv2z_atom a)])
+      | Tsint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadd (limbs (Z.to_int n) [evar l; evar v]) (emul (evar discarded) (econst (e2pow w))))
+                             (bv2z_atom a)
+                   ])
+     )
+  | Isar (v, a, n) ->
+     if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int n) in
+                             (vgen, [eeq (evar v) (econst a_shifted)])
+     else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int n)))) (bv2z_atom a)])
+  | Isars (v, l, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadd (limbs (Z.to_int n) [evar l; evar v]) (emul (evar discarded) (econst (e2pow (w - Z.to_int n)))))
+                             (bv2z_atom a)])
+      | Tsint _ -> (vgen, [eeq (limbs (Z.to_int n) [evar l; evar v]) (bv2z_atom a)]))
   | Icshl (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
      (vgen, [bv2z_split
                vh vl
-               (eadd (emul (bv2z_atomic a1) (econst (e2pow w))) (bv2z_atomic a2))
+               (eadd (emul (bv2z_atom a1) (econst (e2pow w))) (bv2z_atom a2))
                (w - (Z.to_int n))])
+  | Icshr (vh, vl, a1, a2, n) ->
+     let w = size_of_var vh in
+     let n = Z.to_int n in
+     (vgen, [eeq
+               (emul (limbs w [evar vl; evar vh]) (econst (e2pow n)))
+               (limbs w [bv2z_atom a2; bv2z_atom a1])])
+  | Icshrs (vh, vl, l, a1, a2, n) ->
+     (match vh.vtyp with
+      | Tuint w -> (vgen, [eeq
+                             (eadd (emul (limbs w [evar vl; evar vh]) (econst (e2pow (Z.to_int n)))) (evar l))
+                             (limbs w [bv2z_atom a2; bv2z_atom a1])])
+      | Tsint w -> let (discarded, vgen) = gen_var vgen in
+                   let discarded = mkvar ~newvid:true discarded (int_t (Z.to_int n)) in
+                   (vgen, [eeq
+                             (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow (Z.to_int n))); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
+                             (limbs w [bv2z_atom a2; bv2z_atom a1])]))
   | Inondet v ->
      if var_is_bit v then (vgen, carry_constr v)
      else (vgen, [])
@@ -786,92 +870,95 @@ let bv2z_instr vgen i =
      (vgen, [bv2z_assign
                v
                (eadd
-                  (emul (bv2z_atomic c) (bv2z_atomic a1))
-                  (emul (esub (econst Z.one) (bv2z_atomic c)) (bv2z_atomic a2)))])
+                  (emul (bv2z_atom c) (bv2z_atom a1))
+                  (emul (esub (econst Z.one) (bv2z_atom c)) (bv2z_atom a2)))])
   | Inop -> (vgen, [])
   | Iadd (v, a1, a2) ->
-     (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2))])
+     (vgen, [bv2z_assign v (eadd (bv2z_atom a1) (bv2z_atom a2))])
   | Iadds (c, v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_split c v (eadd (bv2z_atomic a1) (bv2z_atomic a2)) w]
+      | Tuint w -> (vgen, [bv2z_split c v (eadd (bv2z_atom a1) (bv2z_atom a2)) w]
                           @(carry_constr c))
-      | Tsint _ -> (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2))]))
-  | Iaddr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (eadd (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.one)])
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))]))
   | Iadc (v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
+     (vgen, [bv2z_assign v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))])
   | Iadcs (c, v, a1, a2, y) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_split c v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) w]
+      | Tuint w -> (vgen, [bv2z_split c v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) w]
                           @(carry_constr c))
-      | Tsint _ -> (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
-  | Iadcr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (eadd (eadd (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y));
-             bv2z_assign c (econst Z.zero)])
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))]))
   | Isub (v, a1, a2) ->
-     (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))])
+     (vgen, [bv2z_assign v (esub (bv2z_atom a1) (bv2z_atom a2))])
   | Isubc (c, v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atomic a1) (bv2z_atomic a2)) w]
+      | Tuint w -> (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))]))
   | Isubb (c, v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_join (evar v) (evar c) (esub (bv2z_atomic a1) (bv2z_atomic a2)) w]
+      | Tuint w -> (vgen, [bv2z_join (evar v) (evar c) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2))]))
-  | Isubr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (esub (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.zero)])
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))]))
   | Isbc (v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))])
+     (vgen, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))])
   | Isbcs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w ->
-         (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y))) w]
+         (vgen, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y))) w]
                 @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)))]))
-  | Isbcr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (esub (econst Z.one) (bv2z_atomic y)));
-             bv2z_assign c (econst Z.zero)])
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))]))
   | Isbb (v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))])
+     (vgen, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))])
   | Isbbs (c, v, a1, a2, y) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_join (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y)) (eneg (evar c)) (evar v) w]
+      | Tuint w -> (vgen, [bv2z_join (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) (eneg (evar c)) (evar v) w]
                           @(carry_constr c))
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y))]))
-  | Isbbr (c, v, a1, a2, y) ->
-     (vgen, [bv2z_assign v (esub (esub (bv2z_atomic a1) (bv2z_atomic a2)) (bv2z_atomic y));
-             bv2z_assign c (econst Z.zero)])
+      | Tsint w ->
+         let (d, vgen) = gen_var vgen in
+         let d = mkvar ~newvid:true d (uint_t 1) in
+         (vgen, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))]))
   | Imul (v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
-  | Imuls (_c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))]) (* how to set c? *)
-  | Imulr (c, v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2));
-             bv2z_assign c (econst Z.zero)])
+     (vgen, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))])
+  | Imuls (_, v, a1, a2) ->
+     let (d, vgen) = gen_var vgen in
+     let d = mkvar ~newvid:true d (typ_of_var v) in
+     (vgen, [eeq (limbs (size_of_var v) [evar v; evar d]) (emul (bv2z_atom a1) (bv2z_atom a2))])
   | Imull (vh, vl, a1, a2) ->
      let w = size_of_var vl in
-     (vgen, [bv2z_split vh vl (emul (bv2z_atomic a1) (bv2z_atomic a2)) w])
+     (vgen, [bv2z_split vh vl (emul (bv2z_atom a1) (bv2z_atom a2)) w])
   | Imulj (v, a1, a2) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atomic a1) (bv2z_atomic a2))])
-  | Isplit (vh, vl, a, n) -> (vgen, [bv2z_split vh vl (bv2z_atomic a) (Z.to_int n)])
+     (vgen, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))])
+  | Isplit (vh, vl, a, n) -> (vgen, [bv2z_split vh vl (bv2z_atom a) (Z.to_int n)])
+  | Ispl (vh, vl, a, n) -> (vgen, [bv2z_split vh vl (bv2z_atom a) (Z.to_int n)])
   | Iand _
     | Ior _
     | Ixor _ -> (vgen, [])
   | Inot (v, a) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atomic a))])
-      | Tsint _w -> (vgen, [bv2z_assign v (esub (eneg (bv2z_atomic a)) (econst Z.one))]))
+      | Tuint w -> (vgen, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atom a))])
+      | Tsint _w -> (vgen, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst Z.one))]))
   | Icast (t, v, a) ->
      bv2z_cast vgen t v a
   | Ivpc (v, a) ->
      bv2z_vpc vgen v a
   | Ijoin (v, ah, al) ->
      (vgen,
-      [bv2z_join (evar v) (bv2z_atomic ah) (bv2z_atomic al) (size_of_atomic al)])
+      [bv2z_join (evar v) (bv2z_atom ah) (bv2z_atom al) (size_of_atom al)])
   | Iassert _e -> (vgen, [])
   | Iassume e -> (vgen, split_eand (eqn_bexp e))
   | Icut (_hd::_tl, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
@@ -1020,17 +1107,17 @@ let get_rewrite_pattern' e others =
          let in2 = eexp_has_sub e2 sub in
          let (has_sub, add_pat, pat) =
            match op, in1, in2 with
-         | Eadd, true, false -> (e1, eneg e2, pat)
-         | Eadd, false, true -> (e2, eneg e1, pat)
-         | Esub, true, false -> (e1, e2, pat)
-         | Esub, false, true -> (e2, e1, eneg pat)
+           | Eadd, true, false -> (e1, eneg e2, pat)
+           | Eadd, false, true -> (e2, eneg e1, pat)
+           | Esub, true, false -> (e1, e2, pat)
+           | Esub, false, true -> (e2, e1, eneg pat)
            | _ -> raise RewriteSeparationException in
          separate sub has_sub (eadd pat add_pat)
       | _ -> raise RewriteSeparationException in
   (* Check shorter eexp first. *)
   let sort_by_length es =
     snd (List.split (List.sort (fun (l1, _) (l2, _) -> Pervasives.compare l1 l2)
-                               (List.map (fun e -> (len_eexp e, e)) es))) in
+                       (List.map (fun e -> (len_eexp e, e)) es))) in
   let is_candidate sub = num_occurrence sub e = 1
                          && vars_disjoint_except_eq sub e
                          && List.for_all (vars_disjoint_except_eq sub) others in
@@ -1039,11 +1126,11 @@ let get_rewrite_pattern' e others =
     | [] -> None
     | hd::tl when is_candidate hd ->
        (try
-         let pat = separate hd e (econst Z.zero) in
-         let pat = simplify_eexp pat in
-         Some (hd, pat)
-       with RewriteSeparationException ->
-         find_separable tl)
+          let pat = separate hd e (econst Z.zero) in
+          let pat = simplify_eexp pat in
+          Some (hd, pat)
+        with RewriteSeparationException ->
+          find_separable tl)
     | _::tl -> find_separable tl in
   find_separable (sort_by_length (sub_exprs_with_var e))
 
@@ -1172,8 +1259,8 @@ let rewrite_assignments' ideal p moduli =
         | None -> do_rewrite (hd::finished) tl p
         | Some (sub, e) ->
            do_rewrite (List.rev (List.rev_map (replace_eexp [(sub, e)]) finished))
-                      (List.rev (List.rev_map (replace_eexp [(sub, e)]) tl))
-                      (replace_eexp [(sub, e)] p)) in
+             (List.rev (List.rev_map (replace_eexp [(sub, e)]) tl))
+             (replace_eexp [(sub, e)] p)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
@@ -1406,8 +1493,8 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
                       else ideal_aps in
                     match ms with
                     | [] -> (* skip rewriting in this case *)
-                            let sliced_ideal = remove_annots sliced_ideal_aps in
-                            (post, vars_in_order (sliced_ideal@[p]), sliced_ideal, p)
+                       let sliced_ideal = remove_annots sliced_ideal_aps in
+                       (post, vars_in_order (sliced_ideal@[p]), sliced_ideal, p)
                     | _ -> let (rewritten_ideal_aps, post_p_ms_list) = do_rewriting (List.rev_append (List.rev_map add_dummy_annot (List.rev ms)) sliced_ideal_aps) [(post, p, ms)] ms in
                            (match post_p_ms_list with
                             | (post, p, _)::[] -> let rewritten_ideal = remove_annots rewritten_ideal_aps in
@@ -1432,7 +1519,7 @@ let rec singular_of_eexp e =
   | Evar v -> string_of_var v
   | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
   | Eunop (op, e) ->
-     symbol_of_eunop op ^ (if is_eexp_atomic e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
+     symbol_of_eunop op ^ (if is_eexp_atom e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
      "(" ^ singular_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
@@ -1445,7 +1532,7 @@ let rec sage_of_eexp e =
   | Evar v -> string_of_var v
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
-     symbol_of_eunop op ^ (if is_eexp_atomic e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
+     symbol_of_eunop op ^ (if is_eexp_atom e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
      "(" ^ sage_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
@@ -1458,13 +1545,13 @@ let rec magma_of_eexp e =
   | Evar v -> string_of_var v
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
-     symbol_of_eunop op ^ (if is_eexp_atomic e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
+     symbol_of_eunop op ^ (if is_eexp_atom e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
      "(" ^ magma_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
-     (if is_eexp_atomic e1 then magma_of_eexp e1 else "(" ^ magma_of_eexp e1 ^ ")")
+     (if is_eexp_atom e1 then magma_of_eexp e1 else "(" ^ magma_of_eexp e1 ^ ")")
      ^ " " ^ algebra_symbol_of_ebinop op ^ " "
-     ^ (if is_eexp_atomic e2 then magma_of_eexp e2 else "(" ^ magma_of_eexp e2 ^ ")")
+     ^ (if is_eexp_atom e2 then magma_of_eexp e2 else "(" ^ magma_of_eexp e2 ^ ")")
 
 let maple_of_eexp e = magma_of_eexp e
 
@@ -1475,7 +1562,7 @@ let rec mathematica_of_eexp e =
   | Evar v -> mathematica_of_var v
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
-     symbol_of_eunop op ^ (if is_eexp_atomic e then mathematica_of_eexp e else " (" ^ mathematica_of_eexp e ^ ")")
+     symbol_of_eunop op ^ (if is_eexp_atom e then mathematica_of_eexp e else " (" ^ mathematica_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
      "(" ^ mathematica_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
@@ -1489,7 +1576,7 @@ let rec macaulay2_of_eexp e =
   | Evar v -> macaulay2_of_var v
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
-     symbol_of_eunop op ^ (if is_eexp_atomic e then macaulay2_of_eexp e else " (" ^ macaulay2_of_eexp e ^ ")")
+     symbol_of_eunop op ^ (if is_eexp_atom e then macaulay2_of_eexp e else " (" ^ macaulay2_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
      "(" ^ macaulay2_of_eexp e ^ ")" ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
   | Ebinop (op, e1, e2) ->
@@ -1640,7 +1727,7 @@ let smtlib_espec vgen es =
        String.concat "\n" (List.map smtlib_assert p);
        (smtlib_assert (smtlib_not g));
        "(check-sat)"
-     ])
+  ])
 
 
 (** For redlog *)

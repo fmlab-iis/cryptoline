@@ -16,80 +16,69 @@
               "broadcast"                  , BROADCAST;
               "add"                        , ADD;
               "adds"                       , ADDS;
-              "addr"                       , ADDR;
               "adc"                        , ADC;
               "adcs"                       , ADCS;
-              "adcr"                       , ADCR;
               "sub"                        , SUB;
               "subs"                       , SUBC;
               "subc"                       , SUBC;
               "subb"                       , SUBB;
-              "subr"                       , SUBR;
               "sbc"                        , SBC;
               "sbcs"                       , SBCS;
-              "sbcr"                       , SBCR;
               "sbb"                        , SBB;
               "sbbs"                       , SBBS;
-              "sbbr"                       , SBBR;
               "mul"                        , MUL;
               "muls"                       , MULS;
-              "mulr"                       , MULR;
               "mull"                       , MULL;
               "mulj"                       , MULJ;
-              "spl"                        , SPLIT;
+              "spl"                        , SPL;
               "split"                      , SPLIT;
               "uadd"                       , UADD;
               "uadds"                      , UADDS;
-              "uaddr"                      , UADDR;
               "uadc"                       , UADC;
               "uadcs"                      , UADCS;
-              "uadcr"                      , UADCR;
               "usub"                       , USUB;
               "usubs"                      , USUBC;
               "usubc"                      , USUBC;
               "usubb"                      , USUBB;
-              "usubr"                      , USUBR;
               "usbc"                       , USBC;
               "usbcs"                      , USBCS;
-              "usbcr"                      , USBCR;
               "usbb"                       , USBB;
               "usbbs"                      , USBBS;
-              "usbbr"                      , USBBR;
               "umul"                       , UMUL;
               "umuls"                      , UMULS;
-              "umulr"                      , UMULR;
               "umull"                      , UMULL;
               "umulj"                      , UMULJ;
-              "uspl"                       , USPLIT;
+              "uspl"                       , USPL;
               "usplit"                     , USPLIT;
               "sadd"                       , SADD;
               "sadds"                      , SADDS;
-              "saddr"                      , SADDR;
               "sadc"                       , SADC;
               "sadcs"                      , SADCS;
-              "sadcr"                      , SADCR;
               "ssub"                       , SSUB;
               "ssubs"                      , SSUBC;
               "ssubc"                      , SSUBC;
               "ssubb"                      , SSUBB;
-              "ssubr"                      , SSUBR;
               "ssbc"                       , SSBC;
               "ssbcs"                      , SSBCS;
-              "ssbcr"                      , SSBCR;
               "ssbb"                       , SSBB;
               "ssbbs"                      , SSBBS;
-              "ssbbr"                      , SSBBR;
               "smul"                       , SMUL;
               "smuls"                      , SMULS;
-              "smulr"                      , SMULR;
               "smull"                      , SMULL;
               "smulj"                      , SMULJ;
-              "sspl"                       , SSPLIT;
+              "sspl"                       , SSPL;
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
               "lsl"                        , SHL;
+              "shls"                       , SHLS;
+              "shr"                        , SHR;
+              "shrs"                       , SHRS;
+              "sar"                        , SAR;
+              "sars"                       , SARS;
               "cshl"                       , CSHL;
               "clsl"                       , CSHL;
+              "cshr"                       , CSHR;
+              "cshrs"                      , CSHRS;
               "set"                        , SET;
               "clear"                      , CLEAR;
               "nondet"                     , NONDET;
@@ -157,6 +146,7 @@
 
 let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
+let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
 let identity_vec = '%' identity
@@ -241,6 +231,10 @@ token = parse
   | "int" ((number+) as w)         { upd_cnum lexbuf; SINT (int_of_string w) }
   | "bit"                          { upd_cnum lexbuf; BIT }
   (* Numbers *)
+  | "0b" ((bin+) as bin)           {
+                                     let _ = upd_cnum lexbuf in
+                                     NUM (Z.of_string_base 2 bin)
+                                   }
   | "0x" ((hex+) as hex)           {
                                      let _ = upd_cnum lexbuf in
                                      NUM (Z.of_string_base 16 hex)
