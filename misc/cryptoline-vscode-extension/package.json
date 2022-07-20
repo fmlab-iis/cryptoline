@@ -1,0 +1,26 @@
+{
+    "name": "cryptoline",
+    "displayName": "cryptoline",
+    "description": "Syntax highlight for CryptoLine language",
+    "publisher": "fmlab-iis",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.69.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "cryptoline",
+            "aliases": ["CryptoLine", "cryptoline"],
+            "extensions": [".cl"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "cryptoline",
+            "scopeName": "source.cryptoline",
+            "path": "./syntaxes/cryptoline.tmLanguage.json"
+        }]
+    }
+}

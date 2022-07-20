@@ -143,10 +143,10 @@ val bexp_program_safe : Ast.Cryptoline.instr list -> Qfbv.Common.bexp
     conjunction of the safety conditions returned by
     [bexp_program_safe_conds]. *)
 
-val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Common.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> (Ast.Cryptoline.rbexp * Ast.Cryptoline.program)
+val slice_for_safety : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Common.bexp -> VS.t Ast.Cryptoline.atomhash_t option -> (Ast.Cryptoline.rbexp * Ast.Cryptoline.program)
 (** Slice a precondition and a program according to a safety condition. *)
 
-val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Common.bexp -> VS.t Ast.Cryptoline.atomichash_t option -> Qfbv.Common.bexp list
+val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.Common.bexp -> VS.t Ast.Cryptoline.atomhash_t option -> Qfbv.Common.bexp list
 (**
    Convert a precondition and a program to QF_BV predicates according to a
    safety condition. The precondition and the program may be sliced.

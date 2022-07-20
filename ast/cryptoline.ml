@@ -369,8 +369,8 @@ let eexp_ebinop_open e op =
   | Ebinop (op, _, _), Emul -> op = Emul
   | Ebinop (_op, _, _), _ -> false
 
-(* An eexp is atomic if it is a variable or a constant. *)
-let is_eexp_atomic e =
+(* An eexp is an atom if it is a variable or a constant. *)
+let is_eexp_atom e =
   match e with
   | Evar _ | Econst _ -> true
   | _ -> false
@@ -445,7 +445,7 @@ let rmuls w es =
               | LeftAssoc -> List.fold_left (fun res e -> rmul w res e) e es
               | RightAssoc -> List.fold_left (fun res e -> rmul w e res) e es)
 
-let is_rexp_atomic e =
+let is_rexp_atom e =
   match e with
   | Rvar _ | Rconst _ -> true
   | _ -> false
@@ -643,50 +643,50 @@ type prove_with_spec =
   | AllAssumes
   | AllGhosts
 
-type atomic =
+type atom =
   | Avar of var
   | Aconst of typ * Z.t
 
 type instr =
-  | Imov of var * atomic                                    (** Assignment *)
-  | Ishl of var * atomic * Z.t                              (** Left shift *)
-  | Ishls of var * var * atomic * Z.t                       (** Left shift *)
-  | Ishr of var * atomic * Z.t                              (** Logical right shift *)
-  | Ishrs of var * var * atomic * Z.t                       (** Logical right shift *)
-  | Isar of var * atomic * Z.t                              (** Arithmetic right shift *)
-  | Isars of var * var * atomic * Z.t                       (** Arithmetic right shift *)
-  | Icshl of var * var * atomic * atomic * Z.t              (** Concatenated left shift *)
-  | Icshr of var * var * atomic * atomic * Z.t              (** Concatenated right shift *)
-  | Icshrs of var * var * var * atomic * atomic * Z.t       (** Concatenated right shift *)
+  | Imov of var * atom                                      (** Assignment *)
+  | Ishl of var * atom * Z.t                                (** Left shift *)
+  | Ishls of var * var * atom * Z.t                         (** Left shift *)
+  | Ishr of var * atom * Z.t                                (** Logical right shift *)
+  | Ishrs of var * var * atom * Z.t                         (** Logical right shift *)
+  | Isar of var * atom * Z.t                                (** Arithmetic right shift *)
+  | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
+  | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
+  | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
+  | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
   | Inondet of var                                          (** Nondeterministic assignment *)
-  | Icmov of var * atomic * atomic * atomic                 (** Conditional assignment *)
+  | Icmov of var * atom * atom * atom                       (** Conditional assignment *)
   | Inop                                                    (** No-op *)
-  | Inot of var * atomic                                    (** Bit-wise NOT *)
-  | Iadd of var * atomic * atomic                           (** Add *)
-  | Iadds of var * var * atomic * atomic                    (** Add and set carry *)
-  | Iadc of var * atomic * atomic * atomic                  (** Add with carry. *)
-  | Iadcs of var * var * atomic * atomic * atomic           (** Add with carry and set carry *)
-  | Isub of var * atomic * atomic                           (** Subtract *)
-  | Isubc of var * var * atomic * atomic                    (** Subtract and set carry *)
-  | Isubb of var * var * atomic * atomic                    (** Subtract and set borrow *)
-  | Isbc of var * atomic * atomic * atomic                  (** Subtract with carry *)
-  | Isbcs of var * var * atomic * atomic * atomic           (** Subtract with carry and set carry *)
-  | Isbb of var * atomic * atomic * atomic                  (** Subtract with borrow *)
-  | Isbbs of var * var * atomic * atomic * atomic           (** Subtract with borrow and set borrow *)
-  | Imul of var * atomic * atomic                           (** Half-multiplication *)
-  | Imuls of var * var * atomic * atomic                    (** Half-multiply and set carry. *)
-  | Imull of var * var * atomic * atomic                    (** Full-multiplication *)
-  | Imulj of var * atomic * atomic                          (** Full-multiplication *)
-  | Isplit of var * var * atomic * Z.t                      (** Split and extend *)
-  | Ispl of var * var * atomic * Z.t                        (** Split without extension *)
+  | Inot of var * atom                                      (** Bit-wise NOT *)
+  | Iadd of var * atom * atom                               (** Add *)
+  | Iadds of var * var * atom * atom                        (** Add and set carry *)
+  | Iadc of var * atom * atom * atom                        (** Add with carry. *)
+  | Iadcs of var * var * atom * atom * atom                 (** Add with carry and set carry *)
+  | Isub of var * atom * atom                               (** Subtract *)
+  | Isubc of var * var * atom * atom                        (** Subtract and set carry *)
+  | Isubb of var * var * atom * atom                        (** Subtract and set borrow *)
+  | Isbc of var * atom * atom * atom                        (** Subtract with carry *)
+  | Isbcs of var * var * atom * atom * atom                 (** Subtract with carry and set carry *)
+  | Isbb of var * atom * atom * atom                        (** Subtract with borrow *)
+  | Isbbs of var * var * atom * atom * atom                 (** Subtract with borrow and set borrow *)
+  | Imul of var * atom * atom                               (** Half-multiplication *)
+  | Imuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
+  | Imull of var * var * atom * atom                        (** Full-multiplication *)
+  | Imulj of var * atom * atom                              (** Full-multiplication *)
+  | Isplit of var * var * atom * Z.t                        (** Split and extend *)
+  | Ispl of var * var * atom * Z.t                          (** Split without extension *)
   (* Instructions that cannot be translated to polynomials *)
-  | Iand of var * atomic * atomic                           (** Bit-wise AND *)
-  | Ior of var * atomic * atomic                            (** Bit-wise OR *)
-  | Ixor of var * atomic * atomic                           (** Bit-wise XOR *)
+  | Iand of var * atom * atom                               (** Bit-wise AND *)
+  | Ior of var * atom * atom                                (** Bit-wise OR *)
+  | Ixor of var * atom * atom                               (** Bit-wise XOR *)
   (* Type conversions *)
-  | Icast of var option * var * atomic                      (** Casting *)
-  | Ivpc of var * atomic                                    (** Value-preserving casting *)
-  | Ijoin of var * atomic * atomic                          (** Join *)
+  | Icast of var option * var * atom                        (** Casting *)
+  | Ivpc of var * atom                                      (** Value-preserving casting *)
+  | Ijoin of var * atom * atom                              (** Join *)
   (* Specifications *)
   | Iassert of bexp                                         (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
@@ -698,41 +698,41 @@ type program = instr list
 type lined_program = (int * instr) list
 
 
-let mkatomic_var v = Avar v
-let mkatomic_const ty n = Aconst (ty, n)
+let mkatom_var v = Avar v
+let mkatom_const ty n = Aconst (ty, n)
 
-let typ_of_atomic a =
+let typ_of_atom a =
   match a with
   | Avar v -> v.vtyp
   | Aconst (ty, _) -> ty
 
-let size_of_atomic a = size_of_typ (typ_of_atomic a)
+let size_of_atom a = size_of_typ (typ_of_atom a)
 
-let atomic_is_var a =
+let atom_is_var a =
   match a with
   | Avar _ -> true
   | _ -> false
 
-let var_of_atomic a =
-  let _ = assert (atomic_is_var a) in
+let var_of_atom a =
+  let _ = assert (atom_is_var a) in
   match a with
   | Avar v -> v
   | _ -> assert false
 
-let atomic_is_const a =
+let atom_is_const a =
   match a with
   | Aconst _ -> true
   | _ -> false
 
-let const_of_atomic a =
-  let _ = assert (atomic_is_const a) in
+let const_of_atom a =
+  let _ = assert (atom_is_const a) in
   match a with
   | Aconst (_, n) -> n
   | _ -> assert false
 
-let atomic_is_signed a = typ_is_signed (typ_of_atomic a)
+let atom_is_signed a = typ_is_signed (typ_of_atom a)
 
-let eq_atomic a1 a2 =
+let eq_atom a1 a2 =
   match a1, a2 with
   | Avar v1, Avar v2 -> eq_var v1 v2
   | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
@@ -989,7 +989,7 @@ let rec string_of_eexp ?typ:(typ=false) e =
   match e with
   | Evar v -> string_of_var ~typ:typ v
   | Econst n -> string_of_const n
-  | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atomic e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
+  | Eunop (op, e) -> symbol_of_eunop op ^ (if is_eexp_atom e then string_of_eexp ~typ:typ e else " (" ^ string_of_eexp ~typ:typ e ^ ")")
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then string_of_eexp ~typ:typ e1 else "(" ^ string_of_eexp ~typ:typ e1 ^ ")")
      ^ " " ^ symbol_of_ebinop op ^ " "
@@ -999,10 +999,10 @@ let rec string_of_rexp ?typ:(typ=false) e =
   match e with
   | Rvar v -> string_of_var ~typ:typ v
   | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
-  | Runop (_w, op, e) -> string_of_runop op ^ " " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")")
+  | Runop (_w, op, e) -> string_of_runop op ^ " " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")")
   | Rbinop (_w, op, e1, e2) -> string_of_rbinop op ^ " (" ^ string_of_rexp ~typ:typ e1 ^ ") (" ^ string_of_rexp ~typ:typ e2 ^ ")"
-  | Ruext (_w, e, i) -> "uext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
-  | Rsext (_w, e, i) -> "sext " ^ (if is_rexp_atomic e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
+  | Ruext (_w, e, i) -> "uext " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
+  | Rsext (_w, e, i) -> "sext " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
 
 let rec string_of_ebexp ?typ:(typ=false) e =
   match e with
@@ -1057,7 +1057,7 @@ let string_of_prove_with_spec ps =
 let string_of_prove_with_specs pss =
   String.concat ", " (List.map string_of_prove_with_spec pss)
 
-let string_of_atomic ?typ:(typ=false) a =
+let string_of_atom ?typ:(typ=false) a =
   match a with
   | Avar v -> string_of_var ~typ:typ v
   | Aconst (ty, n) ->
@@ -1066,7 +1066,7 @@ let string_of_atomic ?typ:(typ=false) a =
 
 let string_of_instr ?typ:(typ=false) i =
   let vstr v = string_of_var ~typ:typ v in
-  let astr a = string_of_atomic ~typ:typ a in
+  let astr a = string_of_atom ~typ:typ a in
   match i with
   | Imov (v, a) -> "mov " ^ vstr v ^ " " ^ astr a
   | Ishl (v, a, n) -> "shl " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
@@ -1214,7 +1214,7 @@ let rec vars_rbexp e =
 let vars_bexp e =
   VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
 
-let vars_atomic a =
+let vars_atom a =
   match a with
   | Avar v -> VS.singleton v
   | _ -> VS.empty
@@ -1224,47 +1224,47 @@ let vars_instr i =
   | Imov (v, a)
     | Ishl (v, a, _)
     | Ishr (v, a, _)
-    | Isar (v, a, _) -> VS.add v (vars_atomic a)
+    | Isar (v, a, _) -> VS.add v (vars_atom a)
   | Ishls (l, v, a, _)
     | Ishrs (v, l, a, _)
-    | Isars (v, l, a, _) -> VS.add l (VS.add v (vars_atomic a))
+    | Isars (v, l, a, _) -> VS.add l (VS.add v (vars_atom a))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
-    | Imulj (v, a1, a2) -> VS.add v (VS.union (vars_atomic a1) (vars_atomic a2))
+    | Imulj (v, a1, a2) -> VS.add v (VS.union (vars_atom a1) (vars_atom a2))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
-    | Isbb (v, a1, a2, c) -> VS.add v (VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c))
+    | Isbb (v, a1, a2, c) -> VS.add v (VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c))
     | Iadds (c, v, a1, a2)
     | Isubc (c, v, a1, a2)
     | Isubb (c, v, a1, a2)
     | Imuls (c, v, a1, a2) ->
-     VS.add c (VS.add v (VS.union (vars_atomic a1) (vars_atomic a2)))
+     VS.add c (VS.add v (VS.union (vars_atom a1) (vars_atom a2)))
   | Iadcs (c, v, a1, a2, y)
     | Isbcs (c, v, a1, a2, y)
     | Isbbs (c, v, a1, a2, y) ->
-     VS.add c (VS.add v (VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic y)))
-  | Isplit (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atomic a))
-  | Ispl (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atomic a))
+     VS.add c (VS.add v (VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom y)))
+  | Isplit (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
+  | Ispl (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
-     VS.add vh (VS.add vl (VS.union (vars_atomic a1) (vars_atomic a2)))
+     VS.add vh (VS.add vl (VS.union (vars_atom a1) (vars_atom a2)))
   | Icshrs (vh, vl, l, a1, a2, _) ->
-     VS.add vh (VS.add vl (VS.add l (VS.union (vars_atomic a1) (vars_atomic a2))))
+     VS.add vh (VS.add vl (VS.add l (VS.union (vars_atom a1) (vars_atom a2))))
   | Inondet v -> VS.singleton v
-  | Icmov (v, c, a1, a2) -> VS.add v (VS.union (vars_atomic c) (VS.union (vars_atomic a1) (vars_atomic a2)))
+  | Icmov (v, c, a1, a2) -> VS.add v (VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2)))
   | Inop -> VS.empty
   | Iand (v, a1, a2)
     | Ior (v, a1, a2)
-    | Ixor (v, a1, a2) ->  VS.add v (VS.union (vars_atomic a1) (vars_atomic a2))
-  | Inot (v, a) -> VS.add v (vars_atomic a)
+    | Ixor (v, a1, a2) ->  VS.add v (VS.union (vars_atom a1) (vars_atom a2))
+  | Inot (v, a) -> VS.add v (vars_atom a)
   | Icast (od, v, a) ->
      (match od with
-      | None -> VS.add v (vars_atomic a)
-      | Some d -> VS.add d (VS.add v (vars_atomic a)))
-  | Ivpc (v, a) -> VS.add v (vars_atomic a)
-  | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atomic ah) (vars_atomic al))
+      | None -> VS.add v (vars_atom a)
+      | Some d -> VS.add d (VS.add v (vars_atom a)))
+  | Ivpc (v, a) -> VS.add v (vars_atom a)
+  | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atom ah) (vars_atom al))
   | Iassert e
   | Iassume e -> vars_bexp e
   | Icut (ecuts, rcuts) ->
@@ -1323,43 +1323,43 @@ let lvs_program p = List.fold_left (fun res i -> VS.union (lvs_instr i) res) VS.
 
 let rvs_instr i =
   match i with
-  | Imov (_, a) -> vars_atomic a
-  | Iadd (_, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Iadds (_, _, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Iadc (_, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Iadcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Isub (_, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Isubc (_, _, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Isubb (_, _, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Isbc (_, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Isbcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Isbb (_, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Isbbs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atomic a1) (vars_atomic a2)) (vars_atomic c)
-  | Imul (_, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Imuls (_, _, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Imull (_, _, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Imulj (_, a1, a2) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Ishl (_, a, _) -> vars_atomic a
-  | Ishls (_, _, a, _) -> vars_atomic a
-  | Ishr (_, a, _) -> vars_atomic a
-  | Ishrs (_, _, a, _) -> vars_atomic a
-  | Isar (_, a, _) -> vars_atomic a
-  | Isars (_, _, a, _) -> vars_atomic a
-  | Isplit (_, _, a, _) -> vars_atomic a
-  | Ispl (_, _, a, _) -> vars_atomic a
-  | Icshl (_, _, a1, a2, _) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Icshr (_, _, a1, a2, _) -> VS.union (vars_atomic a1) (vars_atomic a2)
-  | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atomic a1) (vars_atomic a2)
+  | Imov (_, a) -> vars_atom a
+  | Iadd (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Iadds (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Iadc (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Iadcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Isub (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Isubc (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Isubb (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Isbc (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Isbcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Isbb (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Isbbs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
+  | Imul (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Imuls (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Imull (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Imulj (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Ishl (_, a, _) -> vars_atom a
+  | Ishls (_, _, a, _) -> vars_atom a
+  | Ishr (_, a, _) -> vars_atom a
+  | Ishrs (_, _, a, _) -> vars_atom a
+  | Isar (_, a, _) -> vars_atom a
+  | Isars (_, _, a, _) -> vars_atom a
+  | Isplit (_, _, a, _) -> vars_atom a
+  | Ispl (_, _, a, _) -> vars_atom a
+  | Icshl (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Icshr (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Inondet _ -> VS.empty
-  | Icmov (_, c, a1, a2) -> VS.union (vars_atomic c) (VS.union (vars_atomic a1) (vars_atomic a2))
+  | Icmov (_, c, a1, a2) -> VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2))
   | Inop -> VS.empty
   | Iand (_, a1, a2)
     | Ior (_, a1, a2)
-    | Ixor (_, a1, a2) ->  VS.union (vars_atomic a1) (vars_atomic a2)
-  | Inot (_, a) -> vars_atomic a
-  | Icast (_, _, a) -> vars_atomic a
-  | Ivpc (_, a) -> vars_atomic a
-  | Ijoin (_, ah, al) -> VS.union (vars_atomic ah) (vars_atomic al)
+    | Ixor (_, a1, a2) ->  VS.union (vars_atom a1) (vars_atom a2)
+  | Inot (_, a) -> vars_atom a
+  | Icast (_, _, a) -> vars_atom a
+  | Ivpc (_, a) -> vars_atom a
+  | Ijoin (_, ah, al) -> VS.union (vars_atom ah) (vars_atom al)
   | Iassert e
   | Iassume e -> vars_bexp e
   | Icut (ecuts, rcuts) ->
@@ -1471,7 +1471,7 @@ let rec vids_rbexp e =
 
 let vids_bexp e = IS.union (vids_ebexp (eqn_bexp e)) (vids_rbexp (rng_bexp e))
 
-let vids_atomic a =
+let vids_atom a =
   match a with
   | Avar v -> IS.singleton v.vid
   | _ -> IS.empty
@@ -1481,47 +1481,47 @@ let vids_instr i =
   | Imov (v, a)
     | Ishl (v, a, _)
     | Ishr (v, a, _)
-    | Isar (v, a, _) -> IS.add v.vid (vids_atomic a)
+    | Isar (v, a, _) -> IS.add v.vid (vids_atom a)
   | Ishls (l, v, a, _)
     | Ishrs (v, l, a, _)
-    | Isars (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atomic a))
+    | Isars (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atom a))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
-    | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2))
+    | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
-    | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c))
+    | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c))
     | Iadds (c, v, a1, a2)
     | Isubc (c, v, a1, a2)
     | Isubb (c, v, a1, a2)
     | Imuls (c, v, a1, a2) ->
-     IS.add c.vid (IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2)))
+     IS.add c.vid (IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2)))
   | Iadcs (c, v, a1, a2, y)
     | Isbcs (c, v, a1, a2, y)
     | Isbbs (c, v, a1, a2, y) ->
-     IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic y)))
-  | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atomic a))
-  | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atomic a))
+     IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom y)))
+  | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
+  | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
-     IS.add vh.vid (IS.add vl.vid (IS.union (vids_atomic a1) (vids_atomic a2)))
+     IS.add vh.vid (IS.add vl.vid (IS.union (vids_atom a1) (vids_atom a2)))
   | Icshrs (vh, vl, l, a1, a2, _) ->
-     IS.add vh.vid (IS.add vl.vid (IS.add l.vid (IS.union (vids_atomic a1) (vids_atomic a2))))
+     IS.add vh.vid (IS.add vl.vid (IS.add l.vid (IS.union (vids_atom a1) (vids_atom a2))))
   | Inondet v -> IS.singleton v.vid
-  | Icmov (v, c, a1, a2) -> IS.add v.vid (IS.union (vids_atomic c) (IS.union (vids_atomic a1) (vids_atomic a2)))
+  | Icmov (v, c, a1, a2) -> IS.add v.vid (IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2)))
   | Inop -> IS.empty
   | Iand (v, a1, a2)
     | Ior (v, a1, a2)
-    | Ixor (v, a1, a2) ->  IS.add v.vid (IS.union (vids_atomic a1) (vids_atomic a2))
-  | Inot (v, a) -> IS.add v.vid (vids_atomic a)
+    | Ixor (v, a1, a2) ->  IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
+  | Inot (v, a) -> IS.add v.vid (vids_atom a)
   | Icast (od, v, a) ->
      (match od with
-      | None -> IS.add v.vid (vids_atomic a)
-      | Some d -> IS.add d.vid (IS.add v.vid (vids_atomic a)))
-  | Ivpc (v, a) -> IS.add v.vid (vids_atomic a)
-  | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atomic ah) (vids_atomic al))
+      | None -> IS.add v.vid (vids_atom a)
+      | Some d -> IS.add d.vid (IS.add v.vid (vids_atom a)))
+  | Ivpc (v, a) -> IS.add v.vid (vids_atom a)
+  | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atom ah) (vids_atom al))
   | Iassert e
   | Iassume e -> vids_bexp e
   | Icut (ecuts, rcuts) ->
@@ -1580,43 +1580,43 @@ let lvids_program p = List.fold_left (fun res i -> IS.union (lvids_instr i) res)
 
 let rvids_instr i =
   match i with
-  | Imov (_, a) -> vids_atomic a
-  | Iadd (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Iadds (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Iadc (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Iadcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Isub (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Isubc (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Isubb (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Isbc (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Isbcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Isbb (_, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Isbbs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atomic a1) (vids_atomic a2)) (vids_atomic c)
-  | Imul (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Imuls (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Imull (_, _, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Imulj (_, a1, a2) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Ishl (_, a, _) -> vids_atomic a
-  | Ishls (_, _, a, _) -> vids_atomic a
-  | Ishr (_, a, _) -> vids_atomic a
-  | Ishrs (_, _, a, _) -> vids_atomic a
-  | Isar (_, a, _) -> vids_atomic a
-  | Isars (_, _, a, _) -> vids_atomic a
-  | Isplit (_, _, a, _) -> vids_atomic a
-  | Ispl (_, _, a, _) -> vids_atomic a
-  | Icshl (_, _, a1, a2, _) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Icshr (_, _, a1, a2, _) -> IS.union (vids_atomic a1) (vids_atomic a2)
-  | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atomic a1) (vids_atomic a2)
+  | Imov (_, a) -> vids_atom a
+  | Iadd (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Iadds (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Iadc (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Iadcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Isub (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Isubc (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Isubb (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Isbc (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Isbcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Isbb (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Isbbs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
+  | Imul (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Imuls (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Imull (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Imulj (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Ishl (_, a, _) -> vids_atom a
+  | Ishls (_, _, a, _) -> vids_atom a
+  | Ishr (_, a, _) -> vids_atom a
+  | Ishrs (_, _, a, _) -> vids_atom a
+  | Isar (_, a, _) -> vids_atom a
+  | Isars (_, _, a, _) -> vids_atom a
+  | Isplit (_, _, a, _) -> vids_atom a
+  | Ispl (_, _, a, _) -> vids_atom a
+  | Icshl (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Icshr (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Inondet _ -> IS.empty
-  | Icmov (_, c, a1, a2) -> IS.union (vids_atomic c) (IS.union (vids_atomic a1) (vids_atomic a2))
+  | Icmov (_, c, a1, a2) -> IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2))
   | Inop -> IS.empty
   | Iand (_, a1, a2)
     | Ior (_, a1, a2)
-    | Ixor (_, a1, a2) ->  IS.union (vids_atomic a1) (vids_atomic a2)
-  | Inot (_, a) -> vids_atomic a
-  | Icast (_, _, a) -> vids_atomic a
-  | Ivpc (_, a) -> vids_atomic a
-  | Ijoin (_, ah, al) -> IS.union (vids_atomic ah) (vids_atomic al)
+    | Ixor (_, a1, a2) ->  IS.union (vids_atom a1) (vids_atom a2)
+  | Inot (_, a) -> vids_atom a
+  | Icast (_, _, a) -> vids_atom a
+  | Ivpc (_, a) -> vids_atom a
+  | Ijoin (_, ah, al) -> IS.union (vids_atom ah) (vids_atom al)
   | Iassert e
   | Iassume e -> vids_bexp e
   | Icut (ecuts, rcuts) ->
@@ -1703,7 +1703,7 @@ let mksvar ?(newvid=false) vn vt vi =
 
 let ssa_var m v = mksvar v.vname v.vtyp (get_sidx v m)
 
-let ssa_atomic m a =
+let ssa_atom m a =
   match a with
   | Avar v -> Avar (ssa_var m v)
   | _ -> a
@@ -1745,51 +1745,51 @@ let ssa_bexp m e = (ssa_ebexp m (eqn_bexp e), ssa_rbexp m (rng_bexp e))
 let ssa_instr m i =
   match i with
   | Imov (v, a) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Imov (ssa_var m v, a))
   | Ishl (v, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Ishl (ssa_var m v, a, n))
   | Ishls (l, v, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let ml = upd_sidx l m in
      let mv = upd_sidx v ml in
      (mv, Ishls (ssa_var ml l, ssa_var mv v, a, n))
   | Ishr (v, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Ishr (ssa_var m v, a, n))
   | Ishrs (v, l, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let mv = upd_sidx v m in
      let ml = upd_sidx l mv in
      (ml, Ishrs (ssa_var mv v, ssa_var ml l, a, n))
   | Isar (v, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Isar (ssa_var m v, a, n))
   | Isars (v, l, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let mv = upd_sidx v m in
      let ml = upd_sidx l mv in
      (ml, Isars (ssa_var mv v, ssa_var ml l, a, n))
   | Icshl (vh, vl, a1, a2, n) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Icshl (ssa_var mh vh, ssa_var ml vl, a1, a2, n))
   | Icshr (vh, vl, a1, a2, n) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Icshr (ssa_var mh vh, ssa_var ml vl, a1, a2, n))
   | Icshrs (vh, vl, l, a1, a2, n) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let ml = upd_sidx l m in
      let mvl = upd_sidx vl ml in
      let mvh = upd_sidx vh mvl in
@@ -1798,142 +1798,142 @@ let ssa_instr m i =
      let m = upd_sidx v m in
      (m, Inondet (ssa_var m v))
   | Icmov (v, c, a1, a2) ->
-     let c = ssa_atomic m c in
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let c = ssa_atom m c in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Icmov (ssa_var m v, c, a1, a2))
   | Inop -> (m, Inop)
   | Iadd (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Iadd (ssa_var m v, a1, a2))
   | Iadds (c, v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Iadds (ssa_var mc c, ssa_var mv v, a1, a2))
   | Iadc (v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let m = upd_sidx v m in
      (m, Iadc (ssa_var m v, a1, a2, y))
   | Iadcs (c, v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Iadcs (ssa_var mc c, ssa_var mv v, a1, a2, y))
   | Isub (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Isub (ssa_var m v, a1, a2))
   | Isubc (c, v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Isubc (ssa_var mc c, ssa_var mv v, a1, a2))
   | Isubb (c, v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Isubb (ssa_var mc c, ssa_var mv v, a1, a2))
   | Isbc (v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let m = upd_sidx v m in
      (m, Isbc (ssa_var m v, a1, a2, y))
   | Isbcs (c, v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Isbcs (ssa_var mc c, ssa_var mv v, a1, a2, y))
   | Isbb (v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let m = upd_sidx v m in
      (m, Isbb (ssa_var m v, a1, a2, y))
   | Isbbs (c, v, a1, a2, y) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
-     let y = ssa_atomic m y in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let y = ssa_atom m y in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Isbbs (ssa_var mc c, ssa_var mv v, a1, a2, y))
   | Imul (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Imul (ssa_var m v, a1, a2))
   | Imuls (c, v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let mv = upd_sidx v m in
      let mc = upd_sidx c mv in
      (mc, Imuls (ssa_var mc c, ssa_var mv v, a1, a2))
   | Imull (vh, vl, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Imull (ssa_var mh vh, ssa_var ml vl, a1, a2))
   | Imulj (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Imulj (ssa_var m v, a1, a2))
   | Isplit (vh, vl, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Isplit (ssa_var mh vh, ssa_var ml vl, a, n))
   | Ispl (vh, vl, a, n) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Ispl (ssa_var mh vh, ssa_var ml vl, a, n))
   | Iand (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Iand (ssa_var m v, a1, a2))
   | Ior (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Ior (ssa_var m v, a1, a2))
   | Ixor (v, a1, a2) ->
-     let a1 = ssa_atomic m a1 in
-     let a2 = ssa_atomic m a2 in
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Ixor (ssa_var m v, a1, a2))
   | Inot (v, a) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Inot (ssa_var m v, a))
   | Icast (od, v, a) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let md = apply_to_option (fun v -> upd_sidx v m) m od in
      let mv = upd_sidx v md in
      (mv, Icast (apply_to_some (ssa_var md) od, ssa_var mv v, a))
   | Ivpc (v, a) ->
-     let a = ssa_atomic m a in
+     let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Ivpc (ssa_var m v, a))
   | Ijoin (v, ah, al) ->
-     let ah = ssa_atomic m ah in
-     let al = ssa_atomic m al in
+     let ah = ssa_atom m ah in
+     let al = ssa_atom m al in
      let m = upd_sidx v m in
      (m, Ijoin (ssa_var m v, ah, al))
   | Iassert e -> (m, Iassert (ssa_bexp m e))
@@ -2026,12 +2026,12 @@ let cut_rspec rs =
 
 (** Substitution *)
 
-let eexp_of_atomic a =
+let eexp_of_atom a =
   match a with
   | Avar v -> Evar v
   | Aconst (_, n) -> Econst n
 
-let rexp_of_atomic a =
+let rexp_of_atom a =
   match a with
   | Avar v -> Rvar v
   | Aconst (ty, n) -> Rconst (size_of_typ ty, n)
@@ -2060,9 +2060,9 @@ let emap_trans em = VM.fold (fun v _ res -> VM.add v (emap_find_transitive v em)
 
 let rmap_trans rm = VM.fold (fun v _ res -> VM.add v (rmap_find_transitive v rm) res) rm VM.empty
 
-let emap_of_amap am = VM.fold (fun v a em -> VM.add v (eexp_of_atomic a) em) am VM.empty
+let emap_of_amap am = VM.fold (fun v a em -> VM.add v (eexp_of_atom a) em) am VM.empty
 
-let rmap_of_amap am = VM.fold (fun v a rm -> VM.add v (rexp_of_atomic a) rm) am VM.empty
+let rmap_of_amap am = VM.fold (fun v a rm -> VM.add v (rexp_of_atom a) rm) am VM.empty
 
 let get_subst_maps p =
   let rec helper (am, not_assignments) p_rev =
@@ -2083,7 +2083,7 @@ let get_subst_maps_vpc p =
   (am, emap_of_amap am, rmap_of_amap am, p')
 
 let subst_maps_of_list vas =
-  List.fold_left (fun (am, em, rm) (v, a) -> (VM.add v a am, VM.add v (eexp_of_atomic a) em, VM.add v (rexp_of_atomic a) rm)) (VM.empty, VM.empty, VM.empty) vas
+  List.fold_left (fun (am, em, rm) (v, a) -> (VM.add v a am, VM.add v (eexp_of_atom a) em, VM.add v (rexp_of_atom a) rm)) (VM.empty, VM.empty, VM.empty) vas
 
 let rec subst_eexp em e =
   match e with
@@ -2127,7 +2127,7 @@ let subst_lval am lv =
                        | Aconst (_, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
   else lv
 
-let subst_atomic am a =
+let subst_atom am a =
   match a with
   | Avar v -> if VM.mem v am then VM.find v am
               else a
@@ -2135,43 +2135,43 @@ let subst_atomic am a =
 
 let subst_instr am em rm i =
   match i with
-  | Imov (v, a) -> Imov (subst_lval am v, subst_atomic am a)
-  | Ishl (v, a, n) -> Ishl (subst_lval am v, subst_atomic am a, n)
-  | Ishls (l, v, a, n) -> Ishls (subst_lval am l, subst_lval am v, subst_atomic am a, n)
-  | Ishr (v, a, n) -> Ishr (subst_lval am v, subst_atomic am a, n)
-  | Ishrs (v, l, a, n) -> Ishrs (subst_lval am v, subst_lval am l, subst_atomic am a, n)
-  | Isar (v, a, n) -> Isar (subst_lval am v, subst_atomic am a, n)
-  | Isars (v, l, a, n) -> Isars (subst_lval am v, subst_lval am l, subst_atomic am a, n)
-  | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2, n)
-  | Icshr (vh, vl, a1, a2, n) -> Icshr (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2, n)
-  | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atomic am a1, subst_atomic am a2, n)
+  | Imov (v, a) -> Imov (subst_lval am v, subst_atom am a)
+  | Ishl (v, a, n) -> Ishl (subst_lval am v, subst_atom am a, n)
+  | Ishls (l, v, a, n) -> Ishls (subst_lval am l, subst_lval am v, subst_atom am a, n)
+  | Ishr (v, a, n) -> Ishr (subst_lval am v, subst_atom am a, n)
+  | Ishrs (v, l, a, n) -> Ishrs (subst_lval am v, subst_lval am l, subst_atom am a, n)
+  | Isar (v, a, n) -> Isar (subst_lval am v, subst_atom am a, n)
+  | Isars (v, l, a, n) -> Isars (subst_lval am v, subst_lval am l, subst_atom am a, n)
+  | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
+  | Icshr (vh, vl, a1, a2, n) -> Icshr (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
+  | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atom am a1, subst_atom am a2, n)
   | Inondet v -> Inondet (subst_lval am v)
-  | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atomic am c, subst_atomic am a1, subst_atomic am a2)
+  | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atom am c, subst_atom am a1, subst_atom am a2)
   | Inop -> Inop
-  | Iadd (v, a1, a2) -> Iadd (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Iadds (c, v, a1, a2) -> Iadds (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Iadc (v, a1, a2, y) -> Iadc (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Iadcs (c, v, a1, a2, y) -> Iadcs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Isub (v, a1, a2) -> Isub (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Isubc (c, v, a1, a2) -> Isubc (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Isubb (c, v, a1, a2) -> Isubb (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Isbc (v, a1, a2, y) -> Isbc (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Isbcs (c, v, a1, a2, y) -> Isbcs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Isbb (v, a1, a2, y) -> Isbb (subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Isbbs (c, v, a1, a2, y) -> Isbbs (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2, subst_atomic am y)
-  | Imul (v, a1, a2) -> Imul (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Imuls (c, v, a1, a2) -> Imuls (subst_lval am c, subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atomic am a1, subst_atomic am a2)
-  | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atomic am a, n)
-  | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atomic am a, n)
-  | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atomic am a1, subst_atomic am a2)
-  | Inot (v, a) -> Inot (subst_lval am v, subst_atomic am a)
-  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atomic am a)
-  | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atomic am a)
-  | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atomic am ah, subst_atomic am al)
+  | Iadd (v, a1, a2) -> Iadd (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Iadds (c, v, a1, a2) -> Iadds (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Iadc (v, a1, a2, y) -> Iadc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Iadcs (c, v, a1, a2, y) -> Iadcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Isub (v, a1, a2) -> Isub (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Isubc (c, v, a1, a2) -> Isubc (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Isubb (c, v, a1, a2) -> Isubb (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Isbc (v, a1, a2, y) -> Isbc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Isbcs (c, v, a1, a2, y) -> Isbcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Isbb (v, a1, a2, y) -> Isbb (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Isbbs (c, v, a1, a2, y) -> Isbbs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
+  | Imul (v, a1, a2) -> Imul (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Imuls (c, v, a1, a2) -> Imuls (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2)
+  | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
+  | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
+  | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Inot (v, a) -> Inot (subst_lval am v, subst_atom am a)
+  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atom am a)
+  | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atom am a)
+  | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atom am ah, subst_atom am al)
   | Iassert e -> Iassert (subst_bexp em rm e)
   | Iassume e -> Iassume (subst_bexp em rm e)
   | Icut (ecuts, rcuts) -> Icut (map_fst (fun e -> subst_ebexp em e) ecuts, map_fst (fun e -> subst_rbexp rm e) rcuts)
@@ -2212,16 +2212,16 @@ let rewrite_vpc_ssa_spec spec =
 
 (** Slicing *)
 
-module AtomicHashType =
+module AtomHashType =
   struct
-    type t = atomic
-    let equal = eq_atomic
+    type t = atom
+    let equal = eq_atom
     let hash = Hashtbl.hash
   end
 
-module AtomicHashtbl = Hashtbl.Make (AtomicHashType)
+module AtomHashtbl = Hashtbl.Make (AtomHashType)
 
-type 'a atomichash_t = 'a AtomicHashtbl.t
+type 'a atomhash_t = 'a AtomHashtbl.t
 
 let rec vars_sat_rec b f vars es =
   match es with
@@ -2308,20 +2308,20 @@ let rec slice_rbexp vars e =
 let slice_bexp vars e = (slice_ebexp vars (eqn_bexp e), slice_rbexp vars (rng_bexp e))
 
 let find_dep_vars dep_hash v =
-  if AtomicHashtbl.mem dep_hash (Avar v) then
-    AtomicHashtbl.find dep_hash (Avar v)
+  if AtomHashtbl.mem dep_hash (Avar v) then
+    AtomHashtbl.find dep_hash (Avar v)
   else
     VS.empty
 
 let mk_var_dep_hash p =
-  let dep_hash = AtomicHashtbl.create 103 in
+  let dep_hash = AtomHashtbl.create 103 in
   let update_dep_hash lvs rvs v =
-    let _ = assert (not (AtomicHashtbl.mem dep_hash (Avar v))) in
+    let _ = assert (not (AtomHashtbl.mem dep_hash (Avar v))) in
     let deps = VS.fold (fun rv ret ->
-                   if AtomicHashtbl.mem dep_hash (Avar rv) then
-                     VS.union ret (AtomicHashtbl.find dep_hash (Avar rv))
+                   if AtomHashtbl.mem dep_hash (Avar rv) then
+                     VS.union ret (AtomHashtbl.find dep_hash (Avar rv))
                    else ret) rvs (VS.union lvs rvs) in
-    AtomicHashtbl.add dep_hash (Avar v) deps in
+    AtomHashtbl.add dep_hash (Avar v) deps in
   let helper instr =
     let lvs = lvs_instr instr in
     let rvs = rvs_instr instr in
@@ -2528,7 +2528,7 @@ let auto_cast_const ?preserve:(preserve=false) ct ty (nty, n) =
     if preserve then ([Ivpc (v, Aconst (nty, n))], Avar v)
     else ([Icast (None, v, Aconst (nty, n))], Avar v)
 
-let auto_cast_atomic ?preserve:(preserve=false) (vt, ct) ty a =
+let auto_cast_atom ?preserve:(preserve=false) (vt, ct) ty a =
   match a with
   | Avar v -> let (casts, v) = auto_cast_var ~preserve:preserve vt ty v in
               (casts, Avar v)
@@ -2539,107 +2539,107 @@ let clear_cast vt v =
 
 let auto_cast_instr ?preserve:(preserve=false) t i =
   match i with
-  | Imov (v, a) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Imov (v, a) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                    casts@[Imov (v, a)]
-  | Ishl (v, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Ishl (v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                       casts@[Ishl (v, a, n)]
-  | Ishls (l, v, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Ishls (l, v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                           casts@[Ishls (l, v, a, n)]
-  | Ishr (v, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Ishr (v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                       casts@[Ishr (v, a, n)]
-  | Ishrs (v, l, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Ishrs (v, l, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                           casts@[Ishrs (v, l, a, n)]
-  | Isar (v, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Isar (v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                       casts@[Isar (v, a, n)]
-  | Isars (v, l, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Isars (v, l, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                           casts@[Isars (v, l, a, n)]
-  | Icshl (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t vh.vtyp a1 in
-                                 let (casts2, a2) = auto_cast_atomic ~preserve:preserve t vl.vtyp a2 in
+  | Icshl (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
+                                 let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                  casts1@casts2@[Icshl (vh, vl, a1, a2, n)]
-  | Icshr (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t vh.vtyp a1 in
-                                 let (casts2, a2) = auto_cast_atomic ~preserve:preserve t vl.vtyp a2 in
+  | Icshr (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
+                                 let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                  casts1@casts2@[Icshr (vh, vl, a1, a2, n)]
-  | Icshrs (vh, vl, l, a1, a2, n) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t vh.vtyp a1 in
-                                     let (casts2, a2) = auto_cast_atomic ~preserve:preserve t vl.vtyp a2 in
+  | Icshrs (vh, vl, l, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
+                                     let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                      casts1@casts2@[Icshrs (vh, vl, l, a1, a2, n)]
   | Inondet _v -> [i]
-  | Icmov (v, c, a1, a2) -> let (casts, c) = auto_cast_atomic ~preserve:preserve t bit_t c in
-                            let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                            let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Icmov (v, c, a1, a2) -> let (casts, c) = auto_cast_atom ~preserve:preserve t bit_t c in
+                            let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                            let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                             casts@casts1@casts2@[Icmov (v, c, a1, a2)]
   | Inop -> [i]
-  | Iadd (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                        let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Iadd (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                         casts1@casts2@[Iadd (v, a1, a2)]
-  | Iadds (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                            let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Iadds (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                            let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                             casts1@casts2@[Iadds (c, v, a1, a2)]
-  | Iadc (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                           let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                           let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Iadc (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                           let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                           let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                            casts1@casts2@casts@[Iadc (v, a1, a2, y)]
-  | Iadcs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                               let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                               let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Iadcs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                               let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                               let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                                casts1@casts2@casts@[Iadcs (c, v, a1, a2, y)]
-  | Isub (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                        let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Isub (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                         casts1@casts2@[Isub (v, a1, a2)]
-  | Isubc (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                            let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Isubc (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                            let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                             casts1@casts2@[Isubc (c, v, a1, a2)]
-  | Isubb (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                            let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Isubb (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                            let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                             casts1@casts2@[Isubb (c, v, a1, a2)]
-  | Isbc (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                           let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                           let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Isbc (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                           let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                           let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                            casts1@casts2@casts@[Isbc (v, a1, a2, y)]
-  | Isbcs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                               let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                               let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Isbcs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                               let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                               let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                                casts1@casts2@casts@[Isbcs (c, v, a1, a2, y)]
-  | Isbb (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                           let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                           let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Isbb (v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                           let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                           let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                            casts1@casts2@casts@[Isbb (v, a1, a2, y)]
-  | Isbbs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                               let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
-                               let (casts, y) = auto_cast_atomic ~preserve:preserve t bit_t y in
+  | Isbbs (c, v, a1, a2, y) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                               let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                               let (casts, y) = auto_cast_atom ~preserve:preserve t bit_t y in
                                casts1@casts2@casts@[Isbbs (c, v, a1, a2, y)]
-  | Imul (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                        let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Imul (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                         casts1@casts2@[Imul (v, a1, a2)]
-  | Imuls (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                            let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Imuls (c, v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                            let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                             casts1@casts2@[Imuls (c, v, a1, a2)]
-  | Imull (vh, vl, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t vh.vtyp a1 in
-                              let (casts2, a2) = auto_cast_atomic ~preserve:preserve t vh.vtyp a2 in
+  | Imull (vh, vl, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
+                              let (casts2, a2) = auto_cast_atom ~preserve:preserve t vh.vtyp a2 in
                               casts1@casts2@[Imull (vh, vl, a1, a2)]
-  | Imulj (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                         let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Imulj (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                         let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                          casts1@casts2@[Imulj (v, a1, a2)]
-  | Isplit (vh, vl, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t vh.vtyp a in
+  | Isplit (vh, vl, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t vh.vtyp a in
                              casts@[Isplit (vh, vl, a, n)]
-  | Ispl (vh, vl, a, n) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t vh.vtyp a in
+  | Ispl (vh, vl, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t vh.vtyp a in
                            casts@[Ispl (vh, vl, a, n)]
   (* Instructions that cannot be translated to polynomials *)
-  | Iand (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                        let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Iand (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                         casts1@casts2@[Iand (v, a1, a2)]
-  | Ior (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                       let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Ior (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                       let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                        casts1@casts2@[Ior (v, a1, a2)]
-  | Ixor (v, a1, a2) -> let (casts1, a1) = auto_cast_atomic ~preserve:preserve t v.vtyp a1 in
-                        let (casts2, a2) = auto_cast_atomic ~preserve:preserve t v.vtyp a2 in
+  | Ixor (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                         casts1@casts2@[Ixor (v, a1, a2)]
-  | Inot (v, a) -> let (casts, a) = auto_cast_atomic ~preserve:preserve t v.vtyp a in
+  | Inot (v, a) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                    casts@[Inot (v, a)]
   (* Type conversions *)
   | Icast (_, _, _) -> [i]
   | Ivpc (_, _) -> [i]
-  | Ijoin (v, ah, al) -> let (castsh, ah) = auto_cast_atomic ~preserve:preserve t v.vtyp ah in
-                         let (castsl, al) = auto_cast_atomic ~preserve:preserve t (typ_to_unsigned v.vtyp) al in
+  | Ijoin (v, ah, al) -> let (castsh, ah) = auto_cast_atom ~preserve:preserve t v.vtyp ah in
+                         let (castsl, al) = auto_cast_atom ~preserve:preserve t (typ_to_unsigned v.vtyp) al in
                          castsh@castsl@[Ijoin (v, ah, al)]
   (* Specifications *)
   | Iassert _e -> [i]
@@ -2682,7 +2682,7 @@ object
   method vrbexp : rbexp -> rbexp vaction
   method veexp : eexp -> eexp vaction
   method vrexp : rexp -> rexp vaction
-  method vatomic : atomic -> atomic vaction
+  method vatom : atom -> atom vaction
   method vaconst : (typ * Z.t) -> (typ * Z.t) vaction
   method veconst : Z.t -> Z.t vaction
   method vrconst : (size * Z.t) -> (size * Z.t) vaction
@@ -2700,7 +2700,7 @@ object (* (self) *)
   method vrbexp _e = DoChildren
   method veexp _e = DoChildren
   method vrexp _e = DoChildren
-  method vatomic _a = DoChildren
+  method vatom _a = DoChildren
   method vaconst (_ty, _n) = DoChildren
   method veconst _n = DoChildren
   method vrconst (_size, _n) = DoChildren
@@ -2733,8 +2733,8 @@ let visit_rconst visitor (size, n) =
   | ChangeTo (size', n') -> (size', n')
   | ChangeDoChildrenPost ((size', n'), f) -> f (size', n')
 
-let visit_atomic visitor a =
-  let act = visitor#vatomic a in
+let visit_atom visitor a =
+  let act = visitor#vatom a in
   match act with
   | SkipChildren -> a
   | ChangeTo a' -> a'
@@ -2846,45 +2846,45 @@ let visit_instr visitor i =
        | ChangeDoChildrenPost (i', f) -> (i', f)
        | _ -> failwith ("Never happen") in
      f (match i with
-        | Imov (v, a) -> Imov (visit_var visitor v, visit_atomic visitor a)
-        | Ishl (v, a, n) -> Ishl (visit_var visitor v, visit_atomic visitor a, n)
-        | Ishls (l, v, a, n) -> Ishls (visit_var visitor l, visit_var visitor v, visit_atomic visitor a, n)
-        | Ishr (v, a, n) -> Ishr (visit_var visitor v, visit_atomic visitor a, n)
-        | Ishrs (v, l, a, n) -> Ishrs (visit_var visitor v, visit_var visitor l, visit_atomic visitor a, n)
-        | Isar (v, a, n) -> Isar (visit_var visitor v, visit_atomic visitor a, n)
-        | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atomic visitor a, n)
-        | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a1, visit_atomic visitor a2, n)
-        | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a1, visit_atomic visitor a2, n)
-        | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (visit_var visitor vh, visit_var visitor vl, visit_var visitor l, visit_atomic visitor a1, visit_atomic visitor a2, n)
+        | Imov (v, a) -> Imov (visit_var visitor v, visit_atom visitor a)
+        | Ishl (v, a, n) -> Ishl (visit_var visitor v, visit_atom visitor a, n)
+        | Ishls (l, v, a, n) -> Ishls (visit_var visitor l, visit_var visitor v, visit_atom visitor a, n)
+        | Ishr (v, a, n) -> Ishr (visit_var visitor v, visit_atom visitor a, n)
+        | Ishrs (v, l, a, n) -> Ishrs (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
+        | Isar (v, a, n) -> Isar (visit_var visitor v, visit_atom visitor a, n)
+        | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
+        | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
+        | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
+        | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (visit_var visitor vh, visit_var visitor vl, visit_var visitor l, visit_atom visitor a1, visit_atom visitor a2, n)
         | Inondet v -> Inondet (visit_var visitor v)
-        | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, c, visit_atomic visitor a1, visit_atomic visitor a2)
+        | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, c, visit_atom visitor a1, visit_atom visitor a2)
         | Inop -> Inop
-        | Iadd (v, a1, a2) -> Iadd (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Iadds (c, v, a1, a2) -> Iadds (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Iadc (v, a1, a2, y) -> Iadc (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Iadcs (c, v, a1, a2, y) -> Iadcs (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Isub (v, a1, a2) -> Isub (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Isubc (c, v, a1, a2) -> Isubc (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Isubb (c, v, a1, a2) -> Isubb (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Isbc (v, a1, a2, y) -> Isbc (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Isbcs (c, v, a1, a2, y) -> Isbcs (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Isbb (v, a1, a2, y) -> Isbb (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Isbbs (c, v, a1, a2, y) -> Isbbs (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2, visit_atomic visitor y)
-        | Imul (v, a1, a2) -> Imul (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Imuls (c, v, a1, a2) -> Imuls (visit_var visitor c, visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Imull (vh, vl, a1, a2) -> Imull (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Imulj (v, a1, a2) -> Imulj (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Isplit (vh, vl, a, n) -> Isplit (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a, n)
-        | Ispl (vh, vl, a, n) -> Ispl (visit_var visitor vh, visit_var visitor vl, visit_atomic visitor a, n)
+        | Iadd (v, a1, a2) -> Iadd (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Iadds (c, v, a1, a2) -> Iadds (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Iadc (v, a1, a2, y) -> Iadc (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Iadcs (c, v, a1, a2, y) -> Iadcs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Isub (v, a1, a2) -> Isub (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Isubc (c, v, a1, a2) -> Isubc (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Isubb (c, v, a1, a2) -> Isubb (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Isbc (v, a1, a2, y) -> Isbc (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Isbcs (c, v, a1, a2, y) -> Isbcs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Isbb (v, a1, a2, y) -> Isbb (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Isbbs (c, v, a1, a2, y) -> Isbbs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
+        | Imul (v, a1, a2) -> Imul (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Imuls (c, v, a1, a2) -> Imuls (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Imull (vh, vl, a1, a2) -> Imull (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2)
+        | Imulj (v, a1, a2) -> Imulj (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Isplit (vh, vl, a, n) -> Isplit (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
+        | Ispl (vh, vl, a, n) -> Ispl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
         (* Instructions that cannot be translated to polynomials *)
-        | Iand (v, a1, a2) -> Iand (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Ixor (v, a1, a2) -> Ixor (visit_var visitor v, visit_atomic visitor a1, visit_atomic visitor a2)
-        | Inot (v, a) -> Inot (visit_var visitor v, visit_atomic visitor a)
+        | Iand (v, a1, a2) -> Iand (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Ixor (v, a1, a2) -> Ixor (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Inot (v, a) -> Inot (visit_var visitor v, visit_atom visitor a)
         (* Type conversions *)
-        | Icast (od, v, a) -> Icast (apply_to_some (visit_var visitor) od, visit_var visitor v, visit_atomic visitor a)
-        | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atomic visitor a)
-        | Ijoin (v, ah, al) -> Ijoin (visit_var visitor v, visit_atomic visitor ah, visit_atomic visitor al)
+        | Icast (od, v, a) -> Icast (apply_to_some (visit_var visitor) od, visit_var visitor v, visit_atom visitor a)
+        | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atom visitor a)
+        | Ijoin (v, ah, al) -> Ijoin (visit_var visitor v, visit_atom visitor ah, visit_atom visitor al)
         (* Specifications *)
         | Iassert e -> Iassert (visit_bexp visitor e)
         | Iassume e -> Iassume (visit_bexp visitor e)
@@ -3168,45 +3168,45 @@ let bvcryptoline_of_bexp (e, r) =
   Printf.sprintf "bvands2 [:: %s ] [:: %s ]"
     (e |> split_eand |> List.map bvcryptoline_of_ebexp |> String.concat "; ")
     (r |> split_rand |> List.map bvcryptoline_of_rbexp |> String.concat "; ")
-let bvcryptoline_of_atomic a =
+let bvcryptoline_of_atom a =
   match a with
   | Avar v -> Printf.sprintf "(bvVar %s)" (bvcryptoline_of_var v)
   | Aconst (_, n) -> Printf.sprintf "(bvConst (fromPosZ %s%%Z))" (Z.to_string n)
 let bvcryptoline_of_instr i =
   match i with
-  | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a)
-  | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %d)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a) (Z.to_int n)
+  | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a)
+  | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %d)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a) (Z.to_int n)
   | Ishls _ -> raise (UnsupportedException "Instruction shls is not supported by BvCryptoLine.")
   | Ishr _ -> raise (UnsupportedException "Instruction shr is not supported by BvCryptoLine.")
   | Ishrs _ -> raise (UnsupportedException "Instruction shrs is not supported by BvCryptoLine.")
   | Isar _ -> raise (UnsupportedException "Instruction sar is not supported by BvCryptoLine.")
   | Isars _ -> raise (UnsupportedException "Instruction sars is not supported by BvCryptoLine.")
-  | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (Z.to_int n)
+  | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (Z.to_int n)
   | Icshr _ -> raise (UnsupportedException "Instruction cshr is not supported by BvCryptoLine.")
   | Icshrs _ -> raise (UnsupportedException "Instruction cshrs is not supported by BvCryptoLine.")
   | Inondet _ -> raise (UnsupportedException "Instruction nondet is not supported by BvCryptoLine.")
   | Icmov _ -> raise (UnsupportedException "Instruction cmov is not supported by BvCryptoLine.")
   | Inop -> raise (UnsupportedException "Instruction nop is not supported by BvCryptoLine.")
-  | Iadd (v, a1, a2) -> Printf.sprintf "(bvAdd %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
-  | Iadds (c, v, a1, a2) -> Printf.sprintf "(bvAddC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
-  | Iadc (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdc %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Iadd (v, a1, a2) -> Printf.sprintf "(bvAdd %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
+  | Iadds (c, v, a1, a2) -> Printf.sprintf "(bvAddC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
+  | Iadc (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdc %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (bvcryptoline_of_var y)
   | Iadc (_, _, _, (Aconst _)) -> raise (UnsupportedException ("Adding a carry constant in adc is not supported by BvCryptoLine."))
-  | Iadcs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdcC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Iadcs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvAdcC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (bvcryptoline_of_var y)
   | Iadcs (_, _, _, _, (Aconst _)) -> raise (UnsupportedException ("Adding a carry constant in adcs is not supported by BvCryptoLine."))
-  | Isub (v, a1, a2) -> Printf.sprintf "(bvSub %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Isub (v, a1, a2) -> Printf.sprintf "(bvSub %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
   | Isubc _ -> raise (UnsupportedException "Instruction subc is not supported by BvCryptoLine.")
-  | Isubb (c, v, a1, a2) -> Printf.sprintf "(bvSubC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Isubb (c, v, a1, a2) -> Printf.sprintf "(bvSubC %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
   | Isbc _ -> raise (UnsupportedException "Instruction sbc is not supported by BvCryptoLine.")
   | Isbcs _ -> raise (UnsupportedException "Instruction sbcs is not supported by BvCryptoLine.")
-  | Isbb (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbb %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Isbb (v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbb %s %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (bvcryptoline_of_var y)
   | Isbb (_, _, _, (Aconst _)) -> raise (UnsupportedException ("Subtracting a borrow constant in sbb is not supported by BvCryptoLine."))
-  | Isbbs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbbC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2) (bvcryptoline_of_var y)
+  | Isbbs (c, v, a1, a2, (Avar y)) -> Printf.sprintf "(bvSbbC %s %s %s %s %s)" (bvcryptoline_of_var c) (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (bvcryptoline_of_var y)
   | Isbbs (_, _, _, _, (Aconst _)) -> raise (UnsupportedException ("Subtracting a borrow constant in sbbs is not supported by BvCryptoLine."))
-  | Imul (v, a1, a2) -> Printf.sprintf "(bvMul %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Imul (v, a1, a2) -> Printf.sprintf "(bvMul %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
   | Imuls _ -> raise (UnsupportedException "Instruction muls is not supported by BvCryptoLine.")
-  | Imull (vh, vl, a1, a2) -> Printf.sprintf "(bvMulf %s %s %s %s)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a1) (bvcryptoline_of_atomic a2)
+  | Imull (vh, vl, a1, a2) -> Printf.sprintf "(bvMulf %s %s %s %s)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
   | Imulj _ -> raise (UnsupportedException "Instruction mulj is not supported by BvCryptoLine.")
-  | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atomic a) (Z.to_int n)
+  | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a) (Z.to_int n)
   | Ispl _ -> raise (UnsupportedException "Instruction spl is not supported by BvCryptoLine.")
   (* Instructions that cannot be translated to polynomials *)
   | Iand _ -> raise (UnsupportedException "Instruction and is not supported by BvCryptoLine.")
@@ -3339,57 +3339,57 @@ let rec update_variable_id_rbexp m e =
 
 let update_variable_id_bexp m (e, r) = update_variable_id_rbexp (update_variable_id_ebexp m e) r
 
-let update_variable_id_atomic m a =
+let update_variable_id_atom m a =
   match a with
   | Avar v -> update_variable_id_var m v
   | Aconst _ -> m
 
-let update_variable_id_atomics m atomics = List.fold_left update_variable_id_atomic m atomics
+let update_variable_id_atoms m atoms = List.fold_left update_variable_id_atom m atoms
 
 let update_variable_id_instr m i =
   match i with
   | Imov (v, a)
-  | Ishl (v, a, _) -> update_variable_id_atomics m [Avar v; a]
-  | Ishls (l, v, a, _) -> update_variable_id_atomics m [Avar l; Avar v; a]
-  | Ishr (v, a, _) -> update_variable_id_atomics m [Avar v; a]
-  | Ishrs (v, l, a, _) -> update_variable_id_atomics m [Avar v; Avar l; a]
-  | Isar (v, a, _) -> update_variable_id_atomics m [Avar v; a]
-  | Isars (v, l, a, _) -> update_variable_id_atomics m [Avar v; Avar l; a]
-  | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
-  | Icshr (vh, vl, a1, a2, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
-  | Icshrs (vh, vl, l, a1, a2, _) -> update_variable_id_atomics m [Avar vh; Avar vl; Avar l; a1; a2]
+  | Ishl (v, a, _) -> update_variable_id_atoms m [Avar v; a]
+  | Ishls (l, v, a, _) -> update_variable_id_atoms m [Avar l; Avar v; a]
+  | Ishr (v, a, _) -> update_variable_id_atoms m [Avar v; a]
+  | Ishrs (v, l, a, _) -> update_variable_id_atoms m [Avar v; Avar l; a]
+  | Isar (v, a, _) -> update_variable_id_atoms m [Avar v; a]
+  | Isars (v, l, a, _) -> update_variable_id_atoms m [Avar v; Avar l; a]
+  | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
+  | Icshr (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
+  | Icshrs (vh, vl, l, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; Avar l; a1; a2]
   | Inondet v -> update_variable_id_var m v
-  | Icmov (v, c, a1, a2) -> update_variable_id_atomics m [Avar v; c; a1; a2]
+  | Icmov (v, c, a1, a2) -> update_variable_id_atoms m [Avar v; c; a1; a2]
   | Inop -> m
-  | Inot (v, a) -> update_variable_id_atomics m [Avar v; a]
-  | Iadd (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
-  | Iadds (c, v, a1, a2) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2]
-  | Iadc (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
-  | Iadcs (c, v, a1, a2, y) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2; y]
-  | Isub (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
-  | Isubc (c, v, a1, a2) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2]
-  | Isubb (b, v, a1, a2) -> update_variable_id_atomics m [Avar b; Avar v; a1; a2]
-  | Isbc (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
-  | Isbcs (c, v, a1, a2, y) -> update_variable_id_atomics m [Avar c; Avar v; a1; a2; y]
-  | Isbb (v, a1, a2, y) -> update_variable_id_atomics m [Avar v; a1; a2; y]
-  | Isbbs (b, v, a1, a2, y) -> update_variable_id_atomics m [Avar b; Avar v; a1; a2; y]
-  | Imul (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Inot (v, a) -> update_variable_id_atoms m [Avar v; a]
+  | Iadd (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Iadds (c, v, a1, a2) -> update_variable_id_atoms m [Avar c; Avar v; a1; a2]
+  | Iadc (v, a1, a2, y) -> update_variable_id_atoms m [Avar v; a1; a2; y]
+  | Iadcs (c, v, a1, a2, y) -> update_variable_id_atoms m [Avar c; Avar v; a1; a2; y]
+  | Isub (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Isubc (c, v, a1, a2) -> update_variable_id_atoms m [Avar c; Avar v; a1; a2]
+  | Isubb (b, v, a1, a2) -> update_variable_id_atoms m [Avar b; Avar v; a1; a2]
+  | Isbc (v, a1, a2, y) -> update_variable_id_atoms m [Avar v; a1; a2; y]
+  | Isbcs (c, v, a1, a2, y) -> update_variable_id_atoms m [Avar c; Avar v; a1; a2; y]
+  | Isbb (v, a1, a2, y) -> update_variable_id_atoms m [Avar v; a1; a2; y]
+  | Isbbs (b, v, a1, a2, y) -> update_variable_id_atoms m [Avar b; Avar v; a1; a2; y]
+  | Imul (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Imuls (vh, vl, a1, a2)
-  | Imull (vh, vl, a1, a2) -> update_variable_id_atomics m [Avar vh; Avar vl; a1; a2]
-  | Imulj (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
-  | Isplit (vh, vl, a, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a]
-  | Ispl (vh, vl, a, _) -> update_variable_id_atomics m [Avar vh; Avar vl; a]
+  | Imull (vh, vl, a1, a2) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
+  | Imulj (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Isplit (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
+  | Ispl (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
   | Iand (v, a1, a2)
   | Ior (v, a1, a2)
-  | Ixor (v, a1, a2) -> update_variable_id_atomics m [Avar v; a1; a2]
+  | Ixor (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Icast (od, v, a) ->
      let m' =
        match od with
        | Some v -> update_variable_id_var m v
        | None -> m in
-     update_variable_id_atomics m' [Avar v; a]
-  | Ivpc (v, a) -> update_variable_id_atomics m [Avar v; a]
-  | Ijoin (v, ah, al) -> update_variable_id_atomics m [Avar v; ah; al]
+     update_variable_id_atoms m' [Avar v; a]
+  | Ivpc (v, a) -> update_variable_id_atoms m [Avar v; a]
+  | Ijoin (v, ah, al) -> update_variable_id_atoms m [Avar v; ah; al]
   | Iassert e
   | Iassume e -> update_variable_id_bexp m e
   | Icut (es, rs) -> List.fold_left update_variable_id_rbexp (List.fold_left update_variable_id_ebexp m (fst (List.split es))) (fst (List.split rs))
@@ -3643,7 +3643,7 @@ object (* (self) *)
   method vrbexp _ = DoChildren
   method veexp _ = DoChildren
   method vrexp _ = DoChildren
-  method vatomic _ = DoChildren
+  method vatom _ = DoChildren
   method vaconst _ = DoChildren
   method veconst _ = DoChildren
   method vrconst _ = DoChildren

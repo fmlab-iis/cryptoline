@@ -221,7 +221,7 @@
       "patterns": [
         { "include": "#common" },
         {
-          "begin": "\\b(assert|assume|cut)\\b",
+          "begin": "\\b(assert|assume|(e|r)?cut)\\b",
           "beginCaptures": {
             "1": { "name": "keyword.control" }
           },
@@ -245,7 +245,7 @@
           "comment": "TODO: specialize ghost-declared variables"
         },
         {
-          "begin": "(c?mov|c?shl|c?lsl|set|clear|nondet|c?move|nop)\\b",
+          "begin": "(c?mov|c?shl|c?lsl|shls|c?shrs?|sars?|set|clear|nondet|c?move|nop)\\b",
           "end": "(?=;)",
           "beginCaptures": {
             "1": {
@@ -260,7 +260,7 @@
           "comment": "assignment instuctions"
         },
         {
-          "match": "\\b[su]?(add[sr]?|[su]?adc[sr]?|sub[sbcr]?|sbc[sr]?|sbb[sr]?|mul[srlj]?|spl|split)\\b",
+          "match": "\\b[su]?(add[s]?|[su]?adc[s]?|sub[sbc]?|sbc[s]?|sbb[sr]?|mul[slj]?|spl|split)\\b",
           "name": "entity.name.function.instruction",
           "comment": "arithmetic instructions"
         },

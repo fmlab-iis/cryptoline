@@ -13,3 +13,5 @@ cryptoline.log
 _build
 .merlin
 *.log
+doc/*.aux
+doc/*.dvi

@@ -3011,14 +3011,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf003@sint32 : cf003 = r4 && cf003 = r4;
 
@@ -3027,14 +3027,14 @@ ghost cf003@sint32 : cf003 = r4 && cf003 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf259@sint32 : cf259 = r5 && cf259 = r5;
 
@@ -3153,14 +3153,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf004@sint32 : cf004 = r4 && cf004 = r4;
 
@@ -3169,14 +3169,14 @@ ghost cf004@sint32 : cf004 = r4 && cf004 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf260@sint32 : cf260 = r5 && cf260 = r5;
 
@@ -3295,14 +3295,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf005@sint32 : cf005 = r4 && cf005 = r4;
 
@@ -3311,14 +3311,14 @@ ghost cf005@sint32 : cf005 = r4 && cf005 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf261@sint32 : cf261 = r5 && cf261 = r5;
 
@@ -3452,14 +3452,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf006@sint32 : cf006 = r4 && cf006 = r4;
 
@@ -3468,14 +3468,14 @@ ghost cf006@sint32 : cf006 = r4 && cf006 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf262@sint32 : cf262 = r5 && cf262 = r5;
 
@@ -3594,14 +3594,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf007@sint32 : cf007 = r4 && cf007 = r4;
 
@@ -3610,14 +3610,14 @@ ghost cf007@sint32 : cf007 = r4 && cf007 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf263@sint32 : cf263 = r5 && cf263 = r5;
 
@@ -3736,14 +3736,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf008@sint32 : cf008 = r4 && cf008 = r4;
 
@@ -3752,14 +3752,14 @@ ghost cf008@sint32 : cf008 = r4 && cf008 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf264@sint32 : cf264 = r5 && cf264 = r5;
 
@@ -3893,14 +3893,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf009@sint32 : cf009 = r4 && cf009 = r4;
 
@@ -3909,14 +3909,14 @@ ghost cf009@sint32 : cf009 = r4 && cf009 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf265@sint32 : cf265 = r5 && cf265 = r5;
 
@@ -4035,14 +4035,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf010@sint32 : cf010 = r4 && cf010 = r4;
 
@@ -4051,14 +4051,14 @@ ghost cf010@sint32 : cf010 = r4 && cf010 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf266@sint32 : cf266 = r5 && cf266 = r5;
 
@@ -4177,14 +4177,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf011@sint32 : cf011 = r4 && cf011 = r4;
 
@@ -4193,14 +4193,14 @@ ghost cf011@sint32 : cf011 = r4 && cf011 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf267@sint32 : cf267 = r5 && cf267 = r5;
 
@@ -4334,14 +4334,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf012@sint32 : cf012 = r4 && cf012 = r4;
 
@@ -4350,14 +4350,14 @@ ghost cf012@sint32 : cf012 = r4 && cf012 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf268@sint32 : cf268 = r5 && cf268 = r5;
 
@@ -4476,14 +4476,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf013@sint32 : cf013 = r4 && cf013 = r4;
 
@@ -4492,14 +4492,14 @@ ghost cf013@sint32 : cf013 = r4 && cf013 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf269@sint32 : cf269 = r5 && cf269 = r5;
 
@@ -4618,14 +4618,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf014@sint32 : cf014 = r4 && cf014 = r4;
 
@@ -4634,14 +4634,14 @@ ghost cf014@sint32 : cf014 = r4 && cf014 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf270@sint32 : cf270 = r5 && cf270 = r5;
 
@@ -4775,14 +4775,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf015@sint32 : cf015 = r4 && cf015 = r4;
 
@@ -4791,14 +4791,14 @@ ghost cf015@sint32 : cf015 = r4 && cf015 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf271@sint32 : cf271 = r5 && cf271 = r5;
 
@@ -4917,14 +4917,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf016@sint32 : cf016 = r4 && cf016 = r4;
 
@@ -4933,14 +4933,14 @@ ghost cf016@sint32 : cf016 = r4 && cf016 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf272@sint32 : cf272 = r5 && cf272 = r5;
 
@@ -5059,14 +5059,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf017@sint32 : cf017 = r4 && cf017 = r4;
 
@@ -5075,14 +5075,14 @@ ghost cf017@sint32 : cf017 = r4 && cf017 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf273@sint32 : cf273 = r5 && cf273 = r5;
 
@@ -5216,14 +5216,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf018@sint32 : cf018 = r4 && cf018 = r4;
 
@@ -5232,14 +5232,14 @@ ghost cf018@sint32 : cf018 = r4 && cf018 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf274@sint32 : cf274 = r5 && cf274 = r5;
 
@@ -5358,14 +5358,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf019@sint32 : cf019 = r4 && cf019 = r4;
 
@@ -5374,14 +5374,14 @@ ghost cf019@sint32 : cf019 = r4 && cf019 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf275@sint32 : cf275 = r5 && cf275 = r5;
 
@@ -5500,14 +5500,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf020@sint32 : cf020 = r4 && cf020 = r4;
 
@@ -5516,14 +5516,14 @@ ghost cf020@sint32 : cf020 = r4 && cf020 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf276@sint32 : cf276 = r5 && cf276 = r5;
 
@@ -5657,14 +5657,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf021@sint32 : cf021 = r4 && cf021 = r4;
 
@@ -5673,14 +5673,14 @@ ghost cf021@sint32 : cf021 = r4 && cf021 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf277@sint32 : cf277 = r5 && cf277 = r5;
 
@@ -5799,14 +5799,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf022@sint32 : cf022 = r4 && cf022 = r4;
 
@@ -5815,14 +5815,14 @@ ghost cf022@sint32 : cf022 = r4 && cf022 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf278@sint32 : cf278 = r5 && cf278 = r5;
 
@@ -5941,14 +5941,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf023@sint32 : cf023 = r4 && cf023 = r4;
 
@@ -5957,14 +5957,14 @@ ghost cf023@sint32 : cf023 = r4 && cf023 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf279@sint32 : cf279 = r5 && cf279 = r5;
 
@@ -6098,14 +6098,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf024@sint32 : cf024 = r4 && cf024 = r4;
 
@@ -6114,14 +6114,14 @@ ghost cf024@sint32 : cf024 = r4 && cf024 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf280@sint32 : cf280 = r5 && cf280 = r5;
 
@@ -6240,14 +6240,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf025@sint32 : cf025 = r4 && cf025 = r4;
 
@@ -6256,14 +6256,14 @@ ghost cf025@sint32 : cf025 = r4 && cf025 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf281@sint32 : cf281 = r5 && cf281 = r5;
 
@@ -6382,14 +6382,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf026@sint32 : cf026 = r4 && cf026 = r4;
 
@@ -6398,14 +6398,14 @@ ghost cf026@sint32 : cf026 = r4 && cf026 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf282@sint32 : cf282 = r5 && cf282 = r5;
 
@@ -6539,14 +6539,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf027@sint32 : cf027 = r4 && cf027 = r4;
 
@@ -6555,14 +6555,14 @@ ghost cf027@sint32 : cf027 = r4 && cf027 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf283@sint32 : cf283 = r5 && cf283 = r5;
 
@@ -6681,14 +6681,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf028@sint32 : cf028 = r4 && cf028 = r4;
 
@@ -6697,14 +6697,14 @@ ghost cf028@sint32 : cf028 = r4 && cf028 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf284@sint32 : cf284 = r5 && cf284 = r5;
 
@@ -6823,14 +6823,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf029@sint32 : cf029 = r4 && cf029 = r4;
 
@@ -6839,14 +6839,14 @@ ghost cf029@sint32 : cf029 = r4 && cf029 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf285@sint32 : cf285 = r5 && cf285 = r5;
 
@@ -6980,14 +6980,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf030@sint32 : cf030 = r4 && cf030 = r4;
 
@@ -6996,14 +6996,14 @@ ghost cf030@sint32 : cf030 = r4 && cf030 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf286@sint32 : cf286 = r5 && cf286 = r5;
 
@@ -7122,14 +7122,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf031@sint32 : cf031 = r4 && cf031 = r4;
 
@@ -7138,14 +7138,14 @@ ghost cf031@sint32 : cf031 = r4 && cf031 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf287@sint32 : cf287 = r5 && cf287 = r5;
 
@@ -7264,14 +7264,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf032@sint32 : cf032 = r4 && cf032 = r4;
 
@@ -7280,14 +7280,14 @@ ghost cf032@sint32 : cf032 = r4 && cf032 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf288@sint32 : cf288 = r5 && cf288 = r5;
 
@@ -7421,14 +7421,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf033@sint32 : cf033 = r4 && cf033 = r4;
 
@@ -7437,14 +7437,14 @@ ghost cf033@sint32 : cf033 = r4 && cf033 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf289@sint32 : cf289 = r5 && cf289 = r5;
 
@@ -7563,14 +7563,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf034@sint32 : cf034 = r4 && cf034 = r4;
 
@@ -7579,14 +7579,14 @@ ghost cf034@sint32 : cf034 = r4 && cf034 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf290@sint32 : cf290 = r5 && cf290 = r5;
 
@@ -7705,14 +7705,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf035@sint32 : cf035 = r4 && cf035 = r4;
 
@@ -7721,14 +7721,14 @@ ghost cf035@sint32 : cf035 = r4 && cf035 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf291@sint32 : cf291 = r5 && cf291 = r5;
 
@@ -7862,14 +7862,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf036@sint32 : cf036 = r4 && cf036 = r4;
 
@@ -7878,14 +7878,14 @@ ghost cf036@sint32 : cf036 = r4 && cf036 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf292@sint32 : cf292 = r5 && cf292 = r5;
 
@@ -8004,14 +8004,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf037@sint32 : cf037 = r4 && cf037 = r4;
 
@@ -8020,14 +8020,14 @@ ghost cf037@sint32 : cf037 = r4 && cf037 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf293@sint32 : cf293 = r5 && cf293 = r5;
 
@@ -8146,14 +8146,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf038@sint32 : cf038 = r4 && cf038 = r4;
 
@@ -8162,14 +8162,14 @@ ghost cf038@sint32 : cf038 = r4 && cf038 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf294@sint32 : cf294 = r5 && cf294 = r5;
 
@@ -8303,14 +8303,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf039@sint32 : cf039 = r4 && cf039 = r4;
 
@@ -8319,14 +8319,14 @@ ghost cf039@sint32 : cf039 = r4 && cf039 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf295@sint32 : cf295 = r5 && cf295 = r5;
 
@@ -8445,14 +8445,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf040@sint32 : cf040 = r4 && cf040 = r4;
 
@@ -8461,14 +8461,14 @@ ghost cf040@sint32 : cf040 = r4 && cf040 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf296@sint32 : cf296 = r5 && cf296 = r5;
 
@@ -8587,14 +8587,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf041@sint32 : cf041 = r4 && cf041 = r4;
 
@@ -8603,14 +8603,14 @@ ghost cf041@sint32 : cf041 = r4 && cf041 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf297@sint32 : cf297 = r5 && cf297 = r5;
 
@@ -8744,14 +8744,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf042@sint32 : cf042 = r4 && cf042 = r4;
 
@@ -8760,14 +8760,14 @@ ghost cf042@sint32 : cf042 = r4 && cf042 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf298@sint32 : cf298 = r5 && cf298 = r5;
 
@@ -8886,14 +8886,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf043@sint32 : cf043 = r4 && cf043 = r4;
 
@@ -8902,14 +8902,14 @@ ghost cf043@sint32 : cf043 = r4 && cf043 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf299@sint32 : cf299 = r5 && cf299 = r5;
 
@@ -9028,14 +9028,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf044@sint32 : cf044 = r4 && cf044 = r4;
 
@@ -9044,14 +9044,14 @@ ghost cf044@sint32 : cf044 = r4 && cf044 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf300@sint32 : cf300 = r5 && cf300 = r5;
 
@@ -9185,14 +9185,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf045@sint32 : cf045 = r4 && cf045 = r4;
 
@@ -9201,14 +9201,14 @@ ghost cf045@sint32 : cf045 = r4 && cf045 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf301@sint32 : cf301 = r5 && cf301 = r5;
 
@@ -9327,14 +9327,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf046@sint32 : cf046 = r4 && cf046 = r4;
 
@@ -9343,14 +9343,14 @@ ghost cf046@sint32 : cf046 = r4 && cf046 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf302@sint32 : cf302 = r5 && cf302 = r5;
 
@@ -9469,14 +9469,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf047@sint32 : cf047 = r4 && cf047 = r4;
 
@@ -9485,14 +9485,14 @@ ghost cf047@sint32 : cf047 = r4 && cf047 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf303@sint32 : cf303 = r5 && cf303 = r5;
 
@@ -9626,14 +9626,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf048@sint32 : cf048 = r4 && cf048 = r4;
 
@@ -9642,14 +9642,14 @@ ghost cf048@sint32 : cf048 = r4 && cf048 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf304@sint32 : cf304 = r5 && cf304 = r5;
 
@@ -9768,14 +9768,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf049@sint32 : cf049 = r4 && cf049 = r4;
 
@@ -9784,14 +9784,14 @@ ghost cf049@sint32 : cf049 = r4 && cf049 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf305@sint32 : cf305 = r5 && cf305 = r5;
 
@@ -9910,14 +9910,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf050@sint32 : cf050 = r4 && cf050 = r4;
 
@@ -9926,14 +9926,14 @@ ghost cf050@sint32 : cf050 = r4 && cf050 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf306@sint32 : cf306 = r5 && cf306 = r5;
 
@@ -10067,14 +10067,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf051@sint32 : cf051 = r4 && cf051 = r4;
 
@@ -10083,14 +10083,14 @@ ghost cf051@sint32 : cf051 = r4 && cf051 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf307@sint32 : cf307 = r5 && cf307 = r5;
 
@@ -10209,14 +10209,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf052@sint32 : cf052 = r4 && cf052 = r4;
 
@@ -10225,14 +10225,14 @@ ghost cf052@sint32 : cf052 = r4 && cf052 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf308@sint32 : cf308 = r5 && cf308 = r5;
 
@@ -10351,14 +10351,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf053@sint32 : cf053 = r4 && cf053 = r4;
 
@@ -10367,14 +10367,14 @@ ghost cf053@sint32 : cf053 = r4 && cf053 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf309@sint32 : cf309 = r5 && cf309 = r5;
 
@@ -10508,14 +10508,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf054@sint32 : cf054 = r4 && cf054 = r4;
 
@@ -10524,14 +10524,14 @@ ghost cf054@sint32 : cf054 = r4 && cf054 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf310@sint32 : cf310 = r5 && cf310 = r5;
 
@@ -10650,14 +10650,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf055@sint32 : cf055 = r4 && cf055 = r4;
 
@@ -10666,14 +10666,14 @@ ghost cf055@sint32 : cf055 = r4 && cf055 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf311@sint32 : cf311 = r5 && cf311 = r5;
 
@@ -10792,14 +10792,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf056@sint32 : cf056 = r4 && cf056 = r4;
 
@@ -10808,14 +10808,14 @@ ghost cf056@sint32 : cf056 = r4 && cf056 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf312@sint32 : cf312 = r5 && cf312 = r5;
 
@@ -10949,14 +10949,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf057@sint32 : cf057 = r4 && cf057 = r4;
 
@@ -10965,14 +10965,14 @@ ghost cf057@sint32 : cf057 = r4 && cf057 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf313@sint32 : cf313 = r5 && cf313 = r5;
 
@@ -11091,14 +11091,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf058@sint32 : cf058 = r4 && cf058 = r4;
 
@@ -11107,14 +11107,14 @@ ghost cf058@sint32 : cf058 = r4 && cf058 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf314@sint32 : cf314 = r5 && cf314 = r5;
 
@@ -11233,14 +11233,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf059@sint32 : cf059 = r4 && cf059 = r4;
 
@@ -11249,14 +11249,14 @@ ghost cf059@sint32 : cf059 = r4 && cf059 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf315@sint32 : cf315 = r5 && cf315 = r5;
 
@@ -11390,14 +11390,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf060@sint32 : cf060 = r4 && cf060 = r4;
 
@@ -11406,14 +11406,14 @@ ghost cf060@sint32 : cf060 = r4 && cf060 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf316@sint32 : cf316 = r5 && cf316 = r5;
 
@@ -11532,14 +11532,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf061@sint32 : cf061 = r4 && cf061 = r4;
 
@@ -11548,14 +11548,14 @@ ghost cf061@sint32 : cf061 = r4 && cf061 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf317@sint32 : cf317 = r5 && cf317 = r5;
 
@@ -11674,14 +11674,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf062@sint32 : cf062 = r4 && cf062 = r4;
 
@@ -11690,14 +11690,14 @@ ghost cf062@sint32 : cf062 = r4 && cf062 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf318@sint32 : cf318 = r5 && cf318 = r5;
 
@@ -11831,14 +11831,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf063@sint32 : cf063 = r4 && cf063 = r4;
 
@@ -11847,14 +11847,14 @@ ghost cf063@sint32 : cf063 = r4 && cf063 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf319@sint32 : cf319 = r5 && cf319 = r5;
 
@@ -11973,14 +11973,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf064@sint32 : cf064 = r4 && cf064 = r4;
 
@@ -11989,14 +11989,14 @@ ghost cf064@sint32 : cf064 = r4 && cf064 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf320@sint32 : cf320 = r5 && cf320 = r5;
 
@@ -12115,14 +12115,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf065@sint32 : cf065 = r4 && cf065 = r4;
 
@@ -12131,14 +12131,14 @@ ghost cf065@sint32 : cf065 = r4 && cf065 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf321@sint32 : cf321 = r5 && cf321 = r5;
 
@@ -12272,14 +12272,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf066@sint32 : cf066 = r4 && cf066 = r4;
 
@@ -12288,14 +12288,14 @@ ghost cf066@sint32 : cf066 = r4 && cf066 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf322@sint32 : cf322 = r5 && cf322 = r5;
 
@@ -12414,14 +12414,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf067@sint32 : cf067 = r4 && cf067 = r4;
 
@@ -12430,14 +12430,14 @@ ghost cf067@sint32 : cf067 = r4 && cf067 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf323@sint32 : cf323 = r5 && cf323 = r5;
 
@@ -12556,14 +12556,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf068@sint32 : cf068 = r4 && cf068 = r4;
 
@@ -12572,14 +12572,14 @@ ghost cf068@sint32 : cf068 = r4 && cf068 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf324@sint32 : cf324 = r5 && cf324 = r5;
 
@@ -12713,14 +12713,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf069@sint32 : cf069 = r4 && cf069 = r4;
 
@@ -12729,14 +12729,14 @@ ghost cf069@sint32 : cf069 = r4 && cf069 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf325@sint32 : cf325 = r5 && cf325 = r5;
 
@@ -12855,14 +12855,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf070@sint32 : cf070 = r4 && cf070 = r4;
 
@@ -12871,14 +12871,14 @@ ghost cf070@sint32 : cf070 = r4 && cf070 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf326@sint32 : cf326 = r5 && cf326 = r5;
 
@@ -12997,14 +12997,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf071@sint32 : cf071 = r4 && cf071 = r4;
 
@@ -13013,14 +13013,14 @@ ghost cf071@sint32 : cf071 = r4 && cf071 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf327@sint32 : cf327 = r5 && cf327 = r5;
 
@@ -13154,14 +13154,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf072@sint32 : cf072 = r4 && cf072 = r4;
 
@@ -13170,14 +13170,14 @@ ghost cf072@sint32 : cf072 = r4 && cf072 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf328@sint32 : cf328 = r5 && cf328 = r5;
 
@@ -13296,14 +13296,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf073@sint32 : cf073 = r4 && cf073 = r4;
 
@@ -13312,14 +13312,14 @@ ghost cf073@sint32 : cf073 = r4 && cf073 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf329@sint32 : cf329 = r5 && cf329 = r5;
 
@@ -13438,14 +13438,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf074@sint32 : cf074 = r4 && cf074 = r4;
 
@@ -13454,14 +13454,14 @@ ghost cf074@sint32 : cf074 = r4 && cf074 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf330@sint32 : cf330 = r5 && cf330 = r5;
 
@@ -13595,14 +13595,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf075@sint32 : cf075 = r4 && cf075 = r4;
 
@@ -13611,14 +13611,14 @@ ghost cf075@sint32 : cf075 = r4 && cf075 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf331@sint32 : cf331 = r5 && cf331 = r5;
 
@@ -13737,14 +13737,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf076@sint32 : cf076 = r4 && cf076 = r4;
 
@@ -13753,14 +13753,14 @@ ghost cf076@sint32 : cf076 = r4 && cf076 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf332@sint32 : cf332 = r5 && cf332 = r5;
 
@@ -13879,14 +13879,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf077@sint32 : cf077 = r4 && cf077 = r4;
 
@@ -13895,14 +13895,14 @@ ghost cf077@sint32 : cf077 = r4 && cf077 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf333@sint32 : cf333 = r5 && cf333 = r5;
 
@@ -14036,14 +14036,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf078@sint32 : cf078 = r4 && cf078 = r4;
 
@@ -14052,14 +14052,14 @@ ghost cf078@sint32 : cf078 = r4 && cf078 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf334@sint32 : cf334 = r5 && cf334 = r5;
 
@@ -14178,14 +14178,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf079@sint32 : cf079 = r4 && cf079 = r4;
 
@@ -14194,14 +14194,14 @@ ghost cf079@sint32 : cf079 = r4 && cf079 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf335@sint32 : cf335 = r5 && cf335 = r5;
 
@@ -14320,14 +14320,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf080@sint32 : cf080 = r4 && cf080 = r4;
 
@@ -14336,14 +14336,14 @@ ghost cf080@sint32 : cf080 = r4 && cf080 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf336@sint32 : cf336 = r5 && cf336 = r5;
 
@@ -14477,14 +14477,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf081@sint32 : cf081 = r4 && cf081 = r4;
 
@@ -14493,14 +14493,14 @@ ghost cf081@sint32 : cf081 = r4 && cf081 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf337@sint32 : cf337 = r5 && cf337 = r5;
 
@@ -14619,14 +14619,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf082@sint32 : cf082 = r4 && cf082 = r4;
 
@@ -14635,14 +14635,14 @@ ghost cf082@sint32 : cf082 = r4 && cf082 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf338@sint32 : cf338 = r5 && cf338 = r5;
 
@@ -14761,14 +14761,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf083@sint32 : cf083 = r4 && cf083 = r4;
 
@@ -14777,14 +14777,14 @@ ghost cf083@sint32 : cf083 = r4 && cf083 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf339@sint32 : cf339 = r5 && cf339 = r5;
 
@@ -14918,14 +14918,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf084@sint32 : cf084 = r4 && cf084 = r4;
 
@@ -14934,14 +14934,14 @@ ghost cf084@sint32 : cf084 = r4 && cf084 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf340@sint32 : cf340 = r5 && cf340 = r5;
 
@@ -15060,14 +15060,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf085@sint32 : cf085 = r4 && cf085 = r4;
 
@@ -15076,14 +15076,14 @@ ghost cf085@sint32 : cf085 = r4 && cf085 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf341@sint32 : cf341 = r5 && cf341 = r5;
 
@@ -15202,14 +15202,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf086@sint32 : cf086 = r4 && cf086 = r4;
 
@@ -15218,14 +15218,14 @@ ghost cf086@sint32 : cf086 = r4 && cf086 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf342@sint32 : cf342 = r5 && cf342 = r5;
 
@@ -15359,14 +15359,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf087@sint32 : cf087 = r4 && cf087 = r4;
 
@@ -15375,14 +15375,14 @@ ghost cf087@sint32 : cf087 = r4 && cf087 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf343@sint32 : cf343 = r5 && cf343 = r5;
 
@@ -15501,14 +15501,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf088@sint32 : cf088 = r4 && cf088 = r4;
 
@@ -15517,14 +15517,14 @@ ghost cf088@sint32 : cf088 = r4 && cf088 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf344@sint32 : cf344 = r5 && cf344 = r5;
 
@@ -15643,14 +15643,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf089@sint32 : cf089 = r4 && cf089 = r4;
 
@@ -15659,14 +15659,14 @@ ghost cf089@sint32 : cf089 = r4 && cf089 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf345@sint32 : cf345 = r5 && cf345 = r5;
 
@@ -15800,14 +15800,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf090@sint32 : cf090 = r4 && cf090 = r4;
 
@@ -15816,14 +15816,14 @@ ghost cf090@sint32 : cf090 = r4 && cf090 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf346@sint32 : cf346 = r5 && cf346 = r5;
 
@@ -15942,14 +15942,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf091@sint32 : cf091 = r4 && cf091 = r4;
 
@@ -15958,14 +15958,14 @@ ghost cf091@sint32 : cf091 = r4 && cf091 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf347@sint32 : cf347 = r5 && cf347 = r5;
 
@@ -16084,14 +16084,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf092@sint32 : cf092 = r4 && cf092 = r4;
 
@@ -16100,14 +16100,14 @@ ghost cf092@sint32 : cf092 = r4 && cf092 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf348@sint32 : cf348 = r5 && cf348 = r5;
 
@@ -16241,14 +16241,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf093@sint32 : cf093 = r4 && cf093 = r4;
 
@@ -16257,14 +16257,14 @@ ghost cf093@sint32 : cf093 = r4 && cf093 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf349@sint32 : cf349 = r5 && cf349 = r5;
 
@@ -16383,14 +16383,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf094@sint32 : cf094 = r4 && cf094 = r4;
 
@@ -16399,14 +16399,14 @@ ghost cf094@sint32 : cf094 = r4 && cf094 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf350@sint32 : cf350 = r5 && cf350 = r5;
 
@@ -16525,14 +16525,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf095@sint32 : cf095 = r4 && cf095 = r4;
 
@@ -16541,14 +16541,14 @@ ghost cf095@sint32 : cf095 = r4 && cf095 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf351@sint32 : cf351 = r5 && cf351 = r5;
 
@@ -16682,14 +16682,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf096@sint32 : cf096 = r4 && cf096 = r4;
 
@@ -16698,14 +16698,14 @@ ghost cf096@sint32 : cf096 = r4 && cf096 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf352@sint32 : cf352 = r5 && cf352 = r5;
 
@@ -16824,14 +16824,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf097@sint32 : cf097 = r4 && cf097 = r4;
 
@@ -16840,14 +16840,14 @@ ghost cf097@sint32 : cf097 = r4 && cf097 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf353@sint32 : cf353 = r5 && cf353 = r5;
 
@@ -16966,14 +16966,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf098@sint32 : cf098 = r4 && cf098 = r4;
 
@@ -16982,14 +16982,14 @@ ghost cf098@sint32 : cf098 = r4 && cf098 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf354@sint32 : cf354 = r5 && cf354 = r5;
 
@@ -17123,14 +17123,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf099@sint32 : cf099 = r4 && cf099 = r4;
 
@@ -17139,14 +17139,14 @@ ghost cf099@sint32 : cf099 = r4 && cf099 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf355@sint32 : cf355 = r5 && cf355 = r5;
 
@@ -17265,14 +17265,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf100@sint32 : cf100 = r4 && cf100 = r4;
 
@@ -17281,14 +17281,14 @@ ghost cf100@sint32 : cf100 = r4 && cf100 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf356@sint32 : cf356 = r5 && cf356 = r5;
 
@@ -17407,14 +17407,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf101@sint32 : cf101 = r4 && cf101 = r4;
 
@@ -17423,14 +17423,14 @@ ghost cf101@sint32 : cf101 = r4 && cf101 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf357@sint32 : cf357 = r5 && cf357 = r5;
 
@@ -17564,14 +17564,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf102@sint32 : cf102 = r4 && cf102 = r4;
 
@@ -17580,14 +17580,14 @@ ghost cf102@sint32 : cf102 = r4 && cf102 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf358@sint32 : cf358 = r5 && cf358 = r5;
 
@@ -17706,14 +17706,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf103@sint32 : cf103 = r4 && cf103 = r4;
 
@@ -17722,14 +17722,14 @@ ghost cf103@sint32 : cf103 = r4 && cf103 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf359@sint32 : cf359 = r5 && cf359 = r5;
 
@@ -17848,14 +17848,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf104@sint32 : cf104 = r4 && cf104 = r4;
 
@@ -17864,14 +17864,14 @@ ghost cf104@sint32 : cf104 = r4 && cf104 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf360@sint32 : cf360 = r5 && cf360 = r5;
 
@@ -18005,14 +18005,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf105@sint32 : cf105 = r4 && cf105 = r4;
 
@@ -18021,14 +18021,14 @@ ghost cf105@sint32 : cf105 = r4 && cf105 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf361@sint32 : cf361 = r5 && cf361 = r5;
 
@@ -18147,14 +18147,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf106@sint32 : cf106 = r4 && cf106 = r4;
 
@@ -18163,14 +18163,14 @@ ghost cf106@sint32 : cf106 = r4 && cf106 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf362@sint32 : cf362 = r5 && cf362 = r5;
 
@@ -18289,14 +18289,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf107@sint32 : cf107 = r4 && cf107 = r4;
 
@@ -18305,14 +18305,14 @@ ghost cf107@sint32 : cf107 = r4 && cf107 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf363@sint32 : cf363 = r5 && cf363 = r5;
 
@@ -18446,14 +18446,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf108@sint32 : cf108 = r4 && cf108 = r4;
 
@@ -18462,14 +18462,14 @@ ghost cf108@sint32 : cf108 = r4 && cf108 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf364@sint32 : cf364 = r5 && cf364 = r5;
 
@@ -18588,14 +18588,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf109@sint32 : cf109 = r4 && cf109 = r4;
 
@@ -18604,14 +18604,14 @@ ghost cf109@sint32 : cf109 = r4 && cf109 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf365@sint32 : cf365 = r5 && cf365 = r5;
 
@@ -18730,14 +18730,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf110@sint32 : cf110 = r4 && cf110 = r4;
 
@@ -18746,14 +18746,14 @@ ghost cf110@sint32 : cf110 = r4 && cf110 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf366@sint32 : cf366 = r5 && cf366 = r5;
 
@@ -18887,14 +18887,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf111@sint32 : cf111 = r4 && cf111 = r4;
 
@@ -18903,14 +18903,14 @@ ghost cf111@sint32 : cf111 = r4 && cf111 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf367@sint32 : cf367 = r5 && cf367 = r5;
 
@@ -19029,14 +19029,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf112@sint32 : cf112 = r4 && cf112 = r4;
 
@@ -19045,14 +19045,14 @@ ghost cf112@sint32 : cf112 = r4 && cf112 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf368@sint32 : cf368 = r5 && cf368 = r5;
 
@@ -19171,14 +19171,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf113@sint32 : cf113 = r4 && cf113 = r4;
 
@@ -19187,14 +19187,14 @@ ghost cf113@sint32 : cf113 = r4 && cf113 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf369@sint32 : cf369 = r5 && cf369 = r5;
 
@@ -19328,14 +19328,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf114@sint32 : cf114 = r4 && cf114 = r4;
 
@@ -19344,14 +19344,14 @@ ghost cf114@sint32 : cf114 = r4 && cf114 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf370@sint32 : cf370 = r5 && cf370 = r5;
 
@@ -19470,14 +19470,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf115@sint32 : cf115 = r4 && cf115 = r4;
 
@@ -19486,14 +19486,14 @@ ghost cf115@sint32 : cf115 = r4 && cf115 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf371@sint32 : cf371 = r5 && cf371 = r5;
 
@@ -19612,14 +19612,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf116@sint32 : cf116 = r4 && cf116 = r4;
 
@@ -19628,14 +19628,14 @@ ghost cf116@sint32 : cf116 = r4 && cf116 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf372@sint32 : cf372 = r5 && cf372 = r5;
 
@@ -19769,14 +19769,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf117@sint32 : cf117 = r4 && cf117 = r4;
 
@@ -19785,14 +19785,14 @@ ghost cf117@sint32 : cf117 = r4 && cf117 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf373@sint32 : cf373 = r5 && cf373 = r5;
 
@@ -19911,14 +19911,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf118@sint32 : cf118 = r4 && cf118 = r4;
 
@@ -19927,14 +19927,14 @@ ghost cf118@sint32 : cf118 = r4 && cf118 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf374@sint32 : cf374 = r5 && cf374 = r5;
 
@@ -20053,14 +20053,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf119@sint32 : cf119 = r4 && cf119 = r4;
 
@@ -20069,14 +20069,14 @@ ghost cf119@sint32 : cf119 = r4 && cf119 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf375@sint32 : cf375 = r5 && cf375 = r5;
 
@@ -20210,14 +20210,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf120@sint32 : cf120 = r4 && cf120 = r4;
 
@@ -20226,14 +20226,14 @@ ghost cf120@sint32 : cf120 = r4 && cf120 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf376@sint32 : cf376 = r5 && cf376 = r5;
 
@@ -20352,14 +20352,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf121@sint32 : cf121 = r4 && cf121 = r4;
 
@@ -20368,14 +20368,14 @@ ghost cf121@sint32 : cf121 = r4 && cf121 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf377@sint32 : cf377 = r5 && cf377 = r5;
 
@@ -20494,14 +20494,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf122@sint32 : cf122 = r4 && cf122 = r4;
 
@@ -20510,14 +20510,14 @@ ghost cf122@sint32 : cf122 = r4 && cf122 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf378@sint32 : cf378 = r5 && cf378 = r5;
 
@@ -20651,14 +20651,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf123@sint32 : cf123 = r4 && cf123 = r4;
 
@@ -20667,14 +20667,14 @@ ghost cf123@sint32 : cf123 = r4 && cf123 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf379@sint32 : cf379 = r5 && cf379 = r5;
 
@@ -20793,14 +20793,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf124@sint32 : cf124 = r4 && cf124 = r4;
 
@@ -20809,14 +20809,14 @@ ghost cf124@sint32 : cf124 = r4 && cf124 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf380@sint32 : cf380 = r5 && cf380 = r5;
 
@@ -20935,14 +20935,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf125@sint32 : cf125 = r4 && cf125 = r4;
 
@@ -20951,14 +20951,14 @@ ghost cf125@sint32 : cf125 = r4 && cf125 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf381@sint32 : cf381 = r5 && cf381 = r5;
 
@@ -21092,14 +21092,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf126@sint32 : cf126 = r4 && cf126 = r4;
 
@@ -21108,14 +21108,14 @@ ghost cf126@sint32 : cf126 = r4 && cf126 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf382@sint32 : cf382 = r5 && cf382 = r5;
 
@@ -21234,14 +21234,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf127@sint32 : cf127 = r4 && cf127 = r4;
 
@@ -21250,14 +21250,14 @@ ghost cf127@sint32 : cf127 = r4 && cf127 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf383@sint32 : cf383 = r5 && cf383 = r5;
 
@@ -21376,14 +21376,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf128@sint32 : cf128 = r4 && cf128 = r4;
 
@@ -21392,14 +21392,14 @@ ghost cf128@sint32 : cf128 = r4 && cf128 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf384@sint32 : cf384 = r5 && cf384 = r5;
 
@@ -21533,14 +21533,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf129@sint32 : cf129 = r4 && cf129 = r4;
 
@@ -21549,14 +21549,14 @@ ghost cf129@sint32 : cf129 = r4 && cf129 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf385@sint32 : cf385 = r5 && cf385 = r5;
 
@@ -21675,14 +21675,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf130@sint32 : cf130 = r4 && cf130 = r4;
 
@@ -21691,14 +21691,14 @@ ghost cf130@sint32 : cf130 = r4 && cf130 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf386@sint32 : cf386 = r5 && cf386 = r5;
 
@@ -21817,14 +21817,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf131@sint32 : cf131 = r4 && cf131 = r4;
 
@@ -21833,14 +21833,14 @@ ghost cf131@sint32 : cf131 = r4 && cf131 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf387@sint32 : cf387 = r5 && cf387 = r5;
 
@@ -21974,14 +21974,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf132@sint32 : cf132 = r4 && cf132 = r4;
 
@@ -21990,14 +21990,14 @@ ghost cf132@sint32 : cf132 = r4 && cf132 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf388@sint32 : cf388 = r5 && cf388 = r5;
 
@@ -22116,14 +22116,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf133@sint32 : cf133 = r4 && cf133 = r4;
 
@@ -22132,14 +22132,14 @@ ghost cf133@sint32 : cf133 = r4 && cf133 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf389@sint32 : cf389 = r5 && cf389 = r5;
 
@@ -22258,14 +22258,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf134@sint32 : cf134 = r4 && cf134 = r4;
 
@@ -22274,14 +22274,14 @@ ghost cf134@sint32 : cf134 = r4 && cf134 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf390@sint32 : cf390 = r5 && cf390 = r5;
 
@@ -22415,14 +22415,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf135@sint32 : cf135 = r4 && cf135 = r4;
 
@@ -22431,14 +22431,14 @@ ghost cf135@sint32 : cf135 = r4 && cf135 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf391@sint32 : cf391 = r5 && cf391 = r5;
 
@@ -22557,14 +22557,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf136@sint32 : cf136 = r4 && cf136 = r4;
 
@@ -22573,14 +22573,14 @@ ghost cf136@sint32 : cf136 = r4 && cf136 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf392@sint32 : cf392 = r5 && cf392 = r5;
 
@@ -22699,14 +22699,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf137@sint32 : cf137 = r4 && cf137 = r4;
 
@@ -22715,14 +22715,14 @@ ghost cf137@sint32 : cf137 = r4 && cf137 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf393@sint32 : cf393 = r5 && cf393 = r5;
 
@@ -22856,14 +22856,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf138@sint32 : cf138 = r4 && cf138 = r4;
 
@@ -22872,14 +22872,14 @@ ghost cf138@sint32 : cf138 = r4 && cf138 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf394@sint32 : cf394 = r5 && cf394 = r5;
 
@@ -22998,14 +22998,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf139@sint32 : cf139 = r4 && cf139 = r4;
 
@@ -23014,14 +23014,14 @@ ghost cf139@sint32 : cf139 = r4 && cf139 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf395@sint32 : cf395 = r5 && cf395 = r5;
 
@@ -23140,14 +23140,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf140@sint32 : cf140 = r4 && cf140 = r4;
 
@@ -23156,14 +23156,14 @@ ghost cf140@sint32 : cf140 = r4 && cf140 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf396@sint32 : cf396 = r5 && cf396 = r5;
 
@@ -23297,14 +23297,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf141@sint32 : cf141 = r4 && cf141 = r4;
 
@@ -23313,14 +23313,14 @@ ghost cf141@sint32 : cf141 = r4 && cf141 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf397@sint32 : cf397 = r5 && cf397 = r5;
 
@@ -23439,14 +23439,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf142@sint32 : cf142 = r4 && cf142 = r4;
 
@@ -23455,14 +23455,14 @@ ghost cf142@sint32 : cf142 = r4 && cf142 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf398@sint32 : cf398 = r5 && cf398 = r5;
 
@@ -23581,14 +23581,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf143@sint32 : cf143 = r4 && cf143 = r4;
 
@@ -23597,14 +23597,14 @@ ghost cf143@sint32 : cf143 = r4 && cf143 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf399@sint32 : cf399 = r5 && cf399 = r5;
 
@@ -23738,14 +23738,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf144@sint32 : cf144 = r4 && cf144 = r4;
 
@@ -23754,14 +23754,14 @@ ghost cf144@sint32 : cf144 = r4 && cf144 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf400@sint32 : cf400 = r5 && cf400 = r5;
 
@@ -23880,14 +23880,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf145@sint32 : cf145 = r4 && cf145 = r4;
 
@@ -23896,14 +23896,14 @@ ghost cf145@sint32 : cf145 = r4 && cf145 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf401@sint32 : cf401 = r5 && cf401 = r5;
 
@@ -24022,14 +24022,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf146@sint32 : cf146 = r4 && cf146 = r4;
 
@@ -24038,14 +24038,14 @@ ghost cf146@sint32 : cf146 = r4 && cf146 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf402@sint32 : cf402 = r5 && cf402 = r5;
 
@@ -24179,14 +24179,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf147@sint32 : cf147 = r4 && cf147 = r4;
 
@@ -24195,14 +24195,14 @@ ghost cf147@sint32 : cf147 = r4 && cf147 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf403@sint32 : cf403 = r5 && cf403 = r5;
 
@@ -24321,14 +24321,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf148@sint32 : cf148 = r4 && cf148 = r4;
 
@@ -24337,14 +24337,14 @@ ghost cf148@sint32 : cf148 = r4 && cf148 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf404@sint32 : cf404 = r5 && cf404 = r5;
 
@@ -24463,14 +24463,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf149@sint32 : cf149 = r4 && cf149 = r4;
 
@@ -24479,14 +24479,14 @@ ghost cf149@sint32 : cf149 = r4 && cf149 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf405@sint32 : cf405 = r5 && cf405 = r5;
 
@@ -24620,14 +24620,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf150@sint32 : cf150 = r4 && cf150 = r4;
 
@@ -24636,14 +24636,14 @@ ghost cf150@sint32 : cf150 = r4 && cf150 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf406@sint32 : cf406 = r5 && cf406 = r5;
 
@@ -24762,14 +24762,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf151@sint32 : cf151 = r4 && cf151 = r4;
 
@@ -24778,14 +24778,14 @@ ghost cf151@sint32 : cf151 = r4 && cf151 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf407@sint32 : cf407 = r5 && cf407 = r5;
 
@@ -24904,14 +24904,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf152@sint32 : cf152 = r4 && cf152 = r4;
 
@@ -24920,14 +24920,14 @@ ghost cf152@sint32 : cf152 = r4 && cf152 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf408@sint32 : cf408 = r5 && cf408 = r5;
 
@@ -25061,14 +25061,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf153@sint32 : cf153 = r4 && cf153 = r4;
 
@@ -25077,14 +25077,14 @@ ghost cf153@sint32 : cf153 = r4 && cf153 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf409@sint32 : cf409 = r5 && cf409 = r5;
 
@@ -25203,14 +25203,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf154@sint32 : cf154 = r4 && cf154 = r4;
 
@@ -25219,14 +25219,14 @@ ghost cf154@sint32 : cf154 = r4 && cf154 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf410@sint32 : cf410 = r5 && cf410 = r5;
 
@@ -25345,14 +25345,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf155@sint32 : cf155 = r4 && cf155 = r4;
 
@@ -25361,14 +25361,14 @@ ghost cf155@sint32 : cf155 = r4 && cf155 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf411@sint32 : cf411 = r5 && cf411 = r5;
 
@@ -25502,14 +25502,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf156@sint32 : cf156 = r4 && cf156 = r4;
 
@@ -25518,14 +25518,14 @@ ghost cf156@sint32 : cf156 = r4 && cf156 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf412@sint32 : cf412 = r5 && cf412 = r5;
 
@@ -25644,14 +25644,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf157@sint32 : cf157 = r4 && cf157 = r4;
 
@@ -25660,14 +25660,14 @@ ghost cf157@sint32 : cf157 = r4 && cf157 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf413@sint32 : cf413 = r5 && cf413 = r5;
 
@@ -25786,14 +25786,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf158@sint32 : cf158 = r4 && cf158 = r4;
 
@@ -25802,14 +25802,14 @@ ghost cf158@sint32 : cf158 = r4 && cf158 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf414@sint32 : cf414 = r5 && cf414 = r5;
 
@@ -25943,14 +25943,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf159@sint32 : cf159 = r4 && cf159 = r4;
 
@@ -25959,14 +25959,14 @@ ghost cf159@sint32 : cf159 = r4 && cf159 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf415@sint32 : cf415 = r5 && cf415 = r5;
 
@@ -26085,14 +26085,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf160@sint32 : cf160 = r4 && cf160 = r4;
 
@@ -26101,14 +26101,14 @@ ghost cf160@sint32 : cf160 = r4 && cf160 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf416@sint32 : cf416 = r5 && cf416 = r5;
 
@@ -26227,14 +26227,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf161@sint32 : cf161 = r4 && cf161 = r4;
 
@@ -26243,14 +26243,14 @@ ghost cf161@sint32 : cf161 = r4 && cf161 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf417@sint32 : cf417 = r5 && cf417 = r5;
 
@@ -26384,14 +26384,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf162@sint32 : cf162 = r4 && cf162 = r4;
 
@@ -26400,14 +26400,14 @@ ghost cf162@sint32 : cf162 = r4 && cf162 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf418@sint32 : cf418 = r5 && cf418 = r5;
 
@@ -26526,14 +26526,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf163@sint32 : cf163 = r4 && cf163 = r4;
 
@@ -26542,14 +26542,14 @@ ghost cf163@sint32 : cf163 = r4 && cf163 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf419@sint32 : cf419 = r5 && cf419 = r5;
 
@@ -26668,14 +26668,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf164@sint32 : cf164 = r4 && cf164 = r4;
 
@@ -26684,14 +26684,14 @@ ghost cf164@sint32 : cf164 = r4 && cf164 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf420@sint32 : cf420 = r5 && cf420 = r5;
 
@@ -26825,14 +26825,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf165@sint32 : cf165 = r4 && cf165 = r4;
 
@@ -26841,14 +26841,14 @@ ghost cf165@sint32 : cf165 = r4 && cf165 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf421@sint32 : cf421 = r5 && cf421 = r5;
 
@@ -26967,14 +26967,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf166@sint32 : cf166 = r4 && cf166 = r4;
 
@@ -26983,14 +26983,14 @@ ghost cf166@sint32 : cf166 = r4 && cf166 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf422@sint32 : cf422 = r5 && cf422 = r5;
 
@@ -27109,14 +27109,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf167@sint32 : cf167 = r4 && cf167 = r4;
 
@@ -27125,14 +27125,14 @@ ghost cf167@sint32 : cf167 = r4 && cf167 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf423@sint32 : cf423 = r5 && cf423 = r5;
 
@@ -27266,14 +27266,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf168@sint32 : cf168 = r4 && cf168 = r4;
 
@@ -27282,14 +27282,14 @@ ghost cf168@sint32 : cf168 = r4 && cf168 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf424@sint32 : cf424 = r5 && cf424 = r5;
 
@@ -27408,14 +27408,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf169@sint32 : cf169 = r4 && cf169 = r4;
 
@@ -27424,14 +27424,14 @@ ghost cf169@sint32 : cf169 = r4 && cf169 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf425@sint32 : cf425 = r5 && cf425 = r5;
 
@@ -27550,14 +27550,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf170@sint32 : cf170 = r4 && cf170 = r4;
 
@@ -27566,14 +27566,14 @@ ghost cf170@sint32 : cf170 = r4 && cf170 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf426@sint32 : cf426 = r5 && cf426 = r5;
 
@@ -27707,14 +27707,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf171@sint32 : cf171 = r4 && cf171 = r4;
 
@@ -27723,14 +27723,14 @@ ghost cf171@sint32 : cf171 = r4 && cf171 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf427@sint32 : cf427 = r5 && cf427 = r5;
 
@@ -27849,14 +27849,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf172@sint32 : cf172 = r4 && cf172 = r4;
 
@@ -27865,14 +27865,14 @@ ghost cf172@sint32 : cf172 = r4 && cf172 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf428@sint32 : cf428 = r5 && cf428 = r5;
 
@@ -27991,14 +27991,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf173@sint32 : cf173 = r4 && cf173 = r4;
 
@@ -28007,14 +28007,14 @@ ghost cf173@sint32 : cf173 = r4 && cf173 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf429@sint32 : cf429 = r5 && cf429 = r5;
 
@@ -28148,14 +28148,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf174@sint32 : cf174 = r4 && cf174 = r4;
 
@@ -28164,14 +28164,14 @@ ghost cf174@sint32 : cf174 = r4 && cf174 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf430@sint32 : cf430 = r5 && cf430 = r5;
 
@@ -28290,14 +28290,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf175@sint32 : cf175 = r4 && cf175 = r4;
 
@@ -28306,14 +28306,14 @@ ghost cf175@sint32 : cf175 = r4 && cf175 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf431@sint32 : cf431 = r5 && cf431 = r5;
 
@@ -28432,14 +28432,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf176@sint32 : cf176 = r4 && cf176 = r4;
 
@@ -28448,14 +28448,14 @@ ghost cf176@sint32 : cf176 = r4 && cf176 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf432@sint32 : cf432 = r5 && cf432 = r5;
 
@@ -28589,14 +28589,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf177@sint32 : cf177 = r4 && cf177 = r4;
 
@@ -28605,14 +28605,14 @@ ghost cf177@sint32 : cf177 = r4 && cf177 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf433@sint32 : cf433 = r5 && cf433 = r5;
 
@@ -28731,14 +28731,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf178@sint32 : cf178 = r4 && cf178 = r4;
 
@@ -28747,14 +28747,14 @@ ghost cf178@sint32 : cf178 = r4 && cf178 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf434@sint32 : cf434 = r5 && cf434 = r5;
 
@@ -28873,14 +28873,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf179@sint32 : cf179 = r4 && cf179 = r4;
 
@@ -28889,14 +28889,14 @@ ghost cf179@sint32 : cf179 = r4 && cf179 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf435@sint32 : cf435 = r5 && cf435 = r5;
 
@@ -29030,14 +29030,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf180@sint32 : cf180 = r4 && cf180 = r4;
 
@@ -29046,14 +29046,14 @@ ghost cf180@sint32 : cf180 = r4 && cf180 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf436@sint32 : cf436 = r5 && cf436 = r5;
 
@@ -29172,14 +29172,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf181@sint32 : cf181 = r4 && cf181 = r4;
 
@@ -29188,14 +29188,14 @@ ghost cf181@sint32 : cf181 = r4 && cf181 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf437@sint32 : cf437 = r5 && cf437 = r5;
 
@@ -29314,14 +29314,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf182@sint32 : cf182 = r4 && cf182 = r4;
 
@@ -29330,14 +29330,14 @@ ghost cf182@sint32 : cf182 = r4 && cf182 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf438@sint32 : cf438 = r5 && cf438 = r5;
 
@@ -29471,14 +29471,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf183@sint32 : cf183 = r4 && cf183 = r4;
 
@@ -29487,14 +29487,14 @@ ghost cf183@sint32 : cf183 = r4 && cf183 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf439@sint32 : cf439 = r5 && cf439 = r5;
 
@@ -29613,14 +29613,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf184@sint32 : cf184 = r4 && cf184 = r4;
 
@@ -29629,14 +29629,14 @@ ghost cf184@sint32 : cf184 = r4 && cf184 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf440@sint32 : cf440 = r5 && cf440 = r5;
 
@@ -29755,14 +29755,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf185@sint32 : cf185 = r4 && cf185 = r4;
 
@@ -29771,14 +29771,14 @@ ghost cf185@sint32 : cf185 = r4 && cf185 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf441@sint32 : cf441 = r5 && cf441 = r5;
 
@@ -29912,14 +29912,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf186@sint32 : cf186 = r4 && cf186 = r4;
 
@@ -29928,14 +29928,14 @@ ghost cf186@sint32 : cf186 = r4 && cf186 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf442@sint32 : cf442 = r5 && cf442 = r5;
 
@@ -30054,14 +30054,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf187@sint32 : cf187 = r4 && cf187 = r4;
 
@@ -30070,14 +30070,14 @@ ghost cf187@sint32 : cf187 = r4 && cf187 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf443@sint32 : cf443 = r5 && cf443 = r5;
 
@@ -30196,14 +30196,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf188@sint32 : cf188 = r4 && cf188 = r4;
 
@@ -30212,14 +30212,14 @@ ghost cf188@sint32 : cf188 = r4 && cf188 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf444@sint32 : cf444 = r5 && cf444 = r5;
 
@@ -30353,14 +30353,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf189@sint32 : cf189 = r4 && cf189 = r4;
 
@@ -30369,14 +30369,14 @@ ghost cf189@sint32 : cf189 = r4 && cf189 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf445@sint32 : cf445 = r5 && cf445 = r5;
 
@@ -30495,14 +30495,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf190@sint32 : cf190 = r4 && cf190 = r4;
 
@@ -30511,14 +30511,14 @@ ghost cf190@sint32 : cf190 = r4 && cf190 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf446@sint32 : cf446 = r5 && cf446 = r5;
 
@@ -30637,14 +30637,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf191@sint32 : cf191 = r4 && cf191 = r4;
 
@@ -30653,14 +30653,14 @@ ghost cf191@sint32 : cf191 = r4 && cf191 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf447@sint32 : cf447 = r5 && cf447 = r5;
 
@@ -30794,14 +30794,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf192@sint32 : cf192 = r4 && cf192 = r4;
 
@@ -30810,14 +30810,14 @@ ghost cf192@sint32 : cf192 = r4 && cf192 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf448@sint32 : cf448 = r5 && cf448 = r5;
 
@@ -30936,14 +30936,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf193@sint32 : cf193 = r4 && cf193 = r4;
 
@@ -30952,14 +30952,14 @@ ghost cf193@sint32 : cf193 = r4 && cf193 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf449@sint32 : cf449 = r5 && cf449 = r5;
 
@@ -31078,14 +31078,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf194@sint32 : cf194 = r4 && cf194 = r4;
 
@@ -31094,14 +31094,14 @@ ghost cf194@sint32 : cf194 = r4 && cf194 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf450@sint32 : cf450 = r5 && cf450 = r5;
 
@@ -31235,14 +31235,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf195@sint32 : cf195 = r4 && cf195 = r4;
 
@@ -31251,14 +31251,14 @@ ghost cf195@sint32 : cf195 = r4 && cf195 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf451@sint32 : cf451 = r5 && cf451 = r5;
 
@@ -31377,14 +31377,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf196@sint32 : cf196 = r4 && cf196 = r4;
 
@@ -31393,14 +31393,14 @@ ghost cf196@sint32 : cf196 = r4 && cf196 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf452@sint32 : cf452 = r5 && cf452 = r5;
 
@@ -31519,14 +31519,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf197@sint32 : cf197 = r4 && cf197 = r4;
 
@@ -31535,14 +31535,14 @@ ghost cf197@sint32 : cf197 = r4 && cf197 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf453@sint32 : cf453 = r5 && cf453 = r5;
 
@@ -31676,14 +31676,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf198@sint32 : cf198 = r4 && cf198 = r4;
 
@@ -31692,14 +31692,14 @@ ghost cf198@sint32 : cf198 = r4 && cf198 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf454@sint32 : cf454 = r5 && cf454 = r5;
 
@@ -31818,14 +31818,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf199@sint32 : cf199 = r4 && cf199 = r4;
 
@@ -31834,14 +31834,14 @@ ghost cf199@sint32 : cf199 = r4 && cf199 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf455@sint32 : cf455 = r5 && cf455 = r5;
 
@@ -31960,14 +31960,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf200@sint32 : cf200 = r4 && cf200 = r4;
 
@@ -31976,14 +31976,14 @@ ghost cf200@sint32 : cf200 = r4 && cf200 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf456@sint32 : cf456 = r5 && cf456 = r5;
 
@@ -32117,14 +32117,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf201@sint32 : cf201 = r4 && cf201 = r4;
 
@@ -32133,14 +32133,14 @@ ghost cf201@sint32 : cf201 = r4 && cf201 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf457@sint32 : cf457 = r5 && cf457 = r5;
 
@@ -32259,14 +32259,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf202@sint32 : cf202 = r4 && cf202 = r4;
 
@@ -32275,14 +32275,14 @@ ghost cf202@sint32 : cf202 = r4 && cf202 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf458@sint32 : cf458 = r5 && cf458 = r5;
 
@@ -32401,14 +32401,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf203@sint32 : cf203 = r4 && cf203 = r4;
 
@@ -32417,14 +32417,14 @@ ghost cf203@sint32 : cf203 = r4 && cf203 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf459@sint32 : cf459 = r5 && cf459 = r5;
 
@@ -32558,14 +32558,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf204@sint32 : cf204 = r4 && cf204 = r4;
 
@@ -32574,14 +32574,14 @@ ghost cf204@sint32 : cf204 = r4 && cf204 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf460@sint32 : cf460 = r5 && cf460 = r5;
 
@@ -32700,14 +32700,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf205@sint32 : cf205 = r4 && cf205 = r4;
 
@@ -32716,14 +32716,14 @@ ghost cf205@sint32 : cf205 = r4 && cf205 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf461@sint32 : cf461 = r5 && cf461 = r5;
 
@@ -32842,14 +32842,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf206@sint32 : cf206 = r4 && cf206 = r4;
 
@@ -32858,14 +32858,14 @@ ghost cf206@sint32 : cf206 = r4 && cf206 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf462@sint32 : cf462 = r5 && cf462 = r5;
 
@@ -32999,14 +32999,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf207@sint32 : cf207 = r4 && cf207 = r4;
 
@@ -33015,14 +33015,14 @@ ghost cf207@sint32 : cf207 = r4 && cf207 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf463@sint32 : cf463 = r5 && cf463 = r5;
 
@@ -33141,14 +33141,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf208@sint32 : cf208 = r4 && cf208 = r4;
 
@@ -33157,14 +33157,14 @@ ghost cf208@sint32 : cf208 = r4 && cf208 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf464@sint32 : cf464 = r5 && cf464 = r5;
 
@@ -33283,14 +33283,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf209@sint32 : cf209 = r4 && cf209 = r4;
 
@@ -33299,14 +33299,14 @@ ghost cf209@sint32 : cf209 = r4 && cf209 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf465@sint32 : cf465 = r5 && cf465 = r5;
 
@@ -33440,14 +33440,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf210@sint32 : cf210 = r4 && cf210 = r4;
 
@@ -33456,14 +33456,14 @@ ghost cf210@sint32 : cf210 = r4 && cf210 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf466@sint32 : cf466 = r5 && cf466 = r5;
 
@@ -33582,14 +33582,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf211@sint32 : cf211 = r4 && cf211 = r4;
 
@@ -33598,14 +33598,14 @@ ghost cf211@sint32 : cf211 = r4 && cf211 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf467@sint32 : cf467 = r5 && cf467 = r5;
 
@@ -33724,14 +33724,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf212@sint32 : cf212 = r4 && cf212 = r4;
 
@@ -33740,14 +33740,14 @@ ghost cf212@sint32 : cf212 = r4 && cf212 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf468@sint32 : cf468 = r5 && cf468 = r5;
 
@@ -33881,14 +33881,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf213@sint32 : cf213 = r4 && cf213 = r4;
 
@@ -33897,14 +33897,14 @@ ghost cf213@sint32 : cf213 = r4 && cf213 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf469@sint32 : cf469 = r5 && cf469 = r5;
 
@@ -34023,14 +34023,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf214@sint32 : cf214 = r4 && cf214 = r4;
 
@@ -34039,14 +34039,14 @@ ghost cf214@sint32 : cf214 = r4 && cf214 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf470@sint32 : cf470 = r5 && cf470 = r5;
 
@@ -34165,14 +34165,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf215@sint32 : cf215 = r4 && cf215 = r4;
 
@@ -34181,14 +34181,14 @@ ghost cf215@sint32 : cf215 = r4 && cf215 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf471@sint32 : cf471 = r5 && cf471 = r5;
 
@@ -34322,14 +34322,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf216@sint32 : cf216 = r4 && cf216 = r4;
 
@@ -34338,14 +34338,14 @@ ghost cf216@sint32 : cf216 = r4 && cf216 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf472@sint32 : cf472 = r5 && cf472 = r5;
 
@@ -34464,14 +34464,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf217@sint32 : cf217 = r4 && cf217 = r4;
 
@@ -34480,14 +34480,14 @@ ghost cf217@sint32 : cf217 = r4 && cf217 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf473@sint32 : cf473 = r5 && cf473 = r5;
 
@@ -34606,14 +34606,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf218@sint32 : cf218 = r4 && cf218 = r4;
 
@@ -34622,14 +34622,14 @@ ghost cf218@sint32 : cf218 = r4 && cf218 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf474@sint32 : cf474 = r5 && cf474 = r5;
 
@@ -34763,14 +34763,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf219@sint32 : cf219 = r4 && cf219 = r4;
 
@@ -34779,14 +34779,14 @@ ghost cf219@sint32 : cf219 = r4 && cf219 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf475@sint32 : cf475 = r5 && cf475 = r5;
 
@@ -34905,14 +34905,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf220@sint32 : cf220 = r4 && cf220 = r4;
 
@@ -34921,14 +34921,14 @@ ghost cf220@sint32 : cf220 = r4 && cf220 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf476@sint32 : cf476 = r5 && cf476 = r5;
 
@@ -35047,14 +35047,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf221@sint32 : cf221 = r4 && cf221 = r4;
 
@@ -35063,14 +35063,14 @@ ghost cf221@sint32 : cf221 = r4 && cf221 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf477@sint32 : cf477 = r5 && cf477 = r5;
 
@@ -35204,14 +35204,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf222@sint32 : cf222 = r4 && cf222 = r4;
 
@@ -35220,14 +35220,14 @@ ghost cf222@sint32 : cf222 = r4 && cf222 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf478@sint32 : cf478 = r5 && cf478 = r5;
 
@@ -35346,14 +35346,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf223@sint32 : cf223 = r4 && cf223 = r4;
 
@@ -35362,14 +35362,14 @@ ghost cf223@sint32 : cf223 = r4 && cf223 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf479@sint32 : cf479 = r5 && cf479 = r5;
 
@@ -35488,14 +35488,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf224@sint32 : cf224 = r4 && cf224 = r4;
 
@@ -35504,14 +35504,14 @@ ghost cf224@sint32 : cf224 = r4 && cf224 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf480@sint32 : cf480 = r5 && cf480 = r5;
 
@@ -35645,14 +35645,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf225@sint32 : cf225 = r4 && cf225 = r4;
 
@@ -35661,14 +35661,14 @@ ghost cf225@sint32 : cf225 = r4 && cf225 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf481@sint32 : cf481 = r5 && cf481 = r5;
 
@@ -35787,14 +35787,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf226@sint32 : cf226 = r4 && cf226 = r4;
 
@@ -35803,14 +35803,14 @@ ghost cf226@sint32 : cf226 = r4 && cf226 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf482@sint32 : cf482 = r5 && cf482 = r5;
 
@@ -35929,14 +35929,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf227@sint32 : cf227 = r4 && cf227 = r4;
 
@@ -35945,14 +35945,14 @@ ghost cf227@sint32 : cf227 = r4 && cf227 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf483@sint32 : cf483 = r5 && cf483 = r5;
 
@@ -36086,14 +36086,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf228@sint32 : cf228 = r4 && cf228 = r4;
 
@@ -36102,14 +36102,14 @@ ghost cf228@sint32 : cf228 = r4 && cf228 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf484@sint32 : cf484 = r5 && cf484 = r5;
 
@@ -36228,14 +36228,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf229@sint32 : cf229 = r4 && cf229 = r4;
 
@@ -36244,14 +36244,14 @@ ghost cf229@sint32 : cf229 = r4 && cf229 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf485@sint32 : cf485 = r5 && cf485 = r5;
 
@@ -36370,14 +36370,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf230@sint32 : cf230 = r4 && cf230 = r4;
 
@@ -36386,14 +36386,14 @@ ghost cf230@sint32 : cf230 = r4 && cf230 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf486@sint32 : cf486 = r5 && cf486 = r5;
 
@@ -36527,14 +36527,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf231@sint32 : cf231 = r4 && cf231 = r4;
 
@@ -36543,14 +36543,14 @@ ghost cf231@sint32 : cf231 = r4 && cf231 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf487@sint32 : cf487 = r5 && cf487 = r5;
 
@@ -36669,14 +36669,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf232@sint32 : cf232 = r4 && cf232 = r4;
 
@@ -36685,14 +36685,14 @@ ghost cf232@sint32 : cf232 = r4 && cf232 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf488@sint32 : cf488 = r5 && cf488 = r5;
 
@@ -36811,14 +36811,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf233@sint32 : cf233 = r4 && cf233 = r4;
 
@@ -36827,14 +36827,14 @@ ghost cf233@sint32 : cf233 = r4 && cf233 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf489@sint32 : cf489 = r5 && cf489 = r5;
 
@@ -36968,14 +36968,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf234@sint32 : cf234 = r4 && cf234 = r4;
 
@@ -36984,14 +36984,14 @@ ghost cf234@sint32 : cf234 = r4 && cf234 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf490@sint32 : cf490 = r5 && cf490 = r5;
 
@@ -37110,14 +37110,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf235@sint32 : cf235 = r4 && cf235 = r4;
 
@@ -37126,14 +37126,14 @@ ghost cf235@sint32 : cf235 = r4 && cf235 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf491@sint32 : cf491 = r5 && cf491 = r5;
 
@@ -37252,14 +37252,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf236@sint32 : cf236 = r4 && cf236 = r4;
 
@@ -37268,14 +37268,14 @@ ghost cf236@sint32 : cf236 = r4 && cf236 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf492@sint32 : cf492 = r5 && cf492 = r5;
 
@@ -37409,14 +37409,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf237@sint32 : cf237 = r4 && cf237 = r4;
 
@@ -37425,14 +37425,14 @@ ghost cf237@sint32 : cf237 = r4 && cf237 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf493@sint32 : cf493 = r5 && cf493 = r5;
 
@@ -37551,14 +37551,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf238@sint32 : cf238 = r4 && cf238 = r4;
 
@@ -37567,14 +37567,14 @@ ghost cf238@sint32 : cf238 = r4 && cf238 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf494@sint32 : cf494 = r5 && cf494 = r5;
 
@@ -37693,14 +37693,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf239@sint32 : cf239 = r4 && cf239 = r4;
 
@@ -37709,14 +37709,14 @@ ghost cf239@sint32 : cf239 = r4 && cf239 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf495@sint32 : cf495 = r5 && cf495 = r5;
 
@@ -37850,14 +37850,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf240@sint32 : cf240 = r4 && cf240 = r4;
 
@@ -37866,14 +37866,14 @@ ghost cf240@sint32 : cf240 = r4 && cf240 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf496@sint32 : cf496 = r5 && cf496 = r5;
 
@@ -37992,14 +37992,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf241@sint32 : cf241 = r4 && cf241 = r4;
 
@@ -38008,14 +38008,14 @@ ghost cf241@sint32 : cf241 = r4 && cf241 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf497@sint32 : cf497 = r5 && cf497 = r5;
 
@@ -38134,14 +38134,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf242@sint32 : cf242 = r4 && cf242 = r4;
 
@@ -38150,14 +38150,14 @@ ghost cf242@sint32 : cf242 = r4 && cf242 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf498@sint32 : cf498 = r5 && cf498 = r5;
 
@@ -38291,14 +38291,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf243@sint32 : cf243 = r4 && cf243 = r4;
 
@@ -38307,14 +38307,14 @@ ghost cf243@sint32 : cf243 = r4 && cf243 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf499@sint32 : cf499 = r5 && cf499 = r5;
 
@@ -38433,14 +38433,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf244@sint32 : cf244 = r4 && cf244 = r4;
 
@@ -38449,14 +38449,14 @@ ghost cf244@sint32 : cf244 = r4 && cf244 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf500@sint32 : cf500 = r5 && cf500 = r5;
 
@@ -38575,14 +38575,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf245@sint32 : cf245 = r4 && cf245 = r4;
 
@@ -38591,14 +38591,14 @@ ghost cf245@sint32 : cf245 = r4 && cf245 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf501@sint32 : cf501 = r5 && cf501 = r5;
 
@@ -38732,14 +38732,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf246@sint32 : cf246 = r4 && cf246 = r4;
 
@@ -38748,14 +38748,14 @@ ghost cf246@sint32 : cf246 = r4 && cf246 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf502@sint32 : cf502 = r5 && cf502 = r5;
 
@@ -38874,14 +38874,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf247@sint32 : cf247 = r4 && cf247 = r4;
 
@@ -38890,14 +38890,14 @@ ghost cf247@sint32 : cf247 = r4 && cf247 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf503@sint32 : cf503 = r5 && cf503 = r5;
 
@@ -39016,14 +39016,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf248@sint32 : cf248 = r4 && cf248 = r4;
 
@@ -39032,14 +39032,14 @@ ghost cf248@sint32 : cf248 = r4 && cf248 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf504@sint32 : cf504 = r5 && cf504 = r5;
 
@@ -39177,14 +39177,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002680 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002682 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002686 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf249@sint32 : cf249 = r4 && cf249 = r4;
 
@@ -39193,14 +39193,14 @@ ghost cf249@sint32 : cf249 = r4 && cf249 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800268c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800268e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002692 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf505@sint32 : cf505 = r5 && cf505 = r5;
 
@@ -39323,14 +39323,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002708 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800270a *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800270e *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf250@sint32 : cf250 = r4 && cf250 = r4;
 
@@ -39339,14 +39339,14 @@ ghost cf250@sint32 : cf250 = r4 && cf250 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002714 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002716 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x800271a *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf506@sint32 : cf506 = r5 && cf506 = r5;
 
@@ -39469,14 +39469,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002790 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002792 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002796 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf251@sint32 : cf251 = r4 && cf251 = r4;
 
@@ -39485,14 +39485,14 @@ ghost cf251@sint32 : cf251 = r4 && cf251 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x800279c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800279e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80027a2 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf507@sint32 : cf507 = r5 && cf507 = r5;
 
@@ -39629,14 +39629,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002834 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002836 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x800283a *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf252@sint32 : cf252 = r4 && cf252 = r4;
 
@@ -39645,14 +39645,14 @@ ghost cf252@sint32 : cf252 = r4 && cf252 = r4;
 nop;
 (* cmp	r5, r1                                      #! PC = 0x8002840 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002842 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002846 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf508@sint32 : cf508 = r5 && cf508 = r5;
 
@@ -39763,14 +39763,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x80028b0 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x80028b2 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x80028b6 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf253@sint32 : cf253 = r4 && cf253 = r4;
 
@@ -39803,14 +39803,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r5, r1                                      #! PC = 0x80028e0 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x80028e2 *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x80028e6 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf000@sint32 : cf000 = r5 && cf000 = r5;
 
@@ -39918,14 +39918,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x800294c *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x800294e *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002952 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf254@sint32 : cf254 = r4 && cf254 = r4;
 
@@ -39958,14 +39958,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r5, r1                                      #! PC = 0x800297c *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x800297e *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002982 *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf001@sint32 : cf001 = r5 && cf001 = r5;
 
@@ -40081,14 +40081,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x80029f8 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x80029fa *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x80029fe *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf255@sint32 : cf255 = r4 && cf255 = r4;
 
@@ -40121,14 +40121,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r5, r1                                      #! PC = 0x8002a28 *)
 subc carry cmp r5 r1;
-subs dontcare r5_s r5 r3;
+sub r5_s r5 r3;
 cmov r5 carry r5_s r5;
 (* it	ge                                           #! PC = 0x8002a2a *)
 (* it ge *)
 nop;
 (* cmn	r5, r1                                      #! PC = 0x8002a2e *)
 adds carry cmn r5 r1;
-adds dontcare r5_a r5 r3;
+add r5_a r5 r3;
 cmov r5 carry r5 r5_a;
 ghost cf002@sint32 : cf002 = r5 && cf002 = r5;
 
@@ -40203,14 +40203,14 @@ assume r12 = 0 && true;
 split r1 dclsr r3 1;
 (* cmp	r4, r1                                      #! PC = 0x8002a80 *)
 subc carry cmp r4 r1;
-subs dontcare r4_s r4 r3;
+sub r4_s r4 r3;
 cmov r4 carry r4_s r4;
 (* it	ge                                           #! PC = 0x8002a82 *)
 (* it ge *)
 nop;
 (* cmn	r4, r1                                      #! PC = 0x8002a86 *)
 adds carry cmn r4 r1;
-adds dontcare r4_a r4 r3;
+add r4_a r4 r3;
 cmov r4 carry r4 r4_a;
 ghost cf256@sint32 : cf256 = r4 && cf256 = r4;
 
@@ -40219,14 +40219,14 @@ ghost cf256@sint32 : cf256 = r4 && cf256 = r4;
 nop;
 (* cmp	r6, r1                                      #! PC = 0x8002a8c *)
 subc carry cmp r6 r1;
-subs dontcare r6_s r6 r3;
+sub r6_s r6 r3;
 cmov r6 carry r6_s r6;
 (* it	ge                                           #! PC = 0x8002a8e *)
 (* it ge *)
 nop;
 (* cmn	r6, r1                                      #! PC = 0x8002a92 *)
 adds carry cmn r6 r1;
-adds dontcare r6_a r6 r3;
+add r6_a r6 r3;
 cmov r6 carry r6 r6_a;
 ghost cf257@sint32 : cf257 = r6 && cf257 = r6;
 
@@ -40235,14 +40235,14 @@ ghost cf257@sint32 : cf257 = r6 && cf257 = r6;
 nop;
 (* cmp	r8, r1                                      #! PC = 0x8002a98 *)
 subc carry cmp r8 r1;
-subs dontcare r8_s r8 r3;
+sub r8_s r8 r3;
 cmov r8 carry r8_s r8;
 (* it	ge                                           #! PC = 0x8002a9a *)
 (* it ge *)
 nop;
 (* cmn.w	r8, r1                                    #! PC = 0x8002aa0 *)
 adds carry cmn r8 r1;
-adds dontcare r8_a r8 r3;
+add r8_a r8 r3;
 cmov r8 carry r8 r8_a;
 ghost cf258@sint32 : cf258 = r8 && cf258 = r8;
 

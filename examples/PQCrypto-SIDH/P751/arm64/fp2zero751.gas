@@ -1,4 +1,10 @@
-fp2zero751:
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+
+#! stp xzr, xzr, $1ea -> mov $1ea 0@uint64;\nmov $1ea[+8] 0@uint64
+
+#fp2zero751:
 # x0 = 0xffffffffe238
 # x1 = 0xffffffffe478
 # x2 = 0xffffffffffffffff

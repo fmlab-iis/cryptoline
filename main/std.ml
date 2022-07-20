@@ -152,9 +152,12 @@ let parse_initial_values vars =
   List.map2 (
       fun x v ->
       let w = size_of_var x in
-      let bs = if Str.string_match (Str.regexp "0b([0-1]+)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
-               else if Str.string_match (Str.regexp "0x[0-9a-fA-F]+") v 0 then NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
+      let bs = if Str.string_match (Str.regexp "0b\\([0-1]+\\)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
+               else if Str.string_match (Str.regexp "0x\\([0-9a-fA-F]+\\)") v 0 then
+                 let _ = print_endline (Str.matched_group 1 v) in
+                 NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
                else let bs = NBits.bits_of_num v in
+                 let _ = print_endline ("Here") in
                     let negative = String.length v > 0 && String.get v 0 = '-' in
                     if negative then NBits.sext (w - List.length bs) bs
                     else NBits.zext (w - List.length bs) bs in
