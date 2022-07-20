@@ -1,4 +1,28 @@
-fp2add751:
+#! x$1c = %%x$1c
+#! [x$1c, #$2c] = %%EA
+#! [x$1c] = %%EA
+#! [sp, #$1c] = %%EA
+#! [sp] = %%EA
+#! sp = %%sp
+
+#! add $1v, $2v, \#$3c -> adds dontcare $1v $2v $3c@uint64
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adc $1v, $2v, $3v -> adcs dontcare $1v $2v $3v carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! ldr $1v, $2c <p751x2\+$3c> -> mov $1v L$2c
+#! ldr $1v, $2c <p751x2> -> mov $1v L$2c
+#! mov $1v, $2v -> mov $1v $2v
+#! ngc $1v, xzr -> sbcs dontcare $1v 0@uint64 0@uint64 carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sub $1v, $1v, \#$2c -> subc dontcare $1v $1v $2c@uint64
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! str $1v, $2ea -> mov $2ea $1v
+
+#fp2add751:
 # x0 = 0xffffffffe178
 # x1 = 0xffffffffe238
 # x2 = 0xffffffffe3b8
