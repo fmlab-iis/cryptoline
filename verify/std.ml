@@ -708,8 +708,8 @@ let verify_spec s =
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     (b, s, hashopt) in
-  let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option
-                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomichash_t option) list =
+  let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option
+                   -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option) list =
     [spec_to_ssa; normalize_spec]
     @(if !apply_rewriting then [rewrite_assignments] else [])
     (* @(if !apply_slicing then [build_var_dep_hash] else []) *)

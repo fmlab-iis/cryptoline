@@ -1,16 +1,16 @@
 (* on frege: -v -isafety -isafety_timeout 14400 -jobs 24 -slicing -no_carry_constraint fp2mul751_mont.cl
-Parsing Cryptoline file:		[OK]		0.048603 seconds
-Checking well-formedness:		[OK]		0.009021 seconds
-Transforming to SSA form:		[OK]		0.004157 seconds
-Normalizing specification:		[OK]		0.005918 seconds
-Rewriting assignments:			[OK]		0.005019 seconds
-Verifying program safety:		[OK]		31.776607 seconds
-Verifying range assertions:		[OK]		144.702459 seconds
-Verifying range specification:		[OK]		324.545614 seconds
-Rewriting value-preserved casting:	[OK]		0.003716 seconds
-Verifying algebraic assertions:		[OK]		0.381549 seconds
-Verifying algebraic specification:	[OK]		1.191904 seconds
-Verification result:			[OK]		502.677502 seconds
+Parsing Cryptoline file:		[OK]		0.036684 seconds
+Checking well-formedness:		[OK]		0.009178 seconds
+Transforming to SSA form:		[OK]		0.004419 seconds
+Normalizing specification:		[OK]		0.005214 seconds
+Rewriting assignments:			[OK]		0.005391 seconds
+Verifying program safety:		[OK]		31.991513 seconds
+Verifying range assertions:		[OK]		3418.581407 seconds
+Verifying range specification:		[OK]		329.744212 seconds
+Rewriting value-preserved casting:	[OK]		0.002790 seconds
+Verifying algebraic assertions:		[OK]		0.346297 seconds
+Verifying algebraic specification:	[OK]		1.183657 seconds
+Verification result:			[OK]		3781.913711 seconds
 *)
 
 (*
@@ -5340,12 +5340,11 @@ ecut (limbs 64 [ tt1_1_00, tt1_1_01, tt1_1_02, tt1_1_03, tt1_1_04, tt1_1_05, tt1
        )
      ) prove with [all ghosts, cuts [0,1,2,3,4,6]];
 # toZ tt1_1 = toZ tt1_0 - toZ tt2 + toZ (carry_sub_a0b0_a1b1 * 2**768 * p751)
-# - tt1_0 - tt2 + carry_sub_a0b0_a1b1 * 2**768 * p751 = tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751 - tt2
+# - tt1_0 - tt2 + carry_sub_a0b0_a1b1 * 2**768 * p751 = tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751 - tt2 (x - y + z = x + z - y is a proven lemma)
 # - tt2 <=u tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751, i.e., `tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751 - tt2` does not underflow.
 # - tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751 <u 2**1536, i.e., `tt1_0 + carry_sub_a0b0_a1b1 * 2**768 * p751` does not overflow.
 # => toZ tt1 = toZ (tt1_0 - tt2 + carry_sub_a0b0_a1b1 * 2**768 * p751)
 assert true && and [
-(*
          (limbs 64 [ tt2_00, tt2_01, tt2_02, tt2_03, tt2_04, tt2_05, tt2_06, tt2_07, tt2_08, tt2_09, tt2_10, tt2_11,
                      tt2_12, tt2_13, tt2_14, tt2_15, tt2_16, tt2_17, tt2_18, tt2_19, tt2_20, tt2_21, tt2_22, tt2_23, 0@64 ])
          <=u
@@ -5359,7 +5358,6 @@ assert true && and [
              (2**768)@1600 * uext (limbs 64 [ $p751_00@64, $p751_01@64, $p751_02@64, $p751_03@64, $p751_04@64, $p751_05@64, $p751_06@64, $p751_07@64, $p751_08@64, $p751_09@64, $p751_10@64, $p751_11@64 ]) 832
            )
          ),
-*)
          (
            (limbs 64 [ tt1_0_00, tt1_0_01, tt1_0_02, tt1_0_03, tt1_0_04, tt1_0_05, tt1_0_06, tt1_0_07, tt1_0_08, tt1_0_09, tt1_0_10, tt1_0_11,
                        tt1_0_12, tt1_0_13, tt1_0_14, tt1_0_15, tt1_0_16, tt1_0_17, tt1_0_18, tt1_0_19, tt1_0_20, tt1_0_21, tt1_0_22, tt1_0_23, 0@64 ])
@@ -7253,6 +7251,8 @@ mov c1_09 L0x7fffffffdd08;
 mov c1_10 L0x7fffffffdd10;
 mov c1_11 L0x7fffffffdd18;
 
+ghost i@uint64 : true && true;
+
 {
   and [
     eqmod (limbs 64 [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, c0_00, c0_01, c0_02, c0_03, c0_04, c0_05, c0_06, c0_07, c0_08, c0_09, c0_10, c0_11 ])
@@ -7284,7 +7284,30 @@ mov c1_11 L0x7fffffffdd18;
               (limbs 64 [ b0_00, b0_01, b0_02, b0_03, b0_04, b0_05, b0_06, b0_07, b0_08, b0_09, b0_10, b0_11 ])
             )
           )
-          (limbs 64 [ $p751_00, $p751_01, $p751_02, $p751_03, $p751_04, $p751_05, $p751_06, $p751_07, $p751_08, $p751_09, $p751_10, $p751_11 ])
+          (limbs 64 [ $p751_00, $p751_01, $p751_02, $p751_03, $p751_04, $p751_05, $p751_06, $p751_07, $p751_08, $p751_09, $p751_10, $p751_11 ]),
+    eqmod (
+            2**768
+            *
+            (
+              (limbs 64 [ c0_00, c0_01, c0_02, c0_03, c0_04, c0_05, c0_06, c0_07, c0_08, c0_09, c0_10, c0_11 ])
+              +
+              (limbs 64 [ c1_00, c1_01, c1_02, c1_03, c1_04, c1_05, c1_06, c1_07, c1_08, c1_09, c1_10, c1_11 ]) * i
+            )
+          )
+          (
+            (
+              (limbs 64 [ a0_00, a0_01, a0_02, a0_03, a0_04, a0_05, a0_06, a0_07, a0_08, a0_09, a0_10, a0_11 ])
+              +
+              (limbs 64 [ a1_00, a1_01, a1_02, a1_03, a1_04, a1_05, a1_06, a1_07, a1_08, a1_09, a1_10, a1_11 ]) * i
+            )
+            *
+            (
+              (limbs 64 [ b0_00, b0_01, b0_02, b0_03, b0_04, b0_05, b0_06, b0_07, b0_08, b0_09, b0_10, b0_11 ])
+              +
+              (limbs 64 [ b1_00, b1_01, b1_02, b1_03, b1_04, b1_05, b1_06, b1_07, b1_08, b1_09, b1_10, b1_11 ]) * i
+            )
+          )
+          [i**2 + 1, limbs 64 [ $p751_00, $p751_01, $p751_02, $p751_03, $p751_04, $p751_05, $p751_06, $p751_07, $p751_08, $p751_09, $p751_10, $p751_11 ]]
   ] prove with [all ghosts, cuts [8]]
   &&
   and [

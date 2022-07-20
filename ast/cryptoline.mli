@@ -210,8 +210,8 @@ val ebinop_eexp_open : ebinop -> eexp -> bool
 val eexp_ebinop_open : eexp -> ebinop -> bool
 (** [eexp_ebinop_open e op] is [true] if the string representation of [e] does not need to be enclosed in parentheses when the succeeding operator is [op]. *)
 
-val is_eexp_atomic : eexp -> bool
-(** [is_eexp_atomic e] is [true] if [e] is atomic, that is, [e] is a variable or a constant. *)
+val is_eexp_atom : eexp -> bool
+(** [is_eexp_atom e] is [true] if [e] is an atom, that is, [e] is a variable or a constant. *)
 
 val eexp_has_sub : eexp -> eexp -> bool
 (** [eexp_has_sub e sub] is [true] if [e] has the sub-expression [sub]. *)
@@ -475,51 +475,51 @@ type prove_with_spec =
 | AllGhosts              (** all ghosts *) (* *)
 (** prove-with clauses *)
 
-type atomic =
+type atom =
   | Avar of var          (** variable *)
   | Aconst of typ * Z.t  (** constant of a specified type *)
-(** atomics *)
+(** atoms *)
 
 type instr =
-  | Imov of var * atomic                                    (** Assignment *)
-  | Ishl of var * atomic * Z.t                              (** Left shift *)
-  | Ishls of var * var * atomic * Z.t                       (** Left shift *)
-  | Ishr of var * atomic * Z.t                              (** Logical right shift *)
-  | Ishrs of var * var * atomic * Z.t                       (** Logical right shift *)
-  | Isar of var * atomic * Z.t                              (** Arithmetic right shift *)
-  | Isars of var * var * atomic * Z.t                       (** Arithmetic right shift *)
-  | Icshl of var * var * atomic * atomic * Z.t              (** Concatenated left shift *)
-  | Icshr of var * var * atomic * atomic * Z.t              (** Concatenated right shift *)
-  | Icshrs of var * var * var * atomic * atomic * Z.t       (** Concatenated right shift *)
+  | Imov of var * atom                                      (** Assignment *)
+  | Ishl of var * atom * Z.t                                (** Left shift *)
+  | Ishls of var * var * atom * Z.t                         (** Left shift *)
+  | Ishr of var * atom * Z.t                                (** Logical right shift *)
+  | Ishrs of var * var * atom * Z.t                         (** Logical right shift *)
+  | Isar of var * atom * Z.t                                (** Arithmetic right shift *)
+  | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
+  | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
+  | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
+  | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
   | Inondet of var                                          (** Nondeterministic assignment *)
-  | Icmov of var * atomic * atomic * atomic                 (** Conditional assignment *)
+  | Icmov of var * atom * atom * atom                       (** Conditional assignment *)
   | Inop                                                    (** No-op *)
-  | Inot of var * atomic                                    (** Bit-wise NOT *)
-  | Iadd of var * atomic * atomic                           (** Add *)
-  | Iadds of var * var * atomic * atomic                    (** Add and set carry *)
-  | Iadc of var * atomic * atomic * atomic                  (** Add with carry. *)
-  | Iadcs of var * var * atomic * atomic * atomic           (** Add with carry and set carry *)
-  | Isub of var * atomic * atomic                           (** Subtract *)
-  | Isubc of var * var * atomic * atomic                    (** Subtract and set carry *)
-  | Isubb of var * var * atomic * atomic                    (** Subtract and set borrow *)
-  | Isbc of var * atomic * atomic * atomic                  (** Subtract with carry *)
-  | Isbcs of var * var * atomic * atomic * atomic           (** Subtract with carry and set carry *)
-  | Isbb of var * atomic * atomic * atomic                  (** Subtract with borrow *)
-  | Isbbs of var * var * atomic * atomic * atomic           (** Subtract with borrow and set borrow *)
-  | Imul of var * atomic * atomic                           (** Half-multiplication *)
-  | Imuls of var * var * atomic * atomic                    (** Half-multiply and set carry. *)
-  | Imull of var * var * atomic * atomic                    (** Full-multiplication *)
-  | Imulj of var * atomic * atomic                          (** Full-multiplication *)
-  | Isplit of var * var * atomic * Z.t                      (** Split and extend *)
-  | Ispl of var * var * atomic * Z.t                        (** Split without extension *)
+  | Inot of var * atom                                      (** Bit-wise NOT *)
+  | Iadd of var * atom * atom                               (** Add *)
+  | Iadds of var * var * atom * atom                        (** Add and set carry *)
+  | Iadc of var * atom * atom * atom                        (** Add with carry. *)
+  | Iadcs of var * var * atom * atom * atom                 (** Add with carry and set carry *)
+  | Isub of var * atom * atom                               (** Subtract *)
+  | Isubc of var * var * atom * atom                        (** Subtract and set carry *)
+  | Isubb of var * var * atom * atom                        (** Subtract and set borrow *)
+  | Isbc of var * atom * atom * atom                        (** Subtract with carry *)
+  | Isbcs of var * var * atom * atom * atom                 (** Subtract with carry and set carry *)
+  | Isbb of var * atom * atom * atom                        (** Subtract with borrow *)
+  | Isbbs of var * var * atom * atom * atom                 (** Subtract with borrow and set borrow *)
+  | Imul of var * atom * atom                               (** Half-multiplication *)
+  | Imuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
+  | Imull of var * var * atom * atom                        (** Full-multiplication *)
+  | Imulj of var * atom * atom                              (** Full-multiplication *)
+  | Isplit of var * var * atom * Z.t                        (** Split and extend *)
+  | Ispl of var * var * atom * Z.t                          (** Split without extension *)
   (* Instructions that cannot be translated to polynomials *)
-  | Iand of var * atomic * atomic                           (** Bit-wise AND *)
-  | Ior of var * atomic * atomic                            (** Bit-wise OR *)
-  | Ixor of var * atomic * atomic                           (** Bit-wise XOR *)
+  | Iand of var * atom * atom                               (** Bit-wise AND *)
+  | Ior of var * atom * atom                                (** Bit-wise OR *)
+  | Ixor of var * atom * atom                               (** Bit-wise XOR *)
   (* Type conversions *)
-  | Icast of var option * var * atomic                      (** Casting *)
-  | Ivpc of var * atomic                                    (** Value-preserving casting *)
-  | Ijoin of var * atomic * atomic                          (** Join *)
+  | Icast of var option * var * atom                        (** Casting *)
+  | Ivpc of var * atom                                      (** Value-preserving casting *)
+  | Ijoin of var * atom * atom                              (** Join *)
   (* Specifications *)
   | Iassert of bexp                                         (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
@@ -775,35 +775,35 @@ type program = instr list
 type lined_program = (int * instr) list
 (** A program with instructions annotated with line numbers. *)
 
-val mkatomic_var : var -> atomic
-(** Creates an atomic from a variable. *)
+val mkatom_var : var -> atom
+(** Creates an atom from a variable. *)
 
-val mkatomic_const : typ -> Z.t -> atomic
-(** Creates an atomic from a constant. *)
+val mkatom_const : typ -> Z.t -> atom
+(** Creates an atom from a constant. *)
 
-val size_of_atomic : atomic -> size
-(** [size_of_atomic a] is the bit-width of the atomic [a]. *)
+val size_of_atom : atom -> size
+(** [size_of_atom a] is the bit-width of the atom [a]. *)
 
-val typ_of_atomic : atomic -> typ
-(** [typ_of_atomic a] is the type of the atomic [a]. *)
+val typ_of_atom : atom -> typ
+(** [typ_of_atom a] is the type of the atom [a]. *)
 
-val var_of_atomic : atomic -> var
-(** [var_of_atomic (Avar v)] is the [v]. The input must be an atomic formed by a variable. *)
+val var_of_atom : atom -> var
+(** [var_of_atom (Avar v)] is the [v]. The input must be an atom formed by a variable. *)
 
-val const_of_atomic : atomic -> Z.t
-(** [var_of_atomic (Aconst (t, n))] is the [n]. The input must be an atomic formed by a constant. *)
+val const_of_atom : atom -> Z.t
+(** [var_of_atom (Aconst (t, n))] is the [n]. The input must be an atom formed by a constant. *)
 
-val atomic_is_var : atomic -> bool
-(** [atomic_is_var a] is [true] if [a] is formed by a variable. *)
+val atom_is_var : atom -> bool
+(** [atom_is_var a] is [true] if [a] is formed by a variable. *)
 
-val atomic_is_const : atomic -> bool
-(** [atomic_is_const a] is [true] if [a] is formed by a constant. *)
+val atom_is_const : atom -> bool
+(** [atom_is_const a] is [true] if [a] is formed by a constant. *)
 
-val atomic_is_signed : atomic -> bool
-(** [atomic_is_signed a] is [true] if the type of [a] is signed. *)
+val atom_is_signed : atom -> bool
+(** [atom_is_signed a] is [true] if the type of [a] is signed. *)
 
-val eq_atomic : atomic -> atomic -> bool
-(** [eq_atomic a1 a2] is [true] if [a1] and [a2] are equal. *)
+val eq_atom : atom -> atom -> bool
+(** [eq_atom a1 a2] is [true] if [a1] and [a2] are equal. *)
 
 val is_assert : instr -> bool
 (** [is_assert i] if [i] is an assertion. *)
@@ -920,8 +920,8 @@ val string_of_rbexp : ?typ:bool -> rbexp -> string
 val string_of_bexp : ?typ:bool -> bexp -> string
 (** [string_of_bexp ~typ:b e] is the string representation of a predicate [e]. If [b] is true, types will also be outputted. *)
 
-val string_of_atomic : ?typ:bool -> atomic -> string
-(** [string_of_atomic ~typ:b a] is the string representation of an atomic [a]. If [b] is true, types will also be outputted. *)
+val string_of_atom : ?typ:bool -> atom -> string
+(** [string_of_atom ~typ:b a] is the string representation of an atom [a]. If [b] is true, types will also be outputted. *)
 
 val string_of_instr : ?typ:bool -> instr -> string
 (** [string_of_instr ~typ:b i] is the string representation of an instruction [i]. If [b] is true, types will also be outputted. *)
@@ -956,8 +956,8 @@ val vars_rbexp : rbexp -> VS.t
 val vars_bexp : bexp -> VS.t
 (** [vars_bexp e] is the set of variables in the predicate [e]. *)
 
-val vars_atomic : atomic -> VS.t
-(** [vars_atomic a] is the set of variables in the atomic [a]. *)
+val vars_atom : atom -> VS.t
+(** [vars_atom a] is the set of variables in the atom [a]. *)
 
 val vars_instr : instr -> VS.t
 (** [vars_instr i] is the set of variables in the instruction [i]. *)
@@ -1016,8 +1016,8 @@ val vids_rbexp : rbexp -> IS.t
 val vids_bexp : bexp -> IS.t
 (** [vids_bexp e] is the set of IDs of variables in the predicate [e]. *)
 
-val vids_atomic : atomic -> IS.t
-(** [vids_atomic a] is the set of IDs of variables in the atomic [a]. *)
+val vids_atom : atom -> IS.t
+(** [vids_atom a] is the set of IDs of variables in the atom [a]. *)
 
 val lvids_instr : instr -> IS.t
 (** [lvids_instr i] is the set of IDs of variables written in the instruction [i]. *)
@@ -1055,7 +1055,7 @@ val vids_rspec : rspec -> IS.t
 
 (** {1 Substitution} *)
 
-val amap_trans : atomic VM.t -> atomic VM.t
+val amap_trans : atom VM.t -> atom VM.t
 (** Define v -> v' if v is mapped to Avar v'. Define v -> c if v is mapped to Aconst (_, c).
     [amaps_trans am] returns [am'] such that v -> v' in [am'] if
     1. v -> ... -> v' in [am] and  v' is not in [am], or
@@ -1073,26 +1073,26 @@ val rmap_trans : rexp VM.t -> rexp VM.t
     1. v -> ... -> v' in [rm] and  v' is not in [rm], or
     2. v -> ... -> c in [rm]. *)
 
-val emap_of_amap : atomic VM.t -> eexp VM.t
-(** [emap_of_amap am] convert all atomics in [am] to eexp. *)
+val emap_of_amap : atom VM.t -> eexp VM.t
+(** [emap_of_amap am] convert all atoms in [am] to eexp. *)
 
-val rmap_of_amap : atomic VM.t -> rexp VM.t
-(** [rmap_of_amap am] convert all atomics in [am] to rexp. *)
+val rmap_of_amap : atom VM.t -> rexp VM.t
+(** [rmap_of_amap am] convert all atoms in [am] to rexp. *)
 
-val eexp_of_atomic : atomic -> eexp
-(** Convert an atomic to an eexp. *)
+val eexp_of_atom : atom -> eexp
+(** Convert an atom to an eexp. *)
 
-val rexp_of_atomic : atomic -> rexp
-(** Convert an atomic to a rexp. *)
+val rexp_of_atom : atom -> rexp
+(** Convert an atom to a rexp. *)
 
-val get_subst_maps : program -> atomic VM.t * eexp VM.t * rexp VM.t * program
+val get_subst_maps : program -> atom VM.t * eexp VM.t * rexp VM.t * program
 (** Return substitution maps from assignments in a program. *)
 
-val get_subst_maps_vpc : program -> atomic VM.t * eexp VM.t * rexp VM.t * program
+val get_subst_maps_vpc : program -> atom VM.t * eexp VM.t * rexp VM.t * program
 (** Return substitution maps from value-preserved casting in a program. *)
 
-val subst_maps_of_list : (var * atomic) list -> atomic VM.t * eexp VM.t * rexp VM.t
-(** Convert a list of (v, a) pairs to substitution maps where v is a variable to be replaced by the atomic a. *)
+val subst_maps_of_list : (var * atom) list -> atom VM.t * eexp VM.t * rexp VM.t
+(** Convert a list of (v, a) pairs to substitution maps where v is a variable to be replaced by the atom a. *)
 
 val subst_eexp : eexp VM.t -> eexp -> eexp
 (** [subst_eexp em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
@@ -1112,24 +1112,24 @@ val subst_bexp : eexp VM.t -> rexp VM.t -> bexp -> bexp
     in the range predicate of [e] by the corresponding range expressions in
     [em]. *)
 
-val subst_lval : atomic VM.t -> var -> var
+val subst_lval : atom VM.t -> var -> var
 (** [subst_lval am v] replaces the lval [v] by the variable in the corresponding
-    atomic in [am] if the corresponding atomic is a variable, and does nothing
+    atom in [am] if the corresponding atom is a variable, and does nothing
     otherwise. *)
 
-val subst_atomic : atomic VM.t -> atomic -> atomic
-(** [subst_atomic am a] replaces variables in [a] by the corresponding atomics in am. *)
+val subst_atom : atom VM.t -> atom -> atom
+(** [subst_atom am a] replaces variables in [a] by the corresponding atoms in am. *)
 
-val subst_instr : atomic VM.t -> eexp VM.t -> rexp VM.t -> instr -> instr
+val subst_instr : atom VM.t -> eexp VM.t -> rexp VM.t -> instr -> instr
 (** [subst_instr am em rm i] replaces variables in [i] based on [am], [em], and
     [rm]. It is not necessary that a variable is mapped to the same variable or
     constant in [am], [em], and [rm]. *)
 
-val subst_program : atomic VM.t -> eexp VM.t -> rexp VM.t -> program -> program
+val subst_program : atom VM.t -> eexp VM.t -> rexp VM.t -> program -> program
 (** [subst_program am em rm p] replaces variables in [p] based on [am], [em],
     and [rm]. *)
 
-val subst_lined_program : atomic VM.t -> eexp VM.t -> rexp VM.t -> lined_program -> lined_program
+val subst_lined_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_program -> lined_program
 (** [subst_lined_program am em rm p] replaces variables in [p] based on [am],
     [em], and [rm]. *)
 
@@ -1147,8 +1147,8 @@ val mksvar : ?newvid:bool -> string -> typ -> int -> var
 val ssa_var : int VM.t -> var -> var
 (** [ssa_var m v] updates the SSA index of [v] according to [m]. *)
 
-val ssa_atomic : int VM.t -> atomic -> atomic
-(** [ssa_atomic m a] updates the SSA indices of variables in [a] according to [m]. *)
+val ssa_atom : int VM.t -> atom -> atom
+(** [ssa_atom m a] updates the SSA indices of variables in [a] according to [m]. *)
 
 val ssa_eexp : int VM.t -> eexp -> eexp
 (** [ssa_eexp m e] updates the SSA indices of variables in [e] according to [m]. *)
@@ -1304,17 +1304,17 @@ val slice_program_ssa : VS.t -> program -> program
    this function.
  *)
 
-type 'a atomichash_t
-val find_dep_vars : VS.t atomichash_t -> var -> VS.t
-val mk_var_dep_hash : program -> VS.t atomichash_t
+type 'a atomhash_t
+val find_dep_vars : VS.t atomhash_t -> var -> VS.t
+val mk_var_dep_hash : program -> VS.t atomhash_t
 
-val slice_spec_ssa : spec -> VS.t atomichash_t option -> spec
+val slice_spec_ssa : spec -> VS.t atomhash_t option -> spec
 (** [slice_spec_ssa s o] slices a specification in SSA. *)
 
-val slice_espec_ssa : espec -> VS.t atomichash_t option -> espec
+val slice_espec_ssa : espec -> VS.t atomhash_t option -> espec
 (** [slice_espec_ssa s o] slices an algebraic specification in SSA. *)
 
-val slice_rspec_ssa : rspec -> VS.t atomichash_t option -> rspec
+val slice_rspec_ssa : rspec -> VS.t atomhash_t option -> rspec
 (** [slice_rspec_ssa s o] slices a range specification in SSA. *)
 
 
@@ -1356,11 +1356,11 @@ object
   method vrexp : rexp -> rexp vaction
   (** visit a range expression *)
 
-  method vatomic : atomic -> atomic vaction
-  (** visit an atomic *)
+  method vatom : atom -> atom vaction
+  (** visit an atom *)
 
   method vaconst : (typ * Z.t) -> (typ * Z.t) vaction
-  (** visit a constant in an atomic *)
+  (** visit a constant in an atom *)
 
   method veconst : Z.t -> Z.t vaction
   (** visit a constant in an algebraic expression *)
@@ -1380,7 +1380,7 @@ val visit_var : visitor -> var -> var
 (** Visit a variable by a visitor. *)
 
 val visit_aconst : visitor -> (typ * Z.t) -> (typ * Z.t)
-(** Visit a constant in an atomic by a visitor. *)
+(** Visit a constant in an atom by a visitor. *)
 
 val visit_econst : visitor -> Z.t -> Z.t
 (** Visit a constant in an algebraic expression by a visitor. *)
@@ -1388,8 +1388,8 @@ val visit_econst : visitor -> Z.t -> Z.t
 val visit_rconst : visitor -> (size * Z.t) -> (size * Z.t)
 (** Visit a constant in a range expression by a visitor. *)
 
-val visit_atomic : visitor -> atomic -> atomic
-(** Visit an atomic by a visitor. *)
+val visit_atom : visitor -> atom -> atom
+(** Visit an atom by a visitor. *)
 
 val visit_eexp : visitor -> eexp -> eexp
 (** Visit an algebraic expression by a visitor. *)
