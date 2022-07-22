@@ -3,7 +3,7 @@
 
 open NBits
 open Ast.Cryptoline
-open Utils
+open Utils.Std
 
 (** {1 Options} *)
 

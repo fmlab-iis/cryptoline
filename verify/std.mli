@@ -59,13 +59,13 @@ val verify_rspec : rspec -> VS.t atomhash_t option -> bool
 
 (** {1 Low-level Verification Functions} *)
 
-val verify_instruction_safety : int -> rbexp -> program -> int ->
+val verify_instruction_safety : int -> int -> rbexp -> program -> int ->
                                 VS.t atomhash_t option ->
                                 Common.round_result
 (**
-   [verify_instruction_safety t f p i o] verifies the safety condition of the
-   i-th instruction of the program [p] in SSA under the precondition [f]. [t]
-   is the timeout.
+   [verify_instruction_safety t j f p i o] verifies the safety condition of the
+   [i]-th instruction of the program [p] in SSA under the precondition [f]. [t]
+   is the timeout. [j] is used as the ID of the safety condition.
    @raise TimeoutException if the range solver times out.
  *)
 

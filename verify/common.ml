@@ -2,6 +2,7 @@
 open Ast.Cryptoline
 open Qfbv.Common
 open Options.Std
+open Utils.Std
 
 type round_result =
   Solved of Qfbv.Common.result
@@ -975,7 +976,7 @@ let bv2z_program_annot vgen p =
 
 let bv2z_program vgen p =
   let (vgen, ies) = bv2z_program_annot vgen p in
-  (vgen, Utils.tflatten (snd (List.split ies)))
+  (vgen, tflatten (snd (List.split ies)))
 
 type poly_spec_annot =
   { appre : ebexp;
@@ -1280,7 +1281,7 @@ let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * eexp * e
   let get_others finished_aps_vs_rev tl post_p_ms_vs_list : eexp list =
     let ps1 : eexp list = fst (List.split (fst (List.split finished_aps_vs_rev))) in
     let ps2 : eexp list = fst (List.split (fst (List.split tl))) in
-    let ps3 : eexp list = Utils.tflatten (List.map (fun (_, p, ms) -> p::ms) (fst (List.split post_p_ms_vs_list))) in
+    let ps3 : eexp list = tflatten (List.map (fun (_, p, ms) -> p::ms) (fst (List.split post_p_ms_vs_list))) in
     List.rev_append ps1 (List.rev_append ps2 ps3) in
   let rec do_rewrite finished_aps_vs_rev ideal_aps_vs post_p_ms_vs_list =
     match ideal_aps_vs with

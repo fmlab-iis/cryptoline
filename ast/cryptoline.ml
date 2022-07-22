@@ -1,6 +1,7 @@
 
 open Set
 open NBits
+open Utils.Std
 
 exception IndexOutOfBound of int
 
@@ -3011,7 +3012,7 @@ let ghost_to_assume s =
     | Ighost (vs, e) -> List.rev ((Iassume e)::(VS.fold (fun v instrs_rev -> (Inondet v)::instrs_rev) vs []))
     | _ -> [i] in
   { spre = s.spre;
-    sprog  = Utils.tflatten (List.rev_map helper (List.rev s.sprog));
+    sprog  = tflatten (List.rev_map helper (List.rev s.sprog));
     spost = s.spost;
     sepwss = s.sepwss;
     srpwss = s.srpwss }

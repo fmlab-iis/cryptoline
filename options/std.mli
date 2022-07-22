@@ -1,6 +1,7 @@
 
 (** This module provides options of CryptoLine. *)
 
+open Utils
 
 (** {1 General Options} *)
 
@@ -22,20 +23,26 @@ val verify_eassertion : bool ref
 val verify_rassertion : bool ref
 (** [true] to verify range assertions *)
 
-val verify_ecuts : (int list) option ref
-(** limit the algebraic cut conditions to be verified in the specified algebraic cuts *)
+val verify_ecuts : (int Utils.Hashset.t) option ref
+(** Limit the algebraic cut conditions to be verified in the specified algebraic cuts *)
 
-val verify_rcuts : (int list) option ref
-(** limit the range cut conditions to be verified in the specified range cuts *)
+val verify_rcuts : (int Hashset.t) option ref
+(** Limit the range cut conditions to be verified in the specified range cuts *)
 
-val verify_eacuts : (int list) option ref
-(** limit the algebraic assertions to be verified in the specified algebraic cuts *)
+val verify_eacuts : (int Hashset.t) option ref
+(** Limit the algebraic assertions to be verified in the specified algebraic cuts *)
 
-val verify_racuts : (int list) option ref
-(** limit the range assertions to be verified in the specified range cuts *)
+val verify_racuts : (int Hashset.t) option ref
+(** Limit the range assertions to be verified in the specified range cuts *)
 
-val verify_scuts : (int list) option ref
-(** limit the safety conditions to be verified in the specified range cuts *)
+val verify_scuts : (int Hashset.t) option ref
+(** Limit the safety conditions to be verified in the specified range cuts *)
+
+val verify_safety_ids : (int Hashset.t) option ref
+(** Skip safety conditions not in the specified IDs *)
+
+val mem_hashset_opt : ('a Hashset.t) option -> 'a -> bool
+(** [mem_hashset_opt so a] is true if [so] is [None] and [Hashset.mem s a] if [so] is [Some s]. *)
 
 val incremental_safety : bool ref
 (** [true] to verify safety incrementally, i.e. one instruction by one instruction *)

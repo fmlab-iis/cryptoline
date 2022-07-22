@@ -694,25 +694,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -766,25 +766,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -842,25 +842,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c48; PC = 0x80074b8 *)
@@ -948,25 +948,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -1020,25 +1020,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -1096,25 +1096,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c4c; PC = 0x80075f4 *)
@@ -1204,25 +1204,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -1276,25 +1276,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -1352,25 +1352,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c50; PC = 0x80074b8 *)
@@ -1458,25 +1458,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -1530,25 +1530,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -1606,25 +1606,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c54; PC = 0x80075f4 *)
@@ -1714,25 +1714,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -1786,25 +1786,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -1862,25 +1862,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c58; PC = 0x80074b8 *)
@@ -1968,25 +1968,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -2040,25 +2040,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -2116,25 +2116,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c5c; PC = 0x80075f4 *)
@@ -2224,25 +2224,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -2296,25 +2296,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -2372,25 +2372,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c60; PC = 0x80074b8 *)
@@ -2478,25 +2478,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -2550,25 +2550,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -2626,25 +2626,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c64; PC = 0x80075f4 *)
@@ -2734,25 +2734,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -2806,25 +2806,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -2882,25 +2882,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c68; PC = 0x80074b8 *)
@@ -2988,25 +2988,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -3060,25 +3060,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -3136,25 +3136,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c6c; PC = 0x80075f4 *)
@@ -3244,25 +3244,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -3316,25 +3316,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -3392,25 +3392,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c70; PC = 0x80074b8 *)
@@ -3498,25 +3498,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -3570,25 +3570,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -3646,25 +3646,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c74; PC = 0x80075f4 *)
@@ -3754,25 +3754,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -3826,25 +3826,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -3902,25 +3902,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c78; PC = 0x80074b8 *)
@@ -4008,25 +4008,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -4080,25 +4080,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -4156,25 +4156,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c7c; PC = 0x80075f4 *)
@@ -4264,25 +4264,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -4336,25 +4336,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -4412,25 +4412,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c80; PC = 0x80074b8 *)
@@ -4518,25 +4518,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -4590,25 +4590,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -4666,25 +4666,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c84; PC = 0x80075f4 *)
@@ -4774,25 +4774,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -4846,25 +4846,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -4922,25 +4922,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c88; PC = 0x80074b8 *)
@@ -5028,25 +5028,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -5100,25 +5100,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -5176,25 +5176,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c8c; PC = 0x80075f4 *)
@@ -5284,25 +5284,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -5356,25 +5356,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -5432,25 +5432,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c90; PC = 0x80074b8 *)
@@ -5538,25 +5538,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -5610,25 +5610,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -5686,25 +5686,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c94; PC = 0x80075f4 *)
@@ -5794,25 +5794,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -5866,25 +5866,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -5942,25 +5942,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c98; PC = 0x80074b8 *)
@@ -6048,25 +6048,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -6120,25 +6120,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -6196,25 +6196,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019c9c; PC = 0x80075f4 *)
@@ -6304,25 +6304,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -6376,25 +6376,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -6452,25 +6452,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019ca0; PC = 0x80074b8 *)
@@ -6558,25 +6558,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -6630,25 +6630,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -6706,25 +6706,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019ca4; PC = 0x80075f4 *)
@@ -6814,25 +6814,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -6886,25 +6886,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -6962,25 +6962,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019ca8; PC = 0x80074b8 *)
@@ -7068,25 +7068,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -7140,25 +7140,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -7216,25 +7216,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cac; PC = 0x80075f4 *)
@@ -7324,25 +7324,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -7396,25 +7396,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -7472,25 +7472,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cb0; PC = 0x80074b8 *)
@@ -7578,25 +7578,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -7650,25 +7650,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -7726,25 +7726,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cb4; PC = 0x80075f4 *)
@@ -7834,25 +7834,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -7906,25 +7906,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -7982,25 +7982,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cb8; PC = 0x80074b8 *)
@@ -8088,25 +8088,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -8160,25 +8160,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -8236,25 +8236,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cbc; PC = 0x80075f4 *)
@@ -8344,25 +8344,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80073f4 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80073f6 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80073f8 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80073fa *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80073fc *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x8007400 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007404 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007408 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x800740c *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x8007410 *)
@@ -8416,25 +8416,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007444 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007446 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007448 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x800744a *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x800744c *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007450 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007454 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007458 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x800745c *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007460 *)
@@ -8492,25 +8492,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x800749c *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x800749e *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80074a0 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80074a2 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80074a4 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80074a8 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80074ac *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80074b0 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80074b4 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cc0; PC = 0x80074b8 *)
@@ -8598,25 +8598,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007530 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x8007532 *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x8007534 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x8007536 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x8007538 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x800753c *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x8007540 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x8007544 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x8007548 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x800754c *)
@@ -8670,25 +8670,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x8007580 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x8007582 *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007584 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007586 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007588 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x800758c *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x8007590 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007594 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007598 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x800759c *)
@@ -8746,25 +8746,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x80075d8 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x80075da *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x80075dc *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x80075de *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x80075e0 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x80075e4 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x80075e8 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x80075ec *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* vmov	lr, s0                                     #! PC = 0x80075f0 *)
 mov lr s0;
 (* str.w	r8, [lr, #512]	; 0x200                    #! EA = L0x20019cc4; PC = 0x80075f4 *)
@@ -9307,25 +9307,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -9379,25 +9379,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -9455,25 +9455,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019a88; PC = 0x8007758 *)
 mov L0x20019a88 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019a98; PC = 0x800775c *)
@@ -9557,25 +9557,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -9629,25 +9629,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -9705,25 +9705,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019a8c; PC = 0x800788c *)
 mov L0x20019a8c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019a9c; PC = 0x8007890 *)
@@ -9809,25 +9809,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -9881,25 +9881,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -9957,25 +9957,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019a90; PC = 0x8007758 *)
 mov L0x20019a90 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019aa0; PC = 0x800775c *)
@@ -10059,25 +10059,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -10131,25 +10131,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -10207,25 +10207,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019a94; PC = 0x800788c *)
 mov L0x20019a94 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019aa4; PC = 0x8007890 *)
@@ -10331,25 +10331,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -10403,25 +10403,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -10479,25 +10479,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b08; PC = 0x8007758 *)
 mov L0x20019b08 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b18; PC = 0x800775c *)
@@ -10581,25 +10581,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -10653,25 +10653,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -10729,25 +10729,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b0c; PC = 0x800788c *)
 mov L0x20019b0c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b1c; PC = 0x8007890 *)
@@ -10833,25 +10833,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -10905,25 +10905,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -10981,25 +10981,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b10; PC = 0x8007758 *)
 mov L0x20019b10 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b20; PC = 0x800775c *)
@@ -11083,25 +11083,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -11155,25 +11155,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -11231,25 +11231,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b14; PC = 0x800788c *)
 mov L0x20019b14 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b24; PC = 0x8007890 *)
@@ -11355,25 +11355,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -11427,25 +11427,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -11503,25 +11503,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b88; PC = 0x8007758 *)
 mov L0x20019b88 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b98; PC = 0x800775c *)
@@ -11605,25 +11605,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -11677,25 +11677,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -11753,25 +11753,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b8c; PC = 0x800788c *)
 mov L0x20019b8c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019b9c; PC = 0x8007890 *)
@@ -11857,25 +11857,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -11929,25 +11929,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -12005,25 +12005,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b90; PC = 0x8007758 *)
 mov L0x20019b90 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019ba0; PC = 0x800775c *)
@@ -12107,25 +12107,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -12179,25 +12179,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -12255,25 +12255,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019b94; PC = 0x800788c *)
 mov L0x20019b94 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019ba4; PC = 0x8007890 *)
@@ -12379,25 +12379,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -12451,25 +12451,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -12527,25 +12527,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c08; PC = 0x8007758 *)
 mov L0x20019c08 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c18; PC = 0x800775c *)
@@ -12629,25 +12629,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -12701,25 +12701,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -12777,25 +12777,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c0c; PC = 0x800788c *)
 mov L0x20019c0c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c1c; PC = 0x8007890 *)
@@ -12881,25 +12881,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -12953,25 +12953,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -13029,25 +13029,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c10; PC = 0x8007758 *)
 mov L0x20019c10 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c20; PC = 0x800775c *)
@@ -13131,25 +13131,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -13203,25 +13203,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -13279,25 +13279,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c14; PC = 0x800788c *)
 mov L0x20019c14 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c24; PC = 0x8007890 *)
@@ -13403,25 +13403,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -13475,25 +13475,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -13551,25 +13551,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c88; PC = 0x8007758 *)
 mov L0x20019c88 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c98; PC = 0x800775c *)
@@ -13653,25 +13653,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -13725,25 +13725,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -13801,25 +13801,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c8c; PC = 0x800788c *)
 mov L0x20019c8c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019c9c; PC = 0x8007890 *)
@@ -13905,25 +13905,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -13977,25 +13977,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -14053,25 +14053,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c90; PC = 0x8007758 *)
 mov L0x20019c90 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019ca0; PC = 0x800775c *)
@@ -14155,25 +14155,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -14227,25 +14227,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -14303,25 +14303,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019c94; PC = 0x800788c *)
 mov L0x20019c94 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019ca4; PC = 0x8007890 *)
@@ -14427,25 +14427,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -14499,25 +14499,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -14575,25 +14575,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d08; PC = 0x8007758 *)
 mov L0x20019d08 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d18; PC = 0x800775c *)
@@ -14677,25 +14677,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -14749,25 +14749,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -14825,25 +14825,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d0c; PC = 0x800788c *)
 mov L0x20019d0c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d1c; PC = 0x8007890 *)
@@ -14929,25 +14929,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -15001,25 +15001,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -15077,25 +15077,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d10; PC = 0x8007758 *)
 mov L0x20019d10 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d20; PC = 0x800775c *)
@@ -15179,25 +15179,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -15251,25 +15251,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -15327,25 +15327,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d14; PC = 0x800788c *)
 mov L0x20019d14 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d24; PC = 0x8007890 *)
@@ -15451,25 +15451,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -15523,25 +15523,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -15599,25 +15599,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d88; PC = 0x8007758 *)
 mov L0x20019d88 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d98; PC = 0x800775c *)
@@ -15701,25 +15701,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -15773,25 +15773,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -15849,25 +15849,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d8c; PC = 0x800788c *)
 mov L0x20019d8c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019d9c; PC = 0x8007890 *)
@@ -15953,25 +15953,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -16025,25 +16025,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -16101,25 +16101,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d90; PC = 0x8007758 *)
 mov L0x20019d90 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019da0; PC = 0x800775c *)
@@ -16203,25 +16203,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -16275,25 +16275,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -16351,25 +16351,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019d94; PC = 0x800788c *)
 mov L0x20019d94 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019da4; PC = 0x8007890 *)
@@ -16475,25 +16475,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -16547,25 +16547,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -16623,25 +16623,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019e08; PC = 0x8007758 *)
 mov L0x20019e08 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019e18; PC = 0x800775c *)
@@ -16725,25 +16725,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -16797,25 +16797,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -16873,25 +16873,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019e0c; PC = 0x800788c *)
 mov L0x20019e0c r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019e1c; PC = 0x8007890 *)
@@ -16977,25 +16977,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x8007698 *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x800769a *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x800769c *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x800769e *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80076a0 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80076a4 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80076a8 *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80076ac *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80076b0 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80076b4 *)
@@ -17049,25 +17049,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x80076e8 *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x80076ea *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x80076ec *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x80076ee *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x80076f0 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x80076f4 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x80076f8 *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x80076fc *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007700 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007704 *)
@@ -17125,25 +17125,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007740 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007742 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007744 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x8007746 *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x8007748 *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x800774c *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007750 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007754 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019e10; PC = 0x8007758 *)
 mov L0x20019e10 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019e20; PC = 0x800775c *)
@@ -17227,25 +17227,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r8                                      #! PC = 0x80077cc *)
-adds discard r4 r4 r8;
+add r4 r4 r8;
 (* add	r5, r9                                      #! PC = 0x80077ce *)
-adds discard r5 r5 r9;
+add r5 r5 r9;
 (* add	r6, r10                                     #! PC = 0x80077d0 *)
-adds discard r6 r6 r10;
+add r6 r6 r10;
 (* add	r7, r11                                     #! PC = 0x80077d2 *)
-adds discard r7 r7 r11;
+add r7 r7 r11;
 (* sub.w	r8, r4, r8, lsl #1                        #! PC = 0x80077d4 *)
 shl tmp r8 1;
-subs discard r8 r4 tmp;
+sub r8 r4 tmp;
 (* sub.w	r9, r5, r9, lsl #1                        #! PC = 0x80077d8 *)
 shl tmp r9 1;
-subs discard r9 r5 tmp;
+sub r9 r5 tmp;
 (* sub.w	r10, r6, r10, lsl #1                      #! PC = 0x80077dc *)
 shl tmp r10 1;
-subs discard r10 r6 tmp;
+sub r10 r6 tmp;
 (* sub.w	r11, r7, r11, lsl #1                      #! PC = 0x80077e0 *)
 shl tmp r11 1;
-subs discard r11 r7 tmp;
+sub r11 r7 tmp;
 (* vmov	r1, s5                                     #! PC = 0x80077e4 *)
 mov r1 s5;
 (* smull	r12, r6, r6, r1                           #! PC = 0x80077e8 *)
@@ -17299,25 +17299,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r6                                      #! PC = 0x800781c *)
-adds discard r4 r4 r6;
+add r4 r4 r6;
 (* add	r5, r7                                      #! PC = 0x800781e *)
-adds discard r5 r5 r7;
+add r5 r5 r7;
 (* add	r8, r10                                     #! PC = 0x8007820 *)
-adds discard r8 r8 r10;
+add r8 r8 r10;
 (* add	r9, r11                                     #! PC = 0x8007822 *)
-adds discard r9 r9 r11;
+add r9 r9 r11;
 (* sub.w	r6, r4, r6, lsl #1                        #! PC = 0x8007824 *)
 shl tmp r6 1;
-subs discard r6 r4 tmp;
+sub r6 r4 tmp;
 (* sub.w	r7, r5, r7, lsl #1                        #! PC = 0x8007828 *)
 shl tmp r7 1;
-subs discard r7 r5 tmp;
+sub r7 r5 tmp;
 (* sub.w	r10, r8, r10, lsl #1                      #! PC = 0x800782c *)
 shl tmp r10 1;
-subs discard r10 r8 tmp;
+sub r10 r8 tmp;
 (* sub.w	r11, r9, r11, lsl #1                      #! PC = 0x8007830 *)
 shl tmp r11 1;
-subs discard r11 r9 tmp;
+sub r11 r9 tmp;
 (* vmov	r1, s7                                     #! PC = 0x8007834 *)
 mov r1 s7;
 (* smull	r12, r5, r5, r1                           #! PC = 0x8007838 *)
@@ -17375,25 +17375,25 @@ sadc r11 tmp_h r11 carry;
 assert eqmod r12 0 (2**32) && true;
 assume eq r12 0 && true;
 (* add	r4, r5                                      #! PC = 0x8007874 *)
-adds discard r4 r4 r5;
+add r4 r4 r5;
 (* add	r6, r7                                      #! PC = 0x8007876 *)
-adds discard r6 r6 r7;
+add r6 r6 r7;
 (* add	r8, r9                                      #! PC = 0x8007878 *)
-adds discard r8 r8 r9;
+add r8 r8 r9;
 (* add	r10, r11                                    #! PC = 0x800787a *)
-adds discard r10 r10 r11;
+add r10 r10 r11;
 (* sub.w	r5, r4, r5, lsl #1                        #! PC = 0x800787c *)
 shl tmp r5 1;
-subs discard r5 r4 tmp;
+sub r5 r4 tmp;
 (* sub.w	r7, r6, r7, lsl #1                        #! PC = 0x8007880 *)
 shl tmp r7 1;
-subs discard r7 r6 tmp;
+sub r7 r6 tmp;
 (* sub.w	r9, r8, r9, lsl #1                        #! PC = 0x8007884 *)
 shl tmp r9 1;
-subs discard r9 r8 tmp;
+sub r9 r8 tmp;
 (* sub.w	r11, r10, r11, lsl #1                     #! PC = 0x8007888 *)
 shl tmp r11 1;
-subs discard r11 r10 tmp;
+sub r11 r10 tmp;
 (* str.w	r8, [r0, #64]	; 0x40                      #! EA = L0x20019e14; PC = 0x800788c *)
 mov L0x20019e14 r8;
 (* str.w	r9, [r0, #80]	; 0x50                      #! EA = L0x20019e24; PC = 0x8007890 *)
