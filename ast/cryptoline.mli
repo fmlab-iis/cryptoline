@@ -1185,23 +1185,41 @@ val dessa_spec : spec -> spec
 
 val cut_espec : espec -> (espec list) list
 (**
-   [cut_espec s] cuts the algebraic specification [s] in SSA form and returns
-   a list of lists of algebraic specifications. The i-th item in the returned
-   list represents the specifications for the i-th cut. Each cut corresponds to
-   a list of algebraic specifications because different prove-with clauses may
-   be used. Note that this function removes all range properties in Icut
-   instructions.
+   [cut_espec s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the algebraic predicates in the [K]-th range cut.
+   Different algebraic specifications in [ssK] correspond to algebraic
+   predicates with different prove-with clauses in the [K]-th algebraic cut.
  *)
 
 val cut_rspec : rspec -> (rspec list) list
 (**
-   [cut_rspec s] cuts the range specification [s] in SSA form and returns
-   a list of lists of range specifications. The i-th item in the returned
-   list represents the specifications for the i-th cut. Each cut corresponds to
-   a list of range specifications because different prove-with clauses may
-   be used. Note that this function removes all algebraic properties in Icut
-   instructions.
+   [cut_rspec s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the range predicates in the [K]-th range cut.
+   Different range specifications in [ssK] correspond to range predicates with
+   different prove-with clauses in the [K]-th range cut.
  *)
+
+val cut_eassert : espec -> (espec list) list
+(**
+   [cut_eassert s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the algebraic assertions in the [K]-th algebraic cut.
+ *)
+
+val cut_rassert : rspec -> (rspec list) list
+(**
+   [cut_rassert s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the range assertions in the [K]-th range cut.
+ *)
+
+val cut_safety : rspec -> (rspec list) list
+(**
+   [cut_safety s] cuts the specification [s] in SSA form into
+   [[[s1]; [s2]; ...; [sN]]] where [sK] is the K-th range cut.
+*)
 
 
 (** {1 Rewriting} *)

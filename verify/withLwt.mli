@@ -14,15 +14,6 @@ val verify_safety_inc :
     parallelly verifies the safety conditions [e1; ...; en] of the program [p]
     under the precondition [f]. [t] is the timeout. *)
 
-val verify_assert :
-  Common.var_gen -> Ast.Cryptoline.spec ->
-  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
-(**
-   [verify_assert gen s o] parallelly verifies all assertions of the
-   specification [s] in SSA. Note that this function does not consider
-   {!Options.Std.verify_eacuts} and {!Options.Std.verify_racuts}.
- *)
-
 val verify_eassert :
   Common.var_gen -> Ast.Cryptoline.spec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool

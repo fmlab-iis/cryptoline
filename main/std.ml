@@ -105,7 +105,7 @@ let args = [
                          "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
      ("-vs", String (fun str -> verify_safety_ids := Some (str_to_ids str)),
-      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety."]))
+      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety. Note"; "that -vscuts may change the IDs of safety conditions."]))
   ]@Common.args
 let args = List.sort Pervasives.compare args
 

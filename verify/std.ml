@@ -150,7 +150,7 @@ let verify_safety s hashopt =
       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
       (res, sid + 1) in
   let (res, _) = apply_to_cuts !verify_scuts verify_safety_without_cuts (true, 0)
-                   (fun (res, sid) cont -> if res then cont() else (res, sid)) (cut_rspec (rspec_of_spec s)) in
+                   (fun (res, sid) cont -> if res then cont() else (res, sid)) (cut_safety (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
@@ -571,57 +571,20 @@ let verify_espec vgen s hashopt =
 
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
-  let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify cid epre evisited p =
-    match p with
-    | [] -> true
-    | Iassert e::tl ->
-       let _ = trace ("=== Checking algebraic assertion ===") in
-       let _ = trace ("Algebraic assertion: " ^ Ast.Cryptoline.string_of_bexp e) in
-       let b = verify_espec_without_cuts hashopt vgen cid (mkespec epre (List.rev evisited) (eqn_bexp e)) in
-       if b then verify cid epre evisited tl
-       else false
-    | (Icut _)::_ -> assert false
-    | hd::tl -> verify cid epre (hd::evisited) tl in
-  let verify _ cid s = verify cid s.espre [] s.esprog in
-  apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_espec (espec_of_spec s))
+  let verify _ cid s =
+    let _ = trace ("=== Checking algebraic assertion ===") in
+    let _ = trace ("Algebraic assertion: " ^ Ast.Cryptoline.string_of_ebexp s.espost) in
+    verify_espec_without_cuts hashopt vgen cid s
+  in
+  apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_eassert (espec_of_spec s))
 
 let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
-  let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
-  let rec verify cid rpre rvisited p =
-    match p with
-    | [] -> true
-    | Iassert e::tl ->
-       let _ = trace ("=== Checking range assertion ===") in
-       let _ = trace ("Range assertion: " ^ Ast.Cryptoline.string_of_bexp e) in
-       let b = verify_rspec_without_cuts hashopt cid (mkrspec rpre (List.rev rvisited) (rng_bexp e)) in
-       if b then verify cid rpre rvisited tl
-       else false
-    | Icut (_, [])::tl -> verify cid rpre rvisited tl
-    | Icut (_, rcuts)::tl -> verify cid (rands (fst (List.split rcuts))) [] tl
-    | hd::tl -> verify cid rpre (hd::rvisited) tl in
-  let verify _ cid s = verify cid s.rspre [] s.rsprog in
-  apply_to_cuts !verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rspec (rspec_of_spec s))
-
-let verify_assert vgen s hashopt =
-  let _ = trace "===== Verifying assertions =====" in
-  let mkrspec f p g = { rspre = f; rsprog = p; rspost = g; rspwss = [] } in
-  let mkespec f p g = { espre = f; esprog = p; espost = g; espwss = [] } in
-  let rec verify (ecut_id, rcut_id) (epre, rpre) (evisited, rvisited) p =
-    match p with
-    | [] -> true
-    | Iassert e::tl ->
-       let _ = trace ("=== Checking assertion: " ^ Ast.Cryptoline.string_of_bexp e ^ " ===") in
-       List.for_all (fun f -> f())
-         [ (fun () -> verify_rspec_without_cuts hashopt rcut_id (mkrspec rpre (List.rev rvisited) (rng_bexp e)));
-           (fun () -> verify_espec_without_cuts hashopt vgen ecut_id (mkespec epre (List.rev evisited) (eqn_bexp e)));
-           (fun () -> verify (ecut_id, rcut_id) (epre, rpre) (evisited, rvisited) tl) ]
-    | Icut (ecuts, [])::tl -> verify (ecut_id + 1, rcut_id) (eands (fst (List.split ecuts)), rpre) ([], rvisited) tl
-    | Icut ([], rcuts)::tl -> verify (ecut_id, rcut_id + 1) (epre, rands (fst (List.split rcuts))) (evisited, []) tl
-    | Icut (ecuts, rcuts)::tl -> verify (ecut_id + 1, rcut_id + 1) (eands (fst (List.split ecuts)), rands (fst (List.split rcuts))) ([], []) tl
-    | hd::tl -> verify (ecut_id, rcut_id) (epre, rpre) (hd::evisited, hd::rvisited) tl in
-  verify (0, 0) (eqn_bexp s.spre, rng_bexp s.spre) ([], []) s.sprog
+  let verify _ cid s =
+    let _ = trace ("=== Checking range assertion ===") in
+    let _ = trace ("Range assertion: " ^ Ast.Cryptoline.string_of_rbexp s.rspost) in
+    verify_rspec_without_cuts hashopt cid s in
+  apply_to_cuts !verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rassert (rspec_of_spec s))
 
 (* The main verification process *)
 let verify_spec s =
