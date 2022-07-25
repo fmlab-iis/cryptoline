@@ -643,6 +643,8 @@ type prove_with_spec =
   | AllCuts
   | AllAssumes
   | AllGhosts
+  | AlgebraSolver of Options.Std.algebra_solver
+  | RangeSolver of string
 
 type atom =
   | Avar of var
@@ -738,6 +740,22 @@ let eq_atom a1 a2 =
   | Avar v1, Avar v2 -> eq_var v1 v2
   | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
   | _, _ -> false
+
+(* Return the algebra solver specified in the prove-with clauses. If
+   no algebra solver is specified, return [!Options.Std.algebra_solver]. *)
+let rec algebra_solver_of_prove_with pwss =
+  match pwss with
+  | [] -> !Options.Std.algebra_solver
+  | AlgebraSolver s::_ -> s
+  | _::tl -> algebra_solver_of_prove_with tl
+
+(* Return the range solver specified in the prove-with clauses. If
+   no range solver is specified, return [!Options.Std.range_solver]. *)
+let rec range_solver_of_prove_with pwss =
+  match pwss with
+  | [] -> !Options.Std.range_solver
+  | RangeSolver s::_ -> s
+  | _::tl -> range_solver_of_prove_with tl
 
 let is_assert i =
   match i with
@@ -986,6 +1004,8 @@ let string_of_prove_with_spec ps =
   | AllCuts -> "all cuts"
   | AllAssumes -> "all assumes"
   | AllGhosts -> "all ghosts"
+  | AlgebraSolver s -> "algebra solver " ^ Options.Std.string_of_algebra_solver s
+  | RangeSolver s -> "qfbv solver " ^ s
 
 let string_of_prove_with_specs pss =
   String.concat ", " (List.map string_of_prove_with_spec pss)
@@ -1905,6 +1925,12 @@ let simplify_prove_with_specs pwss =
   let has_precondition = List.mem Precondition pwss in
   let has_all_assumes = List.mem AllAssumes pwss in
   let has_all_ghosts = List.mem AllGhosts pwss in
+  let first_algebra_solver =
+    try [List.find (fun pws -> match pws with AlgebraSolver _ -> true | _ -> false) pwss]
+    with Not_found -> [] in
+  let first_range_solver =
+    try [List.find (fun pws -> match pws with RangeSolver _ -> true | _ -> false) pwss]
+    with Not_found -> [] in
   (* Precondition *)
   (if has_precondition then [Precondition] else [])
   (* Cuts *)
@@ -1915,6 +1941,8 @@ let simplify_prove_with_specs pwss =
   @(if has_all_assumes then [AllAssumes] else [])
   (* Ghosts *)
   @(if has_all_ghosts then [AllGhosts] else [])
+  @first_algebra_solver
+  @first_range_solver
 
 (* Find all required algebraic predicates in instrs according to pwss. *)
 let eprove_with_filter pwss (pre, cuts_rev, instrs) =
@@ -1933,7 +1961,9 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
     | Cuts _ -> (fun _ -> false)
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
+    | AlgebraSolver _ -> (fun _ -> false)
+    | RangeSolver _ -> (fun _ -> false) in
   let filter =
     let filters = List.map filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
@@ -1968,7 +1998,9 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
     | Cuts _ -> (fun _ -> false)
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
+    | AlgebraSolver _ -> (fun _ -> false)
+    | RangeSolver _ -> (fun _ -> false) in
   let filter =
     let filters = List.map filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
@@ -1989,7 +2021,7 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
 (*
  * Make a specification for the verification of a predicate with prove-with
  * clauses taken into consideration. The postcondition of the returned
- * specification has no prove-with clauses.
+ * specification has no prove-with clauses other than [AlgebraSolver].
  *
  * @param precond the precondition of the specification containing the predicate
  * @param before the instructions that are before the predicate and are possibly
@@ -2000,9 +2032,16 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
  * @parap e the predicate
  * @param pwss the prove-with clauses
  *)
-let espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited) (e, pwss) =
+let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (pre, visited) (e, pwss) =
   let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
-  { espre = pre; esprog = List.rev_append (List.rev prove_with) visited; espost = e; espwss = [] }
+  let pwss' =
+    if clear_pwss then []
+    else let is_algebra_solver pws =
+           match pws with
+           | AlgebraSolver _ -> true
+           | _ -> false in
+         List.filter is_algebra_solver pwss in
+  { espre = pre; esprog = List.rev_append (List.rev prove_with) visited; espost = e; espwss = pwss' }
 
 (*
  * Make a specification for the verification of a predicate with prove-with
@@ -2018,9 +2057,16 @@ let espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited) (e, pws
  * @parap e the predicate
  * @param pwss the prove-with clauses
  *)
-let rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited) (e, pwss) =
+let rspec_of_rbexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (pre, visited) (e, pwss) =
   let prove_with = List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
-  { rspre = pre; rsprog = List.rev_append (List.rev prove_with) visited; rspost = e; rspwss = [] }
+  let pwss' =
+    if clear_pwss then []
+    else let is_range_solver pws =
+           match pws with
+           | RangeSolver _ -> true
+           | _ -> false in
+         List.filter is_range_solver pwss in
+  { rspre = pre; rsprog = List.rev_append (List.rev prove_with) visited; rspost = e; rspwss = pwss' }
 
 (*
  * Cut algebraic specifications in SSA and return `(espec list) list`.
@@ -2081,7 +2127,8 @@ let cut_eassert es =
     match prog with
     | [] -> (List.rev easserts_rev)::res_rev
     | ((Iassert e) as hd)::tl ->
-       let assert_as_spec = espec_of_ebexp_prove_with (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (eqn_bexp e, []) in
+       (* TODO: assertion specific prove-with clauses *)
+       let assert_as_spec = espec_of_ebexp_prove_with ~clear_pwss:true (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (eqn_bexp e, []) in
        helper (res_rev, assert_as_spec::easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Icut ([], _))::tl -> helper (res_rev, easserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (ecuts, _) as hd)::tl -> helper ((List.rev easserts_rev)::res_rev, []) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
@@ -2099,7 +2146,8 @@ let cut_rassert es =
     match prog with
     | [] -> (List.rev rasserts_rev)::res_rev
     | ((Iassert e) as hd)::tl ->
-       let assert_as_spec = rspec_of_rbexp_prove_with (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (rng_bexp e, []) in
+       (* TODO: assertion specific prove-with clauses *)
+       let assert_as_spec = rspec_of_rbexp_prove_with ~clear_pwss:true (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (rng_bexp e, []) in
        helper (res_rev, assert_as_spec::rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Icut (_, []))::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl -> helper ((List.rev rasserts_rev)::res_rev, []) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
@@ -2113,7 +2161,7 @@ let cut_safety rs =
   let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog, post) =
     match prog with
     | [] ->
-       let spec = rspec_of_rbexp_prove_with (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (post, rs.rspwss) in
+       let spec = rspec_of_rbexp_prove_with ~clear_pwss:true (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (post, rs.rspwss) in
        [spec]::res
     | (Icut (_, []))::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl, post)
     | (Icut (_, rcuts) as hd)::tl ->
@@ -2124,7 +2172,7 @@ let cut_safety rs =
        let cut_as_specs =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
-         [rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited) (r, pwss)] in
+         [rspec_of_rbexp_prove_with ~clear_pwss:true (precond, before, cuts_rev) (pre, visited) (r, pwss)] in
        helper (cut_as_specs::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)

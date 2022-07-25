@@ -12,15 +12,7 @@ let args =
     ("-algebra_smt_expn_op", String (fun str -> native_smtlib_expn_operator := Some str),
      mk_arg_desc(["OP"; "Specify the exponential operator nativelly supported by SMT solver"; "(specified by -algebra_solver) for algebraic properties."]));
     ("-algebra_solver",
-     String (fun str ->
-         if str = Options.Std.string_of_algebra_solver Options.Std.Singular then algebra_solver := Singular
-         else if str = Options.Std.string_of_algebra_solver Options.Std.Sage then algebra_solver := Sage
-         else if str = Options.Std.string_of_algebra_solver Options.Std.Magma then algebra_solver := Magma
-         else if str = Options.Std.string_of_algebra_solver Options.Std.Mathematica then algebra_solver := Mathematica
-         else if str = Options.Std.string_of_algebra_solver Options.Std.Macaulay2 then algebra_solver := Macaulay2
-         else if str = Options.Std.string_of_algebra_solver Options.Std.Maple then algebra_solver := Maple
-         else if Str.string_match (Str.regexp "^smt:\\(.*\\)") str 0 then algebra_solver := SMTSolver (Str.matched_group 1 str)
-         else failwith ("Unknown algebra solver: " ^ str)),
+     String (fun str -> algebra_solver := Options.Std.parse_algebra_solver str),
      mk_arg_desc(["";
                   "Specify the algebra solver, which can be "
                   ^ Options.Std.string_of_algebra_solver Options.Std.Singular ^ ", "
@@ -40,12 +32,20 @@ let args =
     ("-keep", Set keep_temp_files, mk_arg_desc(["     Keep temporary files."]));
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_solver := Macaulay2),
      mk_arg_desc(["PATH"; "Use Macaulay2 at the specified path."]));
+    ("-macaulay2_path", String (fun str -> macaulay2_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Macaulay2."]));
     ("-magma", String (fun str -> magma_path := str; algebra_solver := Magma),
      mk_arg_desc(["PATH"; "Use Magma at the specified path."]));
+    ("-magma_path", String (fun str -> magma_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Magma."]));
     ("-maple", String (fun str -> maple_path := str; algebra_solver := Maple),
      mk_arg_desc(["PATH"; "Use Maple at the specified path."]));
+    ("-maple_path", String (fun str -> maple_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Maple."]));
     ("-mathematica", String (fun str -> mathematica_path := str; algebra_solver := Mathematica),
      mk_arg_desc(["PATH"; "Use Mathematica command-line script interpreter at the specified"; "path."]));
+    ("-mathematica_path", String (fun str -> mathematica_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Mathematica command-line script interpreter."]));
     ("-no_carry_constraint", Clear carry_constraint, mk_arg_desc([""; "Do not add carry constraints."]));
     ("-o", String (fun str -> logfile := str),
      mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
@@ -59,8 +59,12 @@ let args =
     ("-rename_local", Set rename_local, mk_arg_desc([""; "Rename local variables when inlining a call to a procedure."]));
     ("-sage", String (fun str -> sage_path := str; algebra_solver := Sage),
      mk_arg_desc(["PATH"; "Use Sage at the specified path."]));
+    ("-sage_path", String (fun str -> sage_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Sage."]));
     ("-singular", String (fun str -> singular_path := str; algebra_solver := Singular),
      mk_arg_desc(["PATH"; "Use Singular at the specified path."]));
+    ("-singular_path", String (fun str -> singular_path := str),
+     mk_arg_desc(["PATH"; "Set the path to Singular."]));
     ("-slicing", Set apply_slicing, mk_arg_desc(["  Enable slicing."]));
     ("-tmpdir", String (fun str -> tmpdir := Some str),
      mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));

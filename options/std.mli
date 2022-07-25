@@ -3,6 +3,9 @@
 
 open Utils
 
+exception UnknownAlgebraSolver of string
+(** Raised if an unknown algebra solver is specified *)
+
 (** {1 General Options} *)
 
 val apply_slicing : bool ref
@@ -105,6 +108,10 @@ val algebra_solver_args : string ref
 
 val string_of_algebra_solver : algebra_solver -> string
 (** string representation of an algebra solver *)
+
+val parse_algebra_solver : string -> algebra_solver
+(** Parse a string as an algebra solver. Raise [UnknownSolverException] if the
+    string is not a solver. *)
 
 val singular_path : string ref
 (** the path to Singular *)

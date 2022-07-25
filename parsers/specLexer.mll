@@ -133,7 +133,13 @@
               "cuts"                       , CUTS;
               "assumes"                    , ASSUMES;
               "ghosts"                     , GHOSTS;
-              "precondition"               , PRECONDITION
+              "precondition"               , PRECONDITION;
+              "algebra"                    , ALGEBRA;
+              "range"                      , RANGE;
+              "qfbv"                       , QFBV;
+              "qf_bv"                      , QFBV;
+              "solver"                     , SOLVER;
+              "smt"                        , SMT
             ]
 }
 
@@ -141,6 +147,7 @@ let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
+let path = (['a'-'z' 'A'-'Z' '_' '/'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*) | (['"'][^ '"']+['"'])
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
@@ -229,4 +236,6 @@ token = parse
                                      with Not_found ->
                                        ID id
                                    }
+  | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
+                                     upd_cnum lexbuf; PATH p }
   | eof                            { EOF }

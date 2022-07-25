@@ -1,6 +1,8 @@
 
 open Utils
 
+exception UnknownAlgebraSolver of string
+
 type algebra_solver =
   | Singular
   | Sage
@@ -43,7 +45,16 @@ let string_of_algebra_solver s =
   | Mathematica -> "mathematica"
   | Macaulay2 -> "macaulay2"
   | Maple -> "maple"
-  | SMTSolver solver -> "smt:" ^ solver
+  | SMTSolver solver -> "smt:\"" ^ solver ^ "\""
+let parse_algebra_solver str =
+  if str = string_of_algebra_solver Singular then Singular
+  else if str = string_of_algebra_solver Sage then Sage
+  else if str = string_of_algebra_solver Magma then Magma
+  else if str = string_of_algebra_solver Mathematica then Mathematica
+  else if str = string_of_algebra_solver Macaulay2 then Macaulay2
+  else if str = string_of_algebra_solver Maple then Maple
+  else if Str.string_match (Str.regexp "^smt:\\(.*\\)") str 0 then SMTSolver (Str.matched_group 1 str)
+  else raise (UnknownAlgebraSolver ("Unknown algebra solver: " ^ str))
 
 let apply_rewriting = ref true
 let polys_rewrite_replace_eexp = ref false

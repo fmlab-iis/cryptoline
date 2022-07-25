@@ -428,11 +428,11 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let is_in_ideal vars ideal p =
+let is_in_ideal ?(solver=(!algebra_solver)) vars ideal p =
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
   let res =
-    match !algebra_solver with
+    match solver with
     | Singular ->
        let _ = write_singular_input ifile vars ideal p in
        let _ = run_singular ifile ofile in
@@ -471,12 +471,13 @@ let is_in_ideal vars ideal p =
   res
 
 let verify_rspec_single_conjunct s hashopt =
+  let solver = range_solver_of_prove_with s.rspwss in
   let verify_one s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp s.rspost in
     let _ = trace ("range condition: " ^ string_of_bexp g) in
-    solve_simp (f::p@[g]) = Unsat in
+    solve_simp ~solver:solver (f::p@[g]) = Unsat in
   is_rspec_trivial s ||
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
@@ -495,20 +496,22 @@ let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specification =====" in
   verify_rspec_with_cuts hashopt s
 
-let verify_entailments entailments =
+let verify_entailments ?(solver=(!algebra_solver)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
         let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
-        if let _ = trace ("Try #0") in is_in_ideal vars [] p then true
-        else let _ = trace ("Try #1") in is_in_ideal vars ideal p
+        if let _ = trace ("Try #0") in is_in_ideal ~solver:solver vars [] p then true
+        else let _ = trace ("Try #1") in is_in_ideal ~solver:solver vars ideal p
       )
       else res) true entailments
 
+(* Verify an algebraic specification using a computer algebra system. *)
 let verify_espec_single_conjunct_ideal vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  verify_entailments entailments
+  verify_entailments ~solver:(algebra_solver_of_prove_with s.espwss) entailments
 
+(* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_smt solver vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
   let ifile = tmpfile "inputfgb_" ".smt2" in
@@ -532,9 +535,11 @@ let verify_espec_single_conjunct_smt solver vgen s =
   let _ = cleanup [ifile; ofile] in
   res
 
+(* Verify an algebraic specification. The solver used can be specified in the
+   prove-with clauses of the specification *)
 let verify_espec_single_conjunct vgen s hashopt =
   let verify_one =
-    match !algebra_solver with
+    match algebra_solver_of_prove_with s.espwss with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
   is_espec_trivial s ||
@@ -552,7 +557,7 @@ let verify_espec_without_cuts hashopt vgen cid s =
         | _ -> (slice_espec_ssa s None, true) in
       (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-      verify_entailments entailments
+      verify_entailments ~solver:(algebra_solver_of_prove_with s.espwss) entailments
   else
     let rec verify_ands hashopt vgen cid s =
       match s.espost with

@@ -22,11 +22,11 @@ let btor_write_input m ifile es =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let run_smt_solver ?timeout:timeout header ifile ofile errfile =
+let run_smt_solver ?timeout:timeout ?(solver=(!range_solver)) header ifile ofile errfile =
   let mk_task task =
     let t1 = Unix.gettimeofday() in
     let cmd =
-      !range_solver ^ " " ^ !range_solver_args ^ " "
+      solver ^ " " ^ !range_solver_args ^ " "
       ^ "\"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2> \"" ^ errfile ^ "\"" in
     let%lwt _ =
       match timeout with
@@ -44,18 +44,13 @@ let run_smt_solver ?timeout:timeout header ifile ofile errfile =
                   (fun h -> let%lwt _ = Options.WithLwt.trace h in
                             Lwt.return_unit) header in
     let%lwt _ = Options.WithLwt.trace "INPUT IN SMTLIB2 FORMAT:" in
-    let%lwt _ = Options.WithLwt.unix
-                  ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.trace "" in
-    let%lwt _ = Options.WithLwt.trace
-                  ("Run " ^ !range_solver ^ " with command: " ^ cmd) in
-    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_running_time t1 t2) in
-    let%lwt _ = Options.WithLwt.trace
-                  ("OUTPUT FROM " ^ !range_solver ^ ":") in
-    let%lwt _ = Options.WithLwt.unix
-                  ("cat " ^ ofile ^ " >>  " ^ !logfile) in
-    let%lwt _ = Options.WithLwt.unix
-                  ("cat " ^ errfile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.trace ("Run " ^ solver ^ " with command: " ^ cmd) in
+    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
+    let%lwt _ = Options.WithLwt.trace ("OUTPUT FROM " ^ solver ^ ":") in
+    let%lwt _ = Options.WithLwt.unix ("cat " ^ ofile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.unix ("cat " ^ errfile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.trace "" in
     let%lwt _ = Options.WithLwt.log_unlock () in
     Lwt.return_unit in
@@ -84,7 +79,7 @@ let read_smt_output ofile errfile =
      else if res = "unknown" then Lwt.return Unknown
      else failwith ("Unknown result from the SMT solver: " ^ res)
 
-let solve_simp ?timeout:timeout ?(header=[]) fs =
+let solve_simp ?timeout:timeout ?(solver=(!range_solver)) ?(header=[]) fs =
   let ifile = tmpfile "inputqfbv_" (if !use_btor then ".btor" else ".smt2") in
   let ofile = tmpfile "outputqfbv_" ".log" in
   let errfile = tmpfile "errorqfbv_" ".log" in
@@ -96,8 +91,8 @@ let solve_simp ?timeout:timeout ?(header=[]) fs =
         else smtlib2_write_input ifile fs in
       let%lwt _ =
         match timeout with
-        | None -> run_smt_solver header ifile ofile errfile
-        | Some ti -> run_smt_solver ~timeout:ti header ifile ofile errfile in
+        | None -> run_smt_solver ~solver:solver header ifile ofile errfile
+        | Some ti -> run_smt_solver ~timeout:ti ~solver:solver header ifile ofile errfile in
       let%lwt res = read_smt_output ofile errfile in
       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
       Lwt.return res

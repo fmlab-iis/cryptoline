@@ -16,7 +16,7 @@
 
 %token <string> COMMENT
 %token <Z.t> NUM
-%token <string> ID
+%token <string> ID PATH
 %token <int> UINT SINT
 %token BIT
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOTDOT VBAR COLON
@@ -34,7 +34,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP
 /* Others */
-%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP
+%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF
 
 %left LOROP
@@ -174,9 +174,19 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { Precondition }
+  | CUTS LSQUARE complex_const_list RSQUARE       { Cuts $3 }
   | ALL CUTS                                      { AllCuts }
   | ALL ASSUMES                                   { AllAssumes }
   | ALL GHOSTS                                    { AllGhosts }
+  | ALGEBRA SOLVER ID                             { AlgebraSolver (Options.Std.parse_algebra_solver $3) }
+  | ALGEBRA SOLVER SMT COLON path                 { AlgebraSolver (Options.Std.parse_algebra_solver ("smt:" ^ $5)) }
+  | RANGE SOLVER path                             { RangeSolver $3 }
+  | QFBV SOLVER path                              { RangeSolver $3 }
+;
+
+path:
+    ID                                            { $1 }
+  | PATH                                          { $1 }
 ;
 
 bexp:
@@ -622,6 +632,11 @@ gvars:
 gvar:
     ID AT typ                                     { mkvar $1 $3 }
   | typ ID                                        { mkvar $2 $1 }
+;
+
+complex_const_list:
+    complex_const                                 { [Z.to_int $1] }
+  | complex_const COMMA complex_const_list        { (Z.to_int $1)::$3 }
 ;
 
 const:

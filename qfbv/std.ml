@@ -17,11 +17,11 @@ let btor_write_input m file es =
   unix ("cat " ^ file ^ " >>  " ^ !logfile);
   trace ""
 
-let run_smt_solver ?timeout:timeout ifile ofile errfile =
+let run_smt_solver ?timeout:timeout ?(solver=(!range_solver)) ifile ofile errfile =
   let mk_task task =
     let t1 = Unix.gettimeofday() in
     let cmd =
-      !range_solver ^ " " ^ !range_solver_args ^ " "
+      solver ^ " " ^ !range_solver_args ^ " "
       ^ "\"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2> \"" ^ errfile ^ "\"" in
     let%lwt _ =
       match timeout with
@@ -34,14 +34,11 @@ let run_smt_solver ?timeout:timeout ifile ofile errfile =
                      Lwt.return (Unix.WSIGNALED Sys.sigalrm) in
     let t2 = Unix.gettimeofday() in
     let%lwt _ = Options.WithLwt.log_lock () in
-    let%lwt _ = Options.WithLwt.trace ("Run " ^ !range_solver ^ " with command: " ^ cmd) in
-    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ !range_solver ^ ": " ^ string_of_running_time t1 t2) in
-    let%lwt _ = Options.WithLwt.trace
-                  ("OUTPUT FROM " ^ !range_solver ^ ":") in
-    let%lwt _ = Options.WithLwt.unix
-                  ("cat " ^ ofile ^ " >>  " ^ !logfile) in
-    let%lwt _ = Options.WithLwt.unix
-                  ("cat " ^ errfile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.trace ("Run " ^ solver ^ " with command: " ^ cmd) in
+    let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
+    let%lwt _ = Options.WithLwt.trace ("OUTPUT FROM " ^ solver ^ ":") in
+    let%lwt _ = Options.WithLwt.unix ("cat " ^ ofile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.unix ("cat " ^ errfile ^ " >>  " ^ !logfile) in
     let%lwt _ = Options.WithLwt.trace "" in
     let%lwt _ = Options.WithLwt.log_unlock () in
     Lwt.return_unit in
@@ -75,7 +72,7 @@ let read_smt_output ofile errfile =
  * Solve the implication e1 /\ e2 /\ ... /\ en -> e wheren fs = [e1; e2; ...; en; e].
  * Throw TimeoutException if timeout.
 *)
-let solve_simp ?timeout:timeout fs =
+let solve_simp ?timeout:timeout ?(solver=(!range_solver)) fs =
   let ifile = tmpfile "inputqfbv_" (if !use_btor then ".btor" else ".smt2") in
   let ofile = tmpfile "outputqfbv_" ".log" in
   let errfile = tmpfile "errorqfbv_" ".log" in
@@ -87,8 +84,8 @@ let solve_simp ?timeout:timeout fs =
         else smtlib2_write_input ifile fs in
       let _ =
         match timeout with
-        | None -> run_smt_solver ifile ofile errfile
-        | Some ti -> run_smt_solver ~timeout:ti ifile ofile errfile in
+        | None -> run_smt_solver ~solver:solver ifile ofile errfile
+        | Some ti -> run_smt_solver ~timeout:ti ~solver:solver ifile ofile errfile in
       let res = read_smt_output ofile errfile in
       let _ = cleanup [ifile; ofile; errfile] in
       res

@@ -468,16 +468,18 @@ val eq_bexp : bexp -> bexp -> bool
 (** {1 Instructions} *)
 
 type prove_with_spec =
-  Precondition           (** precondition *)
-| Cuts of int list       (** a list of cuts specified by cut IDs *)
-| AllCuts                (** all cuts *)
-| AllAssumes             (** all assumes *)
-| AllGhosts              (** all ghosts *) (* *)
+  Precondition                                              (** precondition *)
+| Cuts of int list                                          (** a list of cuts specified by cut IDs *)
+| AllCuts                                                   (** all cuts *)
+| AllAssumes                                                (** all assumes *)
+| AllGhosts                                                 (** all ghosts *)
+| AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
+| RangeSolver of string                                     (** range solver *) (* *)
 (** prove-with clauses *)
 
 type atom =
-  | Avar of var          (** variable *)
-  | Aconst of typ * Z.t  (** constant of a specified type *)
+  | Avar of var                                             (** variable *)
+  | Aconst of typ * Z.t                                     (** constant of a specified type *)
 (** atoms *)
 
 type instr =
@@ -822,6 +824,16 @@ val is_rcut : instr -> bool
 
 val is_annotation : instr -> bool
 (** [is_annotation i] if [i] is an annotation such as assertions. *)
+
+val algebra_solver_of_prove_with : prove_with_spec list -> Options.Std.algebra_solver
+(** [algebra_solver_of_prove_with pwss] returns the first algebra solver
+    specified in the prove-with clauses [pwss]. If no algebra solver is
+    specified, [!Options.Std.algebra_solver] is returned. *)
+
+val range_solver_of_prove_with : prove_with_spec list -> string
+(** [range_solver_of_prove_with pwss] returns the first range solver specified
+    in the prove-with clauses [pwss]. If no range solver is specified,
+    [!Options.Std.range_solver] is returned. *)
 
 module SS : Set.S with type elt = string
 (** set of strings *)
