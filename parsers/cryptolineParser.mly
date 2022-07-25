@@ -1163,41 +1163,45 @@
           else ()) relmtyps
         in (rtyphint, rvs)
 
-  (* Given source atoms and names of destinations, make a series of aliasing movs on colliding names.
+  (* Given a list of (writes, read), make a series of aliasing movs on colliding names.
      Besides instructions, it also returns some context after rewriting *)
-  let gen_tmp_movs lno dest_names_set src vm relmtyp =
-    let rewrite_src map a = match a with
-    | `AVAR ({atmname; _} as var) when SS.mem atmname dest_names_set -> (
-      let tmp_name = "_tmp_" ^ atmname in
-      let _ = if SM.mem tmp_name vm then
-        raise_at lno (
-          Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
-                         tmp_name)
-        else () in
-      let new_var = {var with atmname=tmp_name} in
-      (SM.add tmp_name var map, `AVAR new_var))
-    | `AVAR _
-    | `ACONST _ -> (map, a) in
+  let gen_tmp_movs lno (rwpairs: (string list * atom_t) list) vm relmtyp =
+    let rewrite_rws (tainted, submap) (wws, a) =
+      let (submap', a') = match a with
+      | `AVAR ({atmname; _} as var) when SS.mem atmname tainted ->
+        let tmp_name = atmname ^ "_" in
+        let _ = if SM.mem tmp_name vm then
+          raise_at lno (
+            Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
+                          tmp_name)
+          else () in
+        (SM.add tmp_name var submap, `AVAR {var with atmname=tmp_name})
+      | `AVAR _
+      | `ACONST _ -> (submap, a) in
+      let tainted' = List.fold_left (fun set name -> SS.add name set) tainted wws in
+      ((tainted', submap'), a') in
 
-    let (tmp_to_orig, src_safe) = List.fold_left_map rewrite_src SM.empty src in
+    let ((_, tmp_to_orig), src_safe) = List.fold_left_map rewrite_rws (SS.empty, SM.empty) rwpairs in
     let tmp_names = SM.fold (fun k _ names -> k::names) tmp_to_orig [] in
+
     (* Add introduced temp. variables into variable map *)
     let vm_safe = SM.fold (fun k _ map -> SM.add k (mkvar k relmtyp) map) tmp_to_orig vm in
     (* Save into temp. variables with mov instructions *)
     let aliasing_instrs = List.rev (
       SM.fold (fun tmp_name orig instrs ->
         let instr = (lno, Imov (SM.find tmp_name vm_safe, Avar (mkvar orig.atmname relmtyp))) in
-        instr::instrs
-    ) tmp_to_orig []) in
+        instr::instrs) tmp_to_orig []) in
+
     (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
-  let gen_tmp_movs_2 lno dest_names_set srcs vm relmtyp =
-    let srclen = (List.length srcs) / 2 in
-    let (aliasing_instrs, tmp_names, src_safe_joined, vm_safe) = gen_tmp_movs lno dest_names_set srcs vm relmtyp in
-    let (src1_sr, src2_sr) = List.fold_left (fun (a, b) (i, x) ->
-      if i <= srclen then (x::a,    b)
-                     else (   a, x::b)) ([], []) (List.combine (1 -- (srclen * 2)) src_safe_joined) in
-    let src_safe = List.rev (List.combine src1_sr src2_sr) in
+  let gen_tmp_movs_2 lno (rwpairs_: (string list * (atom_t * atom_t)) list) vm relmtyp =
+    let rwpairs = List.rev (List.fold_left (fun l (wws, (rr1, rr2)) -> (wws, rr2)::([], rr1)::l) [] rwpairs_) in
+    let (aliasing_instrs, tmp_names, src_safe_single, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let rec to_pairs_rev acc xs = match xs with
+      | [] -> acc
+      | _::[] -> raise_at lno "Internal error: Incorrect number of source operands."
+      | x::y::tail -> to_pairs_rev ((x, y)::acc) tail in
+    let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
     (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
   let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
@@ -1218,8 +1222,8 @@
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
+    let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=None} in
@@ -1243,8 +1247,8 @@
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+    let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
       let lvtoken = {lvname; lvtyphint=None} in
@@ -1266,8 +1270,8 @@
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (dest1_names @ dest2_names) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
+    let rwpairs = List.map2 (fun (d1, d2) s -> ([d1; d2], s)) (List.combine dest1_names dest2_names) src in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) ((lvname1, lvname2), rv) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
@@ -1296,8 +1300,10 @@
       raise_at lno "Carry vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (carry_names @ dest_names) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+    let rwpairs = List.map2 (fun (c, d) (s1, s2) -> ([c; d], (s1, s2)))
+                            (List.combine carry_names dest_names)
+                            (List.combine src1 src2) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
@@ -1327,8 +1333,10 @@
       raise_at lno "Destination vectors should be as long as the source vectors."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty (destH_names @ destL_names) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+    let rwpairs = List.map2 (fun (dh, dl) (s1, s2) -> ([dh; dl], (s1, s2)))
+                            (List.combine destH_names destL_names)
+                            (List.combine src1 src2) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
     let dest_names = List.combine destH_names destL_names in
 
     let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
@@ -1353,8 +1361,8 @@
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno dest_names_set (src1 @ src2) vm relmtyp in
+    let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
       let lvtoken = {lvname; lvtyphint=None} in
@@ -1373,8 +1381,8 @@
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
-    let dest_names_set = List.fold_left (fun set a -> SS.add a set) SS.empty dest_names in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno dest_names_set src vm relmtyp in
+    let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, rv) = (
       let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
