@@ -796,74 +796,6 @@ let new_name ?prefix:prefix names =
     !name
   else prefix
 
-(* Find all required algebraic predicates in instrs according to pwss. *)
-let eprove_with_filter pwss (pre, cuts_rev, instrs) =
-  let extract_ebexps instrs =
-    let extractor i =
-      match i with
-        Icut (ecuts, _) -> fst (List.split ecuts)
-      | Iassume e -> [eqn_bexp e]
-      | Ighost (_, e) -> [eqn_bexp e]
-      | _ -> [] in
-    List.flatten (List.map extractor instrs) in
-  let filter_of_pws pws =
-    match pws with
-      Precondition -> (fun _i -> false)
-    | Cuts _ -> (fun _ -> false)
-    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
-    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
-  let filter =
-    let filters = List.map filter_of_pws pwss in
-    fun i -> List.exists (fun f -> f i) filters in
-  let ebexps = extract_ebexps (List.filter filter instrs) in
-  let cut_idxs =
-    let idxss = List.rev_map
-                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
-                  pwss in
-    List.flatten idxss in
-  let needed_cutss =
-    List.mapi (fun i cut ->
-        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
-  let cuts_bexps = extract_ebexps (List.flatten needed_cutss) in
-  if List.mem Precondition pwss then
-    pre::(List.rev_append cuts_bexps ebexps)
-  else List.rev_append cuts_bexps ebexps
-
-(* Find all required range predicates in instrs according to pwss. *)
-let rprove_with_filter pwss (pre, cuts_rev, instrs) =
-  let extract_rbexps instrs =
-    let extractor i =
-      match i with
-        Icut (_, rcuts) -> fst (List.split rcuts)
-      | Iassume e -> [rng_bexp e]
-      | Ighost (_, e) -> [rng_bexp e]
-      | _ -> [] in
-    List.flatten (List.map extractor instrs) in
-  let filter_of_pws pws =
-    match pws with
-      Precondition -> (fun _i -> false)
-    | Cuts _ -> (fun _ -> false)
-    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
-    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
-    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
-  let filter =
-    let filters = List.map filter_of_pws pwss in
-    fun i -> List.exists (fun f -> f i) filters in
-  let rbexps = extract_rbexps (List.filter filter instrs) in
-  let cut_idxs =
-    let idxss = List.rev_map
-                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
-                  pwss in
-    List.flatten idxss in
-  let needed_cutss =
-    List.mapi (fun i cut ->
-        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
-  let cuts_rbexps = extract_rbexps (List.flatten needed_cutss) in
-  if List.mem Precondition pwss
-  then pre::(List.rev_append cuts_rbexps rbexps)
-  else List.rev_append cuts_rbexps rbexps
-
 
 (** Specifications *)
 
@@ -1121,7 +1053,7 @@ let string_of_instr ?typ:(typ=false) i =
       | [], [] -> "skip"
       | [], _ -> "rcut " ^ String.concat ", " (List.map string_of_rcut rcuts)
       | _, [] -> "ecut " ^ String.concat ", " (List.map string_of_ecut ecuts)
-      | _, _ -> "cut " ^ String.concat ", " (List.map string_of_ecut ecuts) ^ " && " ^ String.concat ", " (List.map string_of_rcut rcuts))
+      | _, _ -> "cut " ^ String.concat ", " (List.map string_of_ecut ecuts) ^ " " ^ bexp_separator ^ " " ^ String.concat ", " (List.map string_of_rcut rcuts))
   | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
 let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"
@@ -1961,6 +1893,98 @@ let ssa_spec s =
 
 
 (** Cut *)
+
+(* Simplify prove-with clauses. *)
+let simplify_prove_with_specs pwss =
+  let cut_ids_of_pws pws =
+    match pws with
+    | Cuts ids -> ids
+    | _ -> [] in
+  let cut_idxs = List.map cut_ids_of_pws pwss |> List.map IS.of_list |> union_iss |> IS.elements in
+  let has_all_cuts = List.mem AllCuts pwss in
+  let has_precondition = List.mem Precondition pwss in
+  let has_all_assumes = List.mem AllAssumes pwss in
+  let has_all_ghosts = List.mem AllGhosts pwss in
+  (* Precondition *)
+  (if has_precondition then [Precondition] else [])
+  (* Cuts *)
+  @(if has_all_cuts then [AllCuts]
+    else if List.length cut_idxs = 0 then []
+    else [Cuts cut_idxs])
+  (* Assumes *)
+  @(if has_all_assumes then [AllAssumes] else [])
+  (* Ghosts *)
+  @(if has_all_ghosts then [AllGhosts] else [])
+
+(* Find all required algebraic predicates in instrs according to pwss. *)
+let eprove_with_filter pwss (pre, cuts_rev, instrs) =
+  let pwss = simplify_prove_with_specs pwss in
+  let extract_ebexps instrs =
+    let extractor i =
+      match i with
+        Icut (ecuts, _) -> fst (List.split ecuts)
+      | Iassume e -> [eqn_bexp e]
+      | Ighost (_, e) -> [eqn_bexp e]
+      | _ -> [] in
+    List.flatten (List.map extractor instrs) in
+  let filter_of_pws pws =
+    match pws with
+      Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
+    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+  let filter =
+    let filters = List.map filter_of_pws pwss in
+    fun i -> List.exists (fun f -> f i) filters in
+  let ebexps = extract_ebexps (List.filter filter instrs) in
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_bexps = extract_ebexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss then
+    pre::(List.rev_append cuts_bexps ebexps)
+  else List.rev_append cuts_bexps ebexps
+
+(* Find all required range predicates in instrs according to pwss. *)
+let rprove_with_filter pwss (pre, cuts_rev, instrs) =
+  let pwss = simplify_prove_with_specs pwss in
+  let extract_rbexps instrs =
+    let extractor i =
+      match i with
+        Icut (_, rcuts) -> fst (List.split rcuts)
+      | Iassume e -> [rng_bexp e]
+      | Ighost (_, e) -> [rng_bexp e]
+      | _ -> [] in
+    List.flatten (List.map extractor instrs) in
+  let filter_of_pws pws =
+    match pws with
+      Precondition -> (fun _i -> false)
+    | Cuts _ -> (fun _ -> false)
+    | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
+    | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
+    | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false) in
+  let filter =
+    let filters = List.map filter_of_pws pwss in
+    fun i -> List.exists (fun f -> f i) filters in
+  let rbexps = extract_rbexps (List.filter filter instrs) in
+  let cut_idxs =
+    let idxss = List.rev_map
+                  (fun pws -> match pws with | Cuts idxs -> idxs | _ -> [])
+                  pwss in
+    List.flatten idxss in
+  let needed_cutss =
+    List.mapi (fun i cut ->
+        if List.mem i cut_idxs then [cut] else []) (List.rev cuts_rev) in
+  let cuts_rbexps = extract_rbexps (List.flatten needed_cutss) in
+  if List.mem Precondition pwss
+  then pre::(List.rev_append cuts_rbexps rbexps)
+  else List.rev_append cuts_rbexps rbexps
 
 (*
  * Make a specification for the verification of a predicate with prove-with
