@@ -84,6 +84,8 @@ let verify_rcuts = ref None
 let verify_eacuts = ref None
 let verify_racuts = ref None
 let verify_scuts = ref None
+let verify_eassert_ids = ref None
+let verify_rassert_ids = ref None
 let verify_safety_ids = ref None
 let mem_hashset_opt so e =
   match so with

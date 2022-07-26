@@ -61,11 +61,6 @@ val verify_safety_cli : int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
     indicates if the safety conditions in [p] are successfully verified and
     [j] denotes the ID of the next safety condition. *)
 
-val verify_assert_cli : Ast.Cryptoline.spec -> bool
-(** [verify_assert_cli s] parallelly verifies all assertions of the
-    specification [s] in SSA. Both {!Options.Std.verify_eacuts} and
-    {!Options.Std.verify_racuts} are considered in this function. *)
-
 val verify_eassert_cli : Ast.Cryptoline.spec -> bool
 (** [verify_eassert_cli s] parallelly verifies all algebraic assertions of the
     specification [s] in SSA. {!Options.Std.verify_eacuts} is considered in this

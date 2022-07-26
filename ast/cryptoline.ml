@@ -2068,6 +2068,10 @@ let rspec_of_rbexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
          List.filter is_range_solver pwss in
   { rspre = pre; rsprog = List.rev_append (List.rev prove_with) visited; rspost = e; rspwss = pwss' }
 
+let numbering sss =
+  let helper offset ss = List.mapi (fun i s -> (i + offset, s)) ss in
+  List.fold_left (fun (sss_rev, i) ss -> ((helper i ss)::sss_rev, i + List.length ss)) ([], 0) sss |> fst |> List.rev
+
 (*
  * Cut algebraic specifications in SSA and return `(espec list) list`.
  * The i-th item in the returned list represents the specifications for
@@ -2091,7 +2095,7 @@ let cut_espec es =
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost))
+  helper [] (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost) |> List.rev |> numbering
 
 (*
  * Cut range specifications in SSA and return `(rspec list) list`.
@@ -2116,7 +2120,7 @@ let cut_rspec rs =
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
+  helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost) |> List.rev |> numbering
 
 (* Cut algebraic assertions in SSA and return `(espec list) list`.
  * The i-th item in the returned list represents the assertions in
@@ -2135,7 +2139,7 @@ let cut_eassert es =
     | (Iassume _ as hd)::tl -> helper (res_rev, easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper (res_rev, easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper (res_rev, easserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
-  helper ([], []) (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost) |> List.rev
+  helper ([], []) (es.espre, [], [], []) (es.espre, [], es.esprog, es.espost) |> List.rev |> numbering
 
 (* Cut range assertions in SSA and return `(rspec list) list`.
  * The i-th item in the returned list represents the assertions in
@@ -2154,7 +2158,7 @@ let cut_rassert es =
     | (Iassume _ as hd)::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper ([], []) (es.rspre, [], [], []) (es.rspre, [], es.rsprog, es.rspost))
+  helper ([], []) (es.rspre, [], [], []) (es.rspre, [], es.rsprog, es.rspost) |> List.rev |> numbering
 
 (* Cut a specification for verification of safety conditions. *)
 let cut_safety rs =
@@ -2177,7 +2181,7 @@ let cut_safety rs =
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
-  List.rev (helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost))
+  helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog, rs.rspost) |> List.rev |> numbering
 
 
 (** Substitution *)

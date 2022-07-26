@@ -10,24 +10,23 @@ open Utils
  * `apply_to_cuts ids vf res combine cuts` applies verifiction function vf to cuts with ID specified in ids.
  * The verification function vf has three arguments: the previous result, the ID of a cut to be verified, and the cut.
  * res is the initial result.
- * `combine res cont` checks the current result res and invoke cont if the following cuts need to be verified.
  * Note that cuts must be all cuts (including the poscondition as the last cut) of the specification to be verified.
  *)
-let apply_to_cuts ids f res combine ss =
+let apply_to_cuts ids f res ss =
   let ids = ids |> Option.map Hashset.to_list |> Option.map (List.map (normalize_index (List.length ss))) |> Option.map Hashset.of_list in
-  let rec helper res i ss =
+  let rec helper i res ss =
     match ss with
     | [] -> res
     | hd::tl ->
        match ids with
        | Some ids when not (Hashset.mem ids i) ->
-          let _ = trace ("== Skip Cut #" ^ string_of_int i ^ " ==") in
-          helper res (i+1) tl
+          let _ = trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+          helper (i+1) res tl
        | _ ->
-          let _ = trace ("== Cut #" ^ string_of_int i ^ " ==") in
-          let res = List.fold_left (fun res s -> combine res (fun () -> f res i s)) res hd in
-          combine res (fun () -> helper res (i+1) tl) in
-  helper res 0 ss
+          let _ = trace ("=== Cut #" ^ string_of_int i ^ " ===") in
+          let res = List.fold_left (f i) res hd in
+          helper (i+1) res tl in
+  helper 0 res ss
 
 (** Verification *)
 
@@ -47,9 +46,8 @@ let verify_instruction_safety timeout sid f p n hashopt =
     try List.nth p n
     with Failure _ -> failwith ("The program does not contain the instruction: #" ^ string_of_int n) in
   let q = bexp_instr_safe i in
-  let _ = trace ("= Verifying safety condition =") in
-  let _ = trace ("Safety condition #" ^ string_of_int sid ^ ":\n"
-                 ^ "Instruction: " ^ string_of_instr i) in
+  let _ = trace ("= Safety condition #" ^ string_of_int sid ^ " =") in
+  let _ = trace ("Instruction: " ^ string_of_instr i) in
   do_verify f p q
 
 (*
@@ -76,9 +74,8 @@ let verify_safety_inc timeout f p qs hashopt =
        let t1 = Unix.gettimeofday() in
        let res =
          try
-           let _ = trace ("= Verifying safety condition =") in
-           let _ = trace ("Safety condition #" ^ string_of_int id ^ ":\n"
-                          ^ "Instruction: " ^ string_of_instr i) in
+           let _ = trace ("= Safety condition #" ^ string_of_int id ^ " =") in
+           let _ = trace ("Instruction: " ^ string_of_instr i) in
            let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
            let (revp', p') = find_program_prefix i revp p in
            let fp = safety_assumptions f (List.rev revp') q hashopt in
@@ -100,9 +97,9 @@ let verify_safety s hashopt =
   let _ = if !incremental_safety then vprintln "" in
   let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
   let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
-  let verify_safety_without_cuts (_, sid) cid s =
-    let _ = trace ("=== Verifying program safety incrementally: Cut #" ^ string_of_int cid ^ " ===") in
-    let _ = if !incremental_safety then vprintln ("\t Cut " ^ string_of_int cid) in
+  let verify_safety_without_cuts cid (_, sid) s =
+    let _ = if !incremental_safety then let _ = trace ("=== Verifying program safety incrementally: Cut #" ^ string_of_int cid ^ " ===") in
+                                        vprintln ("\t Cut " ^ string_of_int cid) in
     if !incremental_safety && !Options.Std.use_cli then
       WithLwt.verify_safety_cli sid s.rspre s.rsprog
     else if !incremental_safety then
@@ -149,8 +146,11 @@ let verify_safety s hashopt =
       let t2 = Unix.gettimeofday() in
       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
       (res, sid + 1) in
-  let (res, _) = apply_to_cuts !verify_scuts verify_safety_without_cuts (true, 0)
-                   (fun (res, sid) cont -> if res then cont() else (res, sid)) (cut_safety (rspec_of_spec s)) in
+  (* Check previous result *)
+  let verify_safety_without_cuts cid (res, sid) (_, s) =
+    if res then verify_safety_without_cuts cid (res, sid) s
+    else (res, sid) in
+  let (res, _) = apply_to_cuts !verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
@@ -476,31 +476,34 @@ let verify_rspec_single_conjunct s hashopt =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp s.rspost in
-    let _ = trace ("range condition: " ^ string_of_bexp g) in
+    let _ = trace ("Range condition: " ^ string_of_bexp g) in
     solve_simp ~solver:solver (f::p@[g]) = Unsat in
   is_rspec_trivial s ||
     (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
      else verify_one s)
 
-let rec verify_rspec_without_cuts hashopt cid s =
-  match s.rspost with
-  | Rand (e1, e2) ->
-     verify_rspec_without_cuts hashopt cid { rspre = s.rspre; rsprog = s.rsprog; rspost = e1; rspwss = s.rspwss } &&
-       verify_rspec_without_cuts hashopt cid { rspre = s.rspre; rsprog = s.rsprog; rspost = e2; rspwss = s.rspwss }
-  | _ -> verify_rspec_single_conjunct s hashopt
+let verify_rspec_without_cuts hashopt s =
+  let verify res s = if res then verify_rspec_single_conjunct s hashopt
+                     else res in
+  List.fold_left verify true (split_rspec_post s)
 
 let verify_rspec_with_cuts hashopt s =
-  apply_to_cuts !verify_rcuts (fun _ -> verify_rspec_without_cuts hashopt) true (fun res cont -> if res then cont() else res) (cut_rspec s)
+  (* Check previous result *)
+  let verify _ res (sid, s) =
+    if res then let _ = trace ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp s.rspost ^ " =") in
+                verify_rspec_without_cuts hashopt s
+    else res in
+  apply_to_cuts !verify_rcuts verify true (cut_rspec s)
 
 let verify_rspec s hashopt =
-  let _ = trace "===== Verifying range specification =====" in
+  let _ = trace "===== Verifying range specifications =====" in
   verify_rspec_with_cuts hashopt s
 
 let verify_entailments ?(solver=(!algebra_solver)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
-        let _ = trace ("algebraic condition: " ^ string_of_ebexp post) in
+        let _ = trace ("Algebraic condition: " ^ string_of_ebexp post) in
         if let _ = trace ("Try #0") in is_in_ideal ~solver:solver vars [] p then true
         else let _ = trace ("Try #1") in is_in_ideal ~solver:solver vars ideal p
       )
@@ -546,7 +549,7 @@ let verify_espec_single_conjunct vgen s hashopt =
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
-let verify_espec_without_cuts hashopt vgen cid s =
+let verify_espec_without_cuts hashopt vgen s =
   if !Options.Std.two_phase_rewriting then
     let s = remove_trivial_epost s in
     if s.espost = Etrue then true
@@ -559,37 +562,44 @@ let verify_espec_without_cuts hashopt vgen cid s =
       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
       verify_entailments ~solver:(algebra_solver_of_prove_with s.espwss) entailments
   else
-    let rec verify_ands hashopt vgen cid s =
-      match s.espost with
-      | Eand (e1, e2) ->
-         verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e1; espwss = s.espwss } &&
-           verify_ands hashopt vgen cid { espre = s.espre; esprog = s.esprog; espost = e2; espwss = s.espwss }
-      | _ -> verify_espec_single_conjunct vgen s hashopt in
-    verify_ands hashopt vgen cid s
+    let verify res s =
+      if res then verify_espec_single_conjunct vgen s hashopt
+      else res in
+    List.fold_left verify true (split_espec_post s)
 
 let verify_espec_with_cuts hashopt vgen s =
-  apply_to_cuts !verify_ecuts (fun _ -> verify_espec_without_cuts hashopt vgen) true (fun res cont -> if res then cont() else res) (cut_espec s)
+  (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
+  let verify _ res (sid, s) =
+    if res then let _ = trace ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp s.espost ^ " =") in
+                verify_espec_without_cuts hashopt vgen s
+    else res in
+  apply_to_cuts !verify_ecuts verify true (cut_espec s)
 
 let verify_espec vgen s hashopt =
-  let _ = trace "===== Verifying algebraic specification =====" in
+  let _ = trace "===== Verifying algebraic specifications =====" in
   verify_espec_with_cuts hashopt vgen s
 
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
-  let verify _ cid s =
-    let _ = trace ("=== Checking algebraic assertion ===") in
-    let _ = trace ("Algebraic assertion: " ^ Ast.Cryptoline.string_of_ebexp s.espost) in
-    verify_espec_without_cuts hashopt vgen cid s
-  in
-  apply_to_cuts !verify_eacuts verify true (fun res cont -> if res then cont() else res) (cut_eassert (espec_of_spec s))
+  (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
+  let verify _ res (sid, s) =
+    if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid then
+      let _ = trace ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp s.espost ^ " =") in
+      verify_espec_without_cuts hashopt vgen s
+    else
+      res in
+  apply_to_cuts !verify_eacuts verify true (cut_eassert (espec_of_spec s))
 
 let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
-  let verify _ cid s =
-    let _ = trace ("=== Checking range assertion ===") in
-    let _ = trace ("Range assertion: " ^ Ast.Cryptoline.string_of_rbexp s.rspost) in
-    verify_rspec_without_cuts hashopt cid s in
-  apply_to_cuts !verify_racuts verify true (fun res cont -> if res then cont() else res) (cut_rassert (rspec_of_spec s))
+  (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
+  let verify _ res (sid, s) =
+    if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid then
+      let _ = trace ("= Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp s.rspost ^ " =") in
+      verify_rspec_without_cuts hashopt s
+    else
+      res in
+  apply_to_cuts !verify_racuts verify true (cut_rassert (rspec_of_spec s))
 
 (* The main verification process *)
 let verify_spec s =
