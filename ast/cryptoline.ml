@@ -634,9 +634,6 @@ let bands2 es rs = (eands es, rands rs)
 
 let eq_bexp e1 e2 = eq_ebexp (eqn_bexp e1) (eqn_bexp e2) && eq_rbexp (rng_bexp e1) (rng_bexp e2)
 
-
-(** Instructions *)
-
 type prove_with_spec =
   | Precondition
   | Cuts of int list
@@ -645,6 +642,15 @@ type prove_with_spec =
   | AllGhosts
   | AlgebraSolver of Options.Std.algebra_solver
   | RangeSolver of string
+
+type ebexp_prove_with = (ebexp * prove_with_spec list) list
+
+type rbexp_prove_with = (rbexp * prove_with_spec list) list
+
+type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
+
+
+(** Instructions *)
 
 type atom =
   | Avar of var
@@ -693,8 +699,7 @@ type instr =
   (* Specifications *)
   | Iassert of bexp                                         (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
-  | Icut of (ebexp * prove_with_spec list) list * (rbexp * prove_with_spec list) list
-                                                            (** Cuts *)
+  | Icut of bexp_prove_with                                 (** Cuts *)
   | Ighost of VS.t * bexp                                   (** Ghost variables *) (* *)
 
 type program = instr list
@@ -990,9 +995,8 @@ let rec string_of_rbexp ?typ:(typ=false) e =
      | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2
      | _ -> "or [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
 
-let string_of_bexp ?typ:(typ=false) e =
-  match e with
-  | (ee, re) -> string_of_ebexp ~typ:typ ee ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp ~typ:typ re
+let string_of_bexp ?typ:(typ=false) (e, r) =
+  string_of_ebexp ~typ:typ e ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp ~typ:typ r
 
 let string_of_prove_with_spec ps =
   match ps with
@@ -1009,6 +1013,25 @@ let string_of_prove_with_spec ps =
 
 let string_of_prove_with_specs pss =
   String.concat ", " (List.map string_of_prove_with_spec pss)
+
+let string_of_epwss ?typ:(typ=false) (e, pwss) =
+  string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]"))
+
+let string_of_rpwss ?typ:(typ=false) (r, pwss) =
+  string_of_rbexp ~typ:typ r ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]"))
+
+let string_of_ebexp_prove_with ?typ:(typ=false) es =
+  match es with
+  | [] -> "true"
+  | _ -> String.concat ", " (List.rev_map (string_of_epwss ~typ:typ) (List.rev es))
+
+let string_of_rbexp_prove_with ?typ:(typ=false) rs =
+  match rs with
+  | [] -> "true"
+  | _ -> String.concat ", " (List.rev_map (string_of_rpwss ~typ:typ) (List.rev rs))
+
+let string_of_bexp_prove_with ?typ:(typ=false) (es, rs) =
+  string_of_ebexp_prove_with ~typ:typ es ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp_prove_with ~typ:typ rs
 
 let string_of_atom ?typ:(typ=false) a =
   match a with
@@ -1067,13 +1090,14 @@ let string_of_instr ?typ:(typ=false) i =
   | Iassert e -> "assert " ^ string_of_bexp ~typ:typ e
   | Iassume e -> "assume " ^ string_of_bexp ~typ:typ e
   | Icut (ecuts, rcuts) ->
-     let string_of_ecut (e, pwss) = string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]")) in
-     let string_of_rcut (e, pwss) = string_of_rbexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]")) in
      (match ecuts, rcuts with
-      | [], [] -> "skip"
-      | [], _ -> "rcut " ^ String.concat ", " (List.map string_of_rcut rcuts)
-      | _, [] -> "ecut " ^ String.concat ", " (List.map string_of_ecut ecuts)
-      | _, _ -> "cut " ^ String.concat ", " (List.map string_of_ecut ecuts) ^ " " ^ bexp_separator ^ " " ^ String.concat ", " (List.map string_of_rcut rcuts))
+      | [], [] -> "nop"
+      | [], _ -> "rcut " ^ String.concat ", " (List.map (string_of_rpwss ~typ:typ) rcuts)
+      | _, [] -> "ecut " ^ String.concat ", " (List.map (string_of_epwss ~typ:typ) ecuts)
+      | _, _ -> "cut "
+                ^ String.concat ", " (List.map (string_of_epwss ~typ:typ) ecuts)
+                ^ " " ^ bexp_separator ^ " "
+                ^ String.concat ", " (List.map (string_of_rpwss ~typ:typ) rcuts))
   | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
 let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"
@@ -1167,6 +1191,12 @@ let rec vars_rbexp e =
 let vars_bexp e =
   VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
 
+let vars_ebexp_prove_with es = List.split es |> fst |> List.map vars_ebexp |> List.fold_left VS.union VS.empty
+
+let vars_rbexp_prove_with rs = List.split rs |> fst |> List.map vars_rbexp |> List.fold_left VS.union VS.empty
+
+let vars_bexp_prove_with (es, rs) = VS.union (vars_ebexp_prove_with es) (vars_rbexp_prove_with rs)
+
 let vars_atom a =
   match a with
   | Avar v -> VS.singleton v
@@ -1220,10 +1250,7 @@ let vars_instr i =
   | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atom ah) (vars_atom al))
   | Iassert e
   | Iassume e -> vars_bexp e
-  | Icut (ecuts, rcuts) ->
-     let evars = List.map vars_ebexp (fst (List.split ecuts)) in
-     let rvars = List.map vars_rbexp (fst (List.split rcuts)) in
-     VS.union (List.fold_left VS.union VS.empty evars) (List.fold_left VS.union VS.empty rvars)
+  | Icut e -> vars_bexp_prove_with e
   | Ighost (vs, e) -> VS.union vs (vars_bexp e)
 
 let vars_program p = List.fold_left (fun res i -> VS.union (vars_instr i) res) VS.empty p
@@ -1315,10 +1342,7 @@ let rvs_instr i =
   | Ijoin (_, ah, al) -> VS.union (vars_atom ah) (vars_atom al)
   | Iassert e
   | Iassume e -> vars_bexp e
-  | Icut (ecuts, rcuts) ->
-     let evars = List.map vars_ebexp (fst (List.split ecuts)) in
-     let rvars = List.map vars_rbexp (fst (List.split rcuts)) in
-     VS.union (List.fold_left VS.union VS.empty evars) (List.fold_left VS.union VS.empty rvars)
+  | Icut e -> vars_bexp_prove_with e
   | Ighost (_, e) -> vars_bexp e
 
 let rvs_program p = List.fold_left (fun res i -> VS.union (rvs_instr i) res) VS.empty p
@@ -1424,6 +1448,12 @@ let rec vids_rbexp e =
 
 let vids_bexp e = IS.union (vids_ebexp (eqn_bexp e)) (vids_rbexp (rng_bexp e))
 
+let vids_ebexp_prove_with es = List.split es |> fst |> List.map vids_ebexp |> List.fold_left IS.union IS.empty
+
+let vids_rbexp_prove_with rs = List.split rs |> fst |> List.map vids_rbexp |> List.fold_left IS.union IS.empty
+
+let vids_bexp_prove_with (es, rs) = IS.union (vids_ebexp_prove_with es) (vids_rbexp_prove_with rs)
+
 let vids_atom a =
   match a with
   | Avar v -> IS.singleton v.vid
@@ -1477,10 +1507,7 @@ let vids_instr i =
   | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atom ah) (vids_atom al))
   | Iassert e
   | Iassume e -> vids_bexp e
-  | Icut (ecuts, rcuts) ->
-     let evars = List.map vids_ebexp (fst (List.split ecuts)) in
-     let rvars = List.map vids_rbexp (fst (List.split rcuts)) in
-     IS.union (List.fold_left IS.union IS.empty evars) (List.fold_left IS.union IS.empty rvars)
+  | Icut e -> vids_bexp_prove_with e
   | Ighost (vs, e) -> IS.union (vids_of_vs vs) (vids_bexp e)
 
 let vids_program p = List.fold_left (fun res i -> IS.union (vids_instr i) res) IS.empty p
@@ -1572,10 +1599,7 @@ let rvids_instr i =
   | Ijoin (_, ah, al) -> IS.union (vids_atom ah) (vids_atom al)
   | Iassert e
   | Iassume e -> vids_bexp e
-  | Icut (ecuts, rcuts) ->
-     let evars = List.map vids_ebexp (fst (List.split ecuts)) in
-     let rvars = List.map vids_rbexp (fst (List.split rcuts)) in
-     IS.union (List.fold_left IS.union IS.empty evars) (List.fold_left IS.union IS.empty rvars)
+  | Icut e -> vids_bexp_prove_with e
   | Ighost (_, e) -> vids_bexp e
 
 let rvids_program p = List.fold_left (fun res i -> IS.union (rvids_instr i) res) IS.empty p
@@ -1694,6 +1718,12 @@ let rec ssa_rbexp m e =
   | Ror (e1, e2) -> Ror (ssa_rbexp m e1, ssa_rbexp m e2)
 
 let ssa_bexp m e = (ssa_ebexp m (eqn_bexp e), ssa_rbexp m (rng_bexp e))
+
+let ssa_ebexp_prove_with m es = map_fst (ssa_ebexp m) es
+
+let ssa_rbexp_prove_with m rs = map_fst (ssa_rbexp m) rs
+
+let ssa_bexp_prove_with m (es, rs) = (ssa_ebexp_prove_with m es, ssa_rbexp_prove_with m rs)
 
 let ssa_instr m i =
   match i with
@@ -1891,7 +1921,7 @@ let ssa_instr m i =
      (m, Ijoin (ssa_var m v, ah, al))
   | Iassert e -> (m, Iassert (ssa_bexp m e))
   | Iassume e -> (m, Iassume (ssa_bexp m e))
-  | Icut (ecuts, rcuts) -> (m, Icut (map_fst (fun e -> ssa_ebexp m e) ecuts, map_fst (fun e -> ssa_rbexp m e) rcuts))
+  | Icut e -> (m, Icut (ssa_bexp_prove_with m e))
   | Ighost (vs, e) -> (m, Ighost (VS.of_list (List.map (ssa_var m) (VS.elements vs)), ssa_bexp m e))
 
 let ssa_program m p =
@@ -2091,7 +2121,7 @@ let cut_espec es =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          List.rev_map (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) (List.rev ecuts) in
-       helper (cut_as_specs::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
+       helper (cut_as_specs::res) (precond, List.rev_append (List.rev after_rev) before_rev, [hd], hd::cuts_rev) (eands (fst (List.split ecuts)), [], tl, post)
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
@@ -2116,7 +2146,7 @@ let cut_rspec rs =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          List.rev_map (rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited)) (List.rev rcuts) in
-       helper (cut_as_specs::res) (precond, after_rev@before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
+       helper (cut_as_specs::res) (precond, List.rev_append (List.rev after_rev) before_rev, [hd], hd::cuts_rev) (rands (fst (List.split rcuts)), [], tl, post)
     | (Iassume (_e, _) as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl, post)
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl, post) in
@@ -2281,6 +2311,12 @@ let rec subst_rbexp rm e =
 
 let subst_bexp em rm e = (subst_ebexp em (eqn_bexp e), subst_rbexp rm (rng_bexp e))
 
+let subst_ebexp_prove_with em es = map_fst (subst_ebexp em) es
+
+let subst_rbexp_prove_with rm rs = map_fst (subst_rbexp rm) rs
+
+let subst_bexp_prove_with em rm (es, rs) = (subst_ebexp_prove_with em es, subst_rbexp_prove_with rm rs)
+
 let subst_lval am lv =
   if VM.mem lv am then match VM.find lv am with
                        | Avar v -> v
@@ -2334,7 +2370,7 @@ let subst_instr am em rm i =
   | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atom am ah, subst_atom am al)
   | Iassert e -> Iassert (subst_bexp em rm e)
   | Iassume e -> Iassume (subst_bexp em rm e)
-  | Icut (ecuts, rcuts) -> Icut (map_fst (fun e -> subst_ebexp em e) ecuts, map_fst (fun e -> subst_rbexp rm e) rcuts)
+  | Icut e -> Icut (subst_bexp_prove_with em rm e)
   | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
 
 let subst_program am em rm p = List.map (subst_instr am em rm) p
@@ -2994,6 +3030,12 @@ let visit_bexp visitor e =
      f (match e with
         | (eb, rb) -> (visit_ebexp visitor eb, visit_rbexp visitor rb))
 
+let visit_ebexp_prove_with visitor es = map_fst (visit_ebexp visitor) es
+
+let visit_rbexp_prove_with visitor rs = map_fst (visit_rbexp visitor) rs
+
+let visit_bexp_prove_with visitor (es, rs) = (visit_ebexp_prove_with visitor es, visit_rbexp_prove_with visitor rs)
+
 let visit_instr visitor i =
   let act = visitor#vinstr i in
   match act with
@@ -3048,7 +3090,7 @@ let visit_instr visitor i =
         (* Specifications *)
         | Iassert e -> Iassert (visit_bexp visitor e)
         | Iassume e -> Iassume (visit_bexp visitor e)
-        | Icut (ecuts, rcuts) -> Icut (map_fst (visit_ebexp visitor) ecuts, map_fst (visit_rbexp visitor) rcuts)
+        | Icut e -> Icut (visit_bexp_prove_with visitor e)
         | Ighost (vs, e) -> Ighost (VS.map (visit_var visitor) vs, visit_bexp visitor e))
 
 let visit_program visitor p =
@@ -3499,6 +3541,12 @@ let rec update_variable_id_rbexp m e =
 
 let update_variable_id_bexp m (e, r) = update_variable_id_rbexp (update_variable_id_ebexp m e) r
 
+let update_variable_id_ebexp_prove_with m es = List.fold_left update_variable_id_ebexp m (fst (List.split es))
+
+let update_variable_id_rbexp_prove_with m rs = List.fold_left update_variable_id_rbexp m (fst (List.split rs))
+
+let update_variable_id_bexp_prove_with m (es, rs) = update_variable_id_rbexp_prove_with (update_variable_id_ebexp_prove_with m es) rs
+
 let update_variable_id_atom m a =
   match a with
   | Avar v -> update_variable_id_var m v
@@ -3552,7 +3600,7 @@ let update_variable_id_instr m i =
   | Ijoin (v, ah, al) -> update_variable_id_atoms m [Avar v; ah; al]
   | Iassert e
   | Iassume e -> update_variable_id_bexp m e
-  | Icut (es, rs) -> List.fold_left update_variable_id_rbexp (List.fold_left update_variable_id_ebexp m (fst (List.split es))) (fst (List.split rs))
+  | Icut e -> update_variable_id_bexp_prove_with m e
   | Ighost (vs, e) -> update_variable_id_bexp (VS.fold (fun v m -> update_variable_id_var m v) vs m) e
 
 let update_variable_id_program m p = List.fold_left update_variable_id_instr m p
@@ -3583,6 +3631,10 @@ let normalize_pws num_cuts pws =
 let normalize_epwss num_ecuts (e, pwss) = (e, List.map (normalize_pws num_ecuts) pwss)
 let normalize_rpwss num_rcuts (r, pwss) = (r, List.map (normalize_pws num_rcuts) pwss)
 
+let normalize_ebexp_prove_with num_ecuts es = List.rev_map (normalize_epwss num_ecuts) (List.rev es)
+let normalize_rbexp_prove_with num_rcuts rs = List.rev_map (normalize_rpwss num_rcuts) (List.rev rs)
+let normalize_bexp_prove_with num_ecuts num_rcuts (es, rs) = (normalize_ebexp_prove_with num_ecuts es, normalize_rbexp_prove_with num_rcuts rs)
+
 (*
  * Normalize program. After normalization:
  * - All indices in prove-with clauses are positive.
@@ -3600,9 +3652,9 @@ let normalize_program ?num_ecuts ?num_rcuts p =
   let normalize_prove_with p =
     let update_instruction i =
       match i with
-      | Icut (espwss, rspwss) ->
+      | Icut e ->
          (try
-            Icut (List.map (normalize_epwss num_ecuts) espwss, List.map (normalize_rpwss num_rcuts) rspwss)
+            Icut (normalize_bexp_prove_with num_ecuts num_rcuts e)
           with IndexOutOfBound id ->
             failwith("Index out of bound in " ^ string_of_instr i ^ ": " ^ string_of_int id)
          )

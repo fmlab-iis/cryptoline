@@ -464,9 +464,6 @@ val bands2 : ebexp list -> rbexp list -> bexp
 val eq_bexp : bexp -> bexp -> bool
 (** [eq_bexp e1 e2] is [true] if [e1] and [e2] are equal. *)
 
-
-(** {1 Instructions} *)
-
 type prove_with_spec =
   Precondition                                              (** precondition *)
 | Cuts of int list                                          (** a list of cuts specified by cut IDs *)
@@ -476,6 +473,18 @@ type prove_with_spec =
 | AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
 | RangeSolver of string                                     (** range solver *) (* *)
 (** prove-with clauses *)
+
+type ebexp_prove_with = (ebexp * prove_with_spec list) list
+(** Algebraic predicates associated with prove-with clauses *)
+
+type rbexp_prove_with = (rbexp * prove_with_spec list) list
+(** Range predicates associated with prove-with clauses *)
+
+type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
+(** Predicates associated with prove-with clauses *)
+
+
+(** {1 Instructions} *)
 
 type atom =
   | Avar of var                                             (** variable *)
@@ -525,8 +534,7 @@ type instr =
   (* Specifications *)
   | Iassert of bexp                                         (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
-  | Icut of (ebexp * prove_with_spec list) list * (rbexp * prove_with_spec list) list
-                                                            (** Cuts *)
+  | Icut of bexp_prove_with                                 (** Cuts *)
   | Ighost of VS.t * bexp                                   (** Ghost variables *) (* *)
 (**
    Instructions.
@@ -932,6 +940,21 @@ val string_of_rbexp : ?typ:bool -> rbexp -> string
 val string_of_bexp : ?typ:bool -> bexp -> string
 (** [string_of_bexp ~typ:b e] is the string representation of a predicate [e]. If [b] is true, types will also be outputted. *)
 
+val string_of_ebexp_prove_with : ?typ:bool -> ebexp_prove_with -> string
+(** [string_of_ebexp_prove_with ~typ:b e] is the string representation of an
+    algebraic predicate [e] associated with prove-with clauses. If [b] is true,
+    types will also be outputted. *)
+
+val string_of_rbexp_prove_with : ?typ:bool -> rbexp_prove_with -> string
+(** [string_of_rbexp_prove_with ~typ:b e] is the string representation of a
+    range predicate [e] associated with prove-with clauses. If [b] is true,
+    types will also be outputted. *)
+
+val string_of_bexp_prove_with : ?typ:bool -> bexp_prove_with -> string
+(** [string_of_bexp_prove_with ~typ:b e] is the string representation of a
+    predicate [e] associated with prove-with clauses. If [b] is true, types
+    will also be outputted. *)
+
 val string_of_atom : ?typ:bool -> atom -> string
 (** [string_of_atom ~typ:b a] is the string representation of an atom [a]. If [b] is true, types will also be outputted. *)
 
@@ -967,6 +990,15 @@ val vars_rbexp : rbexp -> VS.t
 
 val vars_bexp : bexp -> VS.t
 (** [vars_bexp e] is the set of variables in the predicate [e]. *)
+
+val vars_ebexp_prove_with : ebexp_prove_with -> VS.t
+(** [vars_ebexp_prove_with e] is the set of variables in the algebraic predicate [e] associated with prove-with clauses. *)
+
+val vars_rbexp_prove_with : rbexp_prove_with -> VS.t
+(** [vars_rbexp_prove_with e] is the set of variables in the range predicate [e] associated with prove-with clauses. *)
+
+val vars_bexp_prove_with : bexp_prove_with -> VS.t
+(** [vars_bexp_prove_with e] is the set of variables in the predicate [e] associated with prove-with clauses. *)
 
 val vars_atom : atom -> VS.t
 (** [vars_atom a] is the set of variables in the atom [a]. *)
@@ -1016,17 +1048,26 @@ val vars_rspec : rspec -> VS.t
 val vids_eexp : eexp -> IS.t
 (** [vids_eexp e] is the set of IDs of variables in the algebraic expression [e]. *)
 
-val vids_ebexp : ebexp -> IS.t
-(** [vids_ebexp e] is the set of IDs of variables in the algebraic predicate [e]. *)
-
 val vids_rexp : rexp -> IS.t
 (** [vids_rexp e] is the set of IDs of variables in the range expression [e]. *)
+
+val vids_ebexp : ebexp -> IS.t
+(** [vids_ebexp e] is the set of IDs of variables in the algebraic predicate [e]. *)
 
 val vids_rbexp : rbexp -> IS.t
 (** [vids_rbexp e] is the set of IDs of variables in the range predicate [e]. *)
 
 val vids_bexp : bexp -> IS.t
 (** [vids_bexp e] is the set of IDs of variables in the predicate [e]. *)
+
+val vids_ebexp_prove_with : ebexp_prove_with -> IS.t
+(** [vids_ebexp_prove_with e] is the set of IDs of variables in the algebraic predicate [e] associated with prove-with clauses. *)
+
+val vids_rbexp_prove_with : rbexp_prove_with -> IS.t
+(** [vids_rbexp_prove_with e] is the set of IDs of variables in the range predicate [e] associated with prove-with clauses. *)
+
+val vids_bexp_prove_with : bexp_prove_with -> IS.t
+(** [vids_bexp_prove_with e] is the set of IDs of variables in the predicate [e] associated with prove-with clauses. *)
 
 val vids_atom : atom -> IS.t
 (** [vids_atom a] is the set of IDs of variables in the atom [a]. *)
@@ -1119,10 +1160,20 @@ val subst_rbexp : rexp VM.t -> rbexp -> rbexp
 (** [subst_rbexp em e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
 
 val subst_bexp : eexp VM.t -> rexp VM.t -> bexp -> bexp
-(** [subst_bexp em rm e] replaces variables in the algebraic predicate of [e]
-    by the corresponding algebraic expressions in [em] and replaces variables
-    in the range predicate of [e] by the corresponding range expressions in
-    [em]. *)
+(** [subst_bexp em rm e] replaces variables in [e] based on substitutions of
+    algebraic expressions in [em] and substitutions of range expressions in
+    [rm]. *)
+
+val subst_ebexp_prove_with : eexp VM.t -> ebexp_prove_with -> ebexp_prove_with
+(** [subst_ebexp_prove_with em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+
+val subst_rbexp_prove_with : rexp VM.t -> rbexp_prove_with -> rbexp_prove_with
+(** [subst_rbexp_prove_with em e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+
+val subst_bexp_prove_with : eexp VM.t -> rexp VM.t -> bexp_prove_with -> bexp_prove_with
+(** [subst_bexp_prove_with em rm e] replaces variables in [e] based on
+    substitutions of algebraic expressions in [em] and substitutions of range
+    expressions in [rm]. *)
 
 val subst_lval : atom VM.t -> var -> var
 (** [subst_lval am v] replaces the lval [v] by the variable in the corresponding
@@ -1176,6 +1227,15 @@ val ssa_rbexp : int VM.t -> rbexp -> rbexp
 
 val ssa_bexp : int VM.t -> bexp -> bexp
 (** [ssa_bexp m e] updates the SSA indices of variables in [e] according to [m]. *)
+
+val ssa_ebexp_prove_with : int VM.t -> ebexp_prove_with -> ebexp_prove_with
+(** [ssa_ebexp_prove_with m e] updates the SSA indices of variables in [e] according to [m]. *)
+
+val ssa_rbexp_prove_with : int VM.t -> rbexp_prove_with -> rbexp_prove_with
+(** [ssa_rbexp_prove_with m e] updates the SSA indices of variables in [e] according to [m]. *)
+
+val ssa_bexp_prove_with : int VM.t -> bexp_prove_with -> bexp_prove_with
+(** [ssa_bexp_prove_with m e] updates the SSA indices of variables in [e] according to [m]. *)
 
 val ssa_instr : int VM.t -> instr -> int VM.t * instr
 (** [ssa_instr m i] updates the SSA indices of variables in [i] according to [m]. *)
@@ -1440,6 +1500,15 @@ val visit_rbexp : visitor -> rbexp -> rbexp
 
 val visit_bexp : visitor -> bexp -> bexp
 (** Visit a predicate by a visitor. *)
+
+val visit_ebexp_prove_with : visitor -> ebexp_prove_with -> ebexp_prove_with
+(** Visit an algebraic predicate associated with prove-with clauses by a visitor. *)
+
+val visit_rbexp_prove_with : visitor -> rbexp_prove_with -> rbexp_prove_with
+(** Visit a range predicate associated with prove-with clauses by a visitor. *)
+
+val visit_bexp_prove_with : visitor -> bexp_prove_with -> bexp_prove_with
+(** Visit a predicate associated with prove-with clauses by a visitor. *)
 
 val visit_instr : visitor -> instr -> instr
 (** Visit an instruction by a visitor. *)
