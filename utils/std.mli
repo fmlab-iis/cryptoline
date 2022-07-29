@@ -35,3 +35,9 @@ val parse_range : string -> range
 
 val tflatten : 'a list list -> 'a list
 (** A tail-recursive flatten of lists of list of elements. *)
+
+val tappend : 'a list -> 'a list -> 'a list
+(** A tail-recursive concatenation of two lists *)
+
+val tmap : ('a -> 'b) -> 'a list -> 'b list
+(** A tail-recutsive version of [List.map] *)
