@@ -468,16 +468,18 @@ val eq_bexp : bexp -> bexp -> bool
 (** {1 Instructions} *)
 
 type prove_with_spec =
-  Precondition           (** precondition *)
-| Cuts of int list       (** a list of cuts specified by cut IDs *)
-| AllCuts                (** all cuts *)
-| AllAssumes             (** all assumes *)
-| AllGhosts              (** all ghosts *) (* *)
+  Precondition                                              (** precondition *)
+| Cuts of int list                                          (** a list of cuts specified by cut IDs *)
+| AllCuts                                                   (** all cuts *)
+| AllAssumes                                                (** all assumes *)
+| AllGhosts                                                 (** all ghosts *)
+| AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
+| RangeSolver of string                                     (** range solver *) (* *)
 (** prove-with clauses *)
 
 type atom =
-  | Avar of var          (** variable *)
-  | Aconst of typ * Z.t  (** constant of a specified type *)
+  | Avar of var                                             (** variable *)
+  | Aconst of typ * Z.t                                     (** constant of a specified type *)
 (** atoms *)
 
 type instr =
@@ -822,6 +824,16 @@ val is_rcut : instr -> bool
 
 val is_annotation : instr -> bool
 (** [is_annotation i] if [i] is an annotation such as assertions. *)
+
+val algebra_solver_of_prove_with : prove_with_spec list -> Options.Std.algebra_solver
+(** [algebra_solver_of_prove_with pwss] returns the first algebra solver
+    specified in the prove-with clauses [pwss]. If no algebra solver is
+    specified, [!Options.Std.algebra_solver] is returned. *)
+
+val range_solver_of_prove_with : prove_with_spec list -> string
+(** [range_solver_of_prove_with pwss] returns the first range solver specified
+    in the prove-with clauses [pwss]. If no range solver is specified,
+    [!Options.Std.range_solver] is returned. *)
 
 module SS : Set.S with type elt = string
 (** set of strings *)
@@ -1183,25 +1195,48 @@ val dessa_spec : spec -> spec
 
 (** {1 Cuts} *)
 
-val cut_espec : espec -> (espec list) list
+val cut_espec : espec -> ((int * espec) list) list
 (**
-   [cut_espec s] cuts the algebraic specification [s] in SSA form and returns
-   a list of lists of algebraic specifications. The i-th item in the returned
-   list represents the specifications for the i-th cut. Each cut corresponds to
-   a list of algebraic specifications because different prove-with clauses may
-   be used. Note that this function removes all range properties in Icut
-   instructions.
+   [cut_espec s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the algebraic predicates in the [K]-th range cut.
+   Different algebraic specifications in [ssK] correspond to algebraic
+   predicates with different prove-with clauses in the [K]-th algebraic cut.
+   The integer associated to a returned specification is its ID.
  *)
 
-val cut_rspec : rspec -> (rspec list) list
+val cut_rspec : rspec -> ((int * rspec) list) list
 (**
-   [cut_rspec s] cuts the range specification [s] in SSA form and returns
-   a list of lists of range specifications. The i-th item in the returned
-   list represents the specifications for the i-th cut. Each cut corresponds to
-   a list of range specifications because different prove-with clauses may
-   be used. Note that this function removes all algebraic properties in Icut
-   instructions.
+   [cut_rspec s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the range predicates in the [K]-th range cut.
+   Different range specifications in [ssK] correspond to range predicates with
+   different prove-with clauses in the [K]-th range cut. The integer associated
+   to a returned specification is its ID.
  *)
+
+val cut_eassert : espec -> ((int * espec) list) list
+(**
+   [cut_eassert s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the algebraic assertions in the [K]-th algebraic cut.
+   The integer associated to a returned specification is its ID.
+ *)
+
+val cut_rassert : rspec -> ((int * rspec) list) list
+(**
+   [cut_rassert s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the range assertions in the [K]-th range cut.
+   The integer associated to a returned specification is its ID.
+ *)
+
+val cut_safety : rspec -> ((int * rspec) list) list
+(**
+   [cut_safety s] cuts the specification [s] in SSA form into
+   [[[s1]; [s2]; ...; [sN]]] where [sK] is the K-th range cut.
+   The integer associated to a returned specification is its ID.
+*)
 
 
 (** {1 Rewriting} *)

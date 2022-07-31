@@ -380,12 +380,21 @@ Sometimes a predicate has to be proved with facts that have been cut off.
   \rpredclause &  ::= & \rpred %\\
               & \mid & \rpred\ \pmb\iprove\ \pmb\iwith\ \pmb[
                        \provewith_{\pmb,}^+ \pmb]\\
-  & \mid & \rpredclause_{\pmb,}^+ \\
-  \provewith &  ::= & \pmb\precondition %\\
-              & \mid & \pmb\all\ \pmb\cuts \\
-              & \mid & \pmb\all\ \pmb\assumes %\\
-              & \mid & \pmb\all\ \pmb\ghosts \\
-              & \mid & \pmb\cuts\ \pmb[ \mN_{\pmb,}^+ \pmb]
+              & \mid & \rpredclause_{\pmb,}^+ \\
+  \cas &  ::= & \pmb\singularsolver
+              & \mid & \pmb\sagesolver \\
+              & \mid & \pmb\magmasolver
+              & \mid & \pmb\mathematicasolver \\
+              & \mid & \pmb\macaulaysolver
+              & \mid & \pmb\maplesolver \\
+  \provewith &  ::= & \pmb\precondition
+             & \mid & \pmb\all\ \pmb\cuts \\
+             & \mid & \pmb\all\ \pmb\assumes
+             & \mid & \pmb\all\ \pmb\ghosts \\
+             & \mid & \pmb\cuts\ \pmb[ \mN_{\pmb,}^+ \pmb]
+             & \mid & \pmb\algebra\ \pmb\solver\ \cas \\
+             & \mid & \pmb\algebra\ \pmb\solver\ \pmb\smt\pmb:\path
+             & \mid & \pmb\range\ \pmb\solver\ \path
 \end{array}
 \]
 Note that the indices of $\iecut$ and $\ircut$ are numbered separately

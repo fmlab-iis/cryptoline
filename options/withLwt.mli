@@ -5,10 +5,9 @@ val unix : string -> Lwt_unix.process_status Lwt.t
 (** run an Unix command *)
 
 val trace : string -> Lwt_unix.process_status Lwt.t
-(** write a message to the log file *)
+(** write a message with an ending newline to the log file *)
 
-val tracen : string -> Lwt_unix.process_status Lwt.t
-(** write a message and an ending newline to the log file *)
+val safe_trace : string -> Lwt_unix.process_status
 
 val fail : string -> 'a Lwt.t
 (** write a message to the log file and then fail with the message *)

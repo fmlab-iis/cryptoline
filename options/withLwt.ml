@@ -3,8 +3,7 @@ open Std
 
 let unix cmd = Lwt_unix.system cmd
 
-let trace msg = unix ("echo \"" ^ msg ^ "\n\" >> " ^ !logfile)
-let tracen msg = unix ("echo \"" ^ msg ^ "\" >> " ^ !logfile)
+let trace msg = unix ("echo \"" ^ msg ^ "\" >> " ^ !logfile)
 
 let fail s = let%lwt _ = trace s in failwith s
 
@@ -32,3 +31,11 @@ let log_unlock () =
 let cleanup_lwt files =
   if not !keep_temp_files then Lwt_list.iter_p Lwt_unix.unlink files
   else Lwt.return_unit
+
+let safe_trace msg =
+  let res =
+    let%lwt _ = log_lock () in
+    let%lwt res = trace msg in
+    let%lwt _ = log_unlock () in
+    Lwt.return res in
+  Lwt_main.run res

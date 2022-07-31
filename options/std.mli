@@ -3,6 +3,9 @@
 
 open Utils
 
+exception UnknownAlgebraSolver of string
+(** Raised if an unknown algebra solver is specified *)
+
 (** {1 General Options} *)
 
 val apply_slicing : bool ref
@@ -37,6 +40,12 @@ val verify_racuts : (int Hashset.t) option ref
 
 val verify_scuts : (int Hashset.t) option ref
 (** Limit the safety conditions to be verified in the specified range cuts *)
+
+val verify_eassert_ids : (int Hashset.t) option ref
+(** Skip algebraic assertions not in the specified IDs *)
+
+val verify_rassert_ids : (int Hashset.t) option ref
+(** Skip range assertions not in the specified IDs *)
 
 val verify_safety_ids : (int Hashset.t) option ref
 (** Skip safety conditions not in the specified IDs *)
@@ -105,6 +114,10 @@ val algebra_solver_args : string ref
 
 val string_of_algebra_solver : algebra_solver -> string
 (** string representation of an algebra solver *)
+
+val parse_algebra_solver : string -> algebra_solver
+(** Parse a string as an algebra solver. Raise [UnknownSolverException] if the
+    string is not a solver. *)
 
 val singular_path : string ref
 (** the path to Singular *)

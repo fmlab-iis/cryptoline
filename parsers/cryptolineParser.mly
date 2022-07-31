@@ -1253,7 +1253,7 @@
 
 %token <string> COMMENT
 %token <Z.t> NUM
-%token <string> ID
+%token <string> ID PATH
 %token <int> UINT SINT
 %token BIT
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
@@ -1271,7 +1271,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
-%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP
+%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF
 
 %left LOROP
@@ -1722,6 +1722,15 @@ prove_with_spec:
   | ALL CUTS                                      { fun _ -> AllCuts }
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
+  | ALGEBRA SOLVER ID                             { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver $3) }
+  | ALGEBRA SOLVER SMT COLON path                 { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver ("smt:" ^ $5)) }
+  | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
+  | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
+;
+
+path:
+    ID                                            { $1 }
+  | PATH                                          { $1 }
 ;
 
 bexp:

@@ -89,6 +89,8 @@ let args = [
     ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
+    ("-vea", String (fun str -> verify_eassert_ids := Some (str_to_ids str)),
+     Common.mk_arg_desc(["INDICES"; "Verify algebraic assertions of specific IDs."]));
     ("-veacuts", String (fun str -> verify_eacuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the algebraic assertions between the (i-1)-th cut (or";
@@ -96,16 +98,18 @@ let args = [
     ("-vrcuts", String (fun str -> verify_rcuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified range cuts (comma separated). The indices";
                          "start with 0. The range postcondition is the last cut."]));
+    ("-vra", String (fun str -> verify_rassert_ids := Some (str_to_ids str)),
+     Common.mk_arg_desc(["INDICES"; "Verify range assertions of specific IDs."]));
     ("-vracuts", String (fun str -> verify_racuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified range assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the range assertions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
+     ("-vs", String (fun str -> verify_safety_ids := Some (str_to_ids str)),
+      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety. Note"; "that -vscuts may change the IDs of safety conditions."]));
     ("-vscuts", String (fun str -> verify_scuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify safety of instructions before the specified cuts (comma";
                          "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
-                         "the precondition if i = 0) and the i-th cut will be checked."]));
-     ("-vs", String (fun str -> verify_safety_ids := Some (str_to_ids str)),
-      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety."]))
+                         "the precondition if i = 0) and the i-th cut will be checked."]))
   ]@Common.args
 let args = List.sort Pervasives.compare args
 

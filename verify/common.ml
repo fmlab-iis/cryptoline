@@ -1786,5 +1786,5 @@ let redlog_of_espec es =
                        "rlwqe phi;" ]
 
 let redlog_of_espec es =
-  let ess = cut_espec es in
+  let ess = cut_espec es |> List.map List.split |> List.map snd in
   String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
