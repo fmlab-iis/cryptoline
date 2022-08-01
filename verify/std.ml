@@ -5,6 +5,7 @@ open Qfbv.Common
 open Qfbv.Std
 open Common
 open Utils
+open Utils.Std
 
 (*
  * `apply_to_cuts ids vf res combine cuts` applies verifiction function vf to cuts with ID specified in ids.
@@ -14,18 +15,17 @@ open Utils
  *)
 let apply_to_cuts ids f res ss =
   let ids = ids |> Option.map Hashset.to_list |> Option.map (List.map (normalize_index (List.length ss))) |> Option.map Hashset.of_list in
+  (* [helper i res ss] verifies the [i]-th cut [ss]. [res] is the previous result. *)
   let rec helper i res ss =
     match ss with
     | [] -> res
-    | hd::tl ->
-       match ids with
-       | Some ids when not (Hashset.mem ids i) ->
-          let _ = trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
-          helper (i+1) res tl
-       | _ ->
-          let _ = trace ("=== Cut #" ^ string_of_int i ^ " ===") in
-          let res = List.fold_left (f i) res hd in
-          helper (i+1) res tl in
+    | hd::tl -> if Options.Std.mem_hashset_opt ids i then
+                  let _ = trace ("=== Cut #" ^ string_of_int i ^ " ===") in
+                  let res = List.fold_left (f i) res hd in
+                  helper (i+1) res tl
+                else
+                  let _ = trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+                  helper (i+1) res tl in
   helper 0 res ss
 
 (** Verification *)
@@ -33,6 +33,7 @@ let apply_to_cuts ids f res ss =
 (*
  * Verify the safety of the n-th instruction in a program in SSA.
  * Raise TimeoutException if the SMT solver timed out.
+ * Currently, this function is only used in the CLI mode.
  *)
 let verify_instruction_safety timeout sid f p n hashopt =
   let do_verify f p q =
@@ -51,11 +52,12 @@ let verify_instruction_safety timeout sid f p n hashopt =
   do_verify f p q
 
 (*
-   f: precondition
-   p: program
-   qs: safety conditions
+ * Verify safety conditions [qs].
+ * f: precondition
+ * p: program
+ * qs: safety conditions
  *)
-let verify_safety_inc timeout f p qs hashopt =
+let verify_safety_conditions timeout f p qs hashopt =
   let add_unsolved q res =
     match res with
     | Solved Unsat -> Unfinished [q]
@@ -92,61 +94,72 @@ let verify_safety_inc timeout f p qs hashopt =
   let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
 
+(*
+ * Verify safety conditions incrementally.
+ * sid: the ID of the next safety condition
+ * s: the specification to be verified
+ *)
+let verify_safety_inc sid s hashopt =
+  let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
+  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
+  let round = ref 1 in
+  let timeout = ref !incremental_safety_timeout in
+  let safety = ref None in
+  let all_conds = bexp_program_safe_conds s.rsprog in
+  let next_sid = sid + List.length all_conds in
+  let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
+  let _ =
+    while !safety = None do
+      let _ = trace ("Round: " ^ string_of_int !round ^ "\n"
+                     ^ "Timeout: " ^ string_of_int !timeout ^ "\n"
+                     ^ "Number of safety conditions to be verified: " ^ string_of_int (List.length !qs)) in
+      let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
+                        ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
+                        ^ string_of_int !timeout ^ " seconds)") in
+      let res =
+        if !jobs > 1 then
+          WithLwt.verify_safety_conditions !timeout s.rspre s.rsprog !qs hashopt
+        else
+          verify_safety_conditions !timeout s.rspre s.rsprog !qs hashopt in
+      let _ =
+        match res with
+          Solved r -> safety := if r = Unsat then Some true else Some false
+        | Unfinished rest ->
+           qs := List.sort
+                   (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
+                   rest in
+      let _ = round := !round + 1 in
+      let _ = timeout := !timeout * 2 in
+      ()
+    done in
+  let res =
+    match !safety with
+    | Some r -> r
+    | None -> assert false in
+  (res, next_sid)
+
+(* Verify safety conditions as a single predicate. *)
+let verify_safety_all_in_one sid s hashopt =
+  let t1 = Unix.gettimeofday() in
+  let g = bexp_program_safe s.rsprog in
+  let fp = safety_assumptions s.rspre s.rsprog g hashopt in
+  let res = solve_simp (fp@[g]) = Unsat in
+  let t2 = Unix.gettimeofday() in
+  let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+  (res, sid + 1)
+
+(* The top function of verifying safety conditions. *)
 let verify_safety s hashopt =
   let _ = trace "===== Verifying program safety =====" in
   let _ = if !incremental_safety then vprintln "" in
-  let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
-  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
   let verify_safety_without_cuts cid (_, sid) s =
     let _ = if !incremental_safety then let _ = trace ("=== Verifying program safety incrementally: Cut #" ^ string_of_int cid ^ " ===") in
                                         vprintln ("\t Cut " ^ string_of_int cid) in
-    if !incremental_safety && !Options.Std.use_cli then
-      WithLwt.verify_safety_cli sid s.rspre s.rsprog
-    else if !incremental_safety then
-      let round = ref 1 in
-      let timeout = ref !incremental_safety_timeout in
-      let safety = ref None in
-      let all_conds = bexp_program_safe_conds s.rsprog in
-      let next_sid = sid + List.length all_conds in
-      let qs = ref (all_conds |> List.rev_map (add_offset_to_safety_ids sid) |> List.rev |> List.filter in_verify_safety_ids) in
-      let _ =
-        while !safety = None do
-          let _ = trace ("Round: " ^ string_of_int !round ^ "\n"
-                         ^ "Timeout: " ^ string_of_int !timeout ^ "\n"
-                         ^ "Number of safety conditions to be verified: " ^ string_of_int (List.length !qs)) in
-          let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
-                                 ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
-                                 ^ string_of_int !timeout ^ " seconds)") in
-          let res =
-            if !jobs > 1 then
-              WithLwt.verify_safety_inc !timeout s.rspre s.rsprog !qs hashopt
-            else
-              verify_safety_inc !timeout s.rspre s.rsprog !qs hashopt in
-          let _ =
-            match res with
-              Solved r -> safety := if r = Unsat then Some true else Some false
-            | Unfinished rest ->
-               qs := List.sort
-                       (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
-                       rest in
-          let _ = round := !round + 1 in
-          let _ = timeout := !timeout * 2 in
-          ()
-        done in
-      let res =
-        match !safety with
-        | Some r -> r
-        | None -> assert false in
-      (res, next_sid)
-    else
-      let t1 = Unix.gettimeofday() in
-      let g = bexp_program_safe s.rsprog in
-      let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-      let res = solve_simp (fp@[g]) = Unsat in
-      let t2 = Unix.gettimeofday() in
-      let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
-      (res, sid + 1) in
-  (* Check previous result *)
+    if !incremental_safety then
+      if !jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_cli sid s.rspre s.rsprog
+      else verify_safety_inc sid s hashopt
+    else verify_safety_all_in_one sid s hashopt in
+  (* Check previous result, cid: cut id, sid: id of the next safety condition *)
   let verify_safety_without_cuts cid (res, sid) (_, s) =
     if res then verify_safety_without_cuts cid (res, sid) s
     else (res, sid) in
@@ -470,31 +483,34 @@ let is_in_ideal ?(solver=(!algebra_solver)) vars ideal p =
   let _ = cleanup [ifile; ofile] in
   res
 
+(* Applied in this function: slicing, solving *)
 let verify_rspec_single_conjunct s hashopt =
-  let solver = range_solver_of_prove_with s.rspwss in
-  let verify_one s =
+  let verify s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
-    let g = bexp_rbexp s.rspost in
+    let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
     let _ = trace ("Range condition: " ^ string_of_bexp g) in
+    let solver = range_solver_of_prove_with (rbexp_prove_with_specs s.rspost) in
     solve_simp ~solver:solver (f::p@[g]) = Unsat in
-  is_rspec_trivial s ||
-    (if !apply_slicing then verify_one (slice_rspec_ssa s hashopt)
-     else verify_one s)
+  (is_rspec_trivial s) ||
+    (verify (if !apply_slicing then slice_rspec_ssa s hashopt else s))
 
+(* Applied in this function: split conjunctions *)
 let verify_rspec_without_cuts hashopt s =
   let verify res s = if res then verify_rspec_single_conjunct s hashopt
                      else res in
   List.fold_left verify true (split_rspec_post s)
 
+(* Applied in this function: split cuts *)
 let verify_rspec_with_cuts hashopt s =
   (* Check previous result *)
   let verify _ res (sid, s) =
-    if res then let _ = trace ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp s.rspost ^ " =") in
+    if res then let _ = trace ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =") in
                 verify_rspec_without_cuts hashopt s
     else res in
   apply_to_cuts !verify_rcuts verify true (cut_rspec s)
 
+(* The top function of verifying range specifications when !jobs <= 1 *)
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specifications =====" in
   verify_rspec_with_cuts hashopt s
@@ -509,17 +525,19 @@ let verify_entailments ?(solver=(!algebra_solver)) entailments =
       )
       else res) true entailments
 
-(* Verify an algebraic specification using a computer algebra system. *)
+(* Verify an algebraic specification using a computer algebra system.
+   Applied in this function: converting to ideal membership problems, polynomial rewriting, solving *)
 let verify_espec_single_conjunct_ideal vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  verify_entailments ~solver:(algebra_solver_of_prove_with s.espwss) entailments
+  verify_entailments ~solver:(algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost)) entailments
 
-(* Verify an algebraic specification using a specified SMT solver. *)
+(* Verify an algebraic specification using a specified SMT solver.
+   Applied in this function: solving *)
 let verify_espec_single_conjunct_smt solver vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
   let ifile = tmpfile "inputfgb_" ".smt2" in
   let ofile = tmpfile "outputfgb_" "" in
-  let _ = trace ("algebraic condition: " ^ string_of_ebexp s.espost) in
+  let _ = trace ("algebraic condition: " ^ string_of_ebexp_prove_with s.espost) in
   let _ =
     let ch = open_out ifile in
     let _ = output_string ch smtlib; close_out ch in
@@ -539,63 +557,74 @@ let verify_espec_single_conjunct_smt solver vgen s =
   res
 
 (* Verify an algebraic specification. The solver used can be specified in the
-   prove-with clauses of the specification *)
+   prove-with clauses of the specification.
+   Applied in this function: slicing *)
 let verify_espec_single_conjunct vgen s hashopt =
-  let verify_one =
-    match algebra_solver_of_prove_with s.espwss with
+  let verify =
+    match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
   is_espec_trivial s ||
-    (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
-     else verify_one vgen s)
+    (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))
 
+(* Applied in this function:
+   - With two_phase_rewriting: converting to ideal membership problems, polynomial rewriting, slicing, solving
+   - Without two_phase_rewriting: split conjunctions *)
 let verify_espec_without_cuts hashopt vgen s =
   if !Options.Std.two_phase_rewriting then
     let s = remove_trivial_epost s in
-    if s.espost = Etrue then true
-    else
-      let (s, sliced) =
-        match s.espost with
-        | Eand _ -> (s, false)
-        | _ -> (slice_espec_ssa s None, true) in
-      (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
-      let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-      verify_entailments ~solver:(algebra_solver_of_prove_with s.espwss) entailments
+    match s.espost with
+    | [] -> true
+    | (e, pwss)::[] ->
+       let (s, sliced) =
+         match e with
+         | Eand _ -> (s, false)
+         | _ -> (slice_espec_ssa s None, true) in
+       (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
+       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+       verify_entailments ~solver:(algebra_solver_of_prove_with pwss) entailments
+    | _ -> assert false
   else
     let verify res s =
       if res then verify_espec_single_conjunct vgen s hashopt
       else res in
     List.fold_left verify true (split_espec_post s)
 
+(* Applied in this function: split cuts *)
 let verify_espec_with_cuts hashopt vgen s =
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify _ res (sid, s) =
-    if res then let _ = trace ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp s.espost ^ " =") in
+    if res then let _ = trace ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =") in
                 verify_espec_without_cuts hashopt vgen s
     else res in
   apply_to_cuts !verify_ecuts verify true (cut_espec s)
 
+(* The top function of verifying algebraic specifications when !jobs <= 1 *)
 let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specifications =====" in
   verify_espec_with_cuts hashopt vgen s
 
+(* The top function of verifying algebraic assertions when !jobs <= 1.
+   Applied in this function: split cuts *)
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify _ res (sid, s) =
     if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid then
-      let _ = trace ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp s.espost ^ " =") in
+      let _ = trace ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " =") in
       verify_espec_without_cuts hashopt vgen s
     else
       res in
   apply_to_cuts !verify_eacuts verify true (cut_eassert (espec_of_spec s))
 
+(* The top function of verifying range assertions when !jobs <= 1.
+   Applied in this function: split cuts *)
 let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify _ res (sid, s) =
     if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid then
-      let _ = trace ("= Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp s.rspost ^ " =") in
+      let _ = trace ("= Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " =") in
       verify_rspec_without_cuts hashopt s
     else
       res in

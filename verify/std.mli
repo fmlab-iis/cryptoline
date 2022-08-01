@@ -9,7 +9,8 @@ open Ast.Cryptoline
 val verify_safety : spec -> VS.t atomhash_t option -> bool
 (** [verify_safety s o] is [true] if the safety conditions of the specification
     [s] in SSA are verified successfully. Depending on {!Options.Std.jobs},
-    either {!verify_safety_inc} or {!WithLwt.verify_safety_inc} is invoked. *)
+    either {!verify_safety_conditions} or {!WithLwt.verify_safety_conditions}
+    is invoked. *)
 
 val verify_spec : spec -> bool
 (** [verify_spec s] is [true] if the specification [s] is valid. SSA
@@ -22,7 +23,7 @@ val verify_spec : spec -> bool
 
 (** {1 Sequential Verification Functions} *)
 
-val verify_safety_inc :
+val verify_safety_conditions :
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->

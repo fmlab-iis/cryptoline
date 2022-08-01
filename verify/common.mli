@@ -35,7 +35,8 @@ type poly_spec =
 (** a specification composed of polynomial equations *)
 
 val bv2z_espec : var_gen -> espec -> var_gen * poly_spec
-(** Convert an algebraic specification to a system of polynomial equations. *)
+(** Convert an algebraic specification to a system of polynomial equations.
+    All prove-with clauses are ignored. *)
 
 val polys_of_espec :
   var_gen -> Ast.Cryptoline.espec ->
@@ -44,6 +45,7 @@ val polys_of_espec :
        Ast.Cryptoline.eexp) list
 (**
    Convert an algebraic specification to polynomials for ideal membership query.
+   All prove-with clauses are ignored.
    @return a list [(g1, (p1, vs1, es1, e1)), ..., (gn, (pn, vsn, esn, en))]
            where [gi] is the updated variable name generator, [pi] is an atomic
            predicate in the postcondition of the input specification, [vsi] is

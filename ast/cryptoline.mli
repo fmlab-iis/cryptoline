@@ -432,10 +432,10 @@ val eq_rbexp : rbexp -> rbexp -> bool
 (** [eq_rbexp e1 e2] is [true] if [e1] and [e2] are equal. *)
 
 val split_rand : rbexp -> rbexp list
-(** [split_rand e] splits the top-level conjunction of [e]. *)
+(** [split_rand e] splits the top-level conjunctions in [e]. *)
 
 val split_ror : rbexp -> rbexp list
-(** [split_rand e] splits the top-level disjunction of [e]. *)
+(** [split_rand e] splits the top-level disjunctions in [e]. *)
 
 
 (** {1 Predicates} *)
@@ -482,6 +482,34 @@ type rbexp_prove_with = (rbexp * prove_with_spec list) list
 
 type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
 (** Predicates associated with prove-with clauses *)
+
+val simplify_prove_with_specs : prove_with_spec list -> prove_with_spec list
+(** [simplify_prove_with_specs pwss] simplifies [pwss]. *)
+
+val ebexp_prove_with_eands : ebexp_prove_with -> ebexp
+(** [ebexp_prove_with_eands es] is the conjunction of all algebraic predicates in [es]. *)
+
+val ebexp_prove_with_specs : ebexp_prove_with -> prove_with_spec list
+(** [ebexp_prove_with_specs es] is a list of prove-with clauses in [es]. *)
+
+val rbexp_prove_with_rands : rbexp_prove_with -> rbexp
+(** [rbexp_prove_with_rands rs] is the conjunction of all range predicates in [rs]. *)
+
+val rbexp_prove_with_specs : rbexp_prove_with -> prove_with_spec list
+(** [rbexp_prove_with_specs rs] is a list of prove-with clauses in [rs]. *)
+
+val merge_ebexp_prove_with : ebexp_prove_with -> ebexp * prove_with_spec list
+(** [merge_ebexp_prove_with espwss] is [(es, pwss)] where [es] is the
+    conjunction of algebraic predicates in [espwss] and [pwss] is a list of
+    prove-with clauses in [espwss]. *)
+
+val merge_rbexp_prove_with : rbexp_prove_with -> rbexp * prove_with_spec list
+(** [merge_rbexp_prove_with rspwss] is [(rs, pwss)] where [rs] is the
+    conjunction of range predicates in [rspwss] and [pwss] is a list of
+    prove-with clauses in [rspwss]. *)
+
+val merge_bexp_prove_with : bexp_prove_with -> (ebexp * prove_with_spec list) * (rbexp * prove_with_spec list)
+(** [merge_bexp_prove_with (es, rs)] is [(merge_ebexp_prove_with es, merge_rbexp_prove_with rs)] *)
 
 
 (** {1 Instructions} *)
@@ -775,7 +803,9 @@ type instr =
                               {- Algebra: v = a1 × 2{^size a1} + a2}}
    - [Iassert e]: Verify an assertion.
    - [Iassume e]: Assume a condition.
-   - [Icut (es, rs)]: Verify a condition. Discard everything before this cut and make the condition the precondition when verifying the following program. [Icut ([], rs)] is a cut only on the range specification. [Icut (es, [])] is a cut only on the algebraic specification.
+   - [Icut (es, rs)]: Verify a condition. Discard everything before this cut and make the condition the precondition when
+                      verifying the following program. [Icut ([], rs)] is a cut only on the range specification.
+                      [Icut (es, [])] is a cut only on the algebraic specification.
    - [Ighost (gvs, e)]: Introduce ghost variables and assume a condition.
 *)
 
@@ -859,9 +889,7 @@ type spec =
   {
     spre : bexp;                       (** precondition *)
     sprog : program;                   (** program *)
-    spost : bexp;                      (** postcondition *)
-    sepwss : prove_with_spec list;     (** prove-with clauses for algebraic postcondition *)
-    srpwss : prove_with_spec list      (** prove-with clauses for range postcondition *) (* *)
+    spost : bexp_prove_with            (** postcondition associated with prove-with clauses *) (* *)
   }
 (** specification *)
 
@@ -869,8 +897,7 @@ type espec =
   {
     espre : ebexp;                     (** precondition *)
     esprog : program;                  (** program *)
-    espost : ebexp;                    (** postcondition *)
-    espwss : prove_with_spec list      (** prove-with clauses for algebraic postcondition *) (* *)
+    espost : ebexp_prove_with          (** postcondition associated with prove-with clauses *) (* *)
   }
 (** algebraic specification *)
 
@@ -878,8 +905,7 @@ type rspec =
   {
     rspre : rbexp;                     (** precondition *)
     rsprog : program;                  (** program *)
-    rspost : rbexp;                    (** postcondition *)
-    rspwss : prove_with_spec list      (** prove-with clauses for range postcondition *) (* *)
+    rspost : rbexp_prove_with          (** postcondition associated with prove-with clauses *) (* *)
   }
 (** range specification *)
 
@@ -1578,16 +1604,22 @@ val normalize_rspec : rspec -> rspec
 (** {1 Trivial Specification} *)
 
 val espre_implies_espost : ebexp -> ebexp -> bool
-(** [espre_implies_espost pre post] is [true] if [post] appears in [pre]. *)
-
-val espost_in_assumes : program -> ebexp -> bool
-(** [espost_in_assumes p post] is [true] if [post] appears in some assume instruction in [p]. *)
+(** [espre_implies_espost pre post] is [true] if every atomic predicate of
+    [post] appears in [pre]. *)
 
 val rspre_implies_rspost : rbexp -> rbexp -> bool
-(** [rspre_implies_rspost pre post] is [true] if [post] appears in [pre] but is not a sub-predicate of some disjunction. *)
+(** [rspre_implies_rspost pre post] is [true] if every largest predicate in
+    [post] containing no conjunction appears in [pre] but not in any
+    [Ror]-predicate. *)
+
+val espost_in_assumes : program -> ebexp -> bool
+(** [espost_in_assumes p post] is [true] if every atomic predicate of [post]
+    appears in some assume instruction in [p]. *)
 
 val rspost_in_assumes : program -> rbexp -> bool
-(** [espost_in_assumes p post] is [true] if [post] appears in some assume instruction in [p] but is not a sub-predicate of some disjunction. *)
+(** [espost_in_assumes p post] is [true] if every largest predicate in [post]
+    containing no conjunction appears in some assume instruction in [p] but
+    not in any [Ror]-predicate. *)
 
 val is_espec_trivial : espec -> bool
 (** [is_espec_trivial s] is [true] if the algebraic specification [s] is trivially valid. *)
@@ -1596,10 +1628,12 @@ val is_rspec_trivial : rspec -> bool
 (** [is_rspec_trivial s] is [true] if the range specification [s] is trivially valid. *)
 
 val remove_trivial_epost : espec -> espec
-(** [remove_trivial_epost s] removes trivally-valid atomic predicates in the postcondition of the algebraic specification [s]. *)
+(** [remove_trivial_epost s] removes trivally-valid atomic predicates in the
+    postcondition of the algebraic specification [s]. *)
 
 val remove_trivial_rpost : rspec -> rspec
-(** [remove_trivial_rpost s] removes trivally-valid atomic predicates in the postcondition of the range specification [s]. *)
+(** [remove_trivial_rpost s] removes trivally-valid atomic predicates in the
+    postcondition of the range specification [s]. *)
 
 
 (** {1 Others} *)
@@ -1611,10 +1645,12 @@ val auto_cast_program : ?preserve:bool -> program -> program
 *)
 
 val split_espec_post : espec -> espec list
-(** [split_espec_post s] splits the postcondition of [s] into atomic predicates and makes an atomic predicate an [espec] *)
+(** [split_espec_post s] splits the postcondition of [s] into atomic predicates
+    and makes an atomic predicate an [espec]. *)
 
 val split_rspec_post : rspec -> rspec list
-(** [split_rspec_post s] splits the postcondition of [s] into atomic predicates and makes an atomic predicate an [rspec] *)
+(** [split_rspec_post s] splits the top level conjunctions in the postcondition
+    of [s] and makes a largest predicate containing no conjunction an [rspec]. *)
 
 val separate_assertions : spec -> spec list
 (**

@@ -24,9 +24,7 @@
       fgm : Ast.Cryptoline.var SM.t; (* a map from a name to a ghost variable *)
       fbody : lined_program;
       fpre : bexp;
-      fpost : bexp;
-      fepwss : prove_with_spec list;
-      frpwss : prove_with_spec list }
+      fpost : bexp_prove_with }
 
   let (--) i j =
     let rec aux n acc =
@@ -1307,7 +1305,7 @@ spec:
     let (fm, _cm) = $1 SM.empty SM.empty in
     try
       let m = SM.find main fm in
-      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost; sepwss = m.fepwss; srpwss = m.frpwss })
+      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost })
     with Not_found ->
       raise (ParseError "A main function is required.")
   }
@@ -1344,9 +1342,9 @@ proc:
           | None -> btrue
           | Some e -> e in
         let (vm, ym, gm, p) = parse_instrs $8 fm cm vm ym gm in
-        let (g, epwss, rpwss) =
+        let g =
           match $9 cm vm ym gm with
-          | None -> (btrue, [], [])
+          | None -> ([], [])
           | Some e -> e in
         (SM.add fname { fname = fname;
                         fargs = args;
@@ -1356,9 +1354,7 @@ proc:
                         fgm = gm;
                         fbody = p;
                         fpre = f;
-                        fpost = g;
-                        fepwss = epwss;
-                        frpwss = rpwss } fm, cm)
+                        fpost = g } fm, cm)
   }
   | CONST ID EQOP const
   {
@@ -1378,7 +1374,7 @@ pre:
 ;
 
 post:
-    LBRAC bexp_prove_with RBRAC                   { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
+    LBRAC bexp_prove_with_list RBRAC              { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
   |                                               { fun _cm _vm _ym _gm -> None }
 ;
 

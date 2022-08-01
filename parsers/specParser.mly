@@ -63,7 +63,7 @@ espec:
   epre program epost
   {
     let (post, pwss) = $3 in
-    { espre = $1; esprog = $2; espost = post; espwss = pwss }
+    { espre = $1; esprog = $2; espost = [(post, pwss)] }
   }
 ;
 
@@ -71,7 +71,7 @@ rspec:
   rpre program rpost
   {
     let (post, pwss) = $3 in
-    { rspre = $1; rsprog = $2; rspost = post; rspwss = pwss }
+    { rspre = $1; rsprog = $2; rspost = [(post, pwss)] }
   }
 ;
 

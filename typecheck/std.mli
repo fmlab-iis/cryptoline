@@ -4,27 +4,23 @@ open Ast.Cryptoline
 type spec =
   { spre : bexp;
     sprog : lined_program;
-    spost : bexp;
-    sepwss : prove_with_spec list;
-    srpwss : prove_with_spec list }
+    spost : bexp_prove_with }
 
 type espec =
   { espre : ebexp;
     esprog : lined_program;
-    espost : ebexp;
-    espwss : prove_with_spec list }
+    espost : ebexp_prove_with }
 
 type rspec =
   { rspre : rbexp;
     rsprog : lined_program;
-    rspost : rbexp;
-    rspwss : prove_with_spec list }
+    rspost : rbexp_prove_with }
 
 (** Well-formedness *)
 
 type ill_formed = IllPrecondition of bexp
                 | IllInstruction of instr
-                | IllPostcondition of bexp
+                | IllPostcondition of bexp_prove_with
 val chain_reasons : (string option) list -> string option
 val check_const_range : int -> typ -> Z.t -> string option
 val check_unsigned_var : var -> string option

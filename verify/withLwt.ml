@@ -6,6 +6,7 @@ open Qfbv.Common
 open Qfbv.WithLwt
 open Common
 open Utils
+open Utils.Std
 (* open Lwt.Infix *)
 
 type task = unit -> bool Lwt.t
@@ -70,21 +71,17 @@ let apply_to_cuts_lwt ids f delivered_helper res pending ss =
   let rec helper i (res, pending) ss =
     match ss with
     | [] -> finish_pending delivered_helper res pending
-    | hd::tl ->
-       begin
-         match ids with
-         | Some ids when not (Hashset.mem ids i) ->
-            let _ = safe_trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
-            helper (i+1) (res, pending) tl
-         | _ ->
-            let cut_header = ("=== Cut #" ^ string_of_int i ^ " ===") in
-            let (res, pending) = List.fold_left (f [cut_header]) (res, pending) hd in
-            helper (i+1) (res, pending) tl
-       end in
+    | hd::tl -> if Options.Std.mem_hashset_opt ids i then
+                  let cut_header = ("=== Cut #" ^ string_of_int i ^ " ===") in
+                  let (res, pending) = List.fold_left (f [cut_header]) (res, pending) hd in
+                  helper (i+1) (res, pending) tl
+                else
+                  let _ = safe_trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+                  helper (i+1) (res, pending) tl in
   helper 0 (res, pending) ss
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_inc timeout f prog qs hashopt =
+let verify_safety_conditions timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
     let t1 = Unix.gettimeofday() in
     let header = ["= Safety condition #" ^ string_of_int id ^ " =";
@@ -546,20 +543,17 @@ let is_in_ideal ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
    @return a bool promise
  *)
 let verify_rspec_single_conjunct header s hashopt =
-  let solver = range_solver_of_prove_with s.rspwss in
+  let solver = range_solver_of_prove_with (List.split s.rspost |> snd |> tflatten) in
   let verify_one header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
-    let g = bexp_rbexp s.rspost in
+    let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
     let rheader = ["Range condition: " ^ string_of_bexp g] in
     let%lwt r = solve_simp ~solver:solver ~header:(header@rheader) (f::p@[g]) in
     Lwt.return (r = Unsat) in
   let t1 = Unix.gettimeofday() in
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
-                else
-                  (if !apply_slicing
-                   then verify_one header (slice_rspec_ssa s hashopt)
-                   else verify_one header s) in
+                else verify_one header (if !apply_slicing then slice_rspec_ssa s hashopt else s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
@@ -576,19 +570,8 @@ let verify_rspec_single_conjunct header s hashopt =
    @return a list of [task]
  *)
 let verify_rspec_no_rcut header s hashopt : task list =
-  let rec verify_ands header s =
-    match s.rspost with
-    | Rand (e1, e2) ->
-       let tasks1 = verify_ands header
-                      { rspre = s.rspre; rsprog = s.rsprog; rspost = e1;
-                        rspwss = s.rspwss } in
-       let tasks2 = verify_ands header
-                      { rspre = s.rspre; rsprog = s.rsprog; rspost = e2;
-                        rspwss = s.rspwss } in
-       List.rev_append (List.rev tasks1) tasks2
-    | _ ->
-       [fun () -> verify_rspec_single_conjunct header s hashopt] in
-  verify_ands header s
+  let verify s = fun () -> verify_rspec_single_conjunct header s hashopt in
+  List.map verify (split_rspec_post s)
 
 let verify_entailment ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
   let eheader = ["Algebraic condition: " ^ string_of_ebexp post;
@@ -603,7 +586,7 @@ let verify_entailment ?(solver=(!Options.Std.algebra_solver)) headers (post, var
 (* Verify an algebraic specification using a computer algebra system. *)
 let verify_espec_single_conjunct_ideal headers vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  let solver = algebra_solver_of_prove_with s.espwss in
+  let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   Lwt_list.for_all_p (fun entailment -> verify_entailment ~solver:solver headers entailment) entailments
 
 (* Verify an algebraic specification using a specified SMT solver. *)
@@ -623,7 +606,7 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
     let%lwt _ =
       let%lwt _ = Options.WithLwt.log_lock () in
       let%lwt _ = write_header_to_log cut_headers in
-      let%lwt _ = Options.WithLwt.trace ("algebraic condition: " ^ string_of_ebexp s.espost) in
+      let%lwt _ = Options.WithLwt.trace ("algebraic condition: " ^ string_of_ebexp_prove_with s.espost) in
       let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
       let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile) in
       let%lwt _ = Options.WithLwt.trace "" in
@@ -642,15 +625,12 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
  *)
 let verify_espec_single_conjunct cut_headers vgen s hashopt =
   let verify_one =
-    match algebra_solver_of_prove_with s.espwss with
+    match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
   let t1 = Unix.gettimeofday() in
   let%lwt res = if is_espec_trivial s then Lwt.return_true
-                else
-                  (if !apply_slicing
-                   then verify_one cut_headers vgen (slice_espec_ssa s hashopt)
-                   else verify_one cut_headers vgen s) in
+                else verify_one cut_headers vgen (if !apply_slicing then slice_espec_ssa s hashopt else s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
@@ -663,50 +643,38 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
  *)
 let verify_espec_no_ecut headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
-    let solver = algebra_solver_of_prove_with s.espwss in
+    let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
     let mk_task entailment = fun () -> verify_entailment ~solver:solver headers entailment in
     let s = remove_trivial_epost s in
     (* We don't need the full is_espec_trivial test. espre_implies_espost and espost_in_assumes are considered in remove_trivial_epost. *)
-    if s.espost = Etrue then []
-    else
-      let (s, sliced) =
-        match s.espost with
-        | Eand _ -> (s, false)
-        | _ ->
-           (* If the postcondition is an atomic predicate, apply slicing at the beginning. *)
-           (slice_espec_ssa s None, true) in
-      (* Convert to ideal membership problems, rewriting and slicing (if the postcondition is a conjunction) are done in polys_of_espec_two_phase. *)
-      let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-      let tasks = List.rev (List.rev_map mk_task entailments) in
-      tasks
+    match s.espost with
+    | [] -> []
+    | (e, _)::[] ->
+       let (s, sliced) =
+         match e with
+         | Eand _ -> (s, false)
+         | _ ->
+            (* If the postcondition is an atomic predicate, apply slicing at the beginning. *)
+            (slice_espec_ssa s None, true) in
+       (* Convert to ideal membership problems, rewriting and slicing (if the postcondition is a conjunction) are done in polys_of_espec_two_phase. *)
+       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+       let tasks = tmap mk_task entailments in
+       tasks
+    | _ -> assert false
   else
-    let rec verify_ands headers vgen s hashopt =
+    let verify_task s =
       match s.espost with
-      | Eand (e1, e2) ->
-         let tasks1 = verify_ands headers vgen
-                        { espre = s.espre; esprog = s.esprog;
-                          espost = e1; espwss = s.espwss } hashopt in
-         let tasks2 = verify_ands headers vgen
-                        { espre = s.espre; esprog = s.esprog;
-                          espost = e2; espwss = s.espwss } hashopt in
-         List.rev_append (List.rev tasks1) tasks2
-      | Etrue ->
-         (* It is important to return the empty list in this case so that the
-            verification of algebraic assertions will be much faster for
-            programs with only range assertions (i.e., all algebraic assertions
-            are simply Etrue). Otherwise, a trivial task will be created and
-            inserted to the task queue. *)
-         []
-      | _ ->
-         [fun () -> verify_espec_single_conjunct headers vgen s hashopt] in
-    verify_ands headers vgen s hashopt
+      | [] -> []
+      | _ -> [fun () -> verify_espec_single_conjunct headers vgen s hashopt] in
+    tmap verify_task (split_espec_post s) |> tflatten
 
+(* The top function of verifying algebraic assertions when !jobs > 1. *)
 let verify_eassert vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks headers (sid, s) =
     let headers = headers@["= Algebraic assertion #" ^ string_of_int sid ^ ": " ^
-                             Ast.Cryptoline.string_of_ebexp s.espost ^ " ="] in
+                             Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " ="] in
     let tasks = verify_espec_no_ecut headers vgen s hashopt in
     tasks in
   let rec verify_spec cut_headers (res, pending) s =
@@ -722,12 +690,13 @@ let verify_eassert vgen s hashopt =
     else (res, pending) in
   apply_to_cuts_lwt !verify_eacuts verify delivered_helper true [] (cut_eassert (espec_of_spec s))
 
+(* The top function of verifying range assertions when !jobs > 1. *)
 let verify_rassert s hashopt =
   let _ = safe_trace "===== Verifying range assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks headers (sid, s) =
     let headers = headers@["= Range assertion #" ^ string_of_int sid ^ ": " ^
-                             Ast.Cryptoline.string_of_rbexp s.rspost ^ " ="] in
+                             Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " ="] in
     let tasks = verify_rspec_no_rcut headers s hashopt in
     tasks in
   let rec verify_spec headers (res, pending) s =
@@ -743,6 +712,7 @@ let verify_rassert s hashopt =
     else (res, pending) in
   apply_to_cuts_lwt !verify_racuts verify delivered_helper true [] (cut_rassert (rspec_of_spec s))
 
+(* The top function of verifying range specifications when !jobs > 1. *)
 let verify_rspec s hashopt =
   let _ = safe_trace "===== Verifying range specifications =====" in
   let delivered_helper = (&&) in
@@ -750,12 +720,12 @@ let verify_rspec s hashopt =
   let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
   (* Check previous result *)
   let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (headers@["= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp s.rspost ^ " ="]) (res, pending) s
+    if res then verify_ands (headers@["= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " ="]) (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_rcuts verify delivered_helper true [] (cut_rspec s)
 
 (**
-   Verify an algebraic specification.
+   The top function of verifying range specifications when !jobs > 1.
    @param vgen a variable generator
    @param s an algebraic specification
    @param hashopt
@@ -768,7 +738,7 @@ let verify_espec vgen s hashopt =
   let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
   (* Check previous result *)
   let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (headers@["= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp s.espost ^ " ="]) (res, pending) s
+    if res then verify_ands (headers@["= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " ="]) (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_ecuts verify (&&) true [] (cut_espec s)
 
@@ -848,7 +818,7 @@ let run_cli_vsafety id timeout idx instr ifile =
 let verify_safety_cli sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
-  let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = Rtrue; rspwss = []}); close_out ch in
+  let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = [(Rtrue, [])]}); close_out ch in
   let add_unsolved q res =
     match res with
     | Solved Unsat -> Unfinished [q]
@@ -1027,11 +997,11 @@ let run_cli_vespec header s =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
-(* Verify an espec using CLI to run verification tasks *)
+(* The top function of verifying algebraic specifications when !jobs > 1 and CLI is enabled. *)
 let verify_espec_cli s =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
   verify_spec_cli s
-                  run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp s.espost ^ " =")
+                  run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")
                   split_espec_post cut_espec !verify_ecuts None
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
@@ -1105,21 +1075,23 @@ let run_cli_vrspec header s =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
-(* Verify a rspec using CLI to run verification tasks *)
+(* The top function of verifying range specifications when !jobs > 1 and CLI is enabled. *)
 let verify_rspec_cli s _ =
   let _ = safe_trace "===== Verifying range specifications =====" in
   verify_spec_cli s
-                  run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp s.rspost ^ " =")
+                  run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")
                   split_rspec_post cut_rspec !verify_rcuts None
 
+(* The top function of verifying algebraic assertions when !jobs > 1 and CLI is enabled. *)
 let verify_eassert_cli s =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   verify_spec_cli (espec_of_spec s)
-    run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp s.espost ^ " =")
+    run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")
     split_espec_post cut_eassert !verify_eacuts !Options.Std.verify_eassert_ids
 
+(* The top function of verifying range assertions when !jobs > 1 and CLI is enabled. *)
 let verify_rassert_cli s =
   let _ = safe_trace "===== Verifying range assertions =====" in
   verify_spec_cli (rspec_of_spec s)
-    run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp s.rspost ^ " =")
+    run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")
     split_rspec_post cut_rassert !verify_racuts !Options.Std.verify_rassert_ids
