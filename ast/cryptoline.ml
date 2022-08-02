@@ -645,6 +645,10 @@ let bands es =
   | RightAssoc -> List.fold_left (fun res e -> band e res) btrue es
 let bands2 es rs = (eands es, rands rs)
 
+let band_prove_with (e1, r1) (e2, r2) = (tappend e1 e2, tappend r1 r2)
+
+let bands_prove_with es = List.fold_left (fun res e -> band_prove_with res e) ([], []) es
+
 let eq_bexp e1 e2 = eq_ebexp (eqn_bexp e1) (eqn_bexp e2) && eq_rbexp (rng_bexp e1) (rng_bexp e2)
 
 type prove_with_spec =
@@ -774,7 +778,7 @@ type instr =
   | Ivpc of var * atom                                      (** Value-preserving casting *)
   | Ijoin of var * atom * atom                              (** Join *)
   (* Specifications *)
-  | Iassert of bexp                                         (** Assertion *)
+  | Iassert of bexp_prove_with                              (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
   | Icut of bexp_prove_with                                 (** Cuts *)
   | Ighost of VS.t * bexp                                   (** Ghost variables *) (* *)
@@ -1150,7 +1154,7 @@ let string_of_instr ?typ:(typ=false) i =
   | Ivpc (v, a) -> "vpc " ^ string_of_var ~typ:true v ^ " " ^ astr a
   | Ijoin (v, ah, al) -> "join " ^ vstr v ^ " " ^ astr ah ^ " " ^ astr al
   (* Specifications *)
-  | Iassert e -> "assert " ^ string_of_bexp ~typ:typ e
+  | Iassert e -> "assert " ^ string_of_bexp_prove_with ~typ:typ e
   | Iassume e -> "assume " ^ string_of_bexp ~typ:typ e
   | Icut (ecuts, rcuts) ->
      (match ecuts, rcuts with
@@ -1281,7 +1285,7 @@ let vars_instr i =
       | Some d -> VS.add d (VS.add v (vars_atom a)))
   | Ivpc (v, a) -> VS.add v (vars_atom a)
   | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atom ah) (vars_atom al))
-  | Iassert e
+  | Iassert e -> vars_bexp_prove_with e
   | Iassume e -> vars_bexp e
   | Icut e -> vars_bexp_prove_with e
   | Ighost (vs, e) -> VS.union vs (vars_bexp e)
@@ -1373,7 +1377,7 @@ let rvs_instr i =
   | Icast (_, _, a) -> vars_atom a
   | Ivpc (_, a) -> vars_atom a
   | Ijoin (_, ah, al) -> VS.union (vars_atom ah) (vars_atom al)
-  | Iassert e
+  | Iassert e -> vars_bexp_prove_with e
   | Iassume e -> vars_bexp e
   | Icut e -> vars_bexp_prove_with e
   | Ighost (_, e) -> vars_bexp e
@@ -1534,7 +1538,7 @@ let vids_instr i =
       | Some d -> IS.add d.vid (IS.add v.vid (vids_atom a)))
   | Ivpc (v, a) -> IS.add v.vid (vids_atom a)
   | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atom ah) (vids_atom al))
-  | Iassert e
+  | Iassert e -> vids_bexp_prove_with e
   | Iassume e -> vids_bexp e
   | Icut e -> vids_bexp_prove_with e
   | Ighost (vs, e) -> IS.union (vids_of_vs vs) (vids_bexp e)
@@ -1626,7 +1630,7 @@ let rvids_instr i =
   | Icast (_, _, a) -> vids_atom a
   | Ivpc (_, a) -> vids_atom a
   | Ijoin (_, ah, al) -> IS.union (vids_atom ah) (vids_atom al)
-  | Iassert e
+  | Iassert e -> vids_bexp_prove_with e
   | Iassume e -> vids_bexp e
   | Icut e -> vids_bexp_prove_with e
   | Ighost (_, e) -> vids_bexp e
@@ -1948,7 +1952,7 @@ let ssa_instr m i =
      let al = ssa_atom m al in
      let m = upd_sidx v m in
      (m, Ijoin (ssa_var m v, ah, al))
-  | Iassert e -> (m, Iassert (ssa_bexp m e))
+  | Iassert e -> (m, Iassert (ssa_bexp_prove_with m e))
   | Iassume e -> (m, Iassume (ssa_bexp m e))
   | Icut e -> (m, Icut (ssa_bexp_prove_with m e))
   | Ighost (vs, e) -> (m, Ighost (VS.of_list (List.map (ssa_var m) (VS.elements vs)), ssa_bexp m e))
@@ -2156,18 +2160,29 @@ let cut_rspec rs =
     | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl) in
   helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog) |> List.rev |> numbering
 
+let insert_pwss es pwss = tmap (fun (e, ps) -> (e, tappend pwss ps)) es
+
 (* Cut algebraic assertions in SSA and return `(espec list) list`.
  * The i-th item in the returned list represents the assertions in
  * the i-th cut. Note that this function removes all range properties.
  *)
 let cut_eassert es =
+  let first_ecut_pwss p =
+    try let i = List.find is_ecut p in
+        match i with
+        | Icut (es, _) -> ebexp_prove_with_specs es
+        | _ -> []
+    with Not_found -> ebexp_prove_with_specs es.espost in
   let rec helper (res_rev, easserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog) =
     match prog with
     | [] -> (List.rev easserts_rev)::res_rev
-    | ((Iassert e) as hd)::tl ->
-       (* TODO: assertion specific prove-with clauses *)
-       let assert_as_spec = espec_of_ebexp_prove_with ~clear_pwss:true (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (eqn_bexp e, []) in
-       helper (res_rev, assert_as_spec::easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
+    | ((Iassert (es, _)) as hd)::tl ->
+       let visited = List.rev visited_rev in
+       let before = List.rev before_rev in
+       (* add the prove-with clauses from the next cut *)
+       let es_extended_pwss = insert_pwss es (first_ecut_pwss tl) in
+       let assert_as_specs = tmap (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) es_extended_pwss in
+       helper (res_rev, tappend assert_as_specs easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
     | (Icut ([], _))::tl -> helper (res_rev, easserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl)
     | (Icut (ecuts, _) as hd)::tl -> helper ((List.rev easserts_rev)::res_rev, []) (precond, tappend after_rev before_rev, [hd], hd::cuts_rev) (ebexp_prove_with_eands ecuts, [], tl)
     | (Iassume _ as hd)::tl -> helper (res_rev, easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
@@ -2180,13 +2195,22 @@ let cut_eassert es =
  * the i-th cut. Note that this function removes all algebraic properties.
  *)
 let cut_rassert es =
+  let first_rcut_pwss p =
+    try let i = List.find is_rcut p in
+        match i with
+        | Icut (_, rs) -> rbexp_prove_with_specs rs
+        | _ -> []
+    with Not_found -> rbexp_prove_with_specs es.rspost in
   let rec helper (res_rev, rasserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog) =
     match prog with
     | [] -> (List.rev rasserts_rev)::res_rev
-    | ((Iassert e) as hd)::tl ->
-       (* TODO: assertion specific prove-with clauses *)
-       let assert_as_spec = rspec_of_rbexp_prove_with ~clear_pwss:true (precond, List.rev before_rev, cuts_rev) (pre, List.rev visited_rev) (rng_bexp e, []) in
-       helper (res_rev, assert_as_spec::rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
+    | ((Iassert (_, rs)) as hd)::tl ->
+       let visited = List.rev visited_rev in
+       let before = List.rev before_rev in
+       (* add the prove-with clauses from the next cut *)
+       let rs_extended_pwss = insert_pwss rs (first_rcut_pwss tl) in
+       let assert_as_specs = tmap (rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited)) rs_extended_pwss in
+       helper (res_rev, tappend assert_as_specs rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
     | (Icut (_, []))::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl)
     | (Icut (_, rcuts) as hd)::tl -> helper ((List.rev rasserts_rev)::res_rev, []) (precond, tappend after_rev before_rev, [hd], hd::cuts_rev) (rbexp_prove_with_rands rcuts, [], tl)
     | (Iassume _ as hd)::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
@@ -2373,7 +2397,7 @@ let subst_instr am em rm i =
   | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atom am a)
   | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atom am a)
   | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atom am ah, subst_atom am al)
-  | Iassert e -> Iassert (subst_bexp em rm e)
+  | Iassert e -> Iassert (subst_bexp_prove_with em rm e)
   | Iassume e -> Iassume (subst_bexp em rm e)
   | Icut e -> Icut (subst_bexp_prove_with em rm e)
   | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
@@ -2551,7 +2575,7 @@ let slice_program vars p =
     | hd::tl ->
        begin
          match hd with
-         | Iassert _e -> helper vars res tl
+         | Iassert _ -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
                         helper (VS.union vars (vars_bexp e')) (if e' = btrue then res else Iassume e'::res) tl
          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
@@ -2592,7 +2616,7 @@ let slice_program_ssa vars p =
     | hd::tl ->
        begin
          match hd with
-         | Iassert _e -> helper vars res tl
+         | Iassert _ -> helper vars res tl
          | Iassume e -> let e' = slice_bexp vars e in
                         helper vars (if e' = btrue then res else Iassume e'::res) tl
          | Icut _ -> failwith ("A program with Icut cannot be sliced.")
@@ -2841,8 +2865,8 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
                          let (castsl, al) = auto_cast_atom ~preserve:preserve t (typ_to_unsigned v.vtyp) al in
                          castsh@castsl@[Ijoin (v, ah, al)]
   (* Specifications *)
-  | Iassert _e -> [i]
-  | Iassume _e -> [i]
+  | Iassert _ -> [i]
+  | Iassume _ -> [i]
   | Icut _ -> [i]
   | Ighost (_vs, _e) -> [i]
 
@@ -3091,7 +3115,7 @@ let visit_instr visitor i =
         | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atom visitor a)
         | Ijoin (v, ah, al) -> Ijoin (visit_var visitor v, visit_atom visitor ah, visit_atom visitor al)
         (* Specifications *)
-        | Iassert e -> Iassert (visit_bexp visitor e)
+        | Iassert e -> Iassert (visit_bexp_prove_with visitor e)
         | Iassume e -> Iassume (visit_bexp visitor e)
         | Icut e -> Icut (visit_bexp_prove_with visitor e)
         | Ighost (vs, e) -> Ighost (VS.map (visit_var visitor) vs, visit_bexp visitor e))
@@ -3190,21 +3214,21 @@ let separate_assertions s =
     | [] ->
        (* add the input spec with assertion removed *)
        { spre = s.spre; sprog = List.rev visited_rev; spost = s.spost }::res
-    | (Iassert e)::tl ->
-       helper ({ spre = s.spre; sprog = List.rev visited_rev; spost = ([(eqn_bexp e, [])], [(rng_bexp e, [])]) }::res)
-         visited_rev tl
+    | (Iassert bs)::tl ->
+       let assert_as_spec = { spre = s.spre; sprog = List.rev visited_rev; spost = bs } in
+       helper (assert_as_spec::res) visited_rev tl
     | hd::tl -> helper res (hd::visited_rev) tl in
   helper [] [] s.sprog
 
 (* Move assertions to postcondition. Assume the input specification is in SSA form. *)
 let move_asserts s =
-  let bexp_of_assert i =
+  let bexp_prove_with_of_assert i =
     match i with
-    | Iassert e -> e
+    | Iassert bs -> bs
     | _ -> assert false in
   let (es, is) = List.partition is_assert s.sprog in
-  let assert_bexp = bands (List.map bexp_of_assert es) in
-  let post = ((eqn_bexp assert_bexp, [])::(fst s.spost), (rng_bexp assert_bexp, [])::(snd s.spost)) in
+  let assert_bexp = tmap bexp_prove_with_of_assert es |> bands_prove_with in
+  let post = band_prove_with assert_bexp s.spost in
   { spre = s.spre; sprog = is; spost = post }
 
 let infer_input_variables s =
@@ -3606,7 +3630,7 @@ let update_variable_id_instr m i =
      update_variable_id_atoms m' [Avar v; a]
   | Ivpc (v, a) -> update_variable_id_atoms m [Avar v; a]
   | Ijoin (v, ah, al) -> update_variable_id_atoms m [Avar v; ah; al]
-  | Iassert e
+  | Iassert e -> update_variable_id_bexp_prove_with m e
   | Iassume e -> update_variable_id_bexp m e
   | Icut e -> update_variable_id_bexp_prove_with m e
   | Ighost (vs, e) -> update_variable_id_bexp (VS.fold (fun v m -> update_variable_id_var m v) vs m) e

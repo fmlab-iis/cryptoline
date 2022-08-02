@@ -940,9 +940,9 @@
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Ijoin (v, ah, al)])
 
-  let parse_assert_at lno bexp_token =
+  let parse_assert_at lno bexp_prove_with_list_token =
     fun _fm cm vm ym gm ->
-      (vm, ym, gm, [lno, Iassert (bexp_token cm vm ym gm)])
+      (vm, ym, gm, [lno, Iassert (bexp_prove_with_list_token cm vm ym gm)])
 
   let parse_assume_at lno bexp_token =
     fun _fm cm vm ym gm ->
@@ -1223,8 +1223,8 @@
          parse_vpc_at lno dest src fm cm vm ym gm
       | `JOIN (`LVPLAIN dest, srcH, srcL) ->
          parse_join_at lno dest srcH srcL fm cm vm ym gm
-      | `ASSERT bexp ->
-         parse_assert_at lno bexp fm cm vm ym gm
+      | `ASSERT bexp_prove_with_list ->
+         parse_assert_at lno bexp_prove_with_list fm cm vm ym gm
       | `ASSUME bexp ->
          parse_assume_at lno bexp fm cm vm ym gm
       | `CUT bexp_prove_with_list ->
@@ -1590,7 +1590,7 @@ instr:
   | lhs EQOP VPC atom                             { (!lnum, `VPC (`LV $1, $4)) }
   | JOIN lval atom atom                           { (!lnum, `JOIN ($2, $3, $4)) }
   | lhs EQOP JOIN atom atom                       { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
-  | ASSERT bexp                                   { (!lnum, `ASSERT $2) }
+  | ASSERT bexp_prove_with_list                   { (!lnum, `ASSERT $2) }
   | ASSUME bexp                                   { (!lnum, `ASSUME $2) }
   | CUT bexp_prove_with_list                      { (!lnum, `CUT $2) }
   | ECUT ebexp_prove_with_list                    { (!lnum, `ECUT $2) }
@@ -1692,19 +1692,6 @@ rbexp_prove_with:
 | rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
-;
-
-bexp_prove_with:
-    TRUE                                          { fun _cm _vm _ym _gm -> (btrue, [], []) }
-  | ebexp_prove_with VBAR rbexp_prove_with        { fun cm vm ym gm ->
-                                                      let (e, epwss) = $1 cm vm ym gm in
-                                                      let (r, rpwss) = $3 cm vm ym gm in
-                                                      ((e, r), epwss, rpwss) }
-  | ebexp_prove_with VBAR error                   { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      raise_at lno ("Invalid range predicate after '" ^ string_of_ebexp (fst ($1 cm vm ym gm)) ^ "'.")
-                                                  }
-  | ebexp_prove_with error                        { raise_at !lnum ("Please use '&&' to separate algebraic predicates and range predicates.") }
 ;
 
 prove_with_specs:

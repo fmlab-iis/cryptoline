@@ -202,6 +202,9 @@ let illformed_instr_reason vs cs gs lno i =
   let defined_rbexp e =
     if not (VS.subset (vars_rbexp e) (VS.union vs gs)) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_rbexp e) (VS.union vs gs)) ^ " at line " ^ (string_of_int lno))
     else None in
+  let defined_ebexp_prove_with es = List.split es |> fst |> tmap defined_ebexp in
+  let defined_rbexp_prove_with rs = List.split rs |> fst |> tmap defined_rbexp in
+  let defined_bexp_prove_with (es, rs) = tappend (defined_ebexp_prove_with es) (defined_rbexp_prove_with rs) in
   let defined_ghost gvs e =
     if not (VS.disjoint gvs gs) then Some ("Redefined ghost variables: " ^ string_of_vs (VS.inter gvs gs) ^ " at line " ^ (string_of_int lno))
     else if not (VS.subset (vars_bexp e) (VS.union gvs (VS.union vs gs))) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_bexp e) (VS.union gvs (VS.union vs gs))) ^ " at line " ^ (string_of_int lno))
@@ -270,11 +273,9 @@ let illformed_instr_reason vs cs gs lno i =
         | Some d -> [defined_atom a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
     | Ivpc (_v, a) -> [defined_atom a; const_in_range [a]]
     | Ijoin (v, ah, al) -> [defined_atoms [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atom al; check_join_size lno v ah al]
-    | Iassert e
-      | Iassume e -> [defined_bexp e]
-    | Icut (ecuts, rcuts) ->
-       (List.map defined_ebexp (fst (List.split ecuts)))
-       @ (List.map defined_rbexp (fst (List.split rcuts)))
+    | Iassert e -> defined_bexp_prove_with e
+    | Iassume e -> [defined_bexp e]
+    | Icut e -> defined_bexp_prove_with e
     | Ighost (gvs, e) -> [defined_ghost gvs e; ghost_disjoint gvs]
   in
   chain_reasons reasons

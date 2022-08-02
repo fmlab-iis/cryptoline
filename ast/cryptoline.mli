@@ -483,6 +483,12 @@ type rbexp_prove_with = (rbexp * prove_with_spec list) list
 type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
 (** Predicates associated with prove-with clauses *)
 
+val band_prove_with : bexp_prove_with -> bexp_prove_with -> bexp_prove_with
+(** Conjunctions of two [bexp_prove_with]. *)
+
+val bands_prove_with : bexp_prove_with list -> bexp_prove_with
+(** Conjunctions of a list of [bexp_prove_with]. *)
+
 val simplify_prove_with_specs : prove_with_spec list -> prove_with_spec list
 (** [simplify_prove_with_specs pwss] simplifies [pwss]. *)
 
@@ -560,7 +566,7 @@ type instr =
   | Ivpc of var * atom                                      (** Value-preserving casting *)
   | Ijoin of var * atom * atom                              (** Join *)
   (* Specifications *)
-  | Iassert of bexp                                         (** Assertion *)
+  | Iassert of bexp_prove_with                              (** Assertion *)
   | Iassume of bexp                                         (** Assumption *)
   | Icut of bexp_prove_with                                 (** Cuts *)
   | Ighost of VS.t * bexp                                   (** Ghost variables *) (* *)
