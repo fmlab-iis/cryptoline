@@ -545,7 +545,7 @@ let verify_espec_single_conjunct vgen s hashopt =
     match algebra_solver_of_prove_with s.espwss with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
-  is_espec_trivial s ||
+  is_espec_trivial s || Deduce.espec_prover s ||
     (if !apply_slicing then verify_one vgen (slice_espec_ssa s hashopt)
      else verify_one vgen s)
 
