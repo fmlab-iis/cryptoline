@@ -1154,14 +1154,19 @@ let string_of_instr ?typ:(typ=false) i =
   | Ivpc (v, a) -> "vpc " ^ string_of_var ~typ:true v ^ " " ^ astr a
   | Ijoin (v, ah, al) -> "join " ^ vstr v ^ " " ^ astr ah ^ " " ^ astr al
   (* Specifications *)
-  | Iassert e -> "assert " ^ string_of_bexp_prove_with ~typ:typ e
+  | Iassert (es, rs) ->
+     (match es, rs with
+      | [], [] -> "nop"
+      | [], _ -> "rassert " ^ string_of_rbexp_prove_with ~typ:typ rs
+      | _, [] -> "eassert " ^ string_of_ebexp_prove_with ~typ:typ es
+      | _, _ -> "assert " ^ string_of_bexp_prove_with ~typ:typ (es, rs))
   | Iassume e -> "assume " ^ string_of_bexp ~typ:typ e
   | Icut (ecuts, rcuts) ->
      (match ecuts, rcuts with
       | [], [] -> "nop"
       | [], _ -> "rcut " ^ string_of_rbexp_prove_with rcuts
       | _, [] -> "ecut " ^ string_of_ebexp_prove_with ecuts
-      | _, _ -> "cut " ^ string_of_ebexp_prove_with ecuts ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp_prove_with rcuts)
+      | _, _ -> "cut " ^ string_of_bexp_prove_with (ecuts, rcuts))
   | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
 let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"

@@ -90,6 +90,8 @@
               "vpc"                        , VPC;
               "join"                       , JOIN;
               "assert"                     , ASSERT;
+              "eassert"                    , EASSERT;
+              "rassert"                    , RASSERT;
               "assume"                     , ASSUME;
               "cut"                        , CUT;
               "ecut"                       , ECUT;

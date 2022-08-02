@@ -944,6 +944,14 @@
     fun _fm cm vm ym gm ->
       (vm, ym, gm, [lno, Iassert (bexp_prove_with_list_token cm vm ym gm)])
 
+  let parse_eassert_at lno ebexp_prove_with_list_token =
+    fun _fm cm vm ym gm ->
+      (vm, ym, gm, [lno, Iassert (ebexp_prove_with_list_token cm vm ym gm, [])])
+
+  let parse_rassert_at lno rbexp_prove_with_list_token =
+    fun _fm cm vm ym gm ->
+      (vm, ym, gm, [lno, Iassert ([], rbexp_prove_with_list_token cm vm ym gm)])
+
   let parse_assume_at lno bexp_token =
     fun _fm cm vm ym gm ->
       (vm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
@@ -1225,6 +1233,10 @@
          parse_join_at lno dest srcH srcL fm cm vm ym gm
       | `ASSERT bexp_prove_with_list ->
          parse_assert_at lno bexp_prove_with_list fm cm vm ym gm
+      | `EASSERT ebexp_prove_with_list ->
+         parse_eassert_at lno ebexp_prove_with_list fm cm vm ym gm
+      | `RASSERT rbexp_prove_with_list ->
+         parse_rassert_at lno rbexp_prove_with_list fm cm vm ym gm
       | `ASSUME bexp ->
          parse_assume_at lno bexp fm cm vm ym gm
       | `CUT bexp_prove_with_list ->
@@ -1260,7 +1272,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1591,6 +1603,8 @@ instr:
   | JOIN lval atom atom                           { (!lnum, `JOIN ($2, $3, $4)) }
   | lhs EQOP JOIN atom atom                       { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
   | ASSERT bexp_prove_with_list                   { (!lnum, `ASSERT $2) }
+  | EASSERT ebexp_prove_with_list                 { (!lnum, `EASSERT $2) }
+  | RASSERT rbexp_prove_with_list                 { (!lnum, `RASSERT $2) }
   | ASSUME bexp                                   { (!lnum, `ASSUME $2) }
   | CUT bexp_prove_with_list                      { (!lnum, `CUT $2) }
   | ECUT ebexp_prove_with_list                    { (!lnum, `ECUT $2) }
