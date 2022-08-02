@@ -629,7 +629,8 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
   let t1 = Unix.gettimeofday() in
-  let%lwt res = if is_espec_trivial s then Lwt.return_true
+  let%lwt res = if is_espec_trivial s || Deduce.espec_prover s
+                then Lwt.return_true
                 else verify_one cut_headers vgen (if !apply_slicing then slice_espec_ssa s hashopt else s) in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
