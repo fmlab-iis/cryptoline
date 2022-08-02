@@ -40,3 +40,7 @@ let parse_range str =
 
 let tflatten xss =
   List.rev (List.fold_left (fun rev xs -> List.rev_append xs rev) [] xss)
+
+let tappend xs ys = List.rev_append (List.rev xs) ys
+
+let tmap f xs = List.rev_map f (List.rev xs)

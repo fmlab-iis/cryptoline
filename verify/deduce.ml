@@ -208,5 +208,5 @@ let espec_prover s =
               print_endline (string_of_ebexp eqn)) eqns in
   let _ = print_endline "eqns>" in
    *)
-  rewrite_eqmod eqns s.espost
+  rewrite_eqmod eqns (ebexp_prove_with_eands s.espost)
 

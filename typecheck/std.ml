@@ -1,24 +1,21 @@
 
 open Ast.Cryptoline
+open Utils.Std
 
 type spec =
   { spre : bexp;
     sprog : lined_program;
-    spost : bexp;
-    sepwss : prove_with_spec list;
-    srpwss : prove_with_spec list }
+    spost : bexp_prove_with }
 
 type espec =
   { espre : ebexp;
     esprog : lined_program;
-    espost : ebexp;
-    espwss : prove_with_spec list }
+    espost : ebexp_prove_with }
 
 type rspec =
   { rspre : rbexp;
     rsprog : lined_program;
-    rspost : rbexp;
-    rspwss : prove_with_spec list }
+    rspost : rbexp_prove_with }
 
 (** Well-formedness *)
 
@@ -205,6 +202,9 @@ let illformed_instr_reason vs cs gs lno i =
   let defined_rbexp e =
     if not (VS.subset (vars_rbexp e) (VS.union vs gs)) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_rbexp e) (VS.union vs gs)) ^ " at line " ^ (string_of_int lno))
     else None in
+  let defined_ebexp_prove_with es = List.split es |> fst |> tmap defined_ebexp in
+  let defined_rbexp_prove_with rs = List.split rs |> fst |> tmap defined_rbexp in
+  let defined_bexp_prove_with (es, rs) = tappend (defined_ebexp_prove_with es) (defined_rbexp_prove_with rs) in
   let defined_ghost gvs e =
     if not (VS.disjoint gvs gs) then Some ("Redefined ghost variables: " ^ string_of_vs (VS.inter gvs gs) ^ " at line " ^ (string_of_int lno))
     else if not (VS.subset (vars_bexp e) (VS.union gvs (VS.union vs gs))) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_bexp e) (VS.union gvs (VS.union vs gs))) ^ " at line " ^ (string_of_int lno))
@@ -273,11 +273,9 @@ let illformed_instr_reason vs cs gs lno i =
         | Some d -> [defined_atom a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
     | Ivpc (_v, a) -> [defined_atom a; const_in_range [a]]
     | Ijoin (v, ah, al) -> [defined_atoms [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atom al; check_join_size lno v ah al]
-    | Iassert e
-      | Iassume e -> [defined_bexp e]
-    | Icut (ecuts, rcuts) ->
-       (List.map defined_ebexp (fst (List.split ecuts)))
-       @ (List.map defined_rbexp (fst (List.split rcuts)))
+    | Iassert e -> defined_bexp_prove_with e
+    | Iassume e -> [defined_bexp e]
+    | Icut e -> defined_bexp_prove_with e
     | Ighost (gvs, e) -> [defined_ghost gvs e; ghost_disjoint gvs]
   in
   chain_reasons reasons
@@ -332,9 +330,16 @@ let illformed_rbexp_reason vs e =
   chain_reasons (helper e)
 let illformed_bexp_reason vs e = chain_reasons [illformed_ebexp_reason vs (eqn_bexp e); illformed_rbexp_reason vs (rng_bexp e)]
 
+let illformed_ebexp_prove_with_reason vs es = List.split es |> fst |> tmap (illformed_ebexp_reason vs) |> chain_reasons
+
+let illformed_rbexp_prove_with_reason vs rs = List.split rs |> fst |> tmap (illformed_rbexp_reason vs) |> chain_reasons
+
+let illformed_bexp_prove_with_reason vs (es, rs) =
+  chain_reasons [illformed_ebexp_prove_with_reason vs es; illformed_rbexp_prove_with_reason vs rs]
+
 type ill_formed = IllPrecondition of bexp
                 | IllInstruction of instr
-                | IllPostcondition of bexp
+                | IllPostcondition of bexp_prove_with
 
 let illformed_spec_reason vs s =
   match illformed_bexp_reason vs s.spre with
@@ -343,7 +348,7 @@ let illformed_spec_reason vs s =
     (match illformed_program_reason vs VS.empty VS.empty s.sprog with
      | Some (i, r) -> Some (IllInstruction i, r)
      | None ->
-        (match illformed_bexp_reason (VS.union vs (vars_lined_program s.sprog)) s.spost with
+        (match illformed_bexp_prove_with_reason (VS.union vs (vars_lined_program s.sprog)) s.spost with
          | Some r -> Some (IllPostcondition s.spost, r)
          | None -> None))
 
@@ -366,23 +371,19 @@ let from_typecheck_spec spec_tc =
   {
     Ast.Cryptoline.spre = spec_tc.spre;
     Ast.Cryptoline.sprog = from_lined_program spec_tc.sprog;
-    Ast.Cryptoline.spost = spec_tc.spost;
-    Ast.Cryptoline.sepwss = spec_tc.sepwss;
-    Ast.Cryptoline.srpwss = spec_tc.srpwss;
+    Ast.Cryptoline.spost = spec_tc.spost
   }
 
 let from_typecheck_espec espec_tc =
   {
     Ast.Cryptoline.espre = espec_tc.espre;
     Ast.Cryptoline.esprog = from_lined_program espec_tc.esprog;
-    Ast.Cryptoline.espost = espec_tc.espost;
-    Ast.Cryptoline.espwss = espec_tc.espwss;
+    Ast.Cryptoline.espost = espec_tc.espost
   }
 
 let from_typecheck_rspec rspec_tc =
   {
     Ast.Cryptoline.rspre = rspec_tc.rspre;
     Ast.Cryptoline.rsprog = from_lined_program rspec_tc.rsprog;
-    Ast.Cryptoline.rspost = rspec_tc.rspost;
-    Ast.Cryptoline.rspwss = rspec_tc.rspwss;
+    Ast.Cryptoline.rspost = rspec_tc.rspost
   }

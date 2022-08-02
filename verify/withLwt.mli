@@ -5,7 +5,7 @@
 
 (** The following functions use Lwt to do parallel verification. *)
 
-val verify_safety_inc :
+val verify_safety_conditions :
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->

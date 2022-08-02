@@ -132,6 +132,7 @@ num_ok=0
 num_failed=0
 for file in ${FILES[@]}; do
     tmpfile="${TMP}/`basename ${file}`"
+    tmpfile1=${tmpfile/.cl/_1.cl}
     echo "${file}"
 
     num_file=$((num_file+1))
@@ -147,13 +148,23 @@ for file in ${FILES[@]}; do
     fi
 
     echo -n "  Parsing string output ... "
-    ${CL} -p ${tmpfile} 2>/dev/null 1>/dev/null
+    ${CL} -p ${tmpfile} 2>/dev/null 1>${tmpfile1}
     if [[ $? == 0 ]]; then
-        echo -e "\t\t[OK]"
+      echo -e "\t\t[OK]"
     else
-        echo -e "\t\t[Fail]"
-        num_failed=$((num_failed+1))
-        continue
+      echo -e "\t\t[Fail]"
+      num_failed=$((num_failed+1))
+      continue
+    fi
+
+    echo -n "  Parsing twice ..."
+    d=`diff ${tmpfile} ${tmpfile1}`
+    if [[ "${d}" == "" ]]; then
+      echo -e "\t\t\t[OK]"
+    else
+      echo -e "\t\t\t[Fail]"
+      num_failed=$((num_failed+1))
+      continue
     fi
 
     echo -n "  Parsing SSA form ... "
@@ -168,7 +179,12 @@ for file in ${FILES[@]}; do
     fi
 
     num_ok=$((num_ok+1))
-    rm ${tmpfile}
+    if [[ -f ${tmpfile} ]]; then
+      rm ${tmpfile}
+    fi
+    if [[ -f ${tmpfile1} ]]; then
+      rm ${tmpfile1}
+    fi
 done
 
 echo

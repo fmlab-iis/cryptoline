@@ -992,13 +992,13 @@ let bv2z_espec_annot vgen s =
   let (vgen, ies) = bv2z_program_annot vgen s.esprog in
   (vgen, { appre = s.espre;
            approg = ies;
-           appost = s.espost })
+           appost = ebexp_prove_with_eands s.espost })
 
 let bv2z_espec vgen s =
   let (vgen, es) = bv2z_program vgen s.esprog in
   (vgen, { ppre = s.espre;
            pprog = es;
-           ppost = s.espost })
+           ppost = ebexp_prove_with_eands s.espost })
 
 (* Returns the new vgen, created temporary variables, and polynomials.
    We need created temporary variables to quantify them in redlog. *)

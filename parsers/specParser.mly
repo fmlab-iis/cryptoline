@@ -63,7 +63,7 @@ espec:
   epre program epost
   {
     let (post, pwss) = $3 in
-    { espre = $1; esprog = $2; espost = post; espwss = pwss }
+    { espre = $1; esprog = $2; espost = [(post, pwss)] }
   }
 ;
 
@@ -71,7 +71,7 @@ rspec:
   rpre program rpost
   {
     let (post, pwss) = $3 in
-    { rspre = $1; rsprog = $2; rspost = post; rspwss = pwss }
+    { rspre = $1; rsprog = $2; rspost = [(post, pwss)] }
   }
 ;
 
@@ -138,7 +138,7 @@ instr:
                                                   { [min_int, Icast (Some $3, $5, $6)] }
   | VPC lval_or_lcarry atom                       { [min_int, Ivpc ($2, $3)] }
   | JOIN lval atom atom                           { [min_int, Ijoin ($2, $3, $4)] }
-  | ASSERT bexp                                   { [min_int, Iassert ($2)] }
+  | ASSERT bexp_prove_with                        { let ((e, r), epwss, rpwss) = $2 in [min_int, Iassert ([(e, epwss)], [(r, rpwss)])] }
   | ASSUME bexp                                   { [min_int, Iassume ($2)] }
   | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Icut ([(e, epwss)], [(r, rpwss)])] }
   | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [min_int, Icut ([(e, epwss)], [])] }

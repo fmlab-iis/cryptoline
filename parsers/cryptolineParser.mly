@@ -24,9 +24,7 @@
       fgm : Ast.Cryptoline.var SM.t; (* a map from a name to a ghost variable *)
       fbody : lined_program;
       fpre : bexp;
-      fpost : bexp;
-      fepwss : prove_with_spec list;
-      frpwss : prove_with_spec list }
+      fpost : bexp_prove_with }
 
   let (--) i j =
     let rec aux n acc =
@@ -942,9 +940,17 @@
         resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
       (vm, ym, gm, [lno, Ijoin (v, ah, al)])
 
-  let parse_assert_at lno bexp_token =
+  let parse_assert_at lno bexp_prove_with_list_token =
     fun _fm cm vm ym gm ->
-      (vm, ym, gm, [lno, Iassert (bexp_token cm vm ym gm)])
+      (vm, ym, gm, [lno, Iassert (bexp_prove_with_list_token cm vm ym gm)])
+
+  let parse_eassert_at lno ebexp_prove_with_list_token =
+    fun _fm cm vm ym gm ->
+      (vm, ym, gm, [lno, Iassert (ebexp_prove_with_list_token cm vm ym gm, [])])
+
+  let parse_rassert_at lno rbexp_prove_with_list_token =
+    fun _fm cm vm ym gm ->
+      (vm, ym, gm, [lno, Iassert ([], rbexp_prove_with_list_token cm vm ym gm)])
 
   let parse_assume_at lno bexp_token =
     fun _fm cm vm ym gm ->
@@ -1225,8 +1231,12 @@
          parse_vpc_at lno dest src fm cm vm ym gm
       | `JOIN (`LVPLAIN dest, srcH, srcL) ->
          parse_join_at lno dest srcH srcL fm cm vm ym gm
-      | `ASSERT bexp ->
-         parse_assert_at lno bexp fm cm vm ym gm
+      | `ASSERT bexp_prove_with_list ->
+         parse_assert_at lno bexp_prove_with_list fm cm vm ym gm
+      | `EASSERT ebexp_prove_with_list ->
+         parse_eassert_at lno ebexp_prove_with_list fm cm vm ym gm
+      | `RASSERT rbexp_prove_with_list ->
+         parse_rassert_at lno rbexp_prove_with_list fm cm vm ym gm
       | `ASSUME bexp ->
          parse_assume_at lno bexp fm cm vm ym gm
       | `CUT bexp_prove_with_list ->
@@ -1262,7 +1272,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1307,7 +1317,7 @@ spec:
     let (fm, _cm) = $1 SM.empty SM.empty in
     try
       let m = SM.find main fm in
-      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost; sepwss = m.fepwss; srpwss = m.frpwss })
+      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost })
     with Not_found ->
       raise (ParseError "A main function is required.")
   }
@@ -1344,9 +1354,9 @@ proc:
           | None -> btrue
           | Some e -> e in
         let (vm, ym, gm, p) = parse_instrs $8 fm cm vm ym gm in
-        let (g, epwss, rpwss) =
+        let g =
           match $9 cm vm ym gm with
-          | None -> (btrue, [], [])
+          | None -> ([], [])
           | Some e -> e in
         (SM.add fname { fname = fname;
                         fargs = args;
@@ -1356,9 +1366,7 @@ proc:
                         fgm = gm;
                         fbody = p;
                         fpre = f;
-                        fpost = g;
-                        fepwss = epwss;
-                        frpwss = rpwss } fm, cm)
+                        fpost = g } fm, cm)
   }
   | CONST ID EQOP const
   {
@@ -1378,7 +1386,7 @@ pre:
 ;
 
 post:
-    LBRAC bexp_prove_with RBRAC                   { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
+    LBRAC bexp_prove_with_list RBRAC              { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
   |                                               { fun _cm _vm _ym _gm -> None }
 ;
 
@@ -1594,7 +1602,9 @@ instr:
   | lhs EQOP VPC atom                             { (!lnum, `VPC (`LV $1, $4)) }
   | JOIN lval atom atom                           { (!lnum, `JOIN ($2, $3, $4)) }
   | lhs EQOP JOIN atom atom                       { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
-  | ASSERT bexp                                   { (!lnum, `ASSERT $2) }
+  | ASSERT bexp_prove_with_list                   { (!lnum, `ASSERT $2) }
+  | EASSERT ebexp_prove_with_list                 { (!lnum, `EASSERT $2) }
+  | RASSERT rbexp_prove_with_list                 { (!lnum, `RASSERT $2) }
   | ASSUME bexp                                   { (!lnum, `ASSUME $2) }
   | CUT bexp_prove_with_list                      { (!lnum, `CUT $2) }
   | ECUT ebexp_prove_with_list                    { (!lnum, `ECUT $2) }
@@ -1696,19 +1706,6 @@ rbexp_prove_with:
 | rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
-;
-
-bexp_prove_with:
-    TRUE                                          { fun _cm _vm _ym _gm -> (btrue, [], []) }
-  | ebexp_prove_with VBAR rbexp_prove_with        { fun cm vm ym gm ->
-                                                      let (e, epwss) = $1 cm vm ym gm in
-                                                      let (r, rpwss) = $3 cm vm ym gm in
-                                                      ((e, r), epwss, rpwss) }
-  | ebexp_prove_with VBAR error                   { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      raise_at lno ("Invalid range predicate after '" ^ string_of_ebexp (fst ($1 cm vm ym gm)) ^ "'.")
-                                                  }
-  | ebexp_prove_with error                        { raise_at !lnum ("Please use '&&' to separate algebraic predicates and range predicates.") }
 ;
 
 prove_with_specs:
