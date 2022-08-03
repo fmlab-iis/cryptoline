@@ -121,7 +121,7 @@ let normalize_eexp e =
     | _ -> e in
   merge_product (merge_exponents e)
 
-let simple_rewrite eqns l r =
+let simple_rewrite all_eqns l r =
   let add_edges l r ret =
     match (l, r) with
     | Evar _, Evar _ -> Some ((l, r)::(r, l)::ret)
@@ -163,8 +163,10 @@ let simple_rewrite eqns l r =
          | Etrue -> (dep, eqns)
          | Eeq (l, r) | Eeqmod (l, r, _) ->
             (add_edges l r edges, add_eqns l r eqns)
-         | _ -> failwith "simple_rewrite does not conjunctive equations." in
-    List.fold_left helper (Some [], []) eqns in
+         | _ ->
+            failwith ("simple_rewrite does not conjunctive equations: " ^
+                      (string_of_ebexp e)) in
+    List.fold_left helper (Some [], []) all_eqns in
   let do_rewrite order rules e =
     List.fold_left (fun current left ->
         if Hashtbl.mem rules left
@@ -238,10 +240,12 @@ let rewrite_eqmod eqns epost =
   | Etrue -> true
   | Eeq (l, r) | Eeqmod (l, r, _) ->
      (l = r) || simple_rewrite valid_eqns l r
-  | _ -> failwith "rewrite_eqmod does not allow post conjunctions."
+  | _ -> failwith ("rewrite_eqmod does not allow post conjunctions: " ^
+                     (string_of_ebexp epost))
   
 let espec_prover s =
-  let eqns = s.espre::(collect_assume_eqns s.esprog) in
+  let eqns = List.rev_append (split_eand s.espre [])
+               (collect_assume_eqns s.esprog) in
   (*
   let _ = print_endline "<eqns" in
   let _ = List.iter (fun eqn ->
