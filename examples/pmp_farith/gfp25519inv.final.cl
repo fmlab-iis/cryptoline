@@ -54225,6 +54225,10 @@ mov r11 r10;
 split r11 dontcare r11 63;
 (* and    0x405070,%r10                            #! PC = 0x401af2 *)
 split dontcare r10 r10 63;
+
+assert true && (r11 = dontcare);
+assume (r11 = dontcare) && true;
+
 (* imul   $0x13,%r11,%r11                          #! PC = 0x401afa *)
 mul r11 r11 0x13@uint64;
 (* add    %r11,%r8                                 #! PC = 0x401afe *)
