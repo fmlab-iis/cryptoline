@@ -90,6 +90,26 @@ let normalize_eexp e =
          else
            Ebinop (Emul, Ebinop (Epow, Evar b, Econst i),
                    do_merge (Ebinop (Emul, Ebinop (Epow, Evar c, Econst j), f)))
+      (* C**i*C**j -> C**(i+j) *)
+      | Ebinop (Emul, Ebinop (Epow, Econst b, Econst i),
+                Ebinop (Epow, Econst c, Econst j)) ->
+         if b = c then
+           let k = Z.add i j in
+           if Z.equal Z.zero k then Econst Z.one
+           else Ebinop (Epow, Econst b, Econst k)
+         else e
+      (* C**i*C**j -> C**(i+j) * f *)
+      | Ebinop (Emul, Ebinop (Epow, Econst b, Econst i),
+                Ebinop (Emul, Ebinop (Epow, Econst c, Econst j),
+                        f)) ->
+         if b = c then
+           let k = Z.add i j in
+           if Z.equal Z.zero k
+           then do_merge f
+           else do_merge (Ebinop (Emul, Ebinop (Epow, Econst b, Econst k), f))
+         else
+           Ebinop (Emul, Ebinop (Epow, Econst b, Econst i),
+                   do_merge (Ebinop (Emul, Ebinop (Epow, Econst c, Econst j), f)))
       | Eunop (o, f) -> Eunop (o, do_merge f)
       | Ebinop (o, f, g) -> Ebinop (o, do_merge f, do_merge g)
       | _ -> e in
@@ -111,12 +131,28 @@ let simple_rewrite eqns l r =
     | _, Evar _ ->
        let vars = vars_eexp l in
        Some (VS.fold (fun v res -> (r, Evar v)::res) vars ret)
+    | Ebinop (Emul, Evar v, Ebinop (Epow, Econst _, _)), _
+    | Ebinop (Emul, Ebinop (Epow, Econst _, _), Evar v), _ ->
+       let vars = vars_eexp r in
+       Some (VS.fold (fun u res -> (Evar v, Evar u)::res) vars ret)
+    | _, Ebinop (Emul, Evar v, Ebinop (Epow, Econst _, _))
+    | _, Ebinop (Emul, Ebinop (Epow, Econst _, _), Evar v) ->
+       let vars = vars_eexp l in
+       Some (VS.fold (fun u res -> (Evar v, Evar u)::res) vars ret)
     | _, _ -> None in
   let add_eqns l r eqns =
     match l, r with
     | Evar _, Evar _ -> (l, r)::(r, l)::eqns
     | Evar _, _ -> (l, r)::eqns
     | _, Evar _ -> (r, l)::eqns
+    | Ebinop (Emul, Evar v, Ebinop (Epow, Econst c, Econst i)), _
+    | Ebinop (Emul, Ebinop (Epow, Econst c, Econst i), Evar v), _ ->
+       let cinv = Ebinop (Epow, Econst c, Econst (Z.neg i)) in
+       (Evar v, Ebinop (Emul, cinv, r))::eqns
+    | _, Ebinop (Emul, Evar v, Ebinop (Epow, Econst c, Econst i))
+    | _, Ebinop (Emul, Ebinop (Epow, Econst c, Econst i), Evar v) ->
+       let cinv = Ebinop (Epow, Econst c, Econst (Z.neg i)) in
+       (Evar v, Ebinop (Emul, cinv, l))::eqns
     | _, _ -> [] in
   let vardep, eqns =
     let helper (dep, eqns) e =
@@ -133,7 +169,11 @@ let simple_rewrite eqns l r =
     List.fold_left (fun current left ->
         if Hashtbl.mem rules left
         then let right = Hashtbl.find rules left in
-             normalize_eexp (replace_eexp [(left, right)] current)
+             let next = normalize_eexp (replace_eexp [(left, right)] current) in
+(*
+             let _ = print_endline (string_of_eexp next) in
+ *)
+             next
         else current)
       e order in
   match vardep with
