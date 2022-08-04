@@ -1,4 +1,19 @@
 
+
+(** Numbers *)
+
+(** Returns the log base 2 of n as an integer. *)
+let logi n = int_of_float (log (float_of_int n) /. log 2.0)
+
+let hex_of_Z w n =
+  let n = Z.erem n (Z.pow (Z.of_int 2) w) in
+  Z.format ("%0" ^ string_of_int (w / 4) ^ "X") n
+
+let bin_of_Z w n =
+  let n = Z.erem n (Z.pow (Z.of_int 2) w) in
+  Z.format ("%0" ^ string_of_int w ^ "b") n
+
+
 (** Strings *)
 
 let split_on_char_nonempty char str = List.filter (fun s -> String.length s <> 0) (String.split_on_char char str)
@@ -43,4 +58,6 @@ let tflatten xss =
 
 let tappend xs ys = List.rev_append (List.rev xs) ys
 
-let tmap f xs = List.rev_map f (List.rev xs)
+let tmap f xs = List.rev_map f xs |> List.rev
+
+let (@@) ls1 ls2 = tappend ls1 ls2

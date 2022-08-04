@@ -100,7 +100,7 @@ class btor_manager :
     method mksaddo : size -> int -> int
     method mksge : size -> int -> int
     method mksgt : size -> int -> int
-    method mksignextend : size -> int -> int -> int
+    method mksext : size -> int -> int -> int
     method mksle : size -> int -> int
     method mkslice : size -> int -> int -> int -> int
     method mksll : size -> int -> int -> int
@@ -119,19 +119,44 @@ class btor_manager :
     method mkult : size -> int -> int
     method mkumulo : size -> int -> int
     method mkusubo : size -> int -> int
-    method mkvar : Ast.Cryptoline.VM.key -> int
+    method mkvar : Ast.Cryptoline.var -> int
+    (** [mkvar v] is a BTOR variable corresponding to [v]. *)
+
+    method mkvar_with_name : Ast.Cryptoline.var -> string -> int
+    (** [mkvar_with_name v vn] is a BTOR variable corresponding to [v] but has name [vn] in BTOR. *)
+
     method mkxor : size -> int -> int -> int
-    method mkzeroextend : size -> int -> int -> int
+    (** [mkxor w b1 b2] returns exclusive-OR of two bit-vectors [b1] and [b2], of which both have width [w]. *)
+
+    method mkzext : size -> int -> int -> int
+    (** [mkzext w i b] returns a zero-extension of a bit-vector [b] of width [w] by [i]. *)
+
     method newvar : int
-    method setvar : Ast.Cryptoline.VM.key -> int -> unit
+    (** [newvar] returns a new BTOR variable. *)
+
+    method setvar : Ast.Cryptoline.var -> int -> unit
+    (** [setvar v b] relates variable [v] to a BTOR bit-vector [b]. *)
   end
 (** a manager used to generate BTOR files *)
 
 val smtlib2_imp_check_sat : bexp list -> string
-(** [smtlib2_imp_check_sat [e1; e2; ...; en]] returns a query in SMTLIB format. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)
+(** [smtlib2_imp_check_sat [e1; e2; ...; en]] returns a query in SMTLIB format.
+    If the result is unsat, e{_ n} is implied by the conjunction of
+    e{_ 1}, ..., and e{_ n-1}. *)
 
 val btor_imp_check_sat : btor_manager -> bexp list -> string
-(** [btor_imp_check_sat m [e1; e2; ...; en]] returns a query in BTOR format. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)
+(** [btor_imp_check_sat m [e1; e2; ...; en]] returns a query in BTOR format.
+    If the result is unsat, e{_ n} is implied by the conjunction of
+    e{_ 1}, ..., and e{_ n-1}. *)
 
 val cnf_imp_check_sat : out_channel -> bexp list -> unit
-(** [cnf_imp_check_sat ch [e1; e2; ...; en]] writes a query in DIMACS format to [ch]. If the result is unsat, e{_ n} is implied by the conjunction of e{_ 1}, ..., and e{_ n-1}. *)
+(** [cnf_imp_check_sat ch [e1; e2; ...; en]] writes a query in DIMACS format
+    to [ch]. If the result is unsat, e{_ n} is implied by the conjunction of
+    e{_ 1}, ..., and e{_ n-1}. *)
+
+val btor_program : ?rename:bool -> btor_manager -> program -> var list -> var list -> string
+(** [btor_program ~rename:b m p ins outs] is a bit-vector program in BTOR format
+    with input variables [ins] and output variables [outs] as the roots. The
+    output variables [outs] are sliced into bits in order (from LSB to MSB).
+    Specification-related instructions such as [Iassert] are ignored. Input
+    variables are renamed in the output BTOR if [b] is [true]. *)

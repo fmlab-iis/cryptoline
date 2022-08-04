@@ -2,8 +2,12 @@
 open Set
 open Options.Std
 open Ast.Cryptoline
+open Utils.Std
 
-(** QFBV *)
+(** Utility functions *)
+
+
+(** QF_BV *)
 
 type result = Sat | Unsat | Unknown
 exception TimeoutException
@@ -164,8 +168,6 @@ and string_of_bexp e =
   | Conj (e1, e2) -> string_of_bexp e1 ^ " /\\ " ^ string_of_bexp e2
   | Disj (e1, e2) -> string_of_bexp e1 ^ " \\/ " ^ string_of_bexp e2
 
-let _string_of_imp es = String.concat " -> " (List.map string_of_bexp es)
-
 let rec vars_exp e =
   match e with
   | Var v -> VS.singleton v
@@ -218,91 +220,7 @@ let vars_imp es =
   List.fold_left (fun res e -> VS.union res (vars_bexp e)) VS.empty es
 
 
-(** Solver *)
-
-let _num_16 = Z.of_int 16
-let _num_2 = Z.of_int 2
-
-let _hextbl = ["0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "A"; "B"; "C"; "D"; "E"; "F"]
-
-let hex_of_num w n =
-  let n = Z.erem n (Z.pow z_two w) in
-  Z.format ("%0" ^ string_of_int (w / 4) ^ "X") n
-
-let bin_of_num w n =
-  let n = Z.erem n (Z.pow z_two w) in
-  Z.format ("%0" ^ string_of_int w ^ "b") n
-
-let bvnot e = "(bvnot " ^ e ^ ")"
-let bvand e1 e2 = "(bvand " ^ e1 ^ " " ^ e2 ^ ")"
-let bvor e1 e2 = "(bvor " ^ e1 ^ " " ^ e2 ^ ")"
-let bvxor e1 e2 = "(bvxor " ^ e1 ^ " " ^ e2 ^ ")"
-let bvneg e = "(bvneg " ^ e ^ ")"
-let bvadd e1 e2 = "(bvadd " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsub e1 e2 = "(bvsub " ^ e1 ^ " " ^ e2 ^ ")"
-let bvmul e1 e2 = "(bvmul " ^ e1 ^ " " ^ e2 ^ ")"
-let bvmod e1 e2 = "(bvurem " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsrem e1 e2 = "(bvsrem " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsmod e1 e2 = "(bvsmod " ^ e1 ^ " " ^ e2 ^ ")"
-let bvshl e1 e2 = "(bvshl " ^ e1 ^ " " ^ e2 ^ ")"
-let bvlshr e1 e2 = "(bvlshr " ^ e1 ^ " " ^ e2 ^ ")"
-let bvashr e1 e2 = "(bvashr " ^ e1 ^ " " ^ e2 ^ ")"
-let bvconcat e1 e2 = "(concat " ^ e1 ^ " " ^ e2 ^ ")"
-let bvextract i j e = "((_ extract " ^ string_of_int i ^ " " ^ string_of_int j ^ ") " ^ e ^ ")"
-let bvslice w1 w2 _w3 e = "((_ extract " ^ string_of_int (w1 + w2 - 1) ^ " " ^ string_of_int w1 ^ ") " ^ e ^ ")"
-let bvhigh lo hi e = "((_ extract " ^ string_of_int (lo + hi - 1) ^ " " ^ string_of_int lo ^ ") " ^ e ^ ")"
-let bvlow lo _hi e = "((_ extract " ^ string_of_int (lo - 1) ^ " " ^ string_of_int 0 ^ ") " ^ e ^ ")"
-let zero_extend i e = "((_ zero_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
-let sign_extend i e = "((_ sign_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
-let ite c e1 e2 = "(ite " ^ c ^" " ^ e1 ^ " " ^ e2 ^ ")"
-let bvult e1 e2 = "(bvult " ^ e1 ^ " " ^ e2 ^ ")"
-let bvule e1 e2 = "(bvule " ^ e1 ^ " " ^ e2 ^ ")"
-let bvugt e1 e2 = "(bvugt " ^ e1 ^ " " ^ e2 ^ ")"
-let bvuge e1 e2 = "(bvuge " ^ e1 ^ " " ^ e2 ^ ")"
-let bvslt e1 e2 = "(bvslt " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsle e1 e2 = "(bvsle " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsgt e1 e2 = "(bvsgt " ^ e1 ^ " " ^ e2 ^ ")"
-let bvsge e1 e2 = "(bvsge " ^ e1 ^ " " ^ e2 ^ ")"
-let bveq e1 e2 = "(= " ^ e1 ^ " " ^ e2 ^ ")"
-let bvneq e1 e2 = "(not (= " ^ e1 ^ " " ^ e2 ^ "))"
-let _bvconj e1 e2 = "(and " ^ e1 ^ " " ^ e2 ^ ")"
-let _bvdisj e1 e2 = "(or " ^ e1 ^ " " ^ e2 ^ ")"
-let bvuaddo w e1 e2 = bveq (bvhigh w 1 (bvadd (zero_extend 1 e1) (zero_extend 1 e2))) "#b1"
-let bvusubo w e1 e2 = bveq (bvhigh w 1 (bvsub (zero_extend 1 e1) (zero_extend 1 e2))) "#b1"
-let bvumulo w e1 e2 = bvneq (bvhigh w w (bvmul (zero_extend w e1) (zero_extend w e2))) ("(_ bv0 " ^ string_of_int w ^ ")")
-let bvsaddo w e1 e2 =
-  let sign1 = bvextract (w - 1) (w - 1) e1 in
-  let sign2 = bvextract (w - 1) (w - 1) e2 in
-  let sum = bvadd e1 e2 in
-  let sign_sum = bvextract (w - 1) (w - 1) sum in
-  let ov1 = bvand (bvand sign1 sign2) (bvnot sign_sum) in
-  let ov2 = bvand (bvand (bvnot sign1) (bvnot sign2)) (sign_sum) in
-  bveq (bvor ov1 ov2) "#b1"
-let bvssubo w e1 e2 =
-  let sign1 = bvextract (w - 1) (w - 1) e1 in
-  let sign2 = bvextract (w - 1) (w - 1) e2 in
-  let sub = bvsub e1 e2 in
-  let sign_sub = bvextract (w - 1) (w - 1) sub in
-  let ov1 = bvand (bvand (bvnot sign1) sign2) sign_sub in
-  let ov2 = bvand (bvand sign1 (bvnot sign2)) (bvnot sign_sub) in
-  bveq (bvor ov1 ov2) "#b1"
-let bvsmulo w e1 e2 =
-  let rec zeros n =
-    if n <= 0 then ""
-    else "0" ^ zeros (n - 1) in
-  let rec ones n =
-    if n <= 0 then ""
-    else "1" ^ ones (n - 1) in
-  let ext1 = sign_extend w e1 in
-  let ext2 = sign_extend w e2 in
-  let mul = bvmul ext1 ext2 in
-  let sign_mul = bvextract (w - 1) (w - 1) mul in
-  let high_mul = bvhigh w w mul in
-  let cond = ite (bveq sign_mul "#b1") ("#b" ^ ones w) ("#b" ^ zeros w) in
-  bvneq high_mul cond
-
-(** Returns the log of n (base 2) as an integer. *)
-let logi n = int_of_float (log (float_of_int n) /. log 2.0)
+(** BTOR *)
 
 module WN : OrderedType with type t = (int * Z.t) =
   struct
@@ -347,11 +265,19 @@ object(self)
     try
       VM.find v vmap
     with Not_found ->
-      let bv = self#newvar in
-      let _ = self#addstmt ("; " ^ string_of_var v) in
-      let _ = self#addstmt (Printf.sprintf "%d var %d" bv (size_of_var v)) in
-      let _ = self#setvar v bv in
-      bv
+          let bv = self#newvar in
+          let _ = self#addstmt (Printf.sprintf "%d var %d %s" bv (size_of_var v) (string_of_var v)) in
+          let _ = self#setvar v bv in
+          bv
+
+  method mkvar_with_name v vn =
+    try
+      VM.find v vmap
+    with Not_found ->
+          let bv = self#newvar in
+          let _ = self#addstmt (Printf.sprintf "%d var %d %s" bv (size_of_var v) vn) in
+          let _ = self#setvar v bv in
+          bv
 
   method mkconstd w n =
     try
@@ -452,19 +378,19 @@ object(self)
 
   method mklow lo hi e = self#mkextract (lo + hi) (lo - 1) 0 e
 
-  method mkzeroextend w i e =
-    let bv = self#newvar in
+  method mkzext w i e =
     let c = self#mkconstd i Z.zero in
+    let bv = self#newvar in
     let _ = self#addstmt (Printf.sprintf "%d concat %d %d %d" bv (w + i) c e) in
     bv
 
-  method mksignextend w i e =
+  method mksext w i e =
     let bv_pos = self#newvar in
     let bv_neg = self#newvar in
-    let bv = self#newvar in
     let neg = self#mkextract w (w - 1) (w - 1) e in
     let c_pos = self#mkconstd i Z.zero in
     let c_neg = self#mkconstd i (Z.sub (Z.pow z_two i) Z.one) in
+    let bv = self#newvar in
     let _ = self#addstmt (Printf.sprintf "%d concat %d %d %d" bv_pos (w + i) c_pos e) in
     let _ = self#addstmt (Printf.sprintf "%d concat %d %d %d" bv_neg (w + i) c_neg e) in
     let _ = self#addstmt (Printf.sprintf "%d cond %d %d %d %d" bv (w + i) neg bv_neg bv_pos) in
@@ -557,9 +483,429 @@ object(self)
 
 end
 
+
+(** QF_BV to BTOR *)
+
+let rec btor_of_exp m e =
+  match e with
+  | Var v -> m#mkvar v
+  | Const (w, n) -> m#mkconstd w n
+  | Not (w, e) -> m#mknot w (btor_of_exp m e)
+  | And (w, e1, e2) -> m#mkand w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Or (w, e1, e2) -> m#mkor w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Xor (w, e1, e2) -> m#mkxor w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Neg (w, e) -> m#mkneg w (btor_of_exp m e)
+  | Add (w, e1, e2) -> m#mkadd w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Sub (w, e1, e2) -> m#mksub w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Mul (w, e1, e2) -> m#mkmul w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Mod (w, e1, e2) -> m#mkmod w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Shl _ -> fail "Shl (_, n) with non-constant n is not supported"
+  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
+  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
+  | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
+  | Extract (w, i, j, e) -> m#mkextract w i j (btor_of_exp m e)
+  | Slice (w1, w2, w3, e) -> m#mkslice w1 w2 w3 (btor_of_exp m e)
+  | High (lo, hi, e) -> m#mkhigh lo hi (btor_of_exp m e)
+  | Low (lo, hi, e) -> m#mklow lo hi (btor_of_exp m e)
+  | ZeroExtend (w, i, e) -> m#mkzext w i (btor_of_exp m e)
+  | SignExtend (w, i, e) -> m#mksext w i (btor_of_exp m e)
+  | Ite (w, c, e1, e2) -> m#mkcond w (btor_of_bexp m c) (btor_of_exp m e1) (btor_of_exp m e2)
+and btor_of_bexp m e =
+  (*let _ = m#mkcomment (string_of_bexp e) in*)
+  match e with
+  | True -> m#mkconstd 1 Z.one
+  | Ult (_w, e1, e2) -> m#mkult (btor_of_exp m e1) (btor_of_exp m e2)
+  | Ule (_w, e1, e2) -> m#mkule (btor_of_exp m e1) (btor_of_exp m e2)
+  | Ugt (_w, e1, e2) -> m#mkugt (btor_of_exp m e1) (btor_of_exp m e2)
+  | Uge (_w, e1, e2) -> m#mkuge (btor_of_exp m e1) (btor_of_exp m e2)
+  | Slt (_w, e1, e2) -> m#mkslt (btor_of_exp m e1) (btor_of_exp m e2)
+  | Sle (_w, e1, e2) -> m#mksle (btor_of_exp m e1) (btor_of_exp m e2)
+  | Sgt (_w, e1, e2) -> m#mksgt (btor_of_exp m e1) (btor_of_exp m e2)
+  | Sge (_w, e1, e2) -> m#mksge (btor_of_exp m e1) (btor_of_exp m e2)
+  | Eq (_w, e1, e2) -> m#mkeq (btor_of_exp m e1) (btor_of_exp m e2)
+  | Uaddo (_w, e1, e2) -> m#mkuaddo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Usubo (_w, e1, e2) -> m#mkusubo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Umulo (_w, e1, e2) -> m#mkumulo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Saddo (_w, e1, e2) -> m#mksaddo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Ssubo (_w, e1, e2) -> m#mkssubo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Smulo (_w, e1, e2) -> m#mksmulo (btor_of_exp m e1) (btor_of_exp m e2)
+  | Lneg e -> m#mknot 1 (btor_of_bexp m e)
+  | Conj (e1, e2) -> m#mkand 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
+  | Disj (e1, e2) -> m#mkor 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
+
+let btor_of_imp m es =
+  let rec mkconj es =
+    match es with
+    | [] -> m#mkconstd 1 Z.one
+    | e1::e2::[] -> m#mkand 1 e1 e2
+    | hd::tl -> m#mkand 1 hd (mkconj tl) in
+  let (premises, goal) =
+    match List.rev es with
+    | g::ps -> (List.rev ps, g)
+    | _ -> failwith "imp is empty" in
+  let f = mkconj (List.map (btor_of_bexp m) premises) in
+  let g = btor_of_bexp m goal in
+  let not_g = m#newvar in
+  let r = m#newvar in
+  let _ = m#addstmt (Printf.sprintf "%d not 1 %d" not_g g) in
+  let _ = m#addstmt (Printf.sprintf "%d and 1 %d %d" r f not_g) in
+  r
+
+let btor_declare_vars m ?vnames vars =
+  match vnames with
+  | None -> List.iter (fun v -> ignore(m#mkvar v)) vars
+  | Some vnames -> List.iter2 (fun v vn -> ignore(m#mkvar_with_name v vn)) vars vnames
+
+let btor_imp_check_sat m es =
+  let _ = btor_declare_vars m (VS.elements (vars_imp es)) in
+  let bv = btor_of_imp m es in
+  let r = m#newvar in
+  (String.concat "\n" m#getstmts)
+  ^ "\n"
+  ^ (Printf.sprintf "%d root 1 %d" r bv)
+  ^ "\n"
+
+
+(** Program to BTOR *)
+
+let btor_atom m a =
+  match a with
+  | Avar v -> m#mkvar v
+  | Aconst (ty, n) -> m#mkconstd (size_of_typ ty) n
+
+let btor_cast m od v a =
+  let a_btor = btor_atom m a in
+  let v_btor =
+    match v.vtyp, typ_of_atom a with
+    | Tuint wv, Tuint wa
+      | Tsint wv, Tuint wa ->
+       if wv = wa then a_btor
+       else if wv < wa then m#mklow wv (wa - wv) a_btor
+       else m#mkzext wa (wv - wa) a_btor
+    | Tuint wv, Tsint wa
+      | Tsint wv, Tsint wa ->
+       if wv = wa then a_btor
+       else if wv < wa then m#mklow wv (wa - wv) a_btor
+       else m#mksext wa (wv - wa) a_btor in
+  let od_btor =
+    match od with
+    | None -> None
+    | Some d ->
+       let d_btor =
+         match v.vtyp, typ_of_atom a with
+         | Tuint wv, Tuint wa ->
+            if wv >= wa then m#mkconstd (wv - wa) Z.zero
+            else m#mkhigh wv (wa - wv) a_btor
+         | Tuint wv, Tsint wa ->
+            if wv >= wa then m#mkhigh (wa - 1) 1 a_btor
+            else m#mkhigh wv (wa - wv) a_btor
+         | Tsint wv, Tuint wa ->
+            if wv > wa then m#mkconstd (wv - wa) Z.zero
+            else if wv = wa then m#mkhigh (wa - 1) 1 a_btor
+            else m#mkadd (wa - wv + 1)
+                   (m#mkzext (wa - wv) 1 (m#mkhigh wv (wa - wv) a_btor))
+                   (m#mkzext 1 (wa - wv) (m#mkhigh (wv - 1) 1 (m#mklow wv (wa - wv) a_btor)))
+         | Tsint wv, Tsint wa ->
+            if wv >= wa then m#mkconstd (wv - wa) Z.zero
+            else m#mkadd (wa - wv + 1)
+                   (m#mksext (wa - wv) 1 (m#mkhigh wv (wa - wv) a_btor))
+                   (m#mkzext 1 (wa - wv) (m#mkhigh (wv - 1) 1 (m#mklow wv (wa - wv) a_btor)))
+       in
+       Some (d, d_btor) in
+  m#setvar v v_btor;
+  (match od_btor with | None -> () | Some (d, d_btor) -> m#setvar d d_btor)
+
+let btor_instr m i =
+  match i with
+  | Imov (v, a) -> m#setvar v (btor_atom m a)
+  | Ishl (v, a, n) -> let w = size_of_atom a in
+                      let a_btor = btor_atom m a in
+                      m#setvar v (m#mksll w a_btor (m#mkconstd (logi w) n))
+  | Ishls (l, v, a, n) -> let w = size_of_var v in
+                          let ni = Z.to_int n in
+                          let a_btor = btor_atom m a in
+                          m#setvar l (m#mkhigh (w - ni) ni a_btor);
+                          m#setvar v (m#mksll w a_btor (m#mkconstd (logi w) n))
+  | Ishr (v, a, n) -> let w = size_of_var v in
+                      let a_btor = btor_atom m a in
+                      m#setvar v (m#mksrl w a_btor (m#mkconstd (logi w) n))
+  | Ishrs (v, l, a, n) -> let w = size_of_var v in
+                          let ni = Z.to_int n in
+                          let a_btor = btor_atom m a in
+                          m#setvar v (m#mksrl w a_btor (m#mkconstd (logi w) n));
+                          m#setvar l (m#mklow ni (w - ni) a_btor)
+  | Isar (v, a, n) -> let w = size_of_var v in
+                      let a_btor = btor_atom m a in
+                      m#setvar v (m#mksra w a_btor (m#mkconstd (logi w) n))
+  | Isars (v, l, a, n) -> let w = size_of_var v in
+                          let ni = Z.to_int n in
+                          let a_btor = btor_atom m a in
+                          m#setvar v (m#mksra w a_btor (m#mkconstd (logi w) n));
+                          m#setvar l (m#mklow ni (w - ni) a_btor)
+  | Icshl (vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
+                                 let w2 = size_of_var vl in
+                                 let a1_btor = btor_atom m a1 in
+                                 let a2_btor = btor_atom m a2 in
+                                 let shifted = m#mksll (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                 m#setvar vh (m#mkhigh w2 w1 shifted);
+                                 m#setvar vl (m#mksrl w2 (m#mklow w2 w1 shifted) (m#mkconstd (logi w2) n))
+  | Icshr (vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
+                                 let w2 = size_of_var vl in
+                                 let a1_btor = btor_atom m a1 in
+                                 let a2_btor = btor_atom m a2 in
+                                 let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                 m#setvar vh (m#mkhigh w2 w1 shifted);
+                                 m#setvar vl (m#mklow w2 w1 shifted)
+  | Icshrs (vh, vl, l, a1, a2, n) -> let w1 = size_of_var vh in
+                                     let w2 = size_of_var vl in
+                                     let ni = Z.to_int n in
+                                     let a1_btor = btor_atom m a1 in
+                                     let a2_btor = btor_atom m a2 in
+                                     let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                     m#setvar vh (m#mkhigh w2 w1 shifted);
+                                     m#setvar vl (m#mklow w2 w1 shifted);
+                                     m#setvar l (m#mklow ni (w2 - ni) a2_btor)
+  | Inondet v -> ignore(m#mkvar v)
+  | Icmov (v, c, a1, a2) -> let w = size_of_var v in
+                            let c_btor = btor_atom m c in
+                            let a1_btor = btor_atom m a1 in
+                            let a2_btor = btor_atom m a2 in
+                            m#setvar v (m#mkcond w c_btor a1_btor a2_btor)
+  | Inop -> ()
+  | Iadd (v, a1, a2) -> let w = size_of_var v in
+                        let a1_btor = btor_atom m a1 in
+                        let a2_btor = btor_atom m a2 in
+                        m#setvar v (m#mkadd w a1_btor a2_btor)
+  | Iadds (c, v, a1, a2) -> let w = size_of_var v in
+                            let a1_btor = btor_atom m a1 in
+                            let a2_btor = btor_atom m a2 in
+                            let extsum = m#mkadd (w + 1) (m#mkzext w 1 a1_btor) (m#mkzext w 1 a2_btor) in
+                            m#setvar c (m#mkhigh w 1 extsum);
+                            m#setvar v (m#mklow w 1 extsum)
+  | Iadc (v, a1, a2, y) -> let w = size_of_var v in
+                           let a1_btor = btor_atom m a1 in
+                           let a2_btor = btor_atom m a2 in
+                           let y_btor = btor_atom m y in
+                           m#setvar v (m#mkadd w (m#mkadd w a1_btor a2_btor) (m#mkzext 1 (w - 1) y_btor))
+  | Iadcs (c, v, a1, a2, y) -> let w = size_of_var v in
+                               let a1_btor = btor_atom m a1 in
+                               let a2_btor = btor_atom m a2 in
+                               let y_btor = btor_atom m y in
+                               let extsum = m#mkadd (w + 1) (m#mkadd (w + 1) (m#mkzext w 1 a1_btor) (m#mkzext w 1 a2_btor)) (m#mkzext 1 w y_btor) in
+                               m#setvar c (m#mkhigh w 1 extsum);
+                               m#setvar v (m#mklow w 1 extsum)
+  | Isub (v, a1, a2) -> let w = size_of_var v in
+                        let a1_btor = btor_atom m a1 in
+                        let a2_btor = btor_atom m a2 in
+                        m#setvar v (m#mksub w a1_btor a2_btor)
+  | Isubc (c, v, a1, a2) -> let w = size_of_var v in
+                            let a1_btor = btor_atom m a1 in
+                            let a2_btor = btor_atom m a2 in
+                            let extsub = m#mkadd (w + 1) (m#mkadd (w + 1) (m#mkzext w 1 a1_btor) (m#mkzext w 1 (m#mknot w a2_btor))) (m#mkconstd (w + 1) (Z.of_int 1)) in
+                            m#setvar c (m#mkhigh w 1 extsub);
+                            m#setvar v (m#mklow w 1 extsub)
+  | Isubb (c, v, a1, a2) -> let w = size_of_var v in
+                            let a1_btor = btor_atom m a1 in
+                            let a2_btor = btor_atom m a2 in
+                            let extsub = m#mksub (w + 1) (m#mkzext w 1 a1_btor) (m#mkzext w 1 a2_btor) in
+                            m#setvar c (m#mkhigh w 1 extsub);
+                            m#setvar v (m#mklow w 1 extsub)
+  | Isbc (v, a1, a2, y) -> let w = size_of_var v in
+                           let a1_btor = btor_atom m a1 in
+                           let a2_btor = btor_atom m a2 in
+                           let y_btor = btor_atom m y in
+                           m#setvar v (m#mkadd w (m#mkadd w a1_btor (m#mknot w a2_btor)) (m#mkzext 1 (w - 1) y_btor))
+  | Isbcs (c, v, a1, a2, y) -> let w = size_of_var v in
+                               let a1_btor = btor_atom m a1 in
+                               let a2_btor = btor_atom m a2 in
+                               let y_btor = btor_atom m y in
+                               let extsub = m#mkadd (w + 1) (m#mkadd (w + 1) (m#mkzext w 1 a1_btor) (m#mkzext w 1 (m#mknot w a2_btor))) (m#mkzext 1 w y_btor) in
+                               m#setvar c (m#mkhigh w 1 extsub);
+                               m#setvar v (m#mklow w 1 extsub)
+  | Isbb (v, a1, a2, y) -> let w = size_of_var v in
+                           let a1_btor = btor_atom m a1 in
+                           let a2_btor = btor_atom m a2 in
+                           let y_btor = btor_atom m y in
+                           m#setvar v (m#mksub w a1_btor (m#mkadd w a2_btor (m#mkzext 1 (w - 1) y_btor)))
+  | Isbbs (c, v, a1, a2, y) -> let w = size_of_var v in
+                               let a1_btor = btor_atom m a1 in
+                               let a2_btor = btor_atom m a2 in
+                               let y_btor = btor_atom m y in
+                               let extsub = m#mksub (w + 1) (m#mkzext w 1 a1_btor) (m#mkadd (w + 1) (m#mkzext w 1 a2_btor) (m#mkzext 1 w y_btor)) in
+                               m#setvar c (m#mkhigh w 1 extsub);
+                               m#setvar v (m#mklow w 1 extsub)
+  | Imul (v, a1, a2) -> let w = size_of_var v in
+                        let a1_btor = btor_atom m a1 in
+                        let a2_btor = btor_atom m a2 in
+                        m#setvar v (m#mkmul w a1_btor a2_btor)
+  | Imuls (c, v, a1, a2) -> let w = size_of_var v in
+                            let a1_btor = btor_atom m a1 in
+                            let a2_btor = btor_atom m a2 in
+                            let ext = if var_is_signed v then m#mksext else m#mkzext in
+                            let extmul = m#mkmul (2 * w) (ext w w a1_btor) (ext w w a2_btor) in
+                            m#setvar c (m#mkcond 1 (m#mkeq (m#mkhigh w w extmul) (m#mkconstd w (Z.of_int 0))) (m#mkconstd 1 (Z.of_int 0)) (m#mkconstd 1 (Z.of_int 1)));
+                            m#setvar v (m#mklow w w extmul)
+  | Imull (vh, vl, a1, a2) -> let w = size_of_var vh in
+                              let a1_btor = btor_atom m a1 in
+                              let a2_btor = btor_atom m a2 in
+                              let ext = if var_is_signed vh then m#mksext else m#mkzext in
+                              let extmul = m#mkmul (2 * w) (ext w w a1_btor) (ext w w a2_btor) in
+                              m#setvar vh (m#mkhigh w w extmul);
+                              m#setvar vl (m#mklow w w extmul)
+  | Imulj (v, a1, a2) -> let w = size_of_atom a1 in
+                         let a1_btor = btor_atom m a1 in
+                         let a2_btor = btor_atom m a2 in
+                         let ext = if var_is_signed v then m#mksext else m#mkzext in
+                         let extmul = m#mkmul (2 * w) (ext w w a1_btor) (ext w w a2_btor) in
+                         m#setvar v extmul
+  | Isplit (vh, vl, a, n) -> let w = size_of_var vh in
+                             let ni = Z.to_int n in
+                             let a_btor = btor_atom m a in
+                             let ext = if var_is_signed vh then m#mksext else m#mkzext in
+                             m#setvar vh (ext (w - ni) ni (m#mkhigh ni (w - ni) a_btor));
+                             m#setvar vl (m#mkzext ni (w - ni) (m#mklow ni (w - ni) a_btor))
+  | Ispl (vh, vl, a, n) -> let w = size_of_var vh in
+                           let ni = Z.to_int n in
+                           let a_btor = btor_atom m a in
+                           m#setvar vh (m#mkhigh ni (w - ni) a_btor);
+                           m#setvar vl (m#mklow ni (w - ni) a_btor)
+  | Iand (v, a1, a2) -> let w = size_of_var v in
+                        let a1_btor = btor_atom m a1 in
+                        let a2_btor = btor_atom m a2 in
+                        m#setvar v (m#mkand w a1_btor a2_btor)
+  | Ior (v, a1, a2) -> let w = size_of_var v in
+                       let a1_btor = btor_atom m a1 in
+                       let a2_btor = btor_atom m a2 in
+                       m#setvar v (m#mkor w a1_btor a2_btor)
+  | Ixor (v, a1, a2) -> let w = size_of_var v in
+                        let a1_btor = btor_atom m a1 in
+                        let a2_btor = btor_atom m a2 in
+                        m#setvar v (m#mkxor w a1_btor a2_btor)
+  | Inot (v, a) -> let w = size_of_var v in
+                   let a_btor = btor_atom m a in
+                   m#setvar v (m#mknot w a_btor)
+  | Icast (od, v, a) -> btor_cast m od v a
+  | Ivpc (v, a) -> btor_cast m None v a
+  | Ijoin (v, ah, al) -> let wh = size_of_atom ah in
+                         let wl = size_of_atom al in
+                         let ah_btor = btor_atom m ah in
+                         let al_btor = btor_atom m al in
+                         m#setvar v (m#mkconcat wh wl ah_btor al_btor)
+  | Iassert _ -> ()
+  | Iassume _ -> ()
+  | Icut _ -> ()
+  | Ighost _ -> ()
+
+let btor_program ?(rename=false) m p ins outs =
+  let rec mkbits res_rev w j v_btor =
+    if w <= j then List.rev res_rev
+    else mkbits (m#mkextract w j j v_btor::res_rev) w (j + 1) v_btor in
+  let print_roots bits =
+    String.concat "\n" (tmap (fun b ->
+                            let v = m#newvar in
+                            Printf.sprintf "%d root 1 %d" v b) bits) in
+  let mkoutputs outs =
+    let out_btors = tmap (fun v -> mkbits [] (size_of_var v) 0 (m#mkvar v)) outs in
+    String.concat "\n" (tmap print_roots out_btors) in
+  (* inputs *)
+  let _ = m#mkcomment "variables" in
+  let _ = if rename then let vnames = List.mapi (fun i _ -> Printf.sprintf "pi%d" i) ins in
+                         btor_declare_vars m ~vnames:vnames ins
+          else btor_declare_vars m ins in
+  (* program *)
+  let _ = m#mkcomment "program" in
+  let _ = List.iter (btor_instr m) p in
+  let _ = m#mkcomment "outputs" in
+  let outputs = mkoutputs outs in
+  (* outputs *)
+  (String.concat "\n" m#getstmts)
+  ^ "\n"
+  ^ outputs
+  ^ "\n"
+
+
+(** SMTLIB *)
+
+let bvnot e = "(bvnot " ^ e ^ ")"
+let bvand e1 e2 = "(bvand " ^ e1 ^ " " ^ e2 ^ ")"
+let bvor e1 e2 = "(bvor " ^ e1 ^ " " ^ e2 ^ ")"
+let bvxor e1 e2 = "(bvxor " ^ e1 ^ " " ^ e2 ^ ")"
+let bvneg e = "(bvneg " ^ e ^ ")"
+let bvadd e1 e2 = "(bvadd " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsub e1 e2 = "(bvsub " ^ e1 ^ " " ^ e2 ^ ")"
+let bvmul e1 e2 = "(bvmul " ^ e1 ^ " " ^ e2 ^ ")"
+let bvmod e1 e2 = "(bvurem " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsrem e1 e2 = "(bvsrem " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsmod e1 e2 = "(bvsmod " ^ e1 ^ " " ^ e2 ^ ")"
+let bvshl e1 e2 = "(bvshl " ^ e1 ^ " " ^ e2 ^ ")"
+let bvlshr e1 e2 = "(bvlshr " ^ e1 ^ " " ^ e2 ^ ")"
+let bvashr e1 e2 = "(bvashr " ^ e1 ^ " " ^ e2 ^ ")"
+let bvconcat e1 e2 = "(concat " ^ e1 ^ " " ^ e2 ^ ")"
+let bvextract i j e = "((_ extract " ^ string_of_int i ^ " " ^ string_of_int j ^ ") " ^ e ^ ")"
+let bvslice w1 w2 _w3 e = "((_ extract " ^ string_of_int (w1 + w2 - 1) ^ " " ^ string_of_int w1 ^ ") " ^ e ^ ")"
+let bvhigh lo hi e = "((_ extract " ^ string_of_int (lo + hi - 1) ^ " " ^ string_of_int lo ^ ") " ^ e ^ ")"
+let bvlow lo _hi e = "((_ extract " ^ string_of_int (lo - 1) ^ " " ^ string_of_int 0 ^ ") " ^ e ^ ")"
+let zero_extend i e = "((_ zero_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
+let sign_extend i e = "((_ sign_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
+let ite c e1 e2 = "(ite " ^ c ^" " ^ e1 ^ " " ^ e2 ^ ")"
+let bvult e1 e2 = "(bvult " ^ e1 ^ " " ^ e2 ^ ")"
+let bvule e1 e2 = "(bvule " ^ e1 ^ " " ^ e2 ^ ")"
+let bvugt e1 e2 = "(bvugt " ^ e1 ^ " " ^ e2 ^ ")"
+let bvuge e1 e2 = "(bvuge " ^ e1 ^ " " ^ e2 ^ ")"
+let bvslt e1 e2 = "(bvslt " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsle e1 e2 = "(bvsle " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsgt e1 e2 = "(bvsgt " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsge e1 e2 = "(bvsge " ^ e1 ^ " " ^ e2 ^ ")"
+let bveq e1 e2 = "(= " ^ e1 ^ " " ^ e2 ^ ")"
+let bvlneg e = "(not " ^ e ^ ")"
+let bvneq e1 e2 = bvlneg (bveq e1 e2)
+let bvconj e1 e2 = "(and " ^ e1 ^ " " ^ e2 ^ ")"
+let bvdisj e1 e2 = "(or " ^ e1 ^ " " ^ e2 ^ ")"
+let bvuaddo w e1 e2 = bveq (bvhigh w 1 (bvadd (zero_extend 1 e1) (zero_extend 1 e2))) "#b1"
+let bvusubo w e1 e2 = bveq (bvhigh w 1 (bvsub (zero_extend 1 e1) (zero_extend 1 e2))) "#b1"
+let bvumulo w e1 e2 = bvneq (bvhigh w w (bvmul (zero_extend w e1) (zero_extend w e2))) ("(_ bv0 " ^ string_of_int w ^ ")")
+let bvsaddo w e1 e2 =
+  let sign1 = bvextract (w - 1) (w - 1) e1 in
+  let sign2 = bvextract (w - 1) (w - 1) e2 in
+  let sum = bvadd e1 e2 in
+  let sign_sum = bvextract (w - 1) (w - 1) sum in
+  let ov1 = bvand (bvand sign1 sign2) (bvnot sign_sum) in
+  let ov2 = bvand (bvand (bvnot sign1) (bvnot sign2)) (sign_sum) in
+  bveq (bvor ov1 ov2) "#b1"
+let bvssubo w e1 e2 =
+  let sign1 = bvextract (w - 1) (w - 1) e1 in
+  let sign2 = bvextract (w - 1) (w - 1) e2 in
+  let sub = bvsub e1 e2 in
+  let sign_sub = bvextract (w - 1) (w - 1) sub in
+  let ov1 = bvand (bvand (bvnot sign1) sign2) sign_sub in
+  let ov2 = bvand (bvand sign1 (bvnot sign2)) (bvnot sign_sub) in
+  bveq (bvor ov1 ov2) "#b1"
+let bvsmulo w e1 e2 =
+  let rec zeros n =
+    if n <= 0 then ""
+    else "0" ^ zeros (n - 1) in
+  let rec ones n =
+    if n <= 0 then ""
+    else "1" ^ ones (n - 1) in
+  let ext1 = sign_extend w e1 in
+  let ext2 = sign_extend w e2 in
+  let mul = bvmul ext1 ext2 in
+  let sign_mul = bvextract (w - 1) (w - 1) mul in
+  let high_mul = bvhigh w w mul in
+  let cond = ite (bveq sign_mul "#b1") ("#b" ^ ones w) ("#b" ^ zeros w) in
+  bvneq high_mul cond
+
+
+(** QF_BV to SMTLIB *)
+
 let smtlib2_of_const w n =
-  if w / 4 * 4 = w && not !use_binary_repr then "#x" ^ hex_of_num w n
-  else "#b" ^ bin_of_num w n
+  if w / 4 * 4 = w && not !use_binary_repr then "#x" ^ hex_of_Z w n
+  else "#b" ^ bin_of_Z w n
 
 let rec smtlib2_of_exp e =
   match e with
@@ -605,61 +951,9 @@ and smtlib2_of_bexp e =
   | Saddo (w, e1, e2) -> bvsaddo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ssubo (w, e1, e2) -> bvssubo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Smulo (w, e1, e2) -> bvsmulo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
-  | Lneg e -> "(not " ^ smtlib2_of_bexp e ^ ")"
-  | Conj (e1, e2) -> "(and " ^ smtlib2_of_bexp e1 ^ " " ^ smtlib2_of_bexp e2 ^ ")"
-  | Disj (e1, e2) -> "(or " ^ smtlib2_of_bexp e1 ^ " " ^ smtlib2_of_bexp e2 ^ ")"
-
-let rec btor_of_exp m e =
-  match e with
-  | Var v -> m#mkvar v
-  | Const (w, n) -> m#mkconstd w n
-  | Not (w, e) -> m#mknot w (btor_of_exp m e)
-  | And (w, e1, e2) -> m#mkand w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Or (w, e1, e2) -> m#mkor w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Xor (w, e1, e2) -> m#mkxor w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Neg (w, e) -> m#mkneg w (btor_of_exp m e)
-  | Add (w, e1, e2) -> m#mkadd w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Sub (w, e1, e2) -> m#mksub w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Mul (w, e1, e2) -> m#mkmul w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Mod (w, e1, e2) -> m#mkmod w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
-  | Shl _ -> fail "Shl (_, n) with non-constant n is not supported"
-  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
-  | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
-  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
-  | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
-  | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
-  | Extract (w, i, j, e) -> m#mkextract w i j (btor_of_exp m e)
-  | Slice (w1, w2, w3, e) -> m#mkslice w1 w2 w3 (btor_of_exp m e)
-  | High (lo, hi, e) -> m#mkhigh lo hi (btor_of_exp m e)
-  | Low (lo, hi, e) -> m#mklow lo hi (btor_of_exp m e)
-  | ZeroExtend (w, i, e) -> m#mkzeroextend w i (btor_of_exp m e)
-  | SignExtend (w, i, e) -> m#mksignextend w i (btor_of_exp m e)
-  | Ite (w, c, e1, e2) -> m#mkcond w (btor_of_bexp m c) (btor_of_exp m e1) (btor_of_exp m e2)
-and btor_of_bexp m e =
-  (*let _ = m#mkcomment (string_of_bexp e) in*)
-  match e with
-  | True -> m#mkconstd 1 Z.one
-  | Ult (_w, e1, e2) -> m#mkult (btor_of_exp m e1) (btor_of_exp m e2)
-  | Ule (_w, e1, e2) -> m#mkule (btor_of_exp m e1) (btor_of_exp m e2)
-  | Ugt (_w, e1, e2) -> m#mkugt (btor_of_exp m e1) (btor_of_exp m e2)
-  | Uge (_w, e1, e2) -> m#mkuge (btor_of_exp m e1) (btor_of_exp m e2)
-  | Slt (_w, e1, e2) -> m#mkslt (btor_of_exp m e1) (btor_of_exp m e2)
-  | Sle (_w, e1, e2) -> m#mksle (btor_of_exp m e1) (btor_of_exp m e2)
-  | Sgt (_w, e1, e2) -> m#mksgt (btor_of_exp m e1) (btor_of_exp m e2)
-  | Sge (_w, e1, e2) -> m#mksge (btor_of_exp m e1) (btor_of_exp m e2)
-  | Eq (_w, e1, e2) -> m#mkeq (btor_of_exp m e1) (btor_of_exp m e2)
-  | Uaddo (_w, e1, e2) -> m#mkuaddo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Usubo (_w, e1, e2) -> m#mkusubo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Umulo (_w, e1, e2) -> m#mkumulo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Saddo (_w, e1, e2) -> m#mksaddo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Ssubo (_w, e1, e2) -> m#mkssubo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Smulo (_w, e1, e2) -> m#mksmulo (btor_of_exp m e1) (btor_of_exp m e2)
-  | Lneg e -> m#mknot 1 (btor_of_bexp m e)
-  | Conj (e1, e2) -> m#mkand 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
-  | Disj (e1, e2) -> m#mkor 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
+  | Lneg e -> bvlneg (smtlib2_of_bexp e)
+  | Conj (e1, e2) -> bvconj (smtlib2_of_bexp e1) (smtlib2_of_bexp e2)
+  | Disj (e1, e2) -> bvdisj (smtlib2_of_bexp e1) (smtlib2_of_bexp e2)
 
 let smtlib2_of_imp es =
   let (premises, goal) =
@@ -668,25 +962,7 @@ let smtlib2_of_imp es =
     | _ -> fail "imp is empty" in
   String.concat "\n" (List.map (fun e -> "(assert " ^ smtlib2_of_bexp e ^ ")") premises)
   ^ "\n"
-  ^ "(assert (not " ^ smtlib2_of_bexp goal ^ "))"
-
-let btor_of_imp m es =
-  let rec mkconj es =
-    match es with
-    | [] -> m#mkconstd 1 Z.one
-    | e1::e2::[] -> m#mkand 1 e1 e2
-    | hd::tl -> m#mkand 1 hd (mkconj tl) in
-  let (premises, goal) =
-    match List.rev es with
-    | g::ps -> (List.rev ps, g)
-    | _ -> failwith "imp is empty" in
-  let f = mkconj (List.map (btor_of_bexp m) premises) in
-  let g = btor_of_bexp m goal in
-  let not_g = m#newvar in
-  let r = m#newvar in
-  let _ = m#addstmt (Printf.sprintf "%d not 1 %d" not_g g) in
-  let _ = m#addstmt (Printf.sprintf "%d and 1 %d %d" r f not_g) in
-  r
+  ^ "(assert " ^ bvlneg (smtlib2_of_bexp goal) ^ ")"
 
 let smtlib2_declare_vars vars =
   let decls = VS.fold (
@@ -698,8 +974,6 @@ let smtlib2_declare_vars vars =
                    ^ "))")::res) vars [] in
   String.concat "\n" decls
 
-let btor_declare_vars m vars = VS.iter (fun v -> ignore(m#mkvar v)) vars
-
 let smtlib2_imp_check_sat es =
   "(set-logic QF_BV)\n"
   ^ "(set-info :smt-lib-version 2.0)\n"
@@ -710,37 +984,20 @@ let smtlib2_imp_check_sat es =
   ^ "(check-sat)\n"
   ^ "(exit)\n"
 
-let btor_imp_check_sat m es =
-  let _ = btor_declare_vars m (vars_imp es) in
-  let bv = btor_of_imp m es in
-  let r = m#newvar in
-  (String.concat "\n" m#getstmts)
-  ^ "\n"
-  ^ (Printf.sprintf "%d root 1 %d" r bv)
-  ^ "\n"
 
-
+(** QF_BV to SAT *)
 
 (*
  * Do bit-blasting and prove with SAT solvers.
  * The head of a list represents the LSB.
  *)
 
-(* We need tail-recursive appending because the clauses are extremely large. *)
-let (@@) ls1 ls2 = List.rev_append ls1 ls2
-
-let _mapi2 f xs ys =
-  let rec helper f i xs ys =
-    match xs, ys with
-    | [], [] -> []
-    | _x::xs, _y::ys -> f i xs ys::helper f (i + 1) xs ys
-    | _ -> raise (Invalid_argument "List length does not match in mapi2") in
-  helper f 0 xs ys
 let rec map3 f xs ys zs =
   match xs, ys, zs with
   | [], [], [] -> []
   | x::xs, y::ys, z::zs -> f x y z::map3 f xs ys zs
   | _ -> raise (Invalid_argument "List length does not match in map3")
+
 (*
  * A single bit_blast object can be used to bit-blast multiple expressions (but not simultaneously).
  * When bit-blasting an expression,
@@ -1340,12 +1597,6 @@ object(self)
        (clauses1@@clauses2@@clauses3, r)
 
 end
-
-let _cnf_nvars cnf =
-  let max_clause clause = List.fold_left (fun res n -> max res n) 0 clause in
-  List.fold_left (fun res clause -> max res (max_clause clause)) 0 cnf
-
-let _cnf_nclauses cnf = List.length cnf
 
 let output_clause ch clause = output_string ch (String.concat " " (List.map string_of_int clause) ^ " 0")
 

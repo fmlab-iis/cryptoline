@@ -8,7 +8,7 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | SaveCoqCryptoline | SaveBvCryptoline | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | SaveCoqCryptoline | SaveBvCryptoline | Simulation
 
 let action = ref Verify
 
@@ -25,6 +25,8 @@ let simulation_steps = ref (-1)
 let simulation_dumps_string = ref ""
 
 let interactive_simulation = ref false
+
+let output_vars = ref []
 
 let coq_filename_extension = ".v"
 
@@ -70,6 +72,8 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
+    ("-pbtor", String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
+                                  action := PrintBtor), Common.mk_arg_desc(["    Print the input program in BTOR format. Input variables are renamed"; "uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
     ("-interactive", Set interactive_simulation,
      Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
@@ -189,6 +193,18 @@ let print_data_flow p fout =
     ) p;
   output_string fout "}\n"
 
+let find_output_vars p vnames =
+  let p = List.rev p in
+  let rec find_output_var p vname =
+    match p with
+    | [] -> failwith("Output variable '" ^ vname ^ "' is not found.")
+    | hd::tl -> let vs = lvs_instr hd in
+                (try
+                   VS.filter (fun v -> v.vname = vname) vs |> VS.min_elt
+                 with Not_found ->
+                   find_output_var tl vname) in
+  tmap (find_output_var p) vnames
+
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
   let parse_and_check file =
@@ -233,6 +249,12 @@ let anon file =
      let (_, s) = parse_and_check file in
      let s = ssa_spec s in
      print_data_flow s.sprog stdout
+  | PrintBtor ->
+     let (vs, s) = parse_and_check file in
+     let m = new Qfbv.Common.btor_manager in
+     let outs = find_output_vars s.sprog !output_vars in
+     let str = Qfbv.Common.btor_program ~rename:true m s.sprog vs outs in
+     print_endline str
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"

@@ -1,5 +1,6 @@
 (library
   (name        utils)
   (flags       (:standard -w -3))
+  (libraries   zarith)
   (public_name cryptoline.utils)
 )

@@ -1,4 +1,16 @@
 
+(** {1 Numbers} *)
+
+val logi : int -> int
+(** [logi n] is the logarithm base 2 of n, rounded down to an integer. *)
+
+val hex_of_Z : int -> Z.t -> string
+(** [hex_of_Z w n] is the hexadecimal representation of [n] with bit width [w]. *)
+
+val bin_of_Z : int -> Z.t -> string
+(** [bin_of_Z w n] is the binary representation of [n] with bit width [w]. *)
+
+
 (** {1 Strings} *)
 
 val split_on_char_nonempty : char -> string -> string list
@@ -41,3 +53,6 @@ val tappend : 'a list -> 'a list -> 'a list
 
 val tmap : ('a -> 'b) -> 'a list -> 'b list
 (** A tail-recutsive version of [List.map] *)
+
+val (@@) : 'a list -> 'a list -> 'a list
+(** [l1 @@ l2] is [tappend l1 l2]. *)
