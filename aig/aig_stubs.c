@@ -38,7 +38,7 @@ static value aig_alloc_aiger (aiger *aig)
 {
   CAMLparam0 ();
   CAMLlocal1 (ret);
-  ret = alloc_custom (&aig_ops, sizeof (aiger *), 0, 1);
+  ret = caml_alloc_custom (&aig_ops, sizeof (aiger *), 0, 1);
   aiger_val (ret) = aig;
   CAMLreturn (ret);
 }
