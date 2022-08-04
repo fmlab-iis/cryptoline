@@ -1,0 +1,6 @@
+(library
+ (name          aig)
+ (foreign_stubs (language c) (names aiger aig_stubs))
+ (preprocess
+  (action (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file})))
+)
