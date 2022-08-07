@@ -21,6 +21,7 @@
 #include "aig_stubs.h"
 
 #define aiger_val(v) (*((aiger **) Data_custom_val(v)))
+#define Val_none -1
 
 static void aig_dealloc_aiger (value a);
 
@@ -187,7 +188,7 @@ CAMLprim value aig_check (value a)
   
   error = aiger_check (aiger_val (a));
   if (error) {
-    ret = caml_alloc_some (caml_copy_string (error));
+    ret = caml_alloc_boxed (caml_copy_string (error));
   } else {
     ret = Val_none;
   }
@@ -202,7 +203,7 @@ CAMLprim value aig_error (value a)
 
   error = aiger_error (aiger_val (a));
   if (error) {
-    ret = caml_alloc_some (caml_copy_string (error));
+    ret = caml_alloc_boxed (caml_copy_string (error));
   } else {
     ret = Val_none;
   }
@@ -224,7 +225,7 @@ CAMLprim value aig_write_to_file (value a, value m, value s)
   } else {
     const char *msg = aiger_error (aiger_val (a)) ?
       aiger_error (aiger_val (a)) : "unknown error";
-    ret = caml_alloc_some (caml_copy_string (msg));
+    ret = caml_alloc_boxed (caml_copy_string (msg));
   }
 
   CAMLreturn (ret);
@@ -242,7 +243,7 @@ CAMLprim value aig_open_and_write_to_file (value a, value s)
   } else {
     const char *msg = aiger_error (aiger_val (a)) ?
       aiger_error (aiger_val (a)) : "unknown error";
-    ret = caml_alloc_some (caml_copy_string (msg));
+    ret = caml_alloc_boxed (caml_copy_string (msg));
   }
 
   CAMLreturn (ret);
@@ -272,7 +273,7 @@ CAMLprim value aig_read_from_file (value a, value s)
   error = aiger_read_from_file (aiger_val (a), f);
   fclose (f);
   if (error) {
-    ret = caml_alloc_some (caml_copy_string (error));
+    ret = caml_alloc_boxed (caml_copy_string (error));
   } else {
     ret = Val_none;
   }
@@ -288,7 +289,7 @@ CAMLprim value aig_open_and_read_from_file (value a, value s)
 
   error = aiger_open_and_read_from_file (aiger_val (a), String_val (s));
   if (error) {
-    ret = caml_alloc_some (caml_copy_string (error));
+    ret = caml_alloc_boxed (caml_copy_string (error));
   } else {
     ret = Val_none;
   }
@@ -311,7 +312,7 @@ CAMLprim value aig_write_symbols_to_file (value a, value s)
   } else {
     const char *msg = aiger_error (aiger_val (a)) ?
       aiger_error (aiger_val (a)) : "unknown error";
-    ret = caml_alloc_some (caml_copy_string (msg));
+    ret = caml_alloc_boxed (caml_copy_string (msg));
   }
 
   CAMLreturn (ret);
@@ -332,7 +333,7 @@ CAMLprim value aig_write_comments_to_file (value a, value s)
   } else {
     const char *msg = aiger_error (aiger_val (a)) ?
       aiger_error (aiger_val (a)) : "unknown error";
-    ret = caml_alloc_some (caml_copy_string (msg));
+    ret = caml_alloc_boxed (caml_copy_string (msg));
   }
 
   CAMLreturn (ret);
@@ -377,7 +378,7 @@ CAMLprim value aig_is_latch (value a, value l)
     Store_field (ret, 0, Val_int (sym->next));
     Store_field (ret, 1, Val_int (sym->reset));
     Store_field (ret, 2, caml_copy_string (sym->name));
-    ret = caml_alloc_some (ret);
+    ret = caml_alloc_boxed (ret);
   } else {
     ret = Val_none;
   }
@@ -396,7 +397,7 @@ CAMLprim value aig_is_and (value a, value l)
     ret = caml_alloc_tuple (2);
     Store_field (ret, 0, Val_int (sym->rhs0));
     Store_field (ret, 1, Val_int (sym->rhs1));
-    ret = caml_alloc_some (ret);
+    ret = caml_alloc_boxed (ret);
   } else {
     ret = Val_none;
   }

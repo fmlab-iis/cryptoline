@@ -192,27 +192,38 @@ let print_data_flow p fout =
 let anon file =
   let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
   let parse_and_check file =
-    let (vs, s) = parse_spec file in
-    if check_well_formedness (VS.of_list vs) s then (vs, from_typecheck_spec s)
-    else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
-    else exit 1 in
-  let t1 = Unix.gettimeofday() in
+     let ll = parse_spec file in
+     let l2 = List.map (fun (vs, s) -> 
+        if check_well_formedness (VS.of_list vs) s then (vs, from_typecheck_spec s)
+        else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+        else exit 1
+     ) ll in
+     l2 in
+
+ let t1 = Unix.gettimeofday() in
   let _ = Random.self_init() in
   match !action with
   | Verify ->
-     let (_, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     (* ll type is ( vs, s) list *)
+     let len = List.length ll in
+     let _ = print_endline ("Number of procs for verified is " ^ string_of_int len ^ "\n----------------------")  in
+     List.iteri (fun index (_, s) ->
+     let _ = print_endline("Verifying proc " ^ string_of_int index) in
      let res = Verify.Std.verify_spec s in
      let t2 = Unix.gettimeofday() in
      let _ = print_endline ("Verification result:\t\t\t"
                             ^ (if res then "[OK]\t" else "[FAILED]") ^ "\t"
-                            ^ string_of_running_time t1 t2) in
-     if res then exit 0 else exit 1
+                            ^ string_of_running_time t1 t2)
+     in if res then print_endline ("-----------------------") else exit 1) ll
   | Parse ->
-     let (vs, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     List.iter (fun (vs, s) ->
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec s)
+     print_endline (string_of_spec s) ) ll
   | PrintSSA ->
-     let (vs, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     List.iter (fun (vs, s) ->
      let vs = List.map (ssa_var VM.empty) vs in
      let init_spec = ssa_spec s in
      let post_processes = (if !apply_move_assert then [move_asserts] else [])
@@ -222,7 +233,7 @@ let anon file =
      in
      let s = List.fold_left (|>) init_spec post_processes in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec s)
+     print_endline (string_of_spec s) ) ll
   | PrintESpec ->
      let s = from_typecheck_espec (espec_from_file file) in
      print_endline (string_of_espec s)
@@ -230,9 +241,10 @@ let anon file =
      let s = from_typecheck_rspec (rspec_from_file file) in
      print_endline (string_of_rspec s)
   | PrintDataFlow ->
-     let (_, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     List.iter (fun (_, s) ->
      let s = ssa_spec s in
-     print_data_flow s.sprog stdout
+     print_data_flow s.sprog stdout ) ll
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
@@ -251,9 +263,10 @@ let anon file =
        let _ = output_string ch (str_of_spec s) in
        let _ = close_out ch in
        () in
-     let (_, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     List.iter (fun (_, s) ->
      let coq_specs = spec_to_coqcryptoline s in
-     List.iteri output coq_specs
+     List.iteri output coq_specs) ll 
   | SaveBvCryptoline ->
      let nth_name id = !save_bvcryptoline_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
@@ -269,16 +282,21 @@ let anon file =
        let _ = output_string ch s in
        let _ = close_out ch in
        () in
-     let (_, s) = parse_and_check file in
+     let ll = parse_and_check file in
+     List.iter (fun (_, s) ->
      let bvspecs = spec_to_bvcryptoline s in
-     List.iteri output bvspecs
+     List.iteri output bvspecs) ll 
   | Simulation ->
      let _ = Random.self_init () in
-     let (vs, s) = parse_and_check file in
+     let ll = parse_spec file in
+     List.iter (fun (vs, s) -> 
      let vals = parse_initial_values vs in
      let m = Simulator.make_map vs vals in
-     if !interactive_simulation then Simulator.shell m s.sprog
-     else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
+     let lined_prog_to_prog lp = 
+        List.map ( fun (_, instr) -> instr) lp in
+     if !interactive_simulation then Simulator.shell m (lined_prog_to_prog s.sprog)
+     else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m (lined_prog_to_prog s.sprog)
+     ) ll
 
 
 (*

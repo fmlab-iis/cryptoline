@@ -19,12 +19,16 @@ let parse_spec file =
   with ex ->
     raise ex
 
-let anon file =
-  let _ = Random.self_init() in
-  let (_vs, spec) = parse_spec file in
+let anon spec =
   let spec_ssa = ssa_spec (from_typecheck_spec spec) in
   let res = redlog_of_espec (espec_of_spec spec_ssa) in
   print_endline res
+
+let anon file =
+  let _ = Random.self_init() in
+  (* let (_vs, spec) = parse_spec file in *)
+  let vlist = parse_spec file in
+  List.iter (fun (_, spec) -> anon spec) vlist
 (*
 let _ =
   parse args anon usage

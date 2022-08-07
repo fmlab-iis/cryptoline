@@ -132,6 +132,7 @@
               (********** Others **********)
               "proc"                       , PROC;
               "call"                       , CALL;
+              "inline"                     , INLINE;
               "ulimbs"                     , ULIMBS;
               "slimbs"                     , SLIMBS;
               "limbs"                      , ULIMBS;

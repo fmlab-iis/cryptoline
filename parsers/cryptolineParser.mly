@@ -12,7 +12,6 @@
 
   exception ParseError of string
 
-  let main = "main"
   let vars_expansion_infix = "_"
 
   type func =
@@ -987,7 +986,119 @@
     | Avar v -> formal.vtyp = v.vtyp
     | Aconst (ty, _n) -> formal.vtyp = ty
 
+
   let parse_call_at lno fname_token actuals_token =
+    fun fm cm vm ym gm ->
+      let fname = fname_token in 
+      let f = 
+        try 
+            SM.find fname fm 
+        with Not_found ->
+          raise_at lno ("Call an undefined function '" ^ fname ^ "'.") in
+      (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+      let actuals = actuals_token (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) cm vm ym gm in
+      (* let actuals_input = actuals_token (List.map typ_of_var f.fargs, []) cm vm ym gm in
+      let actuals_output = actuals_token (List.map typ_of_var f.fouts, []) cm vm ym gm in  *)
+      (* update variable maps *)
+      (* Check naming conflicts *)
+      let (fpre, fpost, _, fargs, fouts, fvs, fys, fgs) =
+        (* TODO do the local rename for pre and post condition *) 
+        (* if !Options.Std.rename_local then
+          let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
+          let fpre = List.map rename_var f.fpre in
+          let fpost = List.map rename_var f.fpost in
+          let fargs = List.map rename_var f.fargs in
+          let fouts = List.map rename_var f.fouts in
+          let fvs = VS.map rename_var (vs_of_vm f.fvm) in
+          let fys = VS.map rename_var (vs_of_vm f.fym) in
+          let fgs = VS.map rename_var (vs_of_vm f.fgm) in
+          let local_renamer = object (* (self) *)
+                                inherit nop_visitor
+                                method! vvar v = ChangeTo (rename_var v)
+                              end in
+          let fbody = visit_lined_program local_renamer f.fbody in
+          (fbody, fargs, fouts, fvs, fys, fgs)
+        else *)
+          (f.fpre, f.fpost, f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
+      let inputs = fargs in
+      let outputs = fouts in
+      (* let _ = List.map (fun var -> if var in fpost *)
+      (* let _ = check_var_program fbody in *)
+      (* TODO check the input variable does not modified in the function body *)
+      (* check input variable does not contain in output varaible *) 
+      let formals = inputs@outputs in
+      let rec split_at1 n acc l =
+       if n = 0 then (List.rev acc, l) else
+       match l with
+       | [] -> (List.rev acc, [])
+       | h :: t -> split_at1 (n-1) (h :: acc) t in
+      let (actuals_input, actuals_output) = split_at1 (List.length inputs) [] actuals in  
+      let _ = List.iter (fun input_var -> if List.mem input_var actuals_output then raise_at lno ("Parse call error, the actaul input variable should not also be actual output variable")) actuals_input in
+      (* Check the number of actual parameters *)
+      let _ =
+        if List.length actuals != List.length formals then
+          raise_at lno ("Failed to inline the function " ^ fname ^ ": numbers of arguments mismatch.") in
+      (* Check types of actual parameters, this should be done in parsing actual parameters *)
+      let _ =
+        List.iter2 (fun formal actual ->
+                     if not (is_type_compatible formal actual) then
+                       raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
+                                     ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+                   formals actuals in
+      let pats = List.combine formals actuals in
+      let vs = vs_of_vm vm in
+      let ys = vs_of_vm ym in
+      let gs = vs_of_vm gm in
+      (* Check undefined variables *)
+      let _ =
+        let undefined =
+          List.flatten (List.map (fun (formal, actual) ->
+                                   match actual with
+                                   | Avar v -> if mem_var formal inputs && not (VS.mem v vs) then [v] else []
+                                   | _ -> []
+                                 ) pats) in
+        if List.length undefined > 0 then
+          raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
+      in
+      (* translate actual type from atomic to expr *)
+      (*let epats = (List.combine formals (List.map atomic_to_eexp actuals)) in 
+      let rpats = List.combine formals (List.map atomic_to_rexp actuals) in *)
+      (* substitue the pre post condition with actual args *)
+      let bexp_to_bexp_prove_with bexp =  
+        let (eb, sb) = bexp in 
+        ([eb, []], [sb, []]) in 
+      let bexp_prove_with_to_bexp bpw = 
+        let (ebl, rbl) = bpw in  
+        (*let ebx = List.map( fun (eb, _ ) -> eb) ebl in
+        let eby = List.map( fun (sb, _) -> eb) sbl in  *)
+        let eb = ebexp_prove_with_eands ebl in 
+        let rb = rbexp_prove_with_rands rbl in 
+        (eb, rb) in  
+      let (am, em, rm) = subst_maps_of_list pats in
+      let pre = bexp_to_bexp_prove_with (subst_bexp em rm fpre) in
+      let post = subst_bexp em rm (bexp_prove_with_to_bexp fpost) in
+      (* new prog = assert and assume *)
+      let p = [] in 
+      let p = List.append p [(lno, Iassert pre)] in 
+      (* let p = List.append p [(lno, "the comment" COMMENT)] in *)
+      let p = List.append p [(lno, Iassume post)] in 
+      (* Update variable types *)
+      let subst_varmap vm =
+        (*
+         * subst_lval fails if the corresponding actual parameter of a formal parameter is a constant.
+         * In this case, no variable type will be updated.
+         *)
+        VS.of_list (List.flatten (List.map (fun v -> try [subst_lval am v] with _ -> []) (VS.elements vm))) in
+      let update_varset vs vsp =
+        (* To update variable types, we need to remove variables with new types first. *)
+        VS.union (VS.diff vs vsp) vsp in
+      let vsp = subst_varmap fvs in
+      let ysp = subst_varmap fys in
+      let gsp = subst_varmap fgs in
+      (vm_of_vs (update_varset vs vsp), vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
+
+
+  let parse_inline_at lno fname_token actuals_token =
     fun fm cm vm ym gm ->
       (* The function name *)
       let fname = fname_token in
@@ -1247,6 +1358,8 @@
          parse_rcut_at lno rbexp_prove_with_list fm cm vm ym gm
       | `GHOST (gvars, bexp) ->
          parse_ghost_at lno gvars bexp fm cm vm ym gm
+      | `INLINE (id, actuals) ->
+         parse_inline_at lno id actuals fm cm vm ym gm
       | `CALL (id, actuals) ->
          parse_call_at lno id actuals fm cm vm ym gm
       | `NOP -> (vm, ym, gm, [])
@@ -1281,7 +1394,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
-%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
+%token AT PROC CALL INLINE ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF
 
 %left LOROP
@@ -1302,7 +1415,7 @@
 
 %start spec
 %start prog
-%type <(Ast.Cryptoline.var list * Typecheck.Std.spec)> spec
+%type <(Ast.Cryptoline.var list * Typecheck.Std.spec) list> spec
 %type <Ast.Cryptoline.lined_program> prog
 
 %%
@@ -1315,11 +1428,9 @@ spec:
      * cm: a map from a name to a constant
      *)
     let (fm, _cm) = $1 SM.empty SM.empty in
-    try
-      let m = SM.find main fm in
-      (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost })
-    with Not_found ->
-      raise (ParseError "A main function is required.")
+    let l = SM.bindings fm in
+    let ll = List.map (fun (_, v) -> (v.fargs, {spre = v.fpre; sprog = v.fbody; spost = v.fpost})) l in
+    ll
   }
 ;
 
@@ -1672,6 +1783,8 @@ instr:
   | NONDET error                                  { raise_at !lnum ("Bad nondet instruction") }
   | CALL ID LPAR error                            { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
   | CALL error                                    { raise_at !lnum ("Bad call instruction") }
+  | INLINE ID LPAR error                            { raise_at !lnum (("Invalid actuals in the inline instruction: " ^ $2)) }
+  | INLINE error                                    { raise_at !lnum ("Bad inline instruction") }
 ;
 
 ebexp_prove_with_list:

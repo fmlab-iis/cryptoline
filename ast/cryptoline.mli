@@ -885,6 +885,7 @@ module SS : Set.S with type elt = string
 module SM : Map.S with type key = string
 (** map with strings as its keys *)
 
+
 val new_name : ?prefix:string -> SS.t -> string
 (** [new_name ~prefix:s ss] suggests a new name that does not appear in [ss]. The returned name has a prefix [s]. *)
 
@@ -1671,6 +1672,7 @@ val move_asserts : spec -> spec
    specification must be in SSA.
  *)
 
+
 val infer_input_variables : spec -> VS.t
 (** Infer the input variables of a specification. *)
 
@@ -1710,3 +1712,7 @@ val remove_ecut_spec : spec -> spec
 
 val remove_rcut_spec : spec -> spec
 (** Remove all range cuts in a specification. *)
+
+val atomic_to_eexp : atom -> eexp
+val atomic_to_rexp : atom -> rexp
+(* translote atomic to exp type *)

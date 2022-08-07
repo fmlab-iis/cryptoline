@@ -3259,8 +3259,21 @@ let spec_to_coqcryptoline s =
   |> List.rev_map move_asserts
   |> List.rev_map merge_spec_post
 
+(* function for atomic to expr *)
+let atomic_to_eexp atom =
+  match atom with
+  | Avar v -> Evar v
+  | Aconst (_, v) -> Econst v
 
-(** Convert specifications to BvCryptoLine format. *)
+let type_to_size t =
+  match t with
+  | Tuint s -> s
+  | Tsint s -> s
+
+let atomic_to_rexp atom =
+  match atom with
+  | Avar v -> Rvar v
+  | Aconst (s, v) -> Rconst (type_to_size s, v)
 
 exception UnsupportedException of string
 exception EvaluationException of string
@@ -3919,3 +3932,5 @@ let remove_ecut_spec s =
 let remove_rcut_spec s =
   let post = (fst s.spost, remove_prove_with_cuts (snd s.spost)) in
   { spre = s.spre; sprog = remove_rcut_program s.sprog; spost = post }
+
+
