@@ -13,13 +13,17 @@ let mk_graph pairs =
     else Hashtbl.replace ret s (t::adj) in
   let _ = List.iter helper pairs in
   ret
-    
-let dfs_helper mark enter_fun leave_fun g start =
+
+let dfs_helper mark left enter_fun leave_fun g start =
   let rec helper to_visit =
     match to_visit with
     | current::tl ->
        if Hashtbl.mem mark current then
-         let _ = leave_fun current in
+         let _ =
+           if not (Hashtbl.mem left current) then
+             let _ = Hashtbl.add left current () in
+             let _ = leave_fun current in
+             () in
          helper tl
        else
          let _ = Hashtbl.add mark current () in
@@ -32,14 +36,15 @@ let dfs_helper mark enter_fun leave_fun g start =
   helper [start]
 
 let dfs enter_fun leave_fun g start =
-  dfs_helper (Hashtbl.create 23) enter_fun leave_fun g start
+  dfs_helper (Hashtbl.create 23) (Hashtbl.create 23) enter_fun leave_fun g start
 
 let topological_sort g =
   let ret = ref [] in
   let visited_helper n = ret := n::(!ret) in
   let mark = Hashtbl.create 23 in
+  let left = Hashtbl.create 23 in
   let helper n =
-    dfs_helper mark (fun _ -> ()) visited_helper g n in
+    dfs_helper mark left (fun _ -> ()) visited_helper g n in
   let _ = Hashtbl.iter (fun s _ ->
               if Hashtbl.mem mark s then ()
               else helper s) g in
