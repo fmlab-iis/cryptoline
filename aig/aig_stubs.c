@@ -19,6 +19,7 @@
 
 #include "aiger.h"
 #include "aig_stubs.h"
+#include "compatibility.h"
 
 #define aiger_val(v) (*((aiger **) Data_custom_val(v)))
 

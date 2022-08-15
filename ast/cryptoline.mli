@@ -629,7 +629,7 @@ type instr =
                                       {- QF_BV: vh = lshr a1 n, vl = concate (low n a1) (high (size a1 - n) a2), l = low n a2}
                                       {- Algebra:
                                       {ul {- Unsigned: (vh × 2{^size a1} + vl) × 2{^n} + l = a1 × 2{^size a1} + a2}
-                                          {- Signed: (vh × 2{^size a1} + vl) × 2{^n} + l + d × {2^size a1 + size a2} = a1 × 2{^size a1} + a2 for some fresh d}}}}
+                                          {- Signed: (vh × 2{^size a1} + vl) × 2{^n} + l + d × 2{^size a1 + size a2} = a1 × 2{^size a1} + a2 for some fresh d}}}}
    - [Inondet v]: Assign [v] a nondeterministic value.
                   {ul {- QF_BV: True}
                       {- Algebra: True}}
