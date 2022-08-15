@@ -1,4 +1,40 @@
-SHA3_absorb:
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rbp = %%rbp
+#! %rcx = %%rcx
+#! %rdi = %%rdi
+#! %rdx = %%rdx
+#! %rsi = %%rsi
+#! $1c(%rdi) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rsi) = %%EA
+#! $1c(%rsp) = %%EA
+#! $1c(%r$2c) = %%EA
+#! (%r$1c) = %%EA
+#! %r$1c = %%r$1c
+
+
+#! and $1v, $2v -> and $2v@uint64 $2v $1v
+#! cmp $1v, $2v -> (* cmp $1v, $2v *)\nnop
+#! lea $1v, $2v -> (* lea $1v, $2v *)\nnop
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2v -> mov $2v $1v
+#! notq $1ea -> not $1ea@uint64 $1ea
+#! not $1v -> not $1v@uint64 $1v
+#! or $1v, $2v -> or $2v@uint64 $2v $1v
+#! pop $1v -> (* pop $1v *)\nnop
+#! push $1v -> (* push $1v *)\nnop
+#! rol $1v -> split $1v_H $1v_L $1v 63;\nshl $1v_S $1v_L 1@uint64;\nadd $1v $1v_S $1v_H
+#! rol $1c, $2v -> split $2v_H $2v_L $2v (64-$1c);\nshl $2v_S $2v_L $1c@uint64;\nadd $2v $2v_S $2v_H
+#! shr $1c, $2v -> split $2v dc $2v $1c@uint64
+#! sub $1c, $2v -> subs dc $2v $2v $1c@uint64
+#! test $1c, $2v -> (* test $1c, $2v *)\nnop
+#! xor $1ea, $2v -> xor $2v@uint64 $2v $1ea
+#! xchg $1v, $2v -> mov $2v_T $2v;\nmov $2v $1v;\nmov $1v $2v_T
+#! xor $1v, $2v -> xor $2v@uint64 $2v $1v
+
+#SHA3_absorb:
 # %rdi = 0x555555558040
 # %rsi = 0x7fffffffda20
 # %rdx = 0xa8
