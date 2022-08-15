@@ -739,12 +739,12 @@ type atom =
 
 type instr =
   | Imov of var * atom                                      (** Assignment *)
-  | Ishl of var * atom * Z.t                                (** Left shift *)
+  | Ishl of var * atom * atom                               (** Left shift *)
   | Ishls of var * var * atom * Z.t                         (** Left shift *)
-  | Ishr of var * atom * Z.t                                (** Logical right shift *)
-  | Ishrs of var * var * atom * Z.t                         (** Logical right shift *)
-  | Isar of var * atom * Z.t                                (** Arithmetic right shift *)
-  | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
+  | Ishr of var * atom * atom                               (** Logical right shift *)
+  | Ishrs of var * var * atom * Z.t                        (** Logical right shift *)
+  | Isar of var * atom * atom                               (** Arithmetic right shift *)
+  | Isars of var * var * atom * Z.t                        (** Arithmetic right shift *)
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
@@ -1112,11 +1112,11 @@ let string_of_instr ?typ:(typ=false) i =
   let astr a = string_of_atom ~typ:typ a in
   match i with
   | Imov (v, a) -> "mov " ^ vstr v ^ " " ^ astr a
-  | Ishl (v, a, n) -> "shl " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Ishl (v, a, n) -> "shl " ^ vstr v ^ " " ^ astr a ^ " " ^ astr n
   | Ishls (l, v, a, n) -> "shls " ^ vstr l ^ " " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
-  | Ishr (v, a, n) -> "shr " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Ishr (v, a, n) -> "shr " ^ vstr v ^ " " ^ astr a ^ " " ^ astr n
   | Ishrs (v, l, a, n) -> "shrs " ^ vstr v ^ " " ^ vstr l ^ " " ^ astr a ^ " " ^ Z.to_string n
-  | Isar (v, a, n) -> "sar " ^ vstr v ^ " " ^ astr a ^ " " ^ Z.to_string n
+  | Isar (v, a, n) -> "sar " ^ vstr v ^ " " ^ astr a ^ " " ^ astr n
   | Isars (v, l, a, n) -> "sars " ^ vstr v ^ " " ^ vstr l ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Icshl (vh, vl, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Icshr (vh, vl, a1, a2, n) -> "cshr " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
@@ -3414,7 +3414,7 @@ let bvcryptoline_of_atom a =
 let bvcryptoline_of_instr i =
   match i with
   | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a)
-  | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %d)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a) (Z.to_int n)
+  | Ishl (v, a, n) -> Printf.sprintf "(bvShl %s %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a) (bvcryptoline_of_atom n)
   | Ishls _ -> raise (UnsupportedException "Instruction shls is not supported by BvCryptoLine.")
   | Ishr _ -> raise (UnsupportedException "Instruction shr is not supported by BvCryptoLine.")
   | Ishrs _ -> raise (UnsupportedException "Instruction shrs is not supported by BvCryptoLine.")

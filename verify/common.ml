@@ -187,7 +187,9 @@ let exp_cshl w a1 a2 n =
 let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
 let bexp_shl v a p =
   let w = size_of_var v in
-  Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p)))
+  match p with
+  | Aconst (_, z) -> Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, z)))
+  | Avar _ -> True
 let bexp_shls l v a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -196,7 +198,9 @@ let bexp_shls l v a p =
      Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p))))
 let bexp_shr v a p =
   let w = size_of_var v in
-  Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, p)))
+  match p with
+  | Aconst (_, z) -> Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, z)))
+  | Avar _ -> True
 let bexp_shrs v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -205,7 +209,9 @@ let bexp_shrs v l a p =
      Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
 let bexp_sar v a p =
   let w = size_of_var v in
-  Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, p)))
+  match p with
+  | Aconst (_, z) -> Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, z)))
+  | Avar _ -> True
 let bexp_sars v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -548,51 +554,69 @@ let bexp_atom_umul_safe w a1 a2 =
 let bexp_atom_smul_safe w a1 a2 =
   Lneg (Smulo (w, exp_atom a1, exp_atom a2))
 
-let bexp_atom_ushl_safe w a n =
-  let n = Z.to_int n in
-  Eq (n,
-      High (w - n, n, exp_atom a),
-      Const (n, Z.zero))
+let bexp_atom_ushl_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Eq (n,
+        High (w - n, n, exp_atom a),
+        Const (n, Z.zero))
+  else
+    True
 
-let bexp_atom_sshl_safe w a n =
-  let n = Z.to_int n in
-  Eq (w,
-      SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
-      exp_atom a)
+let bexp_atom_sshl_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Eq (w,
+        SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
+        exp_atom a)
+  else
+    True
 
-let bexp_atom_ushr_safe w a n =
-  let n = Z.to_int n in
-  Eq (n,
-      Low (n, w - n, exp_atom a),
-      Const (n, Z.zero))
+let bexp_atom_ushr_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Eq (n,
+        Low (n, w - n, exp_atom a),
+        Const (n, Z.zero))
+  else
+    True
 
-let bexp_atom_sshr_safe w a n =
-  let n = Z.to_int n in
-  Conj
-    (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
-     Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
+let bexp_atom_sshr_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Conj
+      (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
+       Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
+  else
+    True
 
-let bexp_atom_usar_safe w a n =
-  let n = Z.to_int n in
-  Conj
-    (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
-     Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+let bexp_atom_usar_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Conj
+      (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
+       Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+  else
+    True
 
-let bexp_atom_ssar_safe w a n =
-  let n = Z.to_int n in
-  Eq (n,
-      Low (n, w - n, exp_atom a),
-      Const (n, Z.zero))
+let bexp_atom_ssar_safe w a p =
+  if atom_is_const p then
+    let n = Z.to_int (const_of_atom p) in
+    Eq (n,
+        Low (n, w - n, exp_atom a),
+        Const (n, Z.zero))
+  else
+    True
 
 let bexp_atom_ucshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atom_ushl_safe w a1 n)
+     bexp_atom_ushl_safe w a1 (mkatom_const (uint_t w) n))
 
 let bexp_atom_scshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atom_sshl_safe w a1 n)
+     bexp_atom_sshl_safe w a1 (mkatom_const (uint_t w) n))
 
 let bexp_atom_ucshr_safe w _a1 a2 n =
   let ni = Z.to_int n in
@@ -802,7 +826,11 @@ let bv2z_instr vgen i =
   match i with
   | Imov (v, a) -> (vgen, [bv2z_assign v (bv2z_atom a)])
   | Ishl (v, a, n) ->
-     (vgen, [bv2z_assign v (emul (bv2z_atom a) (econst (e2pow (Z.to_int n))))])
+     if atom_is_const n then
+       (vgen, [bv2z_assign v (emul (bv2z_atom a)
+                                (econst (e2pow (Z.to_int (const_of_atom n)))))])
+     else
+       (vgen, [])
   | Ishls (l, v, a, n) ->
      (match v.vtyp with
       | Tuint w -> (vgen, [eeq
@@ -817,9 +845,12 @@ let bv2z_instr vgen i =
                    ])
      )
   | Ishr (v, a, n) ->
-     if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int n) in
-                             (vgen, [eeq (evar v) (econst a_shifted)])
-     else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int n)))) (bv2z_atom a)])
+     if atom_is_const n then
+       if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int (const_of_atom n)) in
+                               (vgen, [eeq (evar v) (econst a_shifted)])
+       else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int (const_of_atom n))))) (bv2z_atom a)])
+     else
+       (vgen, [])
   | Ishrs (v, l, a, n) ->
      (match v.vtyp with
       | Tuint _ -> (vgen, [eeq (limbs (Z.to_int n) [evar l; evar v]) (bv2z_atom a)])
@@ -831,9 +862,12 @@ let bv2z_instr vgen i =
                    ])
      )
   | Isar (v, a, n) ->
-     if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int n) in
-                             (vgen, [eeq (evar v) (econst a_shifted)])
-     else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int n)))) (bv2z_atom a)])
+     if atom_is_const n then
+       if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) (Z.to_int (const_of_atom n)) in
+                               (vgen, [eeq (evar v) (econst a_shifted)])
+       else (vgen, [eeq (emul (evar v) (econst (e2pow (Z.to_int (const_of_atom n))))) (bv2z_atom a)])
+     else
+       (vgen, [])
   | Isars (v, l, a, n) ->
      (match v.vtyp with
       | Tuint w -> let (discarded, vgen) = gen_var vgen in

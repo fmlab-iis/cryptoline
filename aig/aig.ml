@@ -9,6 +9,9 @@ type tag_t = Constant | Input | Latch | And
 type latch_t = { next : lit_t; reset : lit_t; name : string }
 type and_t = { rhs0 : lit_t; rhs1 : lit_t }
 
+let faux = 0
+let vrai = 1
+
 let var2lit v = v lsl 1
 let lit2var l = l lsr 1
 

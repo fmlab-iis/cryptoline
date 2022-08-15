@@ -8,6 +8,8 @@ type tag_t = Constant | Input | Latch | And
 type latch_t = { next : lit_t; reset : lit_t; name : string }
 type and_t = { rhs0 : lit_t; rhs1 : lit_t }
 
+val faux : lit_t
+val vrai : lit_t
 val var2lit : var_t -> lit_t
 val lit2var : lit_t -> var_t
 val sign : lit_t -> sign_t

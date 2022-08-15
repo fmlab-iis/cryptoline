@@ -238,13 +238,16 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = num cm in
+      let n = resolve_atom_with lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+      let _ = 
+        match n with
+        | Aconst (_, z) ->
+           let w = size_of_var v in
+           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+             raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                         ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+        | _ -> ()
       in
       (vm, ym, gm, [lno, Ishl (v, a, n)])
 
@@ -259,7 +262,7 @@
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, ym, gm, [lno, Ishls (l, v, a, n)])
 
@@ -267,13 +270,16 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = num cm in
+      let n = resolve_atom_with lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+        match n with
+        | Aconst (_, z) ->
+           let w = size_of_var v in
+           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+             raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                         ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+        | _ -> ()
       in
       (vm, ym, gm, [lno, Ishr (v, a, n)])
 
@@ -288,7 +294,7 @@
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, ym, gm, [lno, Ishrs (v, l, a, n)])
 
@@ -296,13 +302,16 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = num cm in
+      let n = resolve_atom_with lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+        match n with
+        | Aconst (_, z) ->
+           let w = size_of_var v in
+           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+             raise_at lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                         ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+        | _ -> ()
       in
       (vm, ym, gm, [lno, Isar (v, a, n)])
 
@@ -317,7 +326,7 @@
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, ym, gm, [lno, Isars (v, l, a, n)])
 
@@ -1460,16 +1469,16 @@ instrs:
 instr:
     MOV lval atom                                 { (!lnum, `MOV ($2, $3)) }
   | lhs EQOP atom                                 { (!lnum, `MOV  (`LVPLAIN $1, $3)) }
-  | SHL lval atom const                           { (!lnum, `SHL ($2, $3, $4)) }
-  | lhs EQOP SHL atom const                       { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
+  | SHL lval atom atom                            { (!lnum, `SHL ($2, $3, $4)) }
+  | lhs EQOP SHL atom atom                        { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
   | SHLS lval lval atom const                     { (!lnum, `SHLS ($2, $3, $4, $5)) }
   | lhs lhs EQOP SHLS atom const                  { (!lnum, `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | SHR lval atom const                           { (!lnum, `SHR ($2, $3, $4)) }
-  | lhs EQOP SHR atom const                       { (!lnum, `SHR (`LVPLAIN $1, $4, $5)) }
+  | SHR lval atom atom                            { (!lnum, `SHR ($2, $3, $4)) }
+  | lhs EQOP SHR atom atom                        { (!lnum, `SHR (`LVPLAIN $1, $4, $5)) }
   | SHRS lval lval atom const                     { (!lnum, `SHRS ($2, $3, $4, $5)) }
   | lhs lhs EQOP SHRS atom const                  { (!lnum, `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | SAR lval atom const                           { (!lnum, `SAR ($2, $3, $4)) }
-  | lhs EQOP SAR atom const                       { (!lnum, `SAR (`LVPLAIN $1, $4, $5)) }
+  | SAR lval atom atom                            { (!lnum, `SAR ($2, $3, $4)) }
+  | lhs EQOP SAR atom atom                        { (!lnum, `SAR (`LVPLAIN $1, $4, $5)) }
   | SARS lval lval atom const                     { (!lnum, `SARS ($2, $3, $4, $5)) }
   | lhs lhs EQOP SARS atom const                  { (!lnum, `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | CSHL lval lval atom atom const                { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }

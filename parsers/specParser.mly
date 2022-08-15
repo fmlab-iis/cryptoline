@@ -102,11 +102,11 @@ instrs:
 
 instr:
     MOV lval atom                                 { [min_int, Imov ($2, $3)] }
-  | SHL lval atom const                           { [min_int, Ishl ($2, $3, $4)] }
+  | SHL lval atom atom                            { [min_int, Ishl ($2, $3, $4)] }
   | SHLS lval lval atom const                     { [min_int, Ishls ($2, $3, $4, $5)] }
-  | SHR lval atom const                           { [min_int, Ishr ($2, $3, $4)] }
+  | SHR lval atom atom                            { [min_int, Ishr ($2, $3, $4)] }
   | SHRS lval lval atom const                     { [min_int, Ishrs ($2, $3, $4, $5)] }
-  | SAR lval atom const                           { [min_int, Isar ($2, $3, $4)] }
+  | SAR lval atom atom                            { [min_int, Isar ($2, $3, $4)] }
   | SARS lval lval atom const                     { [min_int, Isars ($2, $3, $4, $5)] }
   | CSHL lval lval atom atom const                { [min_int, Icshl ($2, $3, $4, $5, $6)] }
   | CSHR lval lval atom atom const                { [min_int, Icshr ($2, $3, $4, $5, $6)] }

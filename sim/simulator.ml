@@ -156,7 +156,7 @@ let simulate_instr m i =
   match i with
   | Imov (v, a) -> VM.add v (value_of_atom m a) m
   | Ishl (v, a, n) ->
-     let n = Z.to_int n in
+     let n = to_nat (value_of_atom m n) in
      let bs = value_of_atom m a in
      VM.add v (shlB n bs) m
   | Ishls (l, v, a, n) ->
@@ -164,7 +164,7 @@ let simulate_instr m i =
      let bs = value_of_atom m a in
      VM.add l (high n bs) (VM.add v (shlB n bs) m)
   | Ishr (v, a, n) ->
-     let n = Z.to_int n in
+     let n = to_nat (value_of_atom m n) in
      let bs = value_of_atom m a in
      VM.add v (shrB n bs) m
   | Ishrs (v, l, a, n) ->
@@ -172,7 +172,7 @@ let simulate_instr m i =
      let bs = value_of_atom m a in
      VM.add v (shrB n bs) (VM.add l (low n bs) m)
   | Isar (v, a, n) ->
-     let n = Z.to_int n in
+     let n = to_nat (value_of_atom m n) in
      let bs = value_of_atom m a in
      VM.add v (sarB n bs) m
   | Isars (v, l, a, n) ->

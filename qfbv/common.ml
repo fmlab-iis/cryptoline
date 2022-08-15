@@ -625,7 +625,10 @@ let btor_instr m i =
   | Imov (v, a) -> m#setvar v (btor_atom m a)
   | Ishl (v, a, n) -> let w = size_of_atom a in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mksll w a_btor (m#mkconstd (logi w) n))
+                      m#setvar v (m#mksll w a_btor
+                                    (match n with
+                                     | Avar _ -> btor_atom m n
+                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
   | Ishls (l, v, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
@@ -633,7 +636,10 @@ let btor_instr m i =
                           m#setvar v (m#mksll w a_btor (m#mkconstd (logi w) n))
   | Ishr (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mksrl w a_btor (m#mkconstd (logi w) n))
+                      m#setvar v (m#mksrl w a_btor
+                                    (match n with
+                                     | Avar _ -> btor_atom m n
+                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
   | Ishrs (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
@@ -641,7 +647,10 @@ let btor_instr m i =
                           m#setvar l (m#mklow ni (w - ni) a_btor)
   | Isar (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mksra w a_btor (m#mkconstd (logi w) n))
+                      m#setvar v (m#mksra w a_btor
+                                    (match n with
+                                     | Avar _ -> btor_atom m n
+                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
   | Isars (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in

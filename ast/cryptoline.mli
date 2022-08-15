@@ -527,11 +527,11 @@ type atom =
 
 type instr =
   | Imov of var * atom                                      (** Assignment *)
-  | Ishl of var * atom * Z.t                                (** Left shift *)
+  | Ishl of var * atom * atom                               (** Left shift *)
   | Ishls of var * var * atom * Z.t                         (** Left shift *)
-  | Ishr of var * atom * Z.t                                (** Logical right shift *)
+  | Ishr of var * atom * atom                               (** Logical right shift *)
   | Ishrs of var * var * atom * Z.t                         (** Logical right shift *)
-  | Isar of var * atom * Z.t                                (** Arithmetic right shift *)
+  | Isar of var * atom * atom                               (** Arithmetic right shift *)
   | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
