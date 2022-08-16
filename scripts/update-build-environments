@@ -1,0 +1,80 @@
+#!/bin/bash
+
+add_opam_repo() {
+  repo=`opam repo list --all | grep https://coq.inria.fr/opam/released`
+  if [[ "${repo}" == "" ]]; then
+    opam repo add coq-released https://coq.inria.fr/opam/released --all-switches --set-default
+  fi
+}
+
+create_switch() {
+  OCAML_VERSION=$1
+  COQ_VERSION=$2
+  SSR_VERSION=$3
+  SWITCH_NAME=ocaml${OCAML_VERSION}-coq${COQ_VERSION}-ssr${SSR_VERSION}
+
+  has_switch=`opam switch | grep ${SWITCH_NAME}`
+
+  if [[ "${has_switch}" == "" ]]; then
+    opam switch create ${SWITCH_NAME} ocaml-base-compiler.${OCAML_VERSION}
+  else
+    opam switch ${SWITCH_NAME}
+  fi
+  status=$?
+  if [[ ${status} != 0 ]]; then
+    echo "'opam switch' failed"
+    exit
+  fi
+  eval $(opam env)
+}
+
+install_packages() {
+  OCAML_VERSION=$1
+  COQ_VERSION=$2
+  SSR_VERSION=$3
+
+  opam pin -y coq ${COQ_VERSION}
+  opam pin -y coq-mathcomp-ssreflect ${SSR_VERSION}
+  opam install -y coq-mathcomp-algebra lwt lwt_ppx zarith menhir dune cppo odoc
+  opam upgrade -y
+}
+
+create_switch_install_packages() {
+  create_switch $1 $2 $3
+  install_packages $1 $2 $3
+}
+
+# Remember the current switch
+current=`opam switch show`
+
+# Add the repository for mathcomp
+add_opam_repo
+
+# Install the environment same as Ubuntu 20.04 LTS
+create_switch 4.08.1 8.11.0 1.10.0
+opam pin -y dune 2.1.3
+opam pin -y cppo 1.6.6
+opam pin -y zarith 1.9.1
+opam pin -y menhir 20200123
+opam pin -y lwt 5.1.1
+install_packages 4.08.1 8.11.0 1.10.0
+
+# Install the environment same as Ubuntu 22.04 LTS
+create_switch 4.13.1 8.15.0 1.14.0
+opam pin -y dune 2.9.1
+opam pin -y cppo 1.6.8
+opam pin -y zarith 1.12
+opam pin -y menhir 20210929
+opam pin -y odoc 2.0.2
+opam pin -y lwt 5.5.0
+install_packages 4.13.1 8.15.0 1.14.0
+
+# Install other environments
+create_switch_install_packages 4.11.2 8.12.2 1.11.0
+create_switch_install_packages 4.12.1 8.13.2 1.12.0
+create_switch_install_packages 4.13.1 8.14.1 1.13.0
+create_switch_install_packages 4.14.0 8.15.2 1.14.0
+
+# Switch back
+opam switch ${current}
+eval $(opam env)

@@ -1,7 +1,12 @@
-(lang dune 2.0)
+(lang dune 3.4)
+
+;; There is `(lang dune 3.4)` in the file dune-package of lwt_ppx.
+;; Dune builds CryptoLine using the dune installed in the current
+;; switch rather than in each context. Thus we need dune >= 3.4.
 
 (context (opam (switch ocaml4.08.1-coq8.11.0-ssr1.10.0)))
 (context (opam (switch ocaml4.11.2-coq8.12.2-ssr1.11.0)))
 (context (opam (switch ocaml4.12.1-coq8.13.2-ssr1.12.0)))
 (context (opam (switch ocaml4.13.1-coq8.14.1-ssr1.13.0)))
+(context (opam (switch ocaml4.13.1-coq8.15.0-ssr1.14.0)))
 (context (opam (switch ocaml4.14.0-coq8.15.2-ssr1.14.0)))
