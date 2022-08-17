@@ -47,3 +47,5 @@ val is_and : aiger_t -> lit_t -> and_t option
 
 val string_of_lit : lit_t -> string
 
+val aig_inputs : aiger_t -> string list
+val aig_maxvar : aiger_t -> int

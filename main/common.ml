@@ -1,6 +1,10 @@
 
 open Arg
 open Options.Std
+open Typecheck.Std
+open Parsers.Std
+open Ast.Cryptoline
+open Utils.Std
 
 let mk_arg_desc lines = (String.concat "\n\t     " lines) ^ "\n"
 
@@ -77,3 +81,47 @@ let args =
                         failwith ("Unknown variable ordering: " ^ str))),
      mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]))
   ]
+
+let parse_and_check file =
+  let parse_spec file =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint ("Parsing CryptoLine file:\t\t") in
+    try
+      let spec = spec_from_file file in
+      let t2 = Unix.gettimeofday() in
+      let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+      spec
+    with ex ->
+      let t2 = Unix.gettimeofday() in
+      let _ = vprintln ("[FAILED]\t" ^ string_of_running_time t1 t2) in
+      raise ex in
+  let check_well_formedness vs s =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint ("Checking well-formedness:\t\t") in
+    let ropt = illformed_spec_reason vs s in
+    let wf = ropt = None in
+    let t2 = Unix.gettimeofday() in
+    let _ = vprintln ((if wf then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ =
+      match ropt with
+      | Some (IllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_bexp e ^ ".\nReason: " ^ r)
+      | Some (IllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_instr i ^ ".\nReason: " ^ r)
+      | Some (IllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_bexp_prove_with e ^ ".\nReason: " ^ r)
+      | _ -> () in
+    wf in
+  let (vs, s) = parse_spec file in
+  if check_well_formedness (VS.of_list vs) s then (vs, from_typecheck_spec s)
+  else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+  else exit 1
+
+let find_output_vars p vnames =
+  let p = List.rev p in
+  let rec find_output_var p vname =
+    match p with
+    | [] -> failwith("Output variable '" ^ vname ^ "' is not found.")
+    | hd::tl -> let vs = lvs_instr hd in
+                (try
+                   VS.filter (fun v -> v.vname = vname) vs |> VS.min_elt
+                 with Not_found ->
+                   find_output_var tl vname) in
+  tmap (find_output_var p) vnames

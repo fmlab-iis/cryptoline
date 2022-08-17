@@ -217,3 +217,12 @@ val tmpfile : string -> string -> string
 
 val cleanup : string list -> unit
 (** [cleanup [f1; ...; fn]] removes temporary files [f1], ..., and [fn]. *)
+
+
+(** {1 Equivalence checking} *)
+
+val abc_path : string ref
+(** The path to ABC *)
+
+val boolector_path : string ref
+(** The path to Boolector *)

@@ -1,6 +1,6 @@
 (executables
- (names cv cv_cli)
+ (names cv cv_cli cv_cec)
  (libraries options utils aig ast parsers qfbv verify sim main lwt.unix)
- (public_names cv cv_cli)
+ (public_names cv cv_cli cv_cec)
  (package cryptoline)
 )

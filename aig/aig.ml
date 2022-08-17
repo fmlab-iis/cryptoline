@@ -83,3 +83,8 @@ external is_latch : aiger_t -> lit_t -> latch_t option
   = "aig_is_latch"
 external is_and : aiger_t -> lit_t -> and_t option
   = "aig_is_and"
+
+external aig_inputs : aiger_t -> string list
+  = "aig_inputs"
+external aig_maxvar : aiger_t -> int
+  = "aig_maxvar"

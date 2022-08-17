@@ -404,3 +404,30 @@ CAMLprim value aig_is_and (value a, value l)
 
   CAMLreturn (ret);
 }
+
+CAMLprim value aig_inputs (value a)
+{
+  CAMLparam1 (a);
+  CAMLlocal2 (ret, tmp);
+  aiger* aig = aiger_val(a);
+
+  ret = Val_int(0);
+  for (int i = aig->num_inputs - 1; i >= 0; i--) {
+    tmp = caml_alloc(2, 0);
+    Store_field(tmp, 0, caml_copy_string(aig->inputs[i].name));
+    Store_field(tmp, 1, ret);
+    ret = tmp;
+  }
+
+  CAMLreturn (ret);
+}
+
+CAMLprim value aig_maxvar (value a)
+{
+  CAMLparam1 (a);
+  CAMLlocal1 (ret);
+  aiger* aig = aiger_val(a);
+
+  ret = Val_int(aig->maxvar);
+  CAMLreturn (ret);
+}
