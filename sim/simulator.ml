@@ -198,6 +198,12 @@ let simulate_instr m i =
      let shifted = shrB n (cat bs2 bs1) in
      let shifted_out = low n bs2 in
      VM.add vh (high (size bs1) shifted) (VM.add vl (low (size bs2) shifted) (VM.add l shifted_out m))
+  | Irol (v, a, n) ->
+     let bs = value_of_atom m a in
+     VM.add v (rolB (Z.to_int n) bs) m
+  | Iror (v, a, n) ->
+     let bs = value_of_atom m a in
+     VM.add v (rorB (Z.to_int n) bs) m
   | Inondet v -> VM.add v (List.init (size_of_var v) (fun _ -> Random.bool())) m
   | Icmov (v, c, a1, a2) ->
      let cs = value_of_atom m c in

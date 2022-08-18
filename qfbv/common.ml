@@ -29,6 +29,8 @@ type exp =
   | Shl of size * exp * exp
   | Lshr of size * exp * exp
   | Ashr of size * exp * exp
+  | Rol of size * exp * int
+  | Ror of size * exp * int
   | Concat of size * size * exp * exp   (* Concat (wh, wl, vh, vl) *)
   | Extract of size * int * int * exp   (* Extract (size_of_exp, i, j, e) where i >= j *)
   | Slice of size * int * int * exp     (* Slice (w1, w2, w3, exp), w1: the width before the slice, w2: the width of the slice, w3: the width after the slice *)
@@ -122,6 +124,14 @@ let rec string_of_exp (e : exp) : string =
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " >>a "
      ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+  | Rol (_, e, n) ->
+     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     ^ " rol "
+     ^ string_of_int n
+  | Ror (_, e, n) ->
+     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     ^ " ror "
+     ^ string_of_int n
   | Concat (_w1, _w2, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ "."
@@ -187,6 +197,8 @@ let rec vars_exp e =
   | Lshr (_, e1, e2)
   | Ashr (_, e1, e2)
   | Concat (_, _, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
+  | Rol (_, e, _)
+  | Ror (_, e, _)
   | Extract (_, _, _, e)
   | Slice (_, _, _, e)
   | High (_, _, e)
@@ -362,6 +374,16 @@ object(self)
     let _ = self#addstmt (Printf.sprintf "%d sra %d %d %d" bv w e1 e2) in
     bv
 
+  method mkrol w e n =
+    let bv = self#newvar in
+    let _ = self#addstmt (Printf.sprintf "%d rol %d %d %d" bv w e n) in
+    bv
+
+  method mkror w e n =
+    let bv = self#newvar in
+    let _ = self#addstmt (Printf.sprintf "%d ror %d %d %d" bv w e n) in
+    bv
+
   method mkconcat w1 w2 e1 e2 =
     let bv = self#newvar in
     let _ = self#addstmt (Printf.sprintf "%d concat %d %d %d" bv (w1 + w2) e1 e2) in
@@ -507,6 +529,8 @@ let rec btor_of_exp m e =
   | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
   | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
   | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
+  | Rol (w, e, n) -> m#mkrol w (btor_of_exp m e) (m#mkconstd (logi w) (Z.of_int n))
+  | Ror (w, e, n) -> m#mkror w (btor_of_exp m e) (m#mkconstd (logi w) (Z.of_int n))
   | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
   | Extract (w, i, j, e) -> m#mkextract w i j (btor_of_exp m e)
   | Slice (w1, w2, w3, e) -> m#mkslice w1 w2 w3 (btor_of_exp m e)
@@ -679,6 +703,12 @@ let btor_instr m i =
                                      m#setvar vh (m#mkhigh w2 w1 shifted);
                                      m#setvar vl (m#mklow w2 w1 shifted);
                                      m#setvar l (m#mklow ni (w2 - ni) a2_btor)
+  | Irol (v, a, n) -> let w = size_of_var v in
+                      let a_btor = btor_atom m a in
+                      m#setvar v (m#mkrol w a_btor (m#mkconstd (logi w) n))
+  | Iror (v, a, n) -> let w = size_of_var v in
+                      let a_btor = btor_atom m a in
+                      m#setvar v (m#mkror w a_btor (m#mkconstd (logi w) n))
   | Inondet v -> ignore(m#mkvar v)
   | Icmov (v, c, a1, a2) -> let w = size_of_var v in
                             let c_btor = btor_atom m c in
@@ -854,6 +884,8 @@ let bvsmod e1 e2 = "(bvsmod " ^ e1 ^ " " ^ e2 ^ ")"
 let bvshl e1 e2 = "(bvshl " ^ e1 ^ " " ^ e2 ^ ")"
 let bvlshr e1 e2 = "(bvlshr " ^ e1 ^ " " ^ e2 ^ ")"
 let bvashr e1 e2 = "(bvashr " ^ e1 ^ " " ^ e2 ^ ")"
+let bvrol e n = Printf.sprintf "((_ rotate_left %d) %s)" n e
+let bvror e n = Printf.sprintf "((_ rotate_right %d) %s)" n e
 let bvconcat e1 e2 = "(concat " ^ e1 ^ " " ^ e2 ^ ")"
 let bvextract i j e = "((_ extract " ^ string_of_int i ^ " " ^ string_of_int j ^ ") " ^ e ^ ")"
 let bvslice w1 w2 _w3 e = "((_ extract " ^ string_of_int (w1 + w2 - 1) ^ " " ^ string_of_int w1 ^ ") " ^ e ^ ")"
@@ -934,6 +966,8 @@ let rec smtlib2_of_exp e =
   | Shl (_w, e1, e2) -> bvshl (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Lshr (_w, e1, e2) -> bvlshr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ashr (_w, e1, e2) -> bvashr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | Rol (_, e, n) -> bvrol (smtlib2_of_exp e) n
+  | Ror (_, e, n) -> bvror (smtlib2_of_exp e) n
   | Concat (_w1, _w2, e1, e2) -> bvconcat (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Extract (_w, i, j, e) -> bvextract i j (smtlib2_of_exp e)
   | Slice (w1, w2, w3, e) -> bvslice w1 w2 w3 (smtlib2_of_exp e)
@@ -1474,6 +1508,8 @@ object(self)
        let (clauses3, rs) = self#bit_blast_shr w e1 e2 in
        (clauses1@@clauses2@@clauses3, rs)
     | Ashr (_w, _e1, _e2) -> failwith "Not supported: Ashr"
+    | Rol _ -> failwith "Not supported: Rol"
+    | Ror _ -> failwith "Not supported: Ror"
     | Concat (w1, w2, e1, e2) ->
        let (clauses1, e1) = self#bit_blast_exp e1 in
        let (clauses2, e2) = self#bit_blast_exp e2 in

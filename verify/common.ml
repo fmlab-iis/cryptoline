@@ -244,6 +244,14 @@ let bexp_cshrs vh vl l a1 a2 p =
         (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atom a1), High (ip, w - ip, exp_atom a2))))),
      (Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a2))))
 
+let bexp_rol v a n =
+  let w = size_of_var v in
+  Eq (w, exp_var v, Rol (w, exp_atom a, Z.to_int n))
+
+let bexp_ror v a n =
+  let w = size_of_var v in
+  Eq (w, exp_var v, Ror (w, exp_atom a, Z.to_int n))
+
 let bexp_cmov v c a1 a2 =
   let w = size_of_var v in
   let cond = Eq (1, exp_atom c, exp_const 1 Z.one) in
@@ -449,6 +457,8 @@ let bexp_instr i =
   | Icshl (vh, vl, a1, a2, p) -> bexp_cshl vh vl a1 a2 p
   | Icshr (vh, vl, a1, a2, p) -> bexp_cshr vh vl a1 a2 p
   | Icshrs (vh, vl, l, a1, a2, p) -> bexp_cshrs vh vl l a1 a2 p
+  | Irol (v, a, n) -> bexp_rol v a n
+  | Iror (v, a, n) -> bexp_ror v a n
   | Inondet _ -> True
   | Icmov (v, c, a1, a2) -> bexp_cmov v c a1 a2
   | Inop -> True
@@ -681,6 +691,8 @@ let bexp_instr_safe i =
       | Tuint w -> bexp_atom_ucshr_safe w a1 a2 n
       | Tsint w -> bexp_atom_scshr_safe w a1 a2 n)
   | Icshrs _ -> True
+  | Irol _ -> True
+  | Iror _ -> True
   | Inondet _ -> True
   | Icmov _ -> True
   | Inop -> True
@@ -898,6 +910,26 @@ let bv2z_instr vgen i =
                    (vgen, [eeq
                              (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow (Z.to_int n))); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
                              (limbs w [bv2z_atom a2; bv2z_atom a1])]))
+  | Irol (v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> let (h, vgen) = gen_var vgen in
+                   let (l, vgen) = gen_var vgen in
+                   let ni = Z.to_int n in
+                   let h = mkvar ~newvid:true h (uint_t ni) in
+                   let l = mkvar ~newvid:true l (uint_t (w - ni)) in
+                   (vgen, [ bv2z_split h l (bv2z_atom a) (w - ni);
+                            bv2z_split l h (evar v) ni])
+      | Tsint _ -> assert false)
+  | Iror (v, a, n) ->
+     (match v.vtyp with
+      | Tuint w -> let (h, vgen) = gen_var vgen in
+                   let (l, vgen) = gen_var vgen in
+                   let ni = Z.to_int n in
+                   let h = mkvar ~newvid:true h (uint_t (w - ni)) in
+                   let l = mkvar ~newvid:true l (uint_t ni) in
+                   (vgen, [ bv2z_split h l (bv2z_atom a) ni;
+                            bv2z_split l h (evar v) (w - ni)])
+      | Tsint _ -> assert false)
   | Inondet v ->
      if var_is_bit v then (vgen, carry_constr v)
      else (vgen, [])

@@ -124,6 +124,10 @@ FILES=(
     examples/pqm4/saber/m4fspeed/asm_negacyclic_ntt_32.cl
 )
 
+if [[ "${1}" != "" ]]; then
+  FILES=( "$@" )
+fi
+
 CL=./_build/default/cv.exe
 TMP=/tmp
 

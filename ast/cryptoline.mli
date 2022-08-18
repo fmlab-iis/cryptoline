@@ -536,6 +536,8 @@ type instr =
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
+  | Irol of var * atom * Z.t                                (** Left rotation *)
+  | Iror of var * atom * Z.t                                (** Right rotation *)
   | Inondet of var                                          (** Nondeterministic assignment *)
   | Icmov of var * atom * atom * atom                       (** Conditional assignment *)
   | Inop                                                    (** No-op *)
@@ -625,11 +627,19 @@ type instr =
                                       {ul {- Unsigned: low n a2 = 0}
                                           {- Signed: high 1 a1 = 0, low n a2 = 0}}}}
    - [Icshrs (vh, vl, l, a1, a2, n)]: Concatenate [a1] (high) and [a2] (low), (logically) shift the concatenation right by [n], store the high bits in [vh], and store the low bits in [vl]. Bits shifted out are stored in [l].
-                                  {ul {- Type: [vh] and [a1] have the same type. [vl] and [a2] have the same unsigned type. [vh] and [vl] have the same size. [l] is unsigned and of size [n].}
-                                      {- QF_BV: vh = lshr a1 n, vl = concate (low n a1) (high (size a1 - n) a2), l = low n a2}
-                                      {- Algebra:
-                                      {ul {- Unsigned: (vh × 2{^size a1} + vl) × 2{^n} + l = a1 × 2{^size a1} + a2}
-                                          {- Signed: (vh × 2{^size a1} + vl) × 2{^n} + l + d × 2{^size a1 + size a2} = a1 × 2{^size a1} + a2 for some fresh d}}}}
+                                      {ul {- Type: [vh] and [a1] have the same type. [vl] and [a2] have the same unsigned type. [vh] and [vl] have the same size. [l] is unsigned and of size [n].}
+                                          {- QF_BV: vh = lshr a1 n, vl = concate (low n a1) (high (size a1 - n) a2), l = low n a2}
+                                          {- Algebra:
+                                          {ul {- Unsigned: (vh × 2{^size a1} + vl) × 2{^n} + l = a1 × 2{^size a1} + a2}
+                                              {- Signed: (vh × 2{^size a1} + vl) × 2{^n} + l + d × 2{^size a1 + size a2} = a1 × 2{^size a1} + a2 for some fresh d}}}}
+   - [Irol (v, a, n)]: Rotate [v] to the left by [n] and store the rotated result in [v].
+                       {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
+                           {- QF_BV: v = rol a n}
+                           {- Algebra: a = l + h × 2{^size a - n}, v = h + l × 2{^n} for some fresh l and h}}
+   - [Iror (v, a, n)]: Rotate [v] to the right by [n] and store the rotated result in [v].
+                       {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
+                           {- QF_BV: v = ror a n}
+                           {- Algebra: a = l + h × 2{^n}, v = h + l × 2{^size a - n} for some fresh l and h}}
    - [Inondet v]: Assign [v] a nondeterministic value.
                   {ul {- QF_BV: True}
                       {- Algebra: True}}

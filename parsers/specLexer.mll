@@ -76,6 +76,8 @@
               "cshl"                       , CSHL;
               "cshr"                       , CSHR;
               "cshrs"                      , CSHRS;
+              "rol"                        , ROL;
+              "ror"                        , ROR;
               "set"                        , SET;
               "clear"                      , CLEAR;
               "nondet"                     , NONDET;
