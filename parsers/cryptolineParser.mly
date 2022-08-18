@@ -50,6 +50,10 @@
     match ty with
     | Tuint w -> Tuint (w * 2)
     | Tsint w -> Tsint (w * 2)
+  let typ_map f ty =
+    match ty with
+    | Tuint w -> Tuint (f w)
+    | Tsint w -> Tsint (f w)
 
   (*
   let check_at lno reasons =
@@ -944,9 +948,9 @@
     fun _fm cm vm ym gm ->
       let ah = resolve_atom_with lno srcH cm vm ym gm in
       let al = resolve_atom_with lno srcL cm vm ym gm in
-      let ty = typ_of_atom ah in
+      let ty = typ_map ((+) (size_of_atom al)) (typ_of_atom ah) in
       let (vm, ym, gm, v) =
-        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
+        resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, ym, gm, [lno, Ijoin (v, ah, al)])
 
   let parse_assert_at lno bexp_prove_with_list_token =

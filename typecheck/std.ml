@@ -158,11 +158,7 @@ let check_join_size lno v ah al =
   let sv = size_of_var v in
   let sh = size_of_atom ah in
   let sl = size_of_atom al in
-  if sh != sl then
-    Some ("The bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atom ah
-          ^ " and the bit-width (" ^ string_of_int sl ^  ") of " ^ string_of_atom al
-          ^ " should be the same at line " ^ (string_of_int lno))
-  else if sv != sh + sl then
+  if sv != sh + sl then
     Some ("The bit-width (" ^ string_of_int sv ^ ") of " ^ string_of_var v
           ^ " should be the sum of the bit-width (" ^ string_of_int sh ^ ") of " ^ string_of_atom ah
           ^ " and the bit-width " ^ string_of_int sl ^ " of " ^ string_of_atom al ^ " at line " ^ (string_of_int lno))

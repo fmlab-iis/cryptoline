@@ -804,9 +804,9 @@ type instr =
                             {ul {- wv ≥ wa: True}
                                 {- wv < wa: sext (wa - wv) (low wv a) = a}}}}}}
    - [Ijoin (v, a1, a2)]: Store the concatenation of [a1] (high) and [a2] (low) in [v].
-                          {ul {- Type: [v] and [a1] have the same type. [a2] is unsigned. [a1] and [a2] have the same size.}
+                          {ul {- Type: [v] and [a1] have the same sign. [a2] is unsigned. Size of [v] is the sum of the size of [a1] and the size of [a2].}
                               {- QF_BV: v = concat a1 a2}
-                              {- Algebra: v = a1 × 2{^size a1} + a2}}
+                              {- Algebra: v = a1 × 2{^size a2} + a2}}
    - [Iassert e]: Verify an assertion.
    - [Iassume e]: Assume a condition.
    - [Icut (es, rs)]: Verify a condition. Discard everything before this cut and make the condition the precondition when
