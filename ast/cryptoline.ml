@@ -3132,11 +3132,11 @@ let visit_instr visitor i =
        | _ -> failwith ("Never happen") in
      f (match i with
         | Imov (v, a) -> Imov (visit_var visitor v, visit_atom visitor a)
-        | Ishl (v, a, n) -> Ishl (visit_var visitor v, visit_atom visitor a, n)
+        | Ishl (v, a, n) -> Ishl (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
         | Ishls (l, v, a, n) -> Ishls (visit_var visitor l, visit_var visitor v, visit_atom visitor a, n)
-        | Ishr (v, a, n) -> Ishr (visit_var visitor v, visit_atom visitor a, n)
+        | Ishr (v, a, n) -> Ishr (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
         | Ishrs (v, l, a, n) -> Ishrs (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
-        | Isar (v, a, n) -> Isar (visit_var visitor v, visit_atom visitor a, n)
+        | Isar (v, a, n) -> Isar (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
         | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
         | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
         | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
