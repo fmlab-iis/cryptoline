@@ -158,6 +158,9 @@ val string_of_variable_ordering : variable_order -> string
 val parse_variable_ordering : string -> variable_order
 (** parse a variable order from its string representation *)
 
+val track_split : bool ref
+(** [true] to track splits of atoms *)
+
 
 (** {1 Range-Specific Options} *)
 

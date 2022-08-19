@@ -106,6 +106,7 @@
               "sq"                         , SQ;
               "ext"                        , UEXT;
               "uext"                       , UEXT;
+              "zext"                       , UEXT;
               "sext"                       , SEXT;
               "mod"                        , MOD;
               "umod"                       , UMOD;

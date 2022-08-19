@@ -65,6 +65,10 @@ val typ_to_unsigned : typ -> typ
 val typ_to_size : typ -> size -> typ
 (** [typ_to_size t w] is [t] with size changed to [w]. *)
 
+val cmp_typ : typ -> typ -> int
+(** [cmp_typ a1 a2] compares two types. *)
+
+
 (** {1 Variables} *)
 
 type var =
@@ -635,11 +639,15 @@ type instr =
    - [Irol (v, a, n)]: Rotate [v] to the left by [n] and store the rotated result in [v].
                        {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
                            {- QF_BV: v = rol a n}
-                           {- Algebra: a = l + h × 2{^size a - n}, v = h + l × 2{^n} for some fresh l and h}}
+                           {- Algebra:
+                           {ul {- {!Options.Std.track_split} = [true]: a = l + h × 2{^size a - n}, v = h + l × 2{^n} for some fresh or existing l and h}
+                               {- {!Options.Std.track_split} = [false]: v = a × 2{^n} - h × 2{^size a} + h for some fresh h}}}}
    - [Iror (v, a, n)]: Rotate [v] to the right by [n] and store the rotated result in [v].
                        {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
                            {- QF_BV: v = ror a n}
-                           {- Algebra: a = l + h × 2{^n}, v = h + l × 2{^size a - n} for some fresh l and h}}
+                           {- Algebra:
+                           {ul {- {!Options.Std.track_split} = [true]: a = l + h × 2{^n}, v = h + l × 2{^size a - n} for some fresh l and h}
+                               {- {!Options.Std.track_split} = [false]: v = a × 2{^size a - n} - h × 2{^size a} + h for some fresh h}}}}
    - [Inondet v]: Assign [v] a nondeterministic value.
                   {ul {- QF_BV: True}
                       {- Algebra: True}}
@@ -860,6 +868,9 @@ val atom_is_signed : atom -> bool
 
 val eq_atom : atom -> atom -> bool
 (** [eq_atom a1 a2] is [true] if [a1] and [a2] are equal. *)
+
+val cmp_atom : atom -> atom -> int
+(** [cmp_atom a1 a2] compares two atoms. *)
 
 val is_assert : instr -> bool
 (** [is_assert i] if [i] is an assertion. *)

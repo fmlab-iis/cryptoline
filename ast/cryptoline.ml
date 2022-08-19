@@ -117,6 +117,13 @@ let typ_to_size ty w =
   | Tuint _ -> Tuint w
   | Tsint _ -> Tsint w
 
+let cmp_typ t1 t2 =
+  match t1, t2 with
+  | Tuint w1, Tuint w2 -> compare w1 w2
+  | Tuint _, Tsint _ -> -1
+  | Tsint _, Tuint _ -> 1
+  | Tsint w1, Tsint w2 -> compare w1 w2
+
 
 (** Variables *)
 
@@ -828,6 +835,16 @@ let eq_atom a1 a2 =
   | Avar v1, Avar v2 -> eq_var v1 v2
   | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
   | _, _ -> false
+
+let cmp_atom a1 a2 =
+  match a1, a2 with
+  | Avar v1, Avar v2 -> cmp_var v1 v2
+  | Avar _, Aconst _ -> -1
+  | Aconst _, Avar _ -> 1
+  | Aconst (ty1, n1), Aconst (ty2, n2) ->
+     let c = cmp_typ ty1 ty2 in
+     if c = 0 then Z.compare n1 n2
+     else c
 
 (* Return the algebra solver specified in the prove-with clauses. If
    no algebra solver is specified, return [!Options.Std.algebra_solver]. *)

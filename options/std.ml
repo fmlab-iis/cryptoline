@@ -149,3 +149,5 @@ let two_phase_rewriting = ref false
 
 let abc_path = ref "abc"
 let boolector_path = ref "boolector"
+
+let track_split = ref false

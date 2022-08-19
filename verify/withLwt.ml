@@ -952,6 +952,8 @@ let run_cli_vespec header s =
                             else "");
                            (if !Options.Std.two_phase_rewriting then "-two_phase_rewriting"
                             else "");
+                           (if !Options.Std.track_split then "-track-split"
+                            else "");
                            "-o \"" ^ lfile ^ "\"";
                            "\"" ^ ifile ^ "\"";
                            "1> \"" ^ ofile ^ "\" 2>&1"
