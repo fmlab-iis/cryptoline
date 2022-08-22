@@ -1,8 +1,14 @@
 
 open Ast.Cryptoline
 
-val args : (Arg.key * Arg.spec * Arg.doc) list
-(** Some common command-line arguments for the verifier (with and without CLI). *)
+val args_parsing : (Arg.key * Arg.spec * Arg.doc) list
+(** Some common command-line arguments for parsing. *)
+
+val args_io : (Arg.key * Arg.spec * Arg.doc) list
+(** Some common command-line arguments for inputs and outputs. *)
+
+val args_verifier : (Arg.key * Arg.spec * Arg.doc) list
+(** Some common command-line arguments for the verifier and the CLI mode. *)
 
 val mk_arg_desc : string list -> string
 (** [mk_arg_desc [s1; ...; sN]] returns a string as the description of a

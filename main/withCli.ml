@@ -24,7 +24,7 @@ let args =
     ("-c", String (fun str -> parse_action str), "CMD\t\t Specify the command to be executed");
     ("-instr", Int (fun i -> instr_index := i), "N\t\t Specify the n-th instruction in safety checking");
     ("-id", Int (fun i -> id := i), "N\t\t Specify the ID of this action")
-  ]@Common.args
+  ]@Common.args_parsing@Common.args_io@Common.args_verifier
 let args = List.sort Pervasives.compare args
 
 let usage = "Usage: cv_cli -c CMD OPTIONS FILE"

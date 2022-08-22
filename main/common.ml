@@ -8,8 +8,20 @@ open Utils.Std
 
 let mk_arg_desc lines = (String.concat "\n\t     " lines) ^ "\n"
 
+let args_parsing =
+  [
+    ("-rename_local", Set rename_local, mk_arg_desc([""; "Rename local variables when inlining a call to a procedure."]))
+  ]
+
+let args_io =
+  [
+    ("-o", String (fun str -> logfile := str), mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
+    ("-tmpdir", String (fun str -> tmpdir := Some str), mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
+    ("-v", Set verbose, mk_arg_desc(["\t     Display verbose messages."]))
+  ]
+
 (* Do not use -c or -instr below. *)
-let args =
+let args_verifier =
   [
     ("-algebra_args", String (fun str -> algebra_solver_args := str),
      mk_arg_desc(["ARGS"; "Specify additional arguments passed to the algebra solver."]));
@@ -51,8 +63,6 @@ let args =
     ("-mathematica_path", String (fun str -> mathematica_path := str),
      mk_arg_desc(["PATH"; "Set the path to Mathematica command-line script interpreter."]));
     ("-no_carry_constraint", Clear carry_constraint, mk_arg_desc([""; "Do not add carry constraints."]));
-    ("-o", String (fun str -> logfile := str),
-     mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
     ("-qfbv_args", String (fun str -> range_solver_args := str),
      mk_arg_desc(["ARGS"; "Specify additional arguments passed to the QF_BV solver."]));
     ("-qfbv_solver", String (fun str -> range_solver := str),
@@ -60,7 +70,6 @@ let args =
                   "must output one of \"sat\", \"unsat\", or \"unknown\" for any QF_BV";
                   "query in SMTLIB format."]));
     ("-re", Set polys_rewrite_replace_eexp, mk_arg_desc(["\t     Replace expressions rather than variables in the rewriting of"; "polynomials (experimental)."]));
-    ("-rename_local", Set rename_local, mk_arg_desc([""; "Rename local variables when inlining a call to a procedure."]));
     ("-sage", String (fun str -> sage_path := str; algebra_solver := Sage),
      mk_arg_desc(["PATH"; "Use Sage at the specified path."]));
     ("-sage_path", String (fun str -> sage_path := str),
@@ -70,8 +79,6 @@ let args =
     ("-singular_path", String (fun str -> singular_path := str),
      mk_arg_desc(["PATH"; "Set the path to Singular."]));
     ("-slicing", Set apply_slicing, mk_arg_desc(["  Enable slicing."]));
-    ("-tmpdir", String (fun str -> tmpdir := Some str),
-     mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
     ("-track-split", Set track_split, "Track splits of atoms.");
     ("-two_phase_rewriting", Set two_phase_rewriting, mk_arg_desc [""; "Use two-phase rewriting in verifying algebraic specifications."; "Note that single-phase rewriting is still used when -cli is"; "enabled."]);
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],

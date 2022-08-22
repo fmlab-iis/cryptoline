@@ -11,20 +11,22 @@ let input_files_rev = ref []
 let outputs1 = ref []
 let outputs2 = ref []
 
-let args_spec = [
-    ("-abc", String (fun str -> abc_path := str), Common.mk_arg_desc(["PATH"; "Set the path to ABC."]));
-    ("-boolector", String (fun str -> boolector_path := str), Common.mk_arg_desc(["PATH"; "Set the path to Boolector."]));
-    ("-ov1", String (fun str -> outputs1 := Str.split (Str.regexp ",") str |> tmap String.trim),
-     Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of the first"; "CryptoLine program."]));
-    ("-ov2", String (fun str -> outputs2 := Str.split (Str.regexp ",") str |> tmap String.trim),
-     Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of the second"; "CryptoLine program."]));
-    ("-ov", String (
-                fun str -> let vars = Str.split (Str.regexp ",") str |> tmap String.trim in
-                           outputs1 := vars; outputs2 := vars
-              ),
-     Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of both CryptoLine"; "programs."]));
-    ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]))
-  ]
+let args_spec =
+    [
+      ("-abc", String (fun str -> abc_path := str), Common.mk_arg_desc(["PATH"; "Set the path to ABC."]));
+      ("-boolector", String (fun str -> boolector_path := str), Common.mk_arg_desc(["PATH"; "Set the path to Boolector."]));
+      ("-ov1", String (fun str -> outputs1 := Str.split (Str.regexp ",") str |> tmap String.trim),
+       Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of the first"; "CryptoLine program."]));
+      ("-ov2", String (fun str -> outputs2 := Str.split (Str.regexp ",") str |> tmap String.trim),
+       Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of the second"; "CryptoLine program."]));
+      ("-ov", String (
+                  fun str -> let vars = Str.split (Str.regexp ",") str |> tmap String.trim in
+                             outputs1 := vars; outputs2 := vars
+                ),
+       Common.mk_arg_desc(["VARIABLES"; "Specify the output variables (comma separated) of both CryptoLine"; "programs."]));
+      ("-v", Set verbose, Common.mk_arg_desc(["\t     Display verbose messages."]))
+    ]
+    @Common.args_parsing@Common.args_io
 let args_spec = List.sort Pervasives.compare args_spec
 
 let usage_msg =
