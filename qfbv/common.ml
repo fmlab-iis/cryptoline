@@ -808,7 +808,7 @@ let btor_instr m i =
                              let ext = if var_is_signed vh then m#mksext else m#mkzext in
                              m#setvar vh (ext (w - ni) ni (m#mkhigh ni (w - ni) a_btor));
                              m#setvar vl (m#mkzext ni (w - ni) (m#mklow ni (w - ni) a_btor))
-  | Ispl (vh, vl, a, n) -> let w = size_of_var vh in
+  | Ispl (vh, vl, a, n) -> let w = size_of_atom a in
                            let ni = Z.to_int n in
                            let a_btor = btor_atom m a in
                            m#setvar vh (m#mkhigh ni (w - ni) a_btor);

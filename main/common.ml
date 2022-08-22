@@ -15,6 +15,7 @@ let args_parsing =
 
 let args_io =
   [
+    ("-keep", Set keep_temp_files, mk_arg_desc(["     Keep temporary files."]));
     ("-o", String (fun str -> logfile := str), mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
     ("-tmpdir", String (fun str -> tmpdir := Some str), mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
     ("-v", Set verbose, mk_arg_desc(["\t     Display verbose messages."]))
@@ -45,7 +46,6 @@ let args_verifier =
     ("-disable_rewriting", Clear apply_rewriting, mk_arg_desc([""; "Disable rewriting of assignments (at program level) and equalities"; "(at polynomial level)."]));
     ("-isafety", Set incremental_safety, mk_arg_desc(["  Verify program safety incrementally."]));
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), mk_arg_desc(["INT"; "Set initial timeout for incremental verification of program safety."]));
-    ("-keep", Set keep_temp_files, mk_arg_desc(["     Keep temporary files."]));
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_solver := Macaulay2),
      mk_arg_desc(["PATH"; "Use Macaulay2 at the specified path."]));
     ("-macaulay2_path", String (fun str -> macaulay2_path := str),
