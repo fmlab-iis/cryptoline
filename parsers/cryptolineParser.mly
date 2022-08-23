@@ -78,7 +78,7 @@
   }
 
   type aconst_prim_t = {
-    atmtyp: typ;
+    atmtyphint: typ option;
     (* FIXME *)
     atmvalue: Z.t SM.t -> Z.t;
   }
@@ -174,10 +174,13 @@
         else () in
     v
 
-  let resolve_atom_with lno (a: atom_t) cm vm ym gm =
+  let resolve_atom_with ?typ lno (a: atom_t) cm vm ym gm =
     match a with
     (* FIXME *)
-    | `ACONST c -> parse_typed_const lno c.atmtyp c.atmvalue cm vm ym gm
+    | `ACONST c -> (match c.atmtyphint, typ with
+                    | Some ty, _
+                      | None, Some ty -> parse_typed_const lno ty c.atmvalue cm vm ym gm
+                    | _, _ -> raise_at lno ("Failed to determine the type of constant"))
     | `AVAR v -> Avar (resolve_var_with lno (`AVAR v) cm vm ym gm)
 
   let resolve_lv_with lno {lvname; lvtyphint} _cm vm ym gm ty_opt =
@@ -242,9 +245,9 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = resolve_atom_with lno num cm vm ym gm in
+      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ = 
+      let _ =
         match n with
         | Aconst (_, z) ->
            let w = size_of_var v in
@@ -274,7 +277,7 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = resolve_atom_with lno num cm vm ym gm in
+      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
         match n with
@@ -306,7 +309,7 @@
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = resolve_atom_with lno num cm vm ym gm in
+      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
         match n with
@@ -2678,8 +2681,9 @@ actual_atom:
 ;
 
 atom:
-    const AT typ                                  { `ACONST { atmtyp = $3; atmvalue = $1; } }
-  | typ const                                     { `ACONST { atmtyp = $1; atmvalue = $2; } }
+    const                                         { `ACONST { atmtyphint = None; atmvalue = $1; } }
+  | const AT typ                                  { `ACONST { atmtyphint = Some $3; atmvalue = $1; } }
+  | typ const                                     { `ACONST { atmtyphint = Some $1; atmvalue = $2; } }
   | defined_var                                   { ($1 :> atom_t) }
   /*| LPAR atom RPAR                              { fun cm vm ym gm -> $2 cm vm ym gm } source of reduce/reduce conflict*/
 ;
