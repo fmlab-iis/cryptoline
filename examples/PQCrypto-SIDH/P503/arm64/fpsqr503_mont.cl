@@ -1142,22 +1142,22 @@ adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab6514 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab6518 *)
-shl x9 Lx9 56;
+shl x9 Lx9 56@uint64;
 (* orr	x9, x9, x8, lsr #8                          #! PC = 0xaaaaaaab651c *)
 split Hx8 Lx8 x8 8;
 add x9 x9 Hx8;
 (* lsl	x8, x8, #56                                 #! PC = 0xaaaaaaab6520 *)
-shl x8 Lx8 56;
+shl x8 Lx8 56@uint64;
 (* orr	x8, x8, x7, lsr #8                          #! PC = 0xaaaaaaab6524 *)
 split Hx7 Lx7 x7 8;
 add x8 x8 Hx7;
 (* lsl	x7, x7, #56                                 #! PC = 0xaaaaaaab6528 *)
-shl x7 Lx7 56;
+shl x7 Lx7 56@uint64;
 (* orr	x7, x7, x6, lsr #8                          #! PC = 0xaaaaaaab652c *)
 split Hx6 Lx6 x6 8;
 add x7 x7 Hx6;
 (* lsl	x6, x6, #56                                 #! PC = 0xaaaaaaab6530 *)
-shl x6 Lx6 56;
+shl x6 Lx6 56@uint64;
 (* ldp	x3, x11, [x0, #16]                          #! EA = L0xffffffffe678; Value = 0x1c01efb3dc7bea94; PC = 0xaaaaaaab6534 *)
 mov x3 L0xffffffffe678;
 mov x11 L0xffffffffe680;
@@ -1165,7 +1165,7 @@ mov x11 L0xffffffffe680;
 split Hx5 Lx5 x5 8;
 add x6 x6 Hx5;
 (* lsl	x5, x5, #56                                 #! PC = 0xaaaaaaab653c *)
-shl x5 Lx5 56;
+shl x5 Lx5 56@uint64;
 (* ldp	x12, x13, [x0, #32]                         #! EA = L0xffffffffe688; Value = 0xa7d379b2f29d014e; PC = 0xaaaaaaab6540 *)
 mov x12 L0xffffffffe688;
 mov x13 L0xffffffffe690;
@@ -1173,7 +1173,7 @@ mov x13 L0xffffffffe690;
 split Hx4 Lx4 x4 8;
 add x5 x5 Hx4;
 (* lsl	x4, x4, #56                                 #! PC = 0xaaaaaaab6548 *)
-shl x4 Lx4 56;
+shl x4 Lx4 56@uint64;
 (* ldp	x14, x15, [x0, #48]                         #! EA = L0xffffffffe698; Value = 0x24c158a56d4755d7; PC = 0xaaaaaaab654c *)
 mov x14 L0xffffffffe698;
 mov x15 L0xffffffffe6a0;
@@ -1288,32 +1288,32 @@ adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab6620 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab6624 *)
-shl x9 Lx9 56;
+shl x9 Lx9 56@uint64;
 (* orr	x9, x9, x8, lsr #8                          #! PC = 0xaaaaaaab6628 *)
 split Hx8 Lx8 x8 8;
 add x9 x9 Hx8;
 (* lsl	x8, x8, #56                                 #! PC = 0xaaaaaaab662c *)
-shl x8 Lx8 56;
+shl x8 Lx8 56@uint64;
 (* orr	x8, x8, x7, lsr #8                          #! PC = 0xaaaaaaab6630 *)
 split Hx7 Lx7 x7 8;
 add x8 x8 Hx7;
 (* lsl	x7, x7, #56                                 #! PC = 0xaaaaaaab6634 *)
-shl x7 Lx7 56;
+shl x7 Lx7 56@uint64;
 (* orr	x7, x7, x6, lsr #8                          #! PC = 0xaaaaaaab6638 *)
 split Hx6 Lx6 x6 8;
 add x7 x7 Hx6;
 (* lsl	x6, x6, #56                                 #! PC = 0xaaaaaaab663c *)
-shl x6 Lx6 56;
+shl x6 Lx6 56@uint64;
 (* orr	x6, x6, x5, lsr #8                          #! PC = 0xaaaaaaab6640 *)
 split Hx5 Lx5 x5 8;
 add x6 x6 Hx5;
 (* lsl	x5, x5, #56                                 #! PC = 0xaaaaaaab6644 *)
-shl x5 Lx5 56;
+shl x5 Lx5 56@uint64;
 (* orr	x5, x5, x4, lsr #8                          #! PC = 0xaaaaaaab6648 *)
 split Hx4 Lx4 x4 8;
 add x5 x5 Hx4;
 (* lsl	x4, x4, #56                                 #! PC = 0xaaaaaaab664c *)
-shl x4 Lx4 56;
+shl x4 Lx4 56@uint64;
 (* adds	x13, x4, x13                               #! PC = 0xaaaaaaab6650 *)
 adds carry x13 x4 x13;
 (* adcs	x14, x5, x14                               #! PC = 0xaaaaaaab6654 *)
@@ -1409,32 +1409,32 @@ adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab6708 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab670c *)
-shl x9 Lx9 56;
+shl x9 Lx9 56@uint64;
 (* orr	x9, x9, x8, lsr #8                          #! PC = 0xaaaaaaab6710 *)
 split Hx8 Lx8 x8 8;
 add x9 x9 Hx8;
 (* lsl	x8, x8, #56                                 #! PC = 0xaaaaaaab6714 *)
-shl x8 Lx8 56;
+shl x8 Lx8 56@uint64;
 (* orr	x8, x8, x7, lsr #8                          #! PC = 0xaaaaaaab6718 *)
 split Hx7 Lx7 x7 8;
 add x8 x8 Hx7;
 (* lsl	x7, x7, #56                                 #! PC = 0xaaaaaaab671c *)
-shl x7 Lx7 56;
+shl x7 Lx7 56@uint64;
 (* orr	x7, x7, x6, lsr #8                          #! PC = 0xaaaaaaab6720 *)
 split Hx6 Lx6 x6 8;
 add x7 x7 Hx6;
 (* lsl	x6, x6, #56                                 #! PC = 0xaaaaaaab6724 *)
-shl x6 Lx6 56;
+shl x6 Lx6 56@uint64;
 (* orr	x6, x6, x5, lsr #8                          #! PC = 0xaaaaaaab6728 *)
 split Hx5 Lx5 x5 8;
 add x6 x6 Hx5;
 (* lsl	x5, x5, #56                                 #! PC = 0xaaaaaaab672c *)
-shl x5 Lx5 56;
+shl x5 Lx5 56@uint64;
 (* orr	x5, x5, x4, lsr #8                          #! PC = 0xaaaaaaab6730 *)
 split Hx4 Lx4 x4 8;
 add x5 x5 Hx4;
 (* lsl	x4, x4, #56                                 #! PC = 0xaaaaaaab6734 *)
-shl x4 Lx4 56;
+shl x4 Lx4 56@uint64;
 (* adds	x15, x4, x15                               #! PC = 0xaaaaaaab6738 *)
 adds carry x15 x4 x15;
 (* adcs	x16, x5, x16                               #! PC = 0xaaaaaaab673c *)
@@ -1526,22 +1526,22 @@ adc x9 x9 x10 carry;
 (* orr	x10, xzr, x9, lsr #8                        #! PC = 0xaaaaaaab67e8 *)
 split x10 Lx9 x9 8;
 (* lsl	x9, x9, #56                                 #! PC = 0xaaaaaaab67ec *)
-shl x9 Lx9 56;
+shl x9 Lx9 56@uint64;
 (* orr	x9, x9, x8, lsr #8                          #! PC = 0xaaaaaaab67f0 *)
 split Hx8 Lx8 x8 8;
 add x9 x9 Hx8;
 (* lsl	x8, x8, #56                                 #! PC = 0xaaaaaaab67f4 *)
-shl x8 Lx8 56;
+shl x8 Lx8 56@uint64;
 (* orr	x8, x8, x7, lsr #8                          #! PC = 0xaaaaaaab67f8 *)
 split Hx7 Lx7 x7 8;
 add x8 x8 Hx7;
 (* lsl	x7, x7, #56                                 #! PC = 0xaaaaaaab67fc *)
-shl x7 Lx7 56;
+shl x7 Lx7 56@uint64;
 (* orr	x7, x7, x6, lsr #8                          #! PC = 0xaaaaaaab6800 *)
 split Hx6 Lx6 x6 8;
 add x7 x7 Hx6;
 (* lsl	x6, x6, #56                                 #! PC = 0xaaaaaaab6804 *)
-shl x6 Lx6 56;
+shl x6 Lx6 56@uint64;
 (* ldp	x25, x26, [sp, #48]                         #! EA = L0xffffffffe610; Value = 0x0000ffffffffe8f8; PC = 0xaaaaaaab6808 *)
 mov x25 L0xffffffffe610;
 mov x26 L0xffffffffe618;
@@ -1549,7 +1549,7 @@ mov x26 L0xffffffffe618;
 split Hx5 Lx5 x5 8;
 add x6 x6 Hx5;
 (* lsl	x5, x5, #56                                 #! PC = 0xaaaaaaab6810 *)
-shl x5 Lx5 56;
+shl x5 Lx5 56@uint64;
 (* ldp	x27, x28, [sp, #64]                         #! EA = L0xffffffffe620; Value = 0x0000ffffffffe938; PC = 0xaaaaaaab6814 *)
 mov x27 L0xffffffffe620;
 mov x28 L0xffffffffe628;
@@ -1557,7 +1557,7 @@ mov x28 L0xffffffffe628;
 split Hx4 Lx4 x4 8;
 add x5 x5 Hx4;
 (* lsl	x4, x4, #56                                 #! PC = 0xaaaaaaab681c *)
-shl x4 Lx4 56;
+shl x4 Lx4 56@uint64;
 (* ldp	x29, x30, [sp, #80]                         #! EA = L0xffffffffe630; Value = 0x0000ffffffffe640; PC = 0xaaaaaaab6820 *)
 mov x29 L0xffffffffe630;
 mov x30 L0xffffffffe638;
