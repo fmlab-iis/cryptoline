@@ -33,10 +33,10 @@ let usage_msg =
   "Usage: cv_cec OPTIONS FILE1 FILE2\n\
    \n\
    Check the equivalence between two CryptoLine programs. The two programs are\n\
-   converted to And-Inverter Graphs (AIGs) by Boolector. The equivalence between\n\
-   the two AIGs are checked by ABC. If the output variable names of the two\n\
-   programs are the same, use -out to specify the output variables. Otherwise, use\n\
-   -out1 and -out2 to specify the output variables (in the same order) separately.\n"
+   converted to And-Inverter Graphs (AIGs) by Boolector (>= 2.1.1). The equivalence\n\
+   between the two AIGs are checked by ABC. If the output variable names of the two\n\
+   programs are the same, use -ov to specify the output variables. Otherwise, use\n\
+   -ov1 and -ov2 to specify the output variables (in the same order) separately.\n"
 
 let anon_fun file = input_files_rev := file::!input_files_rev
 

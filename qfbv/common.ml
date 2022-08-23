@@ -234,6 +234,24 @@ let vars_imp es =
 
 (** BTOR *)
 
+(* Boolector version decides the syntax of BTOR *)
+let default_boolector_version = (3, 2, 0)
+
+let get_boolector_version () =
+  let cmd = Printf.sprintf "%s --version 2> /dev/null" !boolector_path in
+  let inch = Unix.open_process_in cmd in
+  let version =
+    try
+      let line = input_line inch in
+      let tokens = tmap int_of_string (String.split_on_char '.' line) in
+      match tokens with
+      | major::minor::patch::[] -> (major, minor, patch)
+      | _ -> default_boolector_version
+    with _ ->
+      default_boolector_version in
+  let _ = Unix.close_process_in inch in
+  version
+
 module WN : OrderedType with type t = (int * Z.t) =
   struct
     type t = (int * Z.t)
@@ -247,6 +265,8 @@ module WNMap : Map.S with type key = (int * Z.t) = Map.Make(WN)
 
 class btor_manager =
 object(self)
+  val version = get_boolector_version ()
+
   (** the ID of the next Btor variable *)
   val mutable v = 0
 
@@ -303,6 +323,14 @@ object(self)
       bv
     | e ->
       fail (Printexc.to_string e)
+
+  method mkconstd_for_shift w e =
+    if compare version (3, 0, 0) < 0 then self#mkconstd (logi w) e
+    else self#mkconstd w e
+
+  method mkconstd_for_rotate w e =
+    if compare version (3, 2, 0) < 0 then self#mkconstd (logi w) e
+    else self#mkconstd w e
 
   method mknot w e =
     let bv = self#newvar in
@@ -523,14 +551,14 @@ let rec btor_of_exp m e =
   | Mod (w, e1, e2) -> m#mkmod w (btor_of_exp m e1) (btor_of_exp m e2)
   | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
   | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Shl _ -> fail "Shl (_, n) with non-constant n is not supported"
-  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
-  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd (logi w) e2)
+  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
-  | Rol (w, e, n) -> m#mkrol w (btor_of_exp m e) (m#mkconstd (logi w) (Z.of_int n))
-  | Ror (w, e, n) -> m#mkror w (btor_of_exp m e) (m#mkconstd (logi w) (Z.of_int n))
+  | Rol (w, e, n) -> m#mkrol w (btor_of_exp m e) (m#mkconstd_for_rotate w (Z.of_int n))
+  | Ror (w, e, n) -> m#mkror w (btor_of_exp m e) (m#mkconstd_for_rotate w (Z.of_int n))
   | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
   | Extract (w, i, j, e) -> m#mkextract w i j (btor_of_exp m e)
   | Slice (w1, w2, w3, e) -> m#mkslice w1 w2 w3 (btor_of_exp m e)
@@ -652,46 +680,46 @@ let btor_instr m i =
                       m#setvar v (m#mksll w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
+                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
   | Ishls (l, v, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
                           m#setvar l (m#mkhigh (w - ni) ni a_btor);
-                          m#setvar v (m#mksll w a_btor (m#mkconstd (logi w) n))
+                          m#setvar v (m#mksll w a_btor (m#mkconstd_for_shift w n))
   | Ishr (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
                       m#setvar v (m#mksrl w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
+                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
   | Ishrs (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
-                          m#setvar v (m#mksrl w a_btor (m#mkconstd (logi w) n));
+                          m#setvar v (m#mksrl w a_btor (m#mkconstd_for_shift w n));
                           m#setvar l (m#mklow ni (w - ni) a_btor)
   | Isar (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
                       m#setvar v (m#mksra w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd (logi w) z))
+                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
   | Isars (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
-                          m#setvar v (m#mksra w a_btor (m#mkconstd (logi w) n));
+                          m#setvar v (m#mksra w a_btor (m#mkconstd_for_shift w n));
                           m#setvar l (m#mklow ni (w - ni) a_btor)
   | Icshl (vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
                                  let w2 = size_of_var vl in
                                  let a1_btor = btor_atom m a1 in
                                  let a2_btor = btor_atom m a2 in
-                                 let shifted = m#mksll (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                 let shifted = m#mksll (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd_for_shift (w1 + w2) n) in
                                  m#setvar vh (m#mkhigh w2 w1 shifted);
-                                 m#setvar vl (m#mksrl w2 (m#mklow w2 w1 shifted) (m#mkconstd (logi w2) n))
+                                 m#setvar vl (m#mksrl w2 (m#mklow w2 w1 shifted) (m#mkconstd_for_shift w2 n))
   | Icshr (vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
                                  let w2 = size_of_var vl in
                                  let a1_btor = btor_atom m a1 in
                                  let a2_btor = btor_atom m a2 in
-                                 let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                 let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd_for_shift (w1 + w2) n) in
                                  m#setvar vh (m#mkhigh w2 w1 shifted);
                                  m#setvar vl (m#mklow w2 w1 shifted)
   | Icshrs (vh, vl, l, a1, a2, n) -> let w1 = size_of_var vh in
@@ -699,16 +727,16 @@ let btor_instr m i =
                                      let ni = Z.to_int n in
                                      let a1_btor = btor_atom m a1 in
                                      let a2_btor = btor_atom m a2 in
-                                     let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd (logi (w1 + w2)) n) in
+                                     let shifted = m#mksrl (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd_for_shift (w1 + w2) n) in
                                      m#setvar vh (m#mkhigh w2 w1 shifted);
                                      m#setvar vl (m#mklow w2 w1 shifted);
                                      m#setvar l (m#mklow ni (w2 - ni) a2_btor)
   | Irol (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mkrol w a_btor (m#mkconstd (logi w) n))
+                      m#setvar v (m#mkrol w a_btor (m#mkconstd_for_rotate w n))
   | Iror (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mkror w a_btor (m#mkconstd (logi w) n))
+                      m#setvar v (m#mkror w a_btor (m#mkconstd_for_rotate w n))
   | Inondet v -> ignore(m#mkvar v)
   | Icmov (v, c, a1, a2) -> let w = size_of_var v in
                             let c_btor = btor_atom m c in

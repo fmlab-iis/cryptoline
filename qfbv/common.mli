@@ -89,6 +89,8 @@ class btor_manager :
     method mkconcat : size -> int -> int -> int -> int
     method mkcond : size -> int -> int -> int -> int
     method mkconstd : size -> Z.t -> int
+    method mkconstd_for_shift : size -> Z.t -> int
+    method mkconstd_for_rotate : size -> Z.t -> int
     method mkeq : size -> int -> int
     method mkextract : size -> int -> int -> int -> int
     method mkhigh : size -> int -> int -> int
