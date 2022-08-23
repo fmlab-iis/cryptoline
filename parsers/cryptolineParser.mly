@@ -1000,7 +1000,7 @@
       (* let actuals_input = actuals_token (List.map typ_of_var f.fargs, []) cm vm ym gm in
       let actuals_output = actuals_token (List.map typ_of_var f.fouts, []) cm vm ym gm in  *)
       (* update variable maps *)
-      (* Check naming conflicts *)
+      (* TODO Check naming conflicts *)
       let (fpre, fpost, _, fargs, fouts, fvs, fys, fgs) =
         (* TODO do the local rename for pre and post condition *) 
         (* if !Options.Std.rename_local then
@@ -1022,11 +1022,33 @@
           (f.fpre, f.fpost, f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
       let inputs = fargs in
       let outputs = fouts in
-      (* let _ = List.map (fun var -> if var in fpost *)
-      (* let _ = check_var_program fbody in *)
-      (* TODO check the input variable does not modified in the function body *)
-      (* check input variable does not contain in output varaible *) 
       let formals = inputs@outputs in
+      let bexp_prove_with_to_bexp bpw = 
+        let (ebl, rbl) = bpw in  
+        (*let ebx = List.map( fun (eb, _ ) -> eb) ebl in
+        let eby = List.map( fun (sb, _) -> eb) sbl in  *)
+        let eb = ebexp_prove_with_eands ebl in 
+        let rb = rbexp_prove_with_rands rbl in 
+        (eb, rb) in  
+      (* let _ = check_var_program fbody in *)
+      (* TODO check the actual input variable does not modified in the function body *)
+      let input_varset = vars_bexp f.fpre in 
+      let post_varset = vars_bexp (bexp_prove_with_to_bexp f.fpost )in 
+      (* check the input variable is modified in the program body *)
+      let check_modified_input k program = let _, slice_p = slice_program k program in if (List.length slice_p) != 0 then raise_at lno ("If using function call, input variable should not be modified in function body") in
+      (* check the input variable is in the post-condition *)
+      let m = VS.empty in 
+      let body = List.map (fun ( _, v) -> v) f.fbody in
+      let _ = VS.iter (fun k -> if (VS.mem k post_varset) then check_modified_input (VS.add k m) body) input_varset in  
+      (* check the post-condition variable is defined in the formal input or output *)
+      let post_varset = vars_bexp (bexp_prove_with_to_bexp f.fpost )in 
+      let formal_map = VS.of_list formals in
+      (* let len1 = VS.cardinal post_varset in 
+      let len2 = VS.cardinal formal_map in 
+      let _ = Printf.printf "\n\nlen of the post is %d %d\n" len1 len2 in *)
+      let _ = if (VS.diff post_varset formal_map) = VS.empty then 0 else 
+      raise_at lno (Printf.sprintf "variable in post-condition not defined in input and ouput variables") in
+      (* check actual input variable does not contain in actual output varaible *) 
       let rec split_at1 n acc l =
        if n = 0 then (List.rev acc, l) else
        match l with
@@ -1067,13 +1089,6 @@
       let bexp_to_bexp_prove_with bexp =  
         let (eb, sb) = bexp in 
         ([eb, []], [sb, []]) in 
-      let bexp_prove_with_to_bexp bpw = 
-        let (ebl, rbl) = bpw in  
-        (*let ebx = List.map( fun (eb, _ ) -> eb) ebl in
-        let eby = List.map( fun (sb, _) -> eb) sbl in  *)
-        let eb = ebexp_prove_with_eands ebl in 
-        let rb = rbexp_prove_with_rands rbl in 
-        (eb, rb) in  
       let (am, em, rm) = subst_maps_of_list pats in
       let pre = bexp_to_bexp_prove_with (subst_bexp em rm fpre) in
       let post = subst_bexp em rm (bexp_prove_with_to_bexp fpost) in
@@ -1723,6 +1738,7 @@ instr:
   | GHOST gvars COLON bexp                        { (!lnum, `GHOST ($2, $4)) }
   /* Extensions */
   | CALL ID LPAR actuals RPAR                     { (!lnum, `CALL ($2, $4)) }
+  | INLINE ID LPAR actuals RPAR                     { (!lnum, `INLINE ($2, $4)) }
   | NOP                                           { (!lnum, `NOP) }
   /* Errors */
   | MOV error                                     { raise_at !lnum ("Bad mov instruction") }
