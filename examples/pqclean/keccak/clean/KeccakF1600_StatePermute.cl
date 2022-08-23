@@ -1,10 +1,5 @@
-proc main (* KeccakF1600_StatePermute *)
-(uint64 a00, uint64 a01, uint64 a02, uint64 a03, uint64 a04,
- uint64 a10, uint64 a11, uint64 a12, uint64 a13, uint64 a14,
- uint64 a20, uint64 a21, uint64 a22, uint64 a23, uint64 a24,
- uint64 a30, uint64 a31, uint64 a32, uint64 a33, uint64 a34,
- uint64 a40, uint64 a41, uint64 a42, uint64 a43, uint64 a44,
- uint64 A00, uint64 A01, uint64 A02, uint64 A03, uint64 A04,
+proc main (* KeccakF1600_StatePermute_24rounds *)
+(uint64 A00, uint64 A01, uint64 A02, uint64 A03, uint64 A04,
  uint64 A10, uint64 A11, uint64 A12, uint64 A13, uint64 A14,
  uint64 A20, uint64 A21, uint64 A22, uint64 A23, uint64 A24,
  uint64 A30, uint64 A31, uint64 A32, uint64 A33, uint64 A34,
@@ -49,7 +44,6 @@ mov L0x555555571240 0x8000000080008081@uint64;
 mov L0x555555571248 0x8000000000008080@uint64;
 mov L0x555555571250 0x0000000080000001@uint64;
 mov L0x555555571258 0x8000000080008008@uint64;
-
 
 nondet rsp@uint64; nondet rdi@uint64; nondet rbx@uint64;
 
@@ -210,7 +204,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x0000000000000000; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x40d72456b3604d93; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -222,7 +216,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0xe277ea9ab7e2ad9e; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x0000000000000000; PC = 0x55555556210b *)
@@ -230,7 +224,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x8000000000000000; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x0000000000000000; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x0000000000000000; PC = 0x55555556211d *)
@@ -252,9 +246,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -266,7 +260,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711a0; PC = 0x55555556215c *)
@@ -274,7 +268,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -282,23 +276,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711a0; Value = 0x0000000000000001; PC = 0x55555556218b *)
 mov r11 L0x5555555711a0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -362,7 +356,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x0000000000000000; PC = 0x555555562207 *)
@@ -370,7 +364,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x7caef27a227f0ab3; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -378,7 +372,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -406,13 +400,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -446,9 +440,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -456,7 +450,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -518,13 +512,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x0000000000000000; PC = 0x555555562325 *)
@@ -532,25 +526,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x0000000000000000; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x0000000000000000; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x505f3ce1044e8e67; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x0000000000000000; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -562,7 +556,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -618,7 +612,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xbb02e162ffbc68b2; PC = 0x5555555623ce *)
@@ -722,7 +716,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -730,19 +724,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -758,23 +752,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -856,7 +850,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xf74d34e9c93b7aa9; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -864,7 +858,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0x5d60f21f9d5cc764; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -876,9 +870,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -904,7 +898,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -952,15 +946,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0x2a301936e1c44cca; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -968,7 +962,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -1040,13 +1034,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x73b8e7bf5f520f62; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -1054,9 +1048,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x1e9f1155971ffd90; PC = 0x5555555626cc *)
@@ -1064,7 +1058,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -1084,7 +1078,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -1098,7 +1092,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -1119,7 +1113,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -1129,7 +1123,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -1139,7 +1133,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -1226,7 +1220,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xf0ba79e4a62caa2c; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x93b9b81ec85a55bc; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -1238,7 +1232,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0xf33c27d3b1076a6b; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x5d24f10350f04ffe; PC = 0x55555556210b *)
@@ -1246,7 +1240,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x15d7f7482e89de94; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0xa54ed39a1ae9b6cb; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x9c7f7a67a1c5f48a; PC = 0x55555556211d *)
@@ -1268,9 +1262,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -1282,7 +1276,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711b0; PC = 0x55555556215c *)
@@ -1290,7 +1284,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -1298,23 +1292,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711b0; Value = 0x800000000000808a; PC = 0x55555556218b *)
 mov r11 L0x5555555711b0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -1378,7 +1372,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x5d24f10350f04ffe; PC = 0x555555562207 *)
@@ -1386,7 +1380,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x1c4309d9b38baae6; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -1394,7 +1388,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -1422,13 +1416,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -1462,9 +1456,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -1472,7 +1466,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -1534,13 +1528,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x1f52a17b813d68ed; PC = 0x555555562325 *)
@@ -1548,25 +1542,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0xa54ed39a1ae9b6cb; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x316f3af162c74cb8; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x64d5294b838bd435; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x942a126861d017e8; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -1578,7 +1572,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -1634,7 +1628,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xec769a17b392e172; PC = 0x5555555623ce *)
@@ -1738,7 +1732,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -1746,19 +1740,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -1774,23 +1768,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -1872,7 +1866,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x43f95a3e5c565d17; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -1880,7 +1874,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xa8ec0dda14895b03; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -1892,9 +1886,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -1920,7 +1914,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -1968,15 +1962,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xc602703b6e89fdfd; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -1984,7 +1978,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -2056,13 +2050,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x1df5809c8b9c29e5; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -2070,9 +2064,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x7f11627b7d0decf1; PC = 0x5555555626cc *)
@@ -2080,7 +2074,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -2100,7 +2094,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -2114,7 +2108,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -2135,7 +2129,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -2145,7 +2139,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -2155,7 +2149,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -2242,7 +2236,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xa09a1a12dd63c6bc; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x053327828483554c; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -2254,7 +2248,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x87081c64280b1b30; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x82710cd9b71575f1; PC = 0x55555556210b *)
@@ -2262,7 +2256,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xbfd3630fa2a15d80; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x86726aad5198894f; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x3c2085c352438f58; PC = 0x55555556211d *)
@@ -2284,9 +2278,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -2298,7 +2292,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711c0; PC = 0x55555556215c *)
@@ -2306,7 +2300,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -2314,23 +2308,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711c0; Value = 0x000000000000808b; PC = 0x55555556218b *)
 mov r11 L0x5555555711c0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -2394,7 +2388,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x82710cd9b71575f1; PC = 0x555555562207 *)
@@ -2402,7 +2396,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0xaabf349caada8448; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -2410,7 +2404,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -2438,13 +2432,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -2478,9 +2472,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -2488,7 +2482,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -2550,13 +2544,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0xf2763a09072df5a0; PC = 0x555555562325 *)
@@ -2564,25 +2558,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x86726aad5198894f; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0xd2cd02690920a6e8; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x88c4ddb3aa46219b; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x78ee2028b86b8ac0; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -2594,7 +2588,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -2650,7 +2644,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xa6463dea900a5e4c; PC = 0x5555555623ce *)
@@ -2754,7 +2748,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -2762,19 +2756,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -2790,23 +2784,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -2888,7 +2882,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xdacf3aab87e6b252; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -2896,7 +2890,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xfb44e3b6f218ea3a; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -2908,9 +2902,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -2936,7 +2930,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -2984,15 +2978,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0x71f5c00ca0a507cd; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -3000,7 +2994,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -3072,13 +3066,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x4b5645d4002710e6; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -3086,9 +3080,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x3f48bec5570ba4b3; PC = 0x5555555626cc *)
@@ -3096,7 +3090,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -3116,7 +3110,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -3130,7 +3124,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -3151,7 +3145,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -3161,7 +3155,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -3171,7 +3165,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -3258,7 +3252,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x07f1709cf7ff2d67; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xec9bafdcfbbbc859; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -3270,7 +3264,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x56cc05651a3bd121; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x619acbacd3507004; PC = 0x55555556210b *)
@@ -3278,7 +3272,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x63548a015a88fa50; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x9b0e69fd2951dcf9; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0xe89e6bc2e61ac2ba; PC = 0x55555556211d *)
@@ -3300,9 +3294,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -3314,7 +3308,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711d0; PC = 0x55555556215c *)
@@ -3322,7 +3316,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -3330,23 +3324,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711d0; Value = 0x8000000080008081; PC = 0x55555556218b *)
 mov r11 L0x5555555711d0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -3410,7 +3404,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x619acbacd3507004; PC = 0x555555562207 *)
@@ -3418,7 +3412,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x0add523fb19b01a3; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -3426,7 +3420,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -3454,13 +3448,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -3494,9 +3488,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -3504,7 +3498,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -3566,13 +3560,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x753a2d354529c62b; PC = 0x555555562325 *)
@@ -3580,25 +3574,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x9b0e69fd2951dcf9; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0xc6a3430f285ffd42; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x0979b72f69bf960b; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x951b75a8ee09e6e0; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -3610,7 +3604,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -3666,7 +3660,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x572acd47eeb83add; PC = 0x5555555623ce *)
@@ -3770,7 +3764,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -3778,19 +3772,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -3806,23 +3800,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -3904,7 +3898,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x7f9981c26badb782; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -3912,7 +3906,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0x6543f93b78dba245; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -3924,9 +3918,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -3952,7 +3946,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -4000,15 +3994,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0x92ff4d5256907e90; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -4016,7 +4010,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -4088,13 +4082,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0xb1c886c5315b98a6; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -4102,9 +4096,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x37d61a5585a31384; PC = 0x5555555626cc *)
@@ -4112,7 +4106,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -4132,7 +4126,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -4146,7 +4140,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -4167,7 +4161,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -4177,7 +4171,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -4187,7 +4181,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -4274,7 +4268,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xc5d3f8c0323ba901; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xe237c4fa0db6ce63; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -4286,7 +4280,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0xa4130b43097a35f1; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x5e7d2ac28459e467; PC = 0x55555556210b *)
@@ -4294,7 +4288,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x2c8f70a0fc4f995a; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0xaf1ee2e906e8f879; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x251e27b62ba0ce80; PC = 0x55555556211d *)
@@ -4316,9 +4310,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -4330,7 +4324,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711e0; PC = 0x55555556215c *)
@@ -4338,7 +4332,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -4346,23 +4340,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711e0; Value = 0x000000000000008a; PC = 0x55555556218b *)
 mov r11 L0x5555555711e0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -4426,7 +4420,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x5e7d2ac28459e467; PC = 0x555555562207 *)
@@ -4434,7 +4428,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x67d9935f61ac8033; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -4442,7 +4436,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -4470,13 +4464,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -4510,9 +4504,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -4520,7 +4514,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -4582,13 +4576,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0xce83606b76d51d02; PC = 0x555555562325 *)
@@ -4596,25 +4590,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0xaf1ee2e906e8f879; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0xe730e20bfa56c265; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x76328d55e6d85e7b; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0xfaa0a49452c750cd; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -4626,7 +4620,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -4682,7 +4676,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x9c0d0624512d5aca; PC = 0x5555555623ce *)
@@ -4786,7 +4780,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -4794,19 +4788,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -4822,23 +4816,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -4920,7 +4914,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x32dbf6e37c811e6d; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -4928,7 +4922,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xdce21f3680d5b68a; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -4940,9 +4934,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -4968,7 +4962,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -5016,15 +5010,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xf65159ff94047a0f; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -5032,7 +5026,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -5104,13 +5098,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0xb58e70c8517c2565; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -5118,9 +5112,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0xf07777f0edf229db; PC = 0x5555555626cc *)
@@ -5128,7 +5122,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -5148,7 +5142,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -5162,7 +5156,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -5183,7 +5177,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -5193,7 +5187,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -5203,7 +5197,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -5290,7 +5284,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x876f72d533563e72; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xc9d0a1e399964bae; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -5302,7 +5296,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x556c54de3e3f1e5d; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0xb4c94adfdc6e973d; PC = 0x55555556210b *)
@@ -5310,7 +5304,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xe10d55b01ae7fc79; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x58c9b67338ca8190; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x0cfa9704bb3dabd5; PC = 0x55555556211d *)
@@ -5332,9 +5326,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -5346,7 +5340,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x00005555555711f0; PC = 0x55555556215c *)
@@ -5354,7 +5348,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -5362,23 +5356,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x5555555711f0; Value = 0x0000000080008009; PC = 0x55555556218b *)
 mov r11 L0x5555555711f0;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -5442,7 +5436,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0xb4c94adfdc6e973d; PC = 0x555555562207 *)
@@ -5450,7 +5444,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x7200c03e7fbc2fb2; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -5458,7 +5452,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -5486,13 +5480,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -5526,9 +5520,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -5536,7 +5530,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -5598,13 +5592,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0xdfa13a5c4ab560b2; PC = 0x555555562325 *)
@@ -5612,25 +5606,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x58c9b67338ca8190; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0xf9263c2f137e4690; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0xab2924de95a4dad0; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0xf7686758a7316c0a; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -5642,7 +5636,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -5698,7 +5692,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x0d2e15adaff78076; PC = 0x5555555623ce *)
@@ -5802,7 +5796,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -5810,19 +5804,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -5838,23 +5832,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -5936,7 +5930,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xe82479ddf2f86c39; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -5944,7 +5938,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0x694e2d9977b947e8; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -5956,9 +5950,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -5984,7 +5978,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -6032,15 +6026,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0x177c83cbca7d8e14; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -6048,7 +6042,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -6120,13 +6114,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x0dfe0c6d5d78a6e7; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -6134,9 +6128,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x53f69761d102eb2a; PC = 0x5555555626cc *)
@@ -6144,7 +6138,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -6164,7 +6158,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -6178,7 +6172,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -6199,7 +6193,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -6209,7 +6203,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -6219,7 +6213,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -6306,7 +6300,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xb682a11dbbc28c8e; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x5cbb42f7dc98e01c; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -6318,7 +6312,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x62eef2f8267db4e8; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x1c28a5c133f495c3; PC = 0x55555556210b *)
@@ -6326,7 +6320,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xb5650f6c533bc3c3; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x1fa2584a465d3f3c; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x39bb8324c4350792; PC = 0x55555556211d *)
@@ -6348,9 +6342,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -6362,7 +6356,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571200; PC = 0x55555556215c *)
@@ -6370,7 +6364,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -6378,23 +6372,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571200; Value = 0x000000008000808b; PC = 0x55555556218b *)
 mov r11 L0x555555571200;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -6458,7 +6452,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x1c28a5c133f495c3; PC = 0x555555562207 *)
@@ -6466,7 +6460,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0xf67019e27dd23462; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -6474,7 +6468,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -6502,13 +6496,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -6542,9 +6536,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -6552,7 +6546,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -6614,13 +6608,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x333de6c35fddc195; PC = 0x555555562325 *)
@@ -6628,25 +6622,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x1fa2584a465d3f3c; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x994f437dc5851e38; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x16a56cbba3a78751; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x00009427cd50e1e0; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -6658,7 +6652,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -6714,7 +6708,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xfaa1e4af38fcc598; PC = 0x5555555623ce *)
@@ -6818,7 +6812,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -6826,19 +6820,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -6854,23 +6848,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -6952,7 +6946,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x4ffc87a4b7441bad; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -6960,7 +6954,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0x74c1f42f4525aab1; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -6972,9 +6966,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -7000,7 +6994,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -7048,15 +7042,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xca0111b11689ebe0; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -7064,7 +7058,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -7136,13 +7130,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x87f87644c0bebdcd; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -7150,9 +7144,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0xf90370744eb6da40; PC = 0x5555555626cc *)
@@ -7160,7 +7154,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -7180,7 +7174,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -7194,7 +7188,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -7215,7 +7209,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -7225,7 +7219,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -7235,7 +7229,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -7322,7 +7316,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x893f6c8b22f8c052; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xe468270a1e6e939f; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -7334,7 +7328,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x9da060589531215d; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x962fbe0b13d418be; PC = 0x55555556210b *)
@@ -7342,7 +7336,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xf865b75c2234866c; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x3539e221cef1767c; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0xbf014154780b9ff1; PC = 0x55555556211d *)
@@ -7364,9 +7358,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -7378,7 +7372,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571210; PC = 0x55555556215c *)
@@ -7386,7 +7380,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -7394,23 +7388,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571210; Value = 0x8000000000008089; PC = 0x55555556218b *)
 mov r11 L0x555555571210;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -7474,7 +7468,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x962fbe0b13d418be; PC = 0x555555562207 *)
@@ -7482,7 +7476,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x4c0ba713d3de741a; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -7490,7 +7484,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -7518,13 +7512,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -7558,9 +7552,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -7568,7 +7562,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -7630,13 +7624,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x5fa348c428d196f3; PC = 0x555555562325 *)
@@ -7644,25 +7638,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x3539e221cef1767c; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x1f5a21aaaddac658; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0xd6d0fa691fd35297; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x4f0cd399b3fc33a8; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -7674,7 +7668,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -7730,7 +7724,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x580b3fa941c4c9ab; PC = 0x5555555623ce *)
@@ -7834,7 +7828,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -7842,19 +7836,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -7870,23 +7864,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -7968,7 +7962,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x8b3a597ad0eec45b; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -7976,7 +7970,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xfa681ee7e62c2a94; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -7988,9 +7982,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -8016,7 +8010,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -8064,15 +8058,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xae8a20e3b70dc821; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -8080,7 +8074,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -8152,13 +8146,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x34345331b2cf5177; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -8166,9 +8160,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0xfcbb363a9e962a0b; PC = 0x5555555626cc *)
@@ -8176,7 +8170,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -8196,7 +8190,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -8210,7 +8204,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -8231,7 +8225,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -8241,7 +8235,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -8251,7 +8245,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -8338,7 +8332,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xd9baed43887f35a9; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xdb92827229734079; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -8350,7 +8344,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x005842425e27d891; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x0c9d39c998916ae2; PC = 0x55555556210b *)
@@ -8358,7 +8352,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xafd4d175414fabf1; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x7a932ee1326f79a6; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x6914f60ea3d15ae0; PC = 0x55555556211d *)
@@ -8380,9 +8374,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -8394,7 +8388,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571220; PC = 0x55555556215c *)
@@ -8402,7 +8396,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -8410,23 +8404,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571220; Value = 0x8000000000008002; PC = 0x55555556218b *)
 mov r11 L0x555555571220;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -8490,7 +8484,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x0c9d39c998916ae2; PC = 0x555555562207 *)
@@ -8498,7 +8492,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0xfafe854d946c2191; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -8506,7 +8500,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -8534,13 +8528,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -8574,9 +8568,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -8584,7 +8578,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -8646,13 +8640,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x337b404d2efb74a4; PC = 0x555555562325 *)
@@ -8660,25 +8654,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x7a932ee1326f79a6; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0xd41aa3b1ff7c5eed; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x2ff3e38d15484457; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x62d6645e243283ee; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -8690,7 +8684,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -8746,7 +8740,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x7bef8175394cc0ea; PC = 0x5555555623ce *)
@@ -8850,7 +8844,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -8858,19 +8852,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -8886,23 +8880,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -8984,7 +8978,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xdc9ebc64eb422eb2; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -8992,7 +8986,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xa35db6d803eb2748; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -9004,9 +8998,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -9032,7 +9026,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -9080,15 +9074,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xdf447e9a326ae947; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -9096,7 +9090,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -9168,13 +9162,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x9e1f654c0e342352; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -9182,9 +9176,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0xd90e507a3e067216; PC = 0x5555555626cc *)
@@ -9192,7 +9186,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -9212,7 +9206,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -9226,7 +9220,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -9247,7 +9241,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -9257,7 +9251,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -9267,7 +9261,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -9354,7 +9348,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0xad34c84f2a7371cc; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0xdf929b2aeb071206; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -9366,7 +9360,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x51b11155ea8a4d20; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0xc0a7f06a7f4e12c1; PC = 0x55555556210b *)
@@ -9374,7 +9368,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0xf054e877c88c693e; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0xf6bce0231a629c15; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0xe1665bdee2e7ae1a; PC = 0x55555556211d *)
@@ -9396,9 +9390,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -9410,7 +9404,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571230; PC = 0x55555556215c *)
@@ -9418,7 +9412,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -9426,23 +9420,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571230; Value = 0x000000000000800a; PC = 0x55555556218b *)
 mov r11 L0x555555571230;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -9506,7 +9500,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0xc0a7f06a7f4e12c1; PC = 0x555555562207 *)
@@ -9514,7 +9508,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0x932d74a3fbb76540; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -9522,7 +9516,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -9550,13 +9544,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -9590,9 +9584,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -9600,7 +9594,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -9662,13 +9656,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x725af788ed11691c; PC = 0x555555562325 *)
@@ -9676,25 +9670,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0xf6bce0231a629c15; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x3fe86e631c3bce2e; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x1f23c0fd191e8611; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x46e1e2efa4347bc8; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -9706,7 +9700,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -9762,7 +9756,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xe4f7cc45ceab7741; PC = 0x5555555623ce *)
@@ -9866,7 +9860,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -9874,19 +9868,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -9902,23 +9896,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -10000,7 +9994,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0x96cbf998755de4c5; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -10008,7 +10002,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xa6da2110aeec3b95; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -10020,9 +10014,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -10048,7 +10042,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -10096,15 +10090,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xed6ae20262390409; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -10112,7 +10106,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -10184,13 +10178,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0xaf73c39a8af30a3b; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -10198,9 +10192,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x92eaaba7d87f69f5; PC = 0x5555555626cc *)
@@ -10208,7 +10202,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -10228,7 +10222,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -10242,7 +10236,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -10263,7 +10257,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -10273,7 +10267,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -10283,7 +10277,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -10370,7 +10364,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x3148cd0c20f1e36c; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x02152019b8f173ba; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -10382,7 +10376,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0x055c9a6860515bb5; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0xd5317cf26c5ba0c2; PC = 0x55555556210b *)
@@ -10390,7 +10384,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x7531689f82937af6; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x6174823eafcdddd9; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0x99d304a969ed0556; PC = 0x55555556211d *)
@@ -10412,9 +10406,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -10426,7 +10420,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571240; PC = 0x55555556215c *)
@@ -10434,7 +10428,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -10442,23 +10436,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571240; Value = 0x8000000080008081; PC = 0x55555556218b *)
 mov r11 L0x555555571240;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -10522,7 +10516,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0xd5317cf26c5ba0c2; PC = 0x555555562207 *)
@@ -10530,7 +10524,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0xd37d0e805efcce29; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -10538,7 +10532,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -10566,13 +10560,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -10606,9 +10600,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -10616,7 +10610,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -10678,13 +10672,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0x078fc83727e1778e; PC = 0x555555562325 *)
@@ -10692,25 +10686,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x6174823eafcdddd9; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x7fe01f674961bd44; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0xa208492acc013614; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x119923bb100cef0b; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -10722,7 +10716,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -10778,7 +10772,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0x803c1e39e4ddc877; PC = 0x5555555623ce *)
@@ -10882,7 +10876,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -10890,19 +10884,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -10918,23 +10912,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -11016,7 +11010,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xdcd1ef62376528c1; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -11024,7 +11018,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0xe7b807ccfd9557c2; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -11036,9 +11030,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -11064,7 +11058,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -11112,15 +11106,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0xcd20652303129e51; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -11128,7 +11122,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -11200,13 +11194,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0x237a3d94dc4e8844; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -11214,9 +11208,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x490cb7c8e8a29fe9; PC = 0x5555555626cc *)
@@ -11224,7 +11218,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -11244,7 +11238,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -11258,7 +11252,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -11279,7 +11273,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -11289,7 +11283,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -11299,7 +11293,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -11386,7 +11380,7 @@ xor r10@uint64 r10 rsi;
 (* xor    0x18(%rsp),%rcx                          #! EA = L0x7fffffffa0f0; Value = 0x9e29f9c457e36838; PC = 0x5555555620e8 *)
 xor rcx@uint64 rcx L0x7fffffffa0f0;
 (* rol    %rbx                                     #! PC = 0x5555555620ed *)
-split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 63; shl rbx_s rbx_l 1@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    -0x68(%rsp),%r11                         #! EA = L0x7fffffffa070; Value = 0x3c6a101cc0e199e7; PC = 0x5555555620f0 *)
 mov r11 L0x7fffffffa070;
 (* mov    %r10,%rdx                                #! PC = 0x5555555620f5 *)
@@ -11398,7 +11392,7 @@ xor r11@uint64 r11 L0x7fffffffa098;
 (* mov    -0x50(%rsp),%rdi                         #! EA = L0x7fffffffa088; Value = 0xf400ded9e2c96b69; PC = 0x555555562100 *)
 mov rdi L0x7fffffffa088;
 (* rol    %rdx                                     #! PC = 0x555555562105 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %rcx,%rbx                                #! PC = 0x555555562108 *)
 xor rbx@uint64 rbx rcx;
 (* xor    -0x18(%rsp),%r11                         #! EA = L0x7fffffffa0c0; Value = 0x8913336c2a6890e2; PC = 0x55555556210b *)
@@ -11406,7 +11400,7 @@ xor r11@uint64 r11 L0x7fffffffa0c0;
 (* xor    -0x28(%rsp),%rdi                         #! EA = L0x7fffffffa0b0; Value = 0x4a55e9e533617e74; PC = 0x555555562110 *)
 xor rdi@uint64 rdi L0x7fffffffa0b0;
 (* rol    %rcx                                     #! PC = 0x555555562115 *)
-split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 63; shl rcx_s rcx_l 1@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    0x8(%rsp),%r11                           #! EA = L0x7fffffffa0e0; Value = 0x313bbbccaf69a773; PC = 0x555555562118 *)
 xor r11@uint64 r11 L0x7fffffffa0e0;
 (* xor    -0x8(%rsp),%rdi                          #! EA = L0x7fffffffa0d0; Value = 0xcbc41a8d6d755b81; PC = 0x55555556211d *)
@@ -11428,9 +11422,9 @@ mov r14 L0x7fffffffa070;
 (* mov    %rdi,%r13                                #! PC = 0x55555556213d *)
 mov r13 rdi;
 (* rol    %r11                                     #! PC = 0x555555562140 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    %rdi                                     #! PC = 0x555555562143 *)
-split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 63; shl rdi_s rdi_l 1@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rdx,%r10                                #! PC = 0x555555562146 *)
 xor r10@uint64 r10 rdx;
 (* xor    %rdi,%rbp                                #! PC = 0x555555562149 *)
@@ -11442,7 +11436,7 @@ xor r14@uint64 r14 rbx;
 (* xor    %r13,%rdi                                #! PC = 0x555555562152 *)
 xor rdi@uint64 rdi r13;
 (* ror    $0x14,%r10                               #! PC = 0x555555562155 *)
-split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x14; shl r10_s r10_l (64-0x14)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rbp,%r15                                #! PC = 0x555555562159 *)
 xor r15@uint64 r15 rbp;
 (* mov    -0x70(%rsp),%r13                         #! EA = L0x7fffffffa068; Value = 0x0000555555571250; PC = 0x55555556215c *)
@@ -11450,7 +11444,7 @@ mov r13 L0x7fffffffa068;
 (* mov    %r10,%r11                                #! PC = 0x555555562161 *)
 mov r11 r10;
 (* ror    $0x15,%r15                               #! PC = 0x555555562164 *)
-split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; add r15 r15_s r15_h;
+split r15_h r15_l r15 0x15; shl r15_s r15_l (64-0x15)@uint64; or r15@uint64 r15_s r15_h;
 (* xor    %rcx,%r9                                 #! PC = 0x555555562168 *)
 xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x55555556216b *)
@@ -11458,23 +11452,23 @@ xor r12@uint64 r12 rdi;
 (* not    %r11                                     #! PC = 0x55555556216e *)
 not r11@uint64 r11;
 (* rol    $0x15,%r9                                #! PC = 0x555555562171 *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %rdx,%r8                                 #! PC = 0x555555562175 *)
 xor r8@uint64 r8 rdx;
 (* xor    %rbp,%rsi                                #! PC = 0x555555562178 *)
 xor rsi@uint64 rsi rbp;
 (* rol    $0xe,%r12                                #! PC = 0x55555556217b *)
-split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 (64-0xe); shl r12_s r12_l 0xe@uint64; or r12@uint64 r12_s r12_h;
 (* and    %r15,%r11                                #! PC = 0x55555556217f *)
 and r11@uint64 r11 r15;
 (* ror    $0x13,%r8                                #! PC = 0x555555562182 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,-0x68(%rsp)                         #! EA = L0x7fffffffa070; PC = 0x555555562186 *)
 mov L0x7fffffffa070 r11;
 (* mov    0x0(%r13),%r11                           #! EA = L0x555555571250; Value = 0x0000000080000001; PC = 0x55555556218b *)
 mov r11 L0x555555571250;
 (* ror    $0x3,%rsi                                #! PC = 0x55555556218f *)
-split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x3; shl rsi_s rsi_l (64-0x3)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %r14,%r11                                #! PC = 0x555555562193 *)
 xor r11@uint64 r11 r14;
 (* mov    %r11,%r13                                #! PC = 0x555555562196 *)
@@ -11538,7 +11532,7 @@ xor r9@uint64 r9 rcx;
 (* xor    %rdi,%r12                                #! PC = 0x5555555621fd *)
 xor r12@uint64 r12 rdi;
 (* rol    $0x1c,%r9                                #! PC = 0x555555562200 *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %r12,%r11                                #! PC = 0x555555562204 *)
 mov r11 r12;
 (* mov    -0x18(%rsp),%r12                         #! EA = L0x7fffffffa0c0; Value = 0x8913336c2a6890e2; PC = 0x555555562207 *)
@@ -11546,7 +11540,7 @@ mov r12 L0x7fffffffa0c0;
 (* mov    -0x60(%rsp),%r14                         #! EA = L0x7fffffffa078; Value = 0xbcb9b0d1fed3b314; PC = 0x55555556220c *)
 mov r14 L0x7fffffffa078;
 (* rol    $0x14,%r11                               #! PC = 0x555555562211 *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* xor    %rbx,%r12                                #! PC = 0x555555562215 *)
 xor r12@uint64 r12 rbx;
 (* mov    %r12,%r10                                #! PC = 0x555555562218 *)
@@ -11554,7 +11548,7 @@ mov r10 r12;
 (* mov    %r11,%r12                                #! PC = 0x55555556221b *)
 mov r12 r11;
 (* rol    $0x3,%r10                                #! PC = 0x55555556221e *)
-split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x3); shl r10_s r10_l 0x3@uint64; or r10@uint64 r10_s r10_h;
 (* not    %r12                                     #! PC = 0x555555562222 *)
 not r12@uint64 r12;
 (* and    %r10,%r12                                #! PC = 0x555555562225 *)
@@ -11582,13 +11576,13 @@ xor r14@uint64 r14 rdx;
 (* xor    %rbx,%rax                                #! PC = 0x555555562248 *)
 xor rax@uint64 rax rbx;
 (* rol    %r14                                     #! PC = 0x55555556224b *)
-split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 63; shl r14_s r14_l 1@uint64; or r14@uint64 r14_s r14_h;
 (* xor    %r10,%r12                                #! PC = 0x55555556224e *)
 xor r12@uint64 r12 r10;
 (* mov    %rsi,%r10                                #! PC = 0x555555562251 *)
 mov r10 rsi;
 (* rol    $0x12,%rax                               #! PC = 0x555555562254 *)
-split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x12); shl rax_s rax_l 0x12@uint64; or rax@uint64 rax_s rax_h;
 (* not    %r10                                     #! PC = 0x555555562258 *)
 not r10@uint64 r10;
 (* mov    %r12,-0x18(%rsp)                         #! EA = L0x7fffffffa0c0; PC = 0x55555556225b *)
@@ -11622,9 +11616,9 @@ xor rsi@uint64 rsi rcx;
 (* mov    %r10,0x50(%rsp)                          #! EA = L0x7fffffffa128; PC = 0x55555556228f *)
 mov L0x7fffffffa128 r10;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562294 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* rol    $0x19,%rsi                               #! PC = 0x555555562298 *)
-split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi (64-0x19); shl rsi_s rsi_l 0x19@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rdi,%r9                                 #! PC = 0x55555556229c *)
 xor r9@uint64 r9 rdi;
 (* mov    %rsi,%r11                                #! PC = 0x55555556229f *)
@@ -11632,7 +11626,7 @@ mov r11 rsi;
 (* mov    %r8,%rsi                                 #! PC = 0x5555555622a2 *)
 mov rsi r8;
 (* rol    $0x8,%r9                                 #! PC = 0x5555555622a5 *)
-split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x8); shl r9_s r9_l 0x8@uint64; or r9@uint64 r9_s r9_h;
 (* not    %rsi                                     #! PC = 0x5555555622a9 *)
 not rsi@uint64 rsi;
 (* mov    %r9,%r10                                 #! PC = 0x5555555622ac *)
@@ -11694,13 +11688,13 @@ xor r14@uint64 r14 rdx;
 (* mov    %r9,0x58(%rsp)                           #! EA = L0x7fffffffa130; PC = 0x55555556230e *)
 mov L0x7fffffffa130 r9;
 (* ror    $0x1c,%r13                               #! PC = 0x555555562313 *)
-split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x1c; shl r13_s r13_l (64-0x1c)@uint64; or r13@uint64 r13_s r13_h;
 (* xor    %rdi,%rax                                #! PC = 0x555555562317 *)
 xor rax@uint64 rax rdi;
 (* rol    $0xa,%r14                                #! PC = 0x55555556231a *)
-split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; add r14 r14_s r14_h;
+split r14_h r14_l r14 (64-0xa); shl r14_s r14_l 0xa@uint64; or r14@uint64 r14_s r14_h;
 (* rol    $0x1b,%rax                               #! PC = 0x55555556231e *)
-split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x1b); shl rax_s rax_l 0x1b@uint64; or rax@uint64 rax_s rax_h;
 (* xor    %rbp,%r8                                 #! PC = 0x555555562322 *)
 xor r8@uint64 r8 rbp;
 (* xor    (%rsp),%rdi                              #! EA = L0x7fffffffa0d8; Value = 0xab7df89c4753830f; PC = 0x555555562325 *)
@@ -11708,25 +11702,25 @@ xor rdi@uint64 rdi L0x7fffffffa0d8;
 (* xor    0x8(%rsp),%rbx                           #! EA = L0x7fffffffa0e0; Value = 0x313bbbccaf69a773; PC = 0x555555562329 *)
 xor rbx@uint64 rbx L0x7fffffffa0e0;
 (* rol    $0xf,%r8                                 #! PC = 0x55555556232e *)
-split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0xf); shl r8_s r8_l 0xf@uint64; or r8@uint64 r8_s r8_h;
 (* ror    $0x19,%rdi                               #! PC = 0x555555562332 *)
-split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x19; shl rdi_s rdi_l (64-0x19)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    0x20(%rsp),%rdx                          #! EA = L0x7fffffffa0f8; Value = 0x9f8e758868e5ae7d; PC = 0x555555562336 *)
 xor rdx@uint64 rdx L0x7fffffffa0f8;
 (* xor    -0x58(%rsp),%rbp                         #! EA = L0x7fffffffa080; Value = 0x1c306e1dabd44dd4; PC = 0x55555556233b *)
 xor rbp@uint64 rbp L0x7fffffffa080;
 (* ror    $0x17,%rbx                               #! PC = 0x555555562340 *)
-split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x17; shl rbx_s rbx_l (64-0x17)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* mov    %r8,%r11                                 #! PC = 0x555555562344 *)
 mov r11 r8;
 (* mov    0x28(%rsp),%r8                           #! EA = L0x7fffffffa100; Value = 0x7527576d33749b1e; PC = 0x555555562347 *)
 mov r8 L0x7fffffffa100;
 (* rol    $0x2,%rdx                                #! PC = 0x55555556234c *)
-split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx (64-0x2); shl rdx_s rdx_l 0x2@uint64; or rdx@uint64 rdx_s rdx_h;
 (* mov    %r11,%r9                                 #! PC = 0x555555562350 *)
 mov r9 r11;
 (* ror    $0x2,%rbp                                #! PC = 0x555555562353 *)
-split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 0x2; shl rbp_s rbp_l (64-0x2)@uint64; or rbp@uint64 rbp_s rbp_h;
 (* xor    %rcx,%r8                                 #! PC = 0x555555562357 *)
 xor r8@uint64 r8 rcx;
 (* not    %r9                                      #! PC = 0x55555556235a *)
@@ -11738,7 +11732,7 @@ mov rsi r8;
 (* mov    %r13,%r8                                 #! PC = 0x555555562365 *)
 mov r8 r13;
 (* ror    $0x8,%rsi                                #! PC = 0x555555562368 *)
-split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x8; shl rsi_s rsi_l (64-0x8)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* not    %r8                                      #! PC = 0x55555556236c *)
 not r8@uint64 r8;
 (* and    %rsi,%r9                                 #! PC = 0x55555556236f *)
@@ -11794,7 +11788,7 @@ xor r8@uint64 r8 r13;
 (* and    %rbx,%r12                                #! PC = 0x5555555623c2 *)
 and r12@uint64 r12 rbx;
 (* ror    $0x9,%rax                                #! PC = 0x5555555623c5 *)
-split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x9; shl rax_s rax_l (64-0x9)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r8,-0x40(%rsp)                          #! EA = L0x7fffffffa098; PC = 0x5555555623c9 *)
 mov L0x7fffffffa098 r8;
 (* mov    -0x68(%rsp),%r8                          #! EA = L0x7fffffffa070; Value = 0xaaa0e924724efdb2; PC = 0x5555555623ce *)
@@ -11898,7 +11892,7 @@ xor rdx@uint64 rdx L0x7fffffffa0c8;
 (* mov    %rsi,%rbx                                #! PC = 0x555555562485 *)
 mov rbx rsi;
 (* rol    %rsi                                     #! PC = 0x555555562488 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* xor    %rbp,%rdx                                #! PC = 0x55555556248b *)
 xor rdx@uint64 rdx rbp;
 (* mov    %r14,%rbp                                #! PC = 0x55555556248e *)
@@ -11906,19 +11900,19 @@ mov rbp r14;
 (* xor    %rsi,%r13                                #! PC = 0x555555562491 *)
 xor r13@uint64 r13 rsi;
 (* rol    %r12                                     #! PC = 0x555555562494 *)
-split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; add r12 r12_s r12_h;
+split r12_h r12_l r12 63; shl r12_s r12_l 1@uint64; or r12@uint64 r12_s r12_h;
 (* rol    %rbp                                     #! PC = 0x555555562497 *)
-split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp 63; shl rbp_s rbp_l 1@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %r11,%rsi                                #! PC = 0x55555556249a *)
 mov rsi r11;
 (* xor    %rdx,%r12                                #! PC = 0x55555556249d *)
 xor r12@uint64 r12 rdx;
 (* rol    %rdx                                     #! PC = 0x5555555624a0 *)
-split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; add rdx rdx_s rdx_h;
+split rdx_h rdx_l rdx 63; shl rdx_s rdx_l 1@uint64; or rdx@uint64 rdx_s rdx_h;
 (* xor    %r11,%rbp                                #! PC = 0x5555555624a3 *)
 xor rbp@uint64 rbp r11;
 (* rol    %rsi                                     #! PC = 0x5555555624a6 *)
-split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 63; shl rsi_s rsi_l 1@uint64; or rsi@uint64 rsi_s rsi_h;
 (* mov    %r8,%r11                                 #! PC = 0x5555555624a9 *)
 mov r11 r8;
 (* xor    %r14,%rdx                                #! PC = 0x5555555624ac *)
@@ -11934,23 +11928,23 @@ xor r10@uint64 r10 r13;
 (* mov    %r15,%rbx                                #! PC = 0x5555555624bb *)
 mov rbx r15;
 (* ror    $0x15,%r10                               #! PC = 0x5555555624be *)
-split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 0x15; shl r10_s r10_l (64-0x15)@uint64; or r10@uint64 r10_s r10_h;
 (* xor    %rdx,%r9                                 #! PC = 0x5555555624c2 *)
 xor r9@uint64 r9 rdx;
 (* xor    %rsi,%rax                                #! PC = 0x5555555624c5 *)
 xor rax@uint64 rax rsi;
 (* ror    $0x14,%rbx                               #! PC = 0x5555555624c8 *)
-split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx 0x14; shl rbx_s rbx_l (64-0x14)@uint64; or rbx@uint64 rbx_s rbx_h;
 (* rol    $0x15,%r9                                #! PC = 0x5555555624cc *)
-split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x15); shl r9_s r9_l 0x15@uint64; or r9@uint64 r9_s r9_h;
 (* xor    %r13,%rdi                                #! PC = 0x5555555624d0 *)
 xor rdi@uint64 rdi r13;
 (* rol    $0xe,%rax                                #! PC = 0x5555555624d3 *)
-split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0xe); shl rax_s rax_l 0xe@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %rbx,%r15                                #! PC = 0x5555555624d7 *)
 mov r15 rbx;
 (* ror    $0x3,%rdi                                #! PC = 0x5555555624da *)
-split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x3; shl rdi_s rdi_l (64-0x3)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* not    %r15                                     #! PC = 0x5555555624de *)
 not r15@uint64 r15;
 (* mov    %r15,%r14                                #! PC = 0x5555555624e1 *)
@@ -12032,7 +12026,7 @@ xor r8@uint64 r8 rax;
 (* mov    -0x20(%rsp),%rax                         #! EA = L0x7fffffffa0b8; Value = 0xa2bd3e960727f066; PC = 0x555555562564 *)
 mov rax L0x7fffffffa0b8;
 (* rol    $0x3,%rbx                                #! PC = 0x555555562569 *)
-split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; add rbx rbx_s rbx_h;
+split rbx_h rbx_l rbx (64-0x3); shl rbx_s rbx_l 0x3@uint64; or rbx@uint64 rbx_s rbx_h;
 (* xor    %rdx,%r9                                 #! PC = 0x55555556256d *)
 xor r9@uint64 r9 rdx;
 (* mov    %r8,-0x48(%rsp)                          #! EA = L0x7fffffffa090; PC = 0x555555562570 *)
@@ -12040,7 +12034,7 @@ mov L0x7fffffffa090 r8;
 (* mov    -0x40(%rsp),%r8                          #! EA = L0x7fffffffa098; Value = 0x87a21b71d225a5e2; PC = 0x555555562575 *)
 mov r8 L0x7fffffffa098;
 (* rol    $0x1c,%r9                                #! PC = 0x55555556257a *)
-split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0x1c); shl r9_s r9_l 0x1c@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rbx,%r10                                #! PC = 0x55555556257e *)
 mov r10 rbx;
 (* xor    %rsi,%rax                                #! PC = 0x555555562581 *)
@@ -12052,9 +12046,9 @@ mov r11 rax;
 (* xor    %rbp,%r8                                 #! PC = 0x55555556258a *)
 xor r8@uint64 r8 rbp;
 (* rol    $0x14,%r11                               #! PC = 0x55555556258d *)
-split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0x14); shl r11_s r11_l 0x14@uint64; or r11@uint64 r11_s r11_h;
 (* ror    $0x13,%r8                                #! PC = 0x555555562591 *)
-split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 0x13; shl r8_s r8_l (64-0x13)@uint64; or r8@uint64 r8_s r8_h;
 (* mov    %r11,%r15                                #! PC = 0x555555562595 *)
 mov r15 r11;
 (* not    %r15                                     #! PC = 0x555555562598 *)
@@ -12080,7 +12074,7 @@ mov r15 r8;
 (* xor    %r11,%r10                                #! PC = 0x5555555625b8 *)
 xor r10@uint64 r10 r11;
 (* rol    $0x12,%rcx                               #! PC = 0x5555555625bb *)
-split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx (64-0x12); shl rcx_s rcx_l 0x12@uint64; or rcx@uint64 rcx_s rcx_h;
 (* not    %r15                                     #! PC = 0x5555555625bf *)
 not r15@uint64 r15;
 (* mov    %r10,-0x38(%rsp)                         #! EA = L0x7fffffffa0a0; PC = 0x5555555625c2 *)
@@ -12128,15 +12122,15 @@ mov rdi L0x7fffffffa0d0;
 (* mov    %r14,%r8                                 #! PC = 0x55555556260d *)
 mov r8 r14;
 (* rol    %r11                                     #! PC = 0x555555562610 *)
-split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 63; shl r11_s r11_l 1@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0x6,%r8                                 #! PC = 0x555555562613 *)
-split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; add r8 r8_s r8_h;
+split r8_h r8_l r8 (64-0x6); shl r8_s r8_l 0x6@uint64; or r8@uint64 r8_s r8_h;
 (* mov    -0x10(%rsp),%rax                         #! EA = L0x7fffffffa0c8; Value = 0x8b11385708bc56f7; PC = 0x555555562617 *)
 mov rax L0x7fffffffa0c8;
 (* xor    %rdx,%rdi                                #! PC = 0x55555556261c *)
 xor rdi@uint64 rdi rdx;
 (* rol    $0x19,%rdi                               #! PC = 0x55555556261f *)
-split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi (64-0x19); shl rdi_s rdi_l 0x19@uint64; or rdi@uint64 rdi_s rdi_h;
 (* xor    %rsi,%rax                                #! PC = 0x555555562623 *)
 xor rax@uint64 rax rsi;
 (* mov    %rdi,%r9                                 #! PC = 0x555555562626 *)
@@ -12144,7 +12138,7 @@ mov r9 rdi;
 (* mov    %r8,%rdi                                 #! PC = 0x555555562629 *)
 mov rdi r8;
 (* rol    $0x8,%rax                                #! PC = 0x55555556262c *)
-split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax (64-0x8); shl rax_s rax_l 0x8@uint64; or rax@uint64 rax_s rax_h;
 (* not    %rdi                                     #! PC = 0x555555562630 *)
 not rdi@uint64 rdi;
 (* mov    %rdi,%r10                                #! PC = 0x555555562633 *)
@@ -12216,13 +12210,13 @@ xor rdi@uint64 rdi rcx;
 (* mov    0x48(%rsp),%rcx                          #! EA = L0x7fffffffa120; Value = 0xd6e7f67189c5efe2; PC = 0x5555555626a4 *)
 mov rcx L0x7fffffffa120;
 (* rol    $0x1b,%r10                               #! PC = 0x5555555626a9 *)
-split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; add r10 r10_s r10_h;
+split r10_h r10_l r10 (64-0x1b); shl r10_s r10_l 0x1b@uint64; or r10@uint64 r10_s r10_h;
 (* mov    %rdi,(%rsp)                              #! EA = L0x7fffffffa0d8; PC = 0x5555555626ad *)
 mov L0x7fffffffa0d8 rdi;
 (* xor    %r12,%rcx                                #! PC = 0x5555555626b1 *)
 xor rcx@uint64 rcx r12;
 (* ror    $0x1c,%rcx                               #! PC = 0x5555555626b4 *)
-split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x1c; shl rcx_s rcx_l (64-0x1c)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rbp,%r11                                #! PC = 0x5555555626b8 *)
 xor r11@uint64 r11 rbp;
 (* xor    %r13,%r9                                 #! PC = 0x5555555626bb *)
@@ -12230,9 +12224,9 @@ xor r9@uint64 r9 r13;
 (* xor    %rdx,%rax                                #! PC = 0x5555555626be *)
 xor rax@uint64 rax rdx;
 (* rol    $0xa,%r11                                #! PC = 0x5555555626c1 *)
-split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; add r11 r11_s r11_h;
+split r11_h r11_l r11 (64-0xa); shl r11_s r11_l 0xa@uint64; or r11@uint64 r11_s r11_h;
 (* rol    $0xf,%r9                                 #! PC = 0x5555555626c5 *)
-split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; add r9 r9_s r9_h;
+split r9_h r9_l r9 (64-0xf); shl r9_s r9_l 0xf@uint64; or r9@uint64 r9_s r9_h;
 (* mov    %rcx,%rdi                                #! PC = 0x5555555626c9 *)
 mov rdi rcx;
 (* xor    0x28(%rsp),%r12                          #! EA = L0x7fffffffa100; Value = 0x42e2b8952a982c0d; PC = 0x5555555626cc *)
@@ -12240,7 +12234,7 @@ xor r12@uint64 r12 L0x7fffffffa100;
 (* mov    %r11,%r8                                 #! PC = 0x5555555626d1 *)
 mov r8 r11;
 (* ror    $0x8,%rax                                #! PC = 0x5555555626d4 *)
-split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; add rax rax_s rax_h;
+split rax_h rax_l rax 0x8; shl rax_s rax_l (64-0x8)@uint64; or rax@uint64 rax_s rax_h;
 (* mov    %r9,%r14                                 #! PC = 0x5555555626d8 *)
 mov r14 r9;
 (* not    %rdi                                     #! PC = 0x5555555626db *)
@@ -12260,7 +12254,7 @@ not r9@uint64 r9;
 (* and    %r11,%rbx                                #! PC = 0x5555555626f4 *)
 and rbx@uint64 rbx r11;
 (* ror    $0x19,%rsi                               #! PC = 0x5555555626f7 *)
-split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; add rsi rsi_s rsi_h;
+split rsi_h rsi_l rsi 0x19; shl rsi_s rsi_l (64-0x19)@uint64; or rsi@uint64 rsi_s rsi_h;
 (* and    %rax,%r9                                 #! PC = 0x5555555626fb *)
 and r9@uint64 r9 rax;
 (* mov    %rbx,%rdi                                #! PC = 0x5555555626fe *)
@@ -12274,7 +12268,7 @@ xor r9@uint64 r9 r11;
 (* xor    %r10,%rdi                                #! PC = 0x55555556270c *)
 xor rdi@uint64 rdi r10;
 (* ror    $0x2,%r13                                #! PC = 0x55555556270f *)
-split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; add r13 r13_s r13_h;
+split r13_h r13_l r13 0x2; shl r13_s r13_l (64-0x2)@uint64; or r13@uint64 r13_s r13_h;
 (* lea    0xeb46(%rip),%rbx        # 0x555555571260#! PC = 0x555555562713 *)
 (* lea 0xeb46(%rip), %rbx *)
 nop;
@@ -12295,7 +12289,7 @@ and r9@uint64 r9 r10;
 (* not    %r10                                     #! PC = 0x555555562735 *)
 not r10@uint64 r10;
 (* ror    $0x17,%rdi                               #! PC = 0x555555562738 *)
-split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; add rdi rdi_s rdi_h;
+split rdi_h rdi_l rdi 0x17; shl rdi_s rdi_l (64-0x17)@uint64; or rdi@uint64 rdi_s rdi_h;
 (* and    %rcx,%r10                                #! PC = 0x55555556273c *)
 and r10@uint64 r10 rcx;
 (* mov    %rdx,%rcx                                #! PC = 0x55555556273f *)
@@ -12305,7 +12299,7 @@ xor r12@uint64 r12 rbp;
 (* xor    %r14,%r9                                 #! PC = 0x555555562745 *)
 xor r9@uint64 r9 r14;
 (* ror    $0x9,%rcx                                #! PC = 0x555555562748 *)
-split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; add rcx rcx_s rcx_h;
+split rcx_h rcx_l rcx 0x9; shl rcx_s rcx_l (64-0x9)@uint64; or rcx@uint64 rcx_s rcx_h;
 (* xor    %rax,%r10                                #! PC = 0x55555556274c *)
 xor r10@uint64 r10 rax;
 (* mov    %r12,%rbp                                #! PC = 0x55555556274f *)
@@ -12315,7 +12309,7 @@ mov r14 rsi;
 (* mov    %rcx,%rax                                #! PC = 0x555555562755 *)
 mov rax rcx;
 (* rol    $0x2,%rbp                                #! PC = 0x555555562758 *)
-split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; add rbp rbp_s rbp_h;
+split rbp_h rbp_l rbp (64-0x2); shl rbp_s rbp_l 0x2@uint64; or rbp@uint64 rbp_s rbp_h;
 (* mov    %rsi,%rdx                                #! PC = 0x55555556275c *)
 mov rdx rsi;
 (* mov    %r10,0x18(%rsp)                          #! EA = L0x7fffffffa0f0; PC = 0x55555556275f *)
@@ -12378,73 +12372,73 @@ mov rax L0x7fffffffa138;
 (* movhps -0x60(%rsp),%xmm0                        #! EA = L0x7fffffffa078; Value = 0xb1fe83d56f5841d0; PC = 0x5555555627c6 *)
 mov xmm0_1 L0x7fffffffa078;
 (* movups %xmm0,(%rax)                             #! EA = L0x7fffffffa180; PC = 0x5555555627cb *)
-mov L0x7fffffffa180 xmm0_0;
+mov L0x7fffffffa180 xmm0_0; mov L0x7fffffffa188 xmm0_1;
 (* movq   -0x58(%rsp),%xmm0                        #! EA = L0x7fffffffa080; Value = 0x433bd32d405afd2a; PC = 0x5555555627ce *)
 mov xmm0_0 L0x7fffffffa080; mov xmm0_1 0@uint64;
 (* movhps -0x50(%rsp),%xmm0                        #! EA = L0x7fffffffa088; Value = 0x8d6c43eba45f3f54; PC = 0x5555555627d4 *)
 mov xmm0_1 L0x7fffffffa088;
 (* movups %xmm0,0x10(%rax)                         #! EA = L0x7fffffffa190; PC = 0x5555555627d9 *)
-mov L0x7fffffffa190 xmm0_0;
+mov L0x7fffffffa190 xmm0_0; mov L0x7fffffffa198 xmm0_1;
 (* movq   -0x48(%rsp),%xmm0                        #! EA = L0x7fffffffa090; Value = 0x46b16a0917308eb1; PC = 0x5555555627dd *)
 mov xmm0_0 L0x7fffffffa090; mov xmm0_1 0@uint64;
 (* movhps -0x40(%rsp),%xmm0                        #! EA = L0x7fffffffa098; Value = 0xa9a6593d2a276262; PC = 0x5555555627e3 *)
 mov xmm0_1 L0x7fffffffa098;
 (* movups %xmm0,0x20(%rax)                         #! EA = L0x7fffffffa1a0; PC = 0x5555555627e8 *)
-mov L0x7fffffffa1a0 xmm0_0;
+mov L0x7fffffffa1a0 xmm0_0; mov L0x7fffffffa1a8 xmm0_1;
 (* movq   -0x38(%rsp),%xmm0                        #! EA = L0x7fffffffa0a0; Value = 0xa1b85dcca98f67d2; PC = 0x5555555627ec *)
 mov xmm0_0 L0x7fffffffa0a0; mov xmm0_1 0@uint64;
 (* movhps -0x30(%rsp),%xmm0                        #! EA = L0x7fffffffa0a8; Value = 0xfda8eb4ded868488; PC = 0x5555555627f2 *)
 mov xmm0_1 L0x7fffffffa0a8;
 (* movups %xmm0,0x30(%rax)                         #! EA = L0x7fffffffa1b0; PC = 0x5555555627f7 *)
-mov L0x7fffffffa1b0 xmm0_0;
+mov L0x7fffffffa1b0 xmm0_0; mov L0x7fffffffa1b8 xmm0_1;
 (* movq   -0x28(%rsp),%xmm0                        #! EA = L0x7fffffffa0b0; Value = 0xd6dc3d602be271ef; PC = 0x5555555627fb *)
 mov xmm0_0 L0x7fffffffa0b0; mov xmm0_1 0@uint64;
 (* movhps -0x20(%rsp),%xmm0                        #! EA = L0x7fffffffa0b8; Value = 0xf5899dc0c6f05e19; PC = 0x555555562801 *)
 mov xmm0_1 L0x7fffffffa0b8;
 (* movups %xmm0,0x40(%rax)                         #! EA = L0x7fffffffa1c0; PC = 0x555555562806 *)
-mov L0x7fffffffa1c0 xmm0_0;
+mov L0x7fffffffa1c0 xmm0_0; mov L0x7fffffffa1c8 xmm0_1;
 (* movq   -0x18(%rsp),%xmm0                        #! EA = L0x7fffffffa0c0; Value = 0xa64c6c8bf4b0e9f0; PC = 0x55555556280a *)
 mov xmm0_0 L0x7fffffffa0c0; mov xmm0_1 0@uint64;
 (* movhps -0x10(%rsp),%xmm0                        #! EA = L0x7fffffffa0c8; Value = 0xd5812c9ad5a8ea11; PC = 0x555555562810 *)
 mov xmm0_1 L0x7fffffffa0c8;
 (* movups %xmm0,0x50(%rax)                         #! EA = L0x7fffffffa1d0; PC = 0x555555562815 *)
-mov L0x7fffffffa1d0 xmm0_0;
+mov L0x7fffffffa1d0 xmm0_0; mov L0x7fffffffa1d8 xmm0_1;
 (* movq   %r15,%xmm0                               #! PC = 0x555555562819 *)
 mov xmm0_0 r15; mov xmm0_1 0@uint64;
 (* movhps -0x8(%rsp),%xmm0                         #! EA = L0x7fffffffa0d0; Value = 0x657ce72b96ee0fd8; PC = 0x55555556281e *)
 mov xmm0_1 L0x7fffffffa0d0;
 (* movups %xmm0,0x60(%rax)                         #! EA = L0x7fffffffa1e0; PC = 0x555555562823 *)
-mov L0x7fffffffa1e0 xmm0_0;
+mov L0x7fffffffa1e0 xmm0_0; mov L0x7fffffffa1e8 xmm0_1;
 (* movq   (%rsp),%xmm0                             #! EA = L0x7fffffffa0d8; Value = 0x5ba6e61e4f69cfe5; PC = 0x555555562827 *)
 mov xmm0_0 L0x7fffffffa0d8; mov xmm0_1 0@uint64;
 (* movhps 0x8(%rsp),%xmm0                          #! EA = L0x7fffffffa0e0; Value = 0xf359f760110f1fcc; PC = 0x55555556282c *)
 mov xmm0_1 L0x7fffffffa0e0;
 (* movups %xmm0,0x70(%rax)                         #! EA = L0x7fffffffa1f0; PC = 0x555555562831 *)
-mov L0x7fffffffa1f0 xmm0_0;
+mov L0x7fffffffa1f0 xmm0_0; mov L0x7fffffffa1f8 xmm0_1;
 (* movq   %r8,%xmm0                                #! PC = 0x555555562835 *)
 mov xmm0_0 r8; mov xmm0_1 0@uint64;
 (* movhps 0x10(%rsp),%xmm0                         #! EA = L0x7fffffffa0e8; Value = 0xc05afe5a3a15dd4c; PC = 0x55555556283a *)
 mov xmm0_1 L0x7fffffffa0e8;
 (* movups %xmm0,0x80(%rax)                         #! EA = L0x7fffffffa200; PC = 0x55555556283f *)
-mov L0x7fffffffa200 xmm0_0;
+mov L0x7fffffffa200 xmm0_0; mov L0x7fffffffa208 xmm0_1;
 (* movq   %r9,%xmm0                                #! PC = 0x555555562846 *)
 mov xmm0_0 r9; mov xmm0_1 0@uint64;
 (* movhps 0x18(%rsp),%xmm0                         #! EA = L0x7fffffffa0f0; Value = 0xbb3f11c1e51b3596; PC = 0x55555556284b *)
 mov xmm0_1 L0x7fffffffa0f0;
 (* movups %xmm0,0x90(%rax)                         #! EA = L0x7fffffffa210; PC = 0x555555562850 *)
-mov L0x7fffffffa210 xmm0_0;
+mov L0x7fffffffa210 xmm0_0; mov L0x7fffffffa218 xmm0_1;
 (* movq   %rbx,%xmm0                               #! PC = 0x555555562857 *)
 mov xmm0_0 rbx; mov xmm0_1 0@uint64;
 (* movhps 0x20(%rsp),%xmm0                         #! EA = L0x7fffffffa0f8; Value = 0x4b092c53adaa31d3; PC = 0x55555556285c *)
 mov xmm0_1 L0x7fffffffa0f8;
 (* movups %xmm0,0xa0(%rax)                         #! EA = L0x7fffffffa220; PC = 0x555555562861 *)
-mov L0x7fffffffa220 xmm0_0;
+mov L0x7fffffffa220 xmm0_0; mov L0x7fffffffa228 xmm0_1;
 (* movq   %rsi,%xmm0                               #! PC = 0x555555562868 *)
 mov xmm0_0 rsi; mov xmm0_1 0@uint64;
 (* movhps 0x28(%rsp),%xmm0                         #! EA = L0x7fffffffa100; Value = 0xd42c1323a3538b80; PC = 0x55555556286d *)
 mov xmm0_1 L0x7fffffffa100;
 (* movups %xmm0,0xb0(%rax)                         #! EA = L0x7fffffffa230; PC = 0x555555562872 *)
-mov L0x7fffffffa230 xmm0_0;
+mov L0x7fffffffa230 xmm0_0; mov L0x7fffffffa238 xmm0_1;
 (* mov    %r12,0xc0(%rax)                          #! EA = L0x7fffffffa240; PC = 0x555555562879 *)
 mov L0x7fffffffa240 r12;
 (* add    $0x70,%rsp                               #! PC = 0x555555562880 *)
