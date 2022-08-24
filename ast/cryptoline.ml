@@ -3242,7 +3242,7 @@ let cut_spec s =
          let before = List.rev before_rev in
          (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
           List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
-       let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, epwss)], [(r, rpwss)]) } in
+       let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
        spec::res
     | (Icut ([], _))::_
       | (Icut (_, []))::_ -> failwith("The function cut_spec cannot cut single algebra or range side")
