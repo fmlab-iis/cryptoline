@@ -1,0 +1,96 @@
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! -$1c(%rip) = %%EA
+#! $1c(%rip) = %%EA
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %eax = %%eax
+#! %rdi = %%rdi
+#! %edi = %%edi
+#! %edx = %%edx
+#! $1c(%rsp) = %%EA
+#! (%rcx) = %%EA
+
+
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! adcx $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adox $1v, $2v -> adcs overflow $2v $2v $1v overflow
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! mov $1c, $2ea -> mov $2ea $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! sub $1ea, $2v -> subb carry $2v $2v $1ea
+#! sub $1v, $2ea -> subb carry $2ea $2ea $1v
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sbb $1v, $1v -> sbbs carry $1v $1v $1v carry;\nmov overflow carry;\nnot zero@bit carry
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! shlx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit ddc $3v $2v 32;\nshl $3v $3v 32
+#! shrx $1v, $2v, $3v -> assert $1v=32 && true;\nsplit $3v dc $2v 32
+#! lea $1ea, $2v -> mov $2v $1ea
+#! test $1v, $1v -> subb zero dontcare $1v 1@uint64
+#! test \$0x1, $1v -> and tmp@uint64 0x1@uint64 $1v;\nsubb zero dontcare tmp 0x1@uint64
+#! or $1v, $2v -> or $2v@uint64 $1v $2v;\nclear carry;\nclear overflow
+#! shl \$0x3f, $1v -> split ddc $1v $1v 1;\nshl $1v $1v 63
+#! shl \$0x20, $1v -> split ddc $1v $1v 32;\nshl $1v $1v 32
+#! shr $1v -> split $1v dontcare $1v 1
+#! shr \$0x20, $1v -> split $1v ddc $1v 32
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! cmove $1v, $2v -> cmov $2v zero $1v $2v
+#! cmovne $1v, $2v -> cmov $2v zero $2v $1v
+#! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
+#! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+#! imul $1v, $2v -> mull dontcare $2v $1v $2v
+#! mul $1v -> mull rdx rax rax $1v;\nsubb tmp dontcare rdx 1@uint64;\nnot carry@bit tmp;\nnot overflow@bit tmp
+#! mulx $1v, $2v, $3v -> mull $3v $2v rdx $1v
+#! mulq $1ea -> mull rdx rax rax $1ea
+
+go_testing_env/nistec.P256NegCond:
+# %rdi = 0xc000196160
+# %rsi = 0x0
+# %rdx = 0x0
+# %rcx = 0xc000196120
+# %r8  = 0x0
+# %r9  = 0x0
+	#! -> SP = 0xc00010ff38
+	mov    0x8(%rsp),%rdi                           #! EA = L0xc00010ff40; Value = 0x000000c000196120; PC = 0x47c6c0
+	mov    0x10(%rsp),%r14                          #! EA = L0xc00010ff48; Value = 0x0000000000000000; PC = 0x47c6c5
+	mov    $0xffffffffffffffff,%r8                  #! PC = 0x47c6ca
+	mov    0x42908(%rip),%r9        # 0x4befe0 <p256const0>#! EA = L0x4befe0; Value = 0x00000000ffffffff; PC = 0x47c6d1
+	mov    $0x0,%r10                                #! PC = 0x47c6d8
+	mov    0x42902(%rip),%r11        # 0x4befe8 <p256const1>#! EA = L0x4befe8; Value = 0xffffffff00000001; PC = 0x47c6df
+	mov    (%rdi),%r13                              #! EA = L0xc000196120; Value = 0x0000000000000000; PC = 0x47c6e6
+	mov    0x8(%rdi),%rsi                           #! EA = L0xc000196128; Value = 0x0000000000000000; PC = 0x47c6e9
+	mov    0x10(%rdi),%rcx                          #! EA = L0xc000196130; Value = 0x0000000000000000; PC = 0x47c6ed
+	mov    0x18(%rdi),%r15                          #! EA = L0xc000196138; Value = 0x0000000000000000; PC = 0x47c6f1
+	sub    %r13,%r8                                 #! PC = 0x47c6f5
+	sbb    %rsi,%r9                                 #! PC = 0x47c6f8
+	sbb    %rcx,%r10                                #! PC = 0x47c6fb
+	sbb    %r15,%r11                                #! PC = 0x47c6fe
+	test   %r14,%r14                                #! PC = 0x47c701
+	cmove  %r13,%r8                                 #! PC = 0x47c704
+	cmove  %rsi,%r9                                 #! PC = 0x47c708
+	cmove  %rcx,%r10                                #! PC = 0x47c70c
+	cmove  %r15,%r11                                #! PC = 0x47c710
+	mov    %r8,(%rdi)                               #! EA = L0xc000196120; PC = 0x47c714
+	mov    %r9,0x8(%rdi)                            #! EA = L0xc000196128; PC = 0x47c717
+	mov    %r10,0x10(%rdi)                          #! EA = L0xc000196130; PC = 0x47c71b
+	mov    %r11,0x18(%rdi)                          #! EA = L0xc000196138; PC = 0x47c71f
+	#! <- SP = 0xc00010ff38
+	#ret                                            #! PC = 0x47c723
