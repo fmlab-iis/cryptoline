@@ -1,4 +1,34 @@
-SHA3_absorb:
+#! [x$1c] = %%EA
+#! [sp] = %%EA
+#! [sp, #$1c] = %%EA
+#! [sp, x$1c] = %%EA
+#! [x$1c, x$2c] = %%EA
+#! [x$1c, #$2c] = %%EA
+#! [x$1c], #$2c = %%EA
+#! x$1c = %%x$1c
+#! sp = %%sp
+
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! ldr $1v, $2c -> mov $1v L$2c
+#! sub $1v, $2v, \# $3c -> subs dontcare $1v $2v $3c@uint64
+#! sub %%sp, %%sp, \# $3c -> subs dontcare sp sp $3c@uint64
+#! add %%sp, %%sp, \# $3c -> adds dontcare sp sp $3c@uint64
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! str $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v -> mov $1v $2v
+#! mov $1v, sp -> mov $1v sp
+#! eor $1v, $2v, $3v, ror \# 63 -> split $3v_h $3v_l $3v 63;\nshl $3v_ls $3v_l 1@uint64;\nadd $3v_ror $3v_ls $3v_h;\nxor $1v@uint64 $2v $3v_ror
+#! eor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
+#! cmp $1v, \# $2c -> nop
+#! adr $1v, $2c <iotas> -> nop
+#! ror $1v, $2v, \# $3c -> split $2v_h $2v_l $2v $3c;\nshl $2v_ls $2v_l (64-$3c)@uint64;\nadd $1v $2v_ls $2v_h
+
+#! bic $1v, $2v, $3v -> not $3v_not@uint64 $3v;\nand $1v@uint64 $2v $3v_not
+#! tst $1v, \# $2c -> nop
+
+# SHA3_absorb:
 # x0 = 0xaaaaaaabc018
 # x1 = 0xffffffffe990
 # x2 = 0xa8

@@ -16,6 +16,8 @@
 #! %rsi = %%rsi
 #! %r$1c = %%r$1c
 #! %rsp = %%rsp
+#! %eax = %%eax
+#! %ebx = %%ebx
 
 #! cmp $1c, $2v -> (* cmp $1c, $2v *)\nnop
 #! lea $1c\(%%rbx\), $2v -> (* lea $1c(%rbx), $2v *)\nnop
@@ -30,6 +32,7 @@
 #! mov $1v, $2v -> mov $2v $1v
 #! mov $1ea, $2v -> mov $2v $1ea
 #! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
 #! not $1v -> not $1v@uint64 $1v
 #! notq $1ea -> not $1ea@uint64 $1ea
 #! or $1v, $2v -> or $2v@uint64 $2v $1v
