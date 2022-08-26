@@ -45,7 +45,7 @@ void ecp_nistz256_sqr_mont(BN_ULONG res[P256_LIMBS],
 /* Convert a number from Montgomery domain, by multiplying with 1 */
 void ecp_nistz256_from_mont(BN_ULONG res[P256_LIMBS],
                             const BN_ULONG in[P256_LIMBS]);
-/* Convert a number to Montgomery domain, by multiplying with 2^512 mod P*/
+/* Convert a number to Montgomery domain, by multiplying with 2^256 mod P*/
 void ecp_nistz256_to_mont(BN_ULONG res[P256_LIMBS],
                           const BN_ULONG in[P256_LIMBS]);
 
@@ -90,7 +90,7 @@ int main (void)
   ecp_nistz256_sqr_mont(r, a);
   /* Convert a number from Montgomery domain, by multiplying with 1 */
   ecp_nistz256_from_mont(r, a);
-  /* Convert a number to Montgomery domain, by multiplying with 2^512 mod P*/
+  /* Convert a number to Montgomery domain, by multiplying with 2^256 mod P*/
   ecp_nistz256_to_mont(r, a);
 
   /*
