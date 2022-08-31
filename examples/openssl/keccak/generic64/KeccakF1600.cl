@@ -82,14 +82,12 @@ mov rcx L0x5555555580b8;
 mov L0x7fffffffd978 rdi;
 (* mov    0x8(%rdi),%rdi                           #! EA = L0x555555558048; Value = 0x0000040000000200; PC = 0x5555555551ce *)
 mov rdi L0x555555558048;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdx                                     #! PC = 0x5555555551d2 *)
-(* not rdx@uint64 rdx; *)
+not rdx@uint64 rdx;
 (* mov    %rcx,-0x50(%rsp)                         #! EA = L0x7fffffffd8c8; PC = 0x5555555551d5 *)
 mov L0x7fffffffd8c8 rcx;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdi                                     #! PC = 0x5555555551da *)
-(* not rdi@uint64 rdi; *)
+not rdi@uint64 rdi;
 (* mov    %rdx,0x40(%rax)                          #! EA = L0x555555558080; PC = 0x5555555551dd *)
 mov L0x555555558080 rdx;
 (* mov    %rdi,0x8(%rax)                           #! EA = L0x555555558048; PC = 0x5555555551e1 *)
@@ -102,9 +100,8 @@ mov rdi L0x555555558050;
 mov L0x7fffffffd910 rdx;
 (* mov    0x88(%rax),%rdx                          #! EA = L0x5555555580c8; Value = 0x0000555555555ca0; PC = 0x5555555551f3 *)
 mov rdx L0x5555555580c8;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdi                                     #! PC = 0x5555555551fa *)
-(* not rdi@uint64 rdi; *)
+not rdi@uint64 rdi;
 (* mov    %rdi,0x10(%rax)                          #! EA = L0x555555558050; PC = 0x5555555551fd *)
 mov L0x555555558050 rdi;
 (* mov    %rdi,-0x28(%rsp)                         #! EA = L0x7fffffffd8f0; PC = 0x555555555201 *)
@@ -115,12 +112,10 @@ mov rdi L0x5555555580a0;
 mov r15 rdi;
 (* mov    %rdx,%rdi                                #! PC = 0x55555555520d *)
 mov rdi rdx;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdi                                     #! PC = 0x555555555210 *)
-(* not rdi@uint64 rdi; *)
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
+not rdi@uint64 rdi;
 (* not    %r15                                     #! PC = 0x555555555213 *)
-(* not r15@uint64 r15; *)
+not r15@uint64 r15;
 (* mov    %rdi,0x88(%rax)                          #! EA = L0x5555555580c8; PC = 0x555555555216 *)
 mov L0x5555555580c8 rdi;
 (* mov    %rdi,0x18(%rsp)                          #! EA = L0x7fffffffd930; PC = 0x55555555521d *)
@@ -133,9 +128,8 @@ mov L0x5555555580a0 r15;
 mov rdx rdi;
 (* mov    (%rax),%rdi                              #! EA = L0x555555558040; Value = 0x0000004000000000; PC = 0x555555555230 *)
 mov rdi L0x555555558040;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdx                                     #! PC = 0x555555555233 *)
-(* not rdx@uint64 rdx; *)
+not rdx@uint64 rdx;
 (* mov    %rdi,-0x68(%rsp)                         #! EA = L0x7fffffffd8b0; PC = 0x555555555236 *)
 mov L0x7fffffffd8b0 rdi;
 (* mov    0x28(%rax),%rdi                          #! EA = L0x555555558068; Value = 0x0000000000000000; PC = 0x55555555523b *)
@@ -10829,18 +10823,16 @@ mov r9 rbp;
 mov rax L0x7fffffffd978;
 (* mov    -0x28(%rsp),%rdx                         #! EA = L0x7fffffffd8f0; Value = 0x8116ababe2f9e060; PC = 0x55555555593f *)
 mov rdx L0x7fffffffd8f0;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %r9                                      #! PC = 0x555555555944 *)
-(* not r9@uint64 r9; *)
+not r9@uint64 r9;
 (* movq   %rdi,%xmm2                               #! PC = 0x555555555947 *)
 mov xmm2_0 rdi; mov xmm2_1 0@uint64;
 (* mov    -0x8(%rsp),%rcx                          #! EA = L0x7fffffffd910; Value = 0x6b976b75e4b5c166; PC = 0x55555555594c *)
 mov rcx L0x7fffffffd910;
 (* mov    0x18(%rsp),%rbx                          #! EA = L0x7fffffffd930; Value = 0x6c444a1b5f3775a8; PC = 0x555555555951 *)
 mov rbx L0x7fffffffd930;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdi                                     #! PC = 0x555555555956 *)
-(* not rdi@uint64 rdi; *)
+not rdi@uint64 rdi;
 (* punpcklqdq %xmm2,%xmm0                          #! PC = 0x555555555959 *)
 mov lqdq_l xmm0_0; mov lqdq_h xmm2_0;
 mov xmm0_0 lqdq_l; mov xmm0_1 lqdq_h;
@@ -10850,14 +10842,12 @@ mov L0x555555558040 xmm0_0; mov L0x555555558048 xmm0_1;
 mov xmm0_0 rdx; mov xmm0_1 0@uint64;
 (* movq   %rbx,%xmm1                               #! PC = 0x555555555965 *)
 mov xmm1_0 rbx; mov xmm1_1 0@uint64;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdx                                     #! PC = 0x55555555596a *)
-(* not rdx@uint64 rdx; *)
+not rdx@uint64 rdx;
 (* movhps -0x18(%rsp),%xmm0                        #! EA = L0x7fffffffd900; Value = 0x4c741e0393ff745f; PC = 0x55555555596d *)
 mov xmm0_1 L0x7fffffffd900;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rbx                                     #! PC = 0x555555555972 *)
-(* not rbx@uint64 rbx; *)
+not rbx@uint64 rbx;
 (* movups %xmm0,0x10(%rax)                         #! EA = L0x555555558050; PC = 0x555555555975 *)
 mov L0x555555558050 xmm0_0; mov L0x555555558058 xmm0_1;
 (* movq   -0x10(%rsp),%xmm0                        #! EA = L0x7fffffffd908; Value = 0x8262e8cd7eb10f03; PC = 0x555555555979 *)
@@ -10931,12 +10921,10 @@ mov rdi r15;
 mov L0x555555558050 rdx;
 (* mov    %rcx,%rdx                                #! PC = 0x555555555a25 *)
 mov rdx rcx;
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
 (* not    %rdi                                     #! PC = 0x555555555a28 *)
-(* not rdi@uint64 rdi; *)
-(* NOTE: disable KECCAK_COMPLEMENTING_TRANSFORM *)
+not rdi@uint64 rdi;
 (* not    %rdx                                     #! PC = 0x555555555a2b *)
-(* not rdx@uint64 rdx; *)
+not rdx@uint64 rdx;
 (* mov    %rdi,0x60(%rax)                          #! EA = L0x5555555580a0; PC = 0x555555555a2e *)
 mov L0x5555555580a0 rdi;
 (* mov    %rdx,0x40(%rax)                          #! EA = L0x555555558080; PC = 0x555555555a32 *)
