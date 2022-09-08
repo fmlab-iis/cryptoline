@@ -325,7 +325,7 @@ object(self)
       fail (Printexc.to_string e)
 
   method mkconstd_for_shift w e =
-    if compare version (3, 0, 0) < 0 then self#mkconstd (logi w) e
+    if compare version (3, 2, 0) < 0 then self#mkconstd (logi w) e
     else self#mkconstd w e
 
   method mkconstd_for_rotate w e =
