@@ -161,6 +161,8 @@ val parse_variable_ordering : string -> variable_order
 val track_split : bool ref
 (** [true] to track splits of atoms *)
 
+val expand_poly : bool ref
+(** [true] to expand polynomials before sending them to computer algebra systems *)
 
 (** {1 Range-Specific Options} *)
 

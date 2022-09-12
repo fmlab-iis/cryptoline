@@ -152,17 +152,37 @@ val econst : Z.t -> eexp
 val eneg : eexp -> eexp
 (** [eneg e] is [Eunop (Eneg, e)]. *)
 
+val eneg' : eexp -> eexp
+(** [eneg'] is the same as [eneg] except that [eneg' (Eunop (Eneg, e)) = e]. *)
+
 val eadd : eexp -> eexp -> eexp
 (** [eadd e1 e2] is [Ebinop (Eadd, e1, e2)]. *)
+
+val eadd' : eexp -> eexp -> eexp
+(** [eadd'] is the same as [eadd] except that [eadd' (Econst Z.zero) e = eadd' e (Econst Z.zero) = e] and
+    addition of constants is evaluated. *)
 
 val esub : eexp -> eexp -> eexp
 (** [esub e1 e2] is [Ebinop (Esub, e1, e2)]. *)
 
+val esub' : eexp -> eexp -> eexp
+(** [esub'] is the same as [esub] except that [esub' (Econst Z.zero) e = eneg' e],
+    [esub' e (Econst Z.zero) = e], and subtraction of constants is evaluated. *)
+
 val emul : eexp -> eexp -> eexp
 (** [emul e1 e2] is [Ebinop (Emul, e1, e2)]. *)
 
+val emul' : eexp -> eexp -> eexp
+(** [emul'] is the same as [emul] except that [emul' (Econst Z.zero) e = emul' e (Econst Z.zero) = Econst Z.zero],
+    [emul' (Econst Z.one) e = emul' e (Econst Z.one) = e], and and multiplication of constants is evaluated. *)
+
 val epow : eexp -> eexp -> eexp
 (** [epow e1 e2] is [Ebinop (Epow, e1, e2)]. *)
+
+val epow' : eexp -> eexp -> eexp
+(** [epow'] is the same as [epow] except that [epow' e (Econst Z.zero) = Econst Z.one], [epow' e (Econst Z.one) = e],
+    [epow' (Econst Z.zero) n = Econst Z.zero] for [n > 0], [epow' (Econst Z.one) n = Econst Z.one] for [n > 0], and
+    exponentiation of constants is evaluated. *)
 
 val esq : eexp -> eexp
 (** [esq e] is [Ebinop (Emul, e, e)]. *)
@@ -170,8 +190,14 @@ val esq : eexp -> eexp
 val eadds : eexp list -> eexp
 (** [eadds [e1; ...; en]] is [eadd (... (eadd e1 e2) ...) en]. [0] if the input list is empty. *)
 
+val eadds' : eexp list -> eexp
+(** [eadds'] is the same as [eadds] except that [eadd] is replaced with [eadd']. *)
+
 val emuls : eexp list -> eexp
 (** [emuls [e1; ...; en]] is [emul (... (emul e1 e2) ...) en]. [0] if the input list is empty. *)
+
+val emuls' : eexp list -> eexp
+(** [emuls'] is the same as [emuls] except that [emul] is replaced with [emul']. *)
 
 val e2pow : int -> Z.t
 (** [e2pow n] is the constant 2{^n}. *)
@@ -195,6 +221,9 @@ val subs_eexp : eexp -> EES.t
 
 val simplify_eexp : eexp -> eexp
 (** Simplify an algebraic expression. For example, e + 0 becomes e. *)
+
+val expand_eexp : eexp -> eexp
+(** [expand_eexp e] expands [e] *)
 
 val limbs : int -> eexp list -> eexp
 (** [limbs i [e1; e2; ...; en]] is e{_ 1} + e{_ 2}2{^ i} + e{_ 3}2{^ 2i} + ... + e{_ n}2{^ (n-1)i}. *)

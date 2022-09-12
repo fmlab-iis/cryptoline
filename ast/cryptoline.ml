@@ -231,13 +231,45 @@ type eexp =
 let evar v = Evar v
 let econst n = Econst n
 let eneg e = Eunop (Eneg, e)
+let eneg' e =
+  match e with
+  | Eunop (Eneg, e) -> e
+  | _ -> e
 let eadd e1 e2 = Ebinop (Eadd, e1, e2)
+let eadd' e1 e2 =
+  match e1, e2 with
+  | Econst n, _ when Z.equal n Z.zero -> e2
+  | _, Econst n when Z.equal n Z.zero -> e1
+  | Econst n, Econst m -> Econst (Z.add n m)
+  | _, _ -> eadd e1 e2
 let esub e1 e2 = Ebinop (Esub, e1, e2)
+let esub' e1 e2 =
+  match e1, e2 with
+  | Econst n, _ when Z.equal n Z.zero -> eneg' e2
+  | _, Econst n when Z.equal n Z.zero -> e1
+  | Econst n, Econst m -> Econst (Z.sub n m)
+  | _, _ -> esub e1 e2
 let emul e1 e2 = Ebinop (Emul, e1, e2)
+let emul' e1 e2 =
+  match e1, e2 with
+  | Econst n, _ when Z.equal n Z.zero -> Econst Z.zero
+  | _, Econst n when Z.equal n Z.zero -> Econst Z.zero
+  | Econst n, _ when Z.equal n Z.one -> e2
+  | _, Econst n when Z.equal n Z.one -> e1
+  | Econst n, Econst m -> Econst (Z.mul n m)
+  | _, _ -> emul e1 e2
 let epow e1 e2 =
   match e2 with
   | Econst _ -> Ebinop (Epow, e1, e2)
   | _ -> failwith "Epow must have integer exponentials"
+let epow' e1 e2 =
+  match e1, e2 with
+  | _, Econst n when Z.equal n Z.zero -> Econst Z.one
+  | _, Econst n when Z.equal n Z.one -> e1
+  | Econst n, _ when Z.equal n Z.zero -> Econst Z.zero
+  | Econst n, _ when Z.equal n Z.one -> Econst Z.one
+  | Econst n, Econst m -> Econst (Z.pow n (Z.to_int m))
+  | _, _ -> epow e1 e2
 let esq e = Ebinop (Epow, e, Econst z_two)
 (*let eadds es = List.fold_left (fun res e -> eadd e res) (econst Z.zero) es
 let emuls es = List.fold_left (fun res e -> emul e res) (econst Z.one) es*)
@@ -248,6 +280,13 @@ let eadds es =
   | e::es -> (match add_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> eadd res e) e es
               | RightAssoc -> List.fold_left (fun res e -> eadd e res) e es)
+let eadds' es =
+  match es with
+  | [] -> econst Z.zero
+  | e::[] -> e
+  | e::es -> (match add_assoc with
+              | LeftAssoc -> List.fold_left (fun res e -> eadd' res e) e es
+              | RightAssoc -> List.fold_left (fun res e -> eadd' e res) e es)
 let emuls es =
   match es with
   | [] -> econst Z.one
@@ -255,6 +294,13 @@ let emuls es =
   | e::es -> (match mul_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> emul res e) e es
               | RightAssoc -> List.fold_left (fun res e -> emul e res) e es)
+let emuls' es =
+  match es with
+  | [] -> econst Z.one
+  | e::[] -> e
+  | e::es -> (match mul_assoc with
+              | LeftAssoc -> List.fold_left (fun res e -> emul' res e) e es
+              | RightAssoc -> List.fold_left (fun res e -> emul' e res) e es)
 
 let e2pow n = Z.pow z_two n
 
@@ -332,6 +378,76 @@ let rec simplify_eexp e =
       | _ -> Ebinop (op, e1, e2))
   | _ -> e
 
+type mon = eexp list
+
+let rec cmp_mon ms1 ms2 =
+  match ms1, ms2 with
+  | [], [] -> 0
+  | [], _::_ -> -1
+  | _::_, [] -> 1
+  | m1::ms1, m2::ms2 -> let c = cmp_eexp m1 m2 in
+                        if c = 0 then cmp_mon ms1 ms2
+                        else c
+
+let norm_mon = List.sort cmp_eexp
+
+module MonElem : OrderedType with type t = mon =
+  struct
+    type t = mon
+    let compare = cmp_mon
+  end
+module TM = Map.Make(MonElem)
+
+module EM = Map.Make(EEElt)
+
+let expand_eexp e =
+  let prod vs =
+    (* count exponents *)
+    let m = List.fold_left (fun res v -> let c = if EM.mem v res then Z.add (EM.find v res) Z.one
+                                                 else Z.one in
+                                         EM.add v c res) EM.empty vs in
+    EM.fold (fun v c res -> emul' res (epow' v (Econst c))) m (Econst Z.one) in
+  (* convert monomial to eexp *)
+  let eexp_of_mon c ms =
+    if Z.equal c Z.zero then Econst Z.zero
+    else if Z.equal c Z.one then prod ms
+    else emul' (Econst c) (prod ms) in
+  (* convert term to eexp *)
+  let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t (Econst Z.zero) in
+  (* a term of a single monomial *)
+  let mon_term c ms = TM.add ms c TM.empty in
+  (* add a monomial to a term *)
+  let add_mon_to_term c ms t =
+    if TM.mem ms t then let c' = Z.add c (TM.find ms t) in
+                        TM.add ms c' t
+    else TM.add ms c t in
+  (* multiply a term by a monomial *)
+  let emul_mon_to_term c ms t = TM.fold (fun t_ms t_c res -> TM.add (norm_mon (tappend ms t_ms)) (Z.mul c t_c) res) t TM.empty in
+  let eneg_term t = TM.map (fun c -> Z.neg c) t in
+  let eadd_term t1 t2 = TM.fold (fun ms1 c1 t2 -> add_mon_to_term c1 ms1 t2) t1 t2 in
+  let esub_term t1 t2 = eadd_term t1 (eneg_term t2) in
+  let emul_term t1 t2 = TM.fold (fun ms1 c1 res -> eadd_term (emul_mon_to_term c1 ms1 t2) res) t1 TM.empty in
+  let is_term_constant t = TM.cardinal t = 1 && TM.mem [] t in
+  let epow_term t1 t2 =
+    if is_term_constant t1 && is_term_constant t2 then mon_term (Z.pow (TM.find [] t1) (Z.to_int (TM.find [] t2))) []
+    else mon_term Z.one [Ebinop (Epow, eexp_of_term t1, eexp_of_term t2)] in
+  let rec h e =
+    match e with
+    | Evar _ -> mon_term Z.one [e]
+    | Econst n -> mon_term n []
+    | Eunop (Eneg, e) -> let t = h e in
+                         eneg_term t
+    | Ebinop (op, e1, e2) -> let t1 = h e1 in
+                             let t2 = h e2 in
+                             begin
+                               match op with
+                               | Eadd -> eadd_term t1 t2
+                               | Esub -> esub_term t1 t2
+                               | Emul -> emul_term t1 t2
+                               | Epow -> epow_term t1 t2
+                             end in
+  eexp_of_term (h e)
+
 (*
 let rec limbs_rec r p es =
   match es with
@@ -370,25 +486,35 @@ let eexp_precedence e =
   | Eunop (op, _) -> eunop_precedence op
   | Ebinop (op, _, _) -> ebinop_precedence op
 
+(*
+  e + (e1 + e2) = e + e1 + e2, e + (e1 - e2) = e + e1 - e2, e + (e1 * e2) = e + e1 * e2, e + (e1 ^ e2) = e + e1 ^ e2
+  e - (e1 * e2) = e - e1 * e2, e - (e1 ^ e2) = e - e1 ^ e2
+  e * (e1 * e2) = e * e1 * e2, e * (e1 ^ e2) = e * e1 ^ e2
+*)
 let ebinop_eexp_open op e =
   match op, e with
   | _, Evar _ -> true
   | _, Econst _ -> true
-  | _, Eunop (_op, _) -> false
-  | Eadd, Ebinop (op, _, _) -> op = Eadd || op = Esub
-  | Esub, Ebinop (_op, _, _) -> false
-  | Emul, Ebinop (op, _, _) -> op = Emul
-  | _, Ebinop (_op, _, _) -> false
+  | _, Eunop (_, _) -> false
+  | Eadd, Ebinop (rop, _, _) -> rop = Eadd || rop = Esub || rop = Emul || rop = Epow
+  | Esub, Ebinop (rop, _, _) -> rop = Emul || rop = Epow
+  | Emul, Ebinop (rop, _, _) -> rop = Emul || rop = Epow
+  | _, Ebinop (_, _, _) -> false
 
+(*
+  (e1 + e2) + e = e1 + e2 + e, (e1 - e2) + e = e1 - e2 + e, (e1 * e2) + e = e1 * e2 + e, (e1 ^ e2) + e = e1 ^ e2 + e
+  (e1 + e2) - e = e1 + e2 - e, (e1 - e2) - e = e1 - e2 - e, (e1 * e2) - e = e1 * e2 - e, (e1 ^ e2) - e = e1 ^ e2 - e
+  (e1 * e2) * e = e1 * e2 * e, (e1 ^ e2) * e = e1 ^ e2 * e
+*)
 let eexp_ebinop_open e op =
   match e, op with
   | Evar _, _ -> true
   | Econst _, _ -> true
-  | Eunop (_op, _), _ -> false
-  | Ebinop (op, _, _), Eadd -> op = Eadd || op = Esub
-  | Ebinop (op, _, _), Esub -> op = Eadd || op = Esub
-  | Ebinop (op, _, _), Emul -> op = Emul
-  | Ebinop (_op, _, _), _ -> false
+  | Eunop (_, _), _ -> false
+  | Ebinop (lop, _, _), Eadd -> lop = Eadd || lop = Esub || lop = Emul || lop = Epow
+  | Ebinop (lop, _, _), Esub -> lop = Eadd || lop = Esub || lop = Emul || lop = Epow
+  | Ebinop (lop, _, _), Emul -> lop = Emul || lop = Epow
+  | Ebinop (_, _, _), _ -> false
 
 (* An eexp is an atom if it is a variable or a constant. *)
 let is_eexp_atom e =

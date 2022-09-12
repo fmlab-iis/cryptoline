@@ -485,7 +485,9 @@ let read_maple_output = read_one_line
    @param ideal the generator of an ideal
    @param p a polynomial
 *)
-let is_in_ideal ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
+let is_in_ideal ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
+  let ideal = if expand then tmap expand_eexp ideal else ideal in
+  let p = if expand then expand_eexp p else p in
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
   let res =

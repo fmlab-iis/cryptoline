@@ -441,7 +441,9 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let is_in_ideal ?(solver=(!algebra_solver)) vars ideal p =
+let is_in_ideal ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
+  let ideal = if expand then tmap expand_eexp ideal else ideal in
+  let p = if expand then expand_eexp p else p in
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
   let res =
