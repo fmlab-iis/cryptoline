@@ -1,9 +1,9 @@
 proc main (
-uint64 a00, uint64 a01, uint64 a02, uint64 a03, uint64 a04,
-uint64 a10, uint64 a11, uint64 a12, uint64 a13, uint64 a14,
-uint64 a20, uint64 a21, uint64 a22, uint64 a23, uint64 a24,
-uint64 a30, uint64 a31, uint64 a32, uint64 a33, uint64 a34,
-uint64 a40, uint64 a41, uint64 a42, uint64 a43, uint64 a44,
+(* uint64 a00, uint64 a01, uint64 a02, uint64 a03, uint64 a04, *)
+(* uint64 a10, uint64 a11, uint64 a12, uint64 a13, uint64 a14, *)
+(* uint64 a20, uint64 a21, uint64 a22, uint64 a23, uint64 a24, *)
+(* uint64 a30, uint64 a31, uint64 a32, uint64 a33, uint64 a34, *)
+(* uint64 a40, uint64 a41, uint64 a42, uint64 a43, uint64 a44, *)
 uint64 A00, uint64 A01, uint64 A02, uint64 A03, uint64 A04,
 uint64 A10, uint64 A11, uint64 A12, uint64 A13, uint64 A14,
 uint64 A20, uint64 A21, uint64 A22, uint64 A23, uint64 A24,
