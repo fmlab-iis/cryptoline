@@ -83,7 +83,6 @@ let apply_to_cuts_lwt ids f delivered_helper res pending ss =
 (* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_conditions timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
-    let t1 = Unix.gettimeofday() in
     let header = ["= Safety condition #" ^ string_of_int id ^ " =";
                   "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
@@ -95,10 +94,6 @@ let verify_safety_conditions timeout f prog qs hashopt =
             | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
       with TimeoutException ->
         Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
-    let t2 = Unix.gettimeofday() in
-    let%lwt _ = Options.WithLwt.log_lock () in
-    let%lwt _ = Options.WithLwt.trace("Execution time of safety task #" ^ string_of_int id ^ ": " ^ string_of_running_time t1 t2) in
-    let%lwt _ = Options.WithLwt.log_unlock () in
     Lwt.return res in
   let delivered_helper r (id, i, q, ret_str, ret) =
     let _ = vprint ("\t\t Safety condition #" ^
@@ -553,13 +548,9 @@ let verify_rspec_single_conjunct header s hashopt =
     let rheader = ["Range condition: " ^ string_of_bexp g] in
     let%lwt r = solve_simp ~solver:solver ~header:(header@rheader) (f::p@[g]) in
     Lwt.return (r = Unsat) in
-  let t1 = Unix.gettimeofday() in
+  (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
                 else verify_one header (if !apply_slicing then slice_rspec_ssa s hashopt else s) in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
 (**
@@ -630,14 +621,10 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver
     | _ -> verify_espec_single_conjunct_ideal in
-  let t1 = Unix.gettimeofday() in
+  (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_espec_trivial s || Deduce.espec_prover s
                 then Lwt.return_true
                 else verify_one cut_headers vgen (if !apply_slicing then slice_espec_ssa s hashopt else s) in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
 (*
@@ -757,7 +744,6 @@ type cli_round_result =
  * ifile: the range specification containing the program
  *)
 let run_cli_vsafety id timeout idx instr ifile =
-  let t1 = Unix.gettimeofday() in
   let ofile = tmpfile "safety_output_" "" in
   let lfile = tmpfile "safety_log_" "" in
   (* Run CLI *)
@@ -791,11 +777,9 @@ let run_cli_vsafety id timeout idx instr ifile =
                  with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
   let line = String.trim line in
   let%lwt _ = Lwt_io.close ch in
-  let t2 = Unix.gettimeofday() in
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of safety task #" ^ string_of_int idx ^ ": " ^ string_of_running_time t1 t2) in
   let _ =
     (* Log abnormal outputs *)
     if not (List.mem line ["sat"; "unsat"; "unknown"; "timeout"]) then
@@ -992,14 +976,10 @@ let run_cli_vespec header s =
  * Check if the input specification is trivially valid first.
  *)
 let run_cli_vespec header s =
-  let t1 = Unix.gettimeofday() in
+  (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
     if is_espec_trivial s then Lwt.return_true
     else run_cli_vespec header s in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of espec task: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
 (* The top function of verifying algebraic specifications when !jobs > 1 and CLI is enabled. *)
@@ -1070,14 +1050,10 @@ let run_cli_vrspec header s =
  * Check if the input specification is trivially valid first.
  *)
 let run_cli_vrspec header s =
-  let t1 = Unix.gettimeofday() in
+  (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
     if is_rspec_trivial s then Lwt.return_true
     else run_cli_vrspec header s in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace("Execution time of rspec task: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return res
 
 (* The top function of verifying range specifications when !jobs > 1 and CLI is enabled. *)
