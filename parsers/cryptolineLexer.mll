@@ -159,7 +159,7 @@ let number = ['0'-'9']
 let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
-let path = (['a'-'z' 'A'-'Z' '_' '/'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*) | (['"'][^ '"']+['"'])
+let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
