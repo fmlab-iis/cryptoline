@@ -3,6 +3,8 @@ open Utils
 
 exception UnknownAlgebraSolver of string
 
+let debug = ref false
+
 type algebra_solver =
   | Singular
   | Sage
@@ -105,12 +107,17 @@ let unix cmd =
 
 let logfile = ref "cryptoline.log"
 
-let trace msg =
-  let ch = open_out_gen [Open_append; Open_creat; Open_text] 0o640 !logfile in
-  let _ = output_string ch msg in
-  let _ = output_string ch "\n" in
-  let _ = close_out ch in
-  ()
+let trace ?log:(lf=(!logfile)) msg =
+  if !debug then
+    let ch = open_out_gen [Open_append; Open_creat; Open_text] 0o640 lf in
+    let _ = output_string ch msg in
+    let _ = output_string ch "\n" in
+    let _ = close_out ch in
+    ()
+
+let trace_file ?log:(lf=(!logfile)) file =
+  if !debug then
+    ignore(unix ("cat " ^ file ^ " >>  " ^ lf))
 
 let fail s = trace s; failwith s
 

@@ -195,7 +195,7 @@ let write_singular_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO SINGULAR:";
-  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let write_sage_input ifile vars gen p =
@@ -213,7 +213,7 @@ let write_sage_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO SAGE:";
-  unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let write_magma_input ifile vars gen p =
@@ -248,7 +248,7 @@ let write_magma_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO MAGMA:";
-  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let write_mathematica_input ifile vars gen p =
@@ -268,7 +268,7 @@ let write_mathematica_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO MATHEMATICA:";
-  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let write_macaulay2_input ifile vars gen p =
@@ -298,7 +298,7 @@ let write_macaulay2_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO MACAULAY2:";
-  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let write_maple_input ifile vars gen p =
@@ -327,7 +327,7 @@ let write_maple_input ifile vars gen p =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO MAPLE:";
-  unix ("cat " ^ ifile ^ " >>  " ^ !logfile);
+  trace_file ifile;
   trace ""
 
 let run_singular ifile ofile =
@@ -336,7 +336,7 @@ let run_singular ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Singular: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SINGULAR:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let run_sage ifile ofile =
@@ -345,7 +345,7 @@ let run_sage ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Sage: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM SAGE:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let run_magma ifile ofile =
@@ -354,7 +354,7 @@ let run_magma ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Magma: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAGMA:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let run_mathematica ifile ofile =
@@ -363,7 +363,7 @@ let run_mathematica ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MATHEMATICA:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let run_macaulay2 ifile ofile =
@@ -372,7 +372,7 @@ let run_macaulay2 ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MACAULAY2:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let run_maple ifile ofile =
@@ -381,7 +381,7 @@ let run_maple ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Maple: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAPLE:";
-  unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+  trace_file ofile;
   trace ""
 
 let read_singular_output ofile =
@@ -544,7 +544,7 @@ let verify_espec_single_conjunct_smt solver vgen s =
     let ch = open_out ifile in
     let _ = output_string ch smtlib; close_out ch in
     trace "INPUT TO SMT Solver:";
-    unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile);
+    trace_file ifile;
     trace "" in
   let _ =
     let t1 = Unix.gettimeofday() in
@@ -552,7 +552,7 @@ let verify_espec_single_conjunct_smt solver vgen s =
     let t2 = Unix.gettimeofday() in
     trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2);
     trace "OUTPUT FROM SMT SOLVER:";
-    unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile);
+    trace_file ofile;
     trace "" in
   let res = read_one_line ofile = "unsat" in
   let _ = cleanup [ifile; ofile] in

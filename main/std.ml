@@ -49,6 +49,7 @@ let args = [
      Common.mk_arg_desc(["\t     Use CLI to run verification tasks (when # of jobs > 1)."]));
     ("-cli_path", String (fun str -> Options.Std.cli_path := str),
      Common.mk_arg_desc(["PATH"; "Set the path to CLI."]));
+    ("-debug", Set Options.Std.debug, Common.mk_arg_desc(["    Log debug messages"]));
     ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false),
      Common.mk_arg_desc([""; "Disable verification of all algebra properties."]));
     ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false),

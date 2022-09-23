@@ -8,6 +8,9 @@ exception UnknownAlgebraSolver of string
 
 (** {1 General Options} *)
 
+val debug : bool ref
+(** [true] to log debug messages *)
+
 val apply_slicing : bool ref
 (** [true] to apply slicing in verifying specifications *)
 
@@ -196,8 +199,11 @@ val logfile : string ref
 val unix : string -> unit
 (** run an Unix command *)
 
-val trace : string -> unit
+val trace : ?log:string -> string -> unit
 (** write a message and an ending newline to the log file *)
+
+val trace_file : ?log:string -> string -> unit
+(** write a file to the log file *)
 
 val fail : string -> 'a
 (** write a message to the log file and then fail with the message *)

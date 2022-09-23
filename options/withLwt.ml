@@ -3,7 +3,19 @@ open Std
 
 let unix cmd = Lwt_unix.system cmd
 
-let trace msg = unix ("echo \"" ^ msg ^ "\" >> " ^ !logfile)
+let trace msg =
+  if !debug then
+    let%lwt _ = unix ("echo \"" ^ msg ^ "\n\" >> " ^ !logfile) in
+    Lwt.return()
+  else
+    Lwt.return()
+
+let trace_file file =
+  if !debug then
+    let%lwt _ = unix ("cat " ^ file ^ " >>  " ^ !logfile) in
+    Lwt.return()
+  else
+    Lwt.return()
 
 let fail s = let%lwt _ = trace s in failwith s
 
@@ -33,9 +45,10 @@ let cleanup_lwt files =
   else Lwt.return_unit
 
 let safe_trace msg =
-  let res =
-    let%lwt _ = log_lock () in
-    let%lwt res = trace msg in
-    let%lwt _ = log_unlock () in
-    Lwt.return res in
-  Lwt_main.run res
+  if !debug then
+    let res =
+      let%lwt _ = log_lock () in
+      let%lwt res = trace msg in
+      let%lwt _ = log_unlock () in
+      Lwt.return res in
+    Lwt_main.run res

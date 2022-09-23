@@ -44,13 +44,13 @@ let run_smt_solver ?timeout:timeout ?(solver=(!range_solver)) header ifile ofile
                   (fun h -> let%lwt _ = Options.WithLwt.trace h in
                             Lwt.return_unit) header in
     let%lwt _ = Options.WithLwt.trace "INPUT IN SMTLIB2 FORMAT:" in
-    let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.trace_file ifile in
     let%lwt _ = Options.WithLwt.trace "" in
     let%lwt _ = Options.WithLwt.trace ("Run " ^ solver ^ " with command: " ^ cmd) in
     let%lwt _ = Options.WithLwt.trace ("Execution time of " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
     let%lwt _ = Options.WithLwt.trace ("OUTPUT FROM " ^ solver ^ ":") in
-    let%lwt _ = Options.WithLwt.unix ("cat " ^ ofile ^ " >>  " ^ !logfile) in
-    let%lwt _ = Options.WithLwt.unix ("cat " ^ errfile ^ " >>  " ^ !logfile) in
+    let%lwt _ = Options.WithLwt.trace_file ofile in
+    let%lwt _ = Options.WithLwt.trace_file errfile in
     let%lwt _ = Options.WithLwt.trace "" in
     let%lwt _ = Options.WithLwt.log_unlock () in
     Lwt.return_unit in

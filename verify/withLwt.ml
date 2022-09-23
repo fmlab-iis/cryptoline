@@ -325,12 +325,11 @@ let run_singular header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO SINGULAR:" in
-  let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SINGULAR:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -343,13 +342,11 @@ let run_sage header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO SAGE:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ifile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SAGE:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -361,12 +358,11 @@ let run_magma header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MAGMA:" in
-  let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAGMA:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -378,12 +374,11 @@ let run_mathematica header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MATHEMATICA:" in
-  let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MATHEMATICA:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -396,12 +391,11 @@ let run_macaulay2 header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MACAULAY2:" in
-  let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MACAULAY2:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -413,12 +407,11 @@ let run_maple header ifile ofile =
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
   let%lwt _ = Options.WithLwt.trace "INPUT TO MAPLE:" in
-  let%lwt _ = Options.WithLwt.unix ("cat " ^ ifile ^ " >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.trace ("Execution time of Maple: " ^ string_of_running_time t1 t2) in
   let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAPLE:" in
-  let%lwt _ = Options.WithLwt.unix
-                ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
   let%lwt _ = Options.WithLwt.trace "" in
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
@@ -601,11 +594,11 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
       let%lwt _ = write_header_to_log cut_headers in
       let%lwt _ = Options.WithLwt.trace ("algebraic condition: " ^ string_of_ebexp_prove_with s.espost) in
       let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
-      let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\"" ^ " >>  " ^ !logfile) in
+      let%lwt _ = Options.WithLwt.trace_file ifile in
       let%lwt _ = Options.WithLwt.trace "" in
       let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
       let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
-      let%lwt _ = Options.WithLwt.unix ("cat \"" ^ ofile ^ "\" >>  " ^ !logfile) in
+      let%lwt _ = Options.WithLwt.trace_file ofile in
       Options.WithLwt.trace "" in
     Lwt.return_unit in
   let%lwt res = read_one_line ofile in
@@ -787,7 +780,7 @@ let run_cli_vsafety id timeout idx instr ifile =
                                  ^ line ^ "\n"
                                  ^ "From the instruction:\n"
                                  ^ "#" ^ string_of_int idx ^ ": " ^ string_of_instr instr) in
-      let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
+      let _ = Options.WithLwt.trace_file ifile in
       ()
   in
   let%lwt _ = Options.WithLwt.log_unlock () in
@@ -955,14 +948,14 @@ let run_cli_vespec header s =
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.trace_file lfile in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
       let _ = Options.WithLwt.trace ("Got abnormal output:") in
       let _ = Options.WithLwt.trace line in
       let _ = Options.WithLwt.trace ("From the input:") in
-      let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+      let _ = Options.WithLwt.trace_file ifile in
       ()
   in
   let%lwt _ = Options.WithLwt.log_unlock () in
@@ -1029,14 +1022,14 @@ let run_cli_vrspec header s =
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
-  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.trace_file lfile in
   let _ =
     (* Log abnormal outputs *)
     if line <> "true" && line <> "false" then
       let _ = Options.WithLwt.trace ("Got abnormal output:") in
       let _ = Options.WithLwt.trace line in
       let _ = Options.WithLwt.trace ("From the input:") in
-      let _ = Options.WithLwt.unix ("cat \"" ^ ifile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\" 2>&1") in
+      let _ = Options.WithLwt.trace_file ifile in
       ()
   in
   let%lwt _ = Options.WithLwt.log_unlock () in
