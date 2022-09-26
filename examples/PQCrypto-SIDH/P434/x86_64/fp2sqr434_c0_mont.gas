@@ -19,7 +19,7 @@
 #! %r$1c = %%r$1c
 #! %cl = %%cl
 
-#! fp2sqr503_c0_mont: -> nop
+#! fp2sqr434_c0_mont: -> nop
 #! endbr64 .* -> nop
 #! push .* -> nop
 #! pop .* -> nop
