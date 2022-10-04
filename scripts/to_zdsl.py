@@ -159,14 +159,13 @@ def parse_tspec(fn, line_parser, line_filter):
   rules = []
   with open(fn) as f:
     lines = map(line_parser, [item for item in f.readlines() if line_filter(item)])
-    substs = substs + [x[0] for x in lines]
-    rules = rules + [x[1] for x in lines]
-  substs = sorted(flatten(substs), key=lambda pat, rep: len(pat), reverse=True)
+    substs, rules = zip(*lines)
+  substs = sorted(flatten(substs), key=lambda rule: len(rule[0]), reverse=True)
   return (collections.OrderedDict(substs), collections.OrderedDict(flatten(rules)))
 
 # Parse translation specification in an external file
 def parse_external_tspec(fn):
-  return parse_tspec(fn, parse_tspec_line, lambda item: not is_asm_comment(item) and not is_empty_line(item))
+  return parse_tspec(fn, parse_tspec_comment, lambda item: not is_asm_comment(item) and not is_empty_line(item))
 
 # Parse translation specification in a gas file
 def parse_internal_tspec(fn):
