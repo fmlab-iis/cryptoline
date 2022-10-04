@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This script utilizes python-enabled gdb on your $PATH to collect
 # per-instruction execution trace for first invocation of named
