@@ -1,0 +1,19 @@
+fqmul:
+# %rdi = 0x0
+# %rsi = 0x0
+# %rdx = 0x0
+# %rcx = 0x555555555190
+# %r8  = 0x0
+# %r9  = 0x7ffff7fe0d50
+	#! -> SP = 0x7fffffffd9b8
+	movswl %di,%eax                                 #! PC = 0x555555555160
+	movswl %si,%ecx                                 #! PC = 0x555555555163
+	imul   %ecx,%eax                                #! PC = 0x555555555166
+	imul   $0xf301,%eax,%ecx                        #! PC = 0x555555555169
+	shl    $0x10,%ecx                               #! PC = 0x55555555516f
+	sar    $0x10,%ecx                               #! PC = 0x555555555172
+	imul   $0xd01,%ecx,%ecx                         #! PC = 0x555555555175
+	sub    %ecx,%eax                                #! PC = 0x55555555517b
+	sar    $0x10,%eax                               #! PC = 0x55555555517d
+	#! <- SP = 0x7fffffffd9b8
+	#retq                                           #! PC = 0x555555555180

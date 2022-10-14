@@ -1,0 +1,51 @@
+proc main (sint16 di, sint16 si) =
+{
+  true
+  &&
+  and [
+    0@16 <=s si,
+    si <=s 3328@16
+  ]
+}
+
+(* fqmul: *)
+#fqmul:;
+(* #! -> SP = 0x7fffffffd9b8 *)
+#! 0x7fffffffd9b8 = 0x7fffffffd9b8;
+(* movswl %di,%eax                                 #! PC = 0x555555555160 *)
+cast eax@sint32 di;
+(* movswl %si,%ecx                                 #! PC = 0x555555555163 *)
+cast ecx@sint32 si;
+(* imul   %ecx,%eax                                #! PC = 0x555555555166 *)
+mull dontcare eax ecx eax;
+(* imul   $0xf301,%eax,%ecx                        #! PC = 0x555555555169 *)
+cast eax@sint32 eax;
+mull dontcare ecx 0xf301@sint32 eax;
+(* shl    $0x10,%ecx                               #! PC = 0x55555555516f *)
+split dontcare ecx ecx 16;
+shl ecx ecx 16;
+(* sar    $0x10,%ecx                               #! PC = 0x555555555172 *)
+cast ecx@sint32 ecx;
+ssplit ecx dontcare ecx 16;
+(* imul   $0xd01,%ecx,%ecx                         #! PC = 0x555555555175 *)
+cast ecx@sint32 ecx;
+mull dontcare ecx 0xd01@sint32 ecx;
+(* sub    %ecx,%eax                                #! PC = 0x55555555517b *)
+cast eax@uint32 eax;
+subb carry eax eax ecx;
+(* sar    $0x10,%eax                               #! PC = 0x55555555517d *)
+cast eax@sint32 eax;
+ssplit eax dontcare eax 16;
+(* #! <- SP = 0x7fffffffd9b8 *)
+#! 0x7fffffffd9b8 = 0x7fffffffd9b8;
+(* #retq                                           #! PC = 0x555555555180 *)
+#retq                                           #! 0x555555555180 = 0x555555555180;
+
+{
+  true
+  &&
+  and [ eqsmod ( eax * 65536@32 ) ((sext di 16) * (sext si 16)) (3329@32),
+        (-3328)@32 <=s eax,
+        eax <=s 3328@32 ]
+}
+
