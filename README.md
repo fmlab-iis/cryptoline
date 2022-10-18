@@ -1,39 +1,42 @@
-CryptoLine
-==========
 
-CryptoLine is a tool and a language for the verification of low-level
-implementations of mathematical constructs. It has been used to verify
-implementations in
-[OpenSSL](https://www.openssl.org),
-[BoringSSL](https://opensource.google.com/projects/boringssl),
-[mbed TLS](https://tls.mbed.org),
-[pqm4](https://github.com/mupq/pqm4),
-[ntt-polymul](https://github.com/ntt-polymul/ntt-polymul), etc.
+Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU
+======================================================================================
+
+This artifact contains the source code of CryptoLine and benchmarks to
+reproduce the results from our paper "Verified NTT Multiplications
+for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU" in CHES
+2022.
+The experiments in the paper run on a Ubuntu 20.04.3 server with
+3.2GHz Intel Xeon (with 32 logical cores) and 1TB RAM.
+All the 32 CPU cores are used during the experiments.
+The minimum requirements for running the experiments are 256GB RAM
+and 5GB free disk space.
+Scripts provided in this artifact may not work on other Ubuntu
+versions or other Linux distributions.
 
 
 Prerequisite
 ============
 
-To compile and run CryptoLine, the following packages need to be installed.
+To compile CryptoLine and run the experiments, the following packages
+need to be installed.
 
+- sudo
+- [bc](https://www.gnu.org/software/bc/)
 - [OCaml compiler](https://ocaml.org) (version 4.08.1 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num, zarith
-- One of the following computer algebra systems:
-  + [Singular](https://www.singular.uni-kl.de) (recommended, the default to be used)
-  + [SageMath](http://www.sagemath.org)
-  + [Magma](http://magma.maths.usyd.edu.au/magma/)
-  + [Mathematica](https://www.wolfram.com/mathematica/)
-  + [Macaulay2](https://faculty.math.illinois.edu/Macaulay2/)
-  + [Maple](https://www.maplesoft.com)
-- One of the following SMT solvers:
-  + [Boolector](https://boolector.github.io) (recommended, the default to be used)
-  + [Z3](https://github.com/Z3Prover/z3)
-  + [Mathsat](http://mathsat.fbk.eu)
+- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, zarith
+- The computer algebra system [Singular](https://www.singular.uni-kl.de)
+- The SMT QF_BV solver [Boolector](https://boolector.github.io)
 
-CryptoLine are successfully compiled with OCaml 4.08.1, 4.11.2,
+CryptoLine is successfully compiled with OCaml 4.08.1, 4.11.2,
   4.12.1, 4.13.1, and 4.14.0 together with dune 3.2.0, lwt 5.5.0,
-  lwt_ppx 2.0.3, num 1.4, and zarith 1.12.
+  lwt_ppx 2.0.3, and zarith 1.12.
+
+All the required packages except sudo can be installed via the script
+`build.sh` provided in this artifact.
+To run `build.sh`, make sure that `sudo` is already installed and the
+user running `build.sh` is in the group sudo.
 
 
 Installation
@@ -41,14 +44,17 @@ Installation
 
 Follow the following instructions (or simply run the script `build.sh`
 in the project root) to build and install CryptoLine as well as
-the default solver Singular and Boolector on Ubuntu 20.04 LTS.
+the compute algebra system Singular and the SMT QF_BV solver Boolector
+on Ubuntu 20.04 LTS.
 
 ```
 $ sudo apt -y install \
-	build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
-	boolector singular
+	build-essential bc ocaml ocaml-dune libzarith-ocaml-dev \
+    liblwt-ocaml-dev
+$ scripts/install-singular.sh
+$ scripts/install-boolector.sh
 $ dune build
-$ dune install
+$ sudo dune install
 ```
 
 Run the following command to see the available command-line arguments.
@@ -60,174 +66,101 @@ $ cv -help
 To uninstall CryptoLine, run the following command.
 
 ```
-$ dune uninstall
-```
-
-Note that Singular and Boolector provided by Ubuntu are pretty old.
-It is recommended to install newer versions of Singular and Boolector.
-Use the scripts `scripts/install-singular.sh` and
-`scripts/install-boolector.sh` to install Singular 4.1.3p2 and
-Boolector 3.2.0.
-
-```
-$ scripts/install-singular.sh
-$ scripts/install-boolector.sh
-```
-
-To test the installation of CryptoLine, run the script
-`run_experiments` in the project root.
-
-```
-$ ./run_experiments -simple
-```
-
-Below is the expected output (time may vary).
-
-```
-Verifying examples/qhasm/fe25519_add.cl: 0 seconds                          [OK]
-Verifying examples/qhasm/fe25519_sub.cl: 1 seconds                          [OK]
-Verifying examples/qhasm/fe25519r64_add.cl: 0 seconds                       [OK]
-Verifying examples/qhasm/fe25519r64_addsub.cl: 0 seconds                    [OK]
-Verifying examples/qhasm/fe25519r64_sub.cl: 0 seconds                       [OK]
+$ sudo dune uninstall
 ```
 
 
-Basic Usage
-===========
-
-Parse a CryptoLine specification `spec.cl`.
-
-```
-$ cv -p spec.cl
-```
-
-Output the SSA (Static Single Assignment) form of a CryptoLine specification
-`spec.cl`.
-
-```
-$ cv -pssa spec.cl
-```
-
-Verify a CryptoLine specification `spec.cl` with verbose outputs (`-v`),
-incremental checking of algebraic soundness (`-isafety`), at most 24
-parallel jobs (`-jobs 24`), program slicing (`-slicing`), and without
-carry constraints for computer algebra systems
-(`-no_carry_constraint`).
-
-```
-$ cv -v -isafety -jobs 24 -slicing -no_carry_constraint spec.cl
-```
+CHES2022 Experiments
+=====================
 
 
-CryptoLine Language
-===================
+Experiment: Table 3
+-------------------
 
-Read doc/cryptoline.pdf for the details of the CryptoLine language.
-Examples of CryptoLine specifications are available in `examples` with
-`.cl` filename suffix.
-More examples can be found on
-[GitHub](https://github.com/fmlab-iis/cryptoline).
-
-
-Tutorial
-========
-
-A tutorial of CryptoLine is available in doc/tutorial.pdf.
-
-
-Syntax Highlight
-================
-
-Syntax highlighting in Emacs is provided by misc/cryptoLine-mode.el.
-
-```elisp
-; Change [PATH_TO_CRYPTOLINE] to the right location
-(add-to-list 'load-path "[PATH_TO_CRYPTOLINE]/misc")
-(autoload 'cryptoline-mode "cryptoline-mode" "Major mode for CryptoLine files." t)
-(add-to-list 'auto-mode-alist '("\\.cl\\'" . cryptoline-mode))
-```
-
-Syntax highlighting in Visual Studio Code is provided by the extension
-misc/cryptoline-vscode-extension/cryptoline-x.y.z.vsix where x.y.z is
-the version of the extension.
-
-
-TCHES2022 Experiments
-===================
-
-The experiments in the TCHESS 2022 paper "Verified NTT Multiplications
-for NISTPQC KEM Lattice Finalists: Kyber, Saber, and NTRU" are running
-on an Ubuntu 20.04.3 server with 3.2GHz Intel Xeon (with 32 logical
-cores) and 1TB RAM.
-
-To run the experiments of verifying the Intel AVX2 and Cortex M4
+To run the experiment of verifying the Intel AVX2 and Cortex-M4
 assembly implementations for the NTTs for Kyber, NTRU, and Saber (see
 Table 3 in the paper), run the script
-`tches2022_run_experiments_table3.sh` in the project root.
+`ches2022_run_experiments_table3.sh` in the project root.
 
 ```
-$ ./tches2022_run_experiments_table3.sh
+$ ./ches2022_run_experiments_table3.sh
 ```
 
-Note that at least 24 CPU cores are used to run the experiments.
+This experiment uses 32 CPU cores and the running time is around 1 day
+on our server.
 The CryptoLine specifications of the assembly implementations are
 listed below.
 
 - Kyber768
     + AVX2
-        * Normal: `examples/tches2022/kyber768/avx2/PQCLEAN_KYBER768_AVX2_polyvec_ntt.cl`
-        * Inverse: `examples/tches2022/kyber768/avx2/PQCLEAN_KYBER768_AVX2_polyvec_invntt_tomont2.cl`
-    + Cortex M4
-        * Normal: `examples/tches2022/kyber768/pqm4/ntt_fast.cl`
-        * Inverse: `examples/tches2022/kyber768/pqm4/invntt_fast_tuned.cl`
+        * Normal: `examples/ches2022/kyber768/avx2/PQCLEAN_KYBER768_AVX2_polyvec_ntt.cl`
+        * Inverse: `examples/ches2022/kyber768/avx2/PQCLEAN_KYBER768_AVX2_polyvec_invntt_tomont2.cl`
+    + Cortex-M4
+        * Normal: `examples/ches2022/kyber768/pqm4/ntt_fast.cl`
+        * Inverse: `examples/ches2022/kyber768/pqm4/invntt_fast_tuned.cl`
 - ntru2048509
     + AVX2
-        * Normal: `examples/tches2022/ntruhps2048509/avx2/nttmul_poly_ntt.cl`
-        * Inverse: `examples/tches2022/ntruhps2048509/avx2/nttmul_poly_invntt_tomont2.cl`
-    + Corext M4
+        * Normal: `examples/ches2022/ntruhps2048509/avx2/nttmul_poly_ntt.cl`
+        * Inverse: `examples/ches2022/ntruhps2048509/avx2/nttmul_poly_invntt_tomont2.cl`
+    + Cortex-M4
         * Normal:
-            - `examples/tches2022/ntruhps2048509/pqm4/__asm_ntt_0_1_2_3_32.cl`
-            - `examples/tches2022/ntruhps2048509/pqm4/__asm_ntt_4_5_6_7_32.cl`
+            - `examples/ches2022/ntruhps2048509/pqm4/__asm_ntt_0_1_2_3_32.cl`
+            - `examples/ches2022/ntruhps2048509/pqm4/__asm_ntt_4_5_6_7_32.cl`
         * Inverse:
-            - `examples/tches2022/ntruhps2048509/pqm4/__asm_intt_32.cl`
-            - `examples/tches2022/ntruhps2048509/pqm4/__asm_final_map.cl`
+            - `examples/ches2022/ntruhps2048509/pqm4/__asm_intt_32.cl`
+            - `examples/ches2022/ntruhps2048509/pqm4/__asm_final_map.cl`
 - Saber
     + AVX2
-        * Normal: `examples/tches2022/saber/avx2/test_sabermul_nttmul_poly_ntt.cl`
-        * Inverse: `examples/tches2022/saber/avx2/test_sabermul_nttmul_poly_invntt_tomont.cl`
-    + Cortex M4
-        * Normal: `examples/tches2022/saber/pqm4/asm_negacyclic_ntt_32.cl`
-        * Inverse: `examples/tches2022/saber/pqm4/asm_negacyclic_intt_32.cl`
+        * Normal: `examples/ches2022/saber/avx2/test_sabermul_nttmul_poly_ntt.cl`
+        * Inverse: `examples/ches2022/saber/avx2/test_sabermul_nttmul_poly_invntt_tomont.cl`
+    + Cortex-M4
+        * Normal: `examples/ches2022/saber/pqm4/asm_negacyclic_ntt_32.cl`
+        * Inverse: `examples/ches2022/saber/pqm4/asm_negacyclic_intt_32.cl`
 
-To run the experiments of verifying AVX2 Kyber NTT with various number
-of cuts, run the script `tches2022_run_experiments_figure5.sh` in the
+Details of the above specifications are available in Section 3.2 and
+Section 4 of the paper.
+To know more about CryptoLine tool and language, please read
+README.CryptoLine.md.
+
+
+Experiment: Figure 5
+--------------------
+
+To run the experiment of verifying AVX2 Kyber NTT with various number
+of cuts, run the script `ches2022_run_experiments_figure5.sh` in the
 project root.
 
 ```
-$ ./tches2022_run_experiments_figure5.sh
+$ ./ches2022_run_experiments_figure5.sh
 ```
 
+This experiment takes 24 CPU cores and the running time on our server
+is around 3 hours.
 The CryptoLine specifications of AVX2 Kyber NTT with various number of
-cuts can be found in `examples/tches2022/kyber768-avx2-cuts`.
+cuts can be found in `examples/ches2022/kyber768-avx2-cuts`.
 Each specification is named `PQCLEAN_KYBER768_AVX2_polyvec_ntt_XX_cuts.cl`
 where `XX` denotes the number of cuts.
 
-All the log files of the experiments are stored in `results` in the
+
+Experimental Results
+--------------------
+
+All the log files of the experiments are stored in `results-*` in the
 project root.
-During the verification of a specification `examples/path/to/spec.cl`,
-the following log files are produced.
+For example, log files of `ches2022_run_experiments_table3.sh` are
+stored in `results-table3` while log files of
+`ches2022_run_experiments_figure5.sh` are stored in `results-figure5`.
+During the verification of a specification `spec.cl`, the following
+log files are produced.
 
-- `results/path/to/spec.log`: verbose output such as the running
-  time of each step
-- `results/path/to/spec_debug.log`: debugging output such as the
-  inputs for Boolector
-- `results/path/to/spec_summary.log`: running time summarized in
-  four categories, namely algebra, overflow, range, and total, as
-  shown in Table 3 of the paper
+- `spec.log`: verbose output such as the running time of each step
+- `spec_debug.log`: debugging output such as the inputs for Boolector
+- `spec_summary.log`: running time summarized in four categories,
+  namely algebra, overflow, range, and total, as shown in Table 3 of
+  the paper
 
-Each of the four categories in `results/path/to/spec_summary.log`
-summarizes the running time of one or more steps in
-`results/path/to/spec.log`.
+Each of the four categories in `spec_summary.log` summarizes the
+running time of one or more steps in `spec.log`.
 
 - Algebra
     + Verifying algebraic assertions
@@ -239,6 +172,28 @@ summarizes the running time of one or more steps in
     + Verifying range specification
 - Total
     + Verification result
+
+
+Extra Experiment: Lite
+----------------------
+
+Besides the experiments reproducing Table 3 and Figure 5, this
+artifact provides an additional lite experiment, which verifies three
+NTT implementations from Table 3 using 2 CPU cores:
+
+- Kyber768 AVX2 normal
+- Kyber768 Cortex-M4 normal
+- Saber AVX2 normal
+
+Execute the following command to run this lite experiment:
+
+```
+$ ./ches2022_run_experiments_table3_lite.sh
+```
+
+Most modern personal computer can run this lite experiment.
+On a MacBook Air (M1, 2020), the running time of this experiment is 1
+hour.
 
 
 Source Code Organization
@@ -268,41 +223,14 @@ cryptoline
   +-- verify/: verification procedures
 ```
 
-
-Reference
-=========
-- Yu-Fu Fu, Jiaxiang Liu, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
-  Signed Cryptographic Program Verification with Typed CryptoLine.
-  In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security (CCS '19).
-  ACM, New York, NY, USA, 1591-1606. DOI: https://doi.org/10.1145/3319535.3354199
-- Andy Polyakov, Ming-Hsien Tsai, Bow-Yaw Wang, Bo-Yin Yang:
-  Verifying Arithmetic Assembly Programs in Cryptographic Primitives (Invited Talk).
-  International Conference on Concurrency Theory (CONCUR),
-  4:1-4:16, LIPIcs, 2018
-- Ming-Hsien Tsai, Bow-Yaw Wang, Bo-Yin Yang:
-  Certified Verification of Algebraic Properties on Low-Level Mathematical Constructs in Cryptographic Programs.
-  ACM SIGSAC Conference on Computer and Communications Security (CCS),
-  pp. 1973-1987, ACM, 2017
-- Yu-Fang Chen, Chang-Hong Hsu, Hsin-Hung Lin, Peter Schwabe, Ming-Hsien Tsai, Bow-Yaw Wang, Bo-Yin Yang, Shang-Yi Yang:
-  Verifying Curve25519 Software.
-  ACM SIGSAC Conference on Computer and Communications Security (CCS),
-  pp. 299-309, ACM, 2014
-
-
-Troubleshooting
-===============
-
-internal error in 'lglib.c': watcher stack overflow
----------------------------------------------------
-
-The scripts `tches2022_run_experiments_table3.sh` and
-`./tches2022_run_experiments_figure5.sh` may output "Failed" and the
-log files contain the following error message.
-
-```
-internal error in 'lglib.c': watcher stack overflow
-```
-
-In this case, remove the line `./contrib/setup-lingeling.sh` from
-`scripts/install-boolector.sh` and install Boolector again using
-`scripts/install-boolector.sh`.
+Each of our improvements made for verifying NTT implementations
+spreads across different files.
+Syntax of asserts, assumes, ghost variables, and cuts is in
+`ast/cryptoline.ml:instr`.
+Conversion from algebraic predicates in asserts, assumes, and ghost
+variables to polynomials is in `verify/common.ml:bv2z_instr`.
+Conversion from range predicates in asserts, assumes, and ghost
+variables to SMT QF_BV expressions is in
+`verify/common.ml:bexp_instr`.
+Cutting specifications and processing `prove with` hints are in
+`ast/cryptoline.ml:cut_espec` and `ast/cryptoline.ml:cut_rspec`.
