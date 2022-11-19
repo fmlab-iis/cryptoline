@@ -386,7 +386,7 @@ def trace():
                         except gdb.MemoryError :
                             value1 = "'?'"
                             value2 = "'?'"
-                        print("\t{0:48s}#! EA = L0x{1:x}; Value_h = {2}; Value_l = {3}; PC = 0x{4:x}"
+                        print("\t{0:48s}#! EA = L0x{1:x}; Value_l = {2}; Value_h = {3}; PC = 0x{4:x}"
                               .format(mnemonic, ea["addr"], value1, value2, insns[0]["addr"]))
                     else:
                         try :
