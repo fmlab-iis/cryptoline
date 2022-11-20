@@ -13,6 +13,7 @@
               "const"                      , CONST;
               "assign"                     , MOV;
               "mov"                        , MOV;
+              "broadcast"                  , BROADCAST;
               "add"                        , ADD;
               "adds"                       , ADDS;
               "adc"                        , ADC;
@@ -159,6 +160,7 @@ let number = ['0'-'9']
 let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
+let identity_vec = '%' identity
 let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
@@ -256,6 +258,7 @@ token = parse
                                      with Not_found ->
                                        ID id
                                    }
+  | identity_vec as id             { upd_cnum lexbuf; VEC_ID id }
   | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
                                      upd_cnum lexbuf; PATH p }
   | eof                            { EOF }
