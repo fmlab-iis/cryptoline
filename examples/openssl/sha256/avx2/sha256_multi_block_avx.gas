@@ -1,4 +1,75 @@
-sha256_multi_block_avx:
+#! %rax = %%rax
+#! $1c(%rbx) = %%EA
+#! %rbp = %%rbp
+#! %rbx = %%rbx
+#! %rcx = %ecx
+#! %ecx = %%ecx
+#! %rdx = %edx
+#! %edx = %%edx
+#! %r$1c = %%r$1c
+#! $1c(%rax) = %%EA
+#! (%rax) = %%EA
+#! $1c(%rbp) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%r$2c) = %%EA
+#! (%r$1c) = %%EA
+#! $1c(%rip) = %%EA
+#! %xmm$1c = %%xmm$1c
+
+#! add $1c, %%rbp -> (* add $1c, rbp *)\nnop
+#! cmovg $1v, $2v -> (* cmovg $1v, $2v *)\nnop
+#! cmovge $1v, $2v -> (* cmovge $1v, $2v *)\nnop
+#! cmovle $1v, $2v -> (* cmovle $1v, $2v *)\nnop
+#! cmp $1c, $2v -> (* cmp $1c, $2v *)\nnop
+#! cmp $1v, $2v -> (* cmp $1v, $2v *)\nnop
+#! dec $1v -> (* dec $1v *)\nnop
+#! prefetcht0 $1ea -> (* prefetcht0 $1ea *)\nnop
+#! pop $1v -> (* pop $1v *)\nnop
+#! push $1v -> (* push $1v *)\nnop
+#! test $1v, $2v -> (* test $1v, $2v *)\nnop
+
+#! and $1c, $2v -> and $2v@uint32 $2v $1c@uint32
+#! lea $1c\(%rsp\), $2v -> (* lea $1c(%rsp), $2v *)\nnop
+#! lea %%EA, $1v -> (* lea XXX, $1v *)\nnop
+#! lea %%EA, %rdi -> (* lea XXX, %rdi *)\nnop
+#! lea %%EA, %rsi -> (* lea XXX, %rsi *)\nnop
+#! lea %%EA, %rsp -> (* lea XXX, %rsp *)\nnop
+#! mov %rsp, $1v -> mov $1v rsp
+#! mov $1v, $2c\(%rsp\) -> (* mov $1v, $2c(%rsp) *)\nnop
+#! mov $1c\(%rsp\), $2v -> (* mov $1c(%rsp), $2v *)\nnop
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1c, $2v -> mov $2v $1c@uint32
+#! shr $1c, $2v -> split $2v dc $2v $1c
+#! sub $1c, $2v -> subs dc $2v $2v $1c@uint32
+#! xor $1v, $1v -> mov $1v 0@uint32
+
+#! vmovd $1ea, $2xmm ->
+#! vmovdqa $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0; mov $2xmm_1 $1xmm_1; mov $2xmm_2 $1xmm_2; mov $2xmm_3 $1xmm_3
+#! vmovdqu $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0; mov $2xmm_1 $1xmm_1; mov $2xmm_2 $1xmm_2; mov $2xmm_3 $1xmm_3
+#! vmovdqa $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
+#! vmovdqu $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
+#! vmovdqu $1xmm, $2ea -> mov $2ea $1xmm_0; mov $2ea[+4] $1xmm_1;\nmov $2ea[+8] $1xmm_2; mov $2ea[+12] $1xmm_3
+#! vpcmpgtd $1xmm, $2xmm, $3xmm -> subs c0 dc $1xmm_0 $2xmm_0; cmov $3xmm_0 c0 0xffffffff@uint32 0@uint32;\nsubs c1 dc $1xmm_1 $2xmm_1; cmov $3xmm_1 c1 0xffffffff@uint32 0@uint32;\nsubs c2 dc $1xmm_2 $2xmm_2; cmov $3xmm_2 c2 0xffffffff@uint32 0@uint32;\nsubs c3 dc $1xmm_3 $2xmm_3; cmov $3xmm_3 c3 0xffffffff@uint32 0@uint32
+#! vpinsrd \$0x1, $1ea, $2xmm, $3xmm -> mov $3xmm_0 $2xmm_0; mov $3xmm_1 $1ea;\nmov $3xmm_2 $2xmm_2; mov $3xmm_3 $2xmm_3
+#! vpaddd $1xmm, $2xmm, $3xmm -> adds dc $3xmm_0 $2xmm_0 $1xmm_0; adds dc $3xmm_1 $2xmm_1 $1xmm_1;\nadds dc $3xmm_2 $2xmm_2 $1xmm_2; adds dc $3xmm_3 $2xmm_3 $1xmm_3
+#! vpaddd $1ea, $2xmm, $3xmm -> adds dc $3xmm_0 $2xmm_0 $1ea; adds dc $3xmm_1 $2xmm_1 $1ea[+4];\nadds dc $3xmm_2 $2xmm_2 $1ea[+8]; adds dc $3xmm_3 $2xmm_3 $1ea[+12]
+#! vpand $1xmm, $2xmm, $3xmm -> and $3xmm_0@uint32 $2xmm_0 $1xmm_0; and $3xmm_1@uint32 $2xmm_1 $1xmm_1;\nand $3xmm_2@uint32 $2xmm_2 $1xmm_2; and $3xmm_3@uint32 $2xmm_3 $1xmm_3
+#! vpandn $1xmm, $2xmm, $3xmm -> and $3xmm_0@uint32 $2xmm_0 $1xmm_0; and $3xmm_1@uint32 $2xmm_1 $1xmm_1;\nand $3xmm_2@uint32 $2xmm_2 $1xmm_2; and $3xmm_3@uint32 $2xmm_3 $1xmm_3
+#! vpandn $1xmm, $2xmm, $3xmm -> and $3xmm_0@uint32 $2xmm_0 $1xmm_0; and $3xmm_1@uint32 $2xmm_1 $1xmm_1;\nand $3xmm_2@uint32 $2xmm_2 $1xmm_2; and $3xmm_3@uint32 $2xmm_3 $1xmm_3
+#! vpshufb $1xmm, $2xmm, $3xmm -> assert true\n   && and [$1xmm_0=0x00010203@32, $1xmm_1=0x04050607@32, $1xmm_2=0x00010203@32, $1xmm_4=0x04050607@32];\nspl s1 s0 $2xmm_0 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3xmm_0 t1 t0;\nspl s1 s0 $2xmm_1 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3xmm_1 t1 t0;\nspl s1 s0 $2xmm_2 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3xmm_2 t1 t0;\nspl s1 s0 $2xmm_3 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3xmm_3 t1 t0
+#! vpslld $1c, $2xmm, $3xmm -> split dc $3xmm_0 $2xmm_0 (32-$1c); shl $3xmm_0 $3xmm_0 $1c@uint32;\nsplit dc $3xmm_1 $2xmm_1 (32-$1c); shl $3xmm_1 $3xmm_1 $1c@uint32;\nsplit dc $3xmm_2 $2xmm_2 (32-$1c); shl $3xmm_2 $3xmm_2 $1c@uint32;\nsplit dc $3xmm_3 $2xmm_3 (32-$1c); shl $3xmm_3 $3xmm_3 $1c@uint32
+#! vpsrld $1c, $2xmm, $3xmm -> split $3xmm_0 dc $2xmm_0 $1c; split $3xmm_1 dc $2xmm_1 $1c;\nsplit $3xmm_2 dc $2xmm_2 $1c; split $3xmm_3 dc $2xmm_3 $1c
+#! vpunpckldq $1xmm, $2xmm, $3xmm -> mov $3xmm_0 $2xmm_0; mov $3xmm_1 $1xmm_0; \nmov $3xmm_2 $2xmm_1; mov $3xmm_3 $1xmm_1
+#! vpxor $1xmm, $2xmm, $3xmm -> xor $3xmm_0@uint32 $2xmm_0 $1xmm_0; xor $3xmm_1@uint32 $2xmm_1 $1xmm_1;\nxor $3xmm_2@uint32 $2xmm_2 $1xmm_2; xor $3xmm_3@uint32 $2xmm_3 $1xmm_3
+
+#sha256_multi_block_avx:
 # %rdi = 0x7fffffffda70
 # %rsi = 0x7fffffffd9f0
 # %rdx = 0x1
