@@ -321,6 +321,11 @@ level7_rcut_ids = []
 def print_comment(str):
     print("(* {} *)".format(str))
 
+def print_unpack_vectors(indices):
+    for i in indices:
+        dest = ', '.join([f'ymm{i}_{hex(j)[2:]}' for j in range(16)])
+        print(f'mov [{dest}] %ymm{i};')
+
 def print_instr(instr):
     global level, off, ecut_id, rcut_id, level7_ecut_ids, level7_rcut_ids
 
@@ -357,6 +362,9 @@ def print_instr(instr):
     elif instr.startswith("(* vperm2i128 $0x20,%ymm10,%ymm5,%ymm7") and level == 1:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([3, 4, 5, 6, 8, 9, 10, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
@@ -382,6 +390,9 @@ def print_instr(instr):
     elif instr.startswith("(* vpunpcklqdq %ymm7,%ymm4,%ymm9") and level == 2:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([4, 6, 8, 3, 7, 10, 5, 11])
+
         print ("cut")
         print ("and [")
         print(str_algebra(
@@ -409,6 +420,9 @@ def print_instr(instr):
     elif instr.startswith("(* vmovdqa 0x80(%rdx),%ymm14") and level == 3:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([3, 9, 7, 4, 6, 5, 8, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
@@ -438,6 +452,9 @@ def print_instr(instr):
     elif instr.startswith("(* vpmullw %ymm14,%ymm3,%ymm13") and level == 4:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([10, 3, 7, 4, 9, 6, 8, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
@@ -465,6 +482,9 @@ def print_instr(instr):
     elif instr.startswith("(* vpmullw 0x80(%rdx),%ymm5,%ymm12") and level == 5:
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([5, 3, 10, 4, 7, 6, 9, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
@@ -505,6 +525,9 @@ def print_instr(instr):
         # End of level 6
         print_comment("===== End of level {0}, off {1} =====".format(level, off))
         print("\n(* ecut {0}, rcut {1} *)\n".format(ecut_id, rcut_id))
+
+        print_unpack_vectors([6, 4, 8, 9, 3, 7, 5, 11])
+
         print("cut")
         print("and [")
         print(str_algebra(
