@@ -1,4 +1,79 @@
-sha256_block_data_order:
+#! $1c(%rsp,%r$2c,$3c) = %%EA
+#! $1c(%rsp,%rcx,$2c) = %%EA
+#! $1c(%rsp,%rdi,$2c) = %%EA
+#! $1c(%rsp,%rdx,$2c) = %%EA
+#! $1c(%rsp,%rsi,$2c) = %%EA
+#! $1c(%rsp) = %%EA
+#! %rsp = %%rsp
+#! $1c(%rax) = %%EA
+#! (%rax) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rcx) = %%EA
+#! $1c(%r10) = %%EA
+#! $1c(%r12) = %%EA
+#! $1c(%r14) = %%EA
+#! $1c(%r15) = %%EA
+#! (%%r15) = %%EA
+#! %rax = %eax
+#! %eax = %%eax
+#! %rbx = %ebx
+#! %ebx = %%ebx
+#! %rcx = %ecx
+#! %ecx = %%ecx
+#! %rdx = %edx
+#! %edx = %%edx
+#! %rdi = %edi
+#! %edi = %%edi
+#! %rbp = %ebp
+#! %ebp = %%ebp
+#! %rsi = %esi
+#! %esi = %%esi
+#! %r8d = %r8
+#! %r9d = %r9
+#! %r10d = %r10
+#! %r11d = %r11
+#! %r12d = %r12
+#! %r13d = %r13
+#! %r14d = %r14
+#! %r15d = %r15
+#! %r$1c = %%r$1c
+
+#! push $1v -> (* push $1v *)\nnop
+#! pop $1v -> (* pop $1v *)\nnop
+#! lea 0x1401\(%rip\), $1v -> nondet $1v@uint32
+#! mov %fs:0x28, $1v -> (* mov %fs:0x28, $1v *)\nnop
+#! sub %fs:0x28, $1v -> (* sub %fs:0x28, $1v *)\nnop
+#! test $1v, $1v -> (* test $1v, $1v *)\nnop
+#! add $1v, $2v -> adds dc $2v $2v $1v
+#! add $1ea, $2v -> adds dc $2v $2v $1ea
+#! add $1c, $2v -> adds dc $2v $2v $1c@uint32
+#! and $1v, $2v -> and $2v@uint32 $2v $1v
+#! and $1c, $2v -> and $2v@uint32 $2v $1c@uint32
+#! cmp $1c, $2v -> (* cmp $1c, $2v *)\nnop
+#! lea -$1c\($2v\), $3v -> subs dc $3v $2v $1c@uint32
+#! lea $1c\($2v\), $3v -> adds dc $3v $2v $1c@uint32
+#! lea \($1v, $2v, 1\), $3v -> adds dc $3v $1v $2v
+#! lea -$1c\($2v, $3v, 1\), $4v -> subs dc tmp $2v $1c@uint32;\nadds dc $4v $3v tmp
+#! lea $1c\($2v, $3v, 1\), $4v -> adds dc tmp $1c@uint32 $2v;\nadds dc $4v $3v tmp
+#! mov $1c, $2v -> mov $2v $1c@uint32
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2v -> mov $2v $1v
+#! movzbl $1ea, $2v -> cast $2v@uint32 $1ea
+#! not $1v -> not $1v@uint32 $1v
+#! or $1v, $2v -> or $2v@uint32 $2v $1v
+#! rol $1c, $2v -> rol $2v@uint32 $2v $1c
+#! ror $1c, $2v -> ror $2v@uint32 $2v $1c
+#! shl $1c, $2v -> split dc $2v $2v (32-$1c);\nshl $2v $2v $1c@uint32
+#! shr $1c, $2v -> split $2v dc $2v $1c
+#! sub $1c, $2v -> subc dc $2v $2v $1c@uint32
+#! subq $1c, $2ea -> subc dc $2ea $2ea $1c@uint32
+#! xor $1v, $1v -> mov $1v 0@uint32
+#! xor $1v, $2v -> xor $2v@uint32 $2v $1v
+
+
+#sha256_block_data_order:
 # %rdi = 0x555555559060
 # %rsi = 0x555555559088
 # %rdx = 0x1
