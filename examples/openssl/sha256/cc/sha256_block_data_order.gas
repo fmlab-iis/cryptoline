@@ -53,9 +53,9 @@
 #! cmp $1c, $2v -> (* cmp $1c, $2v *)\nnop
 #! lea -$1c\($2v\), $3v -> subs dc $3v $2v $1c@uint32
 #! lea $1c\($2v\), $3v -> adds dc $3v $2v $1c@uint32
-#! lea \($1v, $2v, 1\), $3v -> adds dc $3v $1v $2v
 #! lea -$1c\($2v, $3v, 1\), $4v -> subs dc tmp $2v $1c@uint32;\nadds dc $4v $3v tmp
 #! lea $1c\($2v, $3v, 1\), $4v -> adds dc tmp $1c@uint32 $2v;\nadds dc $4v $3v tmp
+#! lea \($1v, $2v, 1\), $3v -> adds dc $3v $1v $2v
 #! mov $1c, $2v -> mov $2v $1c@uint32
 #! mov $1v, $2ea -> mov $2ea $1v
 #! mov $1ea, $2v -> mov $2v $1ea
