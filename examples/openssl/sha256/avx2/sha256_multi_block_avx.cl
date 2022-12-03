@@ -63,13 +63,14 @@ uint8 D60, uint8 D61, uint8 D62, uint8 D63
 
 (* counter = 1 *)
 
-mov L0x7fffffffd8a8 1@uint32;
+mov L0x7fffffffd8a8 1@uint32; mov L0x7fffffffd8b8 1@uint32;
+mov L0x7fffffffd8c8 1@uint32; mov L0x7fffffffd8d8 1@uint32;
 
 nondet rsp@uint32; 
 nondet L0x7fffffffd8a0@uint32; 
-nondet L0x7fffffffd8b0@uint32; nondet L0x7fffffffd8b8@uint32;
-nondet L0x7fffffffd8c0@uint32; nondet L0x7fffffffd8c8@uint32;
-nondet L0x7fffffffd8d0@uint32; nondet L0x7fffffffd8d8@uint32;
+nondet L0x7fffffffd8b0@uint32;
+nondet L0x7fffffffd8c0@uint32;
+nondet L0x7fffffffd8d0@uint32;
 nondet L0x7fffffffd878@uint32; nondet L0x7fffffffd880@uint32;
 
 
