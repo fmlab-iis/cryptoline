@@ -22,6 +22,11 @@ def print_nondet (regs, addrs):
         print ('nondet L0x{0:x}@uint32;'.format (addrs[i]),
                end = '\n' if i%2 == 1 else ' ')
         
+def print_counter (addrs):
+    for i in range (len (addrs)):
+        print ('mov L0x{0:x} 1@uint32;'.format (addrs[i]),
+               end = '\n' if i%2 == 1 else ' ')
+
 def print_constants (base, consts):
     for i in range (len (consts)):
         for j in range (8):
@@ -69,10 +74,12 @@ print_parameters ('D')
 
 print ('\n')
 
-print_nondet (['rsp'], [0x7fffffffd8a0, 0x7fffffffd8a8,
-                        0x7fffffffd8b0, 0x7fffffffd8b8,
-                        0x7fffffffd8c0, 0x7fffffffd8c8,
-                        0x7fffffffd8d0, 0x7fffffffd8d8,
+print_counter ([0x7fffffffd8a8, 0x7fffffffd8b8, 0x7fffffffd8c8, 0x7fffffffd8d8])
+
+print ('\n')
+
+print_nondet (['rsp'], [0x7fffffffd8a0, 0x7fffffffd8b0, 
+                        0x7fffffffd8c0, 0x7fffffffd8d0, 
                         0x7fffffffd878, 0x7fffffffd880])
 
 print ('\n')
