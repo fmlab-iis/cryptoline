@@ -50,7 +50,7 @@
 #! sub $1c, $2v -> subs dc $2v $2v $1c@uint32
 #! xor $1v, $1v -> mov $1v 0@uint32
 
-#! vinserti128 \$0x1, $1ymm, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0; mov $3ymm_1 $2ymm_1; mov $3ymm_2 $2ymm_2; mov $3ymm_3 $2ymm_3;\nmov $3ymm_4 $1ymm_0; mov $3ymm_5 $1ymm_1; mov $3ymm_6 $1ymm_3; mov $3ymm_7 $1ymm_3
+#! vinserti128 \$0x1, $1ymm, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0; mov $3ymm_1 $2ymm_1; mov $3ymm_2 $2ymm_2; mov $3ymm_3 $2ymm_3;\nmov $3ymm_4 $1ymm_0; mov $3ymm_5 $1ymm_1; mov $3ymm_6 $1ymm_2; mov $3ymm_7 $1ymm_3
 #! vmovd $1ea, $2ymm -> mov $2ymm_0 $1ea; mov $2ymm_1 0@uint32;\nmov $2ymm_2 0@uint32; mov $2ymm_3 0@uint32;\nmov $2ymm_4 0@uint32; mov $2ymm_5 0@uint32;\nmov $2ymm_6 0@uint32; mov $2ymm_7 0@uint32
 #! vmovdqa $1ymm, $2ymm -> mov $2ymm_0 $1ymm_0; mov $2ymm_1 $1ymm_1; mov $2ymm_2 $1ymm_2; mov $2ymm_3 $1ymm_3;\nmov $2ymm_4 $1ymm_4; mov $2ymm_5 $1ymm_5; mov $2ymm_6 $1ymm_6; mov $2ymm_7 $1ymm_7
 #! vmovdqu $1ymm, $2ymm -> mov $2ymm_0 $1ymm_0; mov $2ymm_1 $1ymm_1; mov $2ymm_2 $1ymm_2; mov $2ymm_3 $1ymm_3;\nmov $2ymm_4 $1ymm_4; mov $2ymm_5 $1ymm_5; mov $2ymm_6 $1ymm_6; mov $2ymm_7 $1ymm_7
@@ -68,6 +68,7 @@
 #! vpslld $1c, $2ymm, $3ymm -> split dc $3ymm_0 $2ymm_0 (32-$1c); shl $3ymm_0 $3ymm_0 $1c@uint32;\nsplit dc $3ymm_1 $2ymm_1 (32-$1c); shl $3ymm_1 $3ymm_1 $1c@uint32;\nsplit dc $3ymm_2 $2ymm_2 (32-$1c); shl $3ymm_2 $3ymm_2 $1c@uint32;\nsplit dc $3ymm_3 $2ymm_3 (32-$1c); shl $3ymm_3 $3ymm_3 $1c@uint32;\nsplit dc $3ymm_4 $2ymm_4 (32-$1c); shl $3ymm_4 $3ymm_4 $1c@uint32;\nsplit dc $3ymm_5 $2ymm_5 (32-$1c); shl $3ymm_5 $3ymm_5 $1c@uint32;\nsplit dc $3ymm_6 $2ymm_6 (32-$1c); shl $3ymm_6 $3ymm_6 $1c@uint32;\nsplit dc $3ymm_7 $2ymm_7 (32-$1c); shl $3ymm_7 $3ymm_7 $1c@uint32
 #! vpsrld $1c, $2ymm, $3ymm -> split $3ymm_0 dc $2ymm_0 $1c; split $3ymm_1 dc $2ymm_1 $1c;\nsplit $3ymm_2 dc $2ymm_2 $1c; split $3ymm_3 dc $2ymm_3 $1c;\nsplit $3ymm_4 dc $2ymm_4 $1c; split $3ymm_5 dc $2ymm_5 $1c;\nsplit $3ymm_6 dc $2ymm_6 $1c; split $3ymm_7 dc $2ymm_7 $1c
 #! vpunpckldq $1ymm, $2ymm, $3ymm -> mov upck0 $2ymm_0; mov upck1 $1ymm_0; mov upck2 $2ymm_1; mov upck3 $1ymm_1;\nmov upck4 $2ymm_4; mov upck5 $1ymm_4; mov upck6 $2ymm_5; mov upck7 $1ymm_5;\nmov $3ymm_0 upck0; mov $3ymm_1 upck1; mov $3ymm_2 upck2; mov $3ymm_3 upck3;\nmov $3ymm_4 upck4; mov $3ymm_5 upck5; mov $3ymm_6 upck6; mov $3ymm_7 upck7
+#! vpxor $1ymm, $1ymm, $1ymm -> mov $1ymm_0 0@uint32; mov $1ymm_1 0@uint32; mov $1ymm_2 0@uint32; mov $1ymm_3 0@uint32;\nmov $1ymm_4 0@uint32; mov $1ymm_5 0@uint32; mov $1ymm_6 0@uint32; mov $1ymm_7 0@uint32
 #! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint32 $2ymm_0 $1ymm_0; xor $3ymm_1@uint32 $2ymm_1 $1ymm_1;\nxor $3ymm_2@uint32 $2ymm_2 $1ymm_2; xor $3ymm_3@uint32 $2ymm_3 $1ymm_3;\nxor $3ymm_4@uint32 $2ymm_4 $1ymm_4; xor $3ymm_5@uint32 $2ymm_5 $1ymm_5;\nxor $3ymm_6@uint32 $2ymm_6 $1ymm_6; xor $3ymm_7@uint32 $2ymm_7 $1ymm_7
 
 #sha256_multi_block_avx2:

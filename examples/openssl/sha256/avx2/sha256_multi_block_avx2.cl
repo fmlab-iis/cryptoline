@@ -858,7 +858,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555a91b *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555a921 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -1130,7 +1130,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555aa11 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555aa17 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -1402,7 +1402,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555ab07 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555ab0d *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -1674,7 +1674,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555abfd *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555ac03 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -1946,7 +1946,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555acf3 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555acf9 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -2218,7 +2218,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555ade8 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555adee *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -2490,7 +2490,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555aede *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555aee4 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -2762,7 +2762,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555afd4 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555afda *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -3037,7 +3037,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b0d1 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b0d7 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -3309,7 +3309,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b1c7 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b1cd *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -3581,7 +3581,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b2bd *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b2c3 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -3853,7 +3853,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b3b3 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b3b9 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -4125,7 +4125,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b4a9 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b4af *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -4397,7 +4397,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b59e *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b5a4 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -4669,7 +4669,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b694 *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b69a *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -4965,7 +4965,7 @@ mov ymm0_0 upck0; mov ymm0_1 upck1; mov ymm0_2 upck2; mov ymm0_3 upck3;
 mov ymm0_4 upck4; mov ymm0_5 upck5; mov ymm0_6 upck6; mov ymm0_7 upck7;
 (* vinserti128 $0x1,%xmm0,%ymm5,%ymm5              #! PC = 0x55555555b7ab *)
 mov ymm5_0 ymm5_0; mov ymm5_1 ymm5_1; mov ymm5_2 ymm5_2; mov ymm5_3 ymm5_3;
-mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_3; mov ymm5_7 ymm0_3;
+mov ymm5_4 ymm0_0; mov ymm5_5 ymm0_1; mov ymm5_6 ymm0_2; mov ymm5_7 ymm0_3;
 (* vpshufb %ymm6,%ymm5,%ymm5                       #! PC = 0x55555555b7b1 *)
 assert true
    && and [ymm6_0=0x00010203@32, ymm6_1=0x04050607@32, ymm6_2=0x08090a0b@32, ymm6_3=0x0c0d0e0f@32,ymm6_4=0x00010203@32, ymm6_5=0x04050607@32, ymm6_6=0x08090a0b@32, ymm6_7=0x0c0d0e0f@32];
@@ -21596,10 +21596,8 @@ mov ymm7_2 L0x7fffffffd908; mov ymm7_3 L0x7fffffffd90c;
 mov ymm7_4 L0x7fffffffd910; mov ymm7_5 L0x7fffffffd914;
 mov ymm7_6 L0x7fffffffd918; mov ymm7_7 L0x7fffffffd91c;
 (* vpxor  %ymm0,%ymm0,%ymm0                        #! PC = 0x55555555ca6d *)
-xor ymm0_0@uint32 ymm0_0 ymm0_0; xor ymm0_1@uint32 ymm0_1 ymm0_1;
-xor ymm0_2@uint32 ymm0_2 ymm0_2; xor ymm0_3@uint32 ymm0_3 ymm0_3;
-xor ymm0_4@uint32 ymm0_4 ymm0_4; xor ymm0_5@uint32 ymm0_5 ymm0_5;
-xor ymm0_6@uint32 ymm0_6 ymm0_6; xor ymm0_7@uint32 ymm0_7 ymm0_7;
+mov ymm0_0 0@uint32; mov ymm0_1 0@uint32; mov ymm0_2 0@uint32; mov ymm0_3 0@uint32;
+mov ymm0_4 0@uint32; mov ymm0_5 0@uint32; mov ymm0_6 0@uint32; mov ymm0_7 0@uint32;
 (* vmovdqa %ymm7,%ymm6                             #! PC = 0x55555555ca71 *)
 mov ymm6_0 ymm7_0; mov ymm6_1 ymm7_1; mov ymm6_2 ymm7_2; mov ymm6_3 ymm7_3;
 mov ymm6_4 ymm7_4; mov ymm6_5 ymm7_5; mov ymm6_6 ymm7_6; mov ymm6_7 ymm7_7;
