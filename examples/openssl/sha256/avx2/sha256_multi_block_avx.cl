@@ -1,3 +1,12 @@
+(* popper: cv_cec.exe -v -rename_local -ov a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,c0,c1,c2,c3,c4,c5,c6,c7,d0,d1,d2,d3,d4,d5,d6,d7 sha256_block_data_order_cc_times_4.cl sha256_multi_block_avx.cl
+Parsing CryptoLine file:                [OK]            0.035378 seconds
+Checking well-formedness:               [OK]            0.015498 seconds
+Parsing CryptoLine file:                [OK]            0.059176 seconds
+Checking well-formedness:               [OK]            0.016822 seconds
+Converting programs to AIG:             [OK]            2.190439 seconds
+Checking equivalence:                   [OK]            11010.791373 seconds
+*)
+
 proc main (
 uint8 A00, uint8 A01, uint8 A02, uint8 A03, uint8 A04,
 uint8 A05, uint8 A06, uint8 A07, uint8 A08, uint8 A09,

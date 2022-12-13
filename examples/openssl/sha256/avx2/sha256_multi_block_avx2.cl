@@ -1,3 +1,62 @@
+(* popper: for i in a b c d e f g h; do echo check "$i"0,"$i"1,"$i"2,"$i"3,"$i"4,"$i"5,"$i"6,"$i"7; ~/Work/code/cryptoline/_build/default/cv_cec.exe -v -ov "$i"0,"$i"1,"$i"2,"$i"3,"$i"4,"$i"5,"$i"6,"$i"7 sha256_block_data_order_cc_times_8.cl  sha256_multi_block_avx2.cl; done
+check a0,a1,a2,a3,a4,a5,a6,a7
+Parsing CryptoLine file:                [OK]            0.039425 seconds
+Checking well-formedness:               [OK]            0.027182 seconds
+Parsing CryptoLine file:                [OK]            0.130483 seconds
+Checking well-formedness:               [OK]            0.037276 seconds
+Converting programs to AIG:             [OK]            0.587346 seconds
+Checking equivalence:                   [OK]            2251.362282 seconds
+check b0,b1,b2,b3,b4,b5,b6,b7
+Parsing CryptoLine file:                [OK]            0.038930 seconds
+Checking well-formedness:               [OK]            0.027287 seconds
+Parsing CryptoLine file:                [OK]            0.130946 seconds
+Checking well-formedness:               [OK]            0.036783 seconds
+Converting programs to AIG:             [OK]            0.600650 seconds
+Checking equivalence:                   [OK]            3263.078005 seconds
+check c0,c1,c2,c3,c4,c5,c6,c7
+Parsing CryptoLine file:                [OK]            0.042189 seconds
+Checking well-formedness:               [OK]            0.029526 seconds
+Parsing CryptoLine file:                [OK]            0.139063 seconds
+Checking well-formedness:               [OK]            0.037155 seconds
+Converting programs to AIG:             [OK]            0.628957 seconds
+Checking equivalence:                   [OK]            1567.414066 seconds
+check d0,d1,d2,d3,d4,d5,d6,d7
+Parsing CryptoLine file:                [OK]            0.038903 seconds
+Checking well-formedness:               [OK]            0.027141 seconds
+Parsing CryptoLine file:                [OK]            0.131007 seconds
+Checking well-formedness:               [OK]            0.036998 seconds
+Converting programs to AIG:             [OK]            0.606589 seconds
+Checking equivalence:                   [OK]            1572.814601 seconds
+check e0,e1,e2,e3,e4,e5,e6,e7
+Parsing CryptoLine file:                [OK]            0.038772 seconds
+Checking well-formedness:               [OK]            0.027569 seconds
+Parsing CryptoLine file:                [OK]            0.132549 seconds
+Checking well-formedness:               [OK]            0.037511 seconds
+Converting programs to AIG:             [OK]            0.602545 seconds
+Checking equivalence:                   [OK]            1586.567461 seconds
+check f0,f1,f2,f3,f4,f5,f6,f7
+Parsing CryptoLine file:                [OK]            0.038614 seconds
+Checking well-formedness:               [OK]            0.026966 seconds
+Parsing CryptoLine file:                [OK]            0.132884 seconds
+Checking well-formedness:               [OK]            0.037009 seconds
+Converting programs to AIG:             [OK]            0.598903 seconds
+Checking equivalence:                   [OK]            1571.565701 seconds
+check g0,g1,g2,g3,g4,g5,g6,g7
+Parsing CryptoLine file:                [OK]            0.038824 seconds
+Checking well-formedness:               [OK]            0.027063 seconds
+Parsing CryptoLine file:                [OK]            0.132456 seconds
+Checking well-formedness:               [OK]            0.036895 seconds
+Converting programs to AIG:             [OK]            0.590940 seconds
+Checking equivalence:                   [OK]            1568.101743 seconds
+check h0,h1,h2,h3,h4,h5,h6,h7
+Parsing CryptoLine file:                [OK]            0.038815 seconds
+Checking well-formedness:               [OK]            0.027061 seconds
+Parsing CryptoLine file:                [OK]            0.132725 seconds
+Checking well-formedness:               [OK]            0.036645 seconds
+Converting programs to AIG:             [OK]            0.593026 seconds
+Checking equivalence:                   [OK]            1574.757131 seconds
+*)
+
 proc main (
 uint8 A00, uint8 A01, uint8 A02, uint8 A03, uint8 A04,
 uint8 A05, uint8 A06, uint8 A07, uint8 A08, uint8 A09,
