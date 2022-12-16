@@ -1,0 +1,1355 @@
+nondet rb0_0@bit; nondet rb0_1@bit; nondet rb0_2@bit; nondet rb0_3@bit; nondet rb0_4@bit; nondet rb0_5@bit; nondet rb0_6@bit; nondet rb0_7@bit; nondet rb0_8@bit; nondet rb0_9@bit; nondet rb0_10@bit; nondet rb0_11@bit; nondet rb0_12@bit; nondet rb0_13@bit; nondet rb0_14@bit; nondet rb0_15@bit; nondet rb0_16@bit; nondet rb0_17@bit; nondet rb0_18@bit; nondet rb0_19@bit; nondet rb0_20@bit; nondet rb0_21@bit; nondet rb0_22@bit; nondet rb0_23@bit; nondet rb0_24@bit; nondet rb0_25@bit; nondet rb0_26@bit; nondet rb0_27@bit; nondet rb0_28@bit; nondet rb0_29@bit; nondet rb0_30@bit; nondet rb0_31@bit; nondet rb0_32@bit; nondet rb0_33@bit; nondet rb0_34@bit; nondet rb0_35@bit; nondet rb0_36@bit; nondet rb0_37@bit; nondet rb0_38@bit; nondet rb0_39@bit; nondet rb0_40@bit; nondet rb0_41@bit; nondet rb0_42@bit; nondet rb0_43@bit; nondet rb0_44@bit; nondet rb0_45@bit; nondet rb0_46@bit; nondet rb0_47@bit; nondet rb0_48@bit; nondet rb0_49@bit; nondet rb0_50@bit; nondet rb0_51@bit; nondet rb0_52@bit; nondet rb0_53@bit; nondet rb0_54@bit; nondet rb0_55@bit; nondet rb0_56@bit; nondet rb0_57@bit; nondet rb0_58@bit; nondet rb0_59@bit; nondet rb0_60@bit; nondet rb0_61@bit; nondet rb0_62@bit; nondet rb0_63@bit;
+nondet rb1_0@bit; nondet rb1_1@bit; nondet rb1_2@bit; nondet rb1_3@bit; nondet rb1_4@bit; nondet rb1_5@bit; nondet rb1_6@bit; nondet rb1_7@bit; nondet rb1_8@bit; nondet rb1_9@bit; nondet rb1_10@bit; nondet rb1_11@bit; nondet rb1_12@bit; nondet rb1_13@bit; nondet rb1_14@bit; nondet rb1_15@bit; nondet rb1_16@bit; nondet rb1_17@bit; nondet rb1_18@bit; nondet rb1_19@bit; nondet rb1_20@bit; nondet rb1_21@bit; nondet rb1_22@bit; nondet rb1_23@bit; nondet rb1_24@bit; nondet rb1_25@bit; nondet rb1_26@bit; nondet rb1_27@bit; nondet rb1_28@bit; nondet rb1_29@bit; nondet rb1_30@bit; nondet rb1_31@bit; nondet rb1_32@bit; nondet rb1_33@bit; nondet rb1_34@bit; nondet rb1_35@bit; nondet rb1_36@bit; nondet rb1_37@bit; nondet rb1_38@bit; nondet rb1_39@bit; nondet rb1_40@bit; nondet rb1_41@bit; nondet rb1_42@bit; nondet rb1_43@bit; nondet rb1_44@bit; nondet rb1_45@bit; nondet rb1_46@bit; nondet rb1_47@bit; nondet rb1_48@bit; nondet rb1_49@bit; nondet rb1_50@bit; nondet rb1_51@bit; nondet rb1_52@bit; nondet rb1_53@bit; nondet rb1_54@bit; nondet rb1_55@bit; nondet rb1_56@bit; nondet rb1_57@bit; nondet rb1_58@bit; nondet rb1_59@bit; nondet rb1_60@bit; nondet rb1_61@bit; nondet rb1_62@bit; nondet rb1_63@bit;
+nondet rb2_0@bit; nondet rb2_1@bit; nondet rb2_2@bit; nondet rb2_3@bit; nondet rb2_4@bit; nondet rb2_5@bit; nondet rb2_6@bit; nondet rb2_7@bit; nondet rb2_8@bit; nondet rb2_9@bit; nondet rb2_10@bit; nondet rb2_11@bit; nondet rb2_12@bit; nondet rb2_13@bit; nondet rb2_14@bit; nondet rb2_15@bit; nondet rb2_16@bit; nondet rb2_17@bit; nondet rb2_18@bit; nondet rb2_19@bit; nondet rb2_20@bit; nondet rb2_21@bit; nondet rb2_22@bit; nondet rb2_23@bit; nondet rb2_24@bit; nondet rb2_25@bit; nondet rb2_26@bit; nondet rb2_27@bit; nondet rb2_28@bit; nondet rb2_29@bit; nondet rb2_30@bit; nondet rb2_31@bit; nondet rb2_32@bit; nondet rb2_33@bit; nondet rb2_34@bit; nondet rb2_35@bit; nondet rb2_36@bit; nondet rb2_37@bit; nondet rb2_38@bit; nondet rb2_39@bit; nondet rb2_40@bit; nondet rb2_41@bit; nondet rb2_42@bit; nondet rb2_43@bit; nondet rb2_44@bit; nondet rb2_45@bit; nondet rb2_46@bit; nondet rb2_47@bit; nondet rb2_48@bit; nondet rb2_49@bit; nondet rb2_50@bit; nondet rb2_51@bit; nondet rb2_52@bit; nondet rb2_53@bit; nondet rb2_54@bit; nondet rb2_55@bit; nondet rb2_56@bit; nondet rb2_57@bit; nondet rb2_58@bit; nondet rb2_59@bit; nondet rb2_60@bit; nondet rb2_61@bit; nondet rb2_62@bit; nondet rb2_63@bit;
+nondet rb3_0@bit; nondet rb3_1@bit; nondet rb3_2@bit; nondet rb3_3@bit; nondet rb3_4@bit; nondet rb3_5@bit; nondet rb3_6@bit; nondet rb3_7@bit; nondet rb3_8@bit; nondet rb3_9@bit; nondet rb3_10@bit; nondet rb3_11@bit; nondet rb3_12@bit; nondet rb3_13@bit; nondet rb3_14@bit; nondet rb3_15@bit; nondet rb3_16@bit; nondet rb3_17@bit; nondet rb3_18@bit; nondet rb3_19@bit; nondet rb3_20@bit; nondet rb3_21@bit; nondet rb3_22@bit; nondet rb3_23@bit; nondet rb3_24@bit; nondet rb3_25@bit; nondet rb3_26@bit; nondet rb3_27@bit; nondet rb3_28@bit; nondet rb3_29@bit; nondet rb3_30@bit; nondet rb3_31@bit; nondet rb3_32@bit; nondet rb3_33@bit; nondet rb3_34@bit; nondet rb3_35@bit; nondet rb3_36@bit; nondet rb3_37@bit; nondet rb3_38@bit; nondet rb3_39@bit; nondet rb3_40@bit; nondet rb3_41@bit; nondet rb3_42@bit; nondet rb3_43@bit; nondet rb3_44@bit; nondet rb3_45@bit; nondet rb3_46@bit; nondet rb3_47@bit; nondet rb3_48@bit; nondet rb3_49@bit; nondet rb3_50@bit; nondet rb3_51@bit; nondet rb3_52@bit; nondet rb3_53@bit; nondet rb3_54@bit; nondet rb3_55@bit; nondet rb3_56@bit; nondet rb3_57@bit; nondet rb3_58@bit; nondet rb3_59@bit; nondet rb3_60@bit; nondet rb3_61@bit; nondet rb3_62@bit; nondet rb3_63@bit;
+nondet rb4_0@bit; nondet rb4_1@bit; nondet rb4_2@bit; nondet rb4_3@bit; nondet rb4_4@bit; nondet rb4_5@bit; nondet rb4_6@bit; nondet rb4_7@bit; nondet rb4_8@bit; nondet rb4_9@bit; nondet rb4_10@bit; nondet rb4_11@bit; nondet rb4_12@bit; nondet rb4_13@bit; nondet rb4_14@bit; nondet rb4_15@bit; nondet rb4_16@bit; nondet rb4_17@bit; nondet rb4_18@bit; nondet rb4_19@bit; nondet rb4_20@bit; nondet rb4_21@bit; nondet rb4_22@bit; nondet rb4_23@bit; nondet rb4_24@bit; nondet rb4_25@bit; nondet rb4_26@bit; nondet rb4_27@bit; nondet rb4_28@bit; nondet rb4_29@bit; nondet rb4_30@bit; nondet rb4_31@bit; nondet rb4_32@bit; nondet rb4_33@bit; nondet rb4_34@bit; nondet rb4_35@bit; nondet rb4_36@bit; nondet rb4_37@bit; nondet rb4_38@bit; nondet rb4_39@bit; nondet rb4_40@bit; nondet rb4_41@bit; nondet rb4_42@bit; nondet rb4_43@bit; nondet rb4_44@bit; nondet rb4_45@bit; nondet rb4_46@bit; nondet rb4_47@bit; nondet rb4_48@bit; nondet rb4_49@bit; nondet rb4_50@bit; nondet rb4_51@bit; nondet rb4_52@bit; nondet rb4_53@bit; nondet rb4_54@bit; nondet rb4_55@bit; nondet rb4_56@bit; nondet rb4_57@bit; nondet rb4_58@bit; nondet rb4_59@bit; nondet rb4_60@bit; nondet rb4_61@bit; nondet rb4_62@bit; nondet rb4_63@bit;
+nondet rb5_0@bit; nondet rb5_1@bit; nondet rb5_2@bit; nondet rb5_3@bit; nondet rb5_4@bit; nondet rb5_5@bit; nondet rb5_6@bit; nondet rb5_7@bit; nondet rb5_8@bit; nondet rb5_9@bit; nondet rb5_10@bit; nondet rb5_11@bit; nondet rb5_12@bit; nondet rb5_13@bit; nondet rb5_14@bit; nondet rb5_15@bit; nondet rb5_16@bit; nondet rb5_17@bit; nondet rb5_18@bit; nondet rb5_19@bit; nondet rb5_20@bit; nondet rb5_21@bit; nondet rb5_22@bit; nondet rb5_23@bit; nondet rb5_24@bit; nondet rb5_25@bit; nondet rb5_26@bit; nondet rb5_27@bit; nondet rb5_28@bit; nondet rb5_29@bit; nondet rb5_30@bit; nondet rb5_31@bit; nondet rb5_32@bit; nondet rb5_33@bit; nondet rb5_34@bit; nondet rb5_35@bit; nondet rb5_36@bit; nondet rb5_37@bit; nondet rb5_38@bit; nondet rb5_39@bit; nondet rb5_40@bit; nondet rb5_41@bit; nondet rb5_42@bit; nondet rb5_43@bit; nondet rb5_44@bit; nondet rb5_45@bit; nondet rb5_46@bit; nondet rb5_47@bit; nondet rb5_48@bit; nondet rb5_49@bit; nondet rb5_50@bit; nondet rb5_51@bit; nondet rb5_52@bit; nondet rb5_53@bit; nondet rb5_54@bit; nondet rb5_55@bit; nondet rb5_56@bit; nondet rb5_57@bit; nondet rb5_58@bit; nondet rb5_59@bit; nondet rb5_60@bit; nondet rb5_61@bit; nondet rb5_62@bit; nondet rb5_63@bit;
+nondet rb6_0@bit; nondet rb6_1@bit; nondet rb6_2@bit; nondet rb6_3@bit; nondet rb6_4@bit; nondet rb6_5@bit; nondet rb6_6@bit; nondet rb6_7@bit; nondet rb6_8@bit; nondet rb6_9@bit; nondet rb6_10@bit; nondet rb6_11@bit; nondet rb6_12@bit; nondet rb6_13@bit; nondet rb6_14@bit; nondet rb6_15@bit; nondet rb6_16@bit; nondet rb6_17@bit; nondet rb6_18@bit; nondet rb6_19@bit; nondet rb6_20@bit; nondet rb6_21@bit; nondet rb6_22@bit; nondet rb6_23@bit; nondet rb6_24@bit; nondet rb6_25@bit; nondet rb6_26@bit; nondet rb6_27@bit; nondet rb6_28@bit; nondet rb6_29@bit; nondet rb6_30@bit; nondet rb6_31@bit; nondet rb6_32@bit; nondet rb6_33@bit; nondet rb6_34@bit; nondet rb6_35@bit; nondet rb6_36@bit; nondet rb6_37@bit; nondet rb6_38@bit; nondet rb6_39@bit; nondet rb6_40@bit; nondet rb6_41@bit; nondet rb6_42@bit; nondet rb6_43@bit; nondet rb6_44@bit; nondet rb6_45@bit; nondet rb6_46@bit; nondet rb6_47@bit; nondet rb6_48@bit; nondet rb6_49@bit; nondet rb6_50@bit; nondet rb6_51@bit; nondet rb6_52@bit; nondet rb6_53@bit; nondet rb6_54@bit; nondet rb6_55@bit; nondet rb6_56@bit; nondet rb6_57@bit; nondet rb6_58@bit; nondet rb6_59@bit; nondet rb6_60@bit; nondet rb6_61@bit; nondet rb6_62@bit; nondet rb6_63@bit;
+nondet rb7_0@bit; nondet rb7_1@bit; nondet rb7_2@bit; nondet rb7_3@bit; nondet rb7_4@bit; nondet rb7_5@bit; nondet rb7_6@bit; nondet rb7_7@bit; nondet rb7_8@bit; nondet rb7_9@bit; nondet rb7_10@bit; nondet rb7_11@bit; nondet rb7_12@bit; nondet rb7_13@bit; nondet rb7_14@bit; nondet rb7_15@bit; nondet rb7_16@bit; nondet rb7_17@bit; nondet rb7_18@bit; nondet rb7_19@bit; nondet rb7_20@bit; nondet rb7_21@bit; nondet rb7_22@bit; nondet rb7_23@bit; nondet rb7_24@bit; nondet rb7_25@bit; nondet rb7_26@bit; nondet rb7_27@bit; nondet rb7_28@bit; nondet rb7_29@bit; nondet rb7_30@bit; nondet rb7_31@bit; nondet rb7_32@bit; nondet rb7_33@bit; nondet rb7_34@bit; nondet rb7_35@bit; nondet rb7_36@bit; nondet rb7_37@bit; nondet rb7_38@bit; nondet rb7_39@bit; nondet rb7_40@bit; nondet rb7_41@bit; nondet rb7_42@bit; nondet rb7_43@bit; nondet rb7_44@bit; nondet rb7_45@bit; nondet rb7_46@bit; nondet rb7_47@bit; nondet rb7_48@bit; nondet rb7_49@bit; nondet rb7_50@bit; nondet rb7_51@bit; nondet rb7_52@bit; nondet rb7_53@bit; nondet rb7_54@bit; nondet rb7_55@bit; nondet rb7_56@bit; nondet rb7_57@bit; nondet rb7_58@bit; nondet rb7_59@bit; nondet rb7_60@bit; nondet rb7_61@bit; nondet rb7_62@bit; nondet rb7_63@bit;
+nondet rb8_0@bit; nondet rb8_1@bit; nondet rb8_2@bit; nondet rb8_3@bit; nondet rb8_4@bit; nondet rb8_5@bit; nondet rb8_6@bit; nondet rb8_7@bit; nondet rb8_8@bit; nondet rb8_9@bit; nondet rb8_10@bit; nondet rb8_11@bit; nondet rb8_12@bit; nondet rb8_13@bit; nondet rb8_14@bit; nondet rb8_15@bit; nondet rb8_16@bit; nondet rb8_17@bit; nondet rb8_18@bit; nondet rb8_19@bit; nondet rb8_20@bit; nondet rb8_21@bit; nondet rb8_22@bit; nondet rb8_23@bit; nondet rb8_24@bit; nondet rb8_25@bit; nondet rb8_26@bit; nondet rb8_27@bit; nondet rb8_28@bit; nondet rb8_29@bit; nondet rb8_30@bit; nondet rb8_31@bit; nondet rb8_32@bit; nondet rb8_33@bit; nondet rb8_34@bit; nondet rb8_35@bit; nondet rb8_36@bit; nondet rb8_37@bit; nondet rb8_38@bit; nondet rb8_39@bit; nondet rb8_40@bit; nondet rb8_41@bit; nondet rb8_42@bit; nondet rb8_43@bit; nondet rb8_44@bit; nondet rb8_45@bit; nondet rb8_46@bit; nondet rb8_47@bit; nondet rb8_48@bit; nondet rb8_49@bit; nondet rb8_50@bit; nondet rb8_51@bit; nondet rb8_52@bit; nondet rb8_53@bit; nondet rb8_54@bit; nondet rb8_55@bit; nondet rb8_56@bit; nondet rb8_57@bit; nondet rb8_58@bit; nondet rb8_59@bit; nondet rb8_60@bit; nondet rb8_61@bit; nondet rb8_62@bit; nondet rb8_63@bit;
+nondet rb9_0@bit; nondet rb9_1@bit; nondet rb9_2@bit; nondet rb9_3@bit; nondet rb9_4@bit; nondet rb9_5@bit; nondet rb9_6@bit; nondet rb9_7@bit; nondet rb9_8@bit; nondet rb9_9@bit; nondet rb9_10@bit; nondet rb9_11@bit; nondet rb9_12@bit; nondet rb9_13@bit; nondet rb9_14@bit; nondet rb9_15@bit; nondet rb9_16@bit; nondet rb9_17@bit; nondet rb9_18@bit; nondet rb9_19@bit; nondet rb9_20@bit; nondet rb9_21@bit; nondet rb9_22@bit; nondet rb9_23@bit; nondet rb9_24@bit; nondet rb9_25@bit; nondet rb9_26@bit; nondet rb9_27@bit; nondet rb9_28@bit; nondet rb9_29@bit; nondet rb9_30@bit; nondet rb9_31@bit; nondet rb9_32@bit; nondet rb9_33@bit; nondet rb9_34@bit; nondet rb9_35@bit; nondet rb9_36@bit; nondet rb9_37@bit; nondet rb9_38@bit; nondet rb9_39@bit; nondet rb9_40@bit; nondet rb9_41@bit; nondet rb9_42@bit; nondet rb9_43@bit; nondet rb9_44@bit; nondet rb9_45@bit; nondet rb9_46@bit; nondet rb9_47@bit; nondet rb9_48@bit; nondet rb9_49@bit; nondet rb9_50@bit; nondet rb9_51@bit; nondet rb9_52@bit; nondet rb9_53@bit; nondet rb9_54@bit; nondet rb9_55@bit; nondet rb9_56@bit; nondet rb9_57@bit; nondet rb9_58@bit; nondet rb9_59@bit; nondet rb9_60@bit; nondet rb9_61@bit; nondet rb9_62@bit; nondet rb9_63@bit;
+nondet rb10_0@bit; nondet rb10_1@bit; nondet rb10_2@bit; nondet rb10_3@bit; nondet rb10_4@bit; nondet rb10_5@bit; nondet rb10_6@bit; nondet rb10_7@bit; nondet rb10_8@bit; nondet rb10_9@bit; nondet rb10_10@bit; nondet rb10_11@bit; nondet rb10_12@bit; nondet rb10_13@bit; nondet rb10_14@bit; nondet rb10_15@bit; nondet rb10_16@bit; nondet rb10_17@bit; nondet rb10_18@bit; nondet rb10_19@bit; nondet rb10_20@bit; nondet rb10_21@bit; nondet rb10_22@bit; nondet rb10_23@bit; nondet rb10_24@bit; nondet rb10_25@bit; nondet rb10_26@bit; nondet rb10_27@bit; nondet rb10_28@bit; nondet rb10_29@bit; nondet rb10_30@bit; nondet rb10_31@bit; nondet rb10_32@bit; nondet rb10_33@bit; nondet rb10_34@bit; nondet rb10_35@bit; nondet rb10_36@bit; nondet rb10_37@bit; nondet rb10_38@bit; nondet rb10_39@bit; nondet rb10_40@bit; nondet rb10_41@bit; nondet rb10_42@bit; nondet rb10_43@bit; nondet rb10_44@bit; nondet rb10_45@bit; nondet rb10_46@bit; nondet rb10_47@bit; nondet rb10_48@bit; nondet rb10_49@bit; nondet rb10_50@bit; nondet rb10_51@bit; nondet rb10_52@bit; nondet rb10_53@bit; nondet rb10_54@bit; nondet rb10_55@bit; nondet rb10_56@bit; nondet rb10_57@bit; nondet rb10_58@bit; nondet rb10_59@bit; nondet rb10_60@bit; nondet rb10_61@bit; nondet rb10_62@bit; nondet rb10_63@bit;
+nondet rb11_0@bit; nondet rb11_1@bit; nondet rb11_2@bit; nondet rb11_3@bit; nondet rb11_4@bit; nondet rb11_5@bit; nondet rb11_6@bit; nondet rb11_7@bit; nondet rb11_8@bit; nondet rb11_9@bit; nondet rb11_10@bit; nondet rb11_11@bit; nondet rb11_12@bit; nondet rb11_13@bit; nondet rb11_14@bit; nondet rb11_15@bit; nondet rb11_16@bit; nondet rb11_17@bit; nondet rb11_18@bit; nondet rb11_19@bit; nondet rb11_20@bit; nondet rb11_21@bit; nondet rb11_22@bit; nondet rb11_23@bit; nondet rb11_24@bit; nondet rb11_25@bit; nondet rb11_26@bit; nondet rb11_27@bit; nondet rb11_28@bit; nondet rb11_29@bit; nondet rb11_30@bit; nondet rb11_31@bit; nondet rb11_32@bit; nondet rb11_33@bit; nondet rb11_34@bit; nondet rb11_35@bit; nondet rb11_36@bit; nondet rb11_37@bit; nondet rb11_38@bit; nondet rb11_39@bit; nondet rb11_40@bit; nondet rb11_41@bit; nondet rb11_42@bit; nondet rb11_43@bit; nondet rb11_44@bit; nondet rb11_45@bit; nondet rb11_46@bit; nondet rb11_47@bit; nondet rb11_48@bit; nondet rb11_49@bit; nondet rb11_50@bit; nondet rb11_51@bit; nondet rb11_52@bit; nondet rb11_53@bit; nondet rb11_54@bit; nondet rb11_55@bit; nondet rb11_56@bit; nondet rb11_57@bit; nondet rb11_58@bit; nondet rb11_59@bit; nondet rb11_60@bit; nondet rb11_61@bit; nondet rb11_62@bit; nondet rb11_63@bit;
+
+
+/* -------------------------------------------------------------------------- */
+
+assume modulus = z ** 12 + z ** 3 + 1 && true;
+
+nondet res0_0@bit; nondet res0_1@bit; nondet res0_2@bit; nondet res0_3@bit;
+nondet res0_4@bit; nondet res0_5@bit; nondet res0_6@bit; nondet res0_7@bit;
+nondet res0_8@bit; nondet res0_9@bit; nondet res0_10@bit; nondet res0_11@bit;
+nondet res0_12@bit; nondet res0_13@bit; nondet res0_14@bit; nondet res0_15@bit;
+nondet res0_16@bit; nondet res0_17@bit; nondet res0_18@bit; nondet res0_19@bit;
+nondet res0_20@bit; nondet res0_21@bit; nondet res0_22@bit; nondet res0_23@bit;
+nondet res0_24@bit; nondet res0_25@bit; nondet res0_26@bit; nondet res0_27@bit;
+nondet res0_28@bit; nondet res0_29@bit; nondet res0_30@bit; nondet res0_31@bit;
+nondet res0_32@bit; nondet res0_33@bit; nondet res0_34@bit; nondet res0_35@bit;
+nondet res0_36@bit; nondet res0_37@bit; nondet res0_38@bit; nondet res0_39@bit;
+nondet res0_40@bit; nondet res0_41@bit; nondet res0_42@bit; nondet res0_43@bit;
+nondet res0_44@bit; nondet res0_45@bit; nondet res0_46@bit; nondet res0_47@bit;
+nondet res0_48@bit; nondet res0_49@bit; nondet res0_50@bit; nondet res0_51@bit;
+nondet res0_52@bit; nondet res0_53@bit; nondet res0_54@bit; nondet res0_55@bit;
+nondet res0_56@bit; nondet res0_57@bit; nondet res0_58@bit; nondet res0_59@bit;
+nondet res0_60@bit; nondet res0_61@bit; nondet res0_62@bit; nondet res0_63@bit;
+
+assume and [
+  eqmod res0_0 (cvrted0_0 * ((* 0  0 *) 1)) [2, modulus],
+  eqmod res0_1 (cvrted0_1 * ((* 0  1 *) 1)) [2, modulus],
+  eqmod res0_2 (cvrted0_2 * ((* 0  2 *) z**2 + z)) [2, modulus],
+  eqmod res0_3 (cvrted0_3 * ((* 0  3 *) z**2 + z)) [2, modulus],
+  eqmod res0_4 (cvrted0_4 * ((* 0  4 *) z**4 + z**2)) [2, modulus],
+  eqmod res0_5 (cvrted0_5 * ((* 0  5 *) z**4 + z**2)) [2, modulus],
+  eqmod res0_6 (cvrted0_6 * ((* 0  6 *) z**6 + z**5 + z**4 + z**3)) [2, modulus],
+  eqmod res0_7 (cvrted0_7 * ((* 0  7 *) z**6 + z**5 + z**4 + z**3)) [2, modulus],
+  eqmod res0_8 (cvrted0_8 * ((* 0  8 *) z**8 + z**4)) [2, modulus],
+  eqmod res0_9 (cvrted0_9 * ((* 0  9 *) z**8 + z**4)) [2, modulus],
+  eqmod res0_10 (cvrted0_10 * ((* 0 10 *) z**10 + z**9 + z**6 + z**5)) [2, modulus],
+  eqmod res0_11 (cvrted0_11 * ((* 0 11 *) z**10 + z**9 + z**6 + z**5)) [2, modulus],
+  eqmod res0_12 (cvrted0_12 * ((* 0 12 *) z**10 + z**8 + z**6 + z**3 + 1)) [2, modulus],
+  eqmod res0_13 (cvrted0_13 * ((* 0 13 *) z**10 + z**8 + z**6 + z**3 + 1)) [2, modulus],
+  eqmod res0_14 (cvrted0_14 * ((* 0 14 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**5 + z**4 + z**3 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_15 (cvrted0_15 * ((* 0 15 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**5 + z**4 + z**3 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_16 (cvrted0_16 * ((* 0 16 *) z**8 + z**7 + z**4)) [2, modulus],
+  eqmod res0_17 (cvrted0_17 * ((* 0 17 *) z**8 + z**7 + z**4)) [2, modulus],
+  eqmod res0_18 (cvrted0_18 * ((* 0 18 *) z**10 + z**8 + z**6 + z**5)) [2, modulus],
+  eqmod res0_19 (cvrted0_19 * ((* 0 19 *) z**10 + z**8 + z**6 + z**5)) [2, modulus],
+  eqmod res0_20 (cvrted0_20 * ((* 0 20 *) z**11 + z**10 + z**9 + z**8 + z**6 + z**3 + 1)) [2, modulus],
+  eqmod res0_21 (cvrted0_21 * ((* 0 21 *) z**11 + z**10 + z**9 + z**8 + z**6 + z**3 + 1)) [2, modulus],
+  eqmod res0_22 (cvrted0_22 * ((* 0 22 *) z**9 + z**8 + z**7 + z**5 + z**2)) [2, modulus],
+  eqmod res0_23 (cvrted0_23 * ((* 0 23 *) z**9 + z**8 + z**7 + z**5 + z**2)) [2, modulus],
+  eqmod res0_24 (cvrted0_24 * ((* 0 24 *) z**11 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res0_25 (cvrted0_25 * ((* 0 25 *) z**11 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res0_26 (cvrted0_26 * ((* 0 26 *) z**10 + z**7 + z**6 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_27 (cvrted0_27 * ((* 0 27 *) z**10 + z**7 + z**6 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_28 (cvrted0_28 * ((* 0 28 *) z**11 + z**9 + z**7 + z**5 + z**4 + z + 1)) [2, modulus],
+  eqmod res0_29 (cvrted0_29 * ((* 0 29 *) z**11 + z**9 + z**7 + z**5 + z**4 + z + 1)) [2, modulus],
+  eqmod res0_30 (cvrted0_30 * ((* 0 30 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**5 + z**4 + 1)) [2, modulus],
+  eqmod res0_31 (cvrted0_31 * ((* 0 31 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**5 + z**4 + 1)) [2, modulus],
+  eqmod res0_32 (cvrted0_32 * ((* 0 32 *) z**8 + z**7 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res0_33 (cvrted0_33 * ((* 0 33 *) z**8 + z**7 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res0_34 (cvrted0_34 * ((* 0 34 *) z**10 + z**8 + z**7 + z**5 + z**4 + z**3)) [2, modulus],
+  eqmod res0_35 (cvrted0_35 * ((* 0 35 *) z**10 + z**8 + z**7 + z**5 + z**4 + z**3)) [2, modulus],
+  eqmod res0_36 (cvrted0_36 * ((* 0 36 *) z**11 + z**10 + z**8 + z**7 + z**4 + z**3 + 1)) [2, modulus],
+  eqmod res0_37 (cvrted0_37 * ((* 0 37 *) z**11 + z**10 + z**8 + z**7 + z**4 + z**3 + 1)) [2, modulus],
+  eqmod res0_38 (cvrted0_38 * ((* 0 38 *) z**11 + z**10 + z**8 + z**6 + z**2)) [2, modulus],
+  eqmod res0_39 (cvrted0_39 * ((* 0 39 *) z**11 + z**10 + z**8 + z**6 + z**2)) [2, modulus],
+  eqmod res0_40 (cvrted0_40 * ((* 0 40 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**3 + z)) [2, modulus],
+  eqmod res0_41 (cvrted0_41 * ((* 0 41 *) z**11 + z**10 + z**9 + z**8 + z**7 + z**3 + z)) [2, modulus],
+  eqmod res0_42 (cvrted0_42 * ((* 0 42 *) z**8 + z**5 + z**3 + z**2 + z)) [2, modulus],
+  eqmod res0_43 (cvrted0_43 * ((* 0 43 *) z**8 + z**5 + z**3 + z**2 + z)) [2, modulus],
+  eqmod res0_44 (cvrted0_44 * ((* 0 44 *) z**10 + z**9 + z**7 + z**6 + z**5 + z**2)) [2, modulus],
+  eqmod res0_45 (cvrted0_45 * ((* 0 45 *) z**10 + z**9 + z**7 + z**6 + z**5 + z**2)) [2, modulus],
+  eqmod res0_46 (cvrted0_46 * ((* 0 46 *) z**10 + z**9 + z**6 + z**4 + 1)) [2, modulus],
+  eqmod res0_47 (cvrted0_47 * ((* 0 47 *) z**10 + z**9 + z**6 + z**4 + 1)) [2, modulus],
+  eqmod res0_48 (cvrted0_48 * ((* 0 48 *) z**10 + z**8 + z**7 + z**6 + z**5 + z**3 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_49 (cvrted0_49 * ((* 0 49 *) z**10 + z**8 + z**7 + z**6 + z**5 + z**3 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_50 (cvrted0_50 * ((* 0 50 *) z**11 + z**10 + z**6 + z**5 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_51 (cvrted0_51 * ((* 0 51 *) z**11 + z**10 + z**6 + z**5 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_52 (cvrted0_52 * ((* 0 52 *) z**11 + z**8 + z**6 + z**5 + z**3)) [2, modulus],
+  eqmod res0_53 (cvrted0_53 * ((* 0 53 *) z**11 + z**8 + z**6 + z**5 + z**3)) [2, modulus],
+  eqmod res0_54 (cvrted0_54 * ((* 0 54 *) z**10 + z**9 + z**8 + z**6 + z**5 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_55 (cvrted0_55 * ((* 0 55 *) z**10 + z**9 + z**8 + z**6 + z**5 + z**3 + z + 1)) [2, modulus],
+  eqmod res0_56 (cvrted0_56 * ((* 0 56 *) z**9 + z**8 + z**6 + z**5 + z**4 + z + 1)) [2, modulus],
+  eqmod res0_57 (cvrted0_57 * ((* 0 57 *) z**9 + z**8 + z**6 + z**5 + z**4 + z + 1)) [2, modulus],
+  eqmod res0_58 (cvrted0_58 * ((* 0 58 *) z**11 + z**9 + z**8 + z**5 + z**3 + z)) [2, modulus],
+  eqmod res0_59 (cvrted0_59 * ((* 0 59 *) z**11 + z**9 + z**8 + z**5 + z**3 + z)) [2, modulus],
+  eqmod res0_60 (cvrted0_60 * ((* 0 60 *) z**11 + z**9 + z**7 + z**6 + z**5 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_61 (cvrted0_61 * ((* 0 61 *) z**11 + z**9 + z**7 + z**6 + z**5 + z**2 + z + 1)) [2, modulus],
+  eqmod res0_62 (cvrted0_62 * ((* 0 62 *) z**11 + z**10 + z**9 + z**6 + z**3 + 1)) [2, modulus],
+  eqmod res0_63 (cvrted0_63 * ((* 0 63 *) z**11 + z**10 + z**9 + z**6 + z**3 + 1)) [2, modulus]
+] && true;
+
+ghost t0@bit: t0 = (z ** 2 + z) * (x ** 2 + x) && true;
+
+ecut and [
+  eqmod (
+    (cvrted0_0 + x * cvrted0_1) * t0 ** 0 + 
+    (cvrted0_2 + x * cvrted0_3) * t0 ** 1 + 
+    (cvrted0_4 + x * cvrted0_5) * t0 ** 2 + 
+    (cvrted0_6 + x * cvrted0_7) * t0 ** 3 + 
+    (cvrted0_8 + x * cvrted0_9) * t0 ** 4 + 
+    (cvrted0_10 + x * cvrted0_11) * t0 ** 5 + 
+    (cvrted0_12 + x * cvrted0_13) * t0 ** 6 + 
+    (cvrted0_14 + x * cvrted0_15) * t0 ** 7 + 
+    (cvrted0_16 + x * cvrted0_17) * t0 ** 8 + 
+    (cvrted0_18 + x * cvrted0_19) * t0 ** 9 + 
+    (cvrted0_20 + x * cvrted0_21) * t0 ** 10 + 
+    (cvrted0_22 + x * cvrted0_23) * t0 ** 11 + 
+    (cvrted0_24 + x * cvrted0_25) * t0 ** 12 + 
+    (cvrted0_26 + x * cvrted0_27) * t0 ** 13 + 
+    (cvrted0_28 + x * cvrted0_29) * t0 ** 14 + 
+    (cvrted0_30 + x * cvrted0_31) * t0 ** 15 + 
+    (cvrted0_32 + x * cvrted0_33) * t0 ** 16 + 
+    (cvrted0_34 + x * cvrted0_35) * t0 ** 17 + 
+    (cvrted0_36 + x * cvrted0_37) * t0 ** 18 + 
+    (cvrted0_38 + x * cvrted0_39) * t0 ** 19 + 
+    (cvrted0_40 + x * cvrted0_41) * t0 ** 20 + 
+    (cvrted0_42 + x * cvrted0_43) * t0 ** 21 + 
+    (cvrted0_44 + x * cvrted0_45) * t0 ** 22 + 
+    (cvrted0_46 + x * cvrted0_47) * t0 ** 23 + 
+    (cvrted0_48 + x * cvrted0_49) * t0 ** 24 + 
+    (cvrted0_50 + x * cvrted0_51) * t0 ** 25 + 
+    (cvrted0_52 + x * cvrted0_53) * t0 ** 26 + 
+    (cvrted0_54 + x * cvrted0_55) * t0 ** 27 + 
+    (cvrted0_56 + x * cvrted0_57) * t0 ** 28 + 
+    (cvrted0_58 + x * cvrted0_59) * t0 ** 29 + 
+    (cvrted0_60 + x * cvrted0_61) * t0 ** 30 + 
+    (cvrted0_62 + x * cvrted0_63) * t0 ** 31
+  ) (
+    (res0_0 + x * res0_1) * (x ** 2 + x) ** 0 + 
+    (res0_2 + x * res0_3) * (x ** 2 + x) ** 1 + 
+    (res0_4 + x * res0_5) * (x ** 2 + x) ** 2 + 
+    (res0_6 + x * res0_7) * (x ** 2 + x) ** 3 + 
+    (res0_8 + x * res0_9) * (x ** 2 + x) ** 4 + 
+    (res0_10 + x * res0_11) * (x ** 2 + x) ** 5 + 
+    (res0_12 + x * res0_13) * (x ** 2 + x) ** 6 + 
+    (res0_14 + x * res0_15) * (x ** 2 + x) ** 7 + 
+    (res0_16 + x * res0_17) * (x ** 2 + x) ** 8 + 
+    (res0_18 + x * res0_19) * (x ** 2 + x) ** 9 + 
+    (res0_20 + x * res0_21) * (x ** 2 + x) ** 10 + 
+    (res0_22 + x * res0_23) * (x ** 2 + x) ** 11 + 
+    (res0_24 + x * res0_25) * (x ** 2 + x) ** 12 + 
+    (res0_26 + x * res0_27) * (x ** 2 + x) ** 13 + 
+    (res0_28 + x * res0_29) * (x ** 2 + x) ** 14 + 
+    (res0_30 + x * res0_31) * (x ** 2 + x) ** 15 + 
+    (res0_32 + x * res0_33) * (x ** 2 + x) ** 16 + 
+    (res0_34 + x * res0_35) * (x ** 2 + x) ** 17 + 
+    (res0_36 + x * res0_37) * (x ** 2 + x) ** 18 + 
+    (res0_38 + x * res0_39) * (x ** 2 + x) ** 19 + 
+    (res0_40 + x * res0_41) * (x ** 2 + x) ** 20 + 
+    (res0_42 + x * res0_43) * (x ** 2 + x) ** 21 + 
+    (res0_44 + x * res0_45) * (x ** 2 + x) ** 22 + 
+    (res0_46 + x * res0_47) * (x ** 2 + x) ** 23 + 
+    (res0_48 + x * res0_49) * (x ** 2 + x) ** 24 + 
+    (res0_50 + x * res0_51) * (x ** 2 + x) ** 25 + 
+    (res0_52 + x * res0_53) * (x ** 2 + x) ** 26 + 
+    (res0_54 + x * res0_55) * (x ** 2 + x) ** 27 + 
+    (res0_56 + x * res0_57) * (x ** 2 + x) ** 28 + 
+    (res0_58 + x * res0_59) * (x ** 2 + x) ** 29 + 
+    (res0_60 + x * res0_61) * (x ** 2 + x) ** 30 + 
+    (res0_62 + x * res0_63) * (x ** 2 + x) ** 31
+  ) [2, modulus]
+];
+
+ghost inp1_0@uint12: inp1_0 = 
+  res0_0 * x**0 + res0_2 * x**1 + res0_4 * x**2 + res0_6 * x**3 +
+  res0_8 * x**4 + res0_10 * x**5 + res0_12 * x**6 + res0_14 * x**7 +
+  res0_16 * x**8 + res0_18 * x**9 + res0_20 * x**10 + res0_22 * x**11 +
+  res0_24 * x**12 + res0_26 * x**13 + res0_28 * x**14 + res0_30 * x**15 +
+  res0_32 * x**16 + res0_34 * x**17 + res0_36 * x**18 + res0_38 * x**19 +
+  res0_40 * x**20 + res0_42 * x**21 + res0_44 * x**22 + res0_46 * x**23 +
+  res0_48 * x**24 + res0_50 * x**25 + res0_52 * x**26 + res0_54 * x**27 +
+  res0_56 * x**28 + res0_58 * x**29 + res0_60 * x**30 + res0_62 * x**31
+&& true;
+ghost inp1_1@uint12: inp1_1 = 
+  res0_1 * x**0 + res0_3 * x**1 + res0_5 * x**2 + res0_7 * x**3 +
+  res0_9 * x**4 + res0_11 * x**5 + res0_13 * x**6 + res0_15 * x**7 +
+  res0_17 * x**8 + res0_19 * x**9 + res0_21 * x**10 + res0_23 * x**11 +
+  res0_25 * x**12 + res0_27 * x**13 + res0_29 * x**14 + res0_31 * x**15 +
+  res0_33 * x**16 + res0_35 * x**17 + res0_37 * x**18 + res0_39 * x**19 +
+  res0_41 * x**20 + res0_43 * x**21 + res0_45 * x**22 + res0_47 * x**23 +
+  res0_49 * x**24 + res0_51 * x**25 + res0_53 * x**26 + res0_55 * x**27 +
+  res0_57 * x**28 + res0_59 * x**29 + res0_61 * x**30 + res0_63 * x**31
+&& true;
+
+assume and [
+  res0_0 = rb0_0 * z**0 + rb1_0 * z**1 + rb2_0 * z**2 + rb3_0 * z**3 + rb4_0 * z**4 + rb5_0 * z**5 + rb6_0 * z**6 + rb7_0 * z**7 + rb8_0 * z**8 + rb9_0 * z**9 + rb10_0 * z**10 + rb11_0 * z**11,
+  res0_1 = rb0_1 * z**0 + rb1_1 * z**1 + rb2_1 * z**2 + rb3_1 * z**3 + rb4_1 * z**4 + rb5_1 * z**5 + rb6_1 * z**6 + rb7_1 * z**7 + rb8_1 * z**8 + rb9_1 * z**9 + rb10_1 * z**10 + rb11_1 * z**11,
+  res0_2 = rb0_2 * z**0 + rb1_2 * z**1 + rb2_2 * z**2 + rb3_2 * z**3 + rb4_2 * z**4 + rb5_2 * z**5 + rb6_2 * z**6 + rb7_2 * z**7 + rb8_2 * z**8 + rb9_2 * z**9 + rb10_2 * z**10 + rb11_2 * z**11,
+  res0_3 = rb0_3 * z**0 + rb1_3 * z**1 + rb2_3 * z**2 + rb3_3 * z**3 + rb4_3 * z**4 + rb5_3 * z**5 + rb6_3 * z**6 + rb7_3 * z**7 + rb8_3 * z**8 + rb9_3 * z**9 + rb10_3 * z**10 + rb11_3 * z**11,
+  res0_4 = rb0_4 * z**0 + rb1_4 * z**1 + rb2_4 * z**2 + rb3_4 * z**3 + rb4_4 * z**4 + rb5_4 * z**5 + rb6_4 * z**6 + rb7_4 * z**7 + rb8_4 * z**8 + rb9_4 * z**9 + rb10_4 * z**10 + rb11_4 * z**11,
+  res0_5 = rb0_5 * z**0 + rb1_5 * z**1 + rb2_5 * z**2 + rb3_5 * z**3 + rb4_5 * z**4 + rb5_5 * z**5 + rb6_5 * z**6 + rb7_5 * z**7 + rb8_5 * z**8 + rb9_5 * z**9 + rb10_5 * z**10 + rb11_5 * z**11,
+  res0_6 = rb0_6 * z**0 + rb1_6 * z**1 + rb2_6 * z**2 + rb3_6 * z**3 + rb4_6 * z**4 + rb5_6 * z**5 + rb6_6 * z**6 + rb7_6 * z**7 + rb8_6 * z**8 + rb9_6 * z**9 + rb10_6 * z**10 + rb11_6 * z**11,
+  res0_7 = rb0_7 * z**0 + rb1_7 * z**1 + rb2_7 * z**2 + rb3_7 * z**3 + rb4_7 * z**4 + rb5_7 * z**5 + rb6_7 * z**6 + rb7_7 * z**7 + rb8_7 * z**8 + rb9_7 * z**9 + rb10_7 * z**10 + rb11_7 * z**11,
+  res0_8 = rb0_8 * z**0 + rb1_8 * z**1 + rb2_8 * z**2 + rb3_8 * z**3 + rb4_8 * z**4 + rb5_8 * z**5 + rb6_8 * z**6 + rb7_8 * z**7 + rb8_8 * z**8 + rb9_8 * z**9 + rb10_8 * z**10 + rb11_8 * z**11,
+  res0_9 = rb0_9 * z**0 + rb1_9 * z**1 + rb2_9 * z**2 + rb3_9 * z**3 + rb4_9 * z**4 + rb5_9 * z**5 + rb6_9 * z**6 + rb7_9 * z**7 + rb8_9 * z**8 + rb9_9 * z**9 + rb10_9 * z**10 + rb11_9 * z**11,
+  res0_10 = rb0_10 * z**0 + rb1_10 * z**1 + rb2_10 * z**2 + rb3_10 * z**3 + rb4_10 * z**4 + rb5_10 * z**5 + rb6_10 * z**6 + rb7_10 * z**7 + rb8_10 * z**8 + rb9_10 * z**9 + rb10_10 * z**10 + rb11_10 * z**11,
+  res0_11 = rb0_11 * z**0 + rb1_11 * z**1 + rb2_11 * z**2 + rb3_11 * z**3 + rb4_11 * z**4 + rb5_11 * z**5 + rb6_11 * z**6 + rb7_11 * z**7 + rb8_11 * z**8 + rb9_11 * z**9 + rb10_11 * z**10 + rb11_11 * z**11,
+  res0_12 = rb0_12 * z**0 + rb1_12 * z**1 + rb2_12 * z**2 + rb3_12 * z**3 + rb4_12 * z**4 + rb5_12 * z**5 + rb6_12 * z**6 + rb7_12 * z**7 + rb8_12 * z**8 + rb9_12 * z**9 + rb10_12 * z**10 + rb11_12 * z**11,
+  res0_13 = rb0_13 * z**0 + rb1_13 * z**1 + rb2_13 * z**2 + rb3_13 * z**3 + rb4_13 * z**4 + rb5_13 * z**5 + rb6_13 * z**6 + rb7_13 * z**7 + rb8_13 * z**8 + rb9_13 * z**9 + rb10_13 * z**10 + rb11_13 * z**11,
+  res0_14 = rb0_14 * z**0 + rb1_14 * z**1 + rb2_14 * z**2 + rb3_14 * z**3 + rb4_14 * z**4 + rb5_14 * z**5 + rb6_14 * z**6 + rb7_14 * z**7 + rb8_14 * z**8 + rb9_14 * z**9 + rb10_14 * z**10 + rb11_14 * z**11,
+  res0_15 = rb0_15 * z**0 + rb1_15 * z**1 + rb2_15 * z**2 + rb3_15 * z**3 + rb4_15 * z**4 + rb5_15 * z**5 + rb6_15 * z**6 + rb7_15 * z**7 + rb8_15 * z**8 + rb9_15 * z**9 + rb10_15 * z**10 + rb11_15 * z**11,
+  res0_16 = rb0_16 * z**0 + rb1_16 * z**1 + rb2_16 * z**2 + rb3_16 * z**3 + rb4_16 * z**4 + rb5_16 * z**5 + rb6_16 * z**6 + rb7_16 * z**7 + rb8_16 * z**8 + rb9_16 * z**9 + rb10_16 * z**10 + rb11_16 * z**11,
+  res0_17 = rb0_17 * z**0 + rb1_17 * z**1 + rb2_17 * z**2 + rb3_17 * z**3 + rb4_17 * z**4 + rb5_17 * z**5 + rb6_17 * z**6 + rb7_17 * z**7 + rb8_17 * z**8 + rb9_17 * z**9 + rb10_17 * z**10 + rb11_17 * z**11,
+  res0_18 = rb0_18 * z**0 + rb1_18 * z**1 + rb2_18 * z**2 + rb3_18 * z**3 + rb4_18 * z**4 + rb5_18 * z**5 + rb6_18 * z**6 + rb7_18 * z**7 + rb8_18 * z**8 + rb9_18 * z**9 + rb10_18 * z**10 + rb11_18 * z**11,
+  res0_19 = rb0_19 * z**0 + rb1_19 * z**1 + rb2_19 * z**2 + rb3_19 * z**3 + rb4_19 * z**4 + rb5_19 * z**5 + rb6_19 * z**6 + rb7_19 * z**7 + rb8_19 * z**8 + rb9_19 * z**9 + rb10_19 * z**10 + rb11_19 * z**11,
+  res0_20 = rb0_20 * z**0 + rb1_20 * z**1 + rb2_20 * z**2 + rb3_20 * z**3 + rb4_20 * z**4 + rb5_20 * z**5 + rb6_20 * z**6 + rb7_20 * z**7 + rb8_20 * z**8 + rb9_20 * z**9 + rb10_20 * z**10 + rb11_20 * z**11,
+  res0_21 = rb0_21 * z**0 + rb1_21 * z**1 + rb2_21 * z**2 + rb3_21 * z**3 + rb4_21 * z**4 + rb5_21 * z**5 + rb6_21 * z**6 + rb7_21 * z**7 + rb8_21 * z**8 + rb9_21 * z**9 + rb10_21 * z**10 + rb11_21 * z**11,
+  res0_22 = rb0_22 * z**0 + rb1_22 * z**1 + rb2_22 * z**2 + rb3_22 * z**3 + rb4_22 * z**4 + rb5_22 * z**5 + rb6_22 * z**6 + rb7_22 * z**7 + rb8_22 * z**8 + rb9_22 * z**9 + rb10_22 * z**10 + rb11_22 * z**11,
+  res0_23 = rb0_23 * z**0 + rb1_23 * z**1 + rb2_23 * z**2 + rb3_23 * z**3 + rb4_23 * z**4 + rb5_23 * z**5 + rb6_23 * z**6 + rb7_23 * z**7 + rb8_23 * z**8 + rb9_23 * z**9 + rb10_23 * z**10 + rb11_23 * z**11,
+  res0_24 = rb0_24 * z**0 + rb1_24 * z**1 + rb2_24 * z**2 + rb3_24 * z**3 + rb4_24 * z**4 + rb5_24 * z**5 + rb6_24 * z**6 + rb7_24 * z**7 + rb8_24 * z**8 + rb9_24 * z**9 + rb10_24 * z**10 + rb11_24 * z**11,
+  res0_25 = rb0_25 * z**0 + rb1_25 * z**1 + rb2_25 * z**2 + rb3_25 * z**3 + rb4_25 * z**4 + rb5_25 * z**5 + rb6_25 * z**6 + rb7_25 * z**7 + rb8_25 * z**8 + rb9_25 * z**9 + rb10_25 * z**10 + rb11_25 * z**11,
+  res0_26 = rb0_26 * z**0 + rb1_26 * z**1 + rb2_26 * z**2 + rb3_26 * z**3 + rb4_26 * z**4 + rb5_26 * z**5 + rb6_26 * z**6 + rb7_26 * z**7 + rb8_26 * z**8 + rb9_26 * z**9 + rb10_26 * z**10 + rb11_26 * z**11,
+  res0_27 = rb0_27 * z**0 + rb1_27 * z**1 + rb2_27 * z**2 + rb3_27 * z**3 + rb4_27 * z**4 + rb5_27 * z**5 + rb6_27 * z**6 + rb7_27 * z**7 + rb8_27 * z**8 + rb9_27 * z**9 + rb10_27 * z**10 + rb11_27 * z**11,
+  res0_28 = rb0_28 * z**0 + rb1_28 * z**1 + rb2_28 * z**2 + rb3_28 * z**3 + rb4_28 * z**4 + rb5_28 * z**5 + rb6_28 * z**6 + rb7_28 * z**7 + rb8_28 * z**8 + rb9_28 * z**9 + rb10_28 * z**10 + rb11_28 * z**11,
+  res0_29 = rb0_29 * z**0 + rb1_29 * z**1 + rb2_29 * z**2 + rb3_29 * z**3 + rb4_29 * z**4 + rb5_29 * z**5 + rb6_29 * z**6 + rb7_29 * z**7 + rb8_29 * z**8 + rb9_29 * z**9 + rb10_29 * z**10 + rb11_29 * z**11,
+  res0_30 = rb0_30 * z**0 + rb1_30 * z**1 + rb2_30 * z**2 + rb3_30 * z**3 + rb4_30 * z**4 + rb5_30 * z**5 + rb6_30 * z**6 + rb7_30 * z**7 + rb8_30 * z**8 + rb9_30 * z**9 + rb10_30 * z**10 + rb11_30 * z**11,
+  res0_31 = rb0_31 * z**0 + rb1_31 * z**1 + rb2_31 * z**2 + rb3_31 * z**3 + rb4_31 * z**4 + rb5_31 * z**5 + rb6_31 * z**6 + rb7_31 * z**7 + rb8_31 * z**8 + rb9_31 * z**9 + rb10_31 * z**10 + rb11_31 * z**11,
+  res0_32 = rb0_32 * z**0 + rb1_32 * z**1 + rb2_32 * z**2 + rb3_32 * z**3 + rb4_32 * z**4 + rb5_32 * z**5 + rb6_32 * z**6 + rb7_32 * z**7 + rb8_32 * z**8 + rb9_32 * z**9 + rb10_32 * z**10 + rb11_32 * z**11,
+  res0_33 = rb0_33 * z**0 + rb1_33 * z**1 + rb2_33 * z**2 + rb3_33 * z**3 + rb4_33 * z**4 + rb5_33 * z**5 + rb6_33 * z**6 + rb7_33 * z**7 + rb8_33 * z**8 + rb9_33 * z**9 + rb10_33 * z**10 + rb11_33 * z**11,
+  res0_34 = rb0_34 * z**0 + rb1_34 * z**1 + rb2_34 * z**2 + rb3_34 * z**3 + rb4_34 * z**4 + rb5_34 * z**5 + rb6_34 * z**6 + rb7_34 * z**7 + rb8_34 * z**8 + rb9_34 * z**9 + rb10_34 * z**10 + rb11_34 * z**11,
+  res0_35 = rb0_35 * z**0 + rb1_35 * z**1 + rb2_35 * z**2 + rb3_35 * z**3 + rb4_35 * z**4 + rb5_35 * z**5 + rb6_35 * z**6 + rb7_35 * z**7 + rb8_35 * z**8 + rb9_35 * z**9 + rb10_35 * z**10 + rb11_35 * z**11,
+  res0_36 = rb0_36 * z**0 + rb1_36 * z**1 + rb2_36 * z**2 + rb3_36 * z**3 + rb4_36 * z**4 + rb5_36 * z**5 + rb6_36 * z**6 + rb7_36 * z**7 + rb8_36 * z**8 + rb9_36 * z**9 + rb10_36 * z**10 + rb11_36 * z**11,
+  res0_37 = rb0_37 * z**0 + rb1_37 * z**1 + rb2_37 * z**2 + rb3_37 * z**3 + rb4_37 * z**4 + rb5_37 * z**5 + rb6_37 * z**6 + rb7_37 * z**7 + rb8_37 * z**8 + rb9_37 * z**9 + rb10_37 * z**10 + rb11_37 * z**11,
+  res0_38 = rb0_38 * z**0 + rb1_38 * z**1 + rb2_38 * z**2 + rb3_38 * z**3 + rb4_38 * z**4 + rb5_38 * z**5 + rb6_38 * z**6 + rb7_38 * z**7 + rb8_38 * z**8 + rb9_38 * z**9 + rb10_38 * z**10 + rb11_38 * z**11,
+  res0_39 = rb0_39 * z**0 + rb1_39 * z**1 + rb2_39 * z**2 + rb3_39 * z**3 + rb4_39 * z**4 + rb5_39 * z**5 + rb6_39 * z**6 + rb7_39 * z**7 + rb8_39 * z**8 + rb9_39 * z**9 + rb10_39 * z**10 + rb11_39 * z**11,
+  res0_40 = rb0_40 * z**0 + rb1_40 * z**1 + rb2_40 * z**2 + rb3_40 * z**3 + rb4_40 * z**4 + rb5_40 * z**5 + rb6_40 * z**6 + rb7_40 * z**7 + rb8_40 * z**8 + rb9_40 * z**9 + rb10_40 * z**10 + rb11_40 * z**11,
+  res0_41 = rb0_41 * z**0 + rb1_41 * z**1 + rb2_41 * z**2 + rb3_41 * z**3 + rb4_41 * z**4 + rb5_41 * z**5 + rb6_41 * z**6 + rb7_41 * z**7 + rb8_41 * z**8 + rb9_41 * z**9 + rb10_41 * z**10 + rb11_41 * z**11,
+  res0_42 = rb0_42 * z**0 + rb1_42 * z**1 + rb2_42 * z**2 + rb3_42 * z**3 + rb4_42 * z**4 + rb5_42 * z**5 + rb6_42 * z**6 + rb7_42 * z**7 + rb8_42 * z**8 + rb9_42 * z**9 + rb10_42 * z**10 + rb11_42 * z**11,
+  res0_43 = rb0_43 * z**0 + rb1_43 * z**1 + rb2_43 * z**2 + rb3_43 * z**3 + rb4_43 * z**4 + rb5_43 * z**5 + rb6_43 * z**6 + rb7_43 * z**7 + rb8_43 * z**8 + rb9_43 * z**9 + rb10_43 * z**10 + rb11_43 * z**11,
+  res0_44 = rb0_44 * z**0 + rb1_44 * z**1 + rb2_44 * z**2 + rb3_44 * z**3 + rb4_44 * z**4 + rb5_44 * z**5 + rb6_44 * z**6 + rb7_44 * z**7 + rb8_44 * z**8 + rb9_44 * z**9 + rb10_44 * z**10 + rb11_44 * z**11,
+  res0_45 = rb0_45 * z**0 + rb1_45 * z**1 + rb2_45 * z**2 + rb3_45 * z**3 + rb4_45 * z**4 + rb5_45 * z**5 + rb6_45 * z**6 + rb7_45 * z**7 + rb8_45 * z**8 + rb9_45 * z**9 + rb10_45 * z**10 + rb11_45 * z**11,
+  res0_46 = rb0_46 * z**0 + rb1_46 * z**1 + rb2_46 * z**2 + rb3_46 * z**3 + rb4_46 * z**4 + rb5_46 * z**5 + rb6_46 * z**6 + rb7_46 * z**7 + rb8_46 * z**8 + rb9_46 * z**9 + rb10_46 * z**10 + rb11_46 * z**11,
+  res0_47 = rb0_47 * z**0 + rb1_47 * z**1 + rb2_47 * z**2 + rb3_47 * z**3 + rb4_47 * z**4 + rb5_47 * z**5 + rb6_47 * z**6 + rb7_47 * z**7 + rb8_47 * z**8 + rb9_47 * z**9 + rb10_47 * z**10 + rb11_47 * z**11,
+  res0_48 = rb0_48 * z**0 + rb1_48 * z**1 + rb2_48 * z**2 + rb3_48 * z**3 + rb4_48 * z**4 + rb5_48 * z**5 + rb6_48 * z**6 + rb7_48 * z**7 + rb8_48 * z**8 + rb9_48 * z**9 + rb10_48 * z**10 + rb11_48 * z**11,
+  res0_49 = rb0_49 * z**0 + rb1_49 * z**1 + rb2_49 * z**2 + rb3_49 * z**3 + rb4_49 * z**4 + rb5_49 * z**5 + rb6_49 * z**6 + rb7_49 * z**7 + rb8_49 * z**8 + rb9_49 * z**9 + rb10_49 * z**10 + rb11_49 * z**11,
+  res0_50 = rb0_50 * z**0 + rb1_50 * z**1 + rb2_50 * z**2 + rb3_50 * z**3 + rb4_50 * z**4 + rb5_50 * z**5 + rb6_50 * z**6 + rb7_50 * z**7 + rb8_50 * z**8 + rb9_50 * z**9 + rb10_50 * z**10 + rb11_50 * z**11,
+  res0_51 = rb0_51 * z**0 + rb1_51 * z**1 + rb2_51 * z**2 + rb3_51 * z**3 + rb4_51 * z**4 + rb5_51 * z**5 + rb6_51 * z**6 + rb7_51 * z**7 + rb8_51 * z**8 + rb9_51 * z**9 + rb10_51 * z**10 + rb11_51 * z**11,
+  res0_52 = rb0_52 * z**0 + rb1_52 * z**1 + rb2_52 * z**2 + rb3_52 * z**3 + rb4_52 * z**4 + rb5_52 * z**5 + rb6_52 * z**6 + rb7_52 * z**7 + rb8_52 * z**8 + rb9_52 * z**9 + rb10_52 * z**10 + rb11_52 * z**11,
+  res0_53 = rb0_53 * z**0 + rb1_53 * z**1 + rb2_53 * z**2 + rb3_53 * z**3 + rb4_53 * z**4 + rb5_53 * z**5 + rb6_53 * z**6 + rb7_53 * z**7 + rb8_53 * z**8 + rb9_53 * z**9 + rb10_53 * z**10 + rb11_53 * z**11,
+  res0_54 = rb0_54 * z**0 + rb1_54 * z**1 + rb2_54 * z**2 + rb3_54 * z**3 + rb4_54 * z**4 + rb5_54 * z**5 + rb6_54 * z**6 + rb7_54 * z**7 + rb8_54 * z**8 + rb9_54 * z**9 + rb10_54 * z**10 + rb11_54 * z**11,
+  res0_55 = rb0_55 * z**0 + rb1_55 * z**1 + rb2_55 * z**2 + rb3_55 * z**3 + rb4_55 * z**4 + rb5_55 * z**5 + rb6_55 * z**6 + rb7_55 * z**7 + rb8_55 * z**8 + rb9_55 * z**9 + rb10_55 * z**10 + rb11_55 * z**11,
+  res0_56 = rb0_56 * z**0 + rb1_56 * z**1 + rb2_56 * z**2 + rb3_56 * z**3 + rb4_56 * z**4 + rb5_56 * z**5 + rb6_56 * z**6 + rb7_56 * z**7 + rb8_56 * z**8 + rb9_56 * z**9 + rb10_56 * z**10 + rb11_56 * z**11,
+  res0_57 = rb0_57 * z**0 + rb1_57 * z**1 + rb2_57 * z**2 + rb3_57 * z**3 + rb4_57 * z**4 + rb5_57 * z**5 + rb6_57 * z**6 + rb7_57 * z**7 + rb8_57 * z**8 + rb9_57 * z**9 + rb10_57 * z**10 + rb11_57 * z**11,
+  res0_58 = rb0_58 * z**0 + rb1_58 * z**1 + rb2_58 * z**2 + rb3_58 * z**3 + rb4_58 * z**4 + rb5_58 * z**5 + rb6_58 * z**6 + rb7_58 * z**7 + rb8_58 * z**8 + rb9_58 * z**9 + rb10_58 * z**10 + rb11_58 * z**11,
+  res0_59 = rb0_59 * z**0 + rb1_59 * z**1 + rb2_59 * z**2 + rb3_59 * z**3 + rb4_59 * z**4 + rb5_59 * z**5 + rb6_59 * z**6 + rb7_59 * z**7 + rb8_59 * z**8 + rb9_59 * z**9 + rb10_59 * z**10 + rb11_59 * z**11,
+  res0_60 = rb0_60 * z**0 + rb1_60 * z**1 + rb2_60 * z**2 + rb3_60 * z**3 + rb4_60 * z**4 + rb5_60 * z**5 + rb6_60 * z**6 + rb7_60 * z**7 + rb8_60 * z**8 + rb9_60 * z**9 + rb10_60 * z**10 + rb11_60 * z**11,
+  res0_61 = rb0_61 * z**0 + rb1_61 * z**1 + rb2_61 * z**2 + rb3_61 * z**3 + rb4_61 * z**4 + rb5_61 * z**5 + rb6_61 * z**6 + rb7_61 * z**7 + rb8_61 * z**8 + rb9_61 * z**9 + rb10_61 * z**10 + rb11_61 * z**11,
+  res0_62 = rb0_62 * z**0 + rb1_62 * z**1 + rb2_62 * z**2 + rb3_62 * z**3 + rb4_62 * z**4 + rb5_62 * z**5 + rb6_62 * z**6 + rb7_62 * z**7 + rb8_62 * z**8 + rb9_62 * z**9 + rb10_62 * z**10 + rb11_62 * z**11,
+  res0_63 = rb0_63 * z**0 + rb1_63 * z**1 + rb2_63 * z**2 + rb3_63 * z**3 + rb4_63 * z**4 + rb5_63 * z**5 + rb6_63 * z**6 + rb7_63 * z**7 + rb8_63 * z**8 + rb9_63 * z**9 + rb10_63 * z**10 + rb11_63 * z**11
+] && true;
+
+mov %L0x7fffffffdaa0 [rb0_0, rb0_1, rb0_2, rb0_3, rb0_4, rb0_5, rb0_6, rb0_7, rb0_8, rb0_9, rb0_10, rb0_11, rb0_12, rb0_13, rb0_14, rb0_15, rb0_16, rb0_17, rb0_18, rb0_19, rb0_20, rb0_21, rb0_22, rb0_23, rb0_24, rb0_25, rb0_26, rb0_27, rb0_28, rb0_29, rb0_30, rb0_31, rb0_32, rb0_33, rb0_34, rb0_35, rb0_36, rb0_37, rb0_38, rb0_39, rb0_40, rb0_41, rb0_42, rb0_43, rb0_44, rb0_45, rb0_46, rb0_47, rb0_48, rb0_49, rb0_50, rb0_51, rb0_52, rb0_53, rb0_54, rb0_55, rb0_56, rb0_57, rb0_58, rb0_59, rb0_60, rb0_61, rb0_62, rb0_63];
+mov %L0x7fffffffdaa8 [rb1_0, rb1_1, rb1_2, rb1_3, rb1_4, rb1_5, rb1_6, rb1_7, rb1_8, rb1_9, rb1_10, rb1_11, rb1_12, rb1_13, rb1_14, rb1_15, rb1_16, rb1_17, rb1_18, rb1_19, rb1_20, rb1_21, rb1_22, rb1_23, rb1_24, rb1_25, rb1_26, rb1_27, rb1_28, rb1_29, rb1_30, rb1_31, rb1_32, rb1_33, rb1_34, rb1_35, rb1_36, rb1_37, rb1_38, rb1_39, rb1_40, rb1_41, rb1_42, rb1_43, rb1_44, rb1_45, rb1_46, rb1_47, rb1_48, rb1_49, rb1_50, rb1_51, rb1_52, rb1_53, rb1_54, rb1_55, rb1_56, rb1_57, rb1_58, rb1_59, rb1_60, rb1_61, rb1_62, rb1_63];
+mov %L0x7fffffffdab0 [rb2_0, rb2_1, rb2_2, rb2_3, rb2_4, rb2_5, rb2_6, rb2_7, rb2_8, rb2_9, rb2_10, rb2_11, rb2_12, rb2_13, rb2_14, rb2_15, rb2_16, rb2_17, rb2_18, rb2_19, rb2_20, rb2_21, rb2_22, rb2_23, rb2_24, rb2_25, rb2_26, rb2_27, rb2_28, rb2_29, rb2_30, rb2_31, rb2_32, rb2_33, rb2_34, rb2_35, rb2_36, rb2_37, rb2_38, rb2_39, rb2_40, rb2_41, rb2_42, rb2_43, rb2_44, rb2_45, rb2_46, rb2_47, rb2_48, rb2_49, rb2_50, rb2_51, rb2_52, rb2_53, rb2_54, rb2_55, rb2_56, rb2_57, rb2_58, rb2_59, rb2_60, rb2_61, rb2_62, rb2_63];
+mov %L0x7fffffffdab8 [rb3_0, rb3_1, rb3_2, rb3_3, rb3_4, rb3_5, rb3_6, rb3_7, rb3_8, rb3_9, rb3_10, rb3_11, rb3_12, rb3_13, rb3_14, rb3_15, rb3_16, rb3_17, rb3_18, rb3_19, rb3_20, rb3_21, rb3_22, rb3_23, rb3_24, rb3_25, rb3_26, rb3_27, rb3_28, rb3_29, rb3_30, rb3_31, rb3_32, rb3_33, rb3_34, rb3_35, rb3_36, rb3_37, rb3_38, rb3_39, rb3_40, rb3_41, rb3_42, rb3_43, rb3_44, rb3_45, rb3_46, rb3_47, rb3_48, rb3_49, rb3_50, rb3_51, rb3_52, rb3_53, rb3_54, rb3_55, rb3_56, rb3_57, rb3_58, rb3_59, rb3_60, rb3_61, rb3_62, rb3_63];
+mov %L0x7fffffffdac0 [rb4_0, rb4_1, rb4_2, rb4_3, rb4_4, rb4_5, rb4_6, rb4_7, rb4_8, rb4_9, rb4_10, rb4_11, rb4_12, rb4_13, rb4_14, rb4_15, rb4_16, rb4_17, rb4_18, rb4_19, rb4_20, rb4_21, rb4_22, rb4_23, rb4_24, rb4_25, rb4_26, rb4_27, rb4_28, rb4_29, rb4_30, rb4_31, rb4_32, rb4_33, rb4_34, rb4_35, rb4_36, rb4_37, rb4_38, rb4_39, rb4_40, rb4_41, rb4_42, rb4_43, rb4_44, rb4_45, rb4_46, rb4_47, rb4_48, rb4_49, rb4_50, rb4_51, rb4_52, rb4_53, rb4_54, rb4_55, rb4_56, rb4_57, rb4_58, rb4_59, rb4_60, rb4_61, rb4_62, rb4_63];
+mov %L0x7fffffffdac8 [rb5_0, rb5_1, rb5_2, rb5_3, rb5_4, rb5_5, rb5_6, rb5_7, rb5_8, rb5_9, rb5_10, rb5_11, rb5_12, rb5_13, rb5_14, rb5_15, rb5_16, rb5_17, rb5_18, rb5_19, rb5_20, rb5_21, rb5_22, rb5_23, rb5_24, rb5_25, rb5_26, rb5_27, rb5_28, rb5_29, rb5_30, rb5_31, rb5_32, rb5_33, rb5_34, rb5_35, rb5_36, rb5_37, rb5_38, rb5_39, rb5_40, rb5_41, rb5_42, rb5_43, rb5_44, rb5_45, rb5_46, rb5_47, rb5_48, rb5_49, rb5_50, rb5_51, rb5_52, rb5_53, rb5_54, rb5_55, rb5_56, rb5_57, rb5_58, rb5_59, rb5_60, rb5_61, rb5_62, rb5_63];
+mov %L0x7fffffffdad0 [rb6_0, rb6_1, rb6_2, rb6_3, rb6_4, rb6_5, rb6_6, rb6_7, rb6_8, rb6_9, rb6_10, rb6_11, rb6_12, rb6_13, rb6_14, rb6_15, rb6_16, rb6_17, rb6_18, rb6_19, rb6_20, rb6_21, rb6_22, rb6_23, rb6_24, rb6_25, rb6_26, rb6_27, rb6_28, rb6_29, rb6_30, rb6_31, rb6_32, rb6_33, rb6_34, rb6_35, rb6_36, rb6_37, rb6_38, rb6_39, rb6_40, rb6_41, rb6_42, rb6_43, rb6_44, rb6_45, rb6_46, rb6_47, rb6_48, rb6_49, rb6_50, rb6_51, rb6_52, rb6_53, rb6_54, rb6_55, rb6_56, rb6_57, rb6_58, rb6_59, rb6_60, rb6_61, rb6_62, rb6_63];
+mov %L0x7fffffffdad8 [rb7_0, rb7_1, rb7_2, rb7_3, rb7_4, rb7_5, rb7_6, rb7_7, rb7_8, rb7_9, rb7_10, rb7_11, rb7_12, rb7_13, rb7_14, rb7_15, rb7_16, rb7_17, rb7_18, rb7_19, rb7_20, rb7_21, rb7_22, rb7_23, rb7_24, rb7_25, rb7_26, rb7_27, rb7_28, rb7_29, rb7_30, rb7_31, rb7_32, rb7_33, rb7_34, rb7_35, rb7_36, rb7_37, rb7_38, rb7_39, rb7_40, rb7_41, rb7_42, rb7_43, rb7_44, rb7_45, rb7_46, rb7_47, rb7_48, rb7_49, rb7_50, rb7_51, rb7_52, rb7_53, rb7_54, rb7_55, rb7_56, rb7_57, rb7_58, rb7_59, rb7_60, rb7_61, rb7_62, rb7_63];
+mov %L0x7fffffffdae0 [rb8_0, rb8_1, rb8_2, rb8_3, rb8_4, rb8_5, rb8_6, rb8_7, rb8_8, rb8_9, rb8_10, rb8_11, rb8_12, rb8_13, rb8_14, rb8_15, rb8_16, rb8_17, rb8_18, rb8_19, rb8_20, rb8_21, rb8_22, rb8_23, rb8_24, rb8_25, rb8_26, rb8_27, rb8_28, rb8_29, rb8_30, rb8_31, rb8_32, rb8_33, rb8_34, rb8_35, rb8_36, rb8_37, rb8_38, rb8_39, rb8_40, rb8_41, rb8_42, rb8_43, rb8_44, rb8_45, rb8_46, rb8_47, rb8_48, rb8_49, rb8_50, rb8_51, rb8_52, rb8_53, rb8_54, rb8_55, rb8_56, rb8_57, rb8_58, rb8_59, rb8_60, rb8_61, rb8_62, rb8_63];
+mov %L0x7fffffffdae8 [rb9_0, rb9_1, rb9_2, rb9_3, rb9_4, rb9_5, rb9_6, rb9_7, rb9_8, rb9_9, rb9_10, rb9_11, rb9_12, rb9_13, rb9_14, rb9_15, rb9_16, rb9_17, rb9_18, rb9_19, rb9_20, rb9_21, rb9_22, rb9_23, rb9_24, rb9_25, rb9_26, rb9_27, rb9_28, rb9_29, rb9_30, rb9_31, rb9_32, rb9_33, rb9_34, rb9_35, rb9_36, rb9_37, rb9_38, rb9_39, rb9_40, rb9_41, rb9_42, rb9_43, rb9_44, rb9_45, rb9_46, rb9_47, rb9_48, rb9_49, rb9_50, rb9_51, rb9_52, rb9_53, rb9_54, rb9_55, rb9_56, rb9_57, rb9_58, rb9_59, rb9_60, rb9_61, rb9_62, rb9_63];
+mov %L0x7fffffffdaf0 [rb10_0, rb10_1, rb10_2, rb10_3, rb10_4, rb10_5, rb10_6, rb10_7, rb10_8, rb10_9, rb10_10, rb10_11, rb10_12, rb10_13, rb10_14, rb10_15, rb10_16, rb10_17, rb10_18, rb10_19, rb10_20, rb10_21, rb10_22, rb10_23, rb10_24, rb10_25, rb10_26, rb10_27, rb10_28, rb10_29, rb10_30, rb10_31, rb10_32, rb10_33, rb10_34, rb10_35, rb10_36, rb10_37, rb10_38, rb10_39, rb10_40, rb10_41, rb10_42, rb10_43, rb10_44, rb10_45, rb10_46, rb10_47, rb10_48, rb10_49, rb10_50, rb10_51, rb10_52, rb10_53, rb10_54, rb10_55, rb10_56, rb10_57, rb10_58, rb10_59, rb10_60, rb10_61, rb10_62, rb10_63];
+mov %L0x7fffffffdaf8 [rb11_0, rb11_1, rb11_2, rb11_3, rb11_4, rb11_5, rb11_6, rb11_7, rb11_8, rb11_9, rb11_10, rb11_11, rb11_12, rb11_13, rb11_14, rb11_15, rb11_16, rb11_17, rb11_18, rb11_19, rb11_20, rb11_21, rb11_22, rb11_23, rb11_24, rb11_25, rb11_26, rb11_27, rb11_28, rb11_29, rb11_30, rb11_31, rb11_32, rb11_33, rb11_34, rb11_35, rb11_36, rb11_37, rb11_38, rb11_39, rb11_40, rb11_41, rb11_42, rb11_43, rb11_44, rb11_45, rb11_46, rb11_47, rb11_48, rb11_49, rb11_50, rb11_51, rb11_52, rb11_53, rb11_54, rb11_55, rb11_56, rb11_57, rb11_58, rb11_59, rb11_60, rb11_61, rb11_62, rb11_63];
+
+/* -------------------------------------------------------------------------- */
+
+
+/* -------------------------------------------------------------------------- */
+
+assume modulus = z ** 12 + z ** 3 + 1 && true;
+
+nondet res1_0@bit; nondet res1_1@bit; nondet res1_2@bit; nondet res1_3@bit;
+nondet res1_4@bit; nondet res1_5@bit; nondet res1_6@bit; nondet res1_7@bit;
+nondet res1_8@bit; nondet res1_9@bit; nondet res1_10@bit; nondet res1_11@bit;
+nondet res1_12@bit; nondet res1_13@bit; nondet res1_14@bit; nondet res1_15@bit;
+nondet res1_16@bit; nondet res1_17@bit; nondet res1_18@bit; nondet res1_19@bit;
+nondet res1_20@bit; nondet res1_21@bit; nondet res1_22@bit; nondet res1_23@bit;
+nondet res1_24@bit; nondet res1_25@bit; nondet res1_26@bit; nondet res1_27@bit;
+nondet res1_28@bit; nondet res1_29@bit; nondet res1_30@bit; nondet res1_31@bit;
+nondet res1_32@bit; nondet res1_33@bit; nondet res1_34@bit; nondet res1_35@bit;
+nondet res1_36@bit; nondet res1_37@bit; nondet res1_38@bit; nondet res1_39@bit;
+nondet res1_40@bit; nondet res1_41@bit; nondet res1_42@bit; nondet res1_43@bit;
+nondet res1_44@bit; nondet res1_45@bit; nondet res1_46@bit; nondet res1_47@bit;
+nondet res1_48@bit; nondet res1_49@bit; nondet res1_50@bit; nondet res1_51@bit;
+nondet res1_52@bit; nondet res1_53@bit; nondet res1_54@bit; nondet res1_55@bit;
+nondet res1_56@bit; nondet res1_57@bit; nondet res1_58@bit; nondet res1_59@bit;
+nondet res1_60@bit; nondet res1_61@bit; nondet res1_62@bit; nondet res1_63@bit;
+
+assume and [
+  eqmod res1_0 (cvrted1_0 * ((* 1  0 *) 1)) [2, modulus],
+  eqmod res1_1 (cvrted1_1 * ((* 1  1 *) 1)) [2, modulus],
+  eqmod res1_2 (cvrted1_2 * ((* 1  2 *) 1)) [2, modulus],
+  eqmod res1_3 (cvrted1_3 * ((* 1  3 *) 1)) [2, modulus],
+  eqmod res1_4 (cvrted1_4 * ((* 1  4 *) z**4 + z)) [2, modulus],
+  eqmod res1_5 (cvrted1_5 * ((* 1  5 *) z**4 + z)) [2, modulus],
+  eqmod res1_6 (cvrted1_6 * ((* 1  6 *) z**4 + z)) [2, modulus],
+  eqmod res1_7 (cvrted1_7 * ((* 1  7 *) z**4 + z)) [2, modulus],
+  eqmod res1_8 (cvrted1_8 * ((* 1  8 *) z**8 + z**2)) [2, modulus],
+  eqmod res1_9 (cvrted1_9 * ((* 1  9 *) z**8 + z**2)) [2, modulus],
+  eqmod res1_10 (cvrted1_10 * ((* 1 10 *) z**8 + z**2)) [2, modulus],
+  eqmod res1_11 (cvrted1_11 * ((* 1 11 *) z**8 + z**2)) [2, modulus],
+  eqmod res1_12 (cvrted1_12 * ((* 1 12 *) z**9 + z**6 + 1)) [2, modulus],
+  eqmod res1_13 (cvrted1_13 * ((* 1 13 *) z**9 + z**6 + 1)) [2, modulus],
+  eqmod res1_14 (cvrted1_14 * ((* 1 14 *) z**9 + z**6 + 1)) [2, modulus],
+  eqmod res1_15 (cvrted1_15 * ((* 1 15 *) z**9 + z**6 + 1)) [2, modulus],
+  eqmod res1_16 (cvrted1_16 * ((* 1 16 *) z**7)) [2, modulus],
+  eqmod res1_17 (cvrted1_17 * ((* 1 17 *) z**7)) [2, modulus],
+  eqmod res1_18 (cvrted1_18 * ((* 1 18 *) z**7)) [2, modulus],
+  eqmod res1_19 (cvrted1_19 * ((* 1 19 *) z**7)) [2, modulus],
+  eqmod res1_20 (cvrted1_20 * ((* 1 20 *) z**11 + z**8)) [2, modulus],
+  eqmod res1_21 (cvrted1_21 * ((* 1 21 *) z**11 + z**8)) [2, modulus],
+  eqmod res1_22 (cvrted1_22 * ((* 1 22 *) z**11 + z**8)) [2, modulus],
+  eqmod res1_23 (cvrted1_23 * ((* 1 23 *) z**11 + z**8)) [2, modulus],
+  eqmod res1_24 (cvrted1_24 * ((* 1 24 *) z**9 + z**6 + z**3)) [2, modulus],
+  eqmod res1_25 (cvrted1_25 * ((* 1 25 *) z**9 + z**6 + z**3)) [2, modulus],
+  eqmod res1_26 (cvrted1_26 * ((* 1 26 *) z**9 + z**6 + z**3)) [2, modulus],
+  eqmod res1_27 (cvrted1_27 * ((* 1 27 *) z**9 + z**6 + z**3)) [2, modulus],
+  eqmod res1_28 (cvrted1_28 * ((* 1 28 *) z)) [2, modulus],
+  eqmod res1_29 (cvrted1_29 * ((* 1 29 *) z)) [2, modulus],
+  eqmod res1_30 (cvrted1_30 * ((* 1 30 *) z)) [2, modulus],
+  eqmod res1_31 (cvrted1_31 * ((* 1 31 *) z)) [2, modulus],
+  eqmod res1_32 (cvrted1_32 * ((* 1 32 *) z**5 + z**2)) [2, modulus],
+  eqmod res1_33 (cvrted1_33 * ((* 1 33 *) z**5 + z**2)) [2, modulus],
+  eqmod res1_34 (cvrted1_34 * ((* 1 34 *) z**5 + z**2)) [2, modulus],
+  eqmod res1_35 (cvrted1_35 * ((* 1 35 *) z**5 + z**2)) [2, modulus],
+  eqmod res1_36 (cvrted1_36 * ((* 1 36 *) z**9 + z**3)) [2, modulus],
+  eqmod res1_37 (cvrted1_37 * ((* 1 37 *) z**9 + z**3)) [2, modulus],
+  eqmod res1_38 (cvrted1_38 * ((* 1 38 *) z**9 + z**3)) [2, modulus],
+  eqmod res1_39 (cvrted1_39 * ((* 1 39 *) z**9 + z**3)) [2, modulus],
+  eqmod res1_40 (cvrted1_40 * ((* 1 40 *) z**10 + z**7 + z)) [2, modulus],
+  eqmod res1_41 (cvrted1_41 * ((* 1 41 *) z**10 + z**7 + z)) [2, modulus],
+  eqmod res1_42 (cvrted1_42 * ((* 1 42 *) z**10 + z**7 + z)) [2, modulus],
+  eqmod res1_43 (cvrted1_43 * ((* 1 43 *) z**10 + z**7 + z)) [2, modulus],
+  eqmod res1_44 (cvrted1_44 * ((* 1 44 *) z**8)) [2, modulus],
+  eqmod res1_45 (cvrted1_45 * ((* 1 45 *) z**8)) [2, modulus],
+  eqmod res1_46 (cvrted1_46 * ((* 1 46 *) z**8)) [2, modulus],
+  eqmod res1_47 (cvrted1_47 * ((* 1 47 *) z**8)) [2, modulus],
+  eqmod res1_48 (cvrted1_48 * ((* 1 48 *) z**9 + z**3 + 1)) [2, modulus],
+  eqmod res1_49 (cvrted1_49 * ((* 1 49 *) z**9 + z**3 + 1)) [2, modulus],
+  eqmod res1_50 (cvrted1_50 * ((* 1 50 *) z**9 + z**3 + 1)) [2, modulus],
+  eqmod res1_51 (cvrted1_51 * ((* 1 51 *) z**9 + z**3 + 1)) [2, modulus],
+  eqmod res1_52 (cvrted1_52 * ((* 1 52 *) z**10 + z**7 + z**4)) [2, modulus],
+  eqmod res1_53 (cvrted1_53 * ((* 1 53 *) z**10 + z**7 + z**4)) [2, modulus],
+  eqmod res1_54 (cvrted1_54 * ((* 1 54 *) z**10 + z**7 + z**4)) [2, modulus],
+  eqmod res1_55 (cvrted1_55 * ((* 1 55 *) z**10 + z**7 + z**4)) [2, modulus],
+  eqmod res1_56 (cvrted1_56 * ((* 1 56 *) z**2)) [2, modulus],
+  eqmod res1_57 (cvrted1_57 * ((* 1 57 *) z**2)) [2, modulus],
+  eqmod res1_58 (cvrted1_58 * ((* 1 58 *) z**2)) [2, modulus],
+  eqmod res1_59 (cvrted1_59 * ((* 1 59 *) z**2)) [2, modulus],
+  eqmod res1_60 (cvrted1_60 * ((* 1 60 *) z**6 + z**3)) [2, modulus],
+  eqmod res1_61 (cvrted1_61 * ((* 1 61 *) z**6 + z**3)) [2, modulus],
+  eqmod res1_62 (cvrted1_62 * ((* 1 62 *) z**6 + z**3)) [2, modulus],
+  eqmod res1_63 (cvrted1_63 * ((* 1 63 *) z**6 + z**3)) [2, modulus]
+] && true;
+
+ghost t1@bit: t1 = (z ** 4 + z) * (x ** 2 + x) && true;
+
+ecut and [
+  eqmod (
+    (cvrted1_0 + x * cvrted1_2) * t1 ** 0 + 
+    (cvrted1_4 + x * cvrted1_6) * t1 ** 1 + 
+    (cvrted1_8 + x * cvrted1_10) * t1 ** 2 + 
+    (cvrted1_12 + x * cvrted1_14) * t1 ** 3 + 
+    (cvrted1_16 + x * cvrted1_18) * t1 ** 4 + 
+    (cvrted1_20 + x * cvrted1_22) * t1 ** 5 + 
+    (cvrted1_24 + x * cvrted1_26) * t1 ** 6 + 
+    (cvrted1_28 + x * cvrted1_30) * t1 ** 7 + 
+    (cvrted1_32 + x * cvrted1_34) * t1 ** 8 + 
+    (cvrted1_36 + x * cvrted1_38) * t1 ** 9 + 
+    (cvrted1_40 + x * cvrted1_42) * t1 ** 10 + 
+    (cvrted1_44 + x * cvrted1_46) * t1 ** 11 + 
+    (cvrted1_48 + x * cvrted1_50) * t1 ** 12 + 
+    (cvrted1_52 + x * cvrted1_54) * t1 ** 13 + 
+    (cvrted1_56 + x * cvrted1_58) * t1 ** 14 + 
+    (cvrted1_60 + x * cvrted1_62) * t1 ** 15
+  ) (
+    (res1_0 + x * res1_2) * (x ** 2 + x) ** 0 + 
+    (res1_4 + x * res1_6) * (x ** 2 + x) ** 1 + 
+    (res1_8 + x * res1_10) * (x ** 2 + x) ** 2 + 
+    (res1_12 + x * res1_14) * (x ** 2 + x) ** 3 + 
+    (res1_16 + x * res1_18) * (x ** 2 + x) ** 4 + 
+    (res1_20 + x * res1_22) * (x ** 2 + x) ** 5 + 
+    (res1_24 + x * res1_26) * (x ** 2 + x) ** 6 + 
+    (res1_28 + x * res1_30) * (x ** 2 + x) ** 7 + 
+    (res1_32 + x * res1_34) * (x ** 2 + x) ** 8 + 
+    (res1_36 + x * res1_38) * (x ** 2 + x) ** 9 + 
+    (res1_40 + x * res1_42) * (x ** 2 + x) ** 10 + 
+    (res1_44 + x * res1_46) * (x ** 2 + x) ** 11 + 
+    (res1_48 + x * res1_50) * (x ** 2 + x) ** 12 + 
+    (res1_52 + x * res1_54) * (x ** 2 + x) ** 13 + 
+    (res1_56 + x * res1_58) * (x ** 2 + x) ** 14 + 
+    (res1_60 + x * res1_62) * (x ** 2 + x) ** 15
+  ) [2, modulus],
+  eqmod (
+    (cvrted1_1 + x * cvrted1_3) * t1 ** 0 + 
+    (cvrted1_5 + x * cvrted1_7) * t1 ** 1 + 
+    (cvrted1_9 + x * cvrted1_11) * t1 ** 2 + 
+    (cvrted1_13 + x * cvrted1_15) * t1 ** 3 + 
+    (cvrted1_17 + x * cvrted1_19) * t1 ** 4 + 
+    (cvrted1_21 + x * cvrted1_23) * t1 ** 5 + 
+    (cvrted1_25 + x * cvrted1_27) * t1 ** 6 + 
+    (cvrted1_29 + x * cvrted1_31) * t1 ** 7 + 
+    (cvrted1_33 + x * cvrted1_35) * t1 ** 8 + 
+    (cvrted1_37 + x * cvrted1_39) * t1 ** 9 + 
+    (cvrted1_41 + x * cvrted1_43) * t1 ** 10 + 
+    (cvrted1_45 + x * cvrted1_47) * t1 ** 11 + 
+    (cvrted1_49 + x * cvrted1_51) * t1 ** 12 + 
+    (cvrted1_53 + x * cvrted1_55) * t1 ** 13 + 
+    (cvrted1_57 + x * cvrted1_59) * t1 ** 14 + 
+    (cvrted1_61 + x * cvrted1_63) * t1 ** 15
+  ) (
+    (res1_1 + x * res1_3) * (x ** 2 + x) ** 0 + 
+    (res1_5 + x * res1_7) * (x ** 2 + x) ** 1 + 
+    (res1_9 + x * res1_11) * (x ** 2 + x) ** 2 + 
+    (res1_13 + x * res1_15) * (x ** 2 + x) ** 3 + 
+    (res1_17 + x * res1_19) * (x ** 2 + x) ** 4 + 
+    (res1_21 + x * res1_23) * (x ** 2 + x) ** 5 + 
+    (res1_25 + x * res1_27) * (x ** 2 + x) ** 6 + 
+    (res1_29 + x * res1_31) * (x ** 2 + x) ** 7 + 
+    (res1_33 + x * res1_35) * (x ** 2 + x) ** 8 + 
+    (res1_37 + x * res1_39) * (x ** 2 + x) ** 9 + 
+    (res1_41 + x * res1_43) * (x ** 2 + x) ** 10 + 
+    (res1_45 + x * res1_47) * (x ** 2 + x) ** 11 + 
+    (res1_49 + x * res1_51) * (x ** 2 + x) ** 12 + 
+    (res1_53 + x * res1_55) * (x ** 2 + x) ** 13 + 
+    (res1_57 + x * res1_59) * (x ** 2 + x) ** 14 + 
+    (res1_61 + x * res1_63) * (x ** 2 + x) ** 15
+  ) [2, modulus]
+];
+
+ghost inp2_0@uint12: inp2_0 = 
+  res1_0 * x**0 + res1_4 * x**1 + res1_8 * x**2 + res1_12 * x**3 +
+  res1_16 * x**4 + res1_20 * x**5 + res1_24 * x**6 + res1_28 * x**7 +
+  res1_32 * x**8 + res1_36 * x**9 + res1_40 * x**10 + res1_44 * x**11 +
+  res1_48 * x**12 + res1_52 * x**13 + res1_56 * x**14 + res1_60 * x**15
+&& true;
+ghost inp2_1@uint12: inp2_1 = 
+  res1_1 * x**0 + res1_5 * x**1 + res1_9 * x**2 + res1_13 * x**3 +
+  res1_17 * x**4 + res1_21 * x**5 + res1_25 * x**6 + res1_29 * x**7 +
+  res1_33 * x**8 + res1_37 * x**9 + res1_41 * x**10 + res1_45 * x**11 +
+  res1_49 * x**12 + res1_53 * x**13 + res1_57 * x**14 + res1_61 * x**15
+&& true;
+ghost inp2_2@uint12: inp2_2 = 
+  res1_2 * x**0 + res1_6 * x**1 + res1_10 * x**2 + res1_14 * x**3 +
+  res1_18 * x**4 + res1_22 * x**5 + res1_26 * x**6 + res1_30 * x**7 +
+  res1_34 * x**8 + res1_38 * x**9 + res1_42 * x**10 + res1_46 * x**11 +
+  res1_50 * x**12 + res1_54 * x**13 + res1_58 * x**14 + res1_62 * x**15
+&& true;
+ghost inp2_3@uint12: inp2_3 = 
+  res1_3 * x**0 + res1_7 * x**1 + res1_11 * x**2 + res1_15 * x**3 +
+  res1_19 * x**4 + res1_23 * x**5 + res1_27 * x**6 + res1_31 * x**7 +
+  res1_35 * x**8 + res1_39 * x**9 + res1_43 * x**10 + res1_47 * x**11 +
+  res1_51 * x**12 + res1_55 * x**13 + res1_59 * x**14 + res1_63 * x**15
+&& true;
+
+assume and [
+  res1_0 = rb0_0 * z**0 + rb1_0 * z**1 + rb2_0 * z**2 + rb3_0 * z**3 + rb4_0 * z**4 + rb5_0 * z**5 + rb6_0 * z**6 + rb7_0 * z**7 + rb8_0 * z**8 + rb9_0 * z**9 + rb10_0 * z**10 + rb11_0 * z**11,
+  res1_1 = rb0_1 * z**0 + rb1_1 * z**1 + rb2_1 * z**2 + rb3_1 * z**3 + rb4_1 * z**4 + rb5_1 * z**5 + rb6_1 * z**6 + rb7_1 * z**7 + rb8_1 * z**8 + rb9_1 * z**9 + rb10_1 * z**10 + rb11_1 * z**11,
+  res1_2 = rb0_2 * z**0 + rb1_2 * z**1 + rb2_2 * z**2 + rb3_2 * z**3 + rb4_2 * z**4 + rb5_2 * z**5 + rb6_2 * z**6 + rb7_2 * z**7 + rb8_2 * z**8 + rb9_2 * z**9 + rb10_2 * z**10 + rb11_2 * z**11,
+  res1_3 = rb0_3 * z**0 + rb1_3 * z**1 + rb2_3 * z**2 + rb3_3 * z**3 + rb4_3 * z**4 + rb5_3 * z**5 + rb6_3 * z**6 + rb7_3 * z**7 + rb8_3 * z**8 + rb9_3 * z**9 + rb10_3 * z**10 + rb11_3 * z**11,
+  res1_4 = rb0_4 * z**0 + rb1_4 * z**1 + rb2_4 * z**2 + rb3_4 * z**3 + rb4_4 * z**4 + rb5_4 * z**5 + rb6_4 * z**6 + rb7_4 * z**7 + rb8_4 * z**8 + rb9_4 * z**9 + rb10_4 * z**10 + rb11_4 * z**11,
+  res1_5 = rb0_5 * z**0 + rb1_5 * z**1 + rb2_5 * z**2 + rb3_5 * z**3 + rb4_5 * z**4 + rb5_5 * z**5 + rb6_5 * z**6 + rb7_5 * z**7 + rb8_5 * z**8 + rb9_5 * z**9 + rb10_5 * z**10 + rb11_5 * z**11,
+  res1_6 = rb0_6 * z**0 + rb1_6 * z**1 + rb2_6 * z**2 + rb3_6 * z**3 + rb4_6 * z**4 + rb5_6 * z**5 + rb6_6 * z**6 + rb7_6 * z**7 + rb8_6 * z**8 + rb9_6 * z**9 + rb10_6 * z**10 + rb11_6 * z**11,
+  res1_7 = rb0_7 * z**0 + rb1_7 * z**1 + rb2_7 * z**2 + rb3_7 * z**3 + rb4_7 * z**4 + rb5_7 * z**5 + rb6_7 * z**6 + rb7_7 * z**7 + rb8_7 * z**8 + rb9_7 * z**9 + rb10_7 * z**10 + rb11_7 * z**11,
+  res1_8 = rb0_8 * z**0 + rb1_8 * z**1 + rb2_8 * z**2 + rb3_8 * z**3 + rb4_8 * z**4 + rb5_8 * z**5 + rb6_8 * z**6 + rb7_8 * z**7 + rb8_8 * z**8 + rb9_8 * z**9 + rb10_8 * z**10 + rb11_8 * z**11,
+  res1_9 = rb0_9 * z**0 + rb1_9 * z**1 + rb2_9 * z**2 + rb3_9 * z**3 + rb4_9 * z**4 + rb5_9 * z**5 + rb6_9 * z**6 + rb7_9 * z**7 + rb8_9 * z**8 + rb9_9 * z**9 + rb10_9 * z**10 + rb11_9 * z**11,
+  res1_10 = rb0_10 * z**0 + rb1_10 * z**1 + rb2_10 * z**2 + rb3_10 * z**3 + rb4_10 * z**4 + rb5_10 * z**5 + rb6_10 * z**6 + rb7_10 * z**7 + rb8_10 * z**8 + rb9_10 * z**9 + rb10_10 * z**10 + rb11_10 * z**11,
+  res1_11 = rb0_11 * z**0 + rb1_11 * z**1 + rb2_11 * z**2 + rb3_11 * z**3 + rb4_11 * z**4 + rb5_11 * z**5 + rb6_11 * z**6 + rb7_11 * z**7 + rb8_11 * z**8 + rb9_11 * z**9 + rb10_11 * z**10 + rb11_11 * z**11,
+  res1_12 = rb0_12 * z**0 + rb1_12 * z**1 + rb2_12 * z**2 + rb3_12 * z**3 + rb4_12 * z**4 + rb5_12 * z**5 + rb6_12 * z**6 + rb7_12 * z**7 + rb8_12 * z**8 + rb9_12 * z**9 + rb10_12 * z**10 + rb11_12 * z**11,
+  res1_13 = rb0_13 * z**0 + rb1_13 * z**1 + rb2_13 * z**2 + rb3_13 * z**3 + rb4_13 * z**4 + rb5_13 * z**5 + rb6_13 * z**6 + rb7_13 * z**7 + rb8_13 * z**8 + rb9_13 * z**9 + rb10_13 * z**10 + rb11_13 * z**11,
+  res1_14 = rb0_14 * z**0 + rb1_14 * z**1 + rb2_14 * z**2 + rb3_14 * z**3 + rb4_14 * z**4 + rb5_14 * z**5 + rb6_14 * z**6 + rb7_14 * z**7 + rb8_14 * z**8 + rb9_14 * z**9 + rb10_14 * z**10 + rb11_14 * z**11,
+  res1_15 = rb0_15 * z**0 + rb1_15 * z**1 + rb2_15 * z**2 + rb3_15 * z**3 + rb4_15 * z**4 + rb5_15 * z**5 + rb6_15 * z**6 + rb7_15 * z**7 + rb8_15 * z**8 + rb9_15 * z**9 + rb10_15 * z**10 + rb11_15 * z**11,
+  res1_16 = rb0_16 * z**0 + rb1_16 * z**1 + rb2_16 * z**2 + rb3_16 * z**3 + rb4_16 * z**4 + rb5_16 * z**5 + rb6_16 * z**6 + rb7_16 * z**7 + rb8_16 * z**8 + rb9_16 * z**9 + rb10_16 * z**10 + rb11_16 * z**11,
+  res1_17 = rb0_17 * z**0 + rb1_17 * z**1 + rb2_17 * z**2 + rb3_17 * z**3 + rb4_17 * z**4 + rb5_17 * z**5 + rb6_17 * z**6 + rb7_17 * z**7 + rb8_17 * z**8 + rb9_17 * z**9 + rb10_17 * z**10 + rb11_17 * z**11,
+  res1_18 = rb0_18 * z**0 + rb1_18 * z**1 + rb2_18 * z**2 + rb3_18 * z**3 + rb4_18 * z**4 + rb5_18 * z**5 + rb6_18 * z**6 + rb7_18 * z**7 + rb8_18 * z**8 + rb9_18 * z**9 + rb10_18 * z**10 + rb11_18 * z**11,
+  res1_19 = rb0_19 * z**0 + rb1_19 * z**1 + rb2_19 * z**2 + rb3_19 * z**3 + rb4_19 * z**4 + rb5_19 * z**5 + rb6_19 * z**6 + rb7_19 * z**7 + rb8_19 * z**8 + rb9_19 * z**9 + rb10_19 * z**10 + rb11_19 * z**11,
+  res1_20 = rb0_20 * z**0 + rb1_20 * z**1 + rb2_20 * z**2 + rb3_20 * z**3 + rb4_20 * z**4 + rb5_20 * z**5 + rb6_20 * z**6 + rb7_20 * z**7 + rb8_20 * z**8 + rb9_20 * z**9 + rb10_20 * z**10 + rb11_20 * z**11,
+  res1_21 = rb0_21 * z**0 + rb1_21 * z**1 + rb2_21 * z**2 + rb3_21 * z**3 + rb4_21 * z**4 + rb5_21 * z**5 + rb6_21 * z**6 + rb7_21 * z**7 + rb8_21 * z**8 + rb9_21 * z**9 + rb10_21 * z**10 + rb11_21 * z**11,
+  res1_22 = rb0_22 * z**0 + rb1_22 * z**1 + rb2_22 * z**2 + rb3_22 * z**3 + rb4_22 * z**4 + rb5_22 * z**5 + rb6_22 * z**6 + rb7_22 * z**7 + rb8_22 * z**8 + rb9_22 * z**9 + rb10_22 * z**10 + rb11_22 * z**11,
+  res1_23 = rb0_23 * z**0 + rb1_23 * z**1 + rb2_23 * z**2 + rb3_23 * z**3 + rb4_23 * z**4 + rb5_23 * z**5 + rb6_23 * z**6 + rb7_23 * z**7 + rb8_23 * z**8 + rb9_23 * z**9 + rb10_23 * z**10 + rb11_23 * z**11,
+  res1_24 = rb0_24 * z**0 + rb1_24 * z**1 + rb2_24 * z**2 + rb3_24 * z**3 + rb4_24 * z**4 + rb5_24 * z**5 + rb6_24 * z**6 + rb7_24 * z**7 + rb8_24 * z**8 + rb9_24 * z**9 + rb10_24 * z**10 + rb11_24 * z**11,
+  res1_25 = rb0_25 * z**0 + rb1_25 * z**1 + rb2_25 * z**2 + rb3_25 * z**3 + rb4_25 * z**4 + rb5_25 * z**5 + rb6_25 * z**6 + rb7_25 * z**7 + rb8_25 * z**8 + rb9_25 * z**9 + rb10_25 * z**10 + rb11_25 * z**11,
+  res1_26 = rb0_26 * z**0 + rb1_26 * z**1 + rb2_26 * z**2 + rb3_26 * z**3 + rb4_26 * z**4 + rb5_26 * z**5 + rb6_26 * z**6 + rb7_26 * z**7 + rb8_26 * z**8 + rb9_26 * z**9 + rb10_26 * z**10 + rb11_26 * z**11,
+  res1_27 = rb0_27 * z**0 + rb1_27 * z**1 + rb2_27 * z**2 + rb3_27 * z**3 + rb4_27 * z**4 + rb5_27 * z**5 + rb6_27 * z**6 + rb7_27 * z**7 + rb8_27 * z**8 + rb9_27 * z**9 + rb10_27 * z**10 + rb11_27 * z**11,
+  res1_28 = rb0_28 * z**0 + rb1_28 * z**1 + rb2_28 * z**2 + rb3_28 * z**3 + rb4_28 * z**4 + rb5_28 * z**5 + rb6_28 * z**6 + rb7_28 * z**7 + rb8_28 * z**8 + rb9_28 * z**9 + rb10_28 * z**10 + rb11_28 * z**11,
+  res1_29 = rb0_29 * z**0 + rb1_29 * z**1 + rb2_29 * z**2 + rb3_29 * z**3 + rb4_29 * z**4 + rb5_29 * z**5 + rb6_29 * z**6 + rb7_29 * z**7 + rb8_29 * z**8 + rb9_29 * z**9 + rb10_29 * z**10 + rb11_29 * z**11,
+  res1_30 = rb0_30 * z**0 + rb1_30 * z**1 + rb2_30 * z**2 + rb3_30 * z**3 + rb4_30 * z**4 + rb5_30 * z**5 + rb6_30 * z**6 + rb7_30 * z**7 + rb8_30 * z**8 + rb9_30 * z**9 + rb10_30 * z**10 + rb11_30 * z**11,
+  res1_31 = rb0_31 * z**0 + rb1_31 * z**1 + rb2_31 * z**2 + rb3_31 * z**3 + rb4_31 * z**4 + rb5_31 * z**5 + rb6_31 * z**6 + rb7_31 * z**7 + rb8_31 * z**8 + rb9_31 * z**9 + rb10_31 * z**10 + rb11_31 * z**11,
+  res1_32 = rb0_32 * z**0 + rb1_32 * z**1 + rb2_32 * z**2 + rb3_32 * z**3 + rb4_32 * z**4 + rb5_32 * z**5 + rb6_32 * z**6 + rb7_32 * z**7 + rb8_32 * z**8 + rb9_32 * z**9 + rb10_32 * z**10 + rb11_32 * z**11,
+  res1_33 = rb0_33 * z**0 + rb1_33 * z**1 + rb2_33 * z**2 + rb3_33 * z**3 + rb4_33 * z**4 + rb5_33 * z**5 + rb6_33 * z**6 + rb7_33 * z**7 + rb8_33 * z**8 + rb9_33 * z**9 + rb10_33 * z**10 + rb11_33 * z**11,
+  res1_34 = rb0_34 * z**0 + rb1_34 * z**1 + rb2_34 * z**2 + rb3_34 * z**3 + rb4_34 * z**4 + rb5_34 * z**5 + rb6_34 * z**6 + rb7_34 * z**7 + rb8_34 * z**8 + rb9_34 * z**9 + rb10_34 * z**10 + rb11_34 * z**11,
+  res1_35 = rb0_35 * z**0 + rb1_35 * z**1 + rb2_35 * z**2 + rb3_35 * z**3 + rb4_35 * z**4 + rb5_35 * z**5 + rb6_35 * z**6 + rb7_35 * z**7 + rb8_35 * z**8 + rb9_35 * z**9 + rb10_35 * z**10 + rb11_35 * z**11,
+  res1_36 = rb0_36 * z**0 + rb1_36 * z**1 + rb2_36 * z**2 + rb3_36 * z**3 + rb4_36 * z**4 + rb5_36 * z**5 + rb6_36 * z**6 + rb7_36 * z**7 + rb8_36 * z**8 + rb9_36 * z**9 + rb10_36 * z**10 + rb11_36 * z**11,
+  res1_37 = rb0_37 * z**0 + rb1_37 * z**1 + rb2_37 * z**2 + rb3_37 * z**3 + rb4_37 * z**4 + rb5_37 * z**5 + rb6_37 * z**6 + rb7_37 * z**7 + rb8_37 * z**8 + rb9_37 * z**9 + rb10_37 * z**10 + rb11_37 * z**11,
+  res1_38 = rb0_38 * z**0 + rb1_38 * z**1 + rb2_38 * z**2 + rb3_38 * z**3 + rb4_38 * z**4 + rb5_38 * z**5 + rb6_38 * z**6 + rb7_38 * z**7 + rb8_38 * z**8 + rb9_38 * z**9 + rb10_38 * z**10 + rb11_38 * z**11,
+  res1_39 = rb0_39 * z**0 + rb1_39 * z**1 + rb2_39 * z**2 + rb3_39 * z**3 + rb4_39 * z**4 + rb5_39 * z**5 + rb6_39 * z**6 + rb7_39 * z**7 + rb8_39 * z**8 + rb9_39 * z**9 + rb10_39 * z**10 + rb11_39 * z**11,
+  res1_40 = rb0_40 * z**0 + rb1_40 * z**1 + rb2_40 * z**2 + rb3_40 * z**3 + rb4_40 * z**4 + rb5_40 * z**5 + rb6_40 * z**6 + rb7_40 * z**7 + rb8_40 * z**8 + rb9_40 * z**9 + rb10_40 * z**10 + rb11_40 * z**11,
+  res1_41 = rb0_41 * z**0 + rb1_41 * z**1 + rb2_41 * z**2 + rb3_41 * z**3 + rb4_41 * z**4 + rb5_41 * z**5 + rb6_41 * z**6 + rb7_41 * z**7 + rb8_41 * z**8 + rb9_41 * z**9 + rb10_41 * z**10 + rb11_41 * z**11,
+  res1_42 = rb0_42 * z**0 + rb1_42 * z**1 + rb2_42 * z**2 + rb3_42 * z**3 + rb4_42 * z**4 + rb5_42 * z**5 + rb6_42 * z**6 + rb7_42 * z**7 + rb8_42 * z**8 + rb9_42 * z**9 + rb10_42 * z**10 + rb11_42 * z**11,
+  res1_43 = rb0_43 * z**0 + rb1_43 * z**1 + rb2_43 * z**2 + rb3_43 * z**3 + rb4_43 * z**4 + rb5_43 * z**5 + rb6_43 * z**6 + rb7_43 * z**7 + rb8_43 * z**8 + rb9_43 * z**9 + rb10_43 * z**10 + rb11_43 * z**11,
+  res1_44 = rb0_44 * z**0 + rb1_44 * z**1 + rb2_44 * z**2 + rb3_44 * z**3 + rb4_44 * z**4 + rb5_44 * z**5 + rb6_44 * z**6 + rb7_44 * z**7 + rb8_44 * z**8 + rb9_44 * z**9 + rb10_44 * z**10 + rb11_44 * z**11,
+  res1_45 = rb0_45 * z**0 + rb1_45 * z**1 + rb2_45 * z**2 + rb3_45 * z**3 + rb4_45 * z**4 + rb5_45 * z**5 + rb6_45 * z**6 + rb7_45 * z**7 + rb8_45 * z**8 + rb9_45 * z**9 + rb10_45 * z**10 + rb11_45 * z**11,
+  res1_46 = rb0_46 * z**0 + rb1_46 * z**1 + rb2_46 * z**2 + rb3_46 * z**3 + rb4_46 * z**4 + rb5_46 * z**5 + rb6_46 * z**6 + rb7_46 * z**7 + rb8_46 * z**8 + rb9_46 * z**9 + rb10_46 * z**10 + rb11_46 * z**11,
+  res1_47 = rb0_47 * z**0 + rb1_47 * z**1 + rb2_47 * z**2 + rb3_47 * z**3 + rb4_47 * z**4 + rb5_47 * z**5 + rb6_47 * z**6 + rb7_47 * z**7 + rb8_47 * z**8 + rb9_47 * z**9 + rb10_47 * z**10 + rb11_47 * z**11,
+  res1_48 = rb0_48 * z**0 + rb1_48 * z**1 + rb2_48 * z**2 + rb3_48 * z**3 + rb4_48 * z**4 + rb5_48 * z**5 + rb6_48 * z**6 + rb7_48 * z**7 + rb8_48 * z**8 + rb9_48 * z**9 + rb10_48 * z**10 + rb11_48 * z**11,
+  res1_49 = rb0_49 * z**0 + rb1_49 * z**1 + rb2_49 * z**2 + rb3_49 * z**3 + rb4_49 * z**4 + rb5_49 * z**5 + rb6_49 * z**6 + rb7_49 * z**7 + rb8_49 * z**8 + rb9_49 * z**9 + rb10_49 * z**10 + rb11_49 * z**11,
+  res1_50 = rb0_50 * z**0 + rb1_50 * z**1 + rb2_50 * z**2 + rb3_50 * z**3 + rb4_50 * z**4 + rb5_50 * z**5 + rb6_50 * z**6 + rb7_50 * z**7 + rb8_50 * z**8 + rb9_50 * z**9 + rb10_50 * z**10 + rb11_50 * z**11,
+  res1_51 = rb0_51 * z**0 + rb1_51 * z**1 + rb2_51 * z**2 + rb3_51 * z**3 + rb4_51 * z**4 + rb5_51 * z**5 + rb6_51 * z**6 + rb7_51 * z**7 + rb8_51 * z**8 + rb9_51 * z**9 + rb10_51 * z**10 + rb11_51 * z**11,
+  res1_52 = rb0_52 * z**0 + rb1_52 * z**1 + rb2_52 * z**2 + rb3_52 * z**3 + rb4_52 * z**4 + rb5_52 * z**5 + rb6_52 * z**6 + rb7_52 * z**7 + rb8_52 * z**8 + rb9_52 * z**9 + rb10_52 * z**10 + rb11_52 * z**11,
+  res1_53 = rb0_53 * z**0 + rb1_53 * z**1 + rb2_53 * z**2 + rb3_53 * z**3 + rb4_53 * z**4 + rb5_53 * z**5 + rb6_53 * z**6 + rb7_53 * z**7 + rb8_53 * z**8 + rb9_53 * z**9 + rb10_53 * z**10 + rb11_53 * z**11,
+  res1_54 = rb0_54 * z**0 + rb1_54 * z**1 + rb2_54 * z**2 + rb3_54 * z**3 + rb4_54 * z**4 + rb5_54 * z**5 + rb6_54 * z**6 + rb7_54 * z**7 + rb8_54 * z**8 + rb9_54 * z**9 + rb10_54 * z**10 + rb11_54 * z**11,
+  res1_55 = rb0_55 * z**0 + rb1_55 * z**1 + rb2_55 * z**2 + rb3_55 * z**3 + rb4_55 * z**4 + rb5_55 * z**5 + rb6_55 * z**6 + rb7_55 * z**7 + rb8_55 * z**8 + rb9_55 * z**9 + rb10_55 * z**10 + rb11_55 * z**11,
+  res1_56 = rb0_56 * z**0 + rb1_56 * z**1 + rb2_56 * z**2 + rb3_56 * z**3 + rb4_56 * z**4 + rb5_56 * z**5 + rb6_56 * z**6 + rb7_56 * z**7 + rb8_56 * z**8 + rb9_56 * z**9 + rb10_56 * z**10 + rb11_56 * z**11,
+  res1_57 = rb0_57 * z**0 + rb1_57 * z**1 + rb2_57 * z**2 + rb3_57 * z**3 + rb4_57 * z**4 + rb5_57 * z**5 + rb6_57 * z**6 + rb7_57 * z**7 + rb8_57 * z**8 + rb9_57 * z**9 + rb10_57 * z**10 + rb11_57 * z**11,
+  res1_58 = rb0_58 * z**0 + rb1_58 * z**1 + rb2_58 * z**2 + rb3_58 * z**3 + rb4_58 * z**4 + rb5_58 * z**5 + rb6_58 * z**6 + rb7_58 * z**7 + rb8_58 * z**8 + rb9_58 * z**9 + rb10_58 * z**10 + rb11_58 * z**11,
+  res1_59 = rb0_59 * z**0 + rb1_59 * z**1 + rb2_59 * z**2 + rb3_59 * z**3 + rb4_59 * z**4 + rb5_59 * z**5 + rb6_59 * z**6 + rb7_59 * z**7 + rb8_59 * z**8 + rb9_59 * z**9 + rb10_59 * z**10 + rb11_59 * z**11,
+  res1_60 = rb0_60 * z**0 + rb1_60 * z**1 + rb2_60 * z**2 + rb3_60 * z**3 + rb4_60 * z**4 + rb5_60 * z**5 + rb6_60 * z**6 + rb7_60 * z**7 + rb8_60 * z**8 + rb9_60 * z**9 + rb10_60 * z**10 + rb11_60 * z**11,
+  res1_61 = rb0_61 * z**0 + rb1_61 * z**1 + rb2_61 * z**2 + rb3_61 * z**3 + rb4_61 * z**4 + rb5_61 * z**5 + rb6_61 * z**6 + rb7_61 * z**7 + rb8_61 * z**8 + rb9_61 * z**9 + rb10_61 * z**10 + rb11_61 * z**11,
+  res1_62 = rb0_62 * z**0 + rb1_62 * z**1 + rb2_62 * z**2 + rb3_62 * z**3 + rb4_62 * z**4 + rb5_62 * z**5 + rb6_62 * z**6 + rb7_62 * z**7 + rb8_62 * z**8 + rb9_62 * z**9 + rb10_62 * z**10 + rb11_62 * z**11,
+  res1_63 = rb0_63 * z**0 + rb1_63 * z**1 + rb2_63 * z**2 + rb3_63 * z**3 + rb4_63 * z**4 + rb5_63 * z**5 + rb6_63 * z**6 + rb7_63 * z**7 + rb8_63 * z**8 + rb9_63 * z**9 + rb10_63 * z**10 + rb11_63 * z**11
+] && true;
+
+mov %L0x7fffffffdaa0 [rb0_0, rb0_1, rb0_2, rb0_3, rb0_4, rb0_5, rb0_6, rb0_7, rb0_8, rb0_9, rb0_10, rb0_11, rb0_12, rb0_13, rb0_14, rb0_15, rb0_16, rb0_17, rb0_18, rb0_19, rb0_20, rb0_21, rb0_22, rb0_23, rb0_24, rb0_25, rb0_26, rb0_27, rb0_28, rb0_29, rb0_30, rb0_31, rb0_32, rb0_33, rb0_34, rb0_35, rb0_36, rb0_37, rb0_38, rb0_39, rb0_40, rb0_41, rb0_42, rb0_43, rb0_44, rb0_45, rb0_46, rb0_47, rb0_48, rb0_49, rb0_50, rb0_51, rb0_52, rb0_53, rb0_54, rb0_55, rb0_56, rb0_57, rb0_58, rb0_59, rb0_60, rb0_61, rb0_62, rb0_63];
+mov %L0x7fffffffdaa8 [rb1_0, rb1_1, rb1_2, rb1_3, rb1_4, rb1_5, rb1_6, rb1_7, rb1_8, rb1_9, rb1_10, rb1_11, rb1_12, rb1_13, rb1_14, rb1_15, rb1_16, rb1_17, rb1_18, rb1_19, rb1_20, rb1_21, rb1_22, rb1_23, rb1_24, rb1_25, rb1_26, rb1_27, rb1_28, rb1_29, rb1_30, rb1_31, rb1_32, rb1_33, rb1_34, rb1_35, rb1_36, rb1_37, rb1_38, rb1_39, rb1_40, rb1_41, rb1_42, rb1_43, rb1_44, rb1_45, rb1_46, rb1_47, rb1_48, rb1_49, rb1_50, rb1_51, rb1_52, rb1_53, rb1_54, rb1_55, rb1_56, rb1_57, rb1_58, rb1_59, rb1_60, rb1_61, rb1_62, rb1_63];
+mov %L0x7fffffffdab0 [rb2_0, rb2_1, rb2_2, rb2_3, rb2_4, rb2_5, rb2_6, rb2_7, rb2_8, rb2_9, rb2_10, rb2_11, rb2_12, rb2_13, rb2_14, rb2_15, rb2_16, rb2_17, rb2_18, rb2_19, rb2_20, rb2_21, rb2_22, rb2_23, rb2_24, rb2_25, rb2_26, rb2_27, rb2_28, rb2_29, rb2_30, rb2_31, rb2_32, rb2_33, rb2_34, rb2_35, rb2_36, rb2_37, rb2_38, rb2_39, rb2_40, rb2_41, rb2_42, rb2_43, rb2_44, rb2_45, rb2_46, rb2_47, rb2_48, rb2_49, rb2_50, rb2_51, rb2_52, rb2_53, rb2_54, rb2_55, rb2_56, rb2_57, rb2_58, rb2_59, rb2_60, rb2_61, rb2_62, rb2_63];
+mov %L0x7fffffffdab8 [rb3_0, rb3_1, rb3_2, rb3_3, rb3_4, rb3_5, rb3_6, rb3_7, rb3_8, rb3_9, rb3_10, rb3_11, rb3_12, rb3_13, rb3_14, rb3_15, rb3_16, rb3_17, rb3_18, rb3_19, rb3_20, rb3_21, rb3_22, rb3_23, rb3_24, rb3_25, rb3_26, rb3_27, rb3_28, rb3_29, rb3_30, rb3_31, rb3_32, rb3_33, rb3_34, rb3_35, rb3_36, rb3_37, rb3_38, rb3_39, rb3_40, rb3_41, rb3_42, rb3_43, rb3_44, rb3_45, rb3_46, rb3_47, rb3_48, rb3_49, rb3_50, rb3_51, rb3_52, rb3_53, rb3_54, rb3_55, rb3_56, rb3_57, rb3_58, rb3_59, rb3_60, rb3_61, rb3_62, rb3_63];
+mov %L0x7fffffffdac0 [rb4_0, rb4_1, rb4_2, rb4_3, rb4_4, rb4_5, rb4_6, rb4_7, rb4_8, rb4_9, rb4_10, rb4_11, rb4_12, rb4_13, rb4_14, rb4_15, rb4_16, rb4_17, rb4_18, rb4_19, rb4_20, rb4_21, rb4_22, rb4_23, rb4_24, rb4_25, rb4_26, rb4_27, rb4_28, rb4_29, rb4_30, rb4_31, rb4_32, rb4_33, rb4_34, rb4_35, rb4_36, rb4_37, rb4_38, rb4_39, rb4_40, rb4_41, rb4_42, rb4_43, rb4_44, rb4_45, rb4_46, rb4_47, rb4_48, rb4_49, rb4_50, rb4_51, rb4_52, rb4_53, rb4_54, rb4_55, rb4_56, rb4_57, rb4_58, rb4_59, rb4_60, rb4_61, rb4_62, rb4_63];
+mov %L0x7fffffffdac8 [rb5_0, rb5_1, rb5_2, rb5_3, rb5_4, rb5_5, rb5_6, rb5_7, rb5_8, rb5_9, rb5_10, rb5_11, rb5_12, rb5_13, rb5_14, rb5_15, rb5_16, rb5_17, rb5_18, rb5_19, rb5_20, rb5_21, rb5_22, rb5_23, rb5_24, rb5_25, rb5_26, rb5_27, rb5_28, rb5_29, rb5_30, rb5_31, rb5_32, rb5_33, rb5_34, rb5_35, rb5_36, rb5_37, rb5_38, rb5_39, rb5_40, rb5_41, rb5_42, rb5_43, rb5_44, rb5_45, rb5_46, rb5_47, rb5_48, rb5_49, rb5_50, rb5_51, rb5_52, rb5_53, rb5_54, rb5_55, rb5_56, rb5_57, rb5_58, rb5_59, rb5_60, rb5_61, rb5_62, rb5_63];
+mov %L0x7fffffffdad0 [rb6_0, rb6_1, rb6_2, rb6_3, rb6_4, rb6_5, rb6_6, rb6_7, rb6_8, rb6_9, rb6_10, rb6_11, rb6_12, rb6_13, rb6_14, rb6_15, rb6_16, rb6_17, rb6_18, rb6_19, rb6_20, rb6_21, rb6_22, rb6_23, rb6_24, rb6_25, rb6_26, rb6_27, rb6_28, rb6_29, rb6_30, rb6_31, rb6_32, rb6_33, rb6_34, rb6_35, rb6_36, rb6_37, rb6_38, rb6_39, rb6_40, rb6_41, rb6_42, rb6_43, rb6_44, rb6_45, rb6_46, rb6_47, rb6_48, rb6_49, rb6_50, rb6_51, rb6_52, rb6_53, rb6_54, rb6_55, rb6_56, rb6_57, rb6_58, rb6_59, rb6_60, rb6_61, rb6_62, rb6_63];
+mov %L0x7fffffffdad8 [rb7_0, rb7_1, rb7_2, rb7_3, rb7_4, rb7_5, rb7_6, rb7_7, rb7_8, rb7_9, rb7_10, rb7_11, rb7_12, rb7_13, rb7_14, rb7_15, rb7_16, rb7_17, rb7_18, rb7_19, rb7_20, rb7_21, rb7_22, rb7_23, rb7_24, rb7_25, rb7_26, rb7_27, rb7_28, rb7_29, rb7_30, rb7_31, rb7_32, rb7_33, rb7_34, rb7_35, rb7_36, rb7_37, rb7_38, rb7_39, rb7_40, rb7_41, rb7_42, rb7_43, rb7_44, rb7_45, rb7_46, rb7_47, rb7_48, rb7_49, rb7_50, rb7_51, rb7_52, rb7_53, rb7_54, rb7_55, rb7_56, rb7_57, rb7_58, rb7_59, rb7_60, rb7_61, rb7_62, rb7_63];
+mov %L0x7fffffffdae0 [rb8_0, rb8_1, rb8_2, rb8_3, rb8_4, rb8_5, rb8_6, rb8_7, rb8_8, rb8_9, rb8_10, rb8_11, rb8_12, rb8_13, rb8_14, rb8_15, rb8_16, rb8_17, rb8_18, rb8_19, rb8_20, rb8_21, rb8_22, rb8_23, rb8_24, rb8_25, rb8_26, rb8_27, rb8_28, rb8_29, rb8_30, rb8_31, rb8_32, rb8_33, rb8_34, rb8_35, rb8_36, rb8_37, rb8_38, rb8_39, rb8_40, rb8_41, rb8_42, rb8_43, rb8_44, rb8_45, rb8_46, rb8_47, rb8_48, rb8_49, rb8_50, rb8_51, rb8_52, rb8_53, rb8_54, rb8_55, rb8_56, rb8_57, rb8_58, rb8_59, rb8_60, rb8_61, rb8_62, rb8_63];
+mov %L0x7fffffffdae8 [rb9_0, rb9_1, rb9_2, rb9_3, rb9_4, rb9_5, rb9_6, rb9_7, rb9_8, rb9_9, rb9_10, rb9_11, rb9_12, rb9_13, rb9_14, rb9_15, rb9_16, rb9_17, rb9_18, rb9_19, rb9_20, rb9_21, rb9_22, rb9_23, rb9_24, rb9_25, rb9_26, rb9_27, rb9_28, rb9_29, rb9_30, rb9_31, rb9_32, rb9_33, rb9_34, rb9_35, rb9_36, rb9_37, rb9_38, rb9_39, rb9_40, rb9_41, rb9_42, rb9_43, rb9_44, rb9_45, rb9_46, rb9_47, rb9_48, rb9_49, rb9_50, rb9_51, rb9_52, rb9_53, rb9_54, rb9_55, rb9_56, rb9_57, rb9_58, rb9_59, rb9_60, rb9_61, rb9_62, rb9_63];
+mov %L0x7fffffffdaf0 [rb10_0, rb10_1, rb10_2, rb10_3, rb10_4, rb10_5, rb10_6, rb10_7, rb10_8, rb10_9, rb10_10, rb10_11, rb10_12, rb10_13, rb10_14, rb10_15, rb10_16, rb10_17, rb10_18, rb10_19, rb10_20, rb10_21, rb10_22, rb10_23, rb10_24, rb10_25, rb10_26, rb10_27, rb10_28, rb10_29, rb10_30, rb10_31, rb10_32, rb10_33, rb10_34, rb10_35, rb10_36, rb10_37, rb10_38, rb10_39, rb10_40, rb10_41, rb10_42, rb10_43, rb10_44, rb10_45, rb10_46, rb10_47, rb10_48, rb10_49, rb10_50, rb10_51, rb10_52, rb10_53, rb10_54, rb10_55, rb10_56, rb10_57, rb10_58, rb10_59, rb10_60, rb10_61, rb10_62, rb10_63];
+mov %L0x7fffffffdaf8 [rb11_0, rb11_1, rb11_2, rb11_3, rb11_4, rb11_5, rb11_6, rb11_7, rb11_8, rb11_9, rb11_10, rb11_11, rb11_12, rb11_13, rb11_14, rb11_15, rb11_16, rb11_17, rb11_18, rb11_19, rb11_20, rb11_21, rb11_22, rb11_23, rb11_24, rb11_25, rb11_26, rb11_27, rb11_28, rb11_29, rb11_30, rb11_31, rb11_32, rb11_33, rb11_34, rb11_35, rb11_36, rb11_37, rb11_38, rb11_39, rb11_40, rb11_41, rb11_42, rb11_43, rb11_44, rb11_45, rb11_46, rb11_47, rb11_48, rb11_49, rb11_50, rb11_51, rb11_52, rb11_53, rb11_54, rb11_55, rb11_56, rb11_57, rb11_58, rb11_59, rb11_60, rb11_61, rb11_62, rb11_63];
+
+/* -------------------------------------------------------------------------- */
+
+
+/* -------------------------------------------------------------------------- */
+
+assume modulus = z ** 12 + z ** 3 + 1 && true;
+
+nondet res2_0@bit; nondet res2_1@bit; nondet res2_2@bit; nondet res2_3@bit;
+nondet res2_4@bit; nondet res2_5@bit; nondet res2_6@bit; nondet res2_7@bit;
+nondet res2_8@bit; nondet res2_9@bit; nondet res2_10@bit; nondet res2_11@bit;
+nondet res2_12@bit; nondet res2_13@bit; nondet res2_14@bit; nondet res2_15@bit;
+nondet res2_16@bit; nondet res2_17@bit; nondet res2_18@bit; nondet res2_19@bit;
+nondet res2_20@bit; nondet res2_21@bit; nondet res2_22@bit; nondet res2_23@bit;
+nondet res2_24@bit; nondet res2_25@bit; nondet res2_26@bit; nondet res2_27@bit;
+nondet res2_28@bit; nondet res2_29@bit; nondet res2_30@bit; nondet res2_31@bit;
+nondet res2_32@bit; nondet res2_33@bit; nondet res2_34@bit; nondet res2_35@bit;
+nondet res2_36@bit; nondet res2_37@bit; nondet res2_38@bit; nondet res2_39@bit;
+nondet res2_40@bit; nondet res2_41@bit; nondet res2_42@bit; nondet res2_43@bit;
+nondet res2_44@bit; nondet res2_45@bit; nondet res2_46@bit; nondet res2_47@bit;
+nondet res2_48@bit; nondet res2_49@bit; nondet res2_50@bit; nondet res2_51@bit;
+nondet res2_52@bit; nondet res2_53@bit; nondet res2_54@bit; nondet res2_55@bit;
+nondet res2_56@bit; nondet res2_57@bit; nondet res2_58@bit; nondet res2_59@bit;
+nondet res2_60@bit; nondet res2_61@bit; nondet res2_62@bit; nondet res2_63@bit;
+
+assume and [
+  eqmod res2_0 (cvrted2_0 * ((* 2  0 *) 1)) [2, modulus],
+  eqmod res2_1 (cvrted2_1 * ((* 2  1 *) 1)) [2, modulus],
+  eqmod res2_2 (cvrted2_2 * ((* 2  2 *) 1)) [2, modulus],
+  eqmod res2_3 (cvrted2_3 * ((* 2  3 *) 1)) [2, modulus],
+  eqmod res2_4 (cvrted2_4 * ((* 2  4 *) 1)) [2, modulus],
+  eqmod res2_5 (cvrted2_5 * ((* 2  5 *) 1)) [2, modulus],
+  eqmod res2_6 (cvrted2_6 * ((* 2  6 *) 1)) [2, modulus],
+  eqmod res2_7 (cvrted2_7 * ((* 2  7 *) 1)) [2, modulus],
+  eqmod res2_8 (cvrted2_8 * ((* 2  8 *) z**8 + z)) [2, modulus],
+  eqmod res2_9 (cvrted2_9 * ((* 2  9 *) z**8 + z)) [2, modulus],
+  eqmod res2_10 (cvrted2_10 * ((* 2 10 *) z**8 + z)) [2, modulus],
+  eqmod res2_11 (cvrted2_11 * ((* 2 11 *) z**8 + z)) [2, modulus],
+  eqmod res2_12 (cvrted2_12 * ((* 2 12 *) z**8 + z)) [2, modulus],
+  eqmod res2_13 (cvrted2_13 * ((* 2 13 *) z**8 + z)) [2, modulus],
+  eqmod res2_14 (cvrted2_14 * ((* 2 14 *) z**8 + z)) [2, modulus],
+  eqmod res2_15 (cvrted2_15 * ((* 2 15 *) z**8 + z)) [2, modulus],
+  eqmod res2_16 (cvrted2_16 * ((* 2 16 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_17 (cvrted2_17 * ((* 2 17 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_18 (cvrted2_18 * ((* 2 18 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_19 (cvrted2_19 * ((* 2 19 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_20 (cvrted2_20 * ((* 2 20 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_21 (cvrted2_21 * ((* 2 21 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_22 (cvrted2_22 * ((* 2 22 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_23 (cvrted2_23 * ((* 2 23 *) z**7 + z**4 + z**2)) [2, modulus],
+  eqmod res2_24 (cvrted2_24 * ((* 2 24 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_25 (cvrted2_25 * ((* 2 25 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_26 (cvrted2_26 * ((* 2 26 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_27 (cvrted2_27 * ((* 2 27 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_28 (cvrted2_28 * ((* 2 28 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_29 (cvrted2_29 * ((* 2 29 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_30 (cvrted2_30 * ((* 2 30 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_31 (cvrted2_31 * ((* 2 31 *) z**10 + z**8 + z**6 + z**5 + z**3 + 1)) [2, modulus],
+  eqmod res2_32 (cvrted2_32 * ((* 2 32 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_33 (cvrted2_33 * ((* 2 33 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_34 (cvrted2_34 * ((* 2 34 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_35 (cvrted2_35 * ((* 2 35 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_36 (cvrted2_36 * ((* 2 36 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_37 (cvrted2_37 * ((* 2 37 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_38 (cvrted2_38 * ((* 2 38 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_39 (cvrted2_39 * ((* 2 39 *) z**8 + z**5 + z**4 + z**2)) [2, modulus],
+  eqmod res2_40 (cvrted2_40 * ((* 2 40 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_41 (cvrted2_41 * ((* 2 41 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_42 (cvrted2_42 * ((* 2 42 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_43 (cvrted2_43 * ((* 2 43 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_44 (cvrted2_44 * ((* 2 44 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_45 (cvrted2_45 * ((* 2 45 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_46 (cvrted2_46 * ((* 2 46 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_47 (cvrted2_47 * ((* 2 47 *) z**10 + z**9 + z**7 + z**6 + z**5 + z + 1)) [2, modulus],
+  eqmod res2_48 (cvrted2_48 * ((* 2 48 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_49 (cvrted2_49 * ((* 2 49 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_50 (cvrted2_50 * ((* 2 50 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_51 (cvrted2_51 * ((* 2 51 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_52 (cvrted2_52 * ((* 2 52 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_53 (cvrted2_53 * ((* 2 53 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_54 (cvrted2_54 * ((* 2 54 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_55 (cvrted2_55 * ((* 2 55 *) z**11 + z**10 + z**8 + z**7 + z**6 + z**4 + z**3)) [2, modulus],
+  eqmod res2_56 (cvrted2_56 * ((* 2 56 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_57 (cvrted2_57 * ((* 2 57 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_58 (cvrted2_58 * ((* 2 58 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_59 (cvrted2_59 * ((* 2 59 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_60 (cvrted2_60 * ((* 2 60 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_61 (cvrted2_61 * ((* 2 61 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_62 (cvrted2_62 * ((* 2 62 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus],
+  eqmod res2_63 (cvrted2_63 * ((* 2 63 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus]
+] && true;
+
+ghost t2@bit: t2 = (z ** 8 + z) * (x ** 2 + x) && true;
+
+ecut and [
+  eqmod (
+    (cvrted2_0 + x * cvrted2_4) * t2 ** 0 + 
+    (cvrted2_8 + x * cvrted2_12) * t2 ** 1 + 
+    (cvrted2_16 + x * cvrted2_20) * t2 ** 2 + 
+    (cvrted2_24 + x * cvrted2_28) * t2 ** 3 + 
+    (cvrted2_32 + x * cvrted2_36) * t2 ** 4 + 
+    (cvrted2_40 + x * cvrted2_44) * t2 ** 5 + 
+    (cvrted2_48 + x * cvrted2_52) * t2 ** 6 + 
+    (cvrted2_56 + x * cvrted2_60) * t2 ** 7
+  ) (
+    (res2_0 + x * res2_4) * (x ** 2 + x) ** 0 + 
+    (res2_8 + x * res2_12) * (x ** 2 + x) ** 1 + 
+    (res2_16 + x * res2_20) * (x ** 2 + x) ** 2 + 
+    (res2_24 + x * res2_28) * (x ** 2 + x) ** 3 + 
+    (res2_32 + x * res2_36) * (x ** 2 + x) ** 4 + 
+    (res2_40 + x * res2_44) * (x ** 2 + x) ** 5 + 
+    (res2_48 + x * res2_52) * (x ** 2 + x) ** 6 + 
+    (res2_56 + x * res2_60) * (x ** 2 + x) ** 7
+  ) [2, modulus],
+  eqmod (
+    (cvrted2_1 + x * cvrted2_5) * t2 ** 0 + 
+    (cvrted2_9 + x * cvrted2_13) * t2 ** 1 + 
+    (cvrted2_17 + x * cvrted2_21) * t2 ** 2 + 
+    (cvrted2_25 + x * cvrted2_29) * t2 ** 3 + 
+    (cvrted2_33 + x * cvrted2_37) * t2 ** 4 + 
+    (cvrted2_41 + x * cvrted2_45) * t2 ** 5 + 
+    (cvrted2_49 + x * cvrted2_53) * t2 ** 6 + 
+    (cvrted2_57 + x * cvrted2_61) * t2 ** 7
+  ) (
+    (res2_1 + x * res2_5) * (x ** 2 + x) ** 0 + 
+    (res2_9 + x * res2_13) * (x ** 2 + x) ** 1 + 
+    (res2_17 + x * res2_21) * (x ** 2 + x) ** 2 + 
+    (res2_25 + x * res2_29) * (x ** 2 + x) ** 3 + 
+    (res2_33 + x * res2_37) * (x ** 2 + x) ** 4 + 
+    (res2_41 + x * res2_45) * (x ** 2 + x) ** 5 + 
+    (res2_49 + x * res2_53) * (x ** 2 + x) ** 6 + 
+    (res2_57 + x * res2_61) * (x ** 2 + x) ** 7
+  ) [2, modulus],
+  eqmod (
+    (cvrted2_2 + x * cvrted2_6) * t2 ** 0 + 
+    (cvrted2_10 + x * cvrted2_14) * t2 ** 1 + 
+    (cvrted2_18 + x * cvrted2_22) * t2 ** 2 + 
+    (cvrted2_26 + x * cvrted2_30) * t2 ** 3 + 
+    (cvrted2_34 + x * cvrted2_38) * t2 ** 4 + 
+    (cvrted2_42 + x * cvrted2_46) * t2 ** 5 + 
+    (cvrted2_50 + x * cvrted2_54) * t2 ** 6 + 
+    (cvrted2_58 + x * cvrted2_62) * t2 ** 7
+  ) (
+    (res2_2 + x * res2_6) * (x ** 2 + x) ** 0 + 
+    (res2_10 + x * res2_14) * (x ** 2 + x) ** 1 + 
+    (res2_18 + x * res2_22) * (x ** 2 + x) ** 2 + 
+    (res2_26 + x * res2_30) * (x ** 2 + x) ** 3 + 
+    (res2_34 + x * res2_38) * (x ** 2 + x) ** 4 + 
+    (res2_42 + x * res2_46) * (x ** 2 + x) ** 5 + 
+    (res2_50 + x * res2_54) * (x ** 2 + x) ** 6 + 
+    (res2_58 + x * res2_62) * (x ** 2 + x) ** 7
+  ) [2, modulus],
+  eqmod (
+    (cvrted2_3 + x * cvrted2_7) * t2 ** 0 + 
+    (cvrted2_11 + x * cvrted2_15) * t2 ** 1 + 
+    (cvrted2_19 + x * cvrted2_23) * t2 ** 2 + 
+    (cvrted2_27 + x * cvrted2_31) * t2 ** 3 + 
+    (cvrted2_35 + x * cvrted2_39) * t2 ** 4 + 
+    (cvrted2_43 + x * cvrted2_47) * t2 ** 5 + 
+    (cvrted2_51 + x * cvrted2_55) * t2 ** 6 + 
+    (cvrted2_59 + x * cvrted2_63) * t2 ** 7
+  ) (
+    (res2_3 + x * res2_7) * (x ** 2 + x) ** 0 + 
+    (res2_11 + x * res2_15) * (x ** 2 + x) ** 1 + 
+    (res2_19 + x * res2_23) * (x ** 2 + x) ** 2 + 
+    (res2_27 + x * res2_31) * (x ** 2 + x) ** 3 + 
+    (res2_35 + x * res2_39) * (x ** 2 + x) ** 4 + 
+    (res2_43 + x * res2_47) * (x ** 2 + x) ** 5 + 
+    (res2_51 + x * res2_55) * (x ** 2 + x) ** 6 + 
+    (res2_59 + x * res2_63) * (x ** 2 + x) ** 7
+  ) [2, modulus]
+];
+
+ghost inp3_0@uint12: inp3_0 = 
+  res2_0 * x**0 + res2_8 * x**1 + res2_16 * x**2 + res2_24 * x**3 +
+  res2_32 * x**4 + res2_40 * x**5 + res2_48 * x**6 + res2_56 * x**7
+&& true;
+ghost inp3_1@uint12: inp3_1 = 
+  res2_1 * x**0 + res2_9 * x**1 + res2_17 * x**2 + res2_25 * x**3 +
+  res2_33 * x**4 + res2_41 * x**5 + res2_49 * x**6 + res2_57 * x**7
+&& true;
+ghost inp3_2@uint12: inp3_2 = 
+  res2_2 * x**0 + res2_10 * x**1 + res2_18 * x**2 + res2_26 * x**3 +
+  res2_34 * x**4 + res2_42 * x**5 + res2_50 * x**6 + res2_58 * x**7
+&& true;
+ghost inp3_3@uint12: inp3_3 = 
+  res2_3 * x**0 + res2_11 * x**1 + res2_19 * x**2 + res2_27 * x**3 +
+  res2_35 * x**4 + res2_43 * x**5 + res2_51 * x**6 + res2_59 * x**7
+&& true;
+ghost inp3_4@uint12: inp3_4 = 
+  res2_4 * x**0 + res2_12 * x**1 + res2_20 * x**2 + res2_28 * x**3 +
+  res2_36 * x**4 + res2_44 * x**5 + res2_52 * x**6 + res2_60 * x**7
+&& true;
+ghost inp3_5@uint12: inp3_5 = 
+  res2_5 * x**0 + res2_13 * x**1 + res2_21 * x**2 + res2_29 * x**3 +
+  res2_37 * x**4 + res2_45 * x**5 + res2_53 * x**6 + res2_61 * x**7
+&& true;
+ghost inp3_6@uint12: inp3_6 = 
+  res2_6 * x**0 + res2_14 * x**1 + res2_22 * x**2 + res2_30 * x**3 +
+  res2_38 * x**4 + res2_46 * x**5 + res2_54 * x**6 + res2_62 * x**7
+&& true;
+ghost inp3_7@uint12: inp3_7 = 
+  res2_7 * x**0 + res2_15 * x**1 + res2_23 * x**2 + res2_31 * x**3 +
+  res2_39 * x**4 + res2_47 * x**5 + res2_55 * x**6 + res2_63 * x**7
+&& true;
+
+assume and [
+  res2_0 = rb0_0 * z**0 + rb1_0 * z**1 + rb2_0 * z**2 + rb3_0 * z**3 + rb4_0 * z**4 + rb5_0 * z**5 + rb6_0 * z**6 + rb7_0 * z**7 + rb8_0 * z**8 + rb9_0 * z**9 + rb10_0 * z**10 + rb11_0 * z**11,
+  res2_1 = rb0_1 * z**0 + rb1_1 * z**1 + rb2_1 * z**2 + rb3_1 * z**3 + rb4_1 * z**4 + rb5_1 * z**5 + rb6_1 * z**6 + rb7_1 * z**7 + rb8_1 * z**8 + rb9_1 * z**9 + rb10_1 * z**10 + rb11_1 * z**11,
+  res2_2 = rb0_2 * z**0 + rb1_2 * z**1 + rb2_2 * z**2 + rb3_2 * z**3 + rb4_2 * z**4 + rb5_2 * z**5 + rb6_2 * z**6 + rb7_2 * z**7 + rb8_2 * z**8 + rb9_2 * z**9 + rb10_2 * z**10 + rb11_2 * z**11,
+  res2_3 = rb0_3 * z**0 + rb1_3 * z**1 + rb2_3 * z**2 + rb3_3 * z**3 + rb4_3 * z**4 + rb5_3 * z**5 + rb6_3 * z**6 + rb7_3 * z**7 + rb8_3 * z**8 + rb9_3 * z**9 + rb10_3 * z**10 + rb11_3 * z**11,
+  res2_4 = rb0_4 * z**0 + rb1_4 * z**1 + rb2_4 * z**2 + rb3_4 * z**3 + rb4_4 * z**4 + rb5_4 * z**5 + rb6_4 * z**6 + rb7_4 * z**7 + rb8_4 * z**8 + rb9_4 * z**9 + rb10_4 * z**10 + rb11_4 * z**11,
+  res2_5 = rb0_5 * z**0 + rb1_5 * z**1 + rb2_5 * z**2 + rb3_5 * z**3 + rb4_5 * z**4 + rb5_5 * z**5 + rb6_5 * z**6 + rb7_5 * z**7 + rb8_5 * z**8 + rb9_5 * z**9 + rb10_5 * z**10 + rb11_5 * z**11,
+  res2_6 = rb0_6 * z**0 + rb1_6 * z**1 + rb2_6 * z**2 + rb3_6 * z**3 + rb4_6 * z**4 + rb5_6 * z**5 + rb6_6 * z**6 + rb7_6 * z**7 + rb8_6 * z**8 + rb9_6 * z**9 + rb10_6 * z**10 + rb11_6 * z**11,
+  res2_7 = rb0_7 * z**0 + rb1_7 * z**1 + rb2_7 * z**2 + rb3_7 * z**3 + rb4_7 * z**4 + rb5_7 * z**5 + rb6_7 * z**6 + rb7_7 * z**7 + rb8_7 * z**8 + rb9_7 * z**9 + rb10_7 * z**10 + rb11_7 * z**11,
+  res2_8 = rb0_8 * z**0 + rb1_8 * z**1 + rb2_8 * z**2 + rb3_8 * z**3 + rb4_8 * z**4 + rb5_8 * z**5 + rb6_8 * z**6 + rb7_8 * z**7 + rb8_8 * z**8 + rb9_8 * z**9 + rb10_8 * z**10 + rb11_8 * z**11,
+  res2_9 = rb0_9 * z**0 + rb1_9 * z**1 + rb2_9 * z**2 + rb3_9 * z**3 + rb4_9 * z**4 + rb5_9 * z**5 + rb6_9 * z**6 + rb7_9 * z**7 + rb8_9 * z**8 + rb9_9 * z**9 + rb10_9 * z**10 + rb11_9 * z**11,
+  res2_10 = rb0_10 * z**0 + rb1_10 * z**1 + rb2_10 * z**2 + rb3_10 * z**3 + rb4_10 * z**4 + rb5_10 * z**5 + rb6_10 * z**6 + rb7_10 * z**7 + rb8_10 * z**8 + rb9_10 * z**9 + rb10_10 * z**10 + rb11_10 * z**11,
+  res2_11 = rb0_11 * z**0 + rb1_11 * z**1 + rb2_11 * z**2 + rb3_11 * z**3 + rb4_11 * z**4 + rb5_11 * z**5 + rb6_11 * z**6 + rb7_11 * z**7 + rb8_11 * z**8 + rb9_11 * z**9 + rb10_11 * z**10 + rb11_11 * z**11,
+  res2_12 = rb0_12 * z**0 + rb1_12 * z**1 + rb2_12 * z**2 + rb3_12 * z**3 + rb4_12 * z**4 + rb5_12 * z**5 + rb6_12 * z**6 + rb7_12 * z**7 + rb8_12 * z**8 + rb9_12 * z**9 + rb10_12 * z**10 + rb11_12 * z**11,
+  res2_13 = rb0_13 * z**0 + rb1_13 * z**1 + rb2_13 * z**2 + rb3_13 * z**3 + rb4_13 * z**4 + rb5_13 * z**5 + rb6_13 * z**6 + rb7_13 * z**7 + rb8_13 * z**8 + rb9_13 * z**9 + rb10_13 * z**10 + rb11_13 * z**11,
+  res2_14 = rb0_14 * z**0 + rb1_14 * z**1 + rb2_14 * z**2 + rb3_14 * z**3 + rb4_14 * z**4 + rb5_14 * z**5 + rb6_14 * z**6 + rb7_14 * z**7 + rb8_14 * z**8 + rb9_14 * z**9 + rb10_14 * z**10 + rb11_14 * z**11,
+  res2_15 = rb0_15 * z**0 + rb1_15 * z**1 + rb2_15 * z**2 + rb3_15 * z**3 + rb4_15 * z**4 + rb5_15 * z**5 + rb6_15 * z**6 + rb7_15 * z**7 + rb8_15 * z**8 + rb9_15 * z**9 + rb10_15 * z**10 + rb11_15 * z**11,
+  res2_16 = rb0_16 * z**0 + rb1_16 * z**1 + rb2_16 * z**2 + rb3_16 * z**3 + rb4_16 * z**4 + rb5_16 * z**5 + rb6_16 * z**6 + rb7_16 * z**7 + rb8_16 * z**8 + rb9_16 * z**9 + rb10_16 * z**10 + rb11_16 * z**11,
+  res2_17 = rb0_17 * z**0 + rb1_17 * z**1 + rb2_17 * z**2 + rb3_17 * z**3 + rb4_17 * z**4 + rb5_17 * z**5 + rb6_17 * z**6 + rb7_17 * z**7 + rb8_17 * z**8 + rb9_17 * z**9 + rb10_17 * z**10 + rb11_17 * z**11,
+  res2_18 = rb0_18 * z**0 + rb1_18 * z**1 + rb2_18 * z**2 + rb3_18 * z**3 + rb4_18 * z**4 + rb5_18 * z**5 + rb6_18 * z**6 + rb7_18 * z**7 + rb8_18 * z**8 + rb9_18 * z**9 + rb10_18 * z**10 + rb11_18 * z**11,
+  res2_19 = rb0_19 * z**0 + rb1_19 * z**1 + rb2_19 * z**2 + rb3_19 * z**3 + rb4_19 * z**4 + rb5_19 * z**5 + rb6_19 * z**6 + rb7_19 * z**7 + rb8_19 * z**8 + rb9_19 * z**9 + rb10_19 * z**10 + rb11_19 * z**11,
+  res2_20 = rb0_20 * z**0 + rb1_20 * z**1 + rb2_20 * z**2 + rb3_20 * z**3 + rb4_20 * z**4 + rb5_20 * z**5 + rb6_20 * z**6 + rb7_20 * z**7 + rb8_20 * z**8 + rb9_20 * z**9 + rb10_20 * z**10 + rb11_20 * z**11,
+  res2_21 = rb0_21 * z**0 + rb1_21 * z**1 + rb2_21 * z**2 + rb3_21 * z**3 + rb4_21 * z**4 + rb5_21 * z**5 + rb6_21 * z**6 + rb7_21 * z**7 + rb8_21 * z**8 + rb9_21 * z**9 + rb10_21 * z**10 + rb11_21 * z**11,
+  res2_22 = rb0_22 * z**0 + rb1_22 * z**1 + rb2_22 * z**2 + rb3_22 * z**3 + rb4_22 * z**4 + rb5_22 * z**5 + rb6_22 * z**6 + rb7_22 * z**7 + rb8_22 * z**8 + rb9_22 * z**9 + rb10_22 * z**10 + rb11_22 * z**11,
+  res2_23 = rb0_23 * z**0 + rb1_23 * z**1 + rb2_23 * z**2 + rb3_23 * z**3 + rb4_23 * z**4 + rb5_23 * z**5 + rb6_23 * z**6 + rb7_23 * z**7 + rb8_23 * z**8 + rb9_23 * z**9 + rb10_23 * z**10 + rb11_23 * z**11,
+  res2_24 = rb0_24 * z**0 + rb1_24 * z**1 + rb2_24 * z**2 + rb3_24 * z**3 + rb4_24 * z**4 + rb5_24 * z**5 + rb6_24 * z**6 + rb7_24 * z**7 + rb8_24 * z**8 + rb9_24 * z**9 + rb10_24 * z**10 + rb11_24 * z**11,
+  res2_25 = rb0_25 * z**0 + rb1_25 * z**1 + rb2_25 * z**2 + rb3_25 * z**3 + rb4_25 * z**4 + rb5_25 * z**5 + rb6_25 * z**6 + rb7_25 * z**7 + rb8_25 * z**8 + rb9_25 * z**9 + rb10_25 * z**10 + rb11_25 * z**11,
+  res2_26 = rb0_26 * z**0 + rb1_26 * z**1 + rb2_26 * z**2 + rb3_26 * z**3 + rb4_26 * z**4 + rb5_26 * z**5 + rb6_26 * z**6 + rb7_26 * z**7 + rb8_26 * z**8 + rb9_26 * z**9 + rb10_26 * z**10 + rb11_26 * z**11,
+  res2_27 = rb0_27 * z**0 + rb1_27 * z**1 + rb2_27 * z**2 + rb3_27 * z**3 + rb4_27 * z**4 + rb5_27 * z**5 + rb6_27 * z**6 + rb7_27 * z**7 + rb8_27 * z**8 + rb9_27 * z**9 + rb10_27 * z**10 + rb11_27 * z**11,
+  res2_28 = rb0_28 * z**0 + rb1_28 * z**1 + rb2_28 * z**2 + rb3_28 * z**3 + rb4_28 * z**4 + rb5_28 * z**5 + rb6_28 * z**6 + rb7_28 * z**7 + rb8_28 * z**8 + rb9_28 * z**9 + rb10_28 * z**10 + rb11_28 * z**11,
+  res2_29 = rb0_29 * z**0 + rb1_29 * z**1 + rb2_29 * z**2 + rb3_29 * z**3 + rb4_29 * z**4 + rb5_29 * z**5 + rb6_29 * z**6 + rb7_29 * z**7 + rb8_29 * z**8 + rb9_29 * z**9 + rb10_29 * z**10 + rb11_29 * z**11,
+  res2_30 = rb0_30 * z**0 + rb1_30 * z**1 + rb2_30 * z**2 + rb3_30 * z**3 + rb4_30 * z**4 + rb5_30 * z**5 + rb6_30 * z**6 + rb7_30 * z**7 + rb8_30 * z**8 + rb9_30 * z**9 + rb10_30 * z**10 + rb11_30 * z**11,
+  res2_31 = rb0_31 * z**0 + rb1_31 * z**1 + rb2_31 * z**2 + rb3_31 * z**3 + rb4_31 * z**4 + rb5_31 * z**5 + rb6_31 * z**6 + rb7_31 * z**7 + rb8_31 * z**8 + rb9_31 * z**9 + rb10_31 * z**10 + rb11_31 * z**11,
+  res2_32 = rb0_32 * z**0 + rb1_32 * z**1 + rb2_32 * z**2 + rb3_32 * z**3 + rb4_32 * z**4 + rb5_32 * z**5 + rb6_32 * z**6 + rb7_32 * z**7 + rb8_32 * z**8 + rb9_32 * z**9 + rb10_32 * z**10 + rb11_32 * z**11,
+  res2_33 = rb0_33 * z**0 + rb1_33 * z**1 + rb2_33 * z**2 + rb3_33 * z**3 + rb4_33 * z**4 + rb5_33 * z**5 + rb6_33 * z**6 + rb7_33 * z**7 + rb8_33 * z**8 + rb9_33 * z**9 + rb10_33 * z**10 + rb11_33 * z**11,
+  res2_34 = rb0_34 * z**0 + rb1_34 * z**1 + rb2_34 * z**2 + rb3_34 * z**3 + rb4_34 * z**4 + rb5_34 * z**5 + rb6_34 * z**6 + rb7_34 * z**7 + rb8_34 * z**8 + rb9_34 * z**9 + rb10_34 * z**10 + rb11_34 * z**11,
+  res2_35 = rb0_35 * z**0 + rb1_35 * z**1 + rb2_35 * z**2 + rb3_35 * z**3 + rb4_35 * z**4 + rb5_35 * z**5 + rb6_35 * z**6 + rb7_35 * z**7 + rb8_35 * z**8 + rb9_35 * z**9 + rb10_35 * z**10 + rb11_35 * z**11,
+  res2_36 = rb0_36 * z**0 + rb1_36 * z**1 + rb2_36 * z**2 + rb3_36 * z**3 + rb4_36 * z**4 + rb5_36 * z**5 + rb6_36 * z**6 + rb7_36 * z**7 + rb8_36 * z**8 + rb9_36 * z**9 + rb10_36 * z**10 + rb11_36 * z**11,
+  res2_37 = rb0_37 * z**0 + rb1_37 * z**1 + rb2_37 * z**2 + rb3_37 * z**3 + rb4_37 * z**4 + rb5_37 * z**5 + rb6_37 * z**6 + rb7_37 * z**7 + rb8_37 * z**8 + rb9_37 * z**9 + rb10_37 * z**10 + rb11_37 * z**11,
+  res2_38 = rb0_38 * z**0 + rb1_38 * z**1 + rb2_38 * z**2 + rb3_38 * z**3 + rb4_38 * z**4 + rb5_38 * z**5 + rb6_38 * z**6 + rb7_38 * z**7 + rb8_38 * z**8 + rb9_38 * z**9 + rb10_38 * z**10 + rb11_38 * z**11,
+  res2_39 = rb0_39 * z**0 + rb1_39 * z**1 + rb2_39 * z**2 + rb3_39 * z**3 + rb4_39 * z**4 + rb5_39 * z**5 + rb6_39 * z**6 + rb7_39 * z**7 + rb8_39 * z**8 + rb9_39 * z**9 + rb10_39 * z**10 + rb11_39 * z**11,
+  res2_40 = rb0_40 * z**0 + rb1_40 * z**1 + rb2_40 * z**2 + rb3_40 * z**3 + rb4_40 * z**4 + rb5_40 * z**5 + rb6_40 * z**6 + rb7_40 * z**7 + rb8_40 * z**8 + rb9_40 * z**9 + rb10_40 * z**10 + rb11_40 * z**11,
+  res2_41 = rb0_41 * z**0 + rb1_41 * z**1 + rb2_41 * z**2 + rb3_41 * z**3 + rb4_41 * z**4 + rb5_41 * z**5 + rb6_41 * z**6 + rb7_41 * z**7 + rb8_41 * z**8 + rb9_41 * z**9 + rb10_41 * z**10 + rb11_41 * z**11,
+  res2_42 = rb0_42 * z**0 + rb1_42 * z**1 + rb2_42 * z**2 + rb3_42 * z**3 + rb4_42 * z**4 + rb5_42 * z**5 + rb6_42 * z**6 + rb7_42 * z**7 + rb8_42 * z**8 + rb9_42 * z**9 + rb10_42 * z**10 + rb11_42 * z**11,
+  res2_43 = rb0_43 * z**0 + rb1_43 * z**1 + rb2_43 * z**2 + rb3_43 * z**3 + rb4_43 * z**4 + rb5_43 * z**5 + rb6_43 * z**6 + rb7_43 * z**7 + rb8_43 * z**8 + rb9_43 * z**9 + rb10_43 * z**10 + rb11_43 * z**11,
+  res2_44 = rb0_44 * z**0 + rb1_44 * z**1 + rb2_44 * z**2 + rb3_44 * z**3 + rb4_44 * z**4 + rb5_44 * z**5 + rb6_44 * z**6 + rb7_44 * z**7 + rb8_44 * z**8 + rb9_44 * z**9 + rb10_44 * z**10 + rb11_44 * z**11,
+  res2_45 = rb0_45 * z**0 + rb1_45 * z**1 + rb2_45 * z**2 + rb3_45 * z**3 + rb4_45 * z**4 + rb5_45 * z**5 + rb6_45 * z**6 + rb7_45 * z**7 + rb8_45 * z**8 + rb9_45 * z**9 + rb10_45 * z**10 + rb11_45 * z**11,
+  res2_46 = rb0_46 * z**0 + rb1_46 * z**1 + rb2_46 * z**2 + rb3_46 * z**3 + rb4_46 * z**4 + rb5_46 * z**5 + rb6_46 * z**6 + rb7_46 * z**7 + rb8_46 * z**8 + rb9_46 * z**9 + rb10_46 * z**10 + rb11_46 * z**11,
+  res2_47 = rb0_47 * z**0 + rb1_47 * z**1 + rb2_47 * z**2 + rb3_47 * z**3 + rb4_47 * z**4 + rb5_47 * z**5 + rb6_47 * z**6 + rb7_47 * z**7 + rb8_47 * z**8 + rb9_47 * z**9 + rb10_47 * z**10 + rb11_47 * z**11,
+  res2_48 = rb0_48 * z**0 + rb1_48 * z**1 + rb2_48 * z**2 + rb3_48 * z**3 + rb4_48 * z**4 + rb5_48 * z**5 + rb6_48 * z**6 + rb7_48 * z**7 + rb8_48 * z**8 + rb9_48 * z**9 + rb10_48 * z**10 + rb11_48 * z**11,
+  res2_49 = rb0_49 * z**0 + rb1_49 * z**1 + rb2_49 * z**2 + rb3_49 * z**3 + rb4_49 * z**4 + rb5_49 * z**5 + rb6_49 * z**6 + rb7_49 * z**7 + rb8_49 * z**8 + rb9_49 * z**9 + rb10_49 * z**10 + rb11_49 * z**11,
+  res2_50 = rb0_50 * z**0 + rb1_50 * z**1 + rb2_50 * z**2 + rb3_50 * z**3 + rb4_50 * z**4 + rb5_50 * z**5 + rb6_50 * z**6 + rb7_50 * z**7 + rb8_50 * z**8 + rb9_50 * z**9 + rb10_50 * z**10 + rb11_50 * z**11,
+  res2_51 = rb0_51 * z**0 + rb1_51 * z**1 + rb2_51 * z**2 + rb3_51 * z**3 + rb4_51 * z**4 + rb5_51 * z**5 + rb6_51 * z**6 + rb7_51 * z**7 + rb8_51 * z**8 + rb9_51 * z**9 + rb10_51 * z**10 + rb11_51 * z**11,
+  res2_52 = rb0_52 * z**0 + rb1_52 * z**1 + rb2_52 * z**2 + rb3_52 * z**3 + rb4_52 * z**4 + rb5_52 * z**5 + rb6_52 * z**6 + rb7_52 * z**7 + rb8_52 * z**8 + rb9_52 * z**9 + rb10_52 * z**10 + rb11_52 * z**11,
+  res2_53 = rb0_53 * z**0 + rb1_53 * z**1 + rb2_53 * z**2 + rb3_53 * z**3 + rb4_53 * z**4 + rb5_53 * z**5 + rb6_53 * z**6 + rb7_53 * z**7 + rb8_53 * z**8 + rb9_53 * z**9 + rb10_53 * z**10 + rb11_53 * z**11,
+  res2_54 = rb0_54 * z**0 + rb1_54 * z**1 + rb2_54 * z**2 + rb3_54 * z**3 + rb4_54 * z**4 + rb5_54 * z**5 + rb6_54 * z**6 + rb7_54 * z**7 + rb8_54 * z**8 + rb9_54 * z**9 + rb10_54 * z**10 + rb11_54 * z**11,
+  res2_55 = rb0_55 * z**0 + rb1_55 * z**1 + rb2_55 * z**2 + rb3_55 * z**3 + rb4_55 * z**4 + rb5_55 * z**5 + rb6_55 * z**6 + rb7_55 * z**7 + rb8_55 * z**8 + rb9_55 * z**9 + rb10_55 * z**10 + rb11_55 * z**11,
+  res2_56 = rb0_56 * z**0 + rb1_56 * z**1 + rb2_56 * z**2 + rb3_56 * z**3 + rb4_56 * z**4 + rb5_56 * z**5 + rb6_56 * z**6 + rb7_56 * z**7 + rb8_56 * z**8 + rb9_56 * z**9 + rb10_56 * z**10 + rb11_56 * z**11,
+  res2_57 = rb0_57 * z**0 + rb1_57 * z**1 + rb2_57 * z**2 + rb3_57 * z**3 + rb4_57 * z**4 + rb5_57 * z**5 + rb6_57 * z**6 + rb7_57 * z**7 + rb8_57 * z**8 + rb9_57 * z**9 + rb10_57 * z**10 + rb11_57 * z**11,
+  res2_58 = rb0_58 * z**0 + rb1_58 * z**1 + rb2_58 * z**2 + rb3_58 * z**3 + rb4_58 * z**4 + rb5_58 * z**5 + rb6_58 * z**6 + rb7_58 * z**7 + rb8_58 * z**8 + rb9_58 * z**9 + rb10_58 * z**10 + rb11_58 * z**11,
+  res2_59 = rb0_59 * z**0 + rb1_59 * z**1 + rb2_59 * z**2 + rb3_59 * z**3 + rb4_59 * z**4 + rb5_59 * z**5 + rb6_59 * z**6 + rb7_59 * z**7 + rb8_59 * z**8 + rb9_59 * z**9 + rb10_59 * z**10 + rb11_59 * z**11,
+  res2_60 = rb0_60 * z**0 + rb1_60 * z**1 + rb2_60 * z**2 + rb3_60 * z**3 + rb4_60 * z**4 + rb5_60 * z**5 + rb6_60 * z**6 + rb7_60 * z**7 + rb8_60 * z**8 + rb9_60 * z**9 + rb10_60 * z**10 + rb11_60 * z**11,
+  res2_61 = rb0_61 * z**0 + rb1_61 * z**1 + rb2_61 * z**2 + rb3_61 * z**3 + rb4_61 * z**4 + rb5_61 * z**5 + rb6_61 * z**6 + rb7_61 * z**7 + rb8_61 * z**8 + rb9_61 * z**9 + rb10_61 * z**10 + rb11_61 * z**11,
+  res2_62 = rb0_62 * z**0 + rb1_62 * z**1 + rb2_62 * z**2 + rb3_62 * z**3 + rb4_62 * z**4 + rb5_62 * z**5 + rb6_62 * z**6 + rb7_62 * z**7 + rb8_62 * z**8 + rb9_62 * z**9 + rb10_62 * z**10 + rb11_62 * z**11,
+  res2_63 = rb0_63 * z**0 + rb1_63 * z**1 + rb2_63 * z**2 + rb3_63 * z**3 + rb4_63 * z**4 + rb5_63 * z**5 + rb6_63 * z**6 + rb7_63 * z**7 + rb8_63 * z**8 + rb9_63 * z**9 + rb10_63 * z**10 + rb11_63 * z**11
+] && true;
+
+mov %L0x7fffffffdaa0 [rb0_0, rb0_1, rb0_2, rb0_3, rb0_4, rb0_5, rb0_6, rb0_7, rb0_8, rb0_9, rb0_10, rb0_11, rb0_12, rb0_13, rb0_14, rb0_15, rb0_16, rb0_17, rb0_18, rb0_19, rb0_20, rb0_21, rb0_22, rb0_23, rb0_24, rb0_25, rb0_26, rb0_27, rb0_28, rb0_29, rb0_30, rb0_31, rb0_32, rb0_33, rb0_34, rb0_35, rb0_36, rb0_37, rb0_38, rb0_39, rb0_40, rb0_41, rb0_42, rb0_43, rb0_44, rb0_45, rb0_46, rb0_47, rb0_48, rb0_49, rb0_50, rb0_51, rb0_52, rb0_53, rb0_54, rb0_55, rb0_56, rb0_57, rb0_58, rb0_59, rb0_60, rb0_61, rb0_62, rb0_63];
+mov %L0x7fffffffdaa8 [rb1_0, rb1_1, rb1_2, rb1_3, rb1_4, rb1_5, rb1_6, rb1_7, rb1_8, rb1_9, rb1_10, rb1_11, rb1_12, rb1_13, rb1_14, rb1_15, rb1_16, rb1_17, rb1_18, rb1_19, rb1_20, rb1_21, rb1_22, rb1_23, rb1_24, rb1_25, rb1_26, rb1_27, rb1_28, rb1_29, rb1_30, rb1_31, rb1_32, rb1_33, rb1_34, rb1_35, rb1_36, rb1_37, rb1_38, rb1_39, rb1_40, rb1_41, rb1_42, rb1_43, rb1_44, rb1_45, rb1_46, rb1_47, rb1_48, rb1_49, rb1_50, rb1_51, rb1_52, rb1_53, rb1_54, rb1_55, rb1_56, rb1_57, rb1_58, rb1_59, rb1_60, rb1_61, rb1_62, rb1_63];
+mov %L0x7fffffffdab0 [rb2_0, rb2_1, rb2_2, rb2_3, rb2_4, rb2_5, rb2_6, rb2_7, rb2_8, rb2_9, rb2_10, rb2_11, rb2_12, rb2_13, rb2_14, rb2_15, rb2_16, rb2_17, rb2_18, rb2_19, rb2_20, rb2_21, rb2_22, rb2_23, rb2_24, rb2_25, rb2_26, rb2_27, rb2_28, rb2_29, rb2_30, rb2_31, rb2_32, rb2_33, rb2_34, rb2_35, rb2_36, rb2_37, rb2_38, rb2_39, rb2_40, rb2_41, rb2_42, rb2_43, rb2_44, rb2_45, rb2_46, rb2_47, rb2_48, rb2_49, rb2_50, rb2_51, rb2_52, rb2_53, rb2_54, rb2_55, rb2_56, rb2_57, rb2_58, rb2_59, rb2_60, rb2_61, rb2_62, rb2_63];
+mov %L0x7fffffffdab8 [rb3_0, rb3_1, rb3_2, rb3_3, rb3_4, rb3_5, rb3_6, rb3_7, rb3_8, rb3_9, rb3_10, rb3_11, rb3_12, rb3_13, rb3_14, rb3_15, rb3_16, rb3_17, rb3_18, rb3_19, rb3_20, rb3_21, rb3_22, rb3_23, rb3_24, rb3_25, rb3_26, rb3_27, rb3_28, rb3_29, rb3_30, rb3_31, rb3_32, rb3_33, rb3_34, rb3_35, rb3_36, rb3_37, rb3_38, rb3_39, rb3_40, rb3_41, rb3_42, rb3_43, rb3_44, rb3_45, rb3_46, rb3_47, rb3_48, rb3_49, rb3_50, rb3_51, rb3_52, rb3_53, rb3_54, rb3_55, rb3_56, rb3_57, rb3_58, rb3_59, rb3_60, rb3_61, rb3_62, rb3_63];
+mov %L0x7fffffffdac0 [rb4_0, rb4_1, rb4_2, rb4_3, rb4_4, rb4_5, rb4_6, rb4_7, rb4_8, rb4_9, rb4_10, rb4_11, rb4_12, rb4_13, rb4_14, rb4_15, rb4_16, rb4_17, rb4_18, rb4_19, rb4_20, rb4_21, rb4_22, rb4_23, rb4_24, rb4_25, rb4_26, rb4_27, rb4_28, rb4_29, rb4_30, rb4_31, rb4_32, rb4_33, rb4_34, rb4_35, rb4_36, rb4_37, rb4_38, rb4_39, rb4_40, rb4_41, rb4_42, rb4_43, rb4_44, rb4_45, rb4_46, rb4_47, rb4_48, rb4_49, rb4_50, rb4_51, rb4_52, rb4_53, rb4_54, rb4_55, rb4_56, rb4_57, rb4_58, rb4_59, rb4_60, rb4_61, rb4_62, rb4_63];
+mov %L0x7fffffffdac8 [rb5_0, rb5_1, rb5_2, rb5_3, rb5_4, rb5_5, rb5_6, rb5_7, rb5_8, rb5_9, rb5_10, rb5_11, rb5_12, rb5_13, rb5_14, rb5_15, rb5_16, rb5_17, rb5_18, rb5_19, rb5_20, rb5_21, rb5_22, rb5_23, rb5_24, rb5_25, rb5_26, rb5_27, rb5_28, rb5_29, rb5_30, rb5_31, rb5_32, rb5_33, rb5_34, rb5_35, rb5_36, rb5_37, rb5_38, rb5_39, rb5_40, rb5_41, rb5_42, rb5_43, rb5_44, rb5_45, rb5_46, rb5_47, rb5_48, rb5_49, rb5_50, rb5_51, rb5_52, rb5_53, rb5_54, rb5_55, rb5_56, rb5_57, rb5_58, rb5_59, rb5_60, rb5_61, rb5_62, rb5_63];
+mov %L0x7fffffffdad0 [rb6_0, rb6_1, rb6_2, rb6_3, rb6_4, rb6_5, rb6_6, rb6_7, rb6_8, rb6_9, rb6_10, rb6_11, rb6_12, rb6_13, rb6_14, rb6_15, rb6_16, rb6_17, rb6_18, rb6_19, rb6_20, rb6_21, rb6_22, rb6_23, rb6_24, rb6_25, rb6_26, rb6_27, rb6_28, rb6_29, rb6_30, rb6_31, rb6_32, rb6_33, rb6_34, rb6_35, rb6_36, rb6_37, rb6_38, rb6_39, rb6_40, rb6_41, rb6_42, rb6_43, rb6_44, rb6_45, rb6_46, rb6_47, rb6_48, rb6_49, rb6_50, rb6_51, rb6_52, rb6_53, rb6_54, rb6_55, rb6_56, rb6_57, rb6_58, rb6_59, rb6_60, rb6_61, rb6_62, rb6_63];
+mov %L0x7fffffffdad8 [rb7_0, rb7_1, rb7_2, rb7_3, rb7_4, rb7_5, rb7_6, rb7_7, rb7_8, rb7_9, rb7_10, rb7_11, rb7_12, rb7_13, rb7_14, rb7_15, rb7_16, rb7_17, rb7_18, rb7_19, rb7_20, rb7_21, rb7_22, rb7_23, rb7_24, rb7_25, rb7_26, rb7_27, rb7_28, rb7_29, rb7_30, rb7_31, rb7_32, rb7_33, rb7_34, rb7_35, rb7_36, rb7_37, rb7_38, rb7_39, rb7_40, rb7_41, rb7_42, rb7_43, rb7_44, rb7_45, rb7_46, rb7_47, rb7_48, rb7_49, rb7_50, rb7_51, rb7_52, rb7_53, rb7_54, rb7_55, rb7_56, rb7_57, rb7_58, rb7_59, rb7_60, rb7_61, rb7_62, rb7_63];
+mov %L0x7fffffffdae0 [rb8_0, rb8_1, rb8_2, rb8_3, rb8_4, rb8_5, rb8_6, rb8_7, rb8_8, rb8_9, rb8_10, rb8_11, rb8_12, rb8_13, rb8_14, rb8_15, rb8_16, rb8_17, rb8_18, rb8_19, rb8_20, rb8_21, rb8_22, rb8_23, rb8_24, rb8_25, rb8_26, rb8_27, rb8_28, rb8_29, rb8_30, rb8_31, rb8_32, rb8_33, rb8_34, rb8_35, rb8_36, rb8_37, rb8_38, rb8_39, rb8_40, rb8_41, rb8_42, rb8_43, rb8_44, rb8_45, rb8_46, rb8_47, rb8_48, rb8_49, rb8_50, rb8_51, rb8_52, rb8_53, rb8_54, rb8_55, rb8_56, rb8_57, rb8_58, rb8_59, rb8_60, rb8_61, rb8_62, rb8_63];
+mov %L0x7fffffffdae8 [rb9_0, rb9_1, rb9_2, rb9_3, rb9_4, rb9_5, rb9_6, rb9_7, rb9_8, rb9_9, rb9_10, rb9_11, rb9_12, rb9_13, rb9_14, rb9_15, rb9_16, rb9_17, rb9_18, rb9_19, rb9_20, rb9_21, rb9_22, rb9_23, rb9_24, rb9_25, rb9_26, rb9_27, rb9_28, rb9_29, rb9_30, rb9_31, rb9_32, rb9_33, rb9_34, rb9_35, rb9_36, rb9_37, rb9_38, rb9_39, rb9_40, rb9_41, rb9_42, rb9_43, rb9_44, rb9_45, rb9_46, rb9_47, rb9_48, rb9_49, rb9_50, rb9_51, rb9_52, rb9_53, rb9_54, rb9_55, rb9_56, rb9_57, rb9_58, rb9_59, rb9_60, rb9_61, rb9_62, rb9_63];
+mov %L0x7fffffffdaf0 [rb10_0, rb10_1, rb10_2, rb10_3, rb10_4, rb10_5, rb10_6, rb10_7, rb10_8, rb10_9, rb10_10, rb10_11, rb10_12, rb10_13, rb10_14, rb10_15, rb10_16, rb10_17, rb10_18, rb10_19, rb10_20, rb10_21, rb10_22, rb10_23, rb10_24, rb10_25, rb10_26, rb10_27, rb10_28, rb10_29, rb10_30, rb10_31, rb10_32, rb10_33, rb10_34, rb10_35, rb10_36, rb10_37, rb10_38, rb10_39, rb10_40, rb10_41, rb10_42, rb10_43, rb10_44, rb10_45, rb10_46, rb10_47, rb10_48, rb10_49, rb10_50, rb10_51, rb10_52, rb10_53, rb10_54, rb10_55, rb10_56, rb10_57, rb10_58, rb10_59, rb10_60, rb10_61, rb10_62, rb10_63];
+mov %L0x7fffffffdaf8 [rb11_0, rb11_1, rb11_2, rb11_3, rb11_4, rb11_5, rb11_6, rb11_7, rb11_8, rb11_9, rb11_10, rb11_11, rb11_12, rb11_13, rb11_14, rb11_15, rb11_16, rb11_17, rb11_18, rb11_19, rb11_20, rb11_21, rb11_22, rb11_23, rb11_24, rb11_25, rb11_26, rb11_27, rb11_28, rb11_29, rb11_30, rb11_31, rb11_32, rb11_33, rb11_34, rb11_35, rb11_36, rb11_37, rb11_38, rb11_39, rb11_40, rb11_41, rb11_42, rb11_43, rb11_44, rb11_45, rb11_46, rb11_47, rb11_48, rb11_49, rb11_50, rb11_51, rb11_52, rb11_53, rb11_54, rb11_55, rb11_56, rb11_57, rb11_58, rb11_59, rb11_60, rb11_61, rb11_62, rb11_63];
+
+/* -------------------------------------------------------------------------- */
+
+
+/* -------------------------------------------------------------------------- */
+
+assume modulus = z ** 12 + z ** 3 + 1 && true;
+
+nondet res3_0@bit; nondet res3_1@bit; nondet res3_2@bit; nondet res3_3@bit;
+nondet res3_4@bit; nondet res3_5@bit; nondet res3_6@bit; nondet res3_7@bit;
+nondet res3_8@bit; nondet res3_9@bit; nondet res3_10@bit; nondet res3_11@bit;
+nondet res3_12@bit; nondet res3_13@bit; nondet res3_14@bit; nondet res3_15@bit;
+nondet res3_16@bit; nondet res3_17@bit; nondet res3_18@bit; nondet res3_19@bit;
+nondet res3_20@bit; nondet res3_21@bit; nondet res3_22@bit; nondet res3_23@bit;
+nondet res3_24@bit; nondet res3_25@bit; nondet res3_26@bit; nondet res3_27@bit;
+nondet res3_28@bit; nondet res3_29@bit; nondet res3_30@bit; nondet res3_31@bit;
+nondet res3_32@bit; nondet res3_33@bit; nondet res3_34@bit; nondet res3_35@bit;
+nondet res3_36@bit; nondet res3_37@bit; nondet res3_38@bit; nondet res3_39@bit;
+nondet res3_40@bit; nondet res3_41@bit; nondet res3_42@bit; nondet res3_43@bit;
+nondet res3_44@bit; nondet res3_45@bit; nondet res3_46@bit; nondet res3_47@bit;
+nondet res3_48@bit; nondet res3_49@bit; nondet res3_50@bit; nondet res3_51@bit;
+nondet res3_52@bit; nondet res3_53@bit; nondet res3_54@bit; nondet res3_55@bit;
+nondet res3_56@bit; nondet res3_57@bit; nondet res3_58@bit; nondet res3_59@bit;
+nondet res3_60@bit; nondet res3_61@bit; nondet res3_62@bit; nondet res3_63@bit;
+
+assume and [
+  eqmod res3_0 (cvrted3_0 * ((* 3  0 *) 1)) [2, modulus],
+  eqmod res3_1 (cvrted3_1 * ((* 3  1 *) 1)) [2, modulus],
+  eqmod res3_2 (cvrted3_2 * ((* 3  2 *) 1)) [2, modulus],
+  eqmod res3_3 (cvrted3_3 * ((* 3  3 *) 1)) [2, modulus],
+  eqmod res3_4 (cvrted3_4 * ((* 3  4 *) 1)) [2, modulus],
+  eqmod res3_5 (cvrted3_5 * ((* 3  5 *) 1)) [2, modulus],
+  eqmod res3_6 (cvrted3_6 * ((* 3  6 *) 1)) [2, modulus],
+  eqmod res3_7 (cvrted3_7 * ((* 3  7 *) 1)) [2, modulus],
+  eqmod res3_8 (cvrted3_8 * ((* 3  8 *) 1)) [2, modulus],
+  eqmod res3_9 (cvrted3_9 * ((* 3  9 *) 1)) [2, modulus],
+  eqmod res3_10 (cvrted3_10 * ((* 3 10 *) 1)) [2, modulus],
+  eqmod res3_11 (cvrted3_11 * ((* 3 11 *) 1)) [2, modulus],
+  eqmod res3_12 (cvrted3_12 * ((* 3 12 *) 1)) [2, modulus],
+  eqmod res3_13 (cvrted3_13 * ((* 3 13 *) 1)) [2, modulus],
+  eqmod res3_14 (cvrted3_14 * ((* 3 14 *) 1)) [2, modulus],
+  eqmod res3_15 (cvrted3_15 * ((* 3 15 *) 1)) [2, modulus],
+  eqmod res3_16 (cvrted3_16 * ((* 3 16 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_17 (cvrted3_17 * ((* 3 17 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_18 (cvrted3_18 * ((* 3 18 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_19 (cvrted3_19 * ((* 3 19 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_20 (cvrted3_20 * ((* 3 20 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_21 (cvrted3_21 * ((* 3 21 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_22 (cvrted3_22 * ((* 3 22 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_23 (cvrted3_23 * ((* 3 23 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_24 (cvrted3_24 * ((* 3 24 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_25 (cvrted3_25 * ((* 3 25 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_26 (cvrted3_26 * ((* 3 26 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_27 (cvrted3_27 * ((* 3 27 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_28 (cvrted3_28 * ((* 3 28 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_29 (cvrted3_29 * ((* 3 29 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_30 (cvrted3_30 * ((* 3 30 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_31 (cvrted3_31 * ((* 3 31 *) z**7 + z**4 + z)) [2, modulus],
+  eqmod res3_32 (cvrted3_32 * ((* 3 32 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_33 (cvrted3_33 * ((* 3 33 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_34 (cvrted3_34 * ((* 3 34 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_35 (cvrted3_35 * ((* 3 35 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_36 (cvrted3_36 * ((* 3 36 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_37 (cvrted3_37 * ((* 3 37 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_38 (cvrted3_38 * ((* 3 38 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_39 (cvrted3_39 * ((* 3 39 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_40 (cvrted3_40 * ((* 3 40 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_41 (cvrted3_41 * ((* 3 41 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_42 (cvrted3_42 * ((* 3 42 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_43 (cvrted3_43 * ((* 3 43 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_44 (cvrted3_44 * ((* 3 44 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_45 (cvrted3_45 * ((* 3 45 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_46 (cvrted3_46 * ((* 3 46 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_47 (cvrted3_47 * ((* 3 47 *) z**8 + z**5)) [2, modulus],
+  eqmod res3_48 (cvrted3_48 * ((* 3 48 *) z**3)) [2, modulus],
+  eqmod res3_49 (cvrted3_49 * ((* 3 49 *) z**3)) [2, modulus],
+  eqmod res3_50 (cvrted3_50 * ((* 3 50 *) z**3)) [2, modulus],
+  eqmod res3_51 (cvrted3_51 * ((* 3 51 *) z**3)) [2, modulus],
+  eqmod res3_52 (cvrted3_52 * ((* 3 52 *) z**3)) [2, modulus],
+  eqmod res3_53 (cvrted3_53 * ((* 3 53 *) z**3)) [2, modulus],
+  eqmod res3_54 (cvrted3_54 * ((* 3 54 *) z**3)) [2, modulus],
+  eqmod res3_55 (cvrted3_55 * ((* 3 55 *) z**3)) [2, modulus],
+  eqmod res3_56 (cvrted3_56 * ((* 3 56 *) z**3)) [2, modulus],
+  eqmod res3_57 (cvrted3_57 * ((* 3 57 *) z**3)) [2, modulus],
+  eqmod res3_58 (cvrted3_58 * ((* 3 58 *) z**3)) [2, modulus],
+  eqmod res3_59 (cvrted3_59 * ((* 3 59 *) z**3)) [2, modulus],
+  eqmod res3_60 (cvrted3_60 * ((* 3 60 *) z**3)) [2, modulus],
+  eqmod res3_61 (cvrted3_61 * ((* 3 61 *) z**3)) [2, modulus],
+  eqmod res3_62 (cvrted3_62 * ((* 3 62 *) z**3)) [2, modulus],
+  eqmod res3_63 (cvrted3_63 * ((* 3 63 *) z**3)) [2, modulus]
+] && true;
+
+ghost t3@bit: t3 = (z ** 16 + z) * (x ** 2 + x) && true;
+
+ecut and [
+  eqmod (
+    (cvrted3_0 + x * cvrted3_8) * t3 ** 0 + 
+    (cvrted3_16 + x * cvrted3_24) * t3 ** 1 + 
+    (cvrted3_32 + x * cvrted3_40) * t3 ** 2 + 
+    (cvrted3_48 + x * cvrted3_56) * t3 ** 3
+  ) (
+    (res3_0 + x * res3_8) * (x ** 2 + x) ** 0 + 
+    (res3_16 + x * res3_24) * (x ** 2 + x) ** 1 + 
+    (res3_32 + x * res3_40) * (x ** 2 + x) ** 2 + 
+    (res3_48 + x * res3_56) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_1 + x * cvrted3_9) * t3 ** 0 + 
+    (cvrted3_17 + x * cvrted3_25) * t3 ** 1 + 
+    (cvrted3_33 + x * cvrted3_41) * t3 ** 2 + 
+    (cvrted3_49 + x * cvrted3_57) * t3 ** 3
+  ) (
+    (res3_1 + x * res3_9) * (x ** 2 + x) ** 0 + 
+    (res3_17 + x * res3_25) * (x ** 2 + x) ** 1 + 
+    (res3_33 + x * res3_41) * (x ** 2 + x) ** 2 + 
+    (res3_49 + x * res3_57) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_2 + x * cvrted3_10) * t3 ** 0 + 
+    (cvrted3_18 + x * cvrted3_26) * t3 ** 1 + 
+    (cvrted3_34 + x * cvrted3_42) * t3 ** 2 + 
+    (cvrted3_50 + x * cvrted3_58) * t3 ** 3
+  ) (
+    (res3_2 + x * res3_10) * (x ** 2 + x) ** 0 + 
+    (res3_18 + x * res3_26) * (x ** 2 + x) ** 1 + 
+    (res3_34 + x * res3_42) * (x ** 2 + x) ** 2 + 
+    (res3_50 + x * res3_58) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_3 + x * cvrted3_11) * t3 ** 0 + 
+    (cvrted3_19 + x * cvrted3_27) * t3 ** 1 + 
+    (cvrted3_35 + x * cvrted3_43) * t3 ** 2 + 
+    (cvrted3_51 + x * cvrted3_59) * t3 ** 3
+  ) (
+    (res3_3 + x * res3_11) * (x ** 2 + x) ** 0 + 
+    (res3_19 + x * res3_27) * (x ** 2 + x) ** 1 + 
+    (res3_35 + x * res3_43) * (x ** 2 + x) ** 2 + 
+    (res3_51 + x * res3_59) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_4 + x * cvrted3_12) * t3 ** 0 + 
+    (cvrted3_20 + x * cvrted3_28) * t3 ** 1 + 
+    (cvrted3_36 + x * cvrted3_44) * t3 ** 2 + 
+    (cvrted3_52 + x * cvrted3_60) * t3 ** 3
+  ) (
+    (res3_4 + x * res3_12) * (x ** 2 + x) ** 0 + 
+    (res3_20 + x * res3_28) * (x ** 2 + x) ** 1 + 
+    (res3_36 + x * res3_44) * (x ** 2 + x) ** 2 + 
+    (res3_52 + x * res3_60) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_5 + x * cvrted3_13) * t3 ** 0 + 
+    (cvrted3_21 + x * cvrted3_29) * t3 ** 1 + 
+    (cvrted3_37 + x * cvrted3_45) * t3 ** 2 + 
+    (cvrted3_53 + x * cvrted3_61) * t3 ** 3
+  ) (
+    (res3_5 + x * res3_13) * (x ** 2 + x) ** 0 + 
+    (res3_21 + x * res3_29) * (x ** 2 + x) ** 1 + 
+    (res3_37 + x * res3_45) * (x ** 2 + x) ** 2 + 
+    (res3_53 + x * res3_61) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_6 + x * cvrted3_14) * t3 ** 0 + 
+    (cvrted3_22 + x * cvrted3_30) * t3 ** 1 + 
+    (cvrted3_38 + x * cvrted3_46) * t3 ** 2 + 
+    (cvrted3_54 + x * cvrted3_62) * t3 ** 3
+  ) (
+    (res3_6 + x * res3_14) * (x ** 2 + x) ** 0 + 
+    (res3_22 + x * res3_30) * (x ** 2 + x) ** 1 + 
+    (res3_38 + x * res3_46) * (x ** 2 + x) ** 2 + 
+    (res3_54 + x * res3_62) * (x ** 2 + x) ** 3
+  ) [2, modulus],
+  eqmod (
+    (cvrted3_7 + x * cvrted3_15) * t3 ** 0 + 
+    (cvrted3_23 + x * cvrted3_31) * t3 ** 1 + 
+    (cvrted3_39 + x * cvrted3_47) * t3 ** 2 + 
+    (cvrted3_55 + x * cvrted3_63) * t3 ** 3
+  ) (
+    (res3_7 + x * res3_15) * (x ** 2 + x) ** 0 + 
+    (res3_23 + x * res3_31) * (x ** 2 + x) ** 1 + 
+    (res3_39 + x * res3_47) * (x ** 2 + x) ** 2 + 
+    (res3_55 + x * res3_63) * (x ** 2 + x) ** 3
+  ) [2, modulus]
+];
+
+ghost inp4_0@uint12: inp4_0 = 
+  res3_0 * x**0 + res3_16 * x**1 + res3_32 * x**2 + res3_48 * x**3
+&& true;
+ghost inp4_1@uint12: inp4_1 = 
+  res3_1 * x**0 + res3_17 * x**1 + res3_33 * x**2 + res3_49 * x**3
+&& true;
+ghost inp4_2@uint12: inp4_2 = 
+  res3_2 * x**0 + res3_18 * x**1 + res3_34 * x**2 + res3_50 * x**3
+&& true;
+ghost inp4_3@uint12: inp4_3 = 
+  res3_3 * x**0 + res3_19 * x**1 + res3_35 * x**2 + res3_51 * x**3
+&& true;
+ghost inp4_4@uint12: inp4_4 = 
+  res3_4 * x**0 + res3_20 * x**1 + res3_36 * x**2 + res3_52 * x**3
+&& true;
+ghost inp4_5@uint12: inp4_5 = 
+  res3_5 * x**0 + res3_21 * x**1 + res3_37 * x**2 + res3_53 * x**3
+&& true;
+ghost inp4_6@uint12: inp4_6 = 
+  res3_6 * x**0 + res3_22 * x**1 + res3_38 * x**2 + res3_54 * x**3
+&& true;
+ghost inp4_7@uint12: inp4_7 = 
+  res3_7 * x**0 + res3_23 * x**1 + res3_39 * x**2 + res3_55 * x**3
+&& true;
+ghost inp4_8@uint12: inp4_8 = 
+  res3_8 * x**0 + res3_24 * x**1 + res3_40 * x**2 + res3_56 * x**3
+&& true;
+ghost inp4_9@uint12: inp4_9 = 
+  res3_9 * x**0 + res3_25 * x**1 + res3_41 * x**2 + res3_57 * x**3
+&& true;
+ghost inp4_10@uint12: inp4_10 = 
+  res3_10 * x**0 + res3_26 * x**1 + res3_42 * x**2 + res3_58 * x**3
+&& true;
+ghost inp4_11@uint12: inp4_11 = 
+  res3_11 * x**0 + res3_27 * x**1 + res3_43 * x**2 + res3_59 * x**3
+&& true;
+ghost inp4_12@uint12: inp4_12 = 
+  res3_12 * x**0 + res3_28 * x**1 + res3_44 * x**2 + res3_60 * x**3
+&& true;
+ghost inp4_13@uint12: inp4_13 = 
+  res3_13 * x**0 + res3_29 * x**1 + res3_45 * x**2 + res3_61 * x**3
+&& true;
+ghost inp4_14@uint12: inp4_14 = 
+  res3_14 * x**0 + res3_30 * x**1 + res3_46 * x**2 + res3_62 * x**3
+&& true;
+ghost inp4_15@uint12: inp4_15 = 
+  res3_15 * x**0 + res3_31 * x**1 + res3_47 * x**2 + res3_63 * x**3
+&& true;
+
+assume and [
+  res3_0 = rb0_0 * z**0 + rb1_0 * z**1 + rb2_0 * z**2 + rb3_0 * z**3 + rb4_0 * z**4 + rb5_0 * z**5 + rb6_0 * z**6 + rb7_0 * z**7 + rb8_0 * z**8 + rb9_0 * z**9 + rb10_0 * z**10 + rb11_0 * z**11,
+  res3_1 = rb0_1 * z**0 + rb1_1 * z**1 + rb2_1 * z**2 + rb3_1 * z**3 + rb4_1 * z**4 + rb5_1 * z**5 + rb6_1 * z**6 + rb7_1 * z**7 + rb8_1 * z**8 + rb9_1 * z**9 + rb10_1 * z**10 + rb11_1 * z**11,
+  res3_2 = rb0_2 * z**0 + rb1_2 * z**1 + rb2_2 * z**2 + rb3_2 * z**3 + rb4_2 * z**4 + rb5_2 * z**5 + rb6_2 * z**6 + rb7_2 * z**7 + rb8_2 * z**8 + rb9_2 * z**9 + rb10_2 * z**10 + rb11_2 * z**11,
+  res3_3 = rb0_3 * z**0 + rb1_3 * z**1 + rb2_3 * z**2 + rb3_3 * z**3 + rb4_3 * z**4 + rb5_3 * z**5 + rb6_3 * z**6 + rb7_3 * z**7 + rb8_3 * z**8 + rb9_3 * z**9 + rb10_3 * z**10 + rb11_3 * z**11,
+  res3_4 = rb0_4 * z**0 + rb1_4 * z**1 + rb2_4 * z**2 + rb3_4 * z**3 + rb4_4 * z**4 + rb5_4 * z**5 + rb6_4 * z**6 + rb7_4 * z**7 + rb8_4 * z**8 + rb9_4 * z**9 + rb10_4 * z**10 + rb11_4 * z**11,
+  res3_5 = rb0_5 * z**0 + rb1_5 * z**1 + rb2_5 * z**2 + rb3_5 * z**3 + rb4_5 * z**4 + rb5_5 * z**5 + rb6_5 * z**6 + rb7_5 * z**7 + rb8_5 * z**8 + rb9_5 * z**9 + rb10_5 * z**10 + rb11_5 * z**11,
+  res3_6 = rb0_6 * z**0 + rb1_6 * z**1 + rb2_6 * z**2 + rb3_6 * z**3 + rb4_6 * z**4 + rb5_6 * z**5 + rb6_6 * z**6 + rb7_6 * z**7 + rb8_6 * z**8 + rb9_6 * z**9 + rb10_6 * z**10 + rb11_6 * z**11,
+  res3_7 = rb0_7 * z**0 + rb1_7 * z**1 + rb2_7 * z**2 + rb3_7 * z**3 + rb4_7 * z**4 + rb5_7 * z**5 + rb6_7 * z**6 + rb7_7 * z**7 + rb8_7 * z**8 + rb9_7 * z**9 + rb10_7 * z**10 + rb11_7 * z**11,
+  res3_8 = rb0_8 * z**0 + rb1_8 * z**1 + rb2_8 * z**2 + rb3_8 * z**3 + rb4_8 * z**4 + rb5_8 * z**5 + rb6_8 * z**6 + rb7_8 * z**7 + rb8_8 * z**8 + rb9_8 * z**9 + rb10_8 * z**10 + rb11_8 * z**11,
+  res3_9 = rb0_9 * z**0 + rb1_9 * z**1 + rb2_9 * z**2 + rb3_9 * z**3 + rb4_9 * z**4 + rb5_9 * z**5 + rb6_9 * z**6 + rb7_9 * z**7 + rb8_9 * z**8 + rb9_9 * z**9 + rb10_9 * z**10 + rb11_9 * z**11,
+  res3_10 = rb0_10 * z**0 + rb1_10 * z**1 + rb2_10 * z**2 + rb3_10 * z**3 + rb4_10 * z**4 + rb5_10 * z**5 + rb6_10 * z**6 + rb7_10 * z**7 + rb8_10 * z**8 + rb9_10 * z**9 + rb10_10 * z**10 + rb11_10 * z**11,
+  res3_11 = rb0_11 * z**0 + rb1_11 * z**1 + rb2_11 * z**2 + rb3_11 * z**3 + rb4_11 * z**4 + rb5_11 * z**5 + rb6_11 * z**6 + rb7_11 * z**7 + rb8_11 * z**8 + rb9_11 * z**9 + rb10_11 * z**10 + rb11_11 * z**11,
+  res3_12 = rb0_12 * z**0 + rb1_12 * z**1 + rb2_12 * z**2 + rb3_12 * z**3 + rb4_12 * z**4 + rb5_12 * z**5 + rb6_12 * z**6 + rb7_12 * z**7 + rb8_12 * z**8 + rb9_12 * z**9 + rb10_12 * z**10 + rb11_12 * z**11,
+  res3_13 = rb0_13 * z**0 + rb1_13 * z**1 + rb2_13 * z**2 + rb3_13 * z**3 + rb4_13 * z**4 + rb5_13 * z**5 + rb6_13 * z**6 + rb7_13 * z**7 + rb8_13 * z**8 + rb9_13 * z**9 + rb10_13 * z**10 + rb11_13 * z**11,
+  res3_14 = rb0_14 * z**0 + rb1_14 * z**1 + rb2_14 * z**2 + rb3_14 * z**3 + rb4_14 * z**4 + rb5_14 * z**5 + rb6_14 * z**6 + rb7_14 * z**7 + rb8_14 * z**8 + rb9_14 * z**9 + rb10_14 * z**10 + rb11_14 * z**11,
+  res3_15 = rb0_15 * z**0 + rb1_15 * z**1 + rb2_15 * z**2 + rb3_15 * z**3 + rb4_15 * z**4 + rb5_15 * z**5 + rb6_15 * z**6 + rb7_15 * z**7 + rb8_15 * z**8 + rb9_15 * z**9 + rb10_15 * z**10 + rb11_15 * z**11,
+  res3_16 = rb0_16 * z**0 + rb1_16 * z**1 + rb2_16 * z**2 + rb3_16 * z**3 + rb4_16 * z**4 + rb5_16 * z**5 + rb6_16 * z**6 + rb7_16 * z**7 + rb8_16 * z**8 + rb9_16 * z**9 + rb10_16 * z**10 + rb11_16 * z**11,
+  res3_17 = rb0_17 * z**0 + rb1_17 * z**1 + rb2_17 * z**2 + rb3_17 * z**3 + rb4_17 * z**4 + rb5_17 * z**5 + rb6_17 * z**6 + rb7_17 * z**7 + rb8_17 * z**8 + rb9_17 * z**9 + rb10_17 * z**10 + rb11_17 * z**11,
+  res3_18 = rb0_18 * z**0 + rb1_18 * z**1 + rb2_18 * z**2 + rb3_18 * z**3 + rb4_18 * z**4 + rb5_18 * z**5 + rb6_18 * z**6 + rb7_18 * z**7 + rb8_18 * z**8 + rb9_18 * z**9 + rb10_18 * z**10 + rb11_18 * z**11,
+  res3_19 = rb0_19 * z**0 + rb1_19 * z**1 + rb2_19 * z**2 + rb3_19 * z**3 + rb4_19 * z**4 + rb5_19 * z**5 + rb6_19 * z**6 + rb7_19 * z**7 + rb8_19 * z**8 + rb9_19 * z**9 + rb10_19 * z**10 + rb11_19 * z**11,
+  res3_20 = rb0_20 * z**0 + rb1_20 * z**1 + rb2_20 * z**2 + rb3_20 * z**3 + rb4_20 * z**4 + rb5_20 * z**5 + rb6_20 * z**6 + rb7_20 * z**7 + rb8_20 * z**8 + rb9_20 * z**9 + rb10_20 * z**10 + rb11_20 * z**11,
+  res3_21 = rb0_21 * z**0 + rb1_21 * z**1 + rb2_21 * z**2 + rb3_21 * z**3 + rb4_21 * z**4 + rb5_21 * z**5 + rb6_21 * z**6 + rb7_21 * z**7 + rb8_21 * z**8 + rb9_21 * z**9 + rb10_21 * z**10 + rb11_21 * z**11,
+  res3_22 = rb0_22 * z**0 + rb1_22 * z**1 + rb2_22 * z**2 + rb3_22 * z**3 + rb4_22 * z**4 + rb5_22 * z**5 + rb6_22 * z**6 + rb7_22 * z**7 + rb8_22 * z**8 + rb9_22 * z**9 + rb10_22 * z**10 + rb11_22 * z**11,
+  res3_23 = rb0_23 * z**0 + rb1_23 * z**1 + rb2_23 * z**2 + rb3_23 * z**3 + rb4_23 * z**4 + rb5_23 * z**5 + rb6_23 * z**6 + rb7_23 * z**7 + rb8_23 * z**8 + rb9_23 * z**9 + rb10_23 * z**10 + rb11_23 * z**11,
+  res3_24 = rb0_24 * z**0 + rb1_24 * z**1 + rb2_24 * z**2 + rb3_24 * z**3 + rb4_24 * z**4 + rb5_24 * z**5 + rb6_24 * z**6 + rb7_24 * z**7 + rb8_24 * z**8 + rb9_24 * z**9 + rb10_24 * z**10 + rb11_24 * z**11,
+  res3_25 = rb0_25 * z**0 + rb1_25 * z**1 + rb2_25 * z**2 + rb3_25 * z**3 + rb4_25 * z**4 + rb5_25 * z**5 + rb6_25 * z**6 + rb7_25 * z**7 + rb8_25 * z**8 + rb9_25 * z**9 + rb10_25 * z**10 + rb11_25 * z**11,
+  res3_26 = rb0_26 * z**0 + rb1_26 * z**1 + rb2_26 * z**2 + rb3_26 * z**3 + rb4_26 * z**4 + rb5_26 * z**5 + rb6_26 * z**6 + rb7_26 * z**7 + rb8_26 * z**8 + rb9_26 * z**9 + rb10_26 * z**10 + rb11_26 * z**11,
+  res3_27 = rb0_27 * z**0 + rb1_27 * z**1 + rb2_27 * z**2 + rb3_27 * z**3 + rb4_27 * z**4 + rb5_27 * z**5 + rb6_27 * z**6 + rb7_27 * z**7 + rb8_27 * z**8 + rb9_27 * z**9 + rb10_27 * z**10 + rb11_27 * z**11,
+  res3_28 = rb0_28 * z**0 + rb1_28 * z**1 + rb2_28 * z**2 + rb3_28 * z**3 + rb4_28 * z**4 + rb5_28 * z**5 + rb6_28 * z**6 + rb7_28 * z**7 + rb8_28 * z**8 + rb9_28 * z**9 + rb10_28 * z**10 + rb11_28 * z**11,
+  res3_29 = rb0_29 * z**0 + rb1_29 * z**1 + rb2_29 * z**2 + rb3_29 * z**3 + rb4_29 * z**4 + rb5_29 * z**5 + rb6_29 * z**6 + rb7_29 * z**7 + rb8_29 * z**8 + rb9_29 * z**9 + rb10_29 * z**10 + rb11_29 * z**11,
+  res3_30 = rb0_30 * z**0 + rb1_30 * z**1 + rb2_30 * z**2 + rb3_30 * z**3 + rb4_30 * z**4 + rb5_30 * z**5 + rb6_30 * z**6 + rb7_30 * z**7 + rb8_30 * z**8 + rb9_30 * z**9 + rb10_30 * z**10 + rb11_30 * z**11,
+  res3_31 = rb0_31 * z**0 + rb1_31 * z**1 + rb2_31 * z**2 + rb3_31 * z**3 + rb4_31 * z**4 + rb5_31 * z**5 + rb6_31 * z**6 + rb7_31 * z**7 + rb8_31 * z**8 + rb9_31 * z**9 + rb10_31 * z**10 + rb11_31 * z**11,
+  res3_32 = rb0_32 * z**0 + rb1_32 * z**1 + rb2_32 * z**2 + rb3_32 * z**3 + rb4_32 * z**4 + rb5_32 * z**5 + rb6_32 * z**6 + rb7_32 * z**7 + rb8_32 * z**8 + rb9_32 * z**9 + rb10_32 * z**10 + rb11_32 * z**11,
+  res3_33 = rb0_33 * z**0 + rb1_33 * z**1 + rb2_33 * z**2 + rb3_33 * z**3 + rb4_33 * z**4 + rb5_33 * z**5 + rb6_33 * z**6 + rb7_33 * z**7 + rb8_33 * z**8 + rb9_33 * z**9 + rb10_33 * z**10 + rb11_33 * z**11,
+  res3_34 = rb0_34 * z**0 + rb1_34 * z**1 + rb2_34 * z**2 + rb3_34 * z**3 + rb4_34 * z**4 + rb5_34 * z**5 + rb6_34 * z**6 + rb7_34 * z**7 + rb8_34 * z**8 + rb9_34 * z**9 + rb10_34 * z**10 + rb11_34 * z**11,
+  res3_35 = rb0_35 * z**0 + rb1_35 * z**1 + rb2_35 * z**2 + rb3_35 * z**3 + rb4_35 * z**4 + rb5_35 * z**5 + rb6_35 * z**6 + rb7_35 * z**7 + rb8_35 * z**8 + rb9_35 * z**9 + rb10_35 * z**10 + rb11_35 * z**11,
+  res3_36 = rb0_36 * z**0 + rb1_36 * z**1 + rb2_36 * z**2 + rb3_36 * z**3 + rb4_36 * z**4 + rb5_36 * z**5 + rb6_36 * z**6 + rb7_36 * z**7 + rb8_36 * z**8 + rb9_36 * z**9 + rb10_36 * z**10 + rb11_36 * z**11,
+  res3_37 = rb0_37 * z**0 + rb1_37 * z**1 + rb2_37 * z**2 + rb3_37 * z**3 + rb4_37 * z**4 + rb5_37 * z**5 + rb6_37 * z**6 + rb7_37 * z**7 + rb8_37 * z**8 + rb9_37 * z**9 + rb10_37 * z**10 + rb11_37 * z**11,
+  res3_38 = rb0_38 * z**0 + rb1_38 * z**1 + rb2_38 * z**2 + rb3_38 * z**3 + rb4_38 * z**4 + rb5_38 * z**5 + rb6_38 * z**6 + rb7_38 * z**7 + rb8_38 * z**8 + rb9_38 * z**9 + rb10_38 * z**10 + rb11_38 * z**11,
+  res3_39 = rb0_39 * z**0 + rb1_39 * z**1 + rb2_39 * z**2 + rb3_39 * z**3 + rb4_39 * z**4 + rb5_39 * z**5 + rb6_39 * z**6 + rb7_39 * z**7 + rb8_39 * z**8 + rb9_39 * z**9 + rb10_39 * z**10 + rb11_39 * z**11,
+  res3_40 = rb0_40 * z**0 + rb1_40 * z**1 + rb2_40 * z**2 + rb3_40 * z**3 + rb4_40 * z**4 + rb5_40 * z**5 + rb6_40 * z**6 + rb7_40 * z**7 + rb8_40 * z**8 + rb9_40 * z**9 + rb10_40 * z**10 + rb11_40 * z**11,
+  res3_41 = rb0_41 * z**0 + rb1_41 * z**1 + rb2_41 * z**2 + rb3_41 * z**3 + rb4_41 * z**4 + rb5_41 * z**5 + rb6_41 * z**6 + rb7_41 * z**7 + rb8_41 * z**8 + rb9_41 * z**9 + rb10_41 * z**10 + rb11_41 * z**11,
+  res3_42 = rb0_42 * z**0 + rb1_42 * z**1 + rb2_42 * z**2 + rb3_42 * z**3 + rb4_42 * z**4 + rb5_42 * z**5 + rb6_42 * z**6 + rb7_42 * z**7 + rb8_42 * z**8 + rb9_42 * z**9 + rb10_42 * z**10 + rb11_42 * z**11,
+  res3_43 = rb0_43 * z**0 + rb1_43 * z**1 + rb2_43 * z**2 + rb3_43 * z**3 + rb4_43 * z**4 + rb5_43 * z**5 + rb6_43 * z**6 + rb7_43 * z**7 + rb8_43 * z**8 + rb9_43 * z**9 + rb10_43 * z**10 + rb11_43 * z**11,
+  res3_44 = rb0_44 * z**0 + rb1_44 * z**1 + rb2_44 * z**2 + rb3_44 * z**3 + rb4_44 * z**4 + rb5_44 * z**5 + rb6_44 * z**6 + rb7_44 * z**7 + rb8_44 * z**8 + rb9_44 * z**9 + rb10_44 * z**10 + rb11_44 * z**11,
+  res3_45 = rb0_45 * z**0 + rb1_45 * z**1 + rb2_45 * z**2 + rb3_45 * z**3 + rb4_45 * z**4 + rb5_45 * z**5 + rb6_45 * z**6 + rb7_45 * z**7 + rb8_45 * z**8 + rb9_45 * z**9 + rb10_45 * z**10 + rb11_45 * z**11,
+  res3_46 = rb0_46 * z**0 + rb1_46 * z**1 + rb2_46 * z**2 + rb3_46 * z**3 + rb4_46 * z**4 + rb5_46 * z**5 + rb6_46 * z**6 + rb7_46 * z**7 + rb8_46 * z**8 + rb9_46 * z**9 + rb10_46 * z**10 + rb11_46 * z**11,
+  res3_47 = rb0_47 * z**0 + rb1_47 * z**1 + rb2_47 * z**2 + rb3_47 * z**3 + rb4_47 * z**4 + rb5_47 * z**5 + rb6_47 * z**6 + rb7_47 * z**7 + rb8_47 * z**8 + rb9_47 * z**9 + rb10_47 * z**10 + rb11_47 * z**11,
+  res3_48 = rb0_48 * z**0 + rb1_48 * z**1 + rb2_48 * z**2 + rb3_48 * z**3 + rb4_48 * z**4 + rb5_48 * z**5 + rb6_48 * z**6 + rb7_48 * z**7 + rb8_48 * z**8 + rb9_48 * z**9 + rb10_48 * z**10 + rb11_48 * z**11,
+  res3_49 = rb0_49 * z**0 + rb1_49 * z**1 + rb2_49 * z**2 + rb3_49 * z**3 + rb4_49 * z**4 + rb5_49 * z**5 + rb6_49 * z**6 + rb7_49 * z**7 + rb8_49 * z**8 + rb9_49 * z**9 + rb10_49 * z**10 + rb11_49 * z**11,
+  res3_50 = rb0_50 * z**0 + rb1_50 * z**1 + rb2_50 * z**2 + rb3_50 * z**3 + rb4_50 * z**4 + rb5_50 * z**5 + rb6_50 * z**6 + rb7_50 * z**7 + rb8_50 * z**8 + rb9_50 * z**9 + rb10_50 * z**10 + rb11_50 * z**11,
+  res3_51 = rb0_51 * z**0 + rb1_51 * z**1 + rb2_51 * z**2 + rb3_51 * z**3 + rb4_51 * z**4 + rb5_51 * z**5 + rb6_51 * z**6 + rb7_51 * z**7 + rb8_51 * z**8 + rb9_51 * z**9 + rb10_51 * z**10 + rb11_51 * z**11,
+  res3_52 = rb0_52 * z**0 + rb1_52 * z**1 + rb2_52 * z**2 + rb3_52 * z**3 + rb4_52 * z**4 + rb5_52 * z**5 + rb6_52 * z**6 + rb7_52 * z**7 + rb8_52 * z**8 + rb9_52 * z**9 + rb10_52 * z**10 + rb11_52 * z**11,
+  res3_53 = rb0_53 * z**0 + rb1_53 * z**1 + rb2_53 * z**2 + rb3_53 * z**3 + rb4_53 * z**4 + rb5_53 * z**5 + rb6_53 * z**6 + rb7_53 * z**7 + rb8_53 * z**8 + rb9_53 * z**9 + rb10_53 * z**10 + rb11_53 * z**11,
+  res3_54 = rb0_54 * z**0 + rb1_54 * z**1 + rb2_54 * z**2 + rb3_54 * z**3 + rb4_54 * z**4 + rb5_54 * z**5 + rb6_54 * z**6 + rb7_54 * z**7 + rb8_54 * z**8 + rb9_54 * z**9 + rb10_54 * z**10 + rb11_54 * z**11,
+  res3_55 = rb0_55 * z**0 + rb1_55 * z**1 + rb2_55 * z**2 + rb3_55 * z**3 + rb4_55 * z**4 + rb5_55 * z**5 + rb6_55 * z**6 + rb7_55 * z**7 + rb8_55 * z**8 + rb9_55 * z**9 + rb10_55 * z**10 + rb11_55 * z**11,
+  res3_56 = rb0_56 * z**0 + rb1_56 * z**1 + rb2_56 * z**2 + rb3_56 * z**3 + rb4_56 * z**4 + rb5_56 * z**5 + rb6_56 * z**6 + rb7_56 * z**7 + rb8_56 * z**8 + rb9_56 * z**9 + rb10_56 * z**10 + rb11_56 * z**11,
+  res3_57 = rb0_57 * z**0 + rb1_57 * z**1 + rb2_57 * z**2 + rb3_57 * z**3 + rb4_57 * z**4 + rb5_57 * z**5 + rb6_57 * z**6 + rb7_57 * z**7 + rb8_57 * z**8 + rb9_57 * z**9 + rb10_57 * z**10 + rb11_57 * z**11,
+  res3_58 = rb0_58 * z**0 + rb1_58 * z**1 + rb2_58 * z**2 + rb3_58 * z**3 + rb4_58 * z**4 + rb5_58 * z**5 + rb6_58 * z**6 + rb7_58 * z**7 + rb8_58 * z**8 + rb9_58 * z**9 + rb10_58 * z**10 + rb11_58 * z**11,
+  res3_59 = rb0_59 * z**0 + rb1_59 * z**1 + rb2_59 * z**2 + rb3_59 * z**3 + rb4_59 * z**4 + rb5_59 * z**5 + rb6_59 * z**6 + rb7_59 * z**7 + rb8_59 * z**8 + rb9_59 * z**9 + rb10_59 * z**10 + rb11_59 * z**11,
+  res3_60 = rb0_60 * z**0 + rb1_60 * z**1 + rb2_60 * z**2 + rb3_60 * z**3 + rb4_60 * z**4 + rb5_60 * z**5 + rb6_60 * z**6 + rb7_60 * z**7 + rb8_60 * z**8 + rb9_60 * z**9 + rb10_60 * z**10 + rb11_60 * z**11,
+  res3_61 = rb0_61 * z**0 + rb1_61 * z**1 + rb2_61 * z**2 + rb3_61 * z**3 + rb4_61 * z**4 + rb5_61 * z**5 + rb6_61 * z**6 + rb7_61 * z**7 + rb8_61 * z**8 + rb9_61 * z**9 + rb10_61 * z**10 + rb11_61 * z**11,
+  res3_62 = rb0_62 * z**0 + rb1_62 * z**1 + rb2_62 * z**2 + rb3_62 * z**3 + rb4_62 * z**4 + rb5_62 * z**5 + rb6_62 * z**6 + rb7_62 * z**7 + rb8_62 * z**8 + rb9_62 * z**9 + rb10_62 * z**10 + rb11_62 * z**11,
+  res3_63 = rb0_63 * z**0 + rb1_63 * z**1 + rb2_63 * z**2 + rb3_63 * z**3 + rb4_63 * z**4 + rb5_63 * z**5 + rb6_63 * z**6 + rb7_63 * z**7 + rb8_63 * z**8 + rb9_63 * z**9 + rb10_63 * z**10 + rb11_63 * z**11
+] && true;
+
+mov %L0x7fffffffdaa0 [rb0_0, rb0_1, rb0_2, rb0_3, rb0_4, rb0_5, rb0_6, rb0_7, rb0_8, rb0_9, rb0_10, rb0_11, rb0_12, rb0_13, rb0_14, rb0_15, rb0_16, rb0_17, rb0_18, rb0_19, rb0_20, rb0_21, rb0_22, rb0_23, rb0_24, rb0_25, rb0_26, rb0_27, rb0_28, rb0_29, rb0_30, rb0_31, rb0_32, rb0_33, rb0_34, rb0_35, rb0_36, rb0_37, rb0_38, rb0_39, rb0_40, rb0_41, rb0_42, rb0_43, rb0_44, rb0_45, rb0_46, rb0_47, rb0_48, rb0_49, rb0_50, rb0_51, rb0_52, rb0_53, rb0_54, rb0_55, rb0_56, rb0_57, rb0_58, rb0_59, rb0_60, rb0_61, rb0_62, rb0_63];
+mov %L0x7fffffffdaa8 [rb1_0, rb1_1, rb1_2, rb1_3, rb1_4, rb1_5, rb1_6, rb1_7, rb1_8, rb1_9, rb1_10, rb1_11, rb1_12, rb1_13, rb1_14, rb1_15, rb1_16, rb1_17, rb1_18, rb1_19, rb1_20, rb1_21, rb1_22, rb1_23, rb1_24, rb1_25, rb1_26, rb1_27, rb1_28, rb1_29, rb1_30, rb1_31, rb1_32, rb1_33, rb1_34, rb1_35, rb1_36, rb1_37, rb1_38, rb1_39, rb1_40, rb1_41, rb1_42, rb1_43, rb1_44, rb1_45, rb1_46, rb1_47, rb1_48, rb1_49, rb1_50, rb1_51, rb1_52, rb1_53, rb1_54, rb1_55, rb1_56, rb1_57, rb1_58, rb1_59, rb1_60, rb1_61, rb1_62, rb1_63];
+mov %L0x7fffffffdab0 [rb2_0, rb2_1, rb2_2, rb2_3, rb2_4, rb2_5, rb2_6, rb2_7, rb2_8, rb2_9, rb2_10, rb2_11, rb2_12, rb2_13, rb2_14, rb2_15, rb2_16, rb2_17, rb2_18, rb2_19, rb2_20, rb2_21, rb2_22, rb2_23, rb2_24, rb2_25, rb2_26, rb2_27, rb2_28, rb2_29, rb2_30, rb2_31, rb2_32, rb2_33, rb2_34, rb2_35, rb2_36, rb2_37, rb2_38, rb2_39, rb2_40, rb2_41, rb2_42, rb2_43, rb2_44, rb2_45, rb2_46, rb2_47, rb2_48, rb2_49, rb2_50, rb2_51, rb2_52, rb2_53, rb2_54, rb2_55, rb2_56, rb2_57, rb2_58, rb2_59, rb2_60, rb2_61, rb2_62, rb2_63];
+mov %L0x7fffffffdab8 [rb3_0, rb3_1, rb3_2, rb3_3, rb3_4, rb3_5, rb3_6, rb3_7, rb3_8, rb3_9, rb3_10, rb3_11, rb3_12, rb3_13, rb3_14, rb3_15, rb3_16, rb3_17, rb3_18, rb3_19, rb3_20, rb3_21, rb3_22, rb3_23, rb3_24, rb3_25, rb3_26, rb3_27, rb3_28, rb3_29, rb3_30, rb3_31, rb3_32, rb3_33, rb3_34, rb3_35, rb3_36, rb3_37, rb3_38, rb3_39, rb3_40, rb3_41, rb3_42, rb3_43, rb3_44, rb3_45, rb3_46, rb3_47, rb3_48, rb3_49, rb3_50, rb3_51, rb3_52, rb3_53, rb3_54, rb3_55, rb3_56, rb3_57, rb3_58, rb3_59, rb3_60, rb3_61, rb3_62, rb3_63];
+mov %L0x7fffffffdac0 [rb4_0, rb4_1, rb4_2, rb4_3, rb4_4, rb4_5, rb4_6, rb4_7, rb4_8, rb4_9, rb4_10, rb4_11, rb4_12, rb4_13, rb4_14, rb4_15, rb4_16, rb4_17, rb4_18, rb4_19, rb4_20, rb4_21, rb4_22, rb4_23, rb4_24, rb4_25, rb4_26, rb4_27, rb4_28, rb4_29, rb4_30, rb4_31, rb4_32, rb4_33, rb4_34, rb4_35, rb4_36, rb4_37, rb4_38, rb4_39, rb4_40, rb4_41, rb4_42, rb4_43, rb4_44, rb4_45, rb4_46, rb4_47, rb4_48, rb4_49, rb4_50, rb4_51, rb4_52, rb4_53, rb4_54, rb4_55, rb4_56, rb4_57, rb4_58, rb4_59, rb4_60, rb4_61, rb4_62, rb4_63];
+mov %L0x7fffffffdac8 [rb5_0, rb5_1, rb5_2, rb5_3, rb5_4, rb5_5, rb5_6, rb5_7, rb5_8, rb5_9, rb5_10, rb5_11, rb5_12, rb5_13, rb5_14, rb5_15, rb5_16, rb5_17, rb5_18, rb5_19, rb5_20, rb5_21, rb5_22, rb5_23, rb5_24, rb5_25, rb5_26, rb5_27, rb5_28, rb5_29, rb5_30, rb5_31, rb5_32, rb5_33, rb5_34, rb5_35, rb5_36, rb5_37, rb5_38, rb5_39, rb5_40, rb5_41, rb5_42, rb5_43, rb5_44, rb5_45, rb5_46, rb5_47, rb5_48, rb5_49, rb5_50, rb5_51, rb5_52, rb5_53, rb5_54, rb5_55, rb5_56, rb5_57, rb5_58, rb5_59, rb5_60, rb5_61, rb5_62, rb5_63];
+mov %L0x7fffffffdad0 [rb6_0, rb6_1, rb6_2, rb6_3, rb6_4, rb6_5, rb6_6, rb6_7, rb6_8, rb6_9, rb6_10, rb6_11, rb6_12, rb6_13, rb6_14, rb6_15, rb6_16, rb6_17, rb6_18, rb6_19, rb6_20, rb6_21, rb6_22, rb6_23, rb6_24, rb6_25, rb6_26, rb6_27, rb6_28, rb6_29, rb6_30, rb6_31, rb6_32, rb6_33, rb6_34, rb6_35, rb6_36, rb6_37, rb6_38, rb6_39, rb6_40, rb6_41, rb6_42, rb6_43, rb6_44, rb6_45, rb6_46, rb6_47, rb6_48, rb6_49, rb6_50, rb6_51, rb6_52, rb6_53, rb6_54, rb6_55, rb6_56, rb6_57, rb6_58, rb6_59, rb6_60, rb6_61, rb6_62, rb6_63];
+mov %L0x7fffffffdad8 [rb7_0, rb7_1, rb7_2, rb7_3, rb7_4, rb7_5, rb7_6, rb7_7, rb7_8, rb7_9, rb7_10, rb7_11, rb7_12, rb7_13, rb7_14, rb7_15, rb7_16, rb7_17, rb7_18, rb7_19, rb7_20, rb7_21, rb7_22, rb7_23, rb7_24, rb7_25, rb7_26, rb7_27, rb7_28, rb7_29, rb7_30, rb7_31, rb7_32, rb7_33, rb7_34, rb7_35, rb7_36, rb7_37, rb7_38, rb7_39, rb7_40, rb7_41, rb7_42, rb7_43, rb7_44, rb7_45, rb7_46, rb7_47, rb7_48, rb7_49, rb7_50, rb7_51, rb7_52, rb7_53, rb7_54, rb7_55, rb7_56, rb7_57, rb7_58, rb7_59, rb7_60, rb7_61, rb7_62, rb7_63];
+mov %L0x7fffffffdae0 [rb8_0, rb8_1, rb8_2, rb8_3, rb8_4, rb8_5, rb8_6, rb8_7, rb8_8, rb8_9, rb8_10, rb8_11, rb8_12, rb8_13, rb8_14, rb8_15, rb8_16, rb8_17, rb8_18, rb8_19, rb8_20, rb8_21, rb8_22, rb8_23, rb8_24, rb8_25, rb8_26, rb8_27, rb8_28, rb8_29, rb8_30, rb8_31, rb8_32, rb8_33, rb8_34, rb8_35, rb8_36, rb8_37, rb8_38, rb8_39, rb8_40, rb8_41, rb8_42, rb8_43, rb8_44, rb8_45, rb8_46, rb8_47, rb8_48, rb8_49, rb8_50, rb8_51, rb8_52, rb8_53, rb8_54, rb8_55, rb8_56, rb8_57, rb8_58, rb8_59, rb8_60, rb8_61, rb8_62, rb8_63];
+mov %L0x7fffffffdae8 [rb9_0, rb9_1, rb9_2, rb9_3, rb9_4, rb9_5, rb9_6, rb9_7, rb9_8, rb9_9, rb9_10, rb9_11, rb9_12, rb9_13, rb9_14, rb9_15, rb9_16, rb9_17, rb9_18, rb9_19, rb9_20, rb9_21, rb9_22, rb9_23, rb9_24, rb9_25, rb9_26, rb9_27, rb9_28, rb9_29, rb9_30, rb9_31, rb9_32, rb9_33, rb9_34, rb9_35, rb9_36, rb9_37, rb9_38, rb9_39, rb9_40, rb9_41, rb9_42, rb9_43, rb9_44, rb9_45, rb9_46, rb9_47, rb9_48, rb9_49, rb9_50, rb9_51, rb9_52, rb9_53, rb9_54, rb9_55, rb9_56, rb9_57, rb9_58, rb9_59, rb9_60, rb9_61, rb9_62, rb9_63];
+mov %L0x7fffffffdaf0 [rb10_0, rb10_1, rb10_2, rb10_3, rb10_4, rb10_5, rb10_6, rb10_7, rb10_8, rb10_9, rb10_10, rb10_11, rb10_12, rb10_13, rb10_14, rb10_15, rb10_16, rb10_17, rb10_18, rb10_19, rb10_20, rb10_21, rb10_22, rb10_23, rb10_24, rb10_25, rb10_26, rb10_27, rb10_28, rb10_29, rb10_30, rb10_31, rb10_32, rb10_33, rb10_34, rb10_35, rb10_36, rb10_37, rb10_38, rb10_39, rb10_40, rb10_41, rb10_42, rb10_43, rb10_44, rb10_45, rb10_46, rb10_47, rb10_48, rb10_49, rb10_50, rb10_51, rb10_52, rb10_53, rb10_54, rb10_55, rb10_56, rb10_57, rb10_58, rb10_59, rb10_60, rb10_61, rb10_62, rb10_63];
+mov %L0x7fffffffdaf8 [rb11_0, rb11_1, rb11_2, rb11_3, rb11_4, rb11_5, rb11_6, rb11_7, rb11_8, rb11_9, rb11_10, rb11_11, rb11_12, rb11_13, rb11_14, rb11_15, rb11_16, rb11_17, rb11_18, rb11_19, rb11_20, rb11_21, rb11_22, rb11_23, rb11_24, rb11_25, rb11_26, rb11_27, rb11_28, rb11_29, rb11_30, rb11_31, rb11_32, rb11_33, rb11_34, rb11_35, rb11_36, rb11_37, rb11_38, rb11_39, rb11_40, rb11_41, rb11_42, rb11_43, rb11_44, rb11_45, rb11_46, rb11_47, rb11_48, rb11_49, rb11_50, rb11_51, rb11_52, rb11_53, rb11_54, rb11_55, rb11_56, rb11_57, rb11_58, rb11_59, rb11_60, rb11_61, rb11_62, rb11_63];
+
+/* -------------------------------------------------------------------------- */
+
+
+/* -------------------------------------------------------------------------- */
+
+assume modulus = z ** 12 + z ** 3 + 1 && true;
+
+nondet res4_0@bit; nondet res4_1@bit; nondet res4_2@bit; nondet res4_3@bit;
+nondet res4_4@bit; nondet res4_5@bit; nondet res4_6@bit; nondet res4_7@bit;
+nondet res4_8@bit; nondet res4_9@bit; nondet res4_10@bit; nondet res4_11@bit;
+nondet res4_12@bit; nondet res4_13@bit; nondet res4_14@bit; nondet res4_15@bit;
+nondet res4_16@bit; nondet res4_17@bit; nondet res4_18@bit; nondet res4_19@bit;
+nondet res4_20@bit; nondet res4_21@bit; nondet res4_22@bit; nondet res4_23@bit;
+nondet res4_24@bit; nondet res4_25@bit; nondet res4_26@bit; nondet res4_27@bit;
+nondet res4_28@bit; nondet res4_29@bit; nondet res4_30@bit; nondet res4_31@bit;
+nondet res4_32@bit; nondet res4_33@bit; nondet res4_34@bit; nondet res4_35@bit;
+nondet res4_36@bit; nondet res4_37@bit; nondet res4_38@bit; nondet res4_39@bit;
+nondet res4_40@bit; nondet res4_41@bit; nondet res4_42@bit; nondet res4_43@bit;
+nondet res4_44@bit; nondet res4_45@bit; nondet res4_46@bit; nondet res4_47@bit;
+nondet res4_48@bit; nondet res4_49@bit; nondet res4_50@bit; nondet res4_51@bit;
+nondet res4_52@bit; nondet res4_53@bit; nondet res4_54@bit; nondet res4_55@bit;
+nondet res4_56@bit; nondet res4_57@bit; nondet res4_58@bit; nondet res4_59@bit;
+nondet res4_60@bit; nondet res4_61@bit; nondet res4_62@bit; nondet res4_63@bit;
+
+assume and [
+  eqmod res4_0 (cvrted4_0 * ((* 4  0 *) 1)) [2, modulus],
+  eqmod res4_1 (cvrted4_1 * ((* 4  1 *) 1)) [2, modulus],
+  eqmod res4_2 (cvrted4_2 * ((* 4  2 *) 1)) [2, modulus],
+  eqmod res4_3 (cvrted4_3 * ((* 4  3 *) 1)) [2, modulus],
+  eqmod res4_4 (cvrted4_4 * ((* 4  4 *) 1)) [2, modulus],
+  eqmod res4_5 (cvrted4_5 * ((* 4  5 *) 1)) [2, modulus],
+  eqmod res4_6 (cvrted4_6 * ((* 4  6 *) 1)) [2, modulus],
+  eqmod res4_7 (cvrted4_7 * ((* 4  7 *) 1)) [2, modulus],
+  eqmod res4_8 (cvrted4_8 * ((* 4  8 *) 1)) [2, modulus],
+  eqmod res4_9 (cvrted4_9 * ((* 4  9 *) 1)) [2, modulus],
+  eqmod res4_10 (cvrted4_10 * ((* 4 10 *) 1)) [2, modulus],
+  eqmod res4_11 (cvrted4_11 * ((* 4 11 *) 1)) [2, modulus],
+  eqmod res4_12 (cvrted4_12 * ((* 4 12 *) 1)) [2, modulus],
+  eqmod res4_13 (cvrted4_13 * ((* 4 13 *) 1)) [2, modulus],
+  eqmod res4_14 (cvrted4_14 * ((* 4 14 *) 1)) [2, modulus],
+  eqmod res4_15 (cvrted4_15 * ((* 4 15 *) 1)) [2, modulus],
+  eqmod res4_16 (cvrted4_16 * ((* 4 16 *) 1)) [2, modulus],
+  eqmod res4_17 (cvrted4_17 * ((* 4 17 *) 1)) [2, modulus],
+  eqmod res4_18 (cvrted4_18 * ((* 4 18 *) 1)) [2, modulus],
+  eqmod res4_19 (cvrted4_19 * ((* 4 19 *) 1)) [2, modulus],
+  eqmod res4_20 (cvrted4_20 * ((* 4 20 *) 1)) [2, modulus],
+  eqmod res4_21 (cvrted4_21 * ((* 4 21 *) 1)) [2, modulus],
+  eqmod res4_22 (cvrted4_22 * ((* 4 22 *) 1)) [2, modulus],
+  eqmod res4_23 (cvrted4_23 * ((* 4 23 *) 1)) [2, modulus],
+  eqmod res4_24 (cvrted4_24 * ((* 4 24 *) 1)) [2, modulus],
+  eqmod res4_25 (cvrted4_25 * ((* 4 25 *) 1)) [2, modulus],
+  eqmod res4_26 (cvrted4_26 * ((* 4 26 *) 1)) [2, modulus],
+  eqmod res4_27 (cvrted4_27 * ((* 4 27 *) 1)) [2, modulus],
+  eqmod res4_28 (cvrted4_28 * ((* 4 28 *) 1)) [2, modulus],
+  eqmod res4_29 (cvrted4_29 * ((* 4 29 *) 1)) [2, modulus],
+  eqmod res4_30 (cvrted4_30 * ((* 4 30 *) 1)) [2, modulus],
+  eqmod res4_31 (cvrted4_31 * ((* 4 31 *) 1)) [2, modulus],
+  eqmod res4_32 (cvrted4_32 * ((* 4 32 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_33 (cvrted4_33 * ((* 4 33 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_34 (cvrted4_34 * ((* 4 34 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_35 (cvrted4_35 * ((* 4 35 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_36 (cvrted4_36 * ((* 4 36 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_37 (cvrted4_37 * ((* 4 37 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_38 (cvrted4_38 * ((* 4 38 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_39 (cvrted4_39 * ((* 4 39 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_40 (cvrted4_40 * ((* 4 40 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_41 (cvrted4_41 * ((* 4 41 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_42 (cvrted4_42 * ((* 4 42 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_43 (cvrted4_43 * ((* 4 43 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_44 (cvrted4_44 * ((* 4 44 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_45 (cvrted4_45 * ((* 4 45 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_46 (cvrted4_46 * ((* 4 46 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_47 (cvrted4_47 * ((* 4 47 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_48 (cvrted4_48 * ((* 4 48 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_49 (cvrted4_49 * ((* 4 49 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_50 (cvrted4_50 * ((* 4 50 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_51 (cvrted4_51 * ((* 4 51 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_52 (cvrted4_52 * ((* 4 52 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_53 (cvrted4_53 * ((* 4 53 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_54 (cvrted4_54 * ((* 4 54 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_55 (cvrted4_55 * ((* 4 55 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_56 (cvrted4_56 * ((* 4 56 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_57 (cvrted4_57 * ((* 4 57 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_58 (cvrted4_58 * ((* 4 58 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_59 (cvrted4_59 * ((* 4 59 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_60 (cvrted4_60 * ((* 4 60 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_61 (cvrted4_61 * ((* 4 61 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_62 (cvrted4_62 * ((* 4 62 *) z**8 + z**5 + z**2 + z)) [2, modulus],
+  eqmod res4_63 (cvrted4_63 * ((* 4 63 *) z**8 + z**5 + z**2 + z)) [2, modulus]
+] && true;
+
+ghost t4@bit: t4 = (z ** 32 + z) * (x ** 2 + x) && true;
+
+ecut and [
+  eqmod (
+    (cvrted4_0 + x * cvrted4_16) * t4 ** 0 + 
+    (cvrted4_32 + x * cvrted4_48) * t4 ** 1
+  ) (
+    (res4_0 + x * res4_16) * (x ** 2 + x) ** 0 + 
+    (res4_32 + x * res4_48) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_1 + x * cvrted4_17) * t4 ** 0 + 
+    (cvrted4_33 + x * cvrted4_49) * t4 ** 1
+  ) (
+    (res4_1 + x * res4_17) * (x ** 2 + x) ** 0 + 
+    (res4_33 + x * res4_49) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_2 + x * cvrted4_18) * t4 ** 0 + 
+    (cvrted4_34 + x * cvrted4_50) * t4 ** 1
+  ) (
+    (res4_2 + x * res4_18) * (x ** 2 + x) ** 0 + 
+    (res4_34 + x * res4_50) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_3 + x * cvrted4_19) * t4 ** 0 + 
+    (cvrted4_35 + x * cvrted4_51) * t4 ** 1
+  ) (
+    (res4_3 + x * res4_19) * (x ** 2 + x) ** 0 + 
+    (res4_35 + x * res4_51) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_4 + x * cvrted4_20) * t4 ** 0 + 
+    (cvrted4_36 + x * cvrted4_52) * t4 ** 1
+  ) (
+    (res4_4 + x * res4_20) * (x ** 2 + x) ** 0 + 
+    (res4_36 + x * res4_52) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_5 + x * cvrted4_21) * t4 ** 0 + 
+    (cvrted4_37 + x * cvrted4_53) * t4 ** 1
+  ) (
+    (res4_5 + x * res4_21) * (x ** 2 + x) ** 0 + 
+    (res4_37 + x * res4_53) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_6 + x * cvrted4_22) * t4 ** 0 + 
+    (cvrted4_38 + x * cvrted4_54) * t4 ** 1
+  ) (
+    (res4_6 + x * res4_22) * (x ** 2 + x) ** 0 + 
+    (res4_38 + x * res4_54) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_7 + x * cvrted4_23) * t4 ** 0 + 
+    (cvrted4_39 + x * cvrted4_55) * t4 ** 1
+  ) (
+    (res4_7 + x * res4_23) * (x ** 2 + x) ** 0 + 
+    (res4_39 + x * res4_55) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_8 + x * cvrted4_24) * t4 ** 0 + 
+    (cvrted4_40 + x * cvrted4_56) * t4 ** 1
+  ) (
+    (res4_8 + x * res4_24) * (x ** 2 + x) ** 0 + 
+    (res4_40 + x * res4_56) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_9 + x * cvrted4_25) * t4 ** 0 + 
+    (cvrted4_41 + x * cvrted4_57) * t4 ** 1
+  ) (
+    (res4_9 + x * res4_25) * (x ** 2 + x) ** 0 + 
+    (res4_41 + x * res4_57) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_10 + x * cvrted4_26) * t4 ** 0 + 
+    (cvrted4_42 + x * cvrted4_58) * t4 ** 1
+  ) (
+    (res4_10 + x * res4_26) * (x ** 2 + x) ** 0 + 
+    (res4_42 + x * res4_58) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_11 + x * cvrted4_27) * t4 ** 0 + 
+    (cvrted4_43 + x * cvrted4_59) * t4 ** 1
+  ) (
+    (res4_11 + x * res4_27) * (x ** 2 + x) ** 0 + 
+    (res4_43 + x * res4_59) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_12 + x * cvrted4_28) * t4 ** 0 + 
+    (cvrted4_44 + x * cvrted4_60) * t4 ** 1
+  ) (
+    (res4_12 + x * res4_28) * (x ** 2 + x) ** 0 + 
+    (res4_44 + x * res4_60) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_13 + x * cvrted4_29) * t4 ** 0 + 
+    (cvrted4_45 + x * cvrted4_61) * t4 ** 1
+  ) (
+    (res4_13 + x * res4_29) * (x ** 2 + x) ** 0 + 
+    (res4_45 + x * res4_61) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_14 + x * cvrted4_30) * t4 ** 0 + 
+    (cvrted4_46 + x * cvrted4_62) * t4 ** 1
+  ) (
+    (res4_14 + x * res4_30) * (x ** 2 + x) ** 0 + 
+    (res4_46 + x * res4_62) * (x ** 2 + x) ** 1
+  ) [2, modulus],
+  eqmod (
+    (cvrted4_15 + x * cvrted4_31) * t4 ** 0 + 
+    (cvrted4_47 + x * cvrted4_63) * t4 ** 1
+  ) (
+    (res4_15 + x * res4_31) * (x ** 2 + x) ** 0 + 
+    (res4_47 + x * res4_63) * (x ** 2 + x) ** 1
+  ) [2, modulus]
+];
+
+
+/* -------------------------------------------------------------------------- */
+
