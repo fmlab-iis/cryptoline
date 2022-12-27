@@ -15,6 +15,7 @@ let args_parsing =
 
 let args_io =
   [
+    ("-debug", Set Options.Std.debug, mk_arg_desc(["    Log debug messages"]));
     ("-keep", Set keep_temp_files, mk_arg_desc(["     Keep temporary files."]));
     ("-o", String (fun str -> logfile := str), mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
     ("-tmpdir", String (fun str -> tmpdir := Some str), mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
