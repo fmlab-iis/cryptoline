@@ -1298,7 +1298,7 @@ let get_rewrite_pattern' e others =
       | _ -> raise RewriteSeparationException in
   (* Check shorter eexp first. *)
   let sort_by_length es =
-    snd (List.split (List.sort (fun (l1, _) (l2, _) -> Pervasives.compare l1 l2)
+    snd (List.split (List.sort (fun (l1, _) (l2, _) -> Stdlib.compare l1 l2)
                        (List.map (fun e -> (len_eexp e, e)) es))) in
   let is_candidate sub = num_occurrence sub e = 1
                          && vars_disjoint_except_eq sub e

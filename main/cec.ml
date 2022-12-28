@@ -39,7 +39,7 @@ let args_spec =
                            "the equivalence w.r.t. one group is done at a time. "]))
     ]
     @Common.args_parsing@Common.args_io
-let args_spec = List.sort Pervasives.compare args_spec
+let args_spec = List.sort Stdlib.compare args_spec
 
 let usage_msg =
   "Usage: cv_cec OPTIONS FILE1 FILE2\n\

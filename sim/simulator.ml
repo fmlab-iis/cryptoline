@@ -918,14 +918,14 @@ let simulate ?steps:(steps=(-1)) ?dumps:(dumps=[]) m p =
 (* Open an interactive shell. *)
 let shell m p =
   let manager = new shellManager m p in
+  (* Seq.forever is available since 4.14 *)
+  let forever f = Seq.unfold (fun _ -> Some (f (), ())) () in
   let prompt () =
     let f _ = let _ = print_string "\027[34mCryptoLine> \027[37m" in
-              try
-                Some (read_line ())
-              with End_of_file ->
-                Some "exit"
+              try read_line ()
+              with End_of_file -> "exit"
     in
-    Stream.from f in
+    forever f in
   let parse_command str =
     try
       CommandParser.command CommandLexer.token (Lexing.from_string str)
@@ -940,4 +940,4 @@ let shell m p =
         ignore(cmd.cexec manager args)
       with Not_found -> print_endline ("Command " ^ name ^ " is not found.")
   in
-  Stream.iter process_command (prompt())
+  Seq.iter process_command (prompt())

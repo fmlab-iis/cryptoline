@@ -114,7 +114,7 @@ let args = [
                           "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
                           "the precondition if i = 0) and the i-th cut will be checked."]))
   ]@Common.args_parsing@Common.args_io@Common.args_verifier
-let args = List.sort Pervasives.compare args
+let args = List.sort Stdlib.compare args
 
 let usage = "Usage: cv OPTIONS FILE\n"
 

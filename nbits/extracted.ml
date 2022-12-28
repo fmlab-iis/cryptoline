@@ -35,7 +35,7 @@ include Coq__1
 
 (** val sub : int -> int -> int **)
 
-let rec sub = fun n m -> Pervasives.max 0 (n-m)
+let rec sub = fun n m -> Stdlib.max 0 (n-m)
 
 type reflect =
 | ReflectT
@@ -77,21 +77,21 @@ module Nat =
       (fun k' ->
       (fun fO fS n -> if n=0 then fO () else fS (n-1))
         (fun _ ->
-        log2_iter k' (Pervasives.succ p) (Pervasives.succ q) q)
-        (fun r' -> log2_iter k' p (Pervasives.succ q) r')
+        log2_iter k' (Stdlib.succ p) (Stdlib.succ q) q)
+        (fun r' -> log2_iter k' p (Stdlib.succ q) r')
         r)
       k
 
   (** val log2 : int -> int **)
 
   let log2 n0 =
-    log2_iter (pred n0) 0 (Pervasives.succ 0) 0
+    log2_iter (pred n0) 0 (Stdlib.succ 0) 0
 
   (** val log2_up : int -> int **)
 
   let log2_up a =
-    match compare (Pervasives.succ 0) a with
-    | Lt -> Pervasives.succ (log2 (pred a))
+    match compare (Stdlib.succ 0) a with
+    | Lt -> Stdlib.succ (log2 (pred a))
     | _ -> 0
  end
 
@@ -280,7 +280,7 @@ module Coq_Pos =
   (** val to_nat : positive -> int **)
 
   let to_nat x =
-    iter_op Coq__1.add x (Pervasives.succ 0)
+    iter_op Coq__1.add x (Stdlib.succ 0)
 
   (** val of_succ_nat : int -> positive **)
 
@@ -635,11 +635,11 @@ let rec index n0 s1 s2 = match s2 with
      if prefix s1 s2
      then Some 0
      else (match index 0 s1 s2' with
-           | Some n1 -> Some (Pervasives.succ n1)
+           | Some n1 -> Some (Stdlib.succ n1)
            | None -> None))
      (fun n' ->
      match index n' s1 s2' with
-     | Some n1 -> Some (Pervasives.succ n1)
+     | Some n1 -> Some (Stdlib.succ n1)
      | None -> None)
      n0)
 
@@ -817,7 +817,7 @@ let rec iter n0 f x =
 (** val nat_of_bool : bool -> int **)
 
 let nat_of_bool = function
-| true -> Pervasives.succ 0
+| true -> Stdlib.succ 0
 | false -> 0
 
 (** val odd0 : int -> bool **)
@@ -833,7 +833,7 @@ let rec odd0 n0 =
 let rec double_rec n0 =
   (fun fO fS n -> if n=0 then fO () else fS (n-1))
     (fun _ -> 0)
-    (fun n' -> Pervasives.succ (Pervasives.succ (double_rec n')))
+    (fun n' -> Stdlib.succ (Stdlib.succ (double_rec n')))
     n0
 
 (** val double0 : int -> int **)
@@ -854,14 +854,14 @@ let rec half n0 =
 and uphalf n0 =
   (fun fO fS n -> if n=0 then fO () else fS (n-1))
     (fun _ -> n0)
-    (fun n' -> Pervasives.succ (half n'))
+    (fun n' -> Stdlib.succ (half n'))
     n0
 
 (** val size0 : 'a1 list -> int **)
 
 let rec size0 = function
 | [] -> 0
-| _ :: s' -> Pervasives.succ (size0 s')
+| _ :: s' -> Stdlib.succ (size0 s')
 
 (** val head : 'a1 -> 'a1 list -> 'a1 **)
 
@@ -1137,13 +1137,13 @@ let low n0 bs =
 (** val extract : int -> int -> bits -> bits **)
 
 let extract i j bs =
-  high (addn (subn i j) (Pervasives.succ 0))
-    (low (addn i (Pervasives.succ 0)) bs)
+  high (addn (subn i j) (Stdlib.succ 0))
+    (low (addn i (Stdlib.succ 0)) bs)
 
 (** val slice : int -> int -> bits -> bits **)
 
 let slice i m bs =
-  extract i (subn (addn i m) (Pervasives.succ 0)) bs
+  extract i (subn (addn i m) (Stdlib.succ 0)) bs
 
 (** val zext : int -> bits -> bits **)
 
@@ -1251,8 +1251,8 @@ let from_Z n0 x = match x with
 (** val char_to_nibble : char -> bits **)
 
 let char_to_nibble c =
-  from_nat (Pervasives.succ (Pervasives.succ (Pervasives.succ
-    (Pervasives.succ 0))))
+  from_nat (Stdlib.succ (Stdlib.succ (Stdlib.succ
+    (Stdlib.succ 0))))
     (findex 0 (c::[])
       ('0'::('1'::('2'::('3'::('4'::('5'::('6'::('7'::('8'::('9'::('A'::('B'::('C'::('D'::('E'::('F'::('0'::('1'::('2'::('3'::('4'::('5'::('6'::('7'::('8'::('9'::('a'::('b'::('c'::('d'::('e'::('f'::[])))))))))))))))))))))))))))))))))
 
@@ -1291,7 +1291,7 @@ let zpos_of_num_string s =
 
 let from_string s =
   let n0 = zpos_of_num_string s in
-  from_Z (addn (Z.to_nat (Z.log2 n0)) (Pervasives.succ 0)) n0
+  from_Z (addn (Z.to_nat (Z.log2 n0)) (Stdlib.succ 0)) n0
 
 (** val nibble_to_char : bits -> char **)
 
@@ -1315,16 +1315,16 @@ let rec to_hex bs = match bs with
    | [] ->
      append_nibble_on_string
        (cat bs
-         (zeros (Pervasives.succ (Pervasives.succ (Pervasives.succ 0))))) []
+         (zeros (Stdlib.succ (Stdlib.succ (Stdlib.succ 0))))) []
    | b3 :: l0 ->
      (match l0 with
       | [] ->
         append_nibble_on_string
-          (cat bs (zeros (Pervasives.succ (Pervasives.succ 0)))) []
+          (cat bs (zeros (Stdlib.succ (Stdlib.succ 0)))) []
       | b4 :: l1 ->
         (match l1 with
          | [] ->
-           append_nibble_on_string (cat bs (zeros (Pervasives.succ 0))) []
+           append_nibble_on_string (cat bs (zeros (Stdlib.succ 0))) []
          | b5 :: tl ->
            append_nibble_on_string (b2 :: (b3 :: (b4 :: (b5 :: []))))
              (to_hex tl))))
@@ -1518,8 +1518,8 @@ let mulB bs1 bs2 =
 let umulo bs1 bs2 =
   let bs1_hightl = snd (splitlsb bs1) in
   let bs2_hightl = snd (splitlsb bs2) in
-  let wbs1 = zext (Pervasives.succ 0) bs1 in
-  let wbs2 = zext (Pervasives.succ 0) bs2 in
+  let wbs1 = zext (Stdlib.succ 0) bs1 in
+  let wbs2 = zext (Stdlib.succ 0) bs2 in
   let mul0 = mulB wbs1 wbs2 in
   let mul_high = msb mul0 in
   (||) (andb_orb_all bs1_hightl bs2_hightl) mul_high
@@ -1538,8 +1538,8 @@ let smulo bs1 bs2 =
   let xbs1_hightl = snd (splitlsb xbs1) in
   let xbs2_hightl = snd (splitlsb xbs2) in
   let and_or = andb_orb_all xbs1_hightl xbs2_hightl in
-  let wbs1 = sext (Pervasives.succ 0) bs1 in
-  let wbs2 = sext (Pervasives.succ 0) bs2 in
+  let wbs1 = sext (Stdlib.succ 0) bs1 in
+  let wbs2 = sext (Stdlib.succ 0) bs2 in
   let mul0 = mulB wbs1 wbs2 in
   let mul_tl = fst (splitmsb mul0) in
   let mul_n = snd (splitmsb mul0) in
@@ -1640,7 +1640,7 @@ let shrBB bs ns =
   let szbs = size0 bs in
   let szns = size0 ns in
   let log2szbs = Nat.log2_up szbs in
-  if leq szbs (Pervasives.succ 0)
+  if leq szbs (Stdlib.succ 0)
   then if eq_op bitseq_eqType (Obj.magic ns) (Obj.magic zeros szns)
        then bs
        else zeros szbs
@@ -1669,7 +1669,7 @@ let sarBB bs ns =
   let szns = size0 ns in
   let log2szbs = Nat.log2_up szbs in
   let msb_bs = msb bs in
-  if leq szbs (Pervasives.succ 0)
+  if leq szbs (Stdlib.succ 0)
   then if eq_op bitseq_eqType (Obj.magic ns) (Obj.magic zeros szns)
        then bs
        else nseq szbs msb_bs
@@ -1697,7 +1697,7 @@ let shlBB bs ns =
   let szbs = size0 bs in
   let szns = size0 ns in
   let log2szbs = Nat.log2_up szbs in
-  if leq szbs (Pervasives.succ 0)
+  if leq szbs (Stdlib.succ 0)
   then if eq_op bitseq_eqType (Obj.magic ns) (Obj.magic zeros szns)
        then bs
        else zeros szbs
@@ -1714,7 +1714,7 @@ let shlBB bs ns =
 let ucastB bs n0 =
   if eq_op nat_eqType (Obj.magic n0) (Obj.magic size0 bs)
   then bs
-  else if leq (Pervasives.succ n0) (size0 bs)
+  else if leq (Stdlib.succ n0) (size0 bs)
        then low n0 bs
        else zext (subn n0 (size0 bs)) bs
 
@@ -1723,7 +1723,7 @@ let ucastB bs n0 =
 let scastB bs n0 =
   if eq_op nat_eqType (Obj.magic n0) (Obj.magic size0 bs)
   then bs
-  else if leq (Pervasives.succ n0) (size0 bs)
+  else if leq (Stdlib.succ n0) (size0 bs)
        then low n0 bs
        else sext (subn n0 (size0 bs)) bs
 

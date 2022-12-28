@@ -9,7 +9,7 @@ exception IndexOutOfBound of int
 module StringElem : OrderedType with type t = string =
   struct
     type t = string
-    let compare = Pervasives.compare
+    let compare = Stdlib.compare
   end
 module SS = Set.Make(StringElem)
 module SM = Map.Make(StringElem)
@@ -157,8 +157,8 @@ let typ_of_var v = v.vtyp
 let eq_var v1 v2 = v1.vname = v2.vname && v1.vsidx = v2.vsidx
 
 let cmp_var v1 v2 =
-  let c = Pervasives.compare v1.vname v2.vname in
-  if c = 0 then Pervasives.compare v1.vsidx v2.vsidx
+  let c = Stdlib.compare v1.vname v2.vname in
+  if c = 0 then Stdlib.compare v1.vsidx v2.vsidx
   else c
 let mem_var v vs = List.exists (fun u -> eq_var u v) vs
 
@@ -320,9 +320,9 @@ let rec eq_eexp e1 e2 =
   | Ebinop (op1, e11, e12), Ebinop (op2, e21, e22) -> op1 = op2 && eq_eexp e11 e21 && eq_eexp e12 e22
   | _ -> false
 
-let cmp_eunop op1 op2 = Pervasives.compare op1 op2
+let cmp_eunop op1 op2 = Stdlib.compare op1 op2
 
-let _cmp_ebinop op1 op2 = Pervasives.compare op1 op2
+let _cmp_ebinop op1 op2 = Stdlib.compare op1 op2
 
 let rec cmp_eexp e1 e2 =
   match e1, e2 with
