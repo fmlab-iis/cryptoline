@@ -272,6 +272,7 @@ let illformed_instr_reason vs cs gs lno i =
       | Ixor (v, a1, a2) ->
        [defined_atoms [a1; a2]; check_same_size lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Inot (v, a) -> [defined_atom a; check_same_size lno [Avar v; a]; const_in_range [a]]
+    | Ilookupbyte _ -> [] (* TODO *)
     | Icast (od, _v, a) ->
        (match od with
         | None -> [defined_atom a; const_in_range [a]]

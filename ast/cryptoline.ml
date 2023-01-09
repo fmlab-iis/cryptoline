@@ -908,6 +908,7 @@ type instr =
   | Iand of var * atom * atom                               (** Bit-wise AND *)
   | Ior of var * atom * atom                                (** Bit-wise OR *)
   | Ixor of var * atom * atom                               (** Bit-wise XOR *)
+  | Ilookupbyte of var * atom * atom * atom * Z.t           (** Lookup wrt bytes *)
   (* Type conversions *)
   | Icast of var option * var * atom                        (** Casting *)
   | Ivpc of var * atom                                      (** Value-preserving casting *)
@@ -1293,6 +1294,7 @@ let string_of_instr ?typ:(typ=false) i =
   | Ior (v, a1, a2) -> "or " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Ixor (v, a1, a2) -> "xor " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Inot (v, a) -> "not " ^ string_of_var ~typ:true v ^ " " ^ astr a
+  | Ilookupbyte (v, adft, asrc, aidx, n) -> "lookup8 " ^ string_of_var ~typ:true v ^ " " ^ astr adft ^ " " ^ astr asrc ^ " " ^ astr aidx ^ " " ^ Z.to_string n
   (* Type conversions *)
   | Icast (od, v, a) ->
      (match od with
@@ -1433,6 +1435,7 @@ let vars_instr i =
     | Ior (v, a1, a2)
     | Ixor (v, a1, a2) ->  VS.add v (VS.union (vars_atom a1) (vars_atom a2))
   | Inot (v, a) -> VS.add v (vars_atom a)
+  | Ilookupbyte (v, adft, asrc, aidx, _) -> VS.add v (VS.union (VS.union (vars_atom adft) (vars_atom asrc)) (vars_atom aidx))
   | Icast (od, v, a) ->
      (match od with
       | None -> VS.add v (vars_atom a)
@@ -1484,6 +1487,7 @@ let lvs_instr i =
   | Ior (v, _, _)
   | Ixor (v, _, _)
   | Inot (v, _) -> VS.singleton v
+  | Ilookupbyte (v, _, _, _, _) -> VS.singleton v
   | Icast (_, v, _) -> VS.singleton v
   | Ivpc (v, _) -> VS.singleton v
   | Ijoin (v, _, _) -> VS.singleton v
@@ -1532,6 +1536,7 @@ let rvs_instr i =
     | Ior (_, a1, a2)
     | Ixor (_, a1, a2) ->  VS.union (vars_atom a1) (vars_atom a2)
   | Inot (_, a) -> vars_atom a
+  | Ilookupbyte (_, adft, asrc, aidx, _) -> VS.union (VS.union (vars_atom adft) (vars_atom asrc)) (vars_atom aidx)
   | Icast (_, _, a) -> vars_atom a
   | Ivpc (_, a) -> vars_atom a
   | Ijoin (_, ah, al) -> VS.union (vars_atom ah) (vars_atom al)
@@ -1581,6 +1586,7 @@ let lcarries_instr i =
   | Ior (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ixor (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Inot (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
+  | Ilookupbyte (v, _, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Icast (_, v, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ivpc (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
   | Ijoin _
@@ -1694,6 +1700,7 @@ let vids_instr i =
     | Ior (v, a1, a2)
     | Ixor (v, a1, a2) ->  IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
   | Inot (v, a) -> IS.add v.vid (vids_atom a)
+  | Ilookupbyte (v, adft, asrc, aidx, _) -> IS.add v.vid (IS.union (IS.union (vids_atom adft) (vids_atom asrc)) (vids_atom aidx))
   | Icast (od, v, a) ->
      (match od with
       | None -> IS.add v.vid (vids_atom a)
@@ -1745,6 +1752,7 @@ let lvids_instr i =
   | Ior (v, _, _)
   | Ixor (v, _, _)
   | Inot (v, _) -> IS.singleton v.vid
+  | Ilookupbyte (v, _, _, _, _) -> IS.singleton v.vid
   | Icast (_, v, _) -> IS.singleton v.vid
   | Ivpc (v, _) -> IS.singleton v.vid
   | Ijoin (v, _, _) -> IS.singleton v.vid
@@ -1793,6 +1801,7 @@ let rvids_instr i =
     | Ior (_, a1, a2)
     | Ixor (_, a1, a2) ->  IS.union (vids_atom a1) (vids_atom a2)
   | Inot (_, a) -> vids_atom a
+  | Ilookupbyte (_, adft, asrc, aidx, _) -> IS.union (IS.union (vids_atom adft) (vids_atom asrc)) (vids_atom aidx)
   | Icast (_, _, a) -> vids_atom a
   | Ivpc (_, a) -> vids_atom a
   | Ijoin (_, ah, al) -> IS.union (vids_atom ah) (vids_atom al)
@@ -1842,6 +1851,7 @@ let lcids_instr i =
   | Ior (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Ixor (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Inot (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Ilookupbyte (v, _, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Icast (_, v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Ivpc (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
   | Ijoin _
@@ -2114,6 +2124,12 @@ let ssa_instr m i =
      let a = ssa_atom m a in
      let m = upd_sidx v m in
      (m, Inot (ssa_var m v, a))
+  | Ilookupbyte (v, adft, asrc, aidx, n) ->
+     let adft = ssa_atom m adft in
+     let asrc = ssa_atom m asrc in
+     let aidx = ssa_atom m aidx in
+     let m = upd_sidx v m in
+     (m, Ilookupbyte (ssa_var m v, adft, asrc, aidx, n))
   | Icast (od, v, a) ->
      let a = ssa_atom m a in
      let md = apply_to_option (fun v -> upd_sidx v m) m od in
@@ -2572,6 +2588,7 @@ let subst_instr am em rm i =
   | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Inot (v, a) -> Inot (subst_lval am v, subst_atom am a)
+  | Ilookupbyte (v, adft, asrc, aidx, n) -> Ilookupbyte (subst_lval am v, subst_atom am adft, subst_atom am asrc, subst_atom am aidx, n)
   | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atom am a)
   | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atom am a)
   | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atom am ah, subst_atom am al)
@@ -3040,6 +3057,7 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
                         casts1@casts2@[Ixor (v, a1, a2)]
   | Inot (v, a) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
                    casts@[Inot (v, a)]
+  | Ilookupbyte _ -> [i] (* TODO *)
   (* Type conversions *)
   | Icast (_, _, _) -> [i]
   | Ivpc (_, _) -> [i]
@@ -3294,6 +3312,7 @@ let visit_instr visitor i =
         | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Ixor (v, a1, a2) -> Ixor (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Inot (v, a) -> Inot (visit_var visitor v, visit_atom visitor a)
+        | Ilookupbyte (v, adft, asrc, aidx, n) -> Ilookupbyte (visit_var visitor v, visit_atom visitor adft, visit_atom visitor asrc, visit_atom visitor aidx, n)
         (* Type conversions *)
         | Icast (od, v, a) -> Icast (apply_to_some (visit_var visitor) od, visit_var visitor v, visit_atom visitor a)
         | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atom visitor a)
@@ -3633,6 +3652,7 @@ let bvcryptoline_of_instr i =
   | Ior _ -> raise (UnsupportedException "Instruction or is not supported by BvCryptoLine.")
   | Ixor _ -> raise (UnsupportedException "Instruction xor is not supported by BvCryptoLine.")
   | Inot _ -> raise (UnsupportedException "Instruction not is not supported by BvCryptoLine.")
+  | Ilookupbyte _ -> raise (UnsupportedException "Instruction lookup8 is not supported by BvCryptoLine.")
   (* Type conversions *)
   | Icast _ -> raise (UnsupportedException "Instruction cast is not supported by BvCryptoLine.")
   | Ivpc _ -> raise (UnsupportedException "Instruction vpc is not supported by BvCryptoLine.")
@@ -3810,6 +3830,7 @@ let update_variable_id_instr m i =
   | Iand (v, a1, a2)
   | Ior (v, a1, a2)
   | Ixor (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Ilookupbyte (v, adft, asrc, aidx, _) -> update_variable_id_atoms m [Avar v; adft; asrc; aidx]
   | Icast (od, v, a) ->
      let m' =
        match od with

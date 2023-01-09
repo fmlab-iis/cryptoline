@@ -930,6 +930,21 @@
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
       (vm, ym, gm, [lno, Inot (v, a)])
 
+  let parse_lookupbyte_at lno dest dft src idx idxsize =
+    fun _fm cm vm ym gm ->
+      let adft = resolve_atom_with lno dft cm vm ym gm in
+      let asrc = resolve_atom_with lno src cm vm ym gm in
+      let aidx = resolve_atom_with lno idx cm vm ym gm in
+      let n = idxsize cm in
+      let ty = typ_of_atom adft in
+      let (vm, ym, gm, v) =
+        resolve_lv_with lno dest cm vm ym gm (Some ty) in
+      let _ =
+        if Z.leq n Z.zero || Z.gt n (Z.of_int 8) then
+          raise_at lno ("The index width of a lookup8 should be in between 1 and 8 (both included)")
+      in
+      (vm, ym, gm, [lno, Ilookupbyte (v, adft, asrc, aidx, n)])
+
   let parse_cast_at lno optlv dest src =
     fun _fm cm vm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
@@ -1261,6 +1276,8 @@
          parse_xor_at lno dest src1 src2 fm cm vm ym gm
       | `NOT (`LVPLAIN dest, src) ->
          parse_not_at lno dest src fm cm vm ym gm
+      | `LOOKUPBYTE (`LVPLAIN dest, dft, src, idx, idxsize) ->
+         parse_lookupbyte_at lno dest dft src idx idxsize fm cm vm ym gm
       | `CAST (optlv, `LV dest, src) ->
          parse_cast_at lno optlv dest src fm cm vm ym gm
       | `VPC (`LV dest, src) ->
@@ -1308,7 +1325,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR SET CLEAR NONDET CMOV AND OR NOT LOOKUPBYTE CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1632,6 +1649,8 @@ instr:
   | lhs EQOP XOR atom atom                        { (!lnum, `XOR (`LVPLAIN $1, $4, $5)) }
   | NOT lval atom                                 { (!lnum, `NOT ($2, $3)) }
   | lhs EQOP NOT atom                             { (!lnum, `NOT (`LVPLAIN $1, $4)) }
+  | LOOKUPBYTE lval atom atom atom const          { (!lnum, `LOOKUPBYTE ($2, $3, $4, $5, $6)) }
+  | lhs EQOP LOOKUPBYTE atom atom atom const      { (!lnum, `LOOKUPBYTE (`LVPLAIN $1, $4, $5, $6, $7)) }
   | CAST lval_or_lcarry atom                      { (!lnum, `CAST (None, $2, $3)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atom
                                                   { (!lnum, `CAST (Some $3, $5, $6)) }
@@ -1710,6 +1729,7 @@ instr:
   | ROL error                                     { raise_at !lnum ("Bad rol instruction") }
   | ROR error                                     { raise_at !lnum ("Bad ror instruction") }
   | NONDET error                                  { raise_at !lnum ("Bad nondet instruction") }
+  | LOOKUPBYTE error                              { raise_at !lnum ("Bad lookup8 instruction") }  
   | CALL ID LPAR error                            { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
   | CALL error                                    { raise_at !lnum ("Bad call instruction") }
 ;

@@ -672,6 +672,42 @@ let btor_cast m od v a =
   m#setvar v v_btor;
   (match od_btor with | None -> () | Some (d, d_btor) -> m#setvar d d_btor)
 
+let btor_lookupbyte m dst dft src idx n =
+  (* width of src *)
+  let w_src = size_of_atom src in
+  (* number of entries in src *)
+  let n_src = w_src / 8 in
+  (* width of dst *)
+  let w_dst = size_of_var dst in
+  (* number of entries in dst *)
+  let n_dst = w_dst / 8 in
+  let src_btor = btor_atom m src in
+  let idx_btor = btor_atom m idx in
+  let dft_btor = btor_atom m dft in
+  let ni = Z.to_int n in
+  (* build ITEs to select one byte among [num] entries in [src] wrt [index] *)
+  let rec select index num =
+    if num = 0 then m#mkextract w_src 7 0 src_btor
+    else m#mkcond 8 (m#mkeq index (m#mkconstd ni (Z.of_int num)))
+           (m#mkextract w_src (8 * num + 7) (8 * num) src_btor) 
+           (select index (num - 1))
+  in
+  (* btor of each entry in dst *)
+  let btor_dst_i i =
+    let index = m#mkextract w_dst (8 * i + ni - 1) (8 * i) idx_btor in
+    let pow_2_ni = Z.to_int (Z.pow (Z.of_int 2) ni) in
+    (* n_src is large enough so that no index can be out of range *)
+    if n_src >= pow_2_ni then select index (pow_2_ni - 1)
+    else m#mkcond 8 (m#mkuge index (m#mkconstd ni (Z.of_int n_src)))
+           (m#mkextract w_dst (8 * i + 7) (8 * i) dft_btor)
+           (select index (n_src - 1))
+  in
+  let rec helper i =
+    if i = 0 then btor_dst_i 0
+    else m#mkconcat 8 (8 * i) (btor_dst_i i) (helper (i - 1))
+  in
+  m#setvar dst (helper (n_dst - 1))
+
 let btor_instr m i =
   match i with
   | Imov (v, a) -> m#setvar v (btor_atom m a)
@@ -856,6 +892,7 @@ let btor_instr m i =
   | Inot (v, a) -> let w = size_of_var v in
                    let a_btor = btor_atom m a in
                    m#setvar v (m#mknot w a_btor)
+  | Ilookupbyte (v, adft, asrc, aidx, n) -> btor_lookupbyte m v adft asrc aidx n
   | Icast (od, v, a) -> btor_cast m od v a
   | Ivpc (v, a) -> btor_cast m None v a
   | Ijoin (v, ah, al) -> let wh = size_of_atom ah in

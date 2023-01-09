@@ -88,6 +88,7 @@
               "and"                        , AND;
               "or"                         , OR;
               "not"                        , NOT;
+              "lookup8"                    , LOOKUPBYTE;
               "cast"                       , CAST;
               "vpc"                        , VPC;
               "join"                       , JOIN;

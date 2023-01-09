@@ -314,6 +314,7 @@ let simulate_instr m i =
      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in
      VM.add v (xorB bs1 bs2) m
+  | Ilookupbyte _ -> m (* TODO *)
   | Icast (_od, v, a) ->
      (* TODO: update _od *)
      let bs = value_of_atom m a in

@@ -596,6 +596,7 @@ type instr =
   | Iand of var * atom * atom                               (** Bit-wise AND *)
   | Ior of var * atom * atom                                (** Bit-wise OR *)
   | Ixor of var * atom * atom                               (** Bit-wise XOR *)
+  | Ilookupbyte of var * atom * atom * atom * Z.t           (** Lookup wrt bytes *)
   (* Type conversions *)
   | Icast of var option * var * atom                        (** Casting *)
   | Ivpc of var * atom                                      (** Value-preserving casting *)
@@ -810,6 +811,7 @@ type instr =
                          {ul {- Type: [v], [a1], and [a2] can be any type.}
                              {- QF_BV: v = xor a1 a2}
                              {- Algebra: True}}
+   - [Ilookupbyte (v, adft, asrc, aidx, n)]: TODO
    - [Icast (o, v, a)]: Cast [a] to the type of [v] and store the casted value in [v]. [o] is the lost information.
                         {ul {- Type: [v] and [a] can be any type.}
                             {- QF_BV:

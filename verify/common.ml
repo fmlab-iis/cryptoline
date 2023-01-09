@@ -496,6 +496,7 @@ let bexp_instr i =
   | Ior (v, a1, a2) -> bexp_or v a1 a2
   | Ixor (v, a1, a2) -> bexp_xor v a1 a2
   | Inot (v, a) -> bexp_not v a
+  | Ilookupbyte _ -> True (* TODO *)
   | Icast (t, v, a) -> bexp_cast t v a
   | Ivpc (v, a) -> bexp_vpc v a
   | Ijoin (v, ah, al) -> bexp_join v ah al
@@ -748,6 +749,7 @@ let bexp_instr_safe i =
   | Ior _ -> True
   | Ixor _ -> True
   | Inot _ -> True
+  | Ilookupbyte _ -> True (* TODO *)
   | Icast (_, _v, _a) -> True
   | Ivpc (v, a) -> bexp_vpc_safe v a
   | Ijoin (_v, _ah, _al) -> True
@@ -1130,6 +1132,7 @@ let bv2z_instr aim vgen i =
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atom a))])
       | Tsint _w -> (vgen, aim, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst Z.one))]))
+  | Ilookupbyte _ -> (vgen, aim, []) (* TODO *)
   | Icast (t, v, a) ->
      bv2z_cast vgen aim t v a
   | Ivpc (v, a) ->
