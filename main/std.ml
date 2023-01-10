@@ -8,7 +8,7 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | SaveCoqCryptoline | SaveBvCryptoline | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintPoly | PrintDataFlow | PrintBtor | SaveCoqCryptoline | SaveBvCryptoline | Simulation
 
 let action = ref Verify
 
@@ -72,6 +72,8 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
+    ("-ppoly", Unit (fun () -> action := PrintPoly), Common.mk_arg_desc(["    Print algebraic part of the input specification as a root";
+                                                                         "entailment problem. The input specification must contain no cut."]));
     ("-pbtor", String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
                                   action := PrintBtor), Common.mk_arg_desc(["    Print the input program in BTOR format. Input variables are renamed"; "uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
@@ -208,6 +210,25 @@ let anon file =
      let outs = Common.find_output_vars s.sprog !output_vars in
      let str = Qfbv.Common.btor_program ~rename:true m s.sprog vs outs in
      print_endline str
+  | PrintPoly ->
+     (* Print the algebraic part as a root entailment problem (assuming no cut, rewriting applied) *)
+     let s = Common.parse_and_check file |> fun (_, s) -> ssa_spec s in
+     let vgen = Verify.Common.vgen_of_spec s in
+     let es = List.fold_left (|>) s
+                (normalize_spec::
+                   (if !apply_move_assert then [move_asserts] else [])@
+                   (if !apply_rewriting then [rewrite_mov_ssa_spec; rewrite_vpc_ssa_spec] else [])
+                ) |> espec_of_spec in
+     let ps = Verify.Common.bv2z_espec vgen es
+              |> (fun (vgen, ps) -> if !apply_rewriting then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
+              |> snd in
+     let os = {
+         Ast.Cryptoline.spre = (eands (ps.Verify.Common.ppre::ps.Verify.Common.pprog), rtrue);
+         Ast.Cryptoline.sprog = [Inop];
+         Ast.Cryptoline.spost = ([(ps.Verify.Common.ppost, [])], [])
+       } in
+     print_endline ("proc main(" ^ string_of_inputs (VS.elements (vars_spec os)) ^ ") =");
+     print_endline (string_of_spec os)
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"

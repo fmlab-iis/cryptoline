@@ -114,6 +114,8 @@ val smtlib_espec : var_gen -> Ast.Cryptoline.espec -> var_gen * string
 val redlog_of_espec : espec -> string
 (** [redlog_of_espec s] returns the input to redlog for the verification of [s] in SSA. *)
 
+val rewrite_poly_spec : var_gen -> poly_spec -> var_gen * poly_spec
+(** [rewrite_poly_spec s] applies rewriting to [s]. *)
 
 (** {1 Verifying Safety and Range Specifications} *)
 
