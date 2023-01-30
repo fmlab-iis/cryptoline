@@ -1708,11 +1708,37 @@ val split_rspec_post : rspec -> rspec list
 (** [split_rspec_post s] splits the top level conjunctions in the postcondition
     of [s] and makes a largest predicate containing no conjunction an [rspec]. *)
 
+val separate_eassertions : espec -> espec list
+(**
+   Make an algebraic assertion a single specification and remove assertions. The input
+   specification must be in SSA. Note that this function does not consider cut
+   instructions.
+ *)
+
+val separate_rassertions : rspec -> rspec list
+(**
+   Make a range assertion a single specification and remove assertions. The input
+   specification must be in SSA. Note that this function does not consider cut
+   instructions.
+ *)
+
 val separate_assertions : spec -> spec list
 (**
    Make an assertion a single specification and remove assertions. The input
    specification must be in SSA. Note that this function does not consider cut
    instructions.
+ *)
+
+val move_easserts : espec -> espec
+(**
+   Move algebraic assertions in a specification to its postcondition.
+   The input specification must be in SSA.
+ *)
+
+val move_rasserts : rspec -> rspec
+(**
+   Move range assertions in a specification to its postcondition.
+   The input specification must be in SSA.
  *)
 
 val move_asserts : spec -> spec
@@ -1760,3 +1786,30 @@ val remove_ecut_spec : spec -> spec
 
 val remove_rcut_spec : spec -> spec
 (** Remove all range cuts in a specification. *)
+
+
+(** Profiling *)
+
+type profile =
+  { program_typs_exclude_carries : typ list;
+    typs_exclude_carries : typ list;
+    num_program_vars : int;
+    num_vars : int;
+    num_program_ssa_vars : int;
+    num_ssa_vars : int;
+    num_program_instrs : int;
+    num_instrs : int;
+    has_carries : bool;
+    has_assumes : bool;
+    has_signed : bool;
+    has_algebraic_precondition : bool;
+    has_range_precondition : bool;
+    has_algebraic_postcondition: bool;
+    has_range_postcondition : bool }
+(** a profile *)
+
+val profile_program : program -> profile
+(** Return the profile of a program. *)
+
+val profile_spec : spec -> profile
+(** Return the profile of a specification. *)

@@ -81,7 +81,7 @@ let args_verifier =
     ("-singular_path", String (fun str -> singular_path := str),
      mk_arg_desc(["PATH"; "Set the path to Singular."]));
     ("-slicing", Set apply_slicing, mk_arg_desc(["  Enable slicing."]));
-    ("-track-split", Set track_split, "Track splits of atoms.");
+    ("-track-split", Set track_split, mk_arg_desc([""; "Track splits of atoms."]));
     ("-two_phase_rewriting", Set two_phase_rewriting, mk_arg_desc [""; "Use two-phase rewriting in verifying algebraic specifications."; "Note that single-phase rewriting is still used when -cli is"; "enabled."]);
     ("-vo", Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],
                     (fun str ->

@@ -3388,6 +3388,40 @@ let cut_spec s =
   List.rev (helper [] (s.spre, [], [], []) (s.spre, [], s.sprog))
 
 (*
+ * Make an algebraic assertion a single specification and remove assertions.
+ * Assume the input specification is in SSA form.
+ * Note that this function does not handle cut instructions.
+ *)
+let separate_eassertions s =
+  let rec helper res visited_rev instrs =
+    match instrs with
+    | [] ->
+       (* add the input spec with assertion removed *)
+       { espre = s.espre; esprog = List.rev visited_rev; espost = s.espost }::res
+    | (Iassert (ebs, _))::tl ->
+       let assert_as_spec = { espre = s.espre; esprog = List.rev visited_rev; espost = ebs } in
+       helper (assert_as_spec::res) visited_rev tl
+    | hd::tl -> helper res (hd::visited_rev) tl in
+  helper [] [] s.esprog
+
+(*
+ * Make a range assertion a single specification and remove assertions.
+ * Assume the input specification is in SSA form.
+ * Note that this function does not handle cut instructions.
+ *)
+let separate_rassertions s =
+  let rec helper res visited_rev instrs =
+    match instrs with
+    | [] ->
+       (* add the input spec with assertion removed *)
+       { rspre = s.rspre; rsprog = List.rev visited_rev; rspost = s.rspost }::res
+    | (Iassert (_, rbs))::tl ->
+       let assert_as_spec = { rspre = s.rspre; rsprog = List.rev visited_rev; rspost = rbs } in
+       helper (assert_as_spec::res) visited_rev tl
+    | hd::tl -> helper res (hd::visited_rev) tl in
+  helper [] [] s.rsprog
+
+(*
  * Make an assertion a single specification and remove assertions.
  * Assume the input specification is in SSA form.
  * Note that this function does not handle cut instructions.
@@ -3403,6 +3437,28 @@ let separate_assertions s =
        helper (assert_as_spec::res) visited_rev tl
     | hd::tl -> helper res (hd::visited_rev) tl in
   helper [] [] s.sprog
+
+(* Move algebraic assertions to postcondition. Assume the input specification is in SSA form. *)
+let move_easserts s =
+  let ebexp_prove_with_of_assert i =
+    match i with
+    | Iassert (ebs, _) -> ebs
+    | _ -> assert false in
+  let (es, is) = List.partition is_assert s.esprog in
+  let assert_ebexps = tmap ebexp_prove_with_of_assert es |> tflatten in
+  let post = tappend assert_ebexps s.espost in
+  { espre = s.espre; esprog = is; espost = post }
+
+(* Move range assertions to postcondition. Assume the input specification is in SSA form. *)
+let move_rasserts s =
+  let rbexp_prove_with_of_assert i =
+    match i with
+    | Iassert (_, rbs) -> rbs
+    | _ -> assert false in
+  let (es, is) = List.partition is_assert s.rsprog in
+  let assert_rbexps = tmap rbexp_prove_with_of_assert es |> tflatten in
+  let post = tappend assert_rbexps s.rspost in
+  { rspre = s.rspre; rsprog = is; rspost = post }
 
 (* Move assertions to postcondition. Assume the input specification is in SSA form. *)
 let move_asserts s =
@@ -4102,3 +4158,86 @@ let remove_ecut_spec s =
 let remove_rcut_spec s =
   let post = (fst s.spost, remove_prove_with_cuts (snd s.spost)) in
   { spre = s.spre; sprog = remove_rcut_program s.sprog; spost = post }
+
+
+(** Profiling *)
+
+module TypElem : OrderedType with type t = typ =
+  struct
+    type t = typ
+    let compare = Stdlib.compare
+  end
+module TS = Set.Make(TypElem)
+
+type profile =
+  { program_typs_exclude_carries : typ list;
+    typs_exclude_carries : typ list;
+    num_program_vars : int;
+    num_vars : int;
+    num_program_ssa_vars : int;
+    num_ssa_vars : int;
+    num_program_instrs : int;
+    num_instrs : int;
+    has_carries : bool;
+    has_assumes : bool;
+    has_signed : bool;
+    has_algebraic_precondition : bool;
+    has_range_precondition : bool;
+    has_algebraic_postcondition: bool;
+    has_range_postcondition : bool }
+
+let profile_program p =
+  let (_, ssa_p) = ssa_program VM.empty p in
+  let pure_p = List.filter (Fun.negate is_annotation) p in
+  let pure_ssa_p = List.filter (Fun.negate is_annotation) ssa_p in
+  let vars = vars_program p in
+  let ssa_vars = vars_program ssa_p in
+  let program_vars = vars_program pure_p in
+  let program_ssa_vars = vars_program pure_ssa_p in
+  let ssa_carries = lcarries_program ssa_p in
+  let program_ssa_carries = lcarries_program pure_ssa_p in
+  let program_typs_exclude_carries = VS.fold (fun v ts -> TS.add (typ_of_var v) ts) (VS.diff program_ssa_vars program_ssa_carries) TS.empty in
+  let typs_exclude_carries = VS.fold (fun v ts -> TS.add (typ_of_var v) ts) (VS.diff ssa_vars ssa_carries) TS.empty in
+  { program_typs_exclude_carries = TS.elements program_typs_exclude_carries;
+    typs_exclude_carries = TS.elements typs_exclude_carries;
+    num_program_vars = VS.cardinal program_vars;
+    num_vars = VS.cardinal vars;
+    num_program_ssa_vars = VS.cardinal program_ssa_vars;
+    num_ssa_vars = VS.cardinal ssa_vars;
+    num_program_instrs = List.length pure_ssa_p;
+    num_instrs = List.length ssa_p;
+    has_carries = not (VS.is_empty ssa_carries);
+    has_assumes = List.exists is_assume ssa_p;
+    has_signed = TS.exists typ_is_signed typs_exclude_carries;
+    has_algebraic_precondition = false;
+    has_range_precondition = false;
+    has_algebraic_postcondition = false;
+    has_range_postcondition = false }
+
+let profile_spec s =
+  let ssa_s = ssa_spec s in
+  let pure_p = List.filter (Fun.negate is_annotation) s.sprog in
+  let pure_ssa_p = List.filter (Fun.negate is_annotation) ssa_s.sprog in
+  let vars = vars_spec s in
+  let ssa_vars = vars_spec ssa_s in
+  let program_vars = vars_program pure_p in
+  let program_ssa_vars = vars_program pure_ssa_p in
+  let ssa_carries = lcarries_program ssa_s.sprog in
+  let program_ssa_carries = lcarries_program pure_ssa_p in
+  let program_typs_exclude_carries = VS.fold (fun v ts -> TS.add (typ_of_var v) ts) (VS.diff program_ssa_vars program_ssa_carries) TS.empty in
+  let typs_exclude_carries = VS.fold (fun v ts -> TS.add (typ_of_var v) ts) (VS.diff ssa_vars ssa_carries) TS.empty in
+  { program_typs_exclude_carries = TS.elements program_typs_exclude_carries;
+    typs_exclude_carries = TS.elements typs_exclude_carries;
+    num_program_vars = VS.cardinal program_vars;
+    num_vars = VS.cardinal vars;
+    num_program_ssa_vars = VS.cardinal program_ssa_vars;
+    num_ssa_vars = VS.cardinal ssa_vars;
+    num_program_instrs = List.length pure_ssa_p;
+    num_instrs = List.length ssa_s.sprog;
+    has_carries = not (VS.is_empty ssa_carries);
+    has_assumes = List.exists is_assume ssa_s.sprog;
+    has_signed = TS.exists typ_is_signed typs_exclude_carries;
+    has_algebraic_precondition = fst ssa_s.spre <> Etrue;
+    has_range_precondition = snd ssa_s.spre <> Rtrue;
+    has_algebraic_postcondition = List.exists (fun (e, _) -> e <> Etrue) (fst ssa_s.spost);
+    has_range_postcondition = List.exists (fun (e, _) -> e <> Rtrue) (snd ssa_s.spost) }

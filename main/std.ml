@@ -8,13 +8,15 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintPoly | PrintDataFlow | PrintBtor | SaveCoqCryptoline | SaveBvCryptoline | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | Simulation
 
 let action = ref Verify
 
 let save_coqcryptoline_filename = ref ""
 
 let save_bvcryptoline_filename = ref ""
+
+let save_rep_filename = ref ""
 
 let initial_values_string_none = "none"
 
@@ -38,7 +40,19 @@ let apply_remove_ecuts = ref false
 
 let apply_remove_rcuts = ref false
 
+let save_rep_uniform_types = ref false
+
 let str_to_ids str = (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
+
+let suggest_name name ext id =
+  let nth_name id = !name ^ "_" ^ string_of_int id in
+  let rec helper i =
+    let fn = nth_name id ^ "_" ^ string_of_int i ^ ext in
+    if Sys.file_exists fn then helper (i + 1)
+    else fn in
+  let fn = nth_name id ^ ext in
+  if Sys.file_exists fn then helper 0
+  else fn
 
 let args = [
     ("-autocast", Set Options.Std.auto_cast,
@@ -72,11 +86,17 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
-    ("-ppoly", Unit (fun () -> action := PrintPoly), Common.mk_arg_desc(["    Print algebraic part of the input specification as a root";
-                                                                         "entailment problem. The input specification must contain no cut."]));
+    ("-save-rep", String (fun str -> action := SaveREP; save_rep_filename := str),
+     Common.mk_arg_desc(["FILENAME";
+                         "Save algebraic part of the input specification as root";
+                         "entailment problems. A root entailment problem is represented";
+                         "as a specification containing only algebraic pre- and";
+                         "post-conditions."]));
+    ("-save-rep-uniform-types", Set save_rep_uniform_types, Common.mk_arg_desc([""; "Make the types of variables uniform when -save-rep is specified."]));
     ("-pbtor", String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
                                   action := PrintBtor), Common.mk_arg_desc(["    Print the input program in BTOR format. Input variables are renamed"; "uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
+    ("-pprof", Unit (fun () -> action := PrintProfile), Common.mk_arg_desc(["   Print the profile of a specification."]));
     ("-interactive", Set interactive_simulation,
      Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
     ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
@@ -210,25 +230,69 @@ let anon file =
      let outs = Common.find_output_vars s.sprog !output_vars in
      let str = Qfbv.Common.btor_program ~rename:true m s.sprog vs outs in
      print_endline str
-  | PrintPoly ->
-     (* Print the algebraic part as a root entailment problem (assuming no cut, rewriting applied) *)
-     let s = Common.parse_and_check file |> fun (_, s) -> ssa_spec s in
+  | PrintProfile ->
+     let (_, s) = Common.parse_and_check file in
+     let p = profile_spec s in
+     print_endline (String.concat "\n" [
+                        "Types (excluding carries and annotations): " ^ String.concat ", " (List.map string_of_typ p.program_typs_exclude_carries);
+                        "Types (excluding carries): " ^ String.concat ", " (List.map string_of_typ p.typs_exclude_carries);
+                        "Number of variables (excluding annotations): " ^ string_of_int p.num_program_vars;
+                        "Number of variables: " ^ string_of_int p.num_vars;
+                        "Number of SSA variables (excluding annotations): " ^ string_of_int p.num_program_ssa_vars;
+                        "Number of SSA variables: " ^ string_of_int p.num_ssa_vars;
+                        "Number of instructions (excluding annotations): " ^ string_of_int p.num_program_instrs;
+                        "Number of instructions: " ^ string_of_int p.num_instrs;
+                        "Has carries: " ^ string_of_bool p.has_carries;
+                        "Has assumes: " ^ string_of_bool p.has_assumes;
+                        "Has signed: " ^ string_of_bool p.has_signed;
+                        "Has algebraic precondition: " ^ string_of_bool p.has_algebraic_precondition;
+                        "Has range precondition: " ^ string_of_bool p.has_range_precondition;
+                        "Has algebraic postcondition: " ^ string_of_bool p.has_algebraic_postcondition;
+                        "Has range postcondition: " ^ string_of_bool p.has_range_postcondition
+       ])
+  | SaveREP ->
+     (* Print the algebraic part as root entailment problems *)
+     let s = Common.parse_and_check file |> snd |> normalize_spec |> ssa_spec in
      let vgen = Verify.Common.vgen_of_spec s in
-     let es = List.fold_left (|>) s
-                (normalize_spec::
-                   (if !apply_move_assert then [move_asserts] else [])@
-                   (if !apply_rewriting then [rewrite_mov_ssa_spec; rewrite_vpc_ssa_spec] else [])
-                ) |> espec_of_spec in
-     let ps = Verify.Common.bv2z_espec vgen es
-              |> (fun (vgen, ps) -> if !apply_rewriting then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
-              |> snd in
-     let os = {
+     let ess = normalize_spec s
+               |> (if !apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+               |> (if !apply_rewriting then rewrite_vpc_ssa_spec else Fun.id)
+               |> espec_of_spec
+               |> cut_espec
+               |> tflatten
+               |> List.split
+               |> snd
+               |> tmap separate_eassertions
+               |> tflatten
+               |> tmap split_espec_post
+               |> tflatten
+               |> tmap (fun s -> slice_espec_ssa s None) in
+     let ps_of_es es = Verify.Common.bv2z_espec vgen es
+                       |> (fun (vgen, ps) -> if !apply_rewriting then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
+                       |> snd in
+     let os_of_ps ps = {
          Ast.Cryptoline.spre = (eands (ps.Verify.Common.ppre::ps.Verify.Common.pprog), rtrue);
          Ast.Cryptoline.sprog = [Inop];
          Ast.Cryptoline.spost = ([(ps.Verify.Common.ppost, [])], [])
        } in
-     print_endline ("proc main(" ^ string_of_inputs (VS.elements (vars_spec os)) ^ ") =");
-     print_endline (string_of_spec os)
+     let vs_of_os os = let uniform_vtyp v = { vname = v.vname;
+                                              vtyp = Tuint 64;
+                                              vsidx = v.vsidx;
+                                              vid = v.vid } in
+                       vars_spec os |> (if !save_rep_uniform_types then VS.map uniform_vtyp else Fun.id) |> VS.elements in
+     let str_of_spec os =
+       let vs = vs_of_os os in
+       ("proc main(" ^ string_of_inputs vs ^ ") =\n")
+       ^ (string_of_spec os)
+       ^ "\n" in
+     let output sid s =
+       let ch = open_out (suggest_name save_rep_filename cryptoline_filename_extension sid) in
+       let _ = output_string ch (str_of_spec s) in
+       let _ = close_out ch in
+       () in
+     tmap ps_of_es ess
+     |> tmap os_of_ps
+     |> List.iteri (fun i os -> output i os)
   | SaveCoqCryptoline ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
