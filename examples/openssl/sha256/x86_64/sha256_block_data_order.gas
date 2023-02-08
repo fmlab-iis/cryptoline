@@ -1,0 +1,204 @@
+sha256_block_data_order:
+# %rdi = 0x55555555d040
+# %rsi = 0x55555555d068
+# %rdx = 0x1
+# %rcx = 0x18
+# %r8  = 0x0
+# %r9  = 0x4ff8e3bf00000000
+	#! -> SP = 0x7fffffffd728
+	lea    0x74dd(%rip),%r11        # 0x55555555d0e4 <OPENSSL_ia32cap_P>#! PC = 0x555555555c00
+	mov    (%r11),%r9d                              #! EA = L0x55555555d0e4; Value = 0x4ff8e3bfefebffff; PC = 0x555555555c07
+	mov    0x4(%r11),%r10d                          #! EA = L0x55555555d0e8; Value = 0x2294e2874ff8e3bf; PC = 0x555555555c0a
+	mov    0x8(%r11),%r11d                          #! EA = L0x55555555d0ec; Value = 0x404000042294e287; PC = 0x555555555c0e
+	test   $0x20000000,%r11d                        #! PC = 0x555555555c12
+	#jne    0x5555555570c0 <sha256_block_data_order_shaext>#! PC = 0x555555555c19
+	lea    -0x247(%rip),%rcx        # 0x555555556e80 <K256+128>#! PC = 0x5555555570c0
+	movdqu (%rdi),%xmm1                             #! EA = L0x55555555d040; Value = 0xbb67ae856a09e667; PC = 0x5555555570c7
+	movdqu 0x10(%rdi),%xmm2                         #! EA = L0x55555555d050; Value = 0x9b05688c510e527f; PC = 0x5555555570cb
+	movdqa 0x180(%rcx),%xmm7                        #! EA = L0x555555557000; Value = 0x0405060700010203; PC = 0x5555555570d0
+	pshufd $0x1b,%xmm1,%xmm0                        #! PC = 0x5555555570d8
+	pshufd $0xb1,%xmm1,%xmm1                        #! PC = 0x5555555570dd
+	pshufd $0x1b,%xmm2,%xmm2                        #! PC = 0x5555555570e2
+	movdqa %xmm7,%xmm8                              #! PC = 0x5555555570e7
+	palignr $0x8,%xmm2,%xmm1                        #! PC = 0x5555555570ec
+	punpcklqdq %xmm0,%xmm2                          #! PC = 0x5555555570f2
+	#jmp    0x555555557100 <sha256_block_data_order_shaext+64>#! PC = 0x5555555570f6
+	movdqu (%rsi),%xmm3                             #! EA = L0x55555555d068; Value = 0x0706050403020100; PC = 0x555555557100
+	movdqu 0x10(%rsi),%xmm4                         #! EA = L0x55555555d078; Value = 0x0000000000000080; PC = 0x555555557104
+	movdqu 0x20(%rsi),%xmm5                         #! EA = L0x55555555d088; Value = 0x0000000000000000; PC = 0x555555557109
+	pshufb %xmm7,%xmm3                              #! PC = 0x55555555710e
+	movdqu 0x30(%rsi),%xmm6                         #! EA = L0x55555555d098; Value = 0x0000000000000000; PC = 0x555555557113
+	movdqa -0x80(%rcx),%xmm0                        #! EA = L0x555555556e00; Value = 0x71374491428a2f98; PC = 0x555555557118
+	paddd  %xmm3,%xmm0                              #! PC = 0x55555555711d
+	pshufb %xmm7,%xmm4                              #! PC = 0x555555557121
+	movdqa %xmm2,%xmm10                             #! PC = 0x555555557126
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555712b
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x55555555712f
+	nop                                             #! PC = 0x555555557134
+	movdqa %xmm1,%xmm9                              #! PC = 0x555555557135
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555713a
+	movdqa -0x60(%rcx),%xmm0                        #! EA = L0x555555556e20; Value = 0x59f111f13956c25b; PC = 0x55555555713e
+	paddd  %xmm4,%xmm0                              #! PC = 0x555555557143
+	pshufb %xmm7,%xmm5                              #! PC = 0x555555557147
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555714c
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557150
+	lea    0x40(%rsi),%rsi                          #! PC = 0x555555557155
+	sha256msg1 %xmm4,%xmm3                          #! PC = 0x555555557159
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555715d
+	movdqa -0x40(%rcx),%xmm0                        #! EA = L0x555555556e40; Value = 0x12835b01d807aa98; PC = 0x555555557161
+	paddd  %xmm5,%xmm0                              #! PC = 0x555555557166
+	pshufb %xmm7,%xmm6                              #! PC = 0x55555555716a
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555716f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557173
+	movdqa %xmm6,%xmm7                              #! PC = 0x555555557178
+	palignr $0x4,%xmm5,%xmm7                        #! PC = 0x55555555717c
+	nop                                             #! PC = 0x555555557182
+	paddd  %xmm7,%xmm3                              #! PC = 0x555555557183
+	sha256msg1 %xmm5,%xmm4                          #! PC = 0x555555557187
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555718b
+	movdqa -0x20(%rcx),%xmm0                        #! EA = L0x555555556e60; Value = 0x80deb1fe72be5d74; PC = 0x55555555718f
+	paddd  %xmm6,%xmm0                              #! PC = 0x555555557194
+	sha256msg2 %xmm6,%xmm3                          #! PC = 0x555555557198
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555719c
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571a0
+	movdqa %xmm3,%xmm7                              #! PC = 0x5555555571a5
+	palignr $0x4,%xmm6,%xmm7                        #! PC = 0x5555555571a9
+	nop                                             #! PC = 0x5555555571af
+	paddd  %xmm7,%xmm4                              #! PC = 0x5555555571b0
+	sha256msg1 %xmm6,%xmm5                          #! PC = 0x5555555571b4
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555571b8
+	movdqa (%rcx),%xmm0                             #! EA = L0x555555556e80; Value = 0xefbe4786e49b69c1; PC = 0x5555555571bc
+	paddd  %xmm3,%xmm0                              #! PC = 0x5555555571c0
+	sha256msg2 %xmm3,%xmm4                          #! PC = 0x5555555571c4
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555571c8
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571cc
+	movdqa %xmm4,%xmm7                              #! PC = 0x5555555571d1
+	palignr $0x4,%xmm3,%xmm7                        #! PC = 0x5555555571d5
+	nop                                             #! PC = 0x5555555571db
+	paddd  %xmm7,%xmm5                              #! PC = 0x5555555571dc
+	sha256msg1 %xmm3,%xmm6                          #! PC = 0x5555555571e0
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555571e4
+	movdqa 0x20(%rcx),%xmm0                         #! EA = L0x555555556ea0; Value = 0x4a7484aa2de92c6f; PC = 0x5555555571e8
+	paddd  %xmm4,%xmm0                              #! PC = 0x5555555571ed
+	sha256msg2 %xmm4,%xmm5                          #! PC = 0x5555555571f1
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555571f5
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571f9
+	movdqa %xmm5,%xmm7                              #! PC = 0x5555555571fe
+	palignr $0x4,%xmm4,%xmm7                        #! PC = 0x555555557202
+	nop                                             #! PC = 0x555555557208
+	paddd  %xmm7,%xmm6                              #! PC = 0x555555557209
+	sha256msg1 %xmm4,%xmm3                          #! PC = 0x55555555720d
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x555555557211
+	movdqa 0x40(%rcx),%xmm0                         #! EA = L0x555555556ec0; Value = 0xa831c66d983e5152; PC = 0x555555557215
+	paddd  %xmm5,%xmm0                              #! PC = 0x55555555721a
+	sha256msg2 %xmm5,%xmm6                          #! PC = 0x55555555721e
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x555555557222
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557226
+	movdqa %xmm6,%xmm7                              #! PC = 0x55555555722b
+	palignr $0x4,%xmm5,%xmm7                        #! PC = 0x55555555722f
+	nop                                             #! PC = 0x555555557235
+	paddd  %xmm7,%xmm3                              #! PC = 0x555555557236
+	sha256msg1 %xmm5,%xmm4                          #! PC = 0x55555555723a
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555723e
+	movdqa 0x60(%rcx),%xmm0                         #! EA = L0x555555556ee0; Value = 0xd5a79147c6e00bf3; PC = 0x555555557242
+	paddd  %xmm6,%xmm0                              #! PC = 0x555555557247
+	sha256msg2 %xmm6,%xmm3                          #! PC = 0x55555555724b
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555724f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557253
+	movdqa %xmm3,%xmm7                              #! PC = 0x555555557258
+	palignr $0x4,%xmm6,%xmm7                        #! PC = 0x55555555725c
+	nop                                             #! PC = 0x555555557262
+	paddd  %xmm7,%xmm4                              #! PC = 0x555555557263
+	sha256msg1 %xmm6,%xmm5                          #! PC = 0x555555557267
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555726b
+	movdqa 0x80(%rcx),%xmm0                         #! EA = L0x555555556f00; Value = 0x2e1b213827b70a85; PC = 0x55555555726f
+	paddd  %xmm3,%xmm0                              #! PC = 0x555555557277
+	sha256msg2 %xmm3,%xmm4                          #! PC = 0x55555555727b
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555727f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557283
+	movdqa %xmm4,%xmm7                              #! PC = 0x555555557288
+	palignr $0x4,%xmm3,%xmm7                        #! PC = 0x55555555728c
+	nop                                             #! PC = 0x555555557292
+	paddd  %xmm7,%xmm5                              #! PC = 0x555555557293
+	sha256msg1 %xmm3,%xmm6                          #! PC = 0x555555557297
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555729b
+	movdqa 0xa0(%rcx),%xmm0                         #! EA = L0x555555556f20; Value = 0x766a0abb650a7354; PC = 0x55555555729f
+	paddd  %xmm4,%xmm0                              #! PC = 0x5555555572a7
+	sha256msg2 %xmm4,%xmm5                          #! PC = 0x5555555572ab
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555572af
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555572b3
+	movdqa %xmm5,%xmm7                              #! PC = 0x5555555572b8
+	palignr $0x4,%xmm4,%xmm7                        #! PC = 0x5555555572bc
+	nop                                             #! PC = 0x5555555572c2
+	paddd  %xmm7,%xmm6                              #! PC = 0x5555555572c3
+	sha256msg1 %xmm4,%xmm3                          #! PC = 0x5555555572c7
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555572cb
+	movdqa 0xc0(%rcx),%xmm0                         #! EA = L0x555555556f40; Value = 0xa81a664ba2bfe8a1; PC = 0x5555555572cf
+	paddd  %xmm5,%xmm0                              #! PC = 0x5555555572d7
+	sha256msg2 %xmm5,%xmm6                          #! PC = 0x5555555572db
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555572df
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555572e3
+	movdqa %xmm6,%xmm7                              #! PC = 0x5555555572e8
+	palignr $0x4,%xmm5,%xmm7                        #! PC = 0x5555555572ec
+	nop                                             #! PC = 0x5555555572f2
+	paddd  %xmm7,%xmm3                              #! PC = 0x5555555572f3
+	sha256msg1 %xmm5,%xmm4                          #! PC = 0x5555555572f7
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555572fb
+	movdqa 0xe0(%rcx),%xmm0                         #! EA = L0x555555556f60; Value = 0xd6990624d192e819; PC = 0x5555555572ff
+	paddd  %xmm6,%xmm0                              #! PC = 0x555555557307
+	sha256msg2 %xmm6,%xmm3                          #! PC = 0x55555555730b
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555730f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557313
+	movdqa %xmm3,%xmm7                              #! PC = 0x555555557318
+	palignr $0x4,%xmm6,%xmm7                        #! PC = 0x55555555731c
+	nop                                             #! PC = 0x555555557322
+	paddd  %xmm7,%xmm4                              #! PC = 0x555555557323
+	sha256msg1 %xmm6,%xmm5                          #! PC = 0x555555557327
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555732b
+	movdqa 0x100(%rcx),%xmm0                        #! EA = L0x555555556f80; Value = 0x1e376c0819a4c116; PC = 0x55555555732f
+	paddd  %xmm3,%xmm0                              #! PC = 0x555555557337
+	sha256msg2 %xmm3,%xmm4                          #! PC = 0x55555555733b
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555733f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557343
+	movdqa %xmm4,%xmm7                              #! PC = 0x555555557348
+	palignr $0x4,%xmm3,%xmm7                        #! PC = 0x55555555734c
+	nop                                             #! PC = 0x555555557352
+	paddd  %xmm7,%xmm5                              #! PC = 0x555555557353
+	sha256msg1 %xmm3,%xmm6                          #! PC = 0x555555557357
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555735b
+	movdqa 0x120(%rcx),%xmm0                        #! EA = L0x555555556fa0; Value = 0x4ed8aa4a391c0cb3; PC = 0x55555555735f
+	paddd  %xmm4,%xmm0                              #! PC = 0x555555557367
+	sha256msg2 %xmm4,%xmm5                          #! PC = 0x55555555736b
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555736f
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557373
+	movdqa %xmm5,%xmm7                              #! PC = 0x555555557378
+	palignr $0x4,%xmm4,%xmm7                        #! PC = 0x55555555737c
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x555555557382
+	paddd  %xmm7,%xmm6                              #! PC = 0x555555557386
+	movdqa 0x140(%rcx),%xmm0                        #! EA = L0x555555556fc0; Value = 0x78a5636f748f82ee; PC = 0x55555555738a
+	paddd  %xmm5,%xmm0                              #! PC = 0x555555557392
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x555555557396
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x55555555739a
+	sha256msg2 %xmm5,%xmm6                          #! PC = 0x55555555739f
+	movdqa %xmm8,%xmm7                              #! PC = 0x5555555573a3
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555573a8
+	movdqa 0x160(%rcx),%xmm0                        #! EA = L0x555555556fe0; Value = 0xa4506ceb90befffa; PC = 0x5555555573ac
+	paddd  %xmm6,%xmm0                              #! PC = 0x5555555573b4
+	nop                                             #! PC = 0x5555555573b8
+	sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555573b9
+	pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555573bd
+	dec    %rdx                                     #! PC = 0x5555555573c2
+	nop                                             #! PC = 0x5555555573c5
+	sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555573c6
+	paddd  %xmm10,%xmm2                             #! PC = 0x5555555573ca
+	paddd  %xmm9,%xmm1                              #! PC = 0x5555555573cf
+	#jne    0x555555557100 <sha256_block_data_order_shaext+64>#! PC = 0x5555555573d4
+	pshufd $0xb1,%xmm2,%xmm2                        #! PC = 0x5555555573da
+	pshufd $0x1b,%xmm1,%xmm7                        #! PC = 0x5555555573df
+	pshufd $0xb1,%xmm1,%xmm1                        #! PC = 0x5555555573e4
+	punpckhqdq %xmm2,%xmm1                          #! PC = 0x5555555573e9
+	palignr $0x8,%xmm7,%xmm2                        #! PC = 0x5555555573ed
+	movdqu %xmm1,(%rdi)                             #! EA = L0x55555555d040; PC = 0x5555555573f3
+	movdqu %xmm2,0x10(%rdi)                         #! EA = L0x55555555d050; PC = 0x5555555573f7
+	#! <- SP = 0x7fffffffd728
+	#repz ret                                       #! PC = 0x5555555573fc
