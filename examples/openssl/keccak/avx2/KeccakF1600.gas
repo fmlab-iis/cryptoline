@@ -1,4 +1,40 @@
-__KeccakF1600:
+#! $1c(%r8) = %%EA
+#! (%r8) = %%EA
+#! $1c(%r9) = %%EA
+#! (%r9) = %%EA
+#! $1c(%r10) = $1c(%%r10)
+#! (%r10) = %%EA
+#! %eax = %%eax
+#! %ymm$1c = %%ymm$1c
+
+#! dec $1v -> subs dc $1v $1v 1@uint64
+#! lea $1c\(%%r10\), %r10 -> adds dc r10 r10 $1c@uint64
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! vpaddq $1ymm, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ymm_0; adds dc $3ymm_1 $2ymm_1 $1ymm_1;\nadds dc $3ymm_2 $2ymm_2 $1ymm_2; adds dc $3ymm_3 $2ymm_3 $1ymm_3
+#! vpandn $1ymm, $2ymm, $3ymm -> not andn_0@uint64 $2ymm_0; and $3ymm_0@uint64 andn_0 $1ymm_0;\nnot andn_1@uint64 $2ymm_1; and $3ymm_1@uint64 andn_1 $1ymm_1;\nnot andn_2@uint64 $2ymm_2; and $3ymm_2@uint64 andn_2 $1ymm_2;\nnot andn_3@uint64 $2ymm_3; and $3ymm_3@uint64 andn_3 $1ymm_3
+#! vpblendd \$0x3, $1ymm, $2ymm, $3ymm -> mov blen_0 $1ymm_0; mov blen_1 $2ymm_1;\nmov blen_2 $2ymm_2; mov blen_3 $2ymm_3;\nmov $3ymm_0 blen_0; mov $3ymm_1 blen_1;\nmov $3ymm_2 blen_2; mov $3ymm_3 blen_3
+#! vpblendd \$0xc, $1ymm, $2ymm, $3ymm -> mov blen_0 $2ymm_0; mov blen_1 $1ymm_1;\nmov blen_2 $2ymm_2; mov blen_3 $2ymm_3;\nmov $3ymm_0 blen_0; mov $3ymm_1 blen_1;\nmov $3ymm_2 blen_2; mov $3ymm_3 blen_3
+#! vpblendd \$0x30, $1ymm, $2ymm, $3ymm -> mov blen_0 $2ymm_0; mov blen_1 $2ymm_1;\nmov blen_2 $1ymm_2; mov blen_3 $2ymm_3;\nmov $3ymm_0 blen_0; mov $3ymm_1 blen_1;\nmov $3ymm_2 blen_2; mov $3ymm_3 blen_3
+#! vpblendd \$0xc0, $1ymm, $2ymm, $3ymm -> mov blen_0 $2ymm_0; mov blen_1 $2ymm_1;\nmov blen_2 $2ymm_2; mov blen_3 $1ymm_3;\nmov $3ymm_0 blen_0; mov $3ymm_1 blen_1;\nmov $3ymm_2 blen_2; mov $3ymm_3 blen_3
+#! vpermq \$0x0, $1ymm, $2ymm -> mov perm_0 $1ymm_0; mov perm_1 $1ymm_0;\nmov perm_2 $1ymm_0; mov perm_3 $1ymm_0;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x1b, $1ymm, $2ymm -> mov perm_0 $1ymm_3; mov perm_1 $1ymm_2;\nmov perm_2 $1ymm_1; mov perm_3 $1ymm_0;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x1e, $1ymm, $2ymm -> mov perm_0 $1ymm_2; mov perm_1 $1ymm_3;\nmov perm_2 $1ymm_1; mov perm_3 $1ymm_0;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x39, $1ymm, $2ymm -> mov perm_0 $1ymm_1; mov perm_1 $1ymm_2;\nmov perm_2 $1ymm_3; mov perm_3 $1ymm_0;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x4e, $1ymm, $2ymm -> mov perm_0 $1ymm_2; mov perm_1 $1ymm_3;\nmov perm_2 $1ymm_0; mov perm_3 $1ymm_1;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x72, $1ymm, $2ymm -> mov perm_0 $1ymm_2; mov perm_1 $1ymm_0;\nmov perm_2 $1ymm_3; mov perm_3 $1ymm_1;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x8d, $1ymm, $2ymm -> mov perm_0 $1ymm_1; mov perm_1 $1ymm_3;\nmov perm_2 $1ymm_0; mov perm_3 $1ymm_2;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpermq \$0x93, $1ymm, $2ymm -> mov perm_0 $1ymm_3; mov perm_1 $1ymm_0;\nmov perm_2 $1ymm_1; mov perm_3 $1ymm_2;\nmov $2ymm_0 perm_0; mov $2ymm_1 perm_1;\nmov $2ymm_2 perm_2; mov $2ymm_3 perm_3
+#! vpor $1ymm, $2ymm, $3ymm -> or $3ymm_0@uint64 $2ymm_0 $1ymm_0; or $3ymm_1@uint64 $2ymm_1 $1ymm_1;\nor $3ymm_2@uint64 $2ymm_2 $1ymm_2; or $3ymm_3@uint64 $2ymm_3 $1ymm_3
+#! vpshufd \$0x4e, $1ymm, $2ymm -> mov shuf_0 $1ymm_1; mov shuf_1 $1ymm_0;\nmov shuf_2 $1ymm_3; mov shuf_3 $1ymm_2;\nmov $2ymm_0 shuf_0; mov $2ymm_1 shuf_1;\nmov $2ymm_2 shuf_2; mov $2ymm_3 shuf_3
+#! vpsllvq $1ea, $2ymm, $3ymm -> shl $3ymm_0 $2ymm_0 $1ea; shl $3ymm_1 $2ymm_1 $1ea[+8];\nshl $3ymm_2 $2ymm_2 $1ea[+16]; shl $3ymm_3 $2ymm_3 $1ea[+24]
+#! vpsrldq \$0x8, $1ymm, $2ymm -> mov $2ymm_0 $1ymm_1; mov $2ymm_1 0@uint64;\nmov $2ymm_2 $1ymm_3; mov $2ymm_3 0@uint64
+#! vpsrlq $1c, $2ymm, $3ymm -> shr $3ymm_0 $2ymm_0 $1c@uint64; shr $3ymm_1 $2ymm_1 $1c@uint64;\nshr $3ymm_2 $2ymm_2 $1c@uint64; shr $3ymm_3 $2ymm_3 $1c@uint64
+#! vpsrlvq $1ea, $2ymm, $3ymm -> shr $3ymm_0 $2ymm_0 $1ea; shr $3ymm_1 $2ymm_1 $1ea[+8];\nshr $3ymm_2 $2ymm_2 $1ea[+16]; shr $3ymm_3 $2ymm_3 $1ea[+24]
+#! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint64 $2ymm_0 $1ymm_0; xor $3ymm_1@uint64 $2ymm_1 $1ymm_1;\nxor $3ymm_2@uint64 $2ymm_2 $1ymm_2; xor $3ymm_3@uint64 $2ymm_3 $1ymm_3
+#! vpxor $1ea, $2ymm, $3ymm -> xor $3ymm_0@uint64 $2ymm_0 $1ea; xor $3ymm_1@uint64 $2ymm_1 $1ea[+8];\nxor $3ymm_2@uint64 $2ymm_2 $1ea[+16]; xor $3ymm_3@uint64 $2ymm_3 $1ea[+24]
+
+
+#__KeccakF1600:
 # %rdi = 0x5555555580a0
 # %rsi = 0x7fffffffda18
 # %rdx = 0x158
@@ -6,9 +42,9 @@ __KeccakF1600:
 # %r8  = 0x0
 # %r9  = 0x7ffff7fc9040
 	#! -> SP = 0x7fffffffd960
-	lea    0x8d9(%rip),%r8        # 0x555555555ae0 <rhotates_left+96>#! PC = 0x555555555200
-	lea    0x992(%rip),%r9        # 0x555555555ba0 <rhotates_right+96>#! PC = 0x555555555207
-	lea    0x9eb(%rip),%r10        # 0x555555555c00 <iotas>#! PC = 0x55555555520e
+	#lea    0x8d9(%rip),%r8        # 0x555555555ae0 <rhotates_left+96>#! PC = 0x555555555200
+	#lea    0x992(%rip),%r9        # 0x555555555ba0 <rhotates_right+96>#! PC = 0x555555555207
+	#lea    0x9eb(%rip),%r10        # 0x555555555c00 <iotas>#! PC = 0x55555555520e
 	mov    $0x18,%eax                               #! PC = 0x555555555215
 	#jmp    0x555555555220 <__KeccakF1600+32>       #! PC = 0x55555555521a
 	vpshufd $0x4e,%ymm2,%ymm13                      #! PC = 0x555555555220
