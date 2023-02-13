@@ -250,12 +250,12 @@
 
   let parse_ishl_at lno dest src num =
     fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
+      let a1 = resolve_atom_with lno src cm vm ym gm in
+      let ty = typ_of_atom a1 in
+      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
-        match n with
+        match a2 with
         | Aconst (_, z) ->
            let w = size_of_var v in
            if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
@@ -263,7 +263,7 @@
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
         | _ -> ()
       in
-      (vm, vxm, ym, gm, [lno, Ishl (v, a, n)])
+      (vm, vxm, ym, gm, [lno, Ishl (v, a1, a2)])
 
   let parse_ishls_at lno lost dest src num =
     fun _fm cm vm vxm ym gm ->
@@ -272,22 +272,22 @@
       let n = num cm in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (typ_to_size ty (Z.to_int n))) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
+      let _ = 
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, vxm, ym, gm, [lno, Ishls (l, v, a, n)])
 
   let parse_ishr_at lno dest src num =
     fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
+      let a1 = resolve_atom_with lno src cm vm ym gm in
+      let ty = typ_of_atom a1 in
+      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
-        match n with
+        match a2 with
         | Aconst (_, z) ->
            let w = size_of_var v in
            if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
@@ -295,7 +295,7 @@
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
         | _ -> ()
       in
-      (vm, vxm, ym, gm, [lno, Ishr (v, a, n)])
+      (vm, vxm, ym, gm, [lno, Ishr (v, a1, a2)])
 
   let parse_ishrs_at lno dest lost src num =
     fun _fm cm vm vxm ym gm ->
@@ -304,22 +304,22 @@
       let n = num cm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
+      let _ = 
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, vxm, ym, gm, [lno, Ishrs (v, l, a, n)])
 
   let parse_isar_at lno dest src num =
     fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
+      let a1 = resolve_atom_with lno src cm vm ym gm in
+      let ty = typ_of_atom a1 in
+      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let _ =
-        match n with
+        match a2 with
         | Aconst (_, z) ->
            let w = size_of_var v in
            if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
@@ -327,7 +327,7 @@
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
         | _ -> ()
       in
-      (vm, vxm, ym, gm, [lno, Isar (v, a, n)])
+      (vm, vxm, ym, gm, [lno, Isar (v, a1, a2)])
 
   let parse_isars_at lno dest lost src num =
     fun _fm cm vm vxm ym gm ->
@@ -336,11 +336,11 @@
       let n = num cm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
+      let _ = 
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
       in
       (vm, vxm, ym, gm, [lno, Isars (v, l, a, n)])
 
