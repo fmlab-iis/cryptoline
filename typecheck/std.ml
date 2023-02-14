@@ -224,11 +224,11 @@ let illformed_instr_reason vs cs gs lno i =
   let reasons =
     match i with
     | Imov (v, a) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishl (v, a, n) -> [defined_atom a; defined_atom n; check_same_typ lno [Avar v; a; n]; const_in_range [a]; shift_in_range_atom a n]
+    | Ishl (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
     | Ishls (l, v, a, n) -> [defined_atom a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
-    | Ishr (v, a, n) -> [defined_atom a; defined_atom n; check_same_typ lno [Avar v; a; n]; const_in_range [a]; shift_in_range_atom a n]
+    | Ishr (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
     | Ishrs (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
-    | Isar (v, a, n) -> [defined_atom a; defined_atom n; check_same_typ lno [Avar v; a; n]; const_in_range [a]; shift_in_range_atom a n]
+    | Isar (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
     | Isars (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
@@ -261,8 +261,8 @@ let illformed_instr_reason vs cs gs lno i =
        [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
     | Icshrs (vh, vl, l, a1, a2, n) ->
        [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a2 n]
-    | Irol (v, a, n) -> [defined_atoms [a]; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
-    | Iror (v, a, n) -> [defined_atoms [a]; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
+    | Irol (v, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
+    | Iror (v, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
     | Inondet _ -> []
     | Icmov (v, c, a1, a2) ->
        [defined_carry c; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
