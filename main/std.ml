@@ -81,7 +81,9 @@ let args = [
      Common.mk_arg_desc([""; "Disable verification of program safety."]));
     ("-jobs", Int (fun j -> jobs := j),
      Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
-    ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use"; "with -pssa."]));
+    ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use";
+                                                       "with -pssa. Note that if the specification contains assume";
+                                                       "instructions, the move of assertions may be unsound."]));
     ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
@@ -258,12 +260,8 @@ let anon file =
                |> (if !apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
                |> (if !apply_rewriting then rewrite_vpc_ssa_spec else Fun.id)
                |> espec_of_spec
-               |> cut_espec
-               |> tflatten
-               |> List.split
-               |> snd
-               |> tmap separate_eassertions
-               |> tflatten
+               |> (fun s -> tappend (cut_eassert s) (cut_espec s))
+               |> tflatten |> List.split |> snd
                |> tmap split_espec_post
                |> tflatten
                |> tmap (fun s -> slice_espec_ssa s None) in

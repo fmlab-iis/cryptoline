@@ -1378,6 +1378,8 @@ val cut_safety : rspec -> ((int * rspec) list) list
    [cut_safety s] cuts the specification [s] in SSA form into
    [[[s1]; [s2]; ...; [sN]]] where [sK] is the K-th range cut.
    The integer associated to a returned specification is its ID.
+   All prove-with clauses in one cut are merged and taken into
+   consideration when cutting the specification.
 *)
 
 
@@ -1711,40 +1713,43 @@ val split_rspec_post : rspec -> rspec list
 val separate_eassertions : espec -> espec list
 (**
    Make an algebraic assertion a single specification and remove assertions. The input
-   specification must be in SSA. Note that this function does not consider cut
-   instructions.
+   specification must be in SSA. Note that this function considers neither cut
+   instructions nor prove-with clauses.
  *)
 
 val separate_rassertions : rspec -> rspec list
 (**
    Make a range assertion a single specification and remove assertions. The input
-   specification must be in SSA. Note that this function does not consider cut
-   instructions.
+   specification must be in SSA. Note that this function considers neither cut
+   instructions nor prove-with clauses.
  *)
 
 val separate_assertions : spec -> spec list
 (**
    Make an assertion a single specification and remove assertions. The input
-   specification must be in SSA. Note that this function does not consider cut
-   instructions.
+   specification must be in SSA. Note that this function considers neither cut
+   instructions nor prove-with clauses.
  *)
 
 val move_easserts : espec -> espec
 (**
    Move algebraic assertions in a specification to its postcondition.
-   The input specification must be in SSA.
+   The input specification must be in SSA. If the specification
+   contains assume instructions, the move of assertions may be unsound.
  *)
 
 val move_rasserts : rspec -> rspec
 (**
    Move range assertions in a specification to its postcondition.
-   The input specification must be in SSA.
+   The input specification must be in SSA. If the specification
+   contains assume instructions, the move of assertions may be unsound.
  *)
 
 val move_asserts : spec -> spec
 (**
    Move assertions in a specification to its postcondition. The input
-   specification must be in SSA.
+   specification must be in SSA. If the specification contains assume
+   instructions, the move of assertions may be unsound.
  *)
 
 val infer_input_variables : spec -> VS.t
@@ -1786,6 +1791,9 @@ val remove_ecut_spec : spec -> spec
 
 val remove_rcut_spec : spec -> spec
 (** Remove all range cuts in a specification. *)
+
+val remove_assert_spec : spec -> spec
+(** Remove all assertions in a specification. *)
 
 
 (** Profiling *)
