@@ -1,4 +1,55 @@
-sha256_block_data_order:
+#! [sp, $1c]! = %%EA
+#! [sp, $1c] = %%EA
+#! [sp] = %%EA
+#! [x$1c, $2c] = %%EA
+#! [x$1c], $2c = %%EA
+#! [x$1c] = %%EA
+#! v$1c = %%v$1c
+#! w$1c = %%w$1c
+#! x$1c = %%x$1c
+
+#! add %%x2, %%x1, %%x2, lsl #6 -> (* add x2, x1, x2, lsl #6 *)\nnop
+#! add	sp, sp, $1c -> (* add sp, sp, $1c *)\nnop
+#! adr %%x16, $1c -> (* adr x16, $1c *)\nnop
+#! adrp	$1v, $2c <memcpy@got.plt> -> (* adrp	$1v, $2c <memcpy@got.plt> *)\nnop
+#! cmp %%x1, %%x2 -> (* cmp x1, x2 *)\nnop
+#! cmp $1v, $2c -> (* cmp $1v, $2c *)\nnop
+#! csel	%%x17, %%x17, xzr, eq  // eq = none -> (* csel	x17, x17, xzr, eq  // eq = none *)\nnop
+#! mov $1v, sp -> (* mov $1v, sp *)\nnop
+#! stp %%x29, %%x30, $1ea -> (* stp x29, x30, $1ea *)\nnop
+#! sub sp, sp, $1c -> (* sub sp, sp, $1c *)\nnop
+#! sub %%x16, %%x16, $1c -> (* sub x16, x16, $1c *)\nnop
+#! sub %%x17, %%x17, $1c -> (* sub x17, x17, $1c *)\nnop
+#! sub %%x1, %%x1, %%x17 -> (* sub x1, x1, x17 *)\nnop
+#! tst $1v, $2c -> (* tst $1v, $2c *)\nnop
+
+#! add $1v.4s, $2v.4s, $3v.4s -> adds dc $1v_0 $2v_0 $3v_0; adds dc $1v_1 $2v_1 $3v_1;\nadds dc $1v_2 $2v_2 $3v_2; adds dc $1v_3 $2v_3 $3v_3
+#! add $1v, $2v, $3v -> adds dc $1v $2v $3v
+#! and $1v, $2v, $3v -> and $1v@uint32 $2v $3v
+#! bic $1v, $2v, $3v -> not bicn@uint32 $3v; and $1v@uint32 $2v bicn
+#! eor $1v, $2v, $3v, ror $4c -> ror ror$4c@uint32 $3v $4c; xor $1v@uint32 $2v ror$4c
+#! eor $1v.16b, $2v.16b, $3v.16b -> xor $1v_0@uint32 $2v_0 $3v_0; xor $1v_1@uint32 $2v_1 $3v_1;\nxor $1v_2@uint32 $2v_2 $3v_2; xor $1v_3@uint32 $2v_3 $3v_3
+#! eor $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
+#! ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov ext_0 $2v_1; mov ext_1 $2v_2; mov ext_2 $2v_3; mov ext_3 $3v_0;\nmov $1v_0 ext_0; mov $1v_1 ext_1; mov $1v_2 ext_2; mov $1v_3 ext_3
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+4]
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! ld1	{$1v.16b}, $2ea -> mov $1v_0 $2ea[+0]; mov $1v_1 $2ea[+4];\nmov $1v_2 $2ea[+8]; mov $1v_3 $2ea[+12]
+#! ld1	{$1v.4s}, $2ea -> mov $1v_0 $2ea[+0]; mov $1v_1 $2ea[+4];\nmov $1v_2 $2ea[+8]; mov $1v_3 $2ea[+12]
+#! mov $1v, wzr -> mov $1v 0@uint32
+#! mov d19, $1v.d\[1\] -> mov v19_0 $1v_2; mov v19_1 $1v_3
+#! mov $1v.d\[1\], $2v.d\[0\] -> mov $1v_2 $2v_0; mov $1v_3 $2v_1
+#! mov $1v, $2c // -> mov $1v $2c@uint32
+#! mov $1v, $2c -> mov $1v $2c@uint32
+#! orr $1v, $2v, $3v -> or $1v@uint32 $2v $3v
+#! rev32 $1v.16b, $2v.16b -> spl s1 s0 $2v_0 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $1v_0 t1 t0;\nspl s1 s0 $2v_1 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $1v_1 t1 t0;\nspl s1 s0 $2v_2 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $1v_2 t1 t0;\nspl s1 s0 $2v_3 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $1v_3 t1 t0
+#! ror $1v, $2v, $3c -> ror $1v@uint32 $2v $3c
+#! sli $1v.4s, $2v.4s, $3c -> split dc mask 0xffffffff@uint32 $3c;\nsplit dc slil $2v_0 (32-$3c); shl slih slil $3c;\nand $1v_0@uint32 $1v_0 mask; xor $1v_0@uint32 $1v_0 slih;\nsplit dc slil $2v_1 (32-$3c); shl slih slil $3c;\nand $1v_1@uint32 $1v_1 mask; xor $1v_1@uint32 $1v_1 slih;\nsplit dc slil $2v_2 (32-$3c); shl slih slil $3c;\nand $1v_2@uint32 $1v_2 mask; xor $1v_2@uint32 $1v_2 slih;\nsplit dc slil $2v_3 (32-$3c); shl slih slil $3c;\nand $1v_3@uint32 $1v_3 mask; xor $1v_3@uint32 $1v_3 slih
+#! st1 {$1v.4s}, $2ea -> mov $2ea $1v_0; mov $2ea[+4] $1v_1;\nmov $2ea[+8] $1v_2; mov $2ea[+12] $1v_3
+#! st1 {$1v.4s, $2v.4s}, $3ea -> mov $3ea $1v_0; mov $3ea[+4] $1v_1;\nmov $3ea[+8] $1v_2; mov $3ea[+12] $1v_3;\nmov $3ea[+14] $2v_0; mov $3ea[+16] $2v_1;\nmov $3ea[+20] $2v_2; mov $3ea[+24] $2v_3
+#! stp $1v, $2v, $3ea -> mov $3ea $1v; mov $3ea[+4] $2v
+#! ushr $1v.4s, $2v.4s, $3c -> split $1v_0 dc $2v_0 $3c; split $1v_1 dc $2v_1 $3c;\nsplit $1v_2 dc $2v_2 $3c; split $1v_3 dc $2v_3 $3c
+
+#sha256_block_data_order:
 # x0 = 0x55555640a8
 # x1 = 0x55555640d0
 # x2 = 0x1
