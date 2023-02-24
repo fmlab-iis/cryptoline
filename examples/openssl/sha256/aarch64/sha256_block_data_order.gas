@@ -30,7 +30,6 @@
 #! eor $1v, $2v, $3v, ror $4c -> ror $3v_r@uint32 $3v $4c; xor $1v@uint32 $2v $3v_r
 #! eor $1v.16b, $2v.16b, $3v.16b -> xor $1v_0@uint32 $2v_0 $3v_0; xor $1v_1@uint32 $2v_1 $3v_1;\nxor $1v_2@uint32 $2v_2 $3v_2; xor $1v_3@uint32 $2v_3 $3v_3
 #! eor $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
-#### NOTE: change
 # ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov ext_0 $3v_1; mov ext_1 $3v_2; mov ext_2 $3v_3; mov ext_3 $2v_0;\nmov $1v_0 ext_0; mov $1v_1 ext_1; mov $1v_2 ext_2; mov $1v_3 ext_3
 #! ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov ext_0 $2v_1; mov ext_1 $2v_2; mov ext_2 $2v_3; mov ext_3 $3v_0;\nmov $1v_0 ext_0; mov $1v_1 ext_1; mov $1v_2 ext_2; mov $1v_3 ext_3
 #! ldp $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+4]
@@ -42,12 +41,10 @@
 #! mov $1v.d\[1\], $2v.d\[0\] -> mov $1v_2 $2v_0; mov $1v_3 $2v_1
 #! mov $1v, $2c // -> mov $1v $2c@uint32
 #! mov $1v, $2c -> mov $1v $2c@uint32
-## NOTE: change
-# orr $1v, $2v, $3v -> or $1v@uint32 $2v $3v
-#! orr $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
+#! orr $1v, $2v, $3v -> or $1v@uint32 $2v $3v
 #! rev32 $1v.16b, $2v.16b -> spl s10 s00 $2v_0 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_0 t10 t00;\nspl s10 s00 $2v_1 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_1 t10 t00;\nspl s10 s00 $2v_2 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_2 t10 t00;\nspl s10 s00 $2v_3 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_3 t10 t00
 #! ror $1v, $2v, $3c -> ror $1v@uint32 $2v $3c
-#! sli $1v.4s, $2v.4s, $3c -> split dc mask 0xffffffff@uint32 $3c;\nsplit dc slil $2v_0 (32-$3c); shl slih slil $3c;\nand $1v_0@uint32 $1v_0 mask; or $1v_0@uint32 slih $1v_0;\nsplit dc slil $2v_1 (32-$3c); shl slih slil $3c;\nand $1v_1@uint32 $1v_1 mask; or $1v_1@uint32 slih $1v_1;\nsplit dc slil $2v_2 (32-$3c); shl slih slil $3c;\nand $1v_2@uint32 $1v_2 mask; or $1v_2@uint32 slih $1v_2;\nsplit dc slil $2v_3 (32-$3c); shl slih slil $3c;\nand $1v_3@uint32 $1v_3 mask; or $1v_3@uint32 slih $1v_3
+#! sli $1v.4s, $2v.4s, $3c -> split dc slil $2v_0 (32-$3c); shl slih slil $3c;\nsplit dc $1v_0 $1v_0 $3c; or $1v_0@uint32 slih $1v_0;\nsplit dc slil $2v_1 (32-$3c); shl slih slil $3c;\nsplit dc $1v_1 $1v_1 $3c; or $1v_1@uint32 slih $1v_1;\nsplit dc slil $2v_2 (32-$3c); shl slih slil $3c;\nsplit dc $1v_2 $1v_2 $3c; or $1v_2@uint32 slih $1v_2;\nsplit dc slil $2v_3 (32-$3c); shl slih slil $3c;\nsplit dc $1v_3 $1v_3 $3c; or $1v_3@uint32 slih $1v_3
 #! st1 {$1v.4s}, $2ea -> mov $2ea $1v_0; mov $2ea[+4] $1v_1;\nmov $2ea[+8] $1v_2; mov $2ea[+12] $1v_3
 #! st1 {$1v.4s, $2v.4s}, $3ea -> mov $3ea $1v_0; mov $3ea[+4] $1v_1;\nmov $3ea[+8] $1v_2; mov $3ea[+12] $1v_3;\nmov $3ea[+16] $2v_0; mov $3ea[+20] $2v_1;\nmov $3ea[+24] $2v_2; mov $3ea[+28] $2v_3
 #! stp $1v, $2v, $3ea -> mov $3ea $1v; mov $3ea[+4] $2v

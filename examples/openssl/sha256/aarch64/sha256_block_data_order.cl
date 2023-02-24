@@ -1,10 +1,10 @@
 (* quine: ~/Work/code/cryptoline/_build/default/cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../cc/sha256_block_data_order.cl
-Parsing CryptoLine file:                [OK]            0.029710 seconds
-Checking well-formedness:               [OK]            0.010393 seconds
-Parsing CryptoLine file:                [OK]            0.025891 seconds
-Checking well-formedness:               [OK]            0.004420 seconds
-Equivalence of output group #0:         [OK]            4593.513000 seconds
-Final result:                           [OK]            4594.204666 seconds
+Parsing CryptoLine file:                [OK]            0.029272 seconds
+Checking well-formedness:               [OK]            0.008203 seconds
+Parsing CryptoLine file:                [OK]            0.025219 seconds
+Checking well-formedness:               [OK]            0.004453 seconds
+Equivalence of output group #0:         [OK]            4615.367428 seconds
+Final result:                           [OK]            4616.078062 seconds
 *)
 
 proc main (
@@ -85,7 +85,6 @@ mov L0x5555552560 0x748f82ee@uint32; mov L0x5555552564 0x78a5636f@uint32;
 mov L0x5555552568 0x84c87814@uint32; mov L0x555555256c 0x8cc70208@uint32;
 mov L0x5555552570 0x90befffa@uint32; mov L0x5555552574 0xa4506ceb@uint32;
 mov L0x5555552578 0xbef9a3f7@uint32; mov L0x555555257c 0xc67178f2@uint32;
-
 
 (* #! -> SP = 0x7fffffeab0 *)
 #! 0x7fffffeab0 = 0x7fffffeab0;
@@ -245,7 +244,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v3.d[1]                                #! PC = 0x55555528a0 *)
 mov v19_0 v3_2; mov v19_1 v3_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x55555528a4 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x55555528a8 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x55555528ac *)
@@ -264,15 +263,14 @@ adds dc v0_2 v0_2 v7_2; adds dc v0_3 v0_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x55555528c0 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x55555528c4 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x55555528c8 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x55555528cc *)
@@ -294,15 +292,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x55555528e8 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x55555528ec *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x55555528f0 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x55555528f4 *)
@@ -322,19 +319,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x555555290c *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552910 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552914 *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552918 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x555555291c *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -357,15 +353,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x555555293c *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552940 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552944 *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #8]                               #! EA = L0x7fffffea68; Value = 0xf5c2e9b4bdca05da; PC = 0x5555552948 *)
@@ -403,7 +398,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v0_0 17; split v18_1 dc v0_1 17;
 split v18_2 dc v0_2 17; split v18_3 dc v0_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552984 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v0.4s, #10                         #! PC = 0x5555552988 *)
 split v19_0 dc v0_0 10; split v19_1 dc v0_1 10;
 split v19_2 dc v0_2 10; split v19_3 dc v0_3 10;
@@ -412,15 +407,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552990 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v0.4s, #15                          #! PC = 0x5555552994 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v0_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v0_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v0_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v0_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552998 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v0.4s, #19                         #! PC = 0x555555299c *)
@@ -438,15 +432,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x55555529b0 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v0.4s, #13                          #! PC = 0x55555529b4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v0_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v0_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v0_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v0_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #12]                              #! EA = L0x7fffffea6c; Value = 0xb956c25bf5c2e9b4; PC = 0x55555529b8 *)
 mov w12 L0x7fffffea6c;
 (* and	w14, w14, w13                               #! PC = 0x55555529bc *)
@@ -484,7 +477,7 @@ adds dc w8 w8 w14;
 adds dc v0_0 v0_0 v17_0; adds dc v0_1 v0_1 v17_1;
 adds dc v0_2 v0_2 v17_2; adds dc v0_3 v0_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x55555529f8 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x55555529fc *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552a00 *)
@@ -536,7 +529,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v0.d[1]                                #! PC = 0x5555552a54 *)
 mov v19_0 v0_2; mov v19_1 v0_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552a58 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552a5c *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552a60 *)
@@ -555,15 +548,14 @@ adds dc v1_2 v1_2 v7_2; adds dc v1_3 v1_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552a74 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552a78 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552a7c *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552a80 *)
@@ -585,15 +577,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552a9c *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552aa0 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552aa4 *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552aa8 *)
@@ -613,19 +604,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552ac0 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552ac4 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552ac8 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552acc *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552ad0 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -648,15 +638,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552af0 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552af4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552af8 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #24]                              #! EA = L0x7fffffea78; Value = 0xab1c5ed5923f82a4; PC = 0x5555552afc *)
@@ -694,7 +683,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v1_0 17; split v18_1 dc v1_1 17;
 split v18_2 dc v1_2 17; split v18_3 dc v1_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552b38 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v1.4s, #10                         #! PC = 0x5555552b3c *)
 split v19_0 dc v1_0 10; split v19_1 dc v1_1 10;
 split v19_2 dc v1_2 10; split v19_3 dc v1_3 10;
@@ -703,15 +692,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552b44 *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v1.4s, #15                          #! PC = 0x5555552b48 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v1_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v1_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v1_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v1_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552b4c *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v1.4s, #19                         #! PC = 0x5555552b50 *)
@@ -729,15 +717,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552b64 *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v1.4s, #13                          #! PC = 0x5555552b68 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v1_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v1_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v1_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v1_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #28]                              #! EA = L0x7fffffea7c; Value = 0xd807aa98ab1c5ed5; PC = 0x5555552b6c *)
 mov w12 L0x7fffffea7c;
 (* and	w14, w14, w13                               #! PC = 0x5555552b70 *)
@@ -775,7 +762,7 @@ adds dc w4 w4 w14;
 adds dc v1_0 v1_0 v17_0; adds dc v1_1 v1_1 v17_1;
 adds dc v1_2 v1_2 v17_2; adds dc v1_3 v1_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552bac *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552bb0 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552bb4 *)
@@ -827,7 +814,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v1.d[1]                                #! PC = 0x5555552c08 *)
 mov v19_0 v1_2; mov v19_1 v1_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c0c *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x5555552c10 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552c14 *)
@@ -846,15 +833,14 @@ adds dc v2_2 v2_2 v7_2; adds dc v2_3 v2_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552c28 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552c2c *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x5555552c30 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x5555552c34 *)
@@ -876,15 +862,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x5555552c50 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552c54 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x5555552c58 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552c5c *)
@@ -904,19 +889,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x5555552c74 *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552c78 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552c7c *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c80 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552c84 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -939,15 +923,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x5555552ca4 *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552ca8 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552cac *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #40]                              #! EA = L0x7fffffea88; Value = 0x550c7dc3243185be; PC = 0x5555552cb0 *)
@@ -985,7 +968,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v2_0 17; split v18_1 dc v2_1 17;
 split v18_2 dc v2_2 17; split v18_3 dc v2_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552cec *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v2.4s, #10                         #! PC = 0x5555552cf0 *)
 split v19_0 dc v2_0 10; split v19_1 dc v2_1 10;
 split v19_2 dc v2_2 10; split v19_3 dc v2_3 10;
@@ -994,15 +977,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552cf8 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v2.4s, #15                          #! PC = 0x5555552cfc *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v2_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v2_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v2_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v2_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552d00 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v2.4s, #19                         #! PC = 0x5555552d04 *)
@@ -1020,15 +1002,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x5555552d18 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v2.4s, #13                          #! PC = 0x5555552d1c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v2_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v2_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v2_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v2_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #44]                              #! EA = L0x7fffffea8c; Value = 0x72be5d74550c7dc3; PC = 0x5555552d20 *)
 mov w12 L0x7fffffea8c;
 (* and	w14, w14, w13                               #! PC = 0x5555552d24 *)
@@ -1066,7 +1047,7 @@ adds dc w8 w8 w14;
 adds dc v2_0 v2_0 v17_0; adds dc v2_1 v2_1 v17_1;
 adds dc v2_2 v2_2 v17_2; adds dc v2_3 v2_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552d60 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x5555552d64 *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552d68 *)
@@ -1118,7 +1099,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v2.d[1]                                #! PC = 0x5555552dbc *)
 mov v19_0 v2_2; mov v19_1 v2_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552dc0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552dc4 *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552dc8 *)
@@ -1137,15 +1118,14 @@ adds dc v3_2 v3_2 v7_2; adds dc v3_3 v3_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552ddc *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552de0 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552de4 *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552de8 *)
@@ -1167,15 +1147,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552e04 *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552e08 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552e0c *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552e10 *)
@@ -1195,19 +1174,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552e28 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552e2c *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552e30 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552e34 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552e38 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -1230,15 +1208,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552e58 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552e5c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552e60 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #56]                              #! EA = L0x7fffffea98; Value = 0xc19bf1f49bdc06a7; PC = 0x5555552e64 *)
@@ -1276,7 +1253,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v3_0 17; split v18_1 dc v3_1 17;
 split v18_2 dc v3_2 17; split v18_3 dc v3_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552ea0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v3.4s, #10                         #! PC = 0x5555552ea4 *)
 split v19_0 dc v3_0 10; split v19_1 dc v3_1 10;
 split v19_2 dc v3_2 10; split v19_3 dc v3_3 10;
@@ -1285,15 +1262,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552eac *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v3.4s, #15                          #! PC = 0x5555552eb0 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v3_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v3_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v3_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v3_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552eb4 *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v3.4s, #19                         #! PC = 0x5555552eb8 *)
@@ -1311,15 +1287,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552ecc *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v3.4s, #13                          #! PC = 0x5555552ed0 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v3_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v3_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v3_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v3_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #60]                              #! EA = L0x7fffffea9c; Value = 0xffffeab0c19bf1f4; PC = 0x5555552ed4 *)
 mov w12 L0x7fffffea9c;
 (* and	w14, w14, w13                               #! PC = 0x5555552ed8 *)
@@ -1357,7 +1332,7 @@ adds dc w4 w4 w14;
 adds dc v3_0 v3_0 v17_0; adds dc v3_1 v3_1 v17_1;
 adds dc v3_2 v3_2 v17_2; adds dc v3_3 v3_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552f14 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552f18 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552f1c *)
@@ -1419,7 +1394,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v3.d[1]                                #! PC = 0x55555528a0 *)
 mov v19_0 v3_2; mov v19_1 v3_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x55555528a4 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x55555528a8 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x55555528ac *)
@@ -1438,15 +1413,14 @@ adds dc v0_2 v0_2 v7_2; adds dc v0_3 v0_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x55555528c0 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x55555528c4 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x55555528c8 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x55555528cc *)
@@ -1468,15 +1442,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x55555528e8 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x55555528ec *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x55555528f0 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x55555528f4 *)
@@ -1496,19 +1469,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x555555290c *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552910 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552914 *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552918 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x555555291c *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -1531,15 +1503,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x555555293c *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552940 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552944 *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #8]                               #! EA = L0x7fffffea68; Value = 0xa66c6dcfef270dae; PC = 0x5555552948 *)
@@ -1577,7 +1548,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v0_0 17; split v18_1 dc v0_1 17;
 split v18_2 dc v0_2 17; split v18_3 dc v0_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552984 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v0.4s, #10                         #! PC = 0x5555552988 *)
 split v19_0 dc v0_0 10; split v19_1 dc v0_1 10;
 split v19_2 dc v0_2 10; split v19_3 dc v0_3 10;
@@ -1586,15 +1557,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552990 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v0.4s, #15                          #! PC = 0x5555552994 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v0_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v0_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v0_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v0_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552998 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v0.4s, #19                         #! PC = 0x555555299c *)
@@ -1612,15 +1582,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x55555529b0 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v0.4s, #13                          #! PC = 0x55555529b4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v0_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v0_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v0_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v0_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #12]                              #! EA = L0x7fffffea6c; Value = 0xc827d974a66c6dcf; PC = 0x55555529b8 *)
 mov w12 L0x7fffffea6c;
 (* and	w14, w14, w13                               #! PC = 0x55555529bc *)
@@ -1658,7 +1627,7 @@ adds dc w8 w8 w14;
 adds dc v0_0 v0_0 v17_0; adds dc v0_1 v0_1 v17_1;
 adds dc v0_2 v0_2 v17_2; adds dc v0_3 v0_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x55555529f8 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x55555529fc *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552a00 *)
@@ -1710,7 +1679,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v0.d[1]                                #! PC = 0x5555552a54 *)
 mov v19_0 v0_2; mov v19_1 v0_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552a58 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552a5c *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552a60 *)
@@ -1729,15 +1698,14 @@ adds dc v1_2 v1_2 v7_2; adds dc v1_3 v1_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552a74 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552a78 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552a7c *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552a80 *)
@@ -1759,15 +1727,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552a9c *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552aa0 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552aa4 *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552aa8 *)
@@ -1787,19 +1754,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552ac0 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552ac4 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552ac8 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552acc *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552ad0 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -1822,15 +1788,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552af0 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552af4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552af8 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #24]                              #! EA = L0x7fffffea78; Value = 0x7da27b17dfb59c4f; PC = 0x5555552afc *)
@@ -1868,7 +1833,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v1_0 17; split v18_1 dc v1_1 17;
 split v18_2 dc v1_2 17; split v18_3 dc v1_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552b38 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v1.4s, #10                         #! PC = 0x5555552b3c *)
 split v19_0 dc v1_0 10; split v19_1 dc v1_1 10;
 split v19_2 dc v1_2 10; split v19_3 dc v1_3 10;
@@ -1877,15 +1842,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552b44 *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v1.4s, #15                          #! PC = 0x5555552b48 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v1_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v1_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v1_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v1_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552b4c *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v1.4s, #19                         #! PC = 0x5555552b50 *)
@@ -1903,15 +1867,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552b64 *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v1.4s, #13                          #! PC = 0x5555552b68 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v1_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v1_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v1_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v1_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #28]                              #! EA = L0x7fffffea7c; Value = 0xd97eb98e7da27b17; PC = 0x5555552b6c *)
 mov w12 L0x7fffffea7c;
 (* and	w14, w14, w13                               #! PC = 0x5555552b70 *)
@@ -1949,7 +1912,7 @@ adds dc w4 w4 w14;
 adds dc v1_0 v1_0 v17_0; adds dc v1_1 v1_1 v17_1;
 adds dc v1_2 v1_2 v17_2; adds dc v1_3 v1_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552bac *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552bb0 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552bb4 *)
@@ -2001,7 +1964,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v1.d[1]                                #! PC = 0x5555552c08 *)
 mov v19_0 v1_2; mov v19_1 v1_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c0c *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x5555552c10 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552c14 *)
@@ -2020,15 +1983,14 @@ adds dc v2_2 v2_2 v7_2; adds dc v2_3 v2_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552c28 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552c2c *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x5555552c30 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x5555552c34 *)
@@ -2050,15 +2012,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x5555552c50 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552c54 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x5555552c58 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552c5c *)
@@ -2078,19 +2039,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x5555552c74 *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552c78 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552c7c *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c80 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552c84 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -2113,15 +2073,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x5555552ca4 *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552ca8 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552cac *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #40]                              #! EA = L0x7fffffea88; Value = 0x9d8fd1c36b6cec5d; PC = 0x5555552cb0 *)
@@ -2159,7 +2118,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v2_0 17; split v18_1 dc v2_1 17;
 split v18_2 dc v2_2 17; split v18_3 dc v2_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552cec *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v2.4s, #10                         #! PC = 0x5555552cf0 *)
 split v19_0 dc v2_0 10; split v19_1 dc v2_1 10;
 split v19_2 dc v2_2 10; split v19_3 dc v2_3 10;
@@ -2168,15 +2127,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552cf8 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v2.4s, #15                          #! PC = 0x5555552cfc *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v2_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v2_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v2_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v2_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552d00 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v2.4s, #19                         #! PC = 0x5555552d04 *)
@@ -2194,15 +2152,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x5555552d18 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v2.4s, #13                          #! PC = 0x5555552d1c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v2_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v2_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v2_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v2_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #44]                              #! EA = L0x7fffffea8c; Value = 0xc177e3329d8fd1c3; PC = 0x5555552d20 *)
 mov w12 L0x7fffffea8c;
 (* and	w14, w14, w13                               #! PC = 0x5555552d24 *)
@@ -2240,7 +2197,7 @@ adds dc w8 w8 w14;
 adds dc v2_0 v2_0 v17_0; adds dc v2_1 v2_1 v17_1;
 adds dc v2_2 v2_2 v17_2; adds dc v2_3 v2_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552d60 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x5555552d64 *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552d68 *)
@@ -2292,7 +2249,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v2.d[1]                                #! PC = 0x5555552dbc *)
 mov v19_0 v2_2; mov v19_1 v2_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552dc0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552dc4 *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552dc8 *)
@@ -2311,15 +2268,14 @@ adds dc v3_2 v3_2 v7_2; adds dc v3_3 v3_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552ddc *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552de0 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552de4 *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552de8 *)
@@ -2341,15 +2297,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552e04 *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552e08 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552e0c *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552e10 *)
@@ -2369,19 +2324,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552e28 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552e2c *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552e30 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552e34 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552e38 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -2404,15 +2358,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552e58 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552e5c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552e60 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #56]                              #! EA = L0x7fffffea98; Value = 0x60259d5e1ed9fd8b; PC = 0x5555552e64 *)
@@ -2450,7 +2403,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v3_0 17; split v18_1 dc v3_1 17;
 split v18_2 dc v3_2 17; split v18_3 dc v3_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552ea0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v3.4s, #10                         #! PC = 0x5555552ea4 *)
 split v19_0 dc v3_0 10; split v19_1 dc v3_1 10;
 split v19_2 dc v3_2 10; split v19_3 dc v3_3 10;
@@ -2459,15 +2412,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552eac *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v3.4s, #15                          #! PC = 0x5555552eb0 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v3_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v3_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v3_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v3_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552eb4 *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v3.4s, #19                         #! PC = 0x5555552eb8 *)
@@ -2485,15 +2437,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552ecc *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v3.4s, #13                          #! PC = 0x5555552ed0 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v3_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v3_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v3_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v3_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #60]                              #! EA = L0x7fffffea9c; Value = 0xffffeab060259d5e; PC = 0x5555552ed4 *)
 mov w12 L0x7fffffea9c;
 (* and	w14, w14, w13                               #! PC = 0x5555552ed8 *)
@@ -2531,7 +2482,7 @@ adds dc w4 w4 w14;
 adds dc v3_0 v3_0 v17_0; adds dc v3_1 v3_1 v17_1;
 adds dc v3_2 v3_2 v17_2; adds dc v3_3 v3_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552f14 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552f18 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552f1c *)
@@ -2593,7 +2544,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v3.d[1]                                #! PC = 0x55555528a0 *)
 mov v19_0 v3_2; mov v19_1 v3_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x55555528a4 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x55555528a8 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x55555528ac *)
@@ -2612,15 +2563,14 @@ adds dc v0_2 v0_2 v7_2; adds dc v0_3 v0_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x55555528c0 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x55555528c4 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x55555528c8 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x55555528cc *)
@@ -2642,15 +2592,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x55555528e8 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x55555528ec *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x55555528f0 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x55555528f4 *)
@@ -2670,19 +2619,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x555555290c *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552910 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552914 *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552918 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x555555291c *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -2705,15 +2653,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x555555293c *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552940 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552944 *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #8]                               #! EA = L0x7fffffea68; Value = 0xbba5def5b65f11e2; PC = 0x5555552948 *)
@@ -2751,7 +2698,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v0_0 17; split v18_1 dc v0_1 17;
 split v18_2 dc v0_2 17; split v18_3 dc v0_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552984 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v0.4s, #10                         #! PC = 0x5555552988 *)
 split v19_0 dc v0_0 10; split v19_1 dc v0_1 10;
 split v19_2 dc v0_2 10; split v19_3 dc v0_3 10;
@@ -2760,15 +2707,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552990 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v0.4s, #15                          #! PC = 0x5555552994 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v0_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v0_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v0_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v0_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552998 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v0.4s, #19                         #! PC = 0x555555299c *)
@@ -2786,15 +2732,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x55555529b0 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v0.4s, #13                          #! PC = 0x55555529b4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v0_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v0_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v0_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v0_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #12]                              #! EA = L0x7fffffea6c; Value = 0xcf48e2a3bba5def5; PC = 0x55555529b8 *)
 mov w12 L0x7fffffea6c;
 (* and	w14, w14, w13                               #! PC = 0x55555529bc *)
@@ -2832,7 +2777,7 @@ adds dc w8 w8 w14;
 adds dc v0_0 v0_0 v17_0; adds dc v0_1 v0_1 v17_1;
 adds dc v0_2 v0_2 v17_2; adds dc v0_3 v0_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x55555529f8 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x55555529fc *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552a00 *)
@@ -2884,7 +2829,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v0.d[1]                                #! PC = 0x5555552a54 *)
 mov v19_0 v0_2; mov v19_1 v0_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552a58 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552a5c *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552a60 *)
@@ -2903,15 +2848,14 @@ adds dc v1_2 v1_2 v7_2; adds dc v1_3 v1_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552a74 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552a78 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552a7c *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552a80 *)
@@ -2933,15 +2877,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552a9c *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552aa0 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552aa4 *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552aa8 *)
@@ -2961,19 +2904,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552ac0 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552ac4 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552ac8 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552acc *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552ad0 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -2996,15 +2938,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552af0 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552af4 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552af8 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #24]                              #! EA = L0x7fffffea78; Value = 0x80402b5491701564; PC = 0x5555552afc *)
@@ -3042,7 +2983,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v1_0 17; split v18_1 dc v1_1 17;
 split v18_2 dc v1_2 17; split v18_3 dc v1_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552b38 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v1.4s, #10                         #! PC = 0x5555552b3c *)
 split v19_0 dc v1_0 10; split v19_1 dc v1_1 10;
 split v19_2 dc v1_2 10; split v19_3 dc v1_3 10;
@@ -3051,15 +2992,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552b44 *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v1.4s, #15                          #! PC = 0x5555552b48 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v1_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v1_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v1_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v1_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552b4c *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v1.4s, #19                         #! PC = 0x5555552b50 *)
@@ -3077,15 +3017,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552b64 *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v1.4s, #13                          #! PC = 0x5555552b68 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v1_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v1_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v1_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v1_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #28]                              #! EA = L0x7fffffea7c; Value = 0x8e64d44080402b54; PC = 0x5555552b6c *)
 mov w12 L0x7fffffea7c;
 (* and	w14, w14, w13                               #! PC = 0x5555552b70 *)
@@ -3123,7 +3062,7 @@ adds dc w4 w4 w14;
 adds dc v1_0 v1_0 v17_0; adds dc v1_1 v1_1 v17_1;
 adds dc v1_2 v1_2 v17_2; adds dc v1_3 v1_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552bac *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552bb0 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552bb4 *)
@@ -3175,7 +3114,7 @@ adds dc w3 w3 w13;
 (* mov	d19, v1.d[1]                                #! PC = 0x5555552c08 *)
 mov v19_0 v1_2; mov v19_1 v1_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c0c *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x5555552c10 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552c14 *)
@@ -3194,15 +3133,14 @@ adds dc v2_2 v2_2 v7_2; adds dc v2_3 v2_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552c28 *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552c2c *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w3, w4                                 #! PC = 0x5555552c30 *)
 xor w13@uint32 w3 w4;
 (* eor	w15, w15, w3, ror #20                       #! PC = 0x5555552c34 *)
@@ -3224,15 +3162,14 @@ ror w15@uint32 w15 2;
 (* add	w6, w6, w10                                 #! PC = 0x5555552c50 *)
 adds dc w6 w6 w10;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552c54 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w4                                #! PC = 0x5555552c58 *)
 xor w14@uint32 w14 w4;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552c5c *)
@@ -3252,19 +3189,18 @@ not w6_n@uint32 w6; and w15@uint32 w8 w6_n;
 (* eor	w11, w6, w6, ror #5                         #! PC = 0x5555552c74 *)
 ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552c78 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w10, w10, w14                               #! PC = 0x5555552c7c *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552c80 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552c84 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -3287,15 +3223,14 @@ xor w14@uint32 w10 w3;
 (* eor	w15, w15, w10, ror #20                      #! PC = 0x5555552ca4 *)
 ror w10_r@uint32 w10 20; xor w15@uint32 w15 w10_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552ca8 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w9, w9, w11                                 #! PC = 0x5555552cac *)
 adds dc w9 w9 w11;
 (* ldr	w12, [sp, #40]                              #! EA = L0x7fffffea88; Value = 0x841e332444af9494; PC = 0x5555552cb0 *)
@@ -3333,7 +3268,7 @@ adds dc w9 w9 w13;
 split v18_0 dc v2_0 17; split v18_1 dc v2_1 17;
 split v18_2 dc v2_2 17; split v18_3 dc v2_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552cec *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v2.4s, #10                         #! PC = 0x5555552cf0 *)
 split v19_0 dc v2_0 10; split v19_1 dc v2_1 10;
 split v19_2 dc v2_2 10; split v19_3 dc v2_3 10;
@@ -3342,15 +3277,14 @@ ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555552cf8 *)
 ror w9_r@uint32 w9 11; xor w15@uint32 w9 w9_r;
 (* sli	v18.4s, v2.4s, #15                          #! PC = 0x5555552cfc *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v2_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v2_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v2_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v2_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w8, w8, w12                                 #! PC = 0x5555552d00 *)
 adds dc w8 w8 w12;
 (* ushr	v17.4s, v2.4s, #19                         #! PC = 0x5555552d04 *)
@@ -3368,15 +3302,14 @@ ror w9_r@uint32 w9 20; xor w15@uint32 w15 w9_r;
 (* add	w8, w8, w11                                 #! PC = 0x5555552d18 *)
 adds dc w8 w8 w11;
 (* sli	v17.4s, v2.4s, #13                          #! PC = 0x5555552d1c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v2_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v2_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v2_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v2_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #44]                              #! EA = L0x7fffffea8c; Value = 0x56df253d841e3324; PC = 0x5555552d20 *)
 mov w12 L0x7fffffea8c;
 (* and	w14, w14, w13                               #! PC = 0x5555552d24 *)
@@ -3414,7 +3347,7 @@ adds dc w8 w8 w14;
 adds dc v2_0 v2_0 v17_0; adds dc v2_1 v2_1 v17_1;
 adds dc v2_2 v2_2 v17_2; adds dc v2_3 v2_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552d60 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x5555552d64 *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555552d68 *)
@@ -3466,7 +3399,7 @@ adds dc w7 w7 w13;
 (* mov	d19, v2.d[1]                                #! PC = 0x5555552dbc *)
 mov v19_0 v2_2; mov v19_1 v2_3; mov v19_2 0@uint32; mov v19_3 0@uint32;
 (* orr	w12, w12, w15                               #! PC = 0x5555552dc0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555552dc4 *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* ushr	v6.4s, v4.4s, #7                           #! PC = 0x5555552dc8 *)
@@ -3485,15 +3418,14 @@ adds dc v3_2 v3_2 v7_2; adds dc v3_3 v3_3 v7_3;
 (* ror	w11, w11, #6                                #! PC = 0x5555552ddc *)
 ror w11@uint32 w11 6;
 (* sli	v6.4s, v4.4s, #25                           #! PC = 0x5555552de0 *)
-split dc mask 0xffffffff@uint32 25;
 split dc slil v4_0 (32-25); shl slih slil 25;
-and v6_0@uint32 v6_0 mask; or v6_0@uint32 slih v6_0;
+split dc v6_0 v6_0 25; or v6_0@uint32 slih v6_0;
 split dc slil v4_1 (32-25); shl slih slil 25;
-and v6_1@uint32 v6_1 mask; or v6_1@uint32 slih v6_1;
+split dc v6_1 v6_1 25; or v6_1@uint32 slih v6_1;
 split dc slil v4_2 (32-25); shl slih slil 25;
-and v6_2@uint32 v6_2 mask; or v6_2@uint32 slih v6_2;
+split dc v6_2 v6_2 25; or v6_2@uint32 slih v6_2;
 split dc slil v4_3 (32-25); shl slih slil 25;
-and v6_3@uint32 v6_3 mask; or v6_3@uint32 slih v6_3;
+split dc v6_3 v6_3 25; or v6_3@uint32 slih v6_3;
 (* eor	w13, w7, w8                                 #! PC = 0x5555552de4 *)
 xor w13@uint32 w7 w8;
 (* eor	w15, w15, w7, ror #20                       #! PC = 0x5555552de8 *)
@@ -3515,15 +3447,14 @@ ror w15@uint32 w15 2;
 (* add	w10, w10, w6                                #! PC = 0x5555552e04 *)
 adds dc w10 w10 w6;
 (* sli	v7.4s, v4.4s, #14                           #! PC = 0x5555552e08 *)
-split dc mask 0xffffffff@uint32 14;
 split dc slil v4_0 (32-14); shl slih slil 14;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 14; or v7_0@uint32 slih v7_0;
 split dc slil v4_1 (32-14); shl slih slil 14;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 14; or v7_1@uint32 slih v7_1;
 split dc slil v4_2 (32-14); shl slih slil 14;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 14; or v7_2@uint32 slih v7_2;
 split dc slil v4_3 (32-14); shl slih slil 14;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 14; or v7_3@uint32 slih v7_3;
 (* eor	w14, w14, w8                                #! PC = 0x5555552e0c *)
 xor w14@uint32 w14 w8;
 (* ushr	v16.4s, v19.4s, #17                        #! PC = 0x5555552e10 *)
@@ -3543,19 +3474,18 @@ not w10_n@uint32 w10; and w15@uint32 w4 w10_n;
 (* eor	w11, w10, w10, ror #5                       #! PC = 0x5555552e28 *)
 ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* sli	v16.4s, v19.4s, #15                         #! PC = 0x5555552e2c *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v19_0 (32-15); shl slih slil 15;
-and v16_0@uint32 v16_0 mask; or v16_0@uint32 slih v16_0;
+split dc v16_0 v16_0 15; or v16_0@uint32 slih v16_0;
 split dc slil v19_1 (32-15); shl slih slil 15;
-and v16_1@uint32 v16_1 mask; or v16_1@uint32 slih v16_1;
+split dc v16_1 v16_1 15; or v16_1@uint32 slih v16_1;
 split dc slil v19_2 (32-15); shl slih slil 15;
-and v16_2@uint32 v16_2 mask; or v16_2@uint32 slih v16_2;
+split dc v16_2 v16_2 15; or v16_2@uint32 slih v16_2;
 split dc slil v19_3 (32-15); shl slih slil 15;
-and v16_3@uint32 v16_3 mask; or v16_3@uint32 slih v16_3;
+split dc v16_3 v16_3 15; or v16_3@uint32 slih v16_3;
 (* add	w6, w6, w14                                 #! PC = 0x5555552e30 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552e34 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v17.4s, v19.4s, #10                        #! PC = 0x5555552e38 *)
 split v17_0 dc v19_0 10; split v17_1 dc v19_1 10;
 split v17_2 dc v19_2 10; split v17_3 dc v19_3 10;
@@ -3578,15 +3508,14 @@ xor w14@uint32 w6 w7;
 (* eor	w15, w15, w6, ror #20                       #! PC = 0x5555552e58 *)
 ror w6_r@uint32 w6 20; xor w15@uint32 w15 w6_r;
 (* sli	v7.4s, v19.4s, #13                          #! PC = 0x5555552e5c *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v19_0 (32-13); shl slih slil 13;
-and v7_0@uint32 v7_0 mask; or v7_0@uint32 slih v7_0;
+split dc v7_0 v7_0 13; or v7_0@uint32 slih v7_0;
 split dc slil v19_1 (32-13); shl slih slil 13;
-and v7_1@uint32 v7_1 mask; or v7_1@uint32 slih v7_1;
+split dc v7_1 v7_1 13; or v7_1@uint32 slih v7_1;
 split dc slil v19_2 (32-13); shl slih slil 13;
-and v7_2@uint32 v7_2 mask; or v7_2@uint32 slih v7_2;
+split dc v7_2 v7_2 13; or v7_2@uint32 slih v7_2;
 split dc slil v19_3 (32-13); shl slih slil 13;
-and v7_3@uint32 v7_3 mask; or v7_3@uint32 slih v7_3;
+split dc v7_3 v7_3 13; or v7_3@uint32 slih v7_3;
 (* add	w5, w5, w11                                 #! PC = 0x5555552e60 *)
 adds dc w5 w5 w11;
 (* ldr	w12, [sp, #56]                              #! EA = L0x7fffffea98; Value = 0x714c8b958e18f3f4; PC = 0x5555552e64 *)
@@ -3624,7 +3553,7 @@ adds dc w5 w5 w13;
 split v18_0 dc v3_0 17; split v18_1 dc v3_1 17;
 split v18_2 dc v3_2 17; split v18_3 dc v3_3 17;
 (* orr	w12, w12, w15                               #! PC = 0x5555552ea0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* ushr	v19.4s, v3.4s, #10                         #! PC = 0x5555552ea4 *)
 split v19_0 dc v3_0 10; split v19_1 dc v3_1 10;
 split v19_2 dc v3_2 10; split v19_3 dc v3_3 10;
@@ -3633,15 +3562,14 @@ ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555552eac *)
 ror w5_r@uint32 w5 11; xor w15@uint32 w5 w5_r;
 (* sli	v18.4s, v3.4s, #15                          #! PC = 0x5555552eb0 *)
-split dc mask 0xffffffff@uint32 15;
 split dc slil v3_0 (32-15); shl slih slil 15;
-and v18_0@uint32 v18_0 mask; or v18_0@uint32 slih v18_0;
+split dc v18_0 v18_0 15; or v18_0@uint32 slih v18_0;
 split dc slil v3_1 (32-15); shl slih slil 15;
-and v18_1@uint32 v18_1 mask; or v18_1@uint32 slih v18_1;
+split dc v18_1 v18_1 15; or v18_1@uint32 slih v18_1;
 split dc slil v3_2 (32-15); shl slih slil 15;
-and v18_2@uint32 v18_2 mask; or v18_2@uint32 slih v18_2;
+split dc v18_2 v18_2 15; or v18_2@uint32 slih v18_2;
 split dc slil v3_3 (32-15); shl slih slil 15;
-and v18_3@uint32 v18_3 mask; or v18_3@uint32 slih v18_3;
+split dc v18_3 v18_3 15; or v18_3@uint32 slih v18_3;
 (* add	w4, w4, w12                                 #! PC = 0x5555552eb4 *)
 adds dc w4 w4 w12;
 (* ushr	v17.4s, v3.4s, #19                         #! PC = 0x5555552eb8 *)
@@ -3659,15 +3587,14 @@ ror w5_r@uint32 w5 20; xor w15@uint32 w15 w5_r;
 (* add	w4, w4, w11                                 #! PC = 0x5555552ecc *)
 adds dc w4 w4 w11;
 (* sli	v17.4s, v3.4s, #13                          #! PC = 0x5555552ed0 *)
-split dc mask 0xffffffff@uint32 13;
 split dc slil v3_0 (32-13); shl slih slil 13;
-and v17_0@uint32 v17_0 mask; or v17_0@uint32 slih v17_0;
+split dc v17_0 v17_0 13; or v17_0@uint32 slih v17_0;
 split dc slil v3_1 (32-13); shl slih slil 13;
-and v17_1@uint32 v17_1 mask; or v17_1@uint32 slih v17_1;
+split dc v17_1 v17_1 13; or v17_1@uint32 slih v17_1;
 split dc slil v3_2 (32-13); shl slih slil 13;
-and v17_2@uint32 v17_2 mask; or v17_2@uint32 slih v17_2;
+split dc v17_2 v17_2 13; or v17_2@uint32 slih v17_2;
 split dc slil v3_3 (32-13); shl slih slil 13;
-and v17_3@uint32 v17_3 mask; or v17_3@uint32 slih v17_3;
+split dc v17_3 v17_3 13; or v17_3@uint32 slih v17_3;
 (* ldr	w12, [sp, #60]                              #! EA = L0x7fffffea9c; Value = 0xffffeab0714c8b95; PC = 0x5555552ed4 *)
 mov w12 L0x7fffffea9c;
 (* and	w14, w14, w13                               #! PC = 0x5555552ed8 *)
@@ -3705,7 +3632,7 @@ adds dc w4 w4 w14;
 adds dc v3_0 v3_0 v17_0; adds dc v3_1 v3_1 v17_1;
 adds dc v3_2 v3_2 v17_2; adds dc v3_3 v3_3 v17_3;
 (* orr	w12, w12, w15                               #! PC = 0x5555552f14 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555552f18 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555552f1c *)
@@ -3782,7 +3709,7 @@ mov v4_2 L0x5555552488; mov v4_3 L0x555555248c;
 (* add	w3, w3, w13                                 #! PC = 0x5555552f94 *)
 adds dc w3 w3 w13;
 (* orr	w12, w12, w15                               #! PC = 0x5555552f98 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x5555552f9c *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* eor	w15, w3, w3, ror #11                        #! PC = 0x5555552fa0 *)
@@ -3832,7 +3759,7 @@ ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* add	w10, w10, w14                               #! PC = 0x5555552fe8 *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555552fec *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w6, ror #19                       #! PC = 0x5555552ff0 *)
 ror w6_r@uint32 w6 19; xor w11@uint32 w11 w6_r;
 (* eor	w15, w10, w10, ror #11                      #! PC = 0x5555552ff4 *)
@@ -3870,7 +3797,7 @@ ror w5_r@uint32 w5 5; xor w11@uint32 w5 w5_r;
 (* add	w9, w9, w13                                 #! PC = 0x5555553034 *)
 adds dc w9 w9 w13;
 (* orr	w12, w12, w15                               #! PC = 0x5555553038 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w5, ror #19                       #! PC = 0x555555303c *)
 ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x5555553040 *)
@@ -3908,7 +3835,7 @@ ror w4_r@uint32 w4 5; xor w11@uint32 w4 w4_r;
 (* add	w8, w8, w14                                 #! PC = 0x5555553080 *)
 adds dc w8 w8 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555553084 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x5555553088 *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x555555308c *)
@@ -3955,7 +3882,7 @@ mov v4_2 L0x5555552498; mov v4_3 L0x555555249c;
 (* add	w7, w7, w13                                 #! PC = 0x55555530d8 *)
 adds dc w7 w7 w13;
 (* orr	w12, w12, w15                               #! PC = 0x55555530dc *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x55555530e0 *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* eor	w15, w7, w7, ror #11                        #! PC = 0x55555530e4 *)
@@ -4005,7 +3932,7 @@ ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* add	w6, w6, w14                                 #! PC = 0x555555312c *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555553130 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w10, ror #19                      #! PC = 0x5555553134 *)
 ror w10_r@uint32 w10 19; xor w11@uint32 w11 w10_r;
 (* eor	w15, w6, w6, ror #11                        #! PC = 0x5555553138 *)
@@ -4043,7 +3970,7 @@ ror w9_r@uint32 w9 5; xor w11@uint32 w9 w9_r;
 (* add	w5, w5, w13                                 #! PC = 0x5555553178 *)
 adds dc w5 w5 w13;
 (* orr	w12, w12, w15                               #! PC = 0x555555317c *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w9, ror #19                       #! PC = 0x5555553180 *)
 ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x5555553184 *)
@@ -4081,7 +4008,7 @@ ror w8_r@uint32 w8 5; xor w11@uint32 w8 w8_r;
 (* add	w4, w4, w14                                 #! PC = 0x55555531c4 *)
 adds dc w4 w4 w14;
 (* orr	w12, w12, w15                               #! PC = 0x55555531c8 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x55555531cc *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x55555531d0 *)
@@ -4128,7 +4055,7 @@ mov v4_2 L0x55555524a8; mov v4_3 L0x55555524ac;
 (* add	w3, w3, w13                                 #! PC = 0x555555321c *)
 adds dc w3 w3 w13;
 (* orr	w12, w12, w15                               #! PC = 0x5555553220 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w7, ror #19                       #! PC = 0x5555553224 *)
 ror w7_r@uint32 w7 19; xor w11@uint32 w11 w7_r;
 (* eor	w15, w3, w3, ror #11                        #! PC = 0x5555553228 *)
@@ -4178,7 +4105,7 @@ ror w6_r@uint32 w6 5; xor w11@uint32 w6 w6_r;
 (* add	w10, w10, w14                               #! PC = 0x5555553270 *)
 adds dc w10 w10 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555553274 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w6, ror #19                       #! PC = 0x5555553278 *)
 ror w6_r@uint32 w6 19; xor w11@uint32 w11 w6_r;
 (* eor	w15, w10, w10, ror #11                      #! PC = 0x555555327c *)
@@ -4216,7 +4143,7 @@ ror w5_r@uint32 w5 5; xor w11@uint32 w5 w5_r;
 (* add	w9, w9, w13                                 #! PC = 0x55555532bc *)
 adds dc w9 w9 w13;
 (* orr	w12, w12, w15                               #! PC = 0x55555532c0 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w5, ror #19                       #! PC = 0x55555532c4 *)
 ror w5_r@uint32 w5 19; xor w11@uint32 w11 w5_r;
 (* eor	w15, w9, w9, ror #11                        #! PC = 0x55555532c8 *)
@@ -4254,7 +4181,7 @@ ror w4_r@uint32 w4 5; xor w11@uint32 w4 w4_r;
 (* add	w8, w8, w14                                 #! PC = 0x5555553308 *)
 adds dc w8 w8 w14;
 (* orr	w12, w12, w15                               #! PC = 0x555555330c *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w4, ror #19                       #! PC = 0x5555553310 *)
 ror w4_r@uint32 w4 19; xor w11@uint32 w11 w4_r;
 (* eor	w15, w8, w8, ror #11                        #! PC = 0x5555553314 *)
@@ -4301,7 +4228,7 @@ mov v4_2 L0x55555524b8; mov v4_3 L0x55555524bc;
 (* add	w7, w7, w13                                 #! PC = 0x5555553360 *)
 adds dc w7 w7 w13;
 (* orr	w12, w12, w15                               #! PC = 0x5555553364 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w3, ror #19                       #! PC = 0x5555553368 *)
 ror w3_r@uint32 w3 19; xor w11@uint32 w11 w3_r;
 (* eor	w15, w7, w7, ror #11                        #! PC = 0x555555336c *)
@@ -4351,7 +4278,7 @@ ror w10_r@uint32 w10 5; xor w11@uint32 w10 w10_r;
 (* add	w6, w6, w14                                 #! PC = 0x55555533b4 *)
 adds dc w6 w6 w14;
 (* orr	w12, w12, w15                               #! PC = 0x55555533b8 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w10, ror #19                      #! PC = 0x55555533bc *)
 ror w10_r@uint32 w10 19; xor w11@uint32 w11 w10_r;
 (* eor	w15, w6, w6, ror #11                        #! PC = 0x55555533c0 *)
@@ -4389,7 +4316,7 @@ ror w9_r@uint32 w9 5; xor w11@uint32 w9 w9_r;
 (* add	w5, w5, w13                                 #! PC = 0x5555553400 *)
 adds dc w5 w5 w13;
 (* orr	w12, w12, w15                               #! PC = 0x5555553404 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w9, ror #19                       #! PC = 0x5555553408 *)
 ror w9_r@uint32 w9 19; xor w11@uint32 w11 w9_r;
 (* eor	w15, w5, w5, ror #11                        #! PC = 0x555555340c *)
@@ -4427,7 +4354,7 @@ ror w8_r@uint32 w8 5; xor w11@uint32 w8 w8_r;
 (* add	w4, w4, w14                                 #! PC = 0x555555344c *)
 adds dc w4 w4 w14;
 (* orr	w12, w12, w15                               #! PC = 0x5555553450 *)
-xor w12@uint32 w12 w15;
+or w12@uint32 w12 w15;
 (* eor	w11, w11, w8, ror #19                       #! PC = 0x5555553454 *)
 ror w8_r@uint32 w8 19; xor w11@uint32 w11 w8_r;
 (* eor	w15, w4, w4, ror #11                        #! PC = 0x5555553458 *)
