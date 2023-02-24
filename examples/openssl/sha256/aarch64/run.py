@@ -4,7 +4,7 @@ def print_parameters (name):
     for i in range (64):
         print ('uint8 {1}{0:02}'.format (i, name),
                end = '\n' if i == 63 else
-                     ',\n' if i % 5 == 4 else ', ')
+                     ',\n' if i % 7 == 6 else ', ')
 
 def print_inputs (base, name):
     for i in range (0, 64, 4):
@@ -23,15 +23,14 @@ def print_nondet (regs, addrs):
                end = '\n' if i%2 == 1 else ' ')
 def print_constants (base, consts):
     for i in range (len (consts)):
-        for j in range (8):
-            print ('mov L0x{0:x} 0x{1:08x}@uint32;'.
-                   format (base + 4*(8*i+j), consts[i]),
-                   end = '\n' if j % 2 == 1 else ' ')
+        print ('mov L0x{0:x} 0x{1:08x}@uint32;'.
+               format (base + 4*i, consts[i]),
+               end = '\n' if i % 2 == 1 else ' ')
 
 def print_output (base, name):
     for i in range (8):
         print ('mov {0}{1} L0x{2:x};'.
-               format (name, i, base + 32*i),
+               format (name, i, base + 4*i),
                end = '\n' if i % 2 == 1 else ' ')
 
 def print_init (base):
@@ -66,7 +65,7 @@ print_inputs (0x55555640d0, 'A')
 
 print ('\n')
 
-print_nondet ([], [0x5555564308])
+print_nondet (['x29', 'x30'], [0x5555564308, 0x5555552580])
 
 print ('\n')
 
