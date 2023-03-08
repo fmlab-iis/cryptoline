@@ -1,0 +1,2006 @@
+sha256_block_data_order:
+# r0 = 0x2204c
+# r1 = 0x22074
+# r2 = 0x1
+# r3 = 0x80000000
+	#! -> SP = 0x407ffd60
+	sub	r3, pc, #8                                  #! PC = 0x10d80
+	add	r2, r1, r2, lsl #6                          #! PC = 0x10d84
+	push	{r0, r1, r2, r4, r5, r6, r7, r8, r9, r10, r11, lr}#! PC = 0x10d88
+	ldm	r0, {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; Value = 0x6a09e667; PC = 0x10d8c
+	sub	lr, r3, #288	; 0x120                        #! PC = 0x10d90
+	sub	sp, sp, #64	; 0x40                          #! PC = 0x10d94
+	ldrb	r2, [r1, #3]                               #! EA = L0x22077; Value = 0x06050403; PC = 0x10d98
+	eor	r3, r5, r6                                  #! PC = 0x10d9c
+	eor	r12, r12, r12                               #! PC = 0x10da0
+	add	r4, r4, r12                                 #! PC = 0x10da4
+	ldrb	r12, [r1, #2]                              #! EA = L0x22076; Value = 0x05040302; PC = 0x10da8
+	ldrb	r0, [r1, #1]                               #! EA = L0x22075; Value = 0x04030201; PC = 0x10dac
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x10db0
+	ldrb	r12, [r1], #4                              #! EA = L0x22074; Value = 0x03020100; PC = 0x10db4
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10db8
+	eor	r0, r8, r8, ror #5                          #! PC = 0x10dbc
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x10dc0
+	eor	r0, r0, r8, ror #19                         #! PC = 0x10dc4
+	ldr	r12, [lr], #4                               #! EA = L0x10c60; Value = 0x428a2f98; PC = 0x10dc8
+	add	r11, r11, r2                                #! PC = 0x10dcc
+	str	r2, [sp]                                    #! EA = L0x407ffcf0; PC = 0x10dd0
+	eor	r2, r9, r10                                 #! PC = 0x10dd4
+	add	r11, r11, r0, ror #6                        #! PC = 0x10dd8
+	and	r2, r2, r8                                  #! PC = 0x10ddc
+	add	r11, r11, r12                               #! PC = 0x10de0
+	eor	r2, r2, r10                                 #! PC = 0x10de4
+	eor	r0, r4, r4, ror #11                         #! PC = 0x10de8
+	add	r11, r11, r2                                #! PC = 0x10dec
+	ldrb	r2, [r1, #3]                               #! EA = L0x2207b; Value = 0x0a090807; PC = 0x10df0
+	eor	r12, r4, r5                                 #! PC = 0x10df4
+	eor	r0, r0, r4, ror #20                         #! PC = 0x10df8
+	and	r3, r3, r12                                 #! PC = 0x10dfc
+	add	r7, r7, r11                                 #! PC = 0x10e00
+	eor	r3, r3, r5                                  #! PC = 0x10e04
+	add	r11, r11, r0, ror #2                        #! PC = 0x10e08
+	add	r11, r11, r3                                #! PC = 0x10e0c
+	ldrb	r3, [r1, #2]                               #! EA = L0x2207a; Value = 0x09080706; PC = 0x10e10
+	ldrb	r0, [r1, #1]                               #! EA = L0x22079; Value = 0x08070605; PC = 0x10e14
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x10e18
+	ldrb	r3, [r1], #4                               #! EA = L0x22078; Value = 0x07060504; PC = 0x10e1c
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10e20
+	eor	r0, r7, r7, ror #5                          #! PC = 0x10e24
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x10e28
+	eor	r0, r0, r7, ror #19                         #! PC = 0x10e2c
+	ldr	r3, [lr], #4                                #! EA = L0x10c64; Value = 0x71374491; PC = 0x10e30
+	add	r10, r10, r2                                #! PC = 0x10e34
+	str	r2, [sp, #4]                                #! EA = L0x407ffcf4; PC = 0x10e38
+	eor	r2, r8, r9                                  #! PC = 0x10e3c
+	add	r10, r10, r0, ror #6                        #! PC = 0x10e40
+	and	r2, r2, r7                                  #! PC = 0x10e44
+	add	r10, r10, r3                                #! PC = 0x10e48
+	eor	r2, r2, r9                                  #! PC = 0x10e4c
+	eor	r0, r11, r11, ror #11                       #! PC = 0x10e50
+	add	r10, r10, r2                                #! PC = 0x10e54
+	ldrb	r2, [r1, #3]                               #! EA = L0x2207f; Value = 0x0e0d0c0b; PC = 0x10e58
+	eor	r3, r11, r4                                 #! PC = 0x10e5c
+	eor	r0, r0, r11, ror #20                        #! PC = 0x10e60
+	and	r12, r12, r3                                #! PC = 0x10e64
+	add	r6, r6, r10                                 #! PC = 0x10e68
+	eor	r12, r12, r4                                #! PC = 0x10e6c
+	add	r10, r10, r0, ror #2                        #! PC = 0x10e70
+	add	r10, r10, r12                               #! PC = 0x10e74
+	ldrb	r12, [r1, #2]                              #! EA = L0x2207e; Value = 0x0d0c0b0a; PC = 0x10e78
+	ldrb	r0, [r1, #1]                               #! EA = L0x2207d; Value = 0x0c0b0a09; PC = 0x10e7c
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x10e80
+	ldrb	r12, [r1], #4                              #! EA = L0x2207c; Value = 0x0b0a0908; PC = 0x10e84
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10e88
+	eor	r0, r6, r6, ror #5                          #! PC = 0x10e8c
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x10e90
+	eor	r0, r0, r6, ror #19                         #! PC = 0x10e94
+	ldr	r12, [lr], #4                               #! EA = L0x10c68; Value = 0xb5c0fbcf; PC = 0x10e98
+	add	r9, r9, r2                                  #! PC = 0x10e9c
+	str	r2, [sp, #8]                                #! EA = L0x407ffcf8; PC = 0x10ea0
+	eor	r2, r7, r8                                  #! PC = 0x10ea4
+	add	r9, r9, r0, ror #6                          #! PC = 0x10ea8
+	and	r2, r2, r6                                  #! PC = 0x10eac
+	add	r9, r9, r12                                 #! PC = 0x10eb0
+	eor	r2, r2, r8                                  #! PC = 0x10eb4
+	eor	r0, r10, r10, ror #11                       #! PC = 0x10eb8
+	add	r9, r9, r2                                  #! PC = 0x10ebc
+	ldrb	r2, [r1, #3]                               #! EA = L0x22083; Value = 0x0000800f; PC = 0x10ec0
+	eor	r12, r10, r11                               #! PC = 0x10ec4
+	eor	r0, r0, r10, ror #20                        #! PC = 0x10ec8
+	and	r3, r3, r12                                 #! PC = 0x10ecc
+	add	r5, r5, r9                                  #! PC = 0x10ed0
+	eor	r3, r3, r11                                 #! PC = 0x10ed4
+	add	r9, r9, r0, ror #2                          #! PC = 0x10ed8
+	add	r9, r9, r3                                  #! PC = 0x10edc
+	ldrb	r3, [r1, #2]                               #! EA = L0x22082; Value = 0x00800f0e; PC = 0x10ee0
+	ldrb	r0, [r1, #1]                               #! EA = L0x22081; Value = 0x800f0e0d; PC = 0x10ee4
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x10ee8
+	ldrb	r3, [r1], #4                               #! EA = L0x22080; Value = 0x0f0e0d0c; PC = 0x10eec
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10ef0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x10ef4
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x10ef8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x10efc
+	ldr	r3, [lr], #4                                #! EA = L0x10c6c; Value = 0xe9b5dba5; PC = 0x10f00
+	add	r8, r8, r2                                  #! PC = 0x10f04
+	str	r2, [sp, #12]                               #! EA = L0x407ffcfc; PC = 0x10f08
+	eor	r2, r6, r7                                  #! PC = 0x10f0c
+	add	r8, r8, r0, ror #6                          #! PC = 0x10f10
+	and	r2, r2, r5                                  #! PC = 0x10f14
+	add	r8, r8, r3                                  #! PC = 0x10f18
+	eor	r2, r2, r7                                  #! PC = 0x10f1c
+	eor	r0, r9, r9, ror #11                         #! PC = 0x10f20
+	add	r8, r8, r2                                  #! PC = 0x10f24
+	ldrb	r2, [r1, #3]                               #! EA = L0x22087; Value = 0x00000000; PC = 0x10f28
+	eor	r3, r9, r10                                 #! PC = 0x10f2c
+	eor	r0, r0, r9, ror #20                         #! PC = 0x10f30
+	and	r12, r12, r3                                #! PC = 0x10f34
+	add	r4, r4, r8                                  #! PC = 0x10f38
+	eor	r12, r12, r10                               #! PC = 0x10f3c
+	add	r8, r8, r0, ror #2                          #! PC = 0x10f40
+	add	r8, r8, r12                                 #! PC = 0x10f44
+	ldrb	r12, [r1, #2]                              #! EA = L0x22086; Value = 0x00000000; PC = 0x10f48
+	ldrb	r0, [r1, #1]                               #! EA = L0x22085; Value = 0x00000000; PC = 0x10f4c
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x10f50
+	ldrb	r12, [r1], #4                              #! EA = L0x22084; Value = 0x00000080; PC = 0x10f54
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10f58
+	eor	r0, r4, r4, ror #5                          #! PC = 0x10f5c
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x10f60
+	eor	r0, r0, r4, ror #19                         #! PC = 0x10f64
+	ldr	r12, [lr], #4                               #! EA = L0x10c70; Value = 0x3956c25b; PC = 0x10f68
+	add	r7, r7, r2                                  #! PC = 0x10f6c
+	str	r2, [sp, #16]                               #! EA = L0x407ffd00; PC = 0x10f70
+	eor	r2, r5, r6                                  #! PC = 0x10f74
+	add	r7, r7, r0, ror #6                          #! PC = 0x10f78
+	and	r2, r2, r4                                  #! PC = 0x10f7c
+	add	r7, r7, r12                                 #! PC = 0x10f80
+	eor	r2, r2, r6                                  #! PC = 0x10f84
+	eor	r0, r8, r8, ror #11                         #! PC = 0x10f88
+	add	r7, r7, r2                                  #! PC = 0x10f8c
+	ldrb	r2, [r1, #3]                               #! EA = L0x2208b; Value = 0x00000000; PC = 0x10f90
+	eor	r12, r8, r9                                 #! PC = 0x10f94
+	eor	r0, r0, r8, ror #20                         #! PC = 0x10f98
+	and	r3, r3, r12                                 #! PC = 0x10f9c
+	add	r11, r11, r7                                #! PC = 0x10fa0
+	eor	r3, r3, r9                                  #! PC = 0x10fa4
+	add	r7, r7, r0, ror #2                          #! PC = 0x10fa8
+	add	r7, r7, r3                                  #! PC = 0x10fac
+	ldrb	r3, [r1, #2]                               #! EA = L0x2208a; Value = 0x00000000; PC = 0x10fb0
+	ldrb	r0, [r1, #1]                               #! EA = L0x22089; Value = 0x00000000; PC = 0x10fb4
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x10fb8
+	ldrb	r3, [r1], #4                               #! EA = L0x22088; Value = 0x00000000; PC = 0x10fbc
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x10fc0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x10fc4
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x10fc8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x10fcc
+	ldr	r3, [lr], #4                                #! EA = L0x10c74; Value = 0x59f111f1; PC = 0x10fd0
+	add	r6, r6, r2                                  #! PC = 0x10fd4
+	str	r2, [sp, #20]                               #! EA = L0x407ffd04; PC = 0x10fd8
+	eor	r2, r4, r5                                  #! PC = 0x10fdc
+	add	r6, r6, r0, ror #6                          #! PC = 0x10fe0
+	and	r2, r2, r11                                 #! PC = 0x10fe4
+	add	r6, r6, r3                                  #! PC = 0x10fe8
+	eor	r2, r2, r5                                  #! PC = 0x10fec
+	eor	r0, r7, r7, ror #11                         #! PC = 0x10ff0
+	add	r6, r6, r2                                  #! PC = 0x10ff4
+	ldrb	r2, [r1, #3]                               #! EA = L0x2208f; Value = 0x00000000; PC = 0x10ff8
+	eor	r3, r7, r8                                  #! PC = 0x10ffc
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11000
+	and	r12, r12, r3                                #! PC = 0x11004
+	add	r10, r10, r6                                #! PC = 0x11008
+	eor	r12, r12, r8                                #! PC = 0x1100c
+	add	r6, r6, r0, ror #2                          #! PC = 0x11010
+	add	r6, r6, r12                                 #! PC = 0x11014
+	ldrb	r12, [r1, #2]                              #! EA = L0x2208e; Value = 0x00000000; PC = 0x11018
+	ldrb	r0, [r1, #1]                               #! EA = L0x2208d; Value = 0x00000000; PC = 0x1101c
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x11020
+	ldrb	r12, [r1], #4                              #! EA = L0x2208c; Value = 0x00000000; PC = 0x11024
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11028
+	eor	r0, r10, r10, ror #5                        #! PC = 0x1102c
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x11030
+	eor	r0, r0, r10, ror #19                        #! PC = 0x11034
+	ldr	r12, [lr], #4                               #! EA = L0x10c78; Value = 0x923f82a4; PC = 0x11038
+	add	r5, r5, r2                                  #! PC = 0x1103c
+	str	r2, [sp, #24]                               #! EA = L0x407ffd08; PC = 0x11040
+	eor	r2, r11, r4                                 #! PC = 0x11044
+	add	r5, r5, r0, ror #6                          #! PC = 0x11048
+	and	r2, r2, r10                                 #! PC = 0x1104c
+	add	r5, r5, r12                                 #! PC = 0x11050
+	eor	r2, r2, r4                                  #! PC = 0x11054
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11058
+	add	r5, r5, r2                                  #! PC = 0x1105c
+	ldrb	r2, [r1, #3]                               #! EA = L0x22093; Value = 0x00000000; PC = 0x11060
+	eor	r12, r6, r7                                 #! PC = 0x11064
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11068
+	and	r3, r3, r12                                 #! PC = 0x1106c
+	add	r9, r9, r5                                  #! PC = 0x11070
+	eor	r3, r3, r7                                  #! PC = 0x11074
+	add	r5, r5, r0, ror #2                          #! PC = 0x11078
+	add	r5, r5, r3                                  #! PC = 0x1107c
+	ldrb	r3, [r1, #2]                               #! EA = L0x22092; Value = 0x00000000; PC = 0x11080
+	ldrb	r0, [r1, #1]                               #! EA = L0x22091; Value = 0x00000000; PC = 0x11084
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x11088
+	ldrb	r3, [r1], #4                               #! EA = L0x22090; Value = 0x00000000; PC = 0x1108c
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11090
+	eor	r0, r9, r9, ror #5                          #! PC = 0x11094
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x11098
+	eor	r0, r0, r9, ror #19                         #! PC = 0x1109c
+	ldr	r3, [lr], #4                                #! EA = L0x10c7c; Value = 0xab1c5ed5; PC = 0x110a0
+	add	r4, r4, r2                                  #! PC = 0x110a4
+	str	r2, [sp, #28]                               #! EA = L0x407ffd0c; PC = 0x110a8
+	eor	r2, r10, r11                                #! PC = 0x110ac
+	add	r4, r4, r0, ror #6                          #! PC = 0x110b0
+	and	r2, r2, r9                                  #! PC = 0x110b4
+	add	r4, r4, r3                                  #! PC = 0x110b8
+	eor	r2, r2, r11                                 #! PC = 0x110bc
+	eor	r0, r5, r5, ror #11                         #! PC = 0x110c0
+	add	r4, r4, r2                                  #! PC = 0x110c4
+	ldrb	r2, [r1, #3]                               #! EA = L0x22097; Value = 0x00000000; PC = 0x110c8
+	eor	r3, r5, r6                                  #! PC = 0x110cc
+	eor	r0, r0, r5, ror #20                         #! PC = 0x110d0
+	and	r12, r12, r3                                #! PC = 0x110d4
+	add	r8, r8, r4                                  #! PC = 0x110d8
+	eor	r12, r12, r6                                #! PC = 0x110dc
+	add	r4, r4, r0, ror #2                          #! PC = 0x110e0
+	add	r4, r4, r12                                 #! PC = 0x110e4
+	ldrb	r12, [r1, #2]                              #! EA = L0x22096; Value = 0x00000000; PC = 0x110e8
+	ldrb	r0, [r1, #1]                               #! EA = L0x22095; Value = 0x00000000; PC = 0x110ec
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x110f0
+	ldrb	r12, [r1], #4                              #! EA = L0x22094; Value = 0x00000000; PC = 0x110f4
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x110f8
+	eor	r0, r8, r8, ror #5                          #! PC = 0x110fc
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x11100
+	eor	r0, r0, r8, ror #19                         #! PC = 0x11104
+	ldr	r12, [lr], #4                               #! EA = L0x10c80; Value = 0xd807aa98; PC = 0x11108
+	add	r11, r11, r2                                #! PC = 0x1110c
+	str	r2, [sp, #32]                               #! EA = L0x407ffd10; PC = 0x11110
+	eor	r2, r9, r10                                 #! PC = 0x11114
+	add	r11, r11, r0, ror #6                        #! PC = 0x11118
+	and	r2, r2, r8                                  #! PC = 0x1111c
+	add	r11, r11, r12                               #! PC = 0x11120
+	eor	r2, r2, r10                                 #! PC = 0x11124
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11128
+	add	r11, r11, r2                                #! PC = 0x1112c
+	ldrb	r2, [r1, #3]                               #! EA = L0x2209b; Value = 0x00000000; PC = 0x11130
+	eor	r12, r4, r5                                 #! PC = 0x11134
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11138
+	and	r3, r3, r12                                 #! PC = 0x1113c
+	add	r7, r7, r11                                 #! PC = 0x11140
+	eor	r3, r3, r5                                  #! PC = 0x11144
+	add	r11, r11, r0, ror #2                        #! PC = 0x11148
+	add	r11, r11, r3                                #! PC = 0x1114c
+	ldrb	r3, [r1, #2]                               #! EA = L0x2209a; Value = 0x00000000; PC = 0x11150
+	ldrb	r0, [r1, #1]                               #! EA = L0x22099; Value = 0x00000000; PC = 0x11154
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x11158
+	ldrb	r3, [r1], #4                               #! EA = L0x22098; Value = 0x00000000; PC = 0x1115c
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11160
+	eor	r0, r7, r7, ror #5                          #! PC = 0x11164
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x11168
+	eor	r0, r0, r7, ror #19                         #! PC = 0x1116c
+	ldr	r3, [lr], #4                                #! EA = L0x10c84; Value = 0x12835b01; PC = 0x11170
+	add	r10, r10, r2                                #! PC = 0x11174
+	str	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; PC = 0x11178
+	eor	r2, r8, r9                                  #! PC = 0x1117c
+	add	r10, r10, r0, ror #6                        #! PC = 0x11180
+	and	r2, r2, r7                                  #! PC = 0x11184
+	add	r10, r10, r3                                #! PC = 0x11188
+	eor	r2, r2, r9                                  #! PC = 0x1118c
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11190
+	add	r10, r10, r2                                #! PC = 0x11194
+	ldrb	r2, [r1, #3]                               #! EA = L0x2209f; Value = 0x00000000; PC = 0x11198
+	eor	r3, r11, r4                                 #! PC = 0x1119c
+	eor	r0, r0, r11, ror #20                        #! PC = 0x111a0
+	and	r12, r12, r3                                #! PC = 0x111a4
+	add	r6, r6, r10                                 #! PC = 0x111a8
+	eor	r12, r12, r4                                #! PC = 0x111ac
+	add	r10, r10, r0, ror #2                        #! PC = 0x111b0
+	add	r10, r10, r12                               #! PC = 0x111b4
+	ldrb	r12, [r1, #2]                              #! EA = L0x2209e; Value = 0x00000000; PC = 0x111b8
+	ldrb	r0, [r1, #1]                               #! EA = L0x2209d; Value = 0x00000000; PC = 0x111bc
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x111c0
+	ldrb	r12, [r1], #4                              #! EA = L0x2209c; Value = 0x00000000; PC = 0x111c4
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x111c8
+	eor	r0, r6, r6, ror #5                          #! PC = 0x111cc
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x111d0
+	eor	r0, r0, r6, ror #19                         #! PC = 0x111d4
+	ldr	r12, [lr], #4                               #! EA = L0x10c88; Value = 0x243185be; PC = 0x111d8
+	add	r9, r9, r2                                  #! PC = 0x111dc
+	str	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; PC = 0x111e0
+	eor	r2, r7, r8                                  #! PC = 0x111e4
+	add	r9, r9, r0, ror #6                          #! PC = 0x111e8
+	and	r2, r2, r6                                  #! PC = 0x111ec
+	add	r9, r9, r12                                 #! PC = 0x111f0
+	eor	r2, r2, r8                                  #! PC = 0x111f4
+	eor	r0, r10, r10, ror #11                       #! PC = 0x111f8
+	add	r9, r9, r2                                  #! PC = 0x111fc
+	ldrb	r2, [r1, #3]                               #! EA = L0x220a3; Value = 0x00000000; PC = 0x11200
+	eor	r12, r10, r11                               #! PC = 0x11204
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11208
+	and	r3, r3, r12                                 #! PC = 0x1120c
+	add	r5, r5, r9                                  #! PC = 0x11210
+	eor	r3, r3, r11                                 #! PC = 0x11214
+	add	r9, r9, r0, ror #2                          #! PC = 0x11218
+	add	r9, r9, r3                                  #! PC = 0x1121c
+	ldrb	r3, [r1, #2]                               #! EA = L0x220a2; Value = 0x00000000; PC = 0x11220
+	ldrb	r0, [r1, #1]                               #! EA = L0x220a1; Value = 0x00000000; PC = 0x11224
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x11228
+	ldrb	r3, [r1], #4                               #! EA = L0x220a0; Value = 0x00000000; PC = 0x1122c
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11230
+	eor	r0, r5, r5, ror #5                          #! PC = 0x11234
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x11238
+	eor	r0, r0, r5, ror #19                         #! PC = 0x1123c
+	ldr	r3, [lr], #4                                #! EA = L0x10c8c; Value = 0x550c7dc3; PC = 0x11240
+	add	r8, r8, r2                                  #! PC = 0x11244
+	str	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; PC = 0x11248
+	eor	r2, r6, r7                                  #! PC = 0x1124c
+	add	r8, r8, r0, ror #6                          #! PC = 0x11250
+	and	r2, r2, r5                                  #! PC = 0x11254
+	add	r8, r8, r3                                  #! PC = 0x11258
+	eor	r2, r2, r7                                  #! PC = 0x1125c
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11260
+	add	r8, r8, r2                                  #! PC = 0x11264
+	ldrb	r2, [r1, #3]                               #! EA = L0x220a7; Value = 0x00000000; PC = 0x11268
+	eor	r3, r9, r10                                 #! PC = 0x1126c
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11270
+	and	r12, r12, r3                                #! PC = 0x11274
+	add	r4, r4, r8                                  #! PC = 0x11278
+	eor	r12, r12, r10                               #! PC = 0x1127c
+	add	r8, r8, r0, ror #2                          #! PC = 0x11280
+	add	r8, r8, r12                                 #! PC = 0x11284
+	ldrb	r12, [r1, #2]                              #! EA = L0x220a6; Value = 0x00000000; PC = 0x11288
+	ldrb	r0, [r1, #1]                               #! EA = L0x220a5; Value = 0x00000000; PC = 0x1128c
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x11290
+	ldrb	r12, [r1], #4                              #! EA = L0x220a4; Value = 0x00000000; PC = 0x11294
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11298
+	eor	r0, r4, r4, ror #5                          #! PC = 0x1129c
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x112a0
+	eor	r0, r0, r4, ror #19                         #! PC = 0x112a4
+	ldr	r12, [lr], #4                               #! EA = L0x10c90; Value = 0x72be5d74; PC = 0x112a8
+	add	r7, r7, r2                                  #! PC = 0x112ac
+	str	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; PC = 0x112b0
+	eor	r2, r5, r6                                  #! PC = 0x112b4
+	add	r7, r7, r0, ror #6                          #! PC = 0x112b8
+	and	r2, r2, r4                                  #! PC = 0x112bc
+	add	r7, r7, r12                                 #! PC = 0x112c0
+	eor	r2, r2, r6                                  #! PC = 0x112c4
+	eor	r0, r8, r8, ror #11                         #! PC = 0x112c8
+	add	r7, r7, r2                                  #! PC = 0x112cc
+	ldrb	r2, [r1, #3]                               #! EA = L0x220ab; Value = 0x00000000; PC = 0x112d0
+	eor	r12, r8, r9                                 #! PC = 0x112d4
+	eor	r0, r0, r8, ror #20                         #! PC = 0x112d8
+	and	r3, r3, r12                                 #! PC = 0x112dc
+	add	r11, r11, r7                                #! PC = 0x112e0
+	eor	r3, r3, r9                                  #! PC = 0x112e4
+	add	r7, r7, r0, ror #2                          #! PC = 0x112e8
+	add	r7, r7, r3                                  #! PC = 0x112ec
+	ldrb	r3, [r1, #2]                               #! EA = L0x220aa; Value = 0x00000000; PC = 0x112f0
+	ldrb	r0, [r1, #1]                               #! EA = L0x220a9; Value = 0x00000000; PC = 0x112f4
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x112f8
+	ldrb	r3, [r1], #4                               #! EA = L0x220a8; Value = 0x00000000; PC = 0x112fc
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11300
+	eor	r0, r11, r11, ror #5                        #! PC = 0x11304
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x11308
+	eor	r0, r0, r11, ror #19                        #! PC = 0x1130c
+	ldr	r3, [lr], #4                                #! EA = L0x10c94; Value = 0x80deb1fe; PC = 0x11310
+	add	r6, r6, r2                                  #! PC = 0x11314
+	str	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; PC = 0x11318
+	eor	r2, r4, r5                                  #! PC = 0x1131c
+	add	r6, r6, r0, ror #6                          #! PC = 0x11320
+	and	r2, r2, r11                                 #! PC = 0x11324
+	add	r6, r6, r3                                  #! PC = 0x11328
+	eor	r2, r2, r5                                  #! PC = 0x1132c
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11330
+	add	r6, r6, r2                                  #! PC = 0x11334
+	ldrb	r2, [r1, #3]                               #! EA = L0x220af; Value = 0x00000000; PC = 0x11338
+	eor	r3, r7, r8                                  #! PC = 0x1133c
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11340
+	and	r12, r12, r3                                #! PC = 0x11344
+	add	r10, r10, r6                                #! PC = 0x11348
+	eor	r12, r12, r8                                #! PC = 0x1134c
+	add	r6, r6, r0, ror #2                          #! PC = 0x11350
+	add	r6, r6, r12                                 #! PC = 0x11354
+	ldrb	r12, [r1, #2]                              #! EA = L0x220ae; Value = 0x00000000; PC = 0x11358
+	ldrb	r0, [r1, #1]                               #! EA = L0x220ad; Value = 0x00000000; PC = 0x1135c
+	orr	r2, r2, r12, lsl #8                         #! PC = 0x11360
+	ldrb	r12, [r1], #4                              #! EA = L0x220ac; Value = 0x00000000; PC = 0x11364
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x11368
+	eor	r0, r10, r10, ror #5                        #! PC = 0x1136c
+	orr	r2, r2, r12, lsl #24                        #! PC = 0x11370
+	eor	r0, r0, r10, ror #19                        #! PC = 0x11374
+	ldr	r12, [lr], #4                               #! EA = L0x10c98; Value = 0x9bdc06a7; PC = 0x11378
+	add	r5, r5, r2                                  #! PC = 0x1137c
+	str	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; PC = 0x11380
+	eor	r2, r11, r4                                 #! PC = 0x11384
+	add	r5, r5, r0, ror #6                          #! PC = 0x11388
+	and	r2, r2, r10                                 #! PC = 0x1138c
+	add	r5, r5, r12                                 #! PC = 0x11390
+	eor	r2, r2, r4                                  #! PC = 0x11394
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11398
+	add	r5, r5, r2                                  #! PC = 0x1139c
+	ldrb	r2, [r1, #3]                               #! EA = L0x220b3; Value = 0x00001080; PC = 0x113a0
+	eor	r12, r6, r7                                 #! PC = 0x113a4
+	eor	r0, r0, r6, ror #20                         #! PC = 0x113a8
+	and	r3, r3, r12                                 #! PC = 0x113ac
+	add	r9, r9, r5                                  #! PC = 0x113b0
+	eor	r3, r3, r7                                  #! PC = 0x113b4
+	add	r5, r5, r0, ror #2                          #! PC = 0x113b8
+	add	r5, r5, r3                                  #! PC = 0x113bc
+	ldrb	r3, [r1, #2]                               #! EA = L0x220b2; Value = 0x00108000; PC = 0x113c0
+	ldrb	r0, [r1, #1]                               #! EA = L0x220b1; Value = 0x10800000; PC = 0x113c4
+	orr	r2, r2, r3, lsl #8                          #! PC = 0x113c8
+	ldrb	r3, [r1], #4                               #! EA = L0x220b0; Value = 0x80000000; PC = 0x113cc
+	orr	r2, r2, r0, lsl #16                         #! PC = 0x113d0
+	str	r1, [sp, #68]	; 0x44                        #! EA = L0x407ffd34; PC = 0x113d4
+	eor	r0, r9, r9, ror #5                          #! PC = 0x113d8
+	orr	r2, r2, r3, lsl #24                         #! PC = 0x113dc
+	eor	r0, r0, r9, ror #19                         #! PC = 0x113e0
+	ldr	r3, [lr], #4                                #! EA = L0x10c9c; Value = 0xc19bf174; PC = 0x113e4
+	add	r4, r4, r2                                  #! PC = 0x113e8
+	str	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; PC = 0x113ec
+	eor	r2, r10, r11                                #! PC = 0x113f0
+	add	r4, r4, r0, ror #6                          #! PC = 0x113f4
+	and	r2, r2, r9                                  #! PC = 0x113f8
+	add	r4, r4, r3                                  #! PC = 0x113fc
+	eor	r2, r2, r11                                 #! PC = 0x11400
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11404
+	add	r4, r4, r2                                  #! PC = 0x11408
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x04050607; PC = 0x1140c
+	eor	r3, r5, r6                                  #! PC = 0x11410
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x00000000; PC = 0x11414
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11418
+	and	r12, r12, r3                                #! PC = 0x1141c
+	add	r8, r8, r4                                  #! PC = 0x11420
+	eor	r12, r12, r6                                #! PC = 0x11424
+	add	r4, r4, r0, ror #2                          #! PC = 0x11428
+	ror	r0, r2, #7                                  #! PC = 0x1142c
+	add	r4, r4, r12                                 #! PC = 0x11430
+	ror	r12, r1, #17                                #! PC = 0x11434
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11438
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1143c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11440
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x00010203; PC = 0x11444
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11448
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x00000000; PC = 0x1144c
+	add	r12, r12, r0                                #! PC = 0x11450
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11454
+	add	r2, r2, r12                                 #! PC = 0x11458
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1145c
+	add	r2, r2, r1                                  #! PC = 0x11460
+	ldr	r12, [lr], #4                               #! EA = L0x10ca0; Value = 0xe49b69c1; PC = 0x11464
+	add	r11, r11, r2                                #! PC = 0x11468
+	str	r2, [sp]                                    #! EA = L0x407ffcf0; PC = 0x1146c
+	eor	r2, r9, r10                                 #! PC = 0x11470
+	add	r11, r11, r0, ror #6                        #! PC = 0x11474
+	and	r2, r2, r8                                  #! PC = 0x11478
+	add	r11, r11, r12                               #! PC = 0x1147c
+	eor	r2, r2, r10                                 #! PC = 0x11480
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11484
+	add	r11, r11, r2                                #! PC = 0x11488
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x08090a0b; PC = 0x1148c
+	eor	r12, r4, r5                                 #! PC = 0x11490
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x00000080; PC = 0x11494
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11498
+	and	r3, r3, r12                                 #! PC = 0x1149c
+	add	r7, r7, r11                                 #! PC = 0x114a0
+	eor	r3, r3, r5                                  #! PC = 0x114a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x114a8
+	ror	r0, r2, #7                                  #! PC = 0x114ac
+	add	r11, r11, r3                                #! PC = 0x114b0
+	ror	r3, r1, #17                                 #! PC = 0x114b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x114b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x114bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x114c0
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x04050607; PC = 0x114c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x114c8
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x00000000; PC = 0x114cc
+	add	r3, r3, r0                                  #! PC = 0x114d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x114d4
+	add	r2, r2, r3                                  #! PC = 0x114d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x114dc
+	add	r2, r2, r1                                  #! PC = 0x114e0
+	ldr	r3, [lr], #4                                #! EA = L0x10ca4; Value = 0xefbe4786; PC = 0x114e4
+	add	r10, r10, r2                                #! PC = 0x114e8
+	str	r2, [sp, #4]                                #! EA = L0x407ffcf4; PC = 0x114ec
+	eor	r2, r8, r9                                  #! PC = 0x114f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x114f4
+	and	r2, r2, r7                                  #! PC = 0x114f8
+	add	r10, r10, r3                                #! PC = 0x114fc
+	eor	r2, r2, r9                                  #! PC = 0x11500
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11504
+	add	r10, r10, r2                                #! PC = 0x11508
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x0c0d0e0f; PC = 0x1150c
+	eor	r3, r11, r4                                 #! PC = 0x11510
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x4f0a6dd0; PC = 0x11514
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11518
+	and	r12, r12, r3                                #! PC = 0x1151c
+	add	r6, r6, r10                                 #! PC = 0x11520
+	eor	r12, r12, r4                                #! PC = 0x11524
+	add	r10, r10, r0, ror #2                        #! PC = 0x11528
+	ror	r0, r2, #7                                  #! PC = 0x1152c
+	add	r10, r10, r12                               #! PC = 0x11530
+	ror	r12, r1, #17                                #! PC = 0x11534
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11538
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1153c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11540
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x08090a0b; PC = 0x11544
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11548
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0x00000000; PC = 0x1154c
+	add	r12, r12, r0                                #! PC = 0x11550
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11554
+	add	r2, r2, r12                                 #! PC = 0x11558
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1155c
+	add	r2, r2, r1                                  #! PC = 0x11560
+	ldr	r12, [lr], #4                               #! EA = L0x10ca8; Value = 0x0fc19dc6; PC = 0x11564
+	add	r9, r9, r2                                  #! PC = 0x11568
+	str	r2, [sp, #8]                                #! EA = L0x407ffcf8; PC = 0x1156c
+	eor	r2, r7, r8                                  #! PC = 0x11570
+	add	r9, r9, r0, ror #6                          #! PC = 0x11574
+	and	r2, r2, r6                                  #! PC = 0x11578
+	add	r9, r9, r12                                 #! PC = 0x1157c
+	eor	r2, r2, r8                                  #! PC = 0x11580
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11584
+	add	r9, r9, r2                                  #! PC = 0x11588
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x80000000; PC = 0x1158c
+	eor	r12, r10, r11                               #! PC = 0x11590
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x59e8f75e; PC = 0x11594
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11598
+	and	r3, r3, r12                                 #! PC = 0x1159c
+	add	r5, r5, r9                                  #! PC = 0x115a0
+	eor	r3, r3, r11                                 #! PC = 0x115a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x115a8
+	ror	r0, r2, #7                                  #! PC = 0x115ac
+	add	r9, r9, r3                                  #! PC = 0x115b0
+	ror	r3, r1, #17                                 #! PC = 0x115b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x115b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x115bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x115c0
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x0c0d0e0f; PC = 0x115c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x115c8
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x00000000; PC = 0x115cc
+	add	r3, r3, r0                                  #! PC = 0x115d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x115d4
+	add	r2, r2, r3                                  #! PC = 0x115d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x115dc
+	add	r2, r2, r1                                  #! PC = 0x115e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cac; Value = 0x240ca1cc; PC = 0x115e4
+	add	r8, r8, r2                                  #! PC = 0x115e8
+	str	r2, [sp, #12]                               #! EA = L0x407ffcfc; PC = 0x115ec
+	eor	r2, r6, r7                                  #! PC = 0x115f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x115f4
+	and	r2, r2, r5                                  #! PC = 0x115f8
+	add	r8, r8, r3                                  #! PC = 0x115fc
+	eor	r2, r2, r7                                  #! PC = 0x11600
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11604
+	add	r8, r8, r2                                  #! PC = 0x11608
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x00000000; PC = 0x1160c
+	eor	r3, r9, r10                                 #! PC = 0x11610
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0xdf656fe8; PC = 0x11614
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11618
+	and	r12, r12, r3                                #! PC = 0x1161c
+	add	r4, r4, r8                                  #! PC = 0x11620
+	eor	r12, r12, r10                               #! PC = 0x11624
+	add	r8, r8, r0, ror #2                          #! PC = 0x11628
+	ror	r0, r2, #7                                  #! PC = 0x1162c
+	add	r8, r8, r12                                 #! PC = 0x11630
+	ror	r12, r1, #17                                #! PC = 0x11634
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11638
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1163c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11640
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x80000000; PC = 0x11644
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11648
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x00000000; PC = 0x1164c
+	add	r12, r12, r0                                #! PC = 0x11650
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11654
+	add	r2, r2, r12                                 #! PC = 0x11658
+	eor	r0, r0, r4, ror #19                         #! PC = 0x1165c
+	add	r2, r2, r1                                  #! PC = 0x11660
+	ldr	r12, [lr], #4                               #! EA = L0x10cb0; Value = 0x2de92c6f; PC = 0x11664
+	add	r7, r7, r2                                  #! PC = 0x11668
+	str	r2, [sp, #16]                               #! EA = L0x407ffd00; PC = 0x1166c
+	eor	r2, r5, r6                                  #! PC = 0x11670
+	add	r7, r7, r0, ror #6                          #! PC = 0x11674
+	and	r2, r2, r4                                  #! PC = 0x11678
+	add	r7, r7, r12                                 #! PC = 0x1167c
+	eor	r2, r2, r6                                  #! PC = 0x11680
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11684
+	add	r7, r7, r2                                  #! PC = 0x11688
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x00000000; PC = 0x1168c
+	eor	r12, r8, r9                                 #! PC = 0x11690
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x825fcc03; PC = 0x11694
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11698
+	and	r3, r3, r12                                 #! PC = 0x1169c
+	add	r11, r11, r7                                #! PC = 0x116a0
+	eor	r3, r3, r9                                  #! PC = 0x116a4
+	add	r7, r7, r0, ror #2                          #! PC = 0x116a8
+	ror	r0, r2, #7                                  #! PC = 0x116ac
+	add	r7, r7, r3                                  #! PC = 0x116b0
+	ror	r3, r1, #17                                 #! PC = 0x116b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x116b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x116bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x116c0
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x00000000; PC = 0x116c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x116c8
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x00000000; PC = 0x116cc
+	add	r3, r3, r0                                  #! PC = 0x116d0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x116d4
+	add	r2, r2, r3                                  #! PC = 0x116d8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x116dc
+	add	r2, r2, r1                                  #! PC = 0x116e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cb4; Value = 0x4a7484aa; PC = 0x116e4
+	add	r6, r6, r2                                  #! PC = 0x116e8
+	str	r2, [sp, #20]                               #! EA = L0x407ffd04; PC = 0x116ec
+	eor	r2, r4, r5                                  #! PC = 0x116f0
+	add	r6, r6, r0, ror #6                          #! PC = 0x116f4
+	and	r2, r2, r11                                 #! PC = 0x116f8
+	add	r6, r6, r3                                  #! PC = 0x116fc
+	eor	r2, r2, r5                                  #! PC = 0x11700
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11704
+	add	r6, r6, r2                                  #! PC = 0x11708
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x00000000; PC = 0x1170c
+	eor	r3, r7, r8                                  #! PC = 0x11710
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x9a3ead05; PC = 0x11714
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11718
+	and	r12, r12, r3                                #! PC = 0x1171c
+	add	r10, r10, r6                                #! PC = 0x11720
+	eor	r12, r12, r8                                #! PC = 0x11724
+	add	r6, r6, r0, ror #2                          #! PC = 0x11728
+	ror	r0, r2, #7                                  #! PC = 0x1172c
+	add	r6, r6, r12                                 #! PC = 0x11730
+	ror	r12, r1, #17                                #! PC = 0x11734
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11738
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1173c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11740
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x00000000; PC = 0x11744
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11748
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x00000080; PC = 0x1174c
+	add	r12, r12, r0                                #! PC = 0x11750
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11754
+	add	r2, r2, r12                                 #! PC = 0x11758
+	eor	r0, r0, r10, ror #19                        #! PC = 0x1175c
+	add	r2, r2, r1                                  #! PC = 0x11760
+	ldr	r12, [lr], #4                               #! EA = L0x10cb8; Value = 0x5cb0a9dc; PC = 0x11764
+	add	r5, r5, r2                                  #! PC = 0x11768
+	str	r2, [sp, #24]                               #! EA = L0x407ffd08; PC = 0x1176c
+	eor	r2, r11, r4                                 #! PC = 0x11770
+	add	r5, r5, r0, ror #6                          #! PC = 0x11774
+	and	r2, r2, r10                                 #! PC = 0x11778
+	add	r5, r5, r12                                 #! PC = 0x1177c
+	eor	r2, r2, r4                                  #! PC = 0x11780
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11784
+	add	r5, r5, r2                                  #! PC = 0x11788
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x00000000; PC = 0x1178c
+	eor	r12, r6, r7                                 #! PC = 0x11790
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x1fa12697; PC = 0x11794
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11798
+	and	r3, r3, r12                                 #! PC = 0x1179c
+	add	r9, r9, r5                                  #! PC = 0x117a0
+	eor	r3, r3, r7                                  #! PC = 0x117a4
+	add	r5, r5, r0, ror #2                          #! PC = 0x117a8
+	ror	r0, r2, #7                                  #! PC = 0x117ac
+	add	r5, r5, r3                                  #! PC = 0x117b0
+	ror	r3, r1, #17                                 #! PC = 0x117b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x117b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x117bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x117c0
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x00000000; PC = 0x117c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x117c8
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x4f0a6dd0; PC = 0x117cc
+	add	r3, r3, r0                                  #! PC = 0x117d0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x117d4
+	add	r2, r2, r3                                  #! PC = 0x117d8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x117dc
+	add	r2, r2, r1                                  #! PC = 0x117e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cbc; Value = 0x76f988da; PC = 0x117e4
+	add	r4, r4, r2                                  #! PC = 0x117e8
+	str	r2, [sp, #28]                               #! EA = L0x407ffd0c; PC = 0x117ec
+	eor	r2, r10, r11                                #! PC = 0x117f0
+	add	r4, r4, r0, ror #6                          #! PC = 0x117f4
+	and	r2, r2, r9                                  #! PC = 0x117f8
+	add	r4, r4, r3                                  #! PC = 0x117fc
+	eor	r2, r2, r11                                 #! PC = 0x11800
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11804
+	add	r4, r4, r2                                  #! PC = 0x11808
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x00000000; PC = 0x1180c
+	eor	r3, r5, r6                                  #! PC = 0x11810
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x8304f273; PC = 0x11814
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11818
+	and	r12, r12, r3                                #! PC = 0x1181c
+	add	r8, r8, r4                                  #! PC = 0x11820
+	eor	r12, r12, r6                                #! PC = 0x11824
+	add	r4, r4, r0, ror #2                          #! PC = 0x11828
+	ror	r0, r2, #7                                  #! PC = 0x1182c
+	add	r4, r4, r12                                 #! PC = 0x11830
+	ror	r12, r1, #17                                #! PC = 0x11834
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11838
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1183c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11840
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x00000000; PC = 0x11844
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11848
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x59e8f75e; PC = 0x1184c
+	add	r12, r12, r0                                #! PC = 0x11850
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11854
+	add	r2, r2, r12                                 #! PC = 0x11858
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1185c
+	add	r2, r2, r1                                  #! PC = 0x11860
+	ldr	r12, [lr], #4                               #! EA = L0x10cc0; Value = 0x983e5152; PC = 0x11864
+	add	r11, r11, r2                                #! PC = 0x11868
+	str	r2, [sp, #32]                               #! EA = L0x407ffd10; PC = 0x1186c
+	eor	r2, r9, r10                                 #! PC = 0x11870
+	add	r11, r11, r0, ror #6                        #! PC = 0x11874
+	and	r2, r2, r8                                  #! PC = 0x11878
+	add	r11, r11, r12                               #! PC = 0x1187c
+	eor	r2, r2, r10                                 #! PC = 0x11880
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11884
+	add	r11, r11, r2                                #! PC = 0x11888
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x00000000; PC = 0x1188c
+	eor	r12, r4, r5                                 #! PC = 0x11890
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x06a8f23d; PC = 0x11894
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11898
+	and	r3, r3, r12                                 #! PC = 0x1189c
+	add	r7, r7, r11                                 #! PC = 0x118a0
+	eor	r3, r3, r5                                  #! PC = 0x118a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x118a8
+	ror	r0, r2, #7                                  #! PC = 0x118ac
+	add	r11, r11, r3                                #! PC = 0x118b0
+	ror	r3, r1, #17                                 #! PC = 0x118b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x118b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x118bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x118c0
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x00000000; PC = 0x118c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x118c8
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0xdf656fe8; PC = 0x118cc
+	add	r3, r3, r0                                  #! PC = 0x118d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x118d4
+	add	r2, r2, r3                                  #! PC = 0x118d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x118dc
+	add	r2, r2, r1                                  #! PC = 0x118e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cc4; Value = 0xa831c66d; PC = 0x118e4
+	add	r10, r10, r2                                #! PC = 0x118e8
+	str	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; PC = 0x118ec
+	eor	r2, r8, r9                                  #! PC = 0x118f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x118f4
+	and	r2, r2, r7                                  #! PC = 0x118f8
+	add	r10, r10, r3                                #! PC = 0x118fc
+	eor	r2, r2, r9                                  #! PC = 0x11900
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11904
+	add	r10, r10, r2                                #! PC = 0x11908
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0x00000000; PC = 0x1190c
+	eor	r3, r11, r4                                 #! PC = 0x11910
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x4140683c; PC = 0x11914
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11918
+	and	r12, r12, r3                                #! PC = 0x1191c
+	add	r6, r6, r10                                 #! PC = 0x11920
+	eor	r12, r12, r4                                #! PC = 0x11924
+	add	r10, r10, r0, ror #2                        #! PC = 0x11928
+	ror	r0, r2, #7                                  #! PC = 0x1192c
+	add	r10, r10, r12                               #! PC = 0x11930
+	ror	r12, r1, #17                                #! PC = 0x11934
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11938
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1193c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11940
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x00000000; PC = 0x11944
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11948
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x825fcc03; PC = 0x1194c
+	add	r12, r12, r0                                #! PC = 0x11950
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11954
+	add	r2, r2, r12                                 #! PC = 0x11958
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1195c
+	add	r2, r2, r1                                  #! PC = 0x11960
+	ldr	r12, [lr], #4                               #! EA = L0x10cc8; Value = 0xb00327c8; PC = 0x11964
+	add	r9, r9, r2                                  #! PC = 0x11968
+	str	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; PC = 0x1196c
+	eor	r2, r7, r8                                  #! PC = 0x11970
+	add	r9, r9, r0, ror #6                          #! PC = 0x11974
+	and	r2, r2, r6                                  #! PC = 0x11978
+	add	r9, r9, r12                                 #! PC = 0x1197c
+	eor	r2, r2, r8                                  #! PC = 0x11980
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11984
+	add	r9, r9, r2                                  #! PC = 0x11988
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x00000000; PC = 0x1198c
+	eor	r12, r10, r11                               #! PC = 0x11990
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x46bdf9a5; PC = 0x11994
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11998
+	and	r3, r3, r12                                 #! PC = 0x1199c
+	add	r5, r5, r9                                  #! PC = 0x119a0
+	eor	r3, r3, r11                                 #! PC = 0x119a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x119a8
+	ror	r0, r2, #7                                  #! PC = 0x119ac
+	add	r9, r9, r3                                  #! PC = 0x119b0
+	ror	r3, r1, #17                                 #! PC = 0x119b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x119b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x119bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x119c0
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0x00000000; PC = 0x119c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x119c8
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x9a3ead05; PC = 0x119cc
+	add	r3, r3, r0                                  #! PC = 0x119d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x119d4
+	add	r2, r2, r3                                  #! PC = 0x119d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x119dc
+	add	r2, r2, r1                                  #! PC = 0x119e0
+	ldr	r3, [lr], #4                                #! EA = L0x10ccc; Value = 0xbf597fc7; PC = 0x119e4
+	add	r8, r8, r2                                  #! PC = 0x119e8
+	str	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; PC = 0x119ec
+	eor	r2, r6, r7                                  #! PC = 0x119f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x119f4
+	and	r2, r2, r5                                  #! PC = 0x119f8
+	add	r8, r8, r3                                  #! PC = 0x119fc
+	eor	r2, r2, r7                                  #! PC = 0x11a00
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11a04
+	add	r8, r8, r2                                  #! PC = 0x11a08
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x00000000; PC = 0x11a0c
+	eor	r3, r9, r10                                 #! PC = 0x11a10
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0xbb69c495; PC = 0x11a14
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11a18
+	and	r12, r12, r3                                #! PC = 0x11a1c
+	add	r4, r4, r8                                  #! PC = 0x11a20
+	eor	r12, r12, r10                               #! PC = 0x11a24
+	add	r8, r8, r0, ror #2                          #! PC = 0x11a28
+	ror	r0, r2, #7                                  #! PC = 0x11a2c
+	add	r8, r8, r12                                 #! PC = 0x11a30
+	ror	r12, r1, #17                                #! PC = 0x11a34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11a38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11a3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11a40
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x00000000; PC = 0x11a44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11a48
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x1fa12697; PC = 0x11a4c
+	add	r12, r12, r0                                #! PC = 0x11a50
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11a54
+	add	r2, r2, r12                                 #! PC = 0x11a58
+	eor	r0, r0, r4, ror #19                         #! PC = 0x11a5c
+	add	r2, r2, r1                                  #! PC = 0x11a60
+	ldr	r12, [lr], #4                               #! EA = L0x10cd0; Value = 0xc6e00bf3; PC = 0x11a64
+	add	r7, r7, r2                                  #! PC = 0x11a68
+	str	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; PC = 0x11a6c
+	eor	r2, r5, r6                                  #! PC = 0x11a70
+	add	r7, r7, r0, ror #6                          #! PC = 0x11a74
+	and	r2, r2, r4                                  #! PC = 0x11a78
+	add	r7, r7, r12                                 #! PC = 0x11a7c
+	eor	r2, r2, r6                                  #! PC = 0x11a80
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11a84
+	add	r7, r7, r2                                  #! PC = 0x11a88
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x00000000; PC = 0x11a8c
+	eor	r12, r8, r9                                 #! PC = 0x11a90
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xde3651fc; PC = 0x11a94
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11a98
+	and	r3, r3, r12                                 #! PC = 0x11a9c
+	add	r11, r11, r7                                #! PC = 0x11aa0
+	eor	r3, r3, r9                                  #! PC = 0x11aa4
+	add	r7, r7, r0, ror #2                          #! PC = 0x11aa8
+	ror	r0, r2, #7                                  #! PC = 0x11aac
+	add	r7, r7, r3                                  #! PC = 0x11ab0
+	ror	r3, r1, #17                                 #! PC = 0x11ab4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11ab8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11abc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11ac0
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x00000000; PC = 0x11ac4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11ac8
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x8304f273; PC = 0x11acc
+	add	r3, r3, r0                                  #! PC = 0x11ad0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x11ad4
+	add	r2, r2, r3                                  #! PC = 0x11ad8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x11adc
+	add	r2, r2, r1                                  #! PC = 0x11ae0
+	ldr	r3, [lr], #4                                #! EA = L0x10cd4; Value = 0xd5a79147; PC = 0x11ae4
+	add	r6, r6, r2                                  #! PC = 0x11ae8
+	str	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; PC = 0x11aec
+	eor	r2, r4, r5                                  #! PC = 0x11af0
+	add	r6, r6, r0, ror #6                          #! PC = 0x11af4
+	and	r2, r2, r11                                 #! PC = 0x11af8
+	add	r6, r6, r3                                  #! PC = 0x11afc
+	eor	r2, r2, r5                                  #! PC = 0x11b00
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11b04
+	add	r6, r6, r2                                  #! PC = 0x11b08
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x00000080; PC = 0x11b0c
+	eor	r3, r7, r8                                  #! PC = 0x11b10
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0xfa97d73f; PC = 0x11b14
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11b18
+	and	r12, r12, r3                                #! PC = 0x11b1c
+	add	r10, r10, r6                                #! PC = 0x11b20
+	eor	r12, r12, r8                                #! PC = 0x11b24
+	add	r6, r6, r0, ror #2                          #! PC = 0x11b28
+	ror	r0, r2, #7                                  #! PC = 0x11b2c
+	add	r6, r6, r12                                 #! PC = 0x11b30
+	ror	r12, r1, #17                                #! PC = 0x11b34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11b38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11b3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11b40
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x00000000; PC = 0x11b44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11b48
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x06a8f23d; PC = 0x11b4c
+	add	r12, r12, r0                                #! PC = 0x11b50
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11b54
+	add	r2, r2, r12                                 #! PC = 0x11b58
+	eor	r0, r0, r10, ror #19                        #! PC = 0x11b5c
+	add	r2, r2, r1                                  #! PC = 0x11b60
+	ldr	r12, [lr], #4                               #! EA = L0x10cd8; Value = 0x06ca6351; PC = 0x11b64
+	add	r5, r5, r2                                  #! PC = 0x11b68
+	str	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; PC = 0x11b6c
+	eor	r2, r11, r4                                 #! PC = 0x11b70
+	add	r5, r5, r0, ror #6                          #! PC = 0x11b74
+	and	r2, r2, r10                                 #! PC = 0x11b78
+	add	r5, r5, r12                                 #! PC = 0x11b7c
+	eor	r2, r2, r4                                  #! PC = 0x11b80
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11b84
+	add	r5, r5, r2                                  #! PC = 0x11b88
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x4f0a6dd0; PC = 0x11b8c
+	eor	r12, r6, r7                                 #! PC = 0x11b90
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x65fb6bbc; PC = 0x11b94
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11b98
+	and	r3, r3, r12                                 #! PC = 0x11b9c
+	add	r9, r9, r5                                  #! PC = 0x11ba0
+	eor	r3, r3, r7                                  #! PC = 0x11ba4
+	add	r5, r5, r0, ror #2                          #! PC = 0x11ba8
+	ror	r0, r2, #7                                  #! PC = 0x11bac
+	add	r5, r5, r3                                  #! PC = 0x11bb0
+	ror	r3, r1, #17                                 #! PC = 0x11bb4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11bb8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11bbc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11bc0
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x00000080; PC = 0x11bc4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11bc8
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x4140683c; PC = 0x11bcc
+	add	r3, r3, r0                                  #! PC = 0x11bd0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x11bd4
+	add	r2, r2, r3                                  #! PC = 0x11bd8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x11bdc
+	add	r2, r2, r1                                  #! PC = 0x11be0
+	ldr	r3, [lr], #4                                #! EA = L0x10cdc; Value = 0x14292967; PC = 0x11be4
+	add	r4, r4, r2                                  #! PC = 0x11be8
+	str	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; PC = 0x11bec
+	eor	r2, r10, r11                                #! PC = 0x11bf0
+	add	r4, r4, r0, ror #6                          #! PC = 0x11bf4
+	and	r2, r2, r9                                  #! PC = 0x11bf8
+	add	r4, r4, r3                                  #! PC = 0x11bfc
+	eor	r2, r2, r11                                 #! PC = 0x11c00
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11c04
+	add	r4, r4, r2                                  #! PC = 0x11c08
+	and	r3, r3, #255	; 0xff                         #! PC = 0x11c0c
+	cmp	r3, #242	; 0xf2                             #! PC = 0x11c10
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x59e8f75e; PC = 0x11c14
+	eor	r3, r5, r6                                  #! PC = 0x11c18
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x180f9a3a; PC = 0x11c1c
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11c20
+	and	r12, r12, r3                                #! PC = 0x11c24
+	add	r8, r8, r4                                  #! PC = 0x11c28
+	eor	r12, r12, r6                                #! PC = 0x11c2c
+	add	r4, r4, r0, ror #2                          #! PC = 0x11c30
+	ldreq	r3, [sp, #64]	; 0x40                      #! EA = L0x407ffd30; Value = 0x0002204c; PC = 0x11c34
+	#bne	0x1142c <sha256_block_data_order+1708>     #! PC = 0x11c38
+	ror	r0, r2, #7                                  #! PC = 0x1142c
+	add	r4, r4, r12                                 #! PC = 0x11430
+	ror	r12, r1, #17                                #! PC = 0x11434
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11438
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1143c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11440
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x4f0a6dd0; PC = 0x11444
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11448
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x46bdf9a5; PC = 0x1144c
+	add	r12, r12, r0                                #! PC = 0x11450
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11454
+	add	r2, r2, r12                                 #! PC = 0x11458
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1145c
+	add	r2, r2, r1                                  #! PC = 0x11460
+	ldr	r12, [lr], #4                               #! EA = L0x10ce0; Value = 0x27b70a85; PC = 0x11464
+	add	r11, r11, r2                                #! PC = 0x11468
+	str	r2, [sp]                                    #! EA = L0x407ffcf0; PC = 0x1146c
+	eor	r2, r9, r10                                 #! PC = 0x11470
+	add	r11, r11, r0, ror #6                        #! PC = 0x11474
+	and	r2, r2, r8                                  #! PC = 0x11478
+	add	r11, r11, r12                               #! PC = 0x1147c
+	eor	r2, r2, r10                                 #! PC = 0x11480
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11484
+	add	r11, r11, r2                                #! PC = 0x11488
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0xdf656fe8; PC = 0x1148c
+	eor	r12, r4, r5                                 #! PC = 0x11490
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x4bfc73f7; PC = 0x11494
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11498
+	and	r3, r3, r12                                 #! PC = 0x1149c
+	add	r7, r7, r11                                 #! PC = 0x114a0
+	eor	r3, r3, r5                                  #! PC = 0x114a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x114a8
+	ror	r0, r2, #7                                  #! PC = 0x114ac
+	add	r11, r11, r3                                #! PC = 0x114b0
+	ror	r3, r1, #17                                 #! PC = 0x114b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x114b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x114bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x114c0
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x59e8f75e; PC = 0x114c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x114c8
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0xbb69c495; PC = 0x114cc
+	add	r3, r3, r0                                  #! PC = 0x114d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x114d4
+	add	r2, r2, r3                                  #! PC = 0x114d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x114dc
+	add	r2, r2, r1                                  #! PC = 0x114e0
+	ldr	r3, [lr], #4                                #! EA = L0x10ce4; Value = 0x2e1b2138; PC = 0x114e4
+	add	r10, r10, r2                                #! PC = 0x114e8
+	str	r2, [sp, #4]                                #! EA = L0x407ffcf4; PC = 0x114ec
+	eor	r2, r8, r9                                  #! PC = 0x114f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x114f4
+	and	r2, r2, r7                                  #! PC = 0x114f8
+	add	r10, r10, r3                                #! PC = 0x114fc
+	eor	r2, r2, r9                                  #! PC = 0x11500
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11504
+	add	r10, r10, r2                                #! PC = 0x11508
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x825fcc03; PC = 0x1150c
+	eor	r3, r11, r4                                 #! PC = 0x11510
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x5e7e0dd4; PC = 0x11514
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11518
+	and	r12, r12, r3                                #! PC = 0x1151c
+	add	r6, r6, r10                                 #! PC = 0x11520
+	eor	r12, r12, r4                                #! PC = 0x11524
+	add	r10, r10, r0, ror #2                        #! PC = 0x11528
+	ror	r0, r2, #7                                  #! PC = 0x1152c
+	add	r10, r10, r12                               #! PC = 0x11530
+	ror	r12, r1, #17                                #! PC = 0x11534
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11538
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1153c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11540
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0xdf656fe8; PC = 0x11544
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11548
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xde3651fc; PC = 0x1154c
+	add	r12, r12, r0                                #! PC = 0x11550
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11554
+	add	r2, r2, r12                                 #! PC = 0x11558
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1155c
+	add	r2, r2, r1                                  #! PC = 0x11560
+	ldr	r12, [lr], #4                               #! EA = L0x10ce8; Value = 0x4d2c6dfc; PC = 0x11564
+	add	r9, r9, r2                                  #! PC = 0x11568
+	str	r2, [sp, #8]                                #! EA = L0x407ffcf8; PC = 0x1156c
+	eor	r2, r7, r8                                  #! PC = 0x11570
+	add	r9, r9, r0, ror #6                          #! PC = 0x11574
+	and	r2, r2, r6                                  #! PC = 0x11578
+	add	r9, r9, r12                                 #! PC = 0x1157c
+	eor	r2, r2, r8                                  #! PC = 0x11580
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11584
+	add	r9, r9, r2                                  #! PC = 0x11588
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x9a3ead05; PC = 0x1158c
+	eor	r12, r10, r11                               #! PC = 0x11590
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x5e92c08b; PC = 0x11594
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11598
+	and	r3, r3, r12                                 #! PC = 0x1159c
+	add	r5, r5, r9                                  #! PC = 0x115a0
+	eor	r3, r3, r11                                 #! PC = 0x115a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x115a8
+	ror	r0, r2, #7                                  #! PC = 0x115ac
+	add	r9, r9, r3                                  #! PC = 0x115b0
+	ror	r3, r1, #17                                 #! PC = 0x115b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x115b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x115bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x115c0
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x825fcc03; PC = 0x115c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x115c8
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0xfa97d73f; PC = 0x115cc
+	add	r3, r3, r0                                  #! PC = 0x115d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x115d4
+	add	r2, r2, r3                                  #! PC = 0x115d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x115dc
+	add	r2, r2, r1                                  #! PC = 0x115e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cec; Value = 0x53380d13; PC = 0x115e4
+	add	r8, r8, r2                                  #! PC = 0x115e8
+	str	r2, [sp, #12]                               #! EA = L0x407ffcfc; PC = 0x115ec
+	eor	r2, r6, r7                                  #! PC = 0x115f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x115f4
+	and	r2, r2, r5                                  #! PC = 0x115f8
+	add	r8, r8, r3                                  #! PC = 0x115fc
+	eor	r2, r2, r7                                  #! PC = 0x11600
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11604
+	add	r8, r8, r2                                  #! PC = 0x11608
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x1fa12697; PC = 0x1160c
+	eor	r3, r9, r10                                 #! PC = 0x11610
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x6932a3e6; PC = 0x11614
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11618
+	and	r12, r12, r3                                #! PC = 0x1161c
+	add	r4, r4, r8                                  #! PC = 0x11620
+	eor	r12, r12, r10                               #! PC = 0x11624
+	add	r8, r8, r0, ror #2                          #! PC = 0x11628
+	ror	r0, r2, #7                                  #! PC = 0x1162c
+	add	r8, r8, r12                                 #! PC = 0x11630
+	ror	r12, r1, #17                                #! PC = 0x11634
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11638
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1163c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11640
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x9a3ead05; PC = 0x11644
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11648
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x65fb6bbc; PC = 0x1164c
+	add	r12, r12, r0                                #! PC = 0x11650
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11654
+	add	r2, r2, r12                                 #! PC = 0x11658
+	eor	r0, r0, r4, ror #19                         #! PC = 0x1165c
+	add	r2, r2, r1                                  #! PC = 0x11660
+	ldr	r12, [lr], #4                               #! EA = L0x10cf0; Value = 0x650a7354; PC = 0x11664
+	add	r7, r7, r2                                  #! PC = 0x11668
+	str	r2, [sp, #16]                               #! EA = L0x407ffd00; PC = 0x1166c
+	eor	r2, r5, r6                                  #! PC = 0x11670
+	add	r7, r7, r0, ror #6                          #! PC = 0x11674
+	and	r2, r2, r4                                  #! PC = 0x11678
+	add	r7, r7, r12                                 #! PC = 0x1167c
+	eor	r2, r2, r6                                  #! PC = 0x11680
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11684
+	add	r7, r7, r2                                  #! PC = 0x11688
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x8304f273; PC = 0x1168c
+	eor	r12, r8, r9                                 #! PC = 0x11690
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x686dd1e2; PC = 0x11694
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11698
+	and	r3, r3, r12                                 #! PC = 0x1169c
+	add	r11, r11, r7                                #! PC = 0x116a0
+	eor	r3, r3, r9                                  #! PC = 0x116a4
+	add	r7, r7, r0, ror #2                          #! PC = 0x116a8
+	ror	r0, r2, #7                                  #! PC = 0x116ac
+	add	r7, r7, r3                                  #! PC = 0x116b0
+	ror	r3, r1, #17                                 #! PC = 0x116b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x116b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x116bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x116c0
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x1fa12697; PC = 0x116c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x116c8
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x180f9a3a; PC = 0x116cc
+	add	r3, r3, r0                                  #! PC = 0x116d0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x116d4
+	add	r2, r2, r3                                  #! PC = 0x116d8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x116dc
+	add	r2, r2, r1                                  #! PC = 0x116e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cf4; Value = 0x766a0abb; PC = 0x116e4
+	add	r6, r6, r2                                  #! PC = 0x116e8
+	str	r2, [sp, #20]                               #! EA = L0x407ffd04; PC = 0x116ec
+	eor	r2, r4, r5                                  #! PC = 0x116f0
+	add	r6, r6, r0, ror #6                          #! PC = 0x116f4
+	and	r2, r2, r11                                 #! PC = 0x116f8
+	add	r6, r6, r3                                  #! PC = 0x116fc
+	eor	r2, r2, r5                                  #! PC = 0x11700
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11704
+	add	r6, r6, r2                                  #! PC = 0x11708
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x06a8f23d; PC = 0x1170c
+	eor	r3, r7, r8                                  #! PC = 0x11710
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x6a3e6f4f; PC = 0x11714
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11718
+	and	r12, r12, r3                                #! PC = 0x1171c
+	add	r10, r10, r6                                #! PC = 0x11720
+	eor	r12, r12, r8                                #! PC = 0x11724
+	add	r6, r6, r0, ror #2                          #! PC = 0x11728
+	ror	r0, r2, #7                                  #! PC = 0x1172c
+	add	r6, r6, r12                                 #! PC = 0x11730
+	ror	r12, r1, #17                                #! PC = 0x11734
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11738
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1173c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11740
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x8304f273; PC = 0x11744
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11748
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x4bfc73f7; PC = 0x1174c
+	add	r12, r12, r0                                #! PC = 0x11750
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11754
+	add	r2, r2, r12                                 #! PC = 0x11758
+	eor	r0, r0, r10, ror #19                        #! PC = 0x1175c
+	add	r2, r2, r1                                  #! PC = 0x11760
+	ldr	r12, [lr], #4                               #! EA = L0x10cf8; Value = 0x81c2c92e; PC = 0x11764
+	add	r5, r5, r2                                  #! PC = 0x11768
+	str	r2, [sp, #24]                               #! EA = L0x407ffd08; PC = 0x1176c
+	eor	r2, r11, r4                                 #! PC = 0x11770
+	add	r5, r5, r0, ror #6                          #! PC = 0x11774
+	and	r2, r2, r10                                 #! PC = 0x11778
+	add	r5, r5, r12                                 #! PC = 0x1177c
+	eor	r2, r2, r4                                  #! PC = 0x11780
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11784
+	add	r5, r5, r2                                  #! PC = 0x11788
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x4140683c; PC = 0x1178c
+	eor	r12, r6, r7                                 #! PC = 0x11790
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x56829a8b; PC = 0x11794
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11798
+	and	r3, r3, r12                                 #! PC = 0x1179c
+	add	r9, r9, r5                                  #! PC = 0x117a0
+	eor	r3, r3, r7                                  #! PC = 0x117a4
+	add	r5, r5, r0, ror #2                          #! PC = 0x117a8
+	ror	r0, r2, #7                                  #! PC = 0x117ac
+	add	r5, r5, r3                                  #! PC = 0x117b0
+	ror	r3, r1, #17                                 #! PC = 0x117b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x117b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x117bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x117c0
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x06a8f23d; PC = 0x117c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x117c8
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x5e7e0dd4; PC = 0x117cc
+	add	r3, r3, r0                                  #! PC = 0x117d0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x117d4
+	add	r2, r2, r3                                  #! PC = 0x117d8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x117dc
+	add	r2, r2, r1                                  #! PC = 0x117e0
+	ldr	r3, [lr], #4                                #! EA = L0x10cfc; Value = 0x92722c85; PC = 0x117e4
+	add	r4, r4, r2                                  #! PC = 0x117e8
+	str	r2, [sp, #28]                               #! EA = L0x407ffd0c; PC = 0x117ec
+	eor	r2, r10, r11                                #! PC = 0x117f0
+	add	r4, r4, r0, ror #6                          #! PC = 0x117f4
+	and	r2, r2, r9                                  #! PC = 0x117f8
+	add	r4, r4, r3                                  #! PC = 0x117fc
+	eor	r2, r2, r11                                 #! PC = 0x11800
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11804
+	add	r4, r4, r2                                  #! PC = 0x11808
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x46bdf9a5; PC = 0x1180c
+	eor	r3, r5, r6                                  #! PC = 0x11810
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x0fad4c36; PC = 0x11814
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11818
+	and	r12, r12, r3                                #! PC = 0x1181c
+	add	r8, r8, r4                                  #! PC = 0x11820
+	eor	r12, r12, r6                                #! PC = 0x11824
+	add	r4, r4, r0, ror #2                          #! PC = 0x11828
+	ror	r0, r2, #7                                  #! PC = 0x1182c
+	add	r4, r4, r12                                 #! PC = 0x11830
+	ror	r12, r1, #17                                #! PC = 0x11834
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11838
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1183c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11840
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x4140683c; PC = 0x11844
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11848
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x5e92c08b; PC = 0x1184c
+	add	r12, r12, r0                                #! PC = 0x11850
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11854
+	add	r2, r2, r12                                 #! PC = 0x11858
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1185c
+	add	r2, r2, r1                                  #! PC = 0x11860
+	ldr	r12, [lr], #4                               #! EA = L0x10d00; Value = 0xa2bfe8a1; PC = 0x11864
+	add	r11, r11, r2                                #! PC = 0x11868
+	str	r2, [sp, #32]                               #! EA = L0x407ffd10; PC = 0x1186c
+	eor	r2, r9, r10                                 #! PC = 0x11870
+	add	r11, r11, r0, ror #6                        #! PC = 0x11874
+	and	r2, r2, r8                                  #! PC = 0x11878
+	add	r11, r11, r12                               #! PC = 0x1187c
+	eor	r2, r2, r10                                 #! PC = 0x11880
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11884
+	add	r11, r11, r2                                #! PC = 0x11888
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0xbb69c495; PC = 0x1188c
+	eor	r12, r4, r5                                 #! PC = 0x11890
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0xedcdfecf; PC = 0x11894
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11898
+	and	r3, r3, r12                                 #! PC = 0x1189c
+	add	r7, r7, r11                                 #! PC = 0x118a0
+	eor	r3, r3, r5                                  #! PC = 0x118a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x118a8
+	ror	r0, r2, #7                                  #! PC = 0x118ac
+	add	r11, r11, r3                                #! PC = 0x118b0
+	ror	r3, r1, #17                                 #! PC = 0x118b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x118b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x118bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x118c0
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x46bdf9a5; PC = 0x118c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x118c8
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x6932a3e6; PC = 0x118cc
+	add	r3, r3, r0                                  #! PC = 0x118d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x118d4
+	add	r2, r2, r3                                  #! PC = 0x118d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x118dc
+	add	r2, r2, r1                                  #! PC = 0x118e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d04; Value = 0xa81a664b; PC = 0x118e4
+	add	r10, r10, r2                                #! PC = 0x118e8
+	str	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; PC = 0x118ec
+	eor	r2, r8, r9                                  #! PC = 0x118f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x118f4
+	and	r2, r2, r7                                  #! PC = 0x118f8
+	add	r10, r10, r3                                #! PC = 0x118fc
+	eor	r2, r2, r9                                  #! PC = 0x11900
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11904
+	add	r10, r10, r2                                #! PC = 0x11908
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xde3651fc; PC = 0x1190c
+	eor	r3, r11, r4                                 #! PC = 0x11910
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0xeba4eb9f; PC = 0x11914
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11918
+	and	r12, r12, r3                                #! PC = 0x1191c
+	add	r6, r6, r10                                 #! PC = 0x11920
+	eor	r12, r12, r4                                #! PC = 0x11924
+	add	r10, r10, r0, ror #2                        #! PC = 0x11928
+	ror	r0, r2, #7                                  #! PC = 0x1192c
+	add	r10, r10, r12                               #! PC = 0x11930
+	ror	r12, r1, #17                                #! PC = 0x11934
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11938
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1193c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11940
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0xbb69c495; PC = 0x11944
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11948
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x686dd1e2; PC = 0x1194c
+	add	r12, r12, r0                                #! PC = 0x11950
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11954
+	add	r2, r2, r12                                 #! PC = 0x11958
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1195c
+	add	r2, r2, r1                                  #! PC = 0x11960
+	ldr	r12, [lr], #4                               #! EA = L0x10d08; Value = 0xc24b8b70; PC = 0x11964
+	add	r9, r9, r2                                  #! PC = 0x11968
+	str	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; PC = 0x1196c
+	eor	r2, r7, r8                                  #! PC = 0x11970
+	add	r9, r9, r0, ror #6                          #! PC = 0x11974
+	and	r2, r2, r6                                  #! PC = 0x11978
+	add	r9, r9, r12                                 #! PC = 0x1197c
+	eor	r2, r2, r8                                  #! PC = 0x11980
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11984
+	add	r9, r9, r2                                  #! PC = 0x11988
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0xfa97d73f; PC = 0x1198c
+	eor	r12, r10, r11                               #! PC = 0x11990
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x3db49b6c; PC = 0x11994
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11998
+	and	r3, r3, r12                                 #! PC = 0x1199c
+	add	r5, r5, r9                                  #! PC = 0x119a0
+	eor	r3, r3, r11                                 #! PC = 0x119a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x119a8
+	ror	r0, r2, #7                                  #! PC = 0x119ac
+	add	r9, r9, r3                                  #! PC = 0x119b0
+	ror	r3, r1, #17                                 #! PC = 0x119b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x119b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x119bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x119c0
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xde3651fc; PC = 0x119c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x119c8
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x6a3e6f4f; PC = 0x119cc
+	add	r3, r3, r0                                  #! PC = 0x119d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x119d4
+	add	r2, r2, r3                                  #! PC = 0x119d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x119dc
+	add	r2, r2, r1                                  #! PC = 0x119e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d0c; Value = 0xc76c51a3; PC = 0x119e4
+	add	r8, r8, r2                                  #! PC = 0x119e8
+	str	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; PC = 0x119ec
+	eor	r2, r6, r7                                  #! PC = 0x119f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x119f4
+	and	r2, r2, r5                                  #! PC = 0x119f8
+	add	r8, r8, r3                                  #! PC = 0x119fc
+	eor	r2, r2, r7                                  #! PC = 0x11a00
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11a04
+	add	r8, r8, r2                                  #! PC = 0x11a08
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x65fb6bbc; PC = 0x11a0c
+	eor	r3, r9, r10                                 #! PC = 0x11a10
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x82640924; PC = 0x11a14
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11a18
+	and	r12, r12, r3                                #! PC = 0x11a1c
+	add	r4, r4, r8                                  #! PC = 0x11a20
+	eor	r12, r12, r10                               #! PC = 0x11a24
+	add	r8, r8, r0, ror #2                          #! PC = 0x11a28
+	ror	r0, r2, #7                                  #! PC = 0x11a2c
+	add	r8, r8, r12                                 #! PC = 0x11a30
+	ror	r12, r1, #17                                #! PC = 0x11a34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11a38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11a3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11a40
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0xfa97d73f; PC = 0x11a44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11a48
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x56829a8b; PC = 0x11a4c
+	add	r12, r12, r0                                #! PC = 0x11a50
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11a54
+	add	r2, r2, r12                                 #! PC = 0x11a58
+	eor	r0, r0, r4, ror #19                         #! PC = 0x11a5c
+	add	r2, r2, r1                                  #! PC = 0x11a60
+	ldr	r12, [lr], #4                               #! EA = L0x10d10; Value = 0xd192e819; PC = 0x11a64
+	add	r7, r7, r2                                  #! PC = 0x11a68
+	str	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; PC = 0x11a6c
+	eor	r2, r5, r6                                  #! PC = 0x11a70
+	add	r7, r7, r0, ror #6                          #! PC = 0x11a74
+	and	r2, r2, r4                                  #! PC = 0x11a78
+	add	r7, r7, r12                                 #! PC = 0x11a7c
+	eor	r2, r2, r6                                  #! PC = 0x11a80
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11a84
+	add	r7, r7, r2                                  #! PC = 0x11a88
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x180f9a3a; PC = 0x11a8c
+	eor	r12, r8, r9                                 #! PC = 0x11a90
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xbcb1e181; PC = 0x11a94
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11a98
+	and	r3, r3, r12                                 #! PC = 0x11a9c
+	add	r11, r11, r7                                #! PC = 0x11aa0
+	eor	r3, r3, r9                                  #! PC = 0x11aa4
+	add	r7, r7, r0, ror #2                          #! PC = 0x11aa8
+	ror	r0, r2, #7                                  #! PC = 0x11aac
+	add	r7, r7, r3                                  #! PC = 0x11ab0
+	ror	r3, r1, #17                                 #! PC = 0x11ab4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11ab8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11abc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11ac0
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x65fb6bbc; PC = 0x11ac4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11ac8
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x0fad4c36; PC = 0x11acc
+	add	r3, r3, r0                                  #! PC = 0x11ad0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x11ad4
+	add	r2, r2, r3                                  #! PC = 0x11ad8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x11adc
+	add	r2, r2, r1                                  #! PC = 0x11ae0
+	ldr	r3, [lr], #4                                #! EA = L0x10d14; Value = 0xd6990624; PC = 0x11ae4
+	add	r6, r6, r2                                  #! PC = 0x11ae8
+	str	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; PC = 0x11aec
+	eor	r2, r4, r5                                  #! PC = 0x11af0
+	add	r6, r6, r0, ror #6                          #! PC = 0x11af4
+	and	r2, r2, r11                                 #! PC = 0x11af8
+	add	r6, r6, r3                                  #! PC = 0x11afc
+	eor	r2, r2, r5                                  #! PC = 0x11b00
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11b04
+	add	r6, r6, r2                                  #! PC = 0x11b08
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x4bfc73f7; PC = 0x11b0c
+	eor	r3, r7, r8                                  #! PC = 0x11b10
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x854c3d24; PC = 0x11b14
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11b18
+	and	r12, r12, r3                                #! PC = 0x11b1c
+	add	r10, r10, r6                                #! PC = 0x11b20
+	eor	r12, r12, r8                                #! PC = 0x11b24
+	add	r6, r6, r0, ror #2                          #! PC = 0x11b28
+	ror	r0, r2, #7                                  #! PC = 0x11b2c
+	add	r6, r6, r12                                 #! PC = 0x11b30
+	ror	r12, r1, #17                                #! PC = 0x11b34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11b38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11b3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11b40
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x180f9a3a; PC = 0x11b44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11b48
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0xedcdfecf; PC = 0x11b4c
+	add	r12, r12, r0                                #! PC = 0x11b50
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11b54
+	add	r2, r2, r12                                 #! PC = 0x11b58
+	eor	r0, r0, r10, ror #19                        #! PC = 0x11b5c
+	add	r2, r2, r1                                  #! PC = 0x11b60
+	ldr	r12, [lr], #4                               #! EA = L0x10d18; Value = 0xf40e3585; PC = 0x11b64
+	add	r5, r5, r2                                  #! PC = 0x11b68
+	str	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; PC = 0x11b6c
+	eor	r2, r11, r4                                 #! PC = 0x11b70
+	add	r5, r5, r0, ror #6                          #! PC = 0x11b74
+	and	r2, r2, r10                                 #! PC = 0x11b78
+	add	r5, r5, r12                                 #! PC = 0x11b7c
+	eor	r2, r2, r4                                  #! PC = 0x11b80
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11b84
+	add	r5, r5, r2                                  #! PC = 0x11b88
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x5e7e0dd4; PC = 0x11b8c
+	eor	r12, r6, r7                                 #! PC = 0x11b90
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0xd447e818; PC = 0x11b94
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11b98
+	and	r3, r3, r12                                 #! PC = 0x11b9c
+	add	r9, r9, r5                                  #! PC = 0x11ba0
+	eor	r3, r3, r7                                  #! PC = 0x11ba4
+	add	r5, r5, r0, ror #2                          #! PC = 0x11ba8
+	ror	r0, r2, #7                                  #! PC = 0x11bac
+	add	r5, r5, r3                                  #! PC = 0x11bb0
+	ror	r3, r1, #17                                 #! PC = 0x11bb4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11bb8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11bbc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11bc0
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x4bfc73f7; PC = 0x11bc4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11bc8
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0xeba4eb9f; PC = 0x11bcc
+	add	r3, r3, r0                                  #! PC = 0x11bd0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x11bd4
+	add	r2, r2, r3                                  #! PC = 0x11bd8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x11bdc
+	add	r2, r2, r1                                  #! PC = 0x11be0
+	ldr	r3, [lr], #4                                #! EA = L0x10d1c; Value = 0x106aa070; PC = 0x11be4
+	add	r4, r4, r2                                  #! PC = 0x11be8
+	str	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; PC = 0x11bec
+	eor	r2, r10, r11                                #! PC = 0x11bf0
+	add	r4, r4, r0, ror #6                          #! PC = 0x11bf4
+	and	r2, r2, r9                                  #! PC = 0x11bf8
+	add	r4, r4, r3                                  #! PC = 0x11bfc
+	eor	r2, r2, r11                                 #! PC = 0x11c00
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11c04
+	add	r4, r4, r2                                  #! PC = 0x11c08
+	and	r3, r3, #255	; 0xff                         #! PC = 0x11c0c
+	cmp	r3, #242	; 0xf2                             #! PC = 0x11c10
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x5e92c08b; PC = 0x11c14
+	eor	r3, r5, r6                                  #! PC = 0x11c18
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x9a0abe6f; PC = 0x11c1c
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11c20
+	and	r12, r12, r3                                #! PC = 0x11c24
+	add	r8, r8, r4                                  #! PC = 0x11c28
+	eor	r12, r12, r6                                #! PC = 0x11c2c
+	add	r4, r4, r0, ror #2                          #! PC = 0x11c30
+	ldreq	r3, [sp, #64]	; 0x40                      #! EA = L0x407ffd30; Value = 0x0002204c; PC = 0x11c34
+	#bne	0x1142c <sha256_block_data_order+1708>     #! PC = 0x11c38
+	ror	r0, r2, #7                                  #! PC = 0x1142c
+	add	r4, r4, r12                                 #! PC = 0x11430
+	ror	r12, r1, #17                                #! PC = 0x11434
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11438
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1143c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11440
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x5e7e0dd4; PC = 0x11444
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11448
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x3db49b6c; PC = 0x1144c
+	add	r12, r12, r0                                #! PC = 0x11450
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11454
+	add	r2, r2, r12                                 #! PC = 0x11458
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1145c
+	add	r2, r2, r1                                  #! PC = 0x11460
+	ldr	r12, [lr], #4                               #! EA = L0x10d20; Value = 0x19a4c116; PC = 0x11464
+	add	r11, r11, r2                                #! PC = 0x11468
+	str	r2, [sp]                                    #! EA = L0x407ffcf0; PC = 0x1146c
+	eor	r2, r9, r10                                 #! PC = 0x11470
+	add	r11, r11, r0, ror #6                        #! PC = 0x11474
+	and	r2, r2, r8                                  #! PC = 0x11478
+	add	r11, r11, r12                               #! PC = 0x1147c
+	eor	r2, r2, r10                                 #! PC = 0x11480
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11484
+	add	r11, r11, r2                                #! PC = 0x11488
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x6932a3e6; PC = 0x1148c
+	eor	r12, r4, r5                                 #! PC = 0x11490
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x60e1eb25; PC = 0x11494
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11498
+	and	r3, r3, r12                                 #! PC = 0x1149c
+	add	r7, r7, r11                                 #! PC = 0x114a0
+	eor	r3, r3, r5                                  #! PC = 0x114a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x114a8
+	ror	r0, r2, #7                                  #! PC = 0x114ac
+	add	r11, r11, r3                                #! PC = 0x114b0
+	ror	r3, r1, #17                                 #! PC = 0x114b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x114b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x114bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x114c0
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x5e92c08b; PC = 0x114c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x114c8
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x82640924; PC = 0x114cc
+	add	r3, r3, r0                                  #! PC = 0x114d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x114d4
+	add	r2, r2, r3                                  #! PC = 0x114d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x114dc
+	add	r2, r2, r1                                  #! PC = 0x114e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d24; Value = 0x1e376c08; PC = 0x114e4
+	add	r10, r10, r2                                #! PC = 0x114e8
+	str	r2, [sp, #4]                                #! EA = L0x407ffcf4; PC = 0x114ec
+	eor	r2, r8, r9                                  #! PC = 0x114f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x114f4
+	and	r2, r2, r7                                  #! PC = 0x114f8
+	add	r10, r10, r3                                #! PC = 0x114fc
+	eor	r2, r2, r9                                  #! PC = 0x11500
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11504
+	add	r10, r10, r2                                #! PC = 0x11508
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x686dd1e2; PC = 0x1150c
+	eor	r3, r11, r4                                 #! PC = 0x11510
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x525d105f; PC = 0x11514
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11518
+	and	r12, r12, r3                                #! PC = 0x1151c
+	add	r6, r6, r10                                 #! PC = 0x11520
+	eor	r12, r12, r4                                #! PC = 0x11524
+	add	r10, r10, r0, ror #2                        #! PC = 0x11528
+	ror	r0, r2, #7                                  #! PC = 0x1152c
+	add	r10, r10, r12                               #! PC = 0x11530
+	ror	r12, r1, #17                                #! PC = 0x11534
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11538
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1153c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11540
+	ldr	r2, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x6932a3e6; PC = 0x11544
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11548
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xbcb1e181; PC = 0x1154c
+	add	r12, r12, r0                                #! PC = 0x11550
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11554
+	add	r2, r2, r12                                 #! PC = 0x11558
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1155c
+	add	r2, r2, r1                                  #! PC = 0x11560
+	ldr	r12, [lr], #4                               #! EA = L0x10d28; Value = 0x2748774c; PC = 0x11564
+	add	r9, r9, r2                                  #! PC = 0x11568
+	str	r2, [sp, #8]                                #! EA = L0x407ffcf8; PC = 0x1156c
+	eor	r2, r7, r8                                  #! PC = 0x11570
+	add	r9, r9, r0, ror #6                          #! PC = 0x11574
+	and	r2, r2, r6                                  #! PC = 0x11578
+	add	r9, r9, r12                                 #! PC = 0x1157c
+	eor	r2, r2, r8                                  #! PC = 0x11580
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11584
+	add	r9, r9, r2                                  #! PC = 0x11588
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x6a3e6f4f; PC = 0x1158c
+	eor	r12, r10, r11                               #! PC = 0x11590
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x12f2993c; PC = 0x11594
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11598
+	and	r3, r3, r12                                 #! PC = 0x1159c
+	add	r5, r5, r9                                  #! PC = 0x115a0
+	eor	r3, r3, r11                                 #! PC = 0x115a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x115a8
+	ror	r0, r2, #7                                  #! PC = 0x115ac
+	add	r9, r9, r3                                  #! PC = 0x115b0
+	ror	r3, r1, #17                                 #! PC = 0x115b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x115b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x115bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x115c0
+	ldr	r2, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x686dd1e2; PC = 0x115c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x115c8
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x854c3d24; PC = 0x115cc
+	add	r3, r3, r0                                  #! PC = 0x115d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x115d4
+	add	r2, r2, r3                                  #! PC = 0x115d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x115dc
+	add	r2, r2, r1                                  #! PC = 0x115e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d2c; Value = 0x34b0bcb5; PC = 0x115e4
+	add	r8, r8, r2                                  #! PC = 0x115e8
+	str	r2, [sp, #12]                               #! EA = L0x407ffcfc; PC = 0x115ec
+	eor	r2, r6, r7                                  #! PC = 0x115f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x115f4
+	and	r2, r2, r5                                  #! PC = 0x115f8
+	add	r8, r8, r3                                  #! PC = 0x115fc
+	eor	r2, r2, r7                                  #! PC = 0x11600
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11604
+	add	r8, r8, r2                                  #! PC = 0x11608
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x56829a8b; PC = 0x1160c
+	eor	r3, r9, r10                                 #! PC = 0x11610
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x0dbb550c; PC = 0x11614
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11618
+	and	r12, r12, r3                                #! PC = 0x1161c
+	add	r4, r4, r8                                  #! PC = 0x11620
+	eor	r12, r12, r10                               #! PC = 0x11624
+	add	r8, r8, r0, ror #2                          #! PC = 0x11628
+	ror	r0, r2, #7                                  #! PC = 0x1162c
+	add	r8, r8, r12                                 #! PC = 0x11630
+	ror	r12, r1, #17                                #! PC = 0x11634
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11638
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1163c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11640
+	ldr	r2, [sp, #16]                               #! EA = L0x407ffd00; Value = 0x6a3e6f4f; PC = 0x11644
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11648
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0xd447e818; PC = 0x1164c
+	add	r12, r12, r0                                #! PC = 0x11650
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11654
+	add	r2, r2, r12                                 #! PC = 0x11658
+	eor	r0, r0, r4, ror #19                         #! PC = 0x1165c
+	add	r2, r2, r1                                  #! PC = 0x11660
+	ldr	r12, [lr], #4                               #! EA = L0x10d30; Value = 0x391c0cb3; PC = 0x11664
+	add	r7, r7, r2                                  #! PC = 0x11668
+	str	r2, [sp, #16]                               #! EA = L0x407ffd00; PC = 0x1166c
+	eor	r2, r5, r6                                  #! PC = 0x11670
+	add	r7, r7, r0, ror #6                          #! PC = 0x11674
+	and	r2, r2, r4                                  #! PC = 0x11678
+	add	r7, r7, r12                                 #! PC = 0x1167c
+	eor	r2, r2, r6                                  #! PC = 0x11680
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11684
+	add	r7, r7, r2                                  #! PC = 0x11688
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x0fad4c36; PC = 0x1168c
+	eor	r12, r8, r9                                 #! PC = 0x11690
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x15b7b23f; PC = 0x11694
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11698
+	and	r3, r3, r12                                 #! PC = 0x1169c
+	add	r11, r11, r7                                #! PC = 0x116a0
+	eor	r3, r3, r9                                  #! PC = 0x116a4
+	add	r7, r7, r0, ror #2                          #! PC = 0x116a8
+	ror	r0, r2, #7                                  #! PC = 0x116ac
+	add	r7, r7, r3                                  #! PC = 0x116b0
+	ror	r3, r1, #17                                 #! PC = 0x116b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x116b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x116bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x116c0
+	ldr	r2, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x56829a8b; PC = 0x116c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x116c8
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x9a0abe6f; PC = 0x116cc
+	add	r3, r3, r0                                  #! PC = 0x116d0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x116d4
+	add	r2, r2, r3                                  #! PC = 0x116d8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x116dc
+	add	r2, r2, r1                                  #! PC = 0x116e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d34; Value = 0x4ed8aa4a; PC = 0x116e4
+	add	r6, r6, r2                                  #! PC = 0x116e8
+	str	r2, [sp, #20]                               #! EA = L0x407ffd04; PC = 0x116ec
+	eor	r2, r4, r5                                  #! PC = 0x116f0
+	add	r6, r6, r0, ror #6                          #! PC = 0x116f4
+	and	r2, r2, r11                                 #! PC = 0x116f8
+	add	r6, r6, r3                                  #! PC = 0x116fc
+	eor	r2, r2, r5                                  #! PC = 0x11700
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11704
+	add	r6, r6, r2                                  #! PC = 0x11708
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0xedcdfecf; PC = 0x1170c
+	eor	r3, r7, r8                                  #! PC = 0x11710
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0xb98ac4ea; PC = 0x11714
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11718
+	and	r12, r12, r3                                #! PC = 0x1171c
+	add	r10, r10, r6                                #! PC = 0x11720
+	eor	r12, r12, r8                                #! PC = 0x11724
+	add	r6, r6, r0, ror #2                          #! PC = 0x11728
+	ror	r0, r2, #7                                  #! PC = 0x1172c
+	add	r6, r6, r12                                 #! PC = 0x11730
+	ror	r12, r1, #17                                #! PC = 0x11734
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11738
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1173c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11740
+	ldr	r2, [sp, #24]                               #! EA = L0x407ffd08; Value = 0x0fad4c36; PC = 0x11744
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11748
+	ldr	r1, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x60e1eb25; PC = 0x1174c
+	add	r12, r12, r0                                #! PC = 0x11750
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11754
+	add	r2, r2, r12                                 #! PC = 0x11758
+	eor	r0, r0, r10, ror #19                        #! PC = 0x1175c
+	add	r2, r2, r1                                  #! PC = 0x11760
+	ldr	r12, [lr], #4                               #! EA = L0x10d38; Value = 0x5b9cca4f; PC = 0x11764
+	add	r5, r5, r2                                  #! PC = 0x11768
+	str	r2, [sp, #24]                               #! EA = L0x407ffd08; PC = 0x1176c
+	eor	r2, r11, r4                                 #! PC = 0x11770
+	add	r5, r5, r0, ror #6                          #! PC = 0x11774
+	and	r2, r2, r10                                 #! PC = 0x11778
+	add	r5, r5, r12                                 #! PC = 0x1177c
+	eor	r2, r2, r4                                  #! PC = 0x11780
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11784
+	add	r5, r5, r2                                  #! PC = 0x11788
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0xeba4eb9f; PC = 0x1178c
+	eor	r12, r6, r7                                 #! PC = 0x11790
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x5ed1cf70; PC = 0x11794
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11798
+	and	r3, r3, r12                                 #! PC = 0x1179c
+	add	r9, r9, r5                                  #! PC = 0x117a0
+	eor	r3, r3, r7                                  #! PC = 0x117a4
+	add	r5, r5, r0, ror #2                          #! PC = 0x117a8
+	ror	r0, r2, #7                                  #! PC = 0x117ac
+	add	r5, r5, r3                                  #! PC = 0x117b0
+	ror	r3, r1, #17                                 #! PC = 0x117b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x117b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x117bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x117c0
+	ldr	r2, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0xedcdfecf; PC = 0x117c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x117c8
+	ldr	r1, [sp]                                    #! EA = L0x407ffcf0; Value = 0x525d105f; PC = 0x117cc
+	add	r3, r3, r0                                  #! PC = 0x117d0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x117d4
+	add	r2, r2, r3                                  #! PC = 0x117d8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x117dc
+	add	r2, r2, r1                                  #! PC = 0x117e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d3c; Value = 0x682e6ff3; PC = 0x117e4
+	add	r4, r4, r2                                  #! PC = 0x117e8
+	str	r2, [sp, #28]                               #! EA = L0x407ffd0c; PC = 0x117ec
+	eor	r2, r10, r11                                #! PC = 0x117f0
+	add	r4, r4, r0, ror #6                          #! PC = 0x117f4
+	and	r2, r2, r9                                  #! PC = 0x117f8
+	add	r4, r4, r3                                  #! PC = 0x117fc
+	eor	r2, r2, r11                                 #! PC = 0x11800
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11804
+	add	r4, r4, r2                                  #! PC = 0x11808
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x3db49b6c; PC = 0x1180c
+	eor	r3, r5, r6                                  #! PC = 0x11810
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0xa9277ff7; PC = 0x11814
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11818
+	and	r12, r12, r3                                #! PC = 0x1181c
+	add	r8, r8, r4                                  #! PC = 0x11820
+	eor	r12, r12, r6                                #! PC = 0x11824
+	add	r4, r4, r0, ror #2                          #! PC = 0x11828
+	ror	r0, r2, #7                                  #! PC = 0x1182c
+	add	r4, r4, r12                                 #! PC = 0x11830
+	ror	r12, r1, #17                                #! PC = 0x11834
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11838
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1183c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11840
+	ldr	r2, [sp, #32]                               #! EA = L0x407ffd10; Value = 0xeba4eb9f; PC = 0x11844
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11848
+	ldr	r1, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x12f2993c; PC = 0x1184c
+	add	r12, r12, r0                                #! PC = 0x11850
+	eor	r0, r8, r8, ror #5                          #! PC = 0x11854
+	add	r2, r2, r12                                 #! PC = 0x11858
+	eor	r0, r0, r8, ror #19                         #! PC = 0x1185c
+	add	r2, r2, r1                                  #! PC = 0x11860
+	ldr	r12, [lr], #4                               #! EA = L0x10d40; Value = 0x748f82ee; PC = 0x11864
+	add	r11, r11, r2                                #! PC = 0x11868
+	str	r2, [sp, #32]                               #! EA = L0x407ffd10; PC = 0x1186c
+	eor	r2, r9, r10                                 #! PC = 0x11870
+	add	r11, r11, r0, ror #6                        #! PC = 0x11874
+	and	r2, r2, r8                                  #! PC = 0x11878
+	add	r11, r11, r12                               #! PC = 0x1187c
+	eor	r2, r2, r10                                 #! PC = 0x11880
+	eor	r0, r4, r4, ror #11                         #! PC = 0x11884
+	add	r11, r11, r2                                #! PC = 0x11888
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x82640924; PC = 0x1188c
+	eor	r12, r4, r5                                 #! PC = 0x11890
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x36b0ce3c; PC = 0x11894
+	eor	r0, r0, r4, ror #20                         #! PC = 0x11898
+	and	r3, r3, r12                                 #! PC = 0x1189c
+	add	r7, r7, r11                                 #! PC = 0x118a0
+	eor	r3, r3, r5                                  #! PC = 0x118a4
+	add	r11, r11, r0, ror #2                        #! PC = 0x118a8
+	ror	r0, r2, #7                                  #! PC = 0x118ac
+	add	r11, r11, r3                                #! PC = 0x118b0
+	ror	r3, r1, #17                                 #! PC = 0x118b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x118b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x118bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x118c0
+	ldr	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x3db49b6c; PC = 0x118c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x118c8
+	ldr	r1, [sp, #8]                                #! EA = L0x407ffcf8; Value = 0x0dbb550c; PC = 0x118cc
+	add	r3, r3, r0                                  #! PC = 0x118d0
+	eor	r0, r7, r7, ror #5                          #! PC = 0x118d4
+	add	r2, r2, r3                                  #! PC = 0x118d8
+	eor	r0, r0, r7, ror #19                         #! PC = 0x118dc
+	add	r2, r2, r1                                  #! PC = 0x118e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d44; Value = 0x78a5636f; PC = 0x118e4
+	add	r10, r10, r2                                #! PC = 0x118e8
+	str	r2, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; PC = 0x118ec
+	eor	r2, r8, r9                                  #! PC = 0x118f0
+	add	r10, r10, r0, ror #6                        #! PC = 0x118f4
+	and	r2, r2, r7                                  #! PC = 0x118f8
+	add	r10, r10, r3                                #! PC = 0x118fc
+	eor	r2, r2, r9                                  #! PC = 0x11900
+	eor	r0, r11, r11, ror #11                       #! PC = 0x11904
+	add	r10, r10, r2                                #! PC = 0x11908
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xbcb1e181; PC = 0x1190c
+	eor	r3, r11, r4                                 #! PC = 0x11910
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x47dde279; PC = 0x11914
+	eor	r0, r0, r11, ror #20                        #! PC = 0x11918
+	and	r12, r12, r3                                #! PC = 0x1191c
+	add	r6, r6, r10                                 #! PC = 0x11920
+	eor	r12, r12, r4                                #! PC = 0x11924
+	add	r10, r10, r0, ror #2                        #! PC = 0x11928
+	ror	r0, r2, #7                                  #! PC = 0x1192c
+	add	r10, r10, r12                               #! PC = 0x11930
+	ror	r12, r1, #17                                #! PC = 0x11934
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11938
+	eor	r12, r12, r1, ror #19                       #! PC = 0x1193c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11940
+	ldr	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x82640924; PC = 0x11944
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11948
+	ldr	r1, [sp, #12]                               #! EA = L0x407ffcfc; Value = 0x15b7b23f; PC = 0x1194c
+	add	r12, r12, r0                                #! PC = 0x11950
+	eor	r0, r6, r6, ror #5                          #! PC = 0x11954
+	add	r2, r2, r12                                 #! PC = 0x11958
+	eor	r0, r0, r6, ror #19                         #! PC = 0x1195c
+	add	r2, r2, r1                                  #! PC = 0x11960
+	ldr	r12, [lr], #4                               #! EA = L0x10d48; Value = 0x84c87814; PC = 0x11964
+	add	r9, r9, r2                                  #! PC = 0x11968
+	str	r2, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; PC = 0x1196c
+	eor	r2, r7, r8                                  #! PC = 0x11970
+	add	r9, r9, r0, ror #6                          #! PC = 0x11974
+	and	r2, r2, r6                                  #! PC = 0x11978
+	add	r9, r9, r12                                 #! PC = 0x1197c
+	eor	r2, r2, r8                                  #! PC = 0x11980
+	eor	r0, r10, r10, ror #11                       #! PC = 0x11984
+	add	r9, r9, r2                                  #! PC = 0x11988
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x854c3d24; PC = 0x1198c
+	eor	r12, r10, r11                               #! PC = 0x11990
+	ldr	r1, [sp, #36]	; 0x24                        #! EA = L0x407ffd14; Value = 0x25458be4; PC = 0x11994
+	eor	r0, r0, r10, ror #20                        #! PC = 0x11998
+	and	r3, r3, r12                                 #! PC = 0x1199c
+	add	r5, r5, r9                                  #! PC = 0x119a0
+	eor	r3, r3, r11                                 #! PC = 0x119a4
+	add	r9, r9, r0, ror #2                          #! PC = 0x119a8
+	ror	r0, r2, #7                                  #! PC = 0x119ac
+	add	r9, r9, r3                                  #! PC = 0x119b0
+	ror	r3, r1, #17                                 #! PC = 0x119b4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x119b8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x119bc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x119c0
+	ldr	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0xbcb1e181; PC = 0x119c4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x119c8
+	ldr	r1, [sp, #16]                               #! EA = L0x407ffd00; Value = 0xb98ac4ea; PC = 0x119cc
+	add	r3, r3, r0                                  #! PC = 0x119d0
+	eor	r0, r5, r5, ror #5                          #! PC = 0x119d4
+	add	r2, r2, r3                                  #! PC = 0x119d8
+	eor	r0, r0, r5, ror #19                         #! PC = 0x119dc
+	add	r2, r2, r1                                  #! PC = 0x119e0
+	ldr	r3, [lr], #4                                #! EA = L0x10d4c; Value = 0x8cc70208; PC = 0x119e4
+	add	r8, r8, r2                                  #! PC = 0x119e8
+	str	r2, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; PC = 0x119ec
+	eor	r2, r6, r7                                  #! PC = 0x119f0
+	add	r8, r8, r0, ror #6                          #! PC = 0x119f4
+	and	r2, r2, r5                                  #! PC = 0x119f8
+	add	r8, r8, r3                                  #! PC = 0x119fc
+	eor	r2, r2, r7                                  #! PC = 0x11a00
+	eor	r0, r9, r9, ror #11                         #! PC = 0x11a04
+	add	r8, r8, r2                                  #! PC = 0x11a08
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0xd447e818; PC = 0x11a0c
+	eor	r3, r9, r10                                 #! PC = 0x11a10
+	ldr	r1, [sp, #40]	; 0x28                        #! EA = L0x407ffd18; Value = 0x520d68af; PC = 0x11a14
+	eor	r0, r0, r9, ror #20                         #! PC = 0x11a18
+	and	r12, r12, r3                                #! PC = 0x11a1c
+	add	r4, r4, r8                                  #! PC = 0x11a20
+	eor	r12, r12, r10                               #! PC = 0x11a24
+	add	r8, r8, r0, ror #2                          #! PC = 0x11a28
+	ror	r0, r2, #7                                  #! PC = 0x11a2c
+	add	r8, r8, r12                                 #! PC = 0x11a30
+	ror	r12, r1, #17                                #! PC = 0x11a34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11a38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11a3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11a40
+	ldr	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0x854c3d24; PC = 0x11a44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11a48
+	ldr	r1, [sp, #20]                               #! EA = L0x407ffd04; Value = 0x5ed1cf70; PC = 0x11a4c
+	add	r12, r12, r0                                #! PC = 0x11a50
+	eor	r0, r4, r4, ror #5                          #! PC = 0x11a54
+	add	r2, r2, r12                                 #! PC = 0x11a58
+	eor	r0, r0, r4, ror #19                         #! PC = 0x11a5c
+	add	r2, r2, r1                                  #! PC = 0x11a60
+	ldr	r12, [lr], #4                               #! EA = L0x10d50; Value = 0x90befffa; PC = 0x11a64
+	add	r7, r7, r2                                  #! PC = 0x11a68
+	str	r2, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; PC = 0x11a6c
+	eor	r2, r5, r6                                  #! PC = 0x11a70
+	add	r7, r7, r0, ror #6                          #! PC = 0x11a74
+	and	r2, r2, r4                                  #! PC = 0x11a78
+	add	r7, r7, r12                                 #! PC = 0x11a7c
+	eor	r2, r2, r6                                  #! PC = 0x11a80
+	eor	r0, r8, r8, ror #11                         #! PC = 0x11a84
+	add	r7, r7, r2                                  #! PC = 0x11a88
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x9a0abe6f; PC = 0x11a8c
+	eor	r12, r8, r9                                 #! PC = 0x11a90
+	ldr	r1, [sp, #44]	; 0x2c                        #! EA = L0x407ffd1c; Value = 0x41aeac60; PC = 0x11a94
+	eor	r0, r0, r8, ror #20                         #! PC = 0x11a98
+	and	r3, r3, r12                                 #! PC = 0x11a9c
+	add	r11, r11, r7                                #! PC = 0x11aa0
+	eor	r3, r3, r9                                  #! PC = 0x11aa4
+	add	r7, r7, r0, ror #2                          #! PC = 0x11aa8
+	ror	r0, r2, #7                                  #! PC = 0x11aac
+	add	r7, r7, r3                                  #! PC = 0x11ab0
+	ror	r3, r1, #17                                 #! PC = 0x11ab4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11ab8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11abc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11ac0
+	ldr	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0xd447e818; PC = 0x11ac4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11ac8
+	ldr	r1, [sp, #24]                               #! EA = L0x407ffd08; Value = 0xa9277ff7; PC = 0x11acc
+	add	r3, r3, r0                                  #! PC = 0x11ad0
+	eor	r0, r11, r11, ror #5                        #! PC = 0x11ad4
+	add	r2, r2, r3                                  #! PC = 0x11ad8
+	eor	r0, r0, r11, ror #19                        #! PC = 0x11adc
+	add	r2, r2, r1                                  #! PC = 0x11ae0
+	ldr	r3, [lr], #4                                #! EA = L0x10d54; Value = 0xa4506ceb; PC = 0x11ae4
+	add	r6, r6, r2                                  #! PC = 0x11ae8
+	str	r2, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; PC = 0x11aec
+	eor	r2, r4, r5                                  #! PC = 0x11af0
+	add	r6, r6, r0, ror #6                          #! PC = 0x11af4
+	and	r2, r2, r11                                 #! PC = 0x11af8
+	add	r6, r6, r3                                  #! PC = 0x11afc
+	eor	r2, r2, r5                                  #! PC = 0x11b00
+	eor	r0, r7, r7, ror #11                         #! PC = 0x11b04
+	add	r6, r6, r2                                  #! PC = 0x11b08
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x60e1eb25; PC = 0x11b0c
+	eor	r3, r7, r8                                  #! PC = 0x11b10
+	ldr	r1, [sp, #48]	; 0x30                        #! EA = L0x407ffd20; Value = 0xce9b1473; PC = 0x11b14
+	eor	r0, r0, r7, ror #20                         #! PC = 0x11b18
+	and	r12, r12, r3                                #! PC = 0x11b1c
+	add	r10, r10, r6                                #! PC = 0x11b20
+	eor	r12, r12, r8                                #! PC = 0x11b24
+	add	r6, r6, r0, ror #2                          #! PC = 0x11b28
+	ror	r0, r2, #7                                  #! PC = 0x11b2c
+	add	r6, r6, r12                                 #! PC = 0x11b30
+	ror	r12, r1, #17                                #! PC = 0x11b34
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11b38
+	eor	r12, r12, r1, ror #19                       #! PC = 0x11b3c
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11b40
+	ldr	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0x9a0abe6f; PC = 0x11b44
+	eor	r12, r12, r1, lsr #10                       #! PC = 0x11b48
+	ldr	r1, [sp, #28]                               #! EA = L0x407ffd0c; Value = 0x36b0ce3c; PC = 0x11b4c
+	add	r12, r12, r0                                #! PC = 0x11b50
+	eor	r0, r10, r10, ror #5                        #! PC = 0x11b54
+	add	r2, r2, r12                                 #! PC = 0x11b58
+	eor	r0, r0, r10, ror #19                        #! PC = 0x11b5c
+	add	r2, r2, r1                                  #! PC = 0x11b60
+	ldr	r12, [lr], #4                               #! EA = L0x10d58; Value = 0xbef9a3f7; PC = 0x11b64
+	add	r5, r5, r2                                  #! PC = 0x11b68
+	str	r2, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; PC = 0x11b6c
+	eor	r2, r11, r4                                 #! PC = 0x11b70
+	add	r5, r5, r0, ror #6                          #! PC = 0x11b74
+	and	r2, r2, r10                                 #! PC = 0x11b78
+	add	r5, r5, r12                                 #! PC = 0x11b7c
+	eor	r2, r2, r4                                  #! PC = 0x11b80
+	eor	r0, r6, r6, ror #11                         #! PC = 0x11b84
+	add	r5, r5, r2                                  #! PC = 0x11b88
+	ldr	r2, [sp]                                    #! EA = L0x407ffcf0; Value = 0x525d105f; PC = 0x11b8c
+	eor	r12, r6, r7                                 #! PC = 0x11b90
+	ldr	r1, [sp, #52]	; 0x34                        #! EA = L0x407ffd24; Value = 0x650a4f8b; PC = 0x11b94
+	eor	r0, r0, r6, ror #20                         #! PC = 0x11b98
+	and	r3, r3, r12                                 #! PC = 0x11b9c
+	add	r9, r9, r5                                  #! PC = 0x11ba0
+	eor	r3, r3, r7                                  #! PC = 0x11ba4
+	add	r5, r5, r0, ror #2                          #! PC = 0x11ba8
+	ror	r0, r2, #7                                  #! PC = 0x11bac
+	add	r5, r5, r3                                  #! PC = 0x11bb0
+	ror	r3, r1, #17                                 #! PC = 0x11bb4
+	eor	r0, r0, r2, ror #18                         #! PC = 0x11bb8
+	eor	r3, r3, r1, ror #19                         #! PC = 0x11bbc
+	eor	r0, r0, r2, lsr #3                          #! PC = 0x11bc0
+	ldr	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; Value = 0x60e1eb25; PC = 0x11bc4
+	eor	r3, r3, r1, lsr #10                         #! PC = 0x11bc8
+	ldr	r1, [sp, #32]                               #! EA = L0x407ffd10; Value = 0x47dde279; PC = 0x11bcc
+	add	r3, r3, r0                                  #! PC = 0x11bd0
+	eor	r0, r9, r9, ror #5                          #! PC = 0x11bd4
+	add	r2, r2, r3                                  #! PC = 0x11bd8
+	eor	r0, r0, r9, ror #19                         #! PC = 0x11bdc
+	add	r2, r2, r1                                  #! PC = 0x11be0
+	ldr	r3, [lr], #4                                #! EA = L0x10d5c; Value = 0xc67178f2; PC = 0x11be4
+	add	r4, r4, r2                                  #! PC = 0x11be8
+	str	r2, [sp, #60]	; 0x3c                        #! EA = L0x407ffd2c; PC = 0x11bec
+	eor	r2, r10, r11                                #! PC = 0x11bf0
+	add	r4, r4, r0, ror #6                          #! PC = 0x11bf4
+	and	r2, r2, r9                                  #! PC = 0x11bf8
+	add	r4, r4, r3                                  #! PC = 0x11bfc
+	eor	r2, r2, r11                                 #! PC = 0x11c00
+	eor	r0, r5, r5, ror #11                         #! PC = 0x11c04
+	add	r4, r4, r2                                  #! PC = 0x11c08
+	and	r3, r3, #255	; 0xff                         #! PC = 0x11c0c
+	cmp	r3, #242	; 0xf2                             #! PC = 0x11c10
+	ldr	r2, [sp, #4]                                #! EA = L0x407ffcf4; Value = 0x12f2993c; PC = 0x11c14
+	eor	r3, r5, r6                                  #! PC = 0x11c18
+	ldr	r1, [sp, #56]	; 0x38                        #! EA = L0x407ffd28; Value = 0xf5546b90; PC = 0x11c1c
+	eor	r0, r0, r5, ror #20                         #! PC = 0x11c20
+	and	r12, r12, r3                                #! PC = 0x11c24
+	add	r8, r8, r4                                  #! PC = 0x11c28
+	eor	r12, r12, r6                                #! PC = 0x11c2c
+	add	r4, r4, r0, ror #2                          #! PC = 0x11c30
+	ldreq	r3, [sp, #64]	; 0x40                      #! EA = L0x407ffd30; Value = 0x0002204c; PC = 0x11c34
+	#bne	0x1142c <sha256_block_data_order+1708>     #! PC = 0x11c38
+	add	r4, r4, r12                                 #! PC = 0x11c3c
+	ldr	r0, [r3]                                    #! EA = L0x2204c; Value = 0x6a09e667; PC = 0x11c40
+	ldr	r2, [r3, #4]                                #! EA = L0x22050; Value = 0xbb67ae85; PC = 0x11c44
+	ldr	r12, [r3, #8]                               #! EA = L0x22054; Value = 0x3c6ef372; PC = 0x11c48
+	add	r4, r4, r0                                  #! PC = 0x11c4c
+	ldr	r0, [r3, #12]                               #! EA = L0x22058; Value = 0xa54ff53a; PC = 0x11c50
+	add	r5, r5, r2                                  #! PC = 0x11c54
+	ldr	r2, [r3, #16]                               #! EA = L0x2205c; Value = 0x510e527f; PC = 0x11c58
+	add	r6, r6, r12                                 #! PC = 0x11c5c
+	ldr	r12, [r3, #20]                              #! EA = L0x22060; Value = 0x9b05688c; PC = 0x11c60
+	add	r7, r7, r0                                  #! PC = 0x11c64
+	ldr	r0, [r3, #24]                               #! EA = L0x22064; Value = 0x1f83d9ab; PC = 0x11c68
+	add	r8, r8, r2                                  #! PC = 0x11c6c
+	ldr	r2, [r3, #28]                               #! EA = L0x22068; Value = 0x5be0cd19; PC = 0x11c70
+	add	r9, r9, r12                                 #! PC = 0x11c74
+	ldr	r1, [sp, #68]	; 0x44                        #! EA = L0x407ffd34; Value = 0x000220b4; PC = 0x11c78
+	ldr	r12, [sp, #72]	; 0x48                       #! EA = L0x407ffd38; Value = 0x000220b4; PC = 0x11c7c
+	add	r10, r10, r0                                #! PC = 0x11c80
+	add	r11, r11, r2                                #! PC = 0x11c84
+	stm	r3, {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; PC = 0x11c88
+	cmp	r1, r12                                     #! PC = 0x11c8c
+	sub	lr, lr, #256	; 0x100                        #! PC = 0x11c90
+	#bne	0x10d98 <sha256_block_data_order+24>       #! PC = 0x11c94
+	add	sp, sp, #76	; 0x4c                          #! PC = 0x11c98
+	pop	{r4, r5, r6, r7, r8, r9, r10, r11, pc}      #! PC = 0x11c9c
