@@ -1,4 +1,84 @@
-sha256_block_data_order:
+#! %eax = %%eax
+#! %ebx = %%ebx
+#! %ecx = %%ecx
+#! %edi = %%edi
+#! %edx = %%edx
+#! %r$1c = %%r$1c
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%r12) = %%EA
+#! (%%r12) = %%EA
+#! $1c(%rbp) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%rsp) = %%EA
+#! %ymm$1c = %%ymm$1c
+
+#! add $1v, $2v -> adds dc $2v $2v $1v
+#! add $1ea, $2v -> adds dc $2v $2v $1ea
+#! and $1v, $2v -> and $2v@uint32 $2v $1v
+#! andn $1v, $2v, $3v -> not $2v_n@uint32 $2v; and $3v@uint32 $2v_n $1v
+#! cmp %rdx, %rsi -> (* cmp %rdx %rsi *)\nnop
+#! cmp $1ea, %rsi -> (* cmp $1ea %rsi *)\nnop
+#! cmpb $1c, $2ea -> (* cmpb $1c $2ea *)\nnop
+#! lea %%EA, %rsp -> (* lea %%EA %rsp *)\nnop
+#! lea %%EA, %rbp -> (* lea %%EA %rbp *)\nnop
+#! lea \(%rax, $1v, 1\), %%eax -> adds dc eax eax $1vd
+#! lea \(%rbx, $1v, 1\), %%ebx -> adds dc ebx ebx $1vd
+#! lea \(%rbx, %rdi, 1\), %%ebx -> adds dc ebx ebx edi
+#! lea \(%rcx, $1v, 1\), %%ecx -> adds dc ecx ecx $1vd
+#! lea \(%rdx, $1v, 1\), %%edx -> adds dc edx edx $1vd
+#! lea \(%rdx, %rdi, 1\), %%edx -> adds dc edx edx edi
+#! lea \($1v, $2v, 1\), $1vd -> adds dc $1vd $1vd $2vd
+#! lea \($1v, %rax, 1\), $1vd -> adds dc $1vd $1vd eax
+#! lea \($1v, %rbx, 1\), $1vd -> adds dc $1vd $1vd ebx
+#! lea \($1v, %rcx, 1\), $1vd -> adds dc $1vd $1vd ecx
+#! lea \($1v, %rdx, 1\), $1vd -> adds dc $1vd $1vd edx
+#! lea \($1v, %rdi, 1\), $1vd -> adds dc $1vd $1vd edi
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mov %rax, $1ea -> mov $1ea rax
+#! mov $1ea, %rax -> mov rax $1ea
+#! mov $1ea, %rbp -> mov rbp $1ea
+#! mov $1ea, %rbx -> mov rbx $1ea
+#! mov %rdx, $1ea -> mov $1ea rdx
+#! mov $1ea, %rdx -> mov rdx $1ea
+#! mov %rsi, $1ea -> mov $1ea rsi
+#! mov $1ea, %rsi -> mov rdi $1ea
+#! mov %rdi, $1ea -> mov $1ea rdi
+#! mov $1ea, %rdi -> mov rdi $1ea
+#! push $1v -> (* push $1v *)\nnop
+#! push %rbx -> (* push %rbx *)\nnop
+#! push %rbp -> (* push %rbp *)\nnop
+#! rorx $1c, $2v, $3v -> ror $3v@uint32 $2v $1c
+#! sub $1c, %rbp -> (* sub $1c %rbp *)\nnop
+#! vzeroupper -> (* vzeroupper *)\nnop
+#! xor $1v, $1v -> mov $1v 0@uint32
+#! xor $1v, $2v -> xor $2v@uint32 $2v $1v
+
+#! vinserti128 \$0x1, $1ymm, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0; mov $3ymm_1 $2ymm_1; mov $3ymm_2 $2ymm_2; mov $3ymm_3 $2ymm_3;\nmov $3ymm_4 $1ymm_0; mov $3ymm_5 $1ymm_1; mov $3ymm_6 $1ymm_2; mov $3ymm_7 $1ymm_3
+#! vinserti128 \$0x1, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0; mov $3ymm_1 $2ymm_1; mov $3ymm_2 $2ymm_2; mov $3ymm_3 $2ymm_3;\nmov $3ymm_4 $1ea; mov $3ymm_5 $1ea[+4];\nmov $3ymm_6 $1ea[+8]; mov $3ymm_7 $1ea[+12]
+#! vmovdqa $1ea, $2ymm -> mov $2ymm_0 $1ea; mov $2ymm_1 $1ea[+4];\nmov $2ymm_2 $1ea[+8]; mov $2ymm_3 $1ea[+12];\nmov $2ymm_4 $1ea[+16]; mov $2ymm_5 $1ea[+20];\nmov $2ymm_6 $1ea[+24]; mov $2ymm_7 $1ea[+28]
+#! vmovdqa $1ymm, $2ea -> mov $2ea $1ymm_0; mov $2ea[+4] $1ymm_1;\nmov $2ea[+8] $1ymm_2; mov $2ea[+12] $1ymm_3;\nmov $2ea[+16] $1ymm_4; mov $2ea[+20] $1ymm_5;\nmov $2ea[+24] $1ymm_6; mov $2ea[+28] $1ymm_7
+#! vmovdqu $1ea, %xmm$2c -> mov ymm$2c_0 $1ea; mov ymm$2c_1 $1ea[+4];\nmov ymm$2c_2 $1ea[+8]; mov ymm$2c_3 $1ea[+12];\nmov ymm$2c_4 0@uint32; mov ymm$2c_5 0@uint32;\nmov ymm$2c_6 0@uint32; mov ymm$2c_7 0@uint32
+#! vpaddd $1ymm, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ymm_0; adds dc $3ymm_1 $2ymm_1 $1ymm_1;\nadds dc $3ymm_2 $2ymm_2 $1ymm_2; adds dc $3ymm_3 $2ymm_3 $1ymm_3;\nadds dc $3ymm_4 $2ymm_4 $1ymm_4; adds dc $3ymm_5 $2ymm_5 $1ymm_5;\nadds dc $3ymm_6 $2ymm_6 $1ymm_6; adds dc $3ymm_7 $2ymm_7 $1ymm_7
+#! vpaddd $1ea, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ea; adds dc $3ymm_1 $2ymm_1 $1ea[+4];\nadds dc $3ymm_2 $2ymm_2 $1ea[+8]; adds dc $3ymm_3 $2ymm_3 $1ea[+12];\nadds dc $3ymm_4 $2ymm_4 $1ea[+16]; adds dc $3ymm_5 $2ymm_5 $1ea[+20];\nadds dc $3ymm_6 $2ymm_6 $1ea[+24]; adds dc $3ymm_7 $2ymm_7 $1ea[+28]
+#! vpalignr \$0x4, $1ymm, $2ymm, $3ymm -> mov al_0 $1ymm_1; mov al_1 $1ymm_2; mov al_2 $1ymm_3; mov al_3 $2ymm_0;\nmov al_4 $1ymm_5; mov al_5 $1ymm_6; mov al_6 $1ymm_7; mov al_7 $2ymm_4;\nmov $3ymm_0 al_0; mov $3ymm_1 al_1; mov $3ymm_2 al_2; mov $3ymm_3 al_3;\nmov $3ymm_4 al_4; mov $3ymm_5 al_5; mov $3ymm_6 al_6; mov $3ymm_7 al_7
+#! vpandn $1ymm, $2ymm, $3ymm -> not $2ymm_0n@uint32 $2ymm_0; and $3ymm_0@uint32 $2ymm_0n $1ymm_0;\nnot $2ymm_1n@uint32 $2ymm_1; and $3ymm_1@uint32 $2ymm_1n $1ymm_1;\nnot $2ymm_2n@uint32 $2ymm_2; and $3ymm_2@uint32 $2ymm_2n $1ymm_2;\nnot $2ymm_3n@uint32 $2ymm_3; and $3ymm_3@uint32 $2ymm_3n $1ymm_3;\nnot $2ymm_4n@uint32 $2ymm_4; and $3ymm_4@uint32 $2ymm_4n $1ymm_4;\nnot $2ymm_5n@uint32 $2ymm_5; and $3ymm_5@uint32 $2ymm_5n $1ymm_5;\nnot $2ymm_6n@uint32 $2ymm_6; and $3ymm_6@uint32 $2ymm_6n $1ymm_6;\nnot $2ymm_7n@uint32 $2ymm_7; and $3ymm_7@uint32 $2ymm_7n $1ymm_7
+#! vpshufb %%ymm7, $2ymm, $3ymm -> assert true\n   && and [ymm7_0=0x00010203@32, ymm7_1=0x04050607@32, ymm7_2=0x08090a0b@32, ymm7_3=0x0c0d0e0f@32,ymm7_4=0x00010203@32, ymm7_5=0x04050607@32, ymm7_6=0x08090a0b@32, ymm7_7=0x0c0d0e0f@32];\nspl s1 s0 $2ymm_0 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_0 t1 t0;\nspl s1 s0 $2ymm_1 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_1 t1 t0;\nspl s1 s0 $2ymm_2 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_2 t1 t0;\nspl s1 s0 $2ymm_3 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_3 t1 t0;\nspl s1 s0 $2ymm_4 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_4 t1 t0;\nspl s1 s0 $2ymm_5 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_5 t1 t0;\nspl s1 s0 $2ymm_6 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_6 t1 t0;\nspl s1 s0 $2ymm_7 16; spl s01 s00 s0 8; spl s11 s10 s1 8;\njoin t1 s00 s01; join t0 s10 s11; join $3ymm_7 t1 t0
+#! vpshufb %%ymm8, $2ymm, $3ymm -> assert true\n   && and [ymm8_0=0x03020100@32, ymm8_1=0x0b0a0908@32, ymm8_2=0xffffffff@32, ymm8_3=0xffffffff@32,ymm8_4=0x03020100@32, ymm8_5=0x0b0a0908@32, ymm8_6=0xffffffff@32, ymm8_7=0xffffffff@32];\nmov $3ymm_0 $2ymm_0; mov $3ymm_1 $2ymm_2;\nmov $3ymm_2 0@uint32; mov $3ymm_3 0@uint32;\nmov $3ymm_4 $2ymm_4; mov $3ymm_5 $2ymm_6;\nmov $3ymm_6 0@uint32; mov $3ymm_7 0@uint32
+#! vpshufb %%ymm9, $2ymm, $3ymm -> assert true\n   && and [ymm9_0=0xffffffff@32, ymm9_1=0xffffffff@32, ymm9_2=0x03020100@32, ymm9_3=0x0b0a0908@32,ymm9_4=0xffffffff@32, ymm9_5=0xffffffff@32, ymm9_6=0x03020100@32, ymm9_7=0x0b0a0908@32];\nmov $3ymm_3 $2ymm_2; mov $3ymm_2 $2ymm_0;\nmov $3ymm_1 0@uint32; mov $3ymm_0 0@uint32;\nmov $3ymm_7 $2ymm_6; mov $3ymm_6 $2ymm_4;\nmov $3ymm_5 0@uint32; mov $3ymm_4 0@uint32
+#! vpshufd \$0xfa, $1ymm, $2ymm -> mov sh_0 $1ymm_2; mov sh_1 $1ymm_2; mov sh_2 $1ymm_3; mov sh_3 $1ymm_3;\nmov sh_4 $1ymm_6; mov sh_5 $1ymm_6; mov sh_6 $1ymm_7; mov sh_7 $1ymm_7;\nmov $2ymm_0 sh_0; mov $2ymm_1 sh_1; mov $2ymm_2 sh_2; mov $2ymm_3 sh_3;\nmov $2ymm_4 sh_4; mov $2ymm_5 sh_5; mov $2ymm_6 sh_6; mov $2ymm_7 sh_7
+#! vpshufd \$0x50, $1ymm, $2ymm -> mov sh_0 $1ymm_0; mov sh_1 $1ymm_0; mov sh_2 $1ymm_1; mov sh_3 $1ymm_1;\nmov sh_4 $1ymm_4; mov sh_5 $1ymm_4; mov sh_6 $1ymm_5; mov sh_7 $1ymm_5;\nmov $2ymm_0 sh_0; mov $2ymm_1 sh_1; mov $2ymm_2 sh_2; mov $2ymm_3 sh_3;\nmov $2ymm_4 sh_4; mov $2ymm_5 sh_5; mov $2ymm_6 sh_6; mov $2ymm_7 sh_7
+#! vpslld $1c, $2ymm, $3ymm -> split dc $3ymm_0 $2ymm_0 (32-$1c); shl $3ymm_0 $3ymm_0 $1c@uint32;\nsplit dc $3ymm_1 $2ymm_1 (32-$1c); shl $3ymm_1 $3ymm_1 $1c@uint32;\nsplit dc $3ymm_2 $2ymm_2 (32-$1c); shl $3ymm_2 $3ymm_2 $1c@uint32;\nsplit dc $3ymm_3 $2ymm_3 (32-$1c); shl $3ymm_3 $3ymm_3 $1c@uint32;\nsplit dc $3ymm_4 $2ymm_4 (32-$1c); shl $3ymm_4 $3ymm_4 $1c@uint32;\nsplit dc $3ymm_5 $2ymm_5 (32-$1c); shl $3ymm_5 $3ymm_5 $1c@uint32;\nsplit dc $3ymm_6 $2ymm_6 (32-$1c); shl $3ymm_6 $3ymm_6 $1c@uint32;\nsplit dc $3ymm_7 $2ymm_7 (32-$1c); shl $3ymm_7 $3ymm_7 $1c@uint32
+#! vpsrld $1c, $2ymm, $3ymm -> split $3ymm_0 dc $2ymm_0 $1c; split $3ymm_1 dc $2ymm_1 $1c;\nsplit $3ymm_2 dc $2ymm_2 $1c; split $3ymm_3 dc $2ymm_3 $1c;\nsplit $3ymm_4 dc $2ymm_4 $1c; split $3ymm_5 dc $2ymm_5 $1c;\nsplit $3ymm_6 dc $2ymm_6 $1c; split $3ymm_7 dc $2ymm_7 $1c
+#! vpsrlq $1c, $2ymm, $3ymm -> join sr_0 $2ymm_1 $2ymm_0; join sr_1 $2ymm_3 $2ymm_2;\njoin sr_2 $2ymm_5 $2ymm_4; join sr_3 $2ymm_7 $2ymm_6;\nsplit sr_0 dc sr_0 $1c; split sr_1 dc sr_1 $1c;\nsplit sr_2 dc sr_2 $1c; split sr_3 dc sr_3 $1c;\nspl $3ymm_1 $3ymm_0 sr_0 32; spl $3ymm_3 $3ymm_2 sr_1 32;\nspl $3ymm_5 $3ymm_4 sr_2 32; spl $3ymm_7 $3ymm_6 sr_3 32
+#! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint32 $2ymm_0 $1ymm_0; xor $3ymm_1@uint32 $2ymm_1 $1ymm_1;\nxor $3ymm_2@uint32 $2ymm_2 $1ymm_2; xor $3ymm_3@uint32 $2ymm_3 $1ymm_3;\nxor $3ymm_4@uint32 $2ymm_4 $1ymm_4; xor $3ymm_5@uint32 $2ymm_5 $1ymm_5;\nxor $3ymm_6@uint32 $2ymm_6 $1ymm_6; xor $3ymm_7@uint32 $2ymm_7 $1ymm_7
+
+#sha256_block_data_order:
 # %rdi = 0x55555555d040
 # %rsi = 0x55555555d068
 # %rdx = 0x1
@@ -6,39 +86,39 @@ sha256_block_data_order:
 # %r8  = 0x0
 # %r9  = 0x7ffef3ff00000000
 	#! -> SP = 0x7fffffffdfc8
-	lea    0x74dd(%rip),%r11        # 0x55555555d0e4 <OPENSSL_ia32cap_P>#! PC = 0x555555555c00
-	mov    (%r11),%r9d                              #! EA = L0x55555555d0e4; Value = 0x7ffef3ffffebffff; PC = 0x555555555c07
-	mov    0x4(%r11),%r10d                          #! EA = L0x55555555d0e8; Value = 0xd39efffb7ffef3ff; PC = 0x555555555c0a
-	mov    0x8(%r11),%r11d                          #! EA = L0x55555555d0ec; Value = 0x00000018d39efffb; PC = 0x555555555c0e
-	test   $0x20000000,%r11d                        #! PC = 0x555555555c12
+	#lea    0x74dd(%rip),%r11        # 0x55555555d0e4 <OPENSSL_ia32cap_P>#! PC = 0x555555555c00
+	#mov    (%r11),%r9d                              #! EA = L0x55555555d0e4; Value = 0x7ffef3ffffebffff; PC = 0x555555555c07
+	#mov    0x4(%r11),%r10d                          #! EA = L0x55555555d0e8; Value = 0xd39efffb7ffef3ff; PC = 0x555555555c0a
+	#mov    0x8(%r11),%r11d                          #! EA = L0x55555555d0ec; Value = 0x00000018d39efffb; PC = 0x555555555c0e
+	#test   $0x20000000,%r11d                        #! PC = 0x555555555c12
 	#jne    0x5555555570c0 <sha256_block_data_order_shaext>#! PC = 0x555555555c19
-	and    $0x128,%r11d                             #! PC = 0x555555555c1f
-	cmp    $0x128,%r11d                             #! PC = 0x555555555c26
+	#and    $0x128,%r11d                             #! PC = 0x555555555c1f
+	#cmp    $0x128,%r11d                             #! PC = 0x555555555c26
 	#je     0x5555555591c0 <sha256_block_data_order_avx2>#! PC = 0x555555555c2d
-	mov    %rsp,%rax                                #! PC = 0x5555555591c0
+	#mov    %rsp,%rax                                #! PC = 0x5555555591c0
 	push   %rbx                                     #! EA = L0x7fffffffdfc0; PC = 0x5555555591c3
 	push   %rbp                                     #! EA = L0x7fffffffdfb8; PC = 0x5555555591c4
 	push   %r12                                     #! EA = L0x7fffffffdfb0; PC = 0x5555555591c5
 	push   %r13                                     #! EA = L0x7fffffffdfa8; PC = 0x5555555591c7
 	push   %r14                                     #! EA = L0x7fffffffdfa0; PC = 0x5555555591c9
 	push   %r15                                     #! EA = L0x7fffffffdf98; PC = 0x5555555591cb
-	sub    $0x220,%rsp                              #! PC = 0x5555555591cd
-	shl    $0x4,%rdx                                #! PC = 0x5555555591d4
-	and    $0xfffffffffffffc00,%rsp                 #! PC = 0x5555555591d8
-	lea    (%rsi,%rdx,4),%rdx                       #! PC = 0x5555555591df
-	add    $0x1c0,%rsp                              #! PC = 0x5555555591e3
+	#sub    $0x220,%rsp                              #! PC = 0x5555555591cd
+	#shl    $0x4,%rdx                                #! PC = 0x5555555591d4
+	#and    $0xfffffffffffffc00,%rsp                 #! PC = 0x5555555591d8
+	#lea    (%rsi,%rdx,4),%rdx                       #! PC = 0x5555555591df
+	#add    $0x1c0,%rsp                              #! PC = 0x5555555591e3
 	mov    %rdi,0x40(%rsp)                          #! EA = L0x7fffffffde00; PC = 0x5555555591ea
 	mov    %rsi,0x48(%rsp)                          #! EA = L0x7fffffffde08; PC = 0x5555555591ef
 	mov    %rdx,0x50(%rsp)                          #! EA = L0x7fffffffde10; PC = 0x5555555591f4
 	mov    %rax,0x58(%rsp)                          #! EA = L0x7fffffffde18; PC = 0x5555555591f9
-	vzeroupper                                      #! PC = 0x5555555591fe
-	sub    $0xffffffffffffffc0,%rsi                 #! PC = 0x555555559201
+	#vzeroupper                                      #! PC = 0x5555555591fe
+	#sub    $0xffffffffffffffc0,%rsi                 #! PC = 0x555555559201
 	mov    (%rdi),%eax                              #! EA = L0x55555555d040; Value = 0xbb67ae856a09e667; PC = 0x555555559205
-	mov    %rsi,%r12                                #! PC = 0x555555559207
+	#mov    %rsi,%r12                                #! PC = 0x555555559207
 	mov    0x4(%rdi),%ebx                           #! EA = L0x55555555d044; Value = 0x3c6ef372bb67ae85; PC = 0x55555555920a
 	cmp    %rdx,%rsi                                #! PC = 0x55555555920d
 	mov    0x8(%rdi),%ecx                           #! EA = L0x55555555d048; Value = 0xa54ff53a3c6ef372; PC = 0x555555559210
-	cmove  %rsp,%r12                                #! PC = 0x555555559213
+	#cmove  %rsp,%r12                                #! PC = 0x555555559213
 	mov    0xc(%rdi),%edx                           #! EA = L0x55555555d04c; Value = 0x510e527fa54ff53a; PC = 0x555555559217
 	mov    0x10(%rdi),%r8d                          #! EA = L0x55555555d050; Value = 0x9b05688c510e527f; PC = 0x55555555921a
 	mov    0x14(%rdi),%r9d                          #! EA = L0x55555555d054; Value = 0x1f83d9ab9b05688c; PC = 0x55555555921e
