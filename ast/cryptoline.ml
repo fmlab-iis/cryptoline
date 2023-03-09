@@ -3784,13 +3784,44 @@ let ghost_to_assume s =
     sprog  = tflatten (tmap helper s.sprog);
     spost = s.spost }
 
+let has_prove_with_ebexp_prove_with es =
+  List.exists (fun (_, epwss) -> epwss <> []) es
+let has_prove_with_rbexp_prove_with rs =
+  List.exists (fun (_, rpwss) -> rpwss <> []) rs
+let has_prove_with_bexp_prove_with (es, rs) =
+  (has_prove_with_ebexp_prove_with es) || (has_prove_with_rbexp_prove_with rs)
+let has_prove_with_instr i =
+  match i with
+  | Iassert e
+    | Icut e -> has_prove_with_bexp_prove_with e
+  | _ -> false
+let has_prove_with_program p =
+  List.exists (fun i -> has_prove_with_instr i) p
+let has_prove_with_spec s =
+  (has_prove_with_bexp_prove_with s.spost) || (has_prove_with_program s.sprog)
+let merge_bexp_prove_with_instr i =
+  match i with
+  | Iassert e -> let (epw, rpw) = merge_bexp_prove_with e in
+                 Iassert ([epw], [rpw])
+  | Icut e -> let (epw, rpw) = merge_bexp_prove_with e in
+              Icut ([epw], [rpw])
+  | _ -> i
+let merge_bexp_prove_with_program p =
+  List.rev_map merge_bexp_prove_with_instr (List.rev p)
+let merge_bexp_prove_with_spec s =
+  let (epw, rpw) = merge_bexp_prove_with s.spost in
+  { spre = s.spre;
+    sprog = merge_bexp_prove_with_program s.sprog;
+    spost = ([epw], [rpw]) }
 let spec_to_coqcryptoline s =
-  (ssa_spec s)
-  |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
-  |> ghost_to_assume
-  |> (fun s -> List.rev_append (rev (assertion_specs s)) (cut_spec s))
-  |> List.rev_map remove_assert_spec
-  |> List.rev_map merge_spec_post
+  if has_prove_with_spec s then
+    (ssa_spec s)
+    |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+    |> cut_spec
+    |> List.rev_map merge_spec_post
+    |> List.rev
+  else
+    [merge_bexp_prove_with_spec s]
 
 
 (** Convert specifications to BvCryptoLine format. *)
