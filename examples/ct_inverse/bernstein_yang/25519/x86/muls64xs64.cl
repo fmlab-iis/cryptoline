@@ -1,17 +1,36 @@
-(* quine: -v muls64xs64.cl
-Parsing Cryptoline file:                [OK]            0.001673 seconds
-Checking well-formedness:               [OK]            0.000353 seconds
-Transforming to SSA form:               [OK]            0.000157 seconds
-Rewriting assignments:                  [OK]            0.000525 seconds
-Verifying program safety:               [OK]            0.030898 seconds
-Verifying range specification:          [OK]            0.124367 seconds
+(* quine: -v -slicing -isafety -isafety_timeout 20000 -jobs 10 muls64xs64.cl
+Parsing Cryptoline file:                [OK]            0.001835 seconds
+Checking well-formedness:               [OK]            0.000370 seconds
+Transforming to SSA form:               [OK]            0.000158 seconds
+Rewriting assignments:                  [OK]            0.000366 seconds
+Verifying program safety:
+         Cut 0
+             Round 1 (4 safety conditions, timeout = 20000 seconds)
+                 Safety condition #3    [OK]
+                 Safety condition #0    [OK]
+                 Safety condition #2    [OK]
+                 Safety condition #1    [OK]
+         Overall                        [OK]            5930.784833 seconds
+Verifying range specification:          [OK]            0.541371 seconds
 Rewriting value-preserved casting:      [OK]            0.000010 seconds
-Verifying algebraic specification:      [OK]            0.000832 seconds
-Verification result:                    [OK]            0.159367 seconds
+Verifying algebraic specification:      [OK]            0.000738 seconds
+Verification result:                    [OK]            5931.330235 seconds
 *)
 
-proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 y0, uint64 y1, uint64 y2, uint64 y3) =
-{true && true}
+proc main (sint64 x0, sint64 x1, sint64 x2, sint64 x3, sint64 y0, sint64 y1, sint64 y2, sint64 y3) =
+{
+  true
+&&
+  and[const 64 (-(2**62)) <=s x0, x0 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s x1, x1 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s x2, x2 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s x3, x3 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s y0, y0 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s y1, y1 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s y2, y2 <=s const 64 (2**62),
+      const 64 (-(2**62)) <=s y3, y3 <=s const 64 (2**62)
+     ]
+}
 
 mov L0x7fffffffdeb8 x0;
 mov L0x7fffffffdec0 x1;
@@ -131,22 +150,19 @@ mov c5 L0x7fffffffdf08;
 mov c6 L0x7fffffffdf10; 
 mov c7 L0x7fffffffdf18; 
 
+
 {
   true
   &&
   and [
-	eqmod (sext slimbs 64 [c0, c1] 64)
-	      (sext x0 128) * (sext y0 128) + (sext x1 128) * (sext y2 128)
-	      slimbs 64 [1@64, 0@64, 0@64],
-	eqmod (sext slimbs 64 [c2, c3] 64)
-	      (sext x0 128) * (sext y1 128) + (sext x1 128) * (sext y3 128)
-	      slimbs 64 [1@64, 0@64, 0@64],
-	eqmod (sext slimbs 64 [c4, c5] 64)
-	      (sext x2 128) * (sext y0 128) + (sext x3 128) * (sext y2 128)
-	      slimbs 64 [1@64, 0@64, 0@64],
-	eqmod (sext slimbs 64 [c6, c7] 64)
-	      (sext x2 128) * (sext y1 128) + (sext x3 128) * (sext y3 128)
-	      slimbs 64 [1@64, 0@64, 0@64]
+	slimbs 64 [c0, c1] =
+	(sext x0 64) * (sext y0 64) + (sext x1 64) * (sext y2 64),
+	slimbs 64 [c2, c3] =
+	(sext x0 64) * (sext y1 64) + (sext x1 64) * (sext y3 64),
+	slimbs 64 [c4, c5] =
+	(sext x2 64) * (sext y0 64) + (sext x3 64) * (sext y2 64),
+	slimbs 64 [c6, c7] =
+	(sext x2 64) * (sext y1 64) + (sext x3 64) * (sext y3 64)
 	]
 }
 

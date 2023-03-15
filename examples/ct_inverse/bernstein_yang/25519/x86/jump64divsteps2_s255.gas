@@ -1,4 +1,72 @@
-jump64divsteps2_s255:
+#! (%%r8) = %%EA
+#! $1c(%r8) = %%EA
+#! (%%r10) = %%EA
+#! $1c(%r10) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rbx) = %%EA
+
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+#! %cl  = %%cl
+
+#! %r$1c = %%r$1c
+
+
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2v -> adds carry $2v $1v $2v
+#! add $1c, $2v -> adds carry $2v $1c@uint64 $2v
+#! adc $1v, $2v -> adcs carry $2v $1v $2v carry
+#! adc \$0x0, $2v -> adcs carry $2v 0@uint64 $2v carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! adc $1c, $2v -> adcs carry $2v $1c@uint64 $2v carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! and $1v, $2v -> and $2v@uint64 $1v $2v
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mul $1v -> umull rdx rax $1v rax
+#! mulq $1v -> umull rdx rax $1v rax
+#! mulq $1c -> umull rdx rax $1c@uint64 rax
+#! imulq $1v -> smull rdx rax $1v rax
+#! imul $1v, $2v -> smull dontcare $2v $1v $2v
+#! imul $1c, $2v, $3v -> smull dontcare $3v $1c@uint64 $2v
+#! mulx $1v, $2v, $3v -> umull rdx $3v $1v $2v
+#! adox $1v, $2v -> adcs OF $2v $1v $2v OF
+#! adcx $1v, $2v -> adcs carry $2v $1v $2v carry
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
+#! btr \$0x3f, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v;\nand $2v@uint64 $2v 0x7fffffffffffffff@uint64 
+#! bt \$0x3f, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v
+#! sar \$0x3f, $1v -> and msb@uint64 $1v 0x8000000000000000@uint64;\nsubc flag dontcare msb 1@uint64;\ncmov $1v flag 0xffffffffffffffff@uint64 0@uint64
+#! sar $1v -> ssplit $1v dontcare $1v 1 
+
+#! cmove $1v, $2v -> cmov $2v ZF $1v $2v
+#! cmovge $1v, $2v -> cmov $2v SF $2v $1v
+
+#! shrd \$1v, $2v, $3v -> assert true && $1v = 62@8;\njoin tmp $2v $3v;\nusplit tmp dontcare tmp 62;\ncast $3v@uint64 tmp
+#! lea $1v, $2v -> adds dontcare $2v $2v 1@uint64
+#! lea -$1v, $2v -> subb dontcare $2v $2v 1@uint64
+
+#jump64divsteps2_s255:
 # %rdi = 0x3e
 # %rsi = 0x1
 # %rdx = 0x7fffffffde10

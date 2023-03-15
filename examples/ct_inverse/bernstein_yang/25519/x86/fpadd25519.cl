@@ -28,6 +28,7 @@ proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 y0, uint64 y1, uin
 	 m1 = 0xffffffffffffffff@64,
 	 m2 = 0xffffffffffffffff@64,
 	 m3 = 0x7fffffffffffffff@64,
+
     	 limbs 64 [x0, x1, x2, x3] <u limbs 64 [m0, m1, m2, m3],
     	 limbs 64 [y0, y1, y2, y3] <u limbs 64 [m0, m1, m2, m3]
   	]
@@ -190,7 +191,6 @@ mov c3 L0x7fffffffe0a8;
          limbs 64 [y0, y1, y2, y3])
 
         (limbs 64 [c0, c1, c2, c3])
-
         (limbs 64 [m0, m1, m2, m3])
   &&
   eqmod

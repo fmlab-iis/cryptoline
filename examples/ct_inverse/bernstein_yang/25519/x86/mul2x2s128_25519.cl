@@ -1,18 +1,40 @@
 (* quine: -v mul2x2s128_25519.cl
-Parsing Cryptoline file:                [OK]            0.008058 seconds
-Checking well-formedness:               [OK]            0.000921 seconds
-Transforming to SSA form:               [OK]            0.000298 seconds
-Rewriting assignments:                  [OK]            0.003160 seconds
-Verifying program safety:               [OK]            0.045604 seconds
-Verifying range assertions:             [OK]            3.480671 seconds
-Verifying range specification:          [OK]            0.158799 seconds
-Rewriting value-preserved casting:      [OK]            0.000040 seconds
-Verifying algebraic assertions:         [OK]            0.058375 seconds
-Verifying algebraic specification:      [OK]            0.002003 seconds
-Verification result:                    [OK]            3.758537 seconds
+Parsing Cryptoline file:                [OK]            0.012215 seconds
+Checking well-formedness:               [OK]            0.001260 seconds
+Transforming to SSA form:               [OK]            0.000433 seconds
+Rewriting assignments:                  [OK]            0.009014 seconds
+Verifying program safety:               [OK]            284.822715 seconds
+Verifying range assertions:             [OK]            90.426751 seconds
+Verifying range specification:          [OK]            250.188800 seconds
+Rewriting value-preserved casting:      [OK]            0.000063 seconds
+Verifying algebraic assertions:         [OK]            0.875235 seconds
+Verifying algebraic specification:      [OK]            0.649872 seconds
+Verification result:                    [OK]            626.987374 seconds
 *)
-proc main (uint64 x0, uint64 x1, uint64 x2, uint64 x3, uint64 x4, uint64 x5, uint64 x6, uint64 x7, uint64 y0, uint64 y1, uint64 y2, uint64 y3, uint64 y4, uint64 y5, uint64 y6, uint64 y7) =
-{true && true}
+proc main (uint64 x0, sint64 x1, uint64 x2, sint64 x3, uint64 x4, sint64 x5, uint64 x6, sint64 x7, uint64 y0, sint64 y1, uint64 y2, sint64 y3, uint64 y4, sint64 y5, uint64 y6, sint64 y7, uint64 m0, uint64 m1, uint64 m2, uint64 m3) =
+{
+  and
+        [
+         m0 = 0xffffffffffffffed,
+         m1 = 0xffffffffffffffff,
+         m2 = 0xffffffffffffffff,
+         m3 = 0x7fffffffffffffff
+        ]
+&&
+  and[m0 = 0xffffffffffffffed@64,
+      m1 = 0xffffffffffffffff@64,
+      m2 = 0xffffffffffffffff@64,
+      m3 = 0x7fffffffffffffff@64,
+      const 128 (-(2**125)) <s slimbs 64 [x0, x1], slimbs 64 [x0, x1] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [x2, x3], slimbs 64 [x2, x3] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [x4, x5], slimbs 64 [x4, x5] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [x6, x7], slimbs 64 [x6, x7] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [y0, y1], slimbs 64 [y0, y1] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [y2, y3], slimbs 64 [y2, y3] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [y4, y5], slimbs 64 [y4, y5] <s const 128 (2**125),
+      const 128 (-(2**125)) <s slimbs 64 [y6, y7], slimbs 64 [y6, y7] <s const 128 (2**125)
+     ]
+}
 
 mov L0x7fffffffdf10 x0;
 mov L0x7fffffffdf18 x1;
@@ -67,21 +89,45 @@ assume (r11 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%r12                              #! EA = L0x7fffffffded0; Value = 0x1d0dc0f80f74a6f8; PC = 0x40198e *)
 mov r12 L0x7fffffffded0;
 (* mul    %r12                                     #! PC = 0x401991 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax r12 rax;
+
+assert true && limbs 64 [rax, rdx] = (uext r12 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = r12 * (raxh * 2**63 + raxl) && true;
+
 (* and    %r11,%r12                                #! PC = 0x401994 *)
+
+mov r12o r12;
+
 and r12@uint64 r11 r12;
+
+assert true && or[and[flag = 0@1, r12 = 0@64],
+                  and[flag = 1@1, r12 = r12o]];
+assume (flag) * (r12 - r12o) = 0 && true;
+assume (flag - 1) * (r12) = 0 && true;
+
+
 (* add    %rax,%r8                                 #! PC = 0x401997 *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x40199a *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x40199d *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %r12,%r9                                 #! PC = 0x4019a1 *)
 subb carry r9 r9 r12;
 (* sbb    $0x0,%r10                                #! PC = 0x4019a4 *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffded8; Value = 0xffffffffffffffff; PC = 0x4019a8 *)
 mov rax L0x7fffffffded8;
 (* mov    %rax,%rsi                                #! PC = 0x4019ac *)
@@ -99,21 +145,48 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf10; Value = 0x5c9ae3ea75758e00; PC = 0x4019b3 *)
 mov rdi L0x7fffffffdf10;
 (* mul    %rdi                                     #! PC = 0x4019b6 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x4019b9 *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x4019bc *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x4019bf *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x4019c2 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %rdi,%r9                                 #! PC = 0x4019c6 *)
 subb carry r9 r9 rdi;
 (* sbb    $0x0,%r10                                #! PC = 0x4019c9 *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0@sint64 carry;
+
+assert limbs 64 [x0, x1] * limbs 64 [y0, y1] = limbs 64 [rcx, r8, r9, r10] && true;
+assume true && slimbs 64 [x0, x1, 0@64, 0@64] * slimbs 64 [y0, y1, 0@64, 0@64] = slimbs 64 [rcx, r8, r9, r10];
+
 (* mov    $0x10,%rdi                               #! PC = 0x4019cd *)
 mov rdi 0x10@uint64;
 (* mov    $0x20,%rsi                               #! PC = 0x4019d4 *)
@@ -155,21 +228,44 @@ assume (r15 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%rbx                              #! EA = L0x7fffffffdef0; Value = 0x5e82755d1aa0574f; PC = 0x401a0a *)
 mov rbx L0x7fffffffdef0;
 (* mul    %rbx                                     #! PC = 0x401a0d *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rbx rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rbx 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rbx * (raxh * 2**63 + raxl) && true;
+
 (* and    %r15,%rbx                                #! PC = 0x401a10 *)
+
+mov rbxo rbx;
+
 and rbx@uint64 r15 rbx;
+
+assert true && or[and[flag = 0@1, rbx = 0@64],
+                  and[flag = 1@1, rbx = rbxo]];
+assume (flag) * (rbx - rbxo) = 0 && true;
+assume (flag - 1) * (rbx) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401a13 *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401a16 *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401a19 *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rbx,%r13                                #! PC = 0x401a1d *)
 subb carry r13 r13 rbx;
 (* sbb    $0x0,%r14                                #! PC = 0x401a20 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdef8; Value = 0x0000000000000001; PC = 0x401a24 *)
 mov rax L0x7fffffffdef8;
 (* mov    %rax,%rsi                                #! PC = 0x401a28 *)
@@ -187,21 +283,49 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf20; Value = 0x0a947171d8d48020; PC = 0x401a2f *)
 mov rdi L0x7fffffffdf20;
 (* mul    %rdi                                     #! PC = 0x401a32 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401a35 *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
+
 (* add    %rax,%r12                                #! PC = 0x401a38 *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401a3b *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401a3e *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rdi,%r13                                #! PC = 0x401a42 *)
 subb carry r13 r13 rdi;
 (* sbb    $0x0,%r14                                #! PC = 0x401a45 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
+
+assert limbs 64 [x2, x3] * limbs 64 [y4, y5] = limbs 64 [r11, r12, r13, r14] && true;
+assume true && slimbs 64 [x2, x3, 0@64, 0@64] * slimbs 64 [y4, y5, 0@64, 0@64] = slimbs 64 [r11, r12, r13, r14];
+
 (* add    %rcx,%r11                                #! PC = 0x401a49 *)
 adds carry r11 rcx r11;
 (* adc    %r8,%r12                                 #! PC = 0x401a4c *)
@@ -225,11 +349,29 @@ assume (rdi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    $0xffffffffffffffed,%rsi                 #! PC = 0x401a5c *)
 mov rsi 0xffffffffffffffed@uint64;
 (* and    %rdi,%rsi                                #! PC = 0x401a63 *)
+
+mov rsio rsi;
+
 and rsi@uint64 rdi rsi;
+
+assert true && or[and[flag = 0@1, rsi = 0@64],
+                  and[flag = 1@1, rsi = rsio]];
+assume (flag) * (rsi - rsio) = 0 && true;
+assume (flag - 1) * (rsi) = 0 && true;
+
 (* movabs $0x7fffffffffffffff,%rdx                 #! PC = 0x401a66 *)
 mov rdx 0x7fffffffffffffff@uint64;
 (* and    %rdi,%rdx                                #! PC = 0x401a70 *)
-and rdx@uint64 rdi rdx;
+
+mov rdxo rdx;
+
+and rdx@sint64 rdi rdx;
+
+assert true && or[and[flag = 0@1, rdx = 0@64],
+                  and[flag = 1@1, rdx = rdxo]];
+assume (flag) * (rdx - rdxo) = 0 && true;
+assume (flag - 1) * (rdx) = 0 && true;
+
 (* add    %rsi,%r11                                #! PC = 0x401a73 *)
 adds carry r11 rsi r11;
 (* adc    %rdi,%r12                                #! PC = 0x401a76 *)
@@ -248,6 +390,23 @@ mov L0x7fffffffdf58 r12;
 mov L0x7fffffffdf60 r13;
 (* mov    %r14,0x18(%rdi)                          #! EA = L0x7fffffffdf68; PC = 0x401a8f *)
 mov L0x7fffffffdf68 r14;
+
+
+assert 
+and[
+    eqmod limbs 64 [x0, x1] * limbs 64 [y0, y1] + limbs 64 [x2, x3] * limbs 64 [y4, y5] 
+          limbs 64 [L0x7fffffffdf50, L0x7fffffffdf58, L0x7fffffffdf60, L0x7fffffffdf68]
+          limbs 64 [m0, m1, m2, m3]
+] 
+&& true;
+
+assert true && 
+and[
+    slimbs 64 [L0x7fffffffdf50, L0x7fffffffdf58, L0x7fffffffdf60, L0x7fffffffdf68] <s slimbs 64 [m0, m1, m2, m3]
+];
+
+
+
 (* add    $0x20,%rdi                               #! PC = 0x401a93 *)
 adds carry rdi 0x20@uint64 rdi;
 (* #mov    %rdi,0x48(%rsp)                          #! EA = L0x7fffffffdd88; PC = 0x401a97 *)
@@ -291,21 +450,44 @@ assume (r11 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%r12                              #! EA = L0x7fffffffdee0; Value = 0x02f1d498675c8f58; PC = 0x401ad2 *)
 mov r12 L0x7fffffffdee0;
 (* mul    %r12                                     #! PC = 0x401ad5 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax r12 rax;
+
+assert true && limbs 64 [rax, rdx] = (uext r12 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = r12 * (raxh * 2**63 + raxl) && true;
+
 (* and    %r11,%r12                                #! PC = 0x401ad8 *)
+
+mov r12o r12;
+
 and r12@uint64 r11 r12;
+
+assert true && or[and[flag = 0@1, r12 = 0@64],
+                  and[flag = 1@1, r12 = r12o]];
+assume (flag) * (r12 - r12o) = 0 && true;
+assume (flag - 1) * (r12) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401adb *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401ade *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401ae1 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %r12,%r9                                 #! PC = 0x401ae5 *)
 subb carry r9 r9 r12;
 (* sbb    $0x0,%r10                                #! PC = 0x401ae8 *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdee8; Value = 0x0000000000000001; PC = 0x401aec *)
 mov rax L0x7fffffffdee8;
 (* mov    %rax,%rsi                                #! PC = 0x401af0 *)
@@ -323,21 +505,49 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf10; Value = 0x5c9ae3ea75758e00; PC = 0x401af7 *)
 mov rdi L0x7fffffffdf10;
 (* mul    %rdi                                     #! PC = 0x401afa *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401afd *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401b00 *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401b03 *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401b06 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %rdi,%r9                                 #! PC = 0x401b0a *)
 subb carry r9 r9 rdi;
 (* sbb    $0x0,%r10                                #! PC = 0x401b0d *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
+
+assert limbs 64 [x0, x1] * limbs 64 [y2, y3] = limbs 64 [rcx, r8, r9, r10] && true;
+assume true && slimbs 64 [x0, x1, 0@64, 0@64] * slimbs 64 [y2, y3, 0@64, 0@64] = slimbs 64 [rcx, r8, r9, r10];
+
+
 (* mov    $0x10,%rdi                               #! PC = 0x401b11 *)
 mov rdi 0x10@uint64;
 (* mov    $0x30,%rsi                               #! PC = 0x401b18 *)
@@ -379,21 +589,44 @@ assume (r15 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%rbx                              #! EA = L0x7fffffffdf00; Value = 0x5e05972aaa5def1b; PC = 0x401b4e *)
 mov rbx L0x7fffffffdf00;
 (* mul    %rbx                                     #! PC = 0x401b51 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rbx rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rbx 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rbx * (raxh * 2**63 + raxl) && true;
+
 (* and    %r15,%rbx                                #! PC = 0x401b54 *)
+
+mov rbxo rbx;
+
 and rbx@uint64 r15 rbx;
+
+assert true && or[and[flag = 0@1, rbx = 0@64],
+                  and[flag = 1@1, rbx = rbxo]];
+assume (flag) * (rbx - rbxo) = 0 && true;
+assume (flag - 1) * (rbx) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401b57 *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401b5a *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401b5d *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rbx,%r13                                #! PC = 0x401b61 *)
 subb carry r13 r13 rbx;
 (* sbb    $0x0,%r14                                #! PC = 0x401b64 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdf08; Value = 0xfffffffffffffffe; PC = 0x401b68 *)
 mov rax L0x7fffffffdf08;
 (* mov    %rax,%rsi                                #! PC = 0x401b6c *)
@@ -411,21 +644,49 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf20; Value = 0x0a947171d8d48020; PC = 0x401b73 *)
 mov rdi L0x7fffffffdf20;
 (* mul    %rdi                                     #! PC = 0x401b76 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401b79 *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401b7c *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401b7f *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401b82 *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rdi,%r13                                #! PC = 0x401b86 *)
 subb carry r13 r13 rdi;
 (* sbb    $0x0,%r14                                #! PC = 0x401b89 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
+
+assert limbs 64 [x2, x3] * limbs 64 [y6, y7] = limbs 64 [r11, r12, r13, r14] && true;
+assume true && slimbs 64 [x2, x3, 0@64, 0@64] * slimbs 64 [y6, y7, 0@64, 0@64] = slimbs 64 [r11, r12, r13, r14];
+
+
 (* add    %rcx,%r11                                #! PC = 0x401b8d *)
 adds carry r11 rcx r11;
 (* adc    %r8,%r12                                 #! PC = 0x401b90 *)
@@ -449,11 +710,29 @@ assume (rdi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    $0xffffffffffffffed,%rsi                 #! PC = 0x401ba0 *)
 mov rsi 0xffffffffffffffed@uint64;
 (* and    %rdi,%rsi                                #! PC = 0x401ba7 *)
+
+mov rsio rsi;
+
 and rsi@uint64 rdi rsi;
+
+assert true && or[and[flag = 0@1, rsi = 0@64],
+                  and[flag = 1@1, rsi = rsio]];
+assume (flag) * (rsi - rsio) = 0 && true;
+assume (flag - 1) * (rsi) = 0 && true;
+
 (* movabs $0x7fffffffffffffff,%rdx                 #! PC = 0x401baa *)
 mov rdx 0x7fffffffffffffff@uint64;
 (* and    %rdi,%rdx                                #! PC = 0x401bb4 *)
-and rdx@uint64 rdi rdx;
+
+mov rdxo rdx;
+
+and rdx@sint64 rdi rdx;
+
+assert true && or[and[flag = 0@1, rdx = 0@64],
+                  and[flag = 1@1, rdx = rdxo]];
+assume (flag) * (rdx - rdxo) = 0 && true;
+assume (flag - 1) * (rdx) = 0 && true;
+
 (* add    %rsi,%r11                                #! PC = 0x401bb7 *)
 adds carry r11 rsi r11;
 (* adc    %rdi,%r12                                #! PC = 0x401bba *)
@@ -515,21 +794,44 @@ assume (r11 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%r12                              #! EA = L0x7fffffffded0; Value = 0x1d0dc0f80f74a6f8; PC = 0x401c16 *)
 mov r12 L0x7fffffffded0;
 (* mul    %r12                                     #! PC = 0x401c19 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax r12 rax;
+
+assert true && limbs 64 [rax, rdx] = (uext r12 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = r12 * (raxh * 2**63 + raxl) && true;
+
 (* and    %r11,%r12                                #! PC = 0x401c1c *)
+
+mov r12o r12;
+
 and r12@uint64 r11 r12;
+
+assert true && or[and[flag = 0@1, r12 = 0@64],
+                  and[flag = 1@1, r12 = r12o]];
+assume (flag) * (r12 - r12o) = 0 && true;
+assume (flag - 1) * (r12) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401c1f *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401c22 *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401c25 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %r12,%r9                                 #! PC = 0x401c29 *)
 subb carry r9 r9 r12;
 (* sbb    $0x0,%r10                                #! PC = 0x401c2c *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffded8; Value = 0xffffffffffffffff; PC = 0x401c30 *)
 mov rax L0x7fffffffded8;
 (* mov    %rax,%rsi                                #! PC = 0x401c34 *)
@@ -547,21 +849,48 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf30; Value = 0x34367b50c0c98250; PC = 0x401c3b *)
 mov rdi L0x7fffffffdf30;
 (* mul    %rdi                                     #! PC = 0x401c3e *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401c41 *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401c44 *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401c47 *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401c4a *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %rdi,%r9                                 #! PC = 0x401c4e *)
 subb carry r9 r9 rdi;
 (* sbb    $0x0,%r10                                #! PC = 0x401c51 *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
+
+assert limbs 64 [x4, x5] * limbs 64 [y0, y1] = limbs 64 [rcx, r8, r9, r10] && true;
+assume true && slimbs 64 [x4, x5, 0@64, 0@64] * slimbs 64 [y0, y1, 0@64, 0@64] = slimbs 64 [rcx, r8, r9, r10];
+
 (* mov    $0x30,%rdi                               #! PC = 0x401c55 *)
 mov rdi 0x30@uint64;
 (* mov    $0x20,%rsi                               #! PC = 0x401c5c *)
@@ -603,21 +932,44 @@ assume (r15 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%rbx                              #! EA = L0x7fffffffdef0; Value = 0x5e82755d1aa0574f; PC = 0x401c92 *)
 mov rbx L0x7fffffffdef0;
 (* mul    %rbx                                     #! PC = 0x401c95 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rbx rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rbx 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rbx * (raxh * 2**63 + raxl) && true;
+
 (* and    %r15,%rbx                                #! PC = 0x401c98 *)
+
+mov rbxo rbx;
+
 and rbx@uint64 r15 rbx;
+
+assert true && or[and[flag = 0@1, rbx = 0@64],
+                  and[flag = 1@1, rbx = rbxo]];
+assume (flag) * (rbx - rbxo) = 0 && true;
+assume (flag - 1) * (rbx) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401c9b *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401c9e *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401ca1 *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rbx,%r13                                #! PC = 0x401ca5 *)
 subb carry r13 r13 rbx;
 (* sbb    $0x0,%r14                                #! PC = 0x401ca8 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdef8; Value = 0x0000000000000001; PC = 0x401cac *)
 mov rax L0x7fffffffdef8;
 (* mov    %rax,%rsi                                #! PC = 0x401cb0 *)
@@ -635,21 +987,48 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf40; Value = 0x56b8d383d2e5b5b3; PC = 0x401cb7 *)
 mov rdi L0x7fffffffdf40;
 (* mul    %rdi                                     #! PC = 0x401cba *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401cbd *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401cc0 *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401cc3 *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401cc6 *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rdi,%r13                                #! PC = 0x401cca *)
 subb carry r13 r13 rdi;
 (* sbb    $0x0,%r14                                #! PC = 0x401ccd *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
+
+assert limbs 64 [x6, x7] * limbs 64 [y4, y5] = limbs 64 [r11, r12, r13, r14] && true;
+assume true && slimbs 64 [x6, x7, 0@64, 0@64] * slimbs 64 [y4, y5, 0@64, 0@64] = slimbs 64 [r11, r12, r13, r14];
+
 (* add    %rcx,%r11                                #! PC = 0x401cd1 *)
 adds carry r11 rcx r11;
 (* adc    %r8,%r12                                 #! PC = 0x401cd4 *)
@@ -673,11 +1052,29 @@ assume (rdi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    $0xffffffffffffffed,%rsi                 #! PC = 0x401ce4 *)
 mov rsi 0xffffffffffffffed@uint64;
 (* and    %rdi,%rsi                                #! PC = 0x401ceb *)
+
+mov rsio rsi;
+
 and rsi@uint64 rdi rsi;
+
+assert true && or[and[flag = 0@1, rsi = 0@64],
+                  and[flag = 1@1, rsi = rsio]];
+assume (flag) * (rsi - rsio) = 0 && true;
+assume (flag - 1) * (rsi) = 0 && true;
+
 (* movabs $0x7fffffffffffffff,%rdx                 #! PC = 0x401cee *)
 mov rdx 0x7fffffffffffffff@uint64;
 (* and    %rdi,%rdx                                #! PC = 0x401cf8 *)
-and rdx@uint64 rdi rdx;
+
+mov rdxo rdx;
+
+and rdx@sint64 rdi rdx;
+
+assert true && or[and[flag = 0@1, rdx = 0@64],
+                  and[flag = 1@1, rdx = rdxo]];
+assume (flag) * (rdx - rdxo) = 0 && true;
+assume (flag - 1) * (rdx) = 0 && true;
+
 (* add    %rsi,%r11                                #! PC = 0x401cfb *)
 adds carry r11 rsi r11;
 (* adc    %rdi,%r12                                #! PC = 0x401cfe *)
@@ -741,21 +1138,44 @@ assume (r11 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%r12                              #! EA = L0x7fffffffdee0; Value = 0x02f1d498675c8f58; PC = 0x401d61 *)
 mov r12 L0x7fffffffdee0;
 (* mul    %r12                                     #! PC = 0x401d64 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax r12 rax;
+
+assert true && limbs 64 [rax, rdx] = (uext r12 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = r12 * (raxh * 2**63 + raxl) && true;
+
 (* and    %r11,%r12                                #! PC = 0x401d67 *)
+
+mov r12o r12;
+
 and r12@uint64 r11 r12;
+
+assert true && or[and[flag = 0@1, r12 = 0@64],
+                  and[flag = 1@1, r12 = r12o]];
+assume (flag) * (r12 - r12o) = 0 && true;
+assume (flag - 1) * (r12) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401d6a *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401d6d *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401d70 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %r12,%r9                                 #! PC = 0x401d74 *)
 subb carry r9 r9 r12;
 (* sbb    $0x0,%r10                                #! PC = 0x401d77 *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdee8; Value = 0x0000000000000001; PC = 0x401d7b *)
 mov rax L0x7fffffffdee8;
 (* mov    %rax,%rsi                                #! PC = 0x401d7f *)
@@ -773,21 +1193,48 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf30; Value = 0x34367b50c0c98250; PC = 0x401d86 *)
 mov rdi L0x7fffffffdf30;
 (* mul    %rdi                                     #! PC = 0x401d89 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
 (* and    %rsi,%rdi                                #! PC = 0x401d8c *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
 (* add    %rax,%r8                                 #! PC = 0x401d8f *)
 adds carry r8 rax r8;
 (* adc    %rdx,%r9                                 #! PC = 0x401d92 *)
 adcs carry r9 rdx r9 carry;
 (* adc    $0x0,%r10                                #! PC = 0x401d95 *)
-adcs carry r10 0@uint64 r10 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r10 0@sint64 r10 carry;
 (* sub    %rdi,%r9                                 #! PC = 0x401d99 *)
 subb carry r9 r9 rdi;
 (* sbb    $0x0,%r10                                #! PC = 0x401d9c *)
-sbbs carry r10 r10 0x0@uint64 carry;
+sbbs carry r10 r10 0x0@sint64 carry;
+
+assert limbs 64 [x4, x5] * limbs 64 [y2, y3] = limbs 64 [rcx, r8, r9, r10] && true;
+assume true && slimbs 64 [x4, x5, 0@64, 0@64] * slimbs 64 [y2, y3, 0@64, 0@64] = slimbs 64 [rcx, r8, r9, r10];
+
 (* mov    $0x30,%rdi                               #! PC = 0x401da0 *)
 mov rdi 0x30@uint64;
 (* mov    $0x30,%rsi                               #! PC = 0x401da7 *)
@@ -829,21 +1276,44 @@ assume (r15 - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rsi),%rbx                              #! EA = L0x7fffffffdf00; Value = 0x5e05972aaa5def1b; PC = 0x401ddd *)
 mov rbx L0x7fffffffdf00;
 (* mul    %rbx                                     #! PC = 0x401de0 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rbx rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rbx 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rbx * (raxh * 2**63 + raxl) && true;
+
 (* and    %r15,%rbx                                #! PC = 0x401de3 *)
+
+mov rbxo rbx;
+
 and rbx@uint64 r15 rbx;
+
+assert true && or[and[flag = 0@1, rbx = 0@64],
+                  and[flag = 1@1, rbx = rbxo]];
+assume (flag) * (rbx - rbxo) = 0 && true;
+assume (flag - 1) * (rbx) = 0 && true;
+
 (* add    %rax,%r12                                #! PC = 0x401de6 *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401de9 *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401dec *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rbx,%r13                                #! PC = 0x401df0 *)
 subb carry r13 r13 rbx;
 (* sbb    $0x0,%r14                                #! PC = 0x401df3 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
 (* mov    0x8(%rsi),%rax                           #! EA = L0x7fffffffdf08; Value = 0xfffffffffffffffe; PC = 0x401df7 *)
 mov rax L0x7fffffffdf08;
 (* mov    %rax,%rsi                                #! PC = 0x401dfb *)
@@ -861,21 +1331,52 @@ assume (rsi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    (%rdi),%rdi                              #! EA = L0x7fffffffdf40; Value = 0x56b8d383d2e5b5b3; PC = 0x401e02 *)
 mov rdi L0x7fffffffdf40;
 (* mul    %rdi                                     #! PC = 0x401e05 *)
+
+mov raxo rax;
+
+cast rax@uint64 rax;
+usplit raxh raxl rax 63;
+assert true && raxh * const 64 (2**63) + raxl = raxo;
+assume raxl - raxh * (2**63) = raxo && true;
+
+cast flagn@uint64 flag;
+assert true && flagn = raxh;
+assume flag = raxh && true;
+
 umull rdx rax rdi rax;
+
+assert true && limbs 64 [rax, rdx] = (uext rdi 64) * ((uext raxh 64) * (const 128 (2**63)) + (uext raxl 64));
+assume limbs 64 [rax, rdx] = rdi * (raxh * 2**63 + raxl) && true;
+
+
 (* and    %rsi,%rdi                                #! PC = 0x401e08 *)
+
+mov rdio rdi;
+
 and rdi@uint64 rsi rdi;
+
+assert true && or[and[flag = 0@1, rdi = 0@64],
+                  and[flag = 1@1, rdi = rdio]];
+assume (flag) * (rdi - rdio) = 0 && true;
+assume (flag - 1) * (rdi) = 0 && true;
+
+
 (* add    %rax,%r12                                #! PC = 0x401e0b *)
 adds carry r12 rax r12;
 (* adc    %rdx,%r13                                #! PC = 0x401e0e *)
 adcs carry r13 rdx r13 carry;
 (* adc    $0x0,%r14                                #! PC = 0x401e11 *)
-adcs carry r14 0@uint64 r14 carry;
-assert true && carry = 0@1;
-assume carry = 0 && true;
+adcs carry r14 0@sint64 r14 carry;
 (* sub    %rdi,%r13                                #! PC = 0x401e15 *)
 subb carry r13 r13 rdi;
 (* sbb    $0x0,%r14                                #! PC = 0x401e18 *)
-sbbs carry r14 r14 0x0@uint64 carry;
+sbbs carry r14 r14 0x0@sint64 carry;
+
+
+assert limbs 64 [x6, x7] * limbs 64 [y6, y7] = limbs 64 [r11, r12, r13, r14] && true;
+assume true && slimbs 64 [x6, x7, 0@64, 0@64] * slimbs 64 [y6, y7, 0@64, 0@64] = slimbs 64 [r11, r12, r13, r14];
+
+
 (* add    %rcx,%r11                                #! PC = 0x401e1c *)
 adds carry r11 rcx r11;
 (* adc    %r8,%r12                                 #! PC = 0x401e1f *)
@@ -899,11 +1400,30 @@ assume (rdi - 0xffffffffffffffff) * (flag) = 0 && true;
 (* mov    $0xffffffffffffffed,%rsi                 #! PC = 0x401e2f *)
 mov rsi 0xffffffffffffffed@uint64;
 (* and    %rdi,%rsi                                #! PC = 0x401e36 *)
+
+mov rsio rsi;
+
 and rsi@uint64 rdi rsi;
+
+assert true && or[and[flag = 0@1, rsi = 0@64],
+                  and[flag = 1@1, rsi = rsio]];
+assume (flag) * (rsi - rsio) = 0 && true;
+assume (flag - 1) * (rsi) = 0 && true;
+
 (* movabs $0x7fffffffffffffff,%rdx                 #! PC = 0x401e39 *)
 mov rdx 0x7fffffffffffffff@uint64;
 (* and    %rdi,%rdx                                #! PC = 0x401e43 *)
-and rdx@uint64 rdi rdx;
+
+mov rdxo rdx;
+
+and rdx@sint64 rdi rdx;
+
+assert true && or[and[flag = 0@1, rdx = 0@64],
+                  and[flag = 1@1, rdx = rdxo]];
+assume (flag) * (rdx - rdxo) = 0 && true;
+assume (flag - 1) * (rdx) = 0 && true;
+
+
 (* add    %rsi,%r11                                #! PC = 0x401e46 *)
 adds carry r11 rsi r11;
 (* adc    %rdi,%r12                                #! PC = 0x401e49 *)
@@ -962,25 +1482,30 @@ mov c14 L0x7fffffffdfc0;
 mov c15 L0x7fffffffdfc8; 
 
 {
-  true
-  &&
-  and [
-	eqmod 
-	 (sext slimbs 64 [c0, c1, c2, c3] 64)
-	 (sext slimbs 64 [x0, x1] 192) * (sext slimbs 64 [y0, y1] 192) + (sext slimbs 64 [x2, x3] 192) * (sext slimbs 64 [y4, y5] 192)
-	 slimbs 64 [1@64, 0@64, 0@64, 0@64, 0@64],
-	eqmod 
-	 (sext slimbs 64 [c4, c5, c6, c7] 64)
-	 (sext slimbs 64 [x0, x1] 192) * (sext slimbs 64 [y2, y3] 192) + (sext slimbs 64 [x2, x3] 192) * (sext slimbs 64 [y6, y7] 192)
-	 slimbs 64 [1@64, 0@64, 0@64, 0@64, 0@64],
-	eqmod 
-	 (sext slimbs 64 [c8, c9, c10, c11] 64)
-	 (sext slimbs 64 [x4, x5] 192) * (sext slimbs 64 [y0, y1] 192) + (sext slimbs 64 [x6, x7] 192) * (sext slimbs 64 [y4, y5] 192)
-	 slimbs 64 [1@64, 0@64, 0@64, 0@64, 0@64],
-	eqmod 
-	 (sext slimbs 64 [c12, c13, c14, c15] 64)
-	 (sext slimbs 64 [x4, x5] 192) * (sext slimbs 64 [y2, y3] 192) + (sext slimbs 64 [x6, x7] 192) * (sext slimbs 64 [y6, y7] 192)
-	 slimbs 64 [1@64, 0@64, 0@64, 0@64, 0@64]
-       ]
+  and[
+    eqmod limbs 64 [x0, x1] * limbs 64 [y0, y1] + limbs 64 [x2, x3] * limbs 64 [y4, y5]
+	  limbs 64 [c0 , c1 , c2 , c3 ] 
+          limbs 64 [m0, m1, m2, m3],
+    eqmod limbs 64 [x0, x1] * limbs 64 [y2, y3] + limbs 64 [x2, x3] * limbs 64 [y6, y7]
+	  limbs 64 [c4 , c5 , c6 , c7 ] 
+          limbs 64 [m0, m1, m2, m3],
+    eqmod limbs 64 [x4, x5] * limbs 64 [y0, y1] + limbs 64 [x6, x7] * limbs 64 [y4, y5]
+	  limbs 64 [c8 , c9 , c10, c11] 
+          limbs 64 [m0, m1, m2, m3],
+    eqmod limbs 64 [x4, x5] * limbs 64 [y2, y3] + limbs 64 [x6, x7] * limbs 64 [y6, y7]
+	  limbs 64 [c12, c13, c14, c15] 
+          limbs 64 [m0, m1, m2, m3]
+  ]
+ &&
+  and[
+    slimbs 64 [c0 , c1 , c2 , c3 ] <s  slimbs 64 [m0, m1, m2, m3],
+    slimbs 64 [c0 , c1 , c2 , c3 ] >=s const 256 0,
+    slimbs 64 [c4 , c5 , c6 , c7 ] <s  slimbs 64 [m0, m1, m2, m3],
+    slimbs 64 [c4 , c5 , c6 , c7 ] >=s const 256 0,
+    slimbs 64 [c8 , c9 , c10, c11] <s  slimbs 64 [m0, m1, m2, m3],
+    slimbs 64 [c8 , c9 , c10, c11] >=s const 256 0,
+    slimbs 64 [c12, c13, c14, c15] <s  slimbs 64 [m0, m1, m2, m3],
+    slimbs 64 [c12, c13, c14, c15] >=s const 256 0
+  ]
 }
 
