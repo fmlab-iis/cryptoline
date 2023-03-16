@@ -1,4 +1,41 @@
-sha256_block_data_order:
+#! [sp, $1c] = %%EA
+#! [sp] = %%EA
+#! [r$1c, $2c] = %%EA
+#! [r$1c], $2c = %%EA
+#! [r$1c] = %%EA
+#! [lr], $1c = %%EA
+#! r$1c = %%r$1c
+
+#! add sp, sp, $1c ; $3c -> (* add sp, sp, $1c *)\nnop
+#! add $1v, $2v, $3v, lsl $4c -> split dc $3v_l $3v (32-$4c); shl $3v_l $3v_l $4c; adds dc $1v $2v $3v_l
+#! add $1v, $2v, $3v, ror $4c -> ror $3v_r $3v $4c; adds dc $1v $2v $3v_r
+#! add $1v, $2v, $3v -> adds dc $1v $2v $3v
+#! and $1v, $2v, $3v -> and $1v@uint32 $2v $3v
+#! and $1v, $2v, $3c ; $4c -> and $1v@uint32 $2v $3c@uint32
+#! cmp $1v, $2c ; $3c -> (* cmp $1v, $2c *)\nnop
+#! cmp $1v, $2v -> (* cmp $1v, $2v *)\nnop
+#! eor $1v, $2v, $3v, lsr $4c -> split $3v_r dc $3v $4c; xor $1v@uint32 $2v $3v_r
+#! eor $1v, $2v, $3v, ror $4c -> ror $3v_r@uint32 $3v $4c; xor $1v@uint32 $2v $3v_r
+#! eor $1v, $1v, $1v -> mov $1v 0@uint32
+#! eor $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
+#! ldm $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov $2v $1ea; mov $3v $1ea[+4]; mov $4v $1ea[+8]; mov $5v $1ea[+12];\nmov $6v $1ea[+16]; mov $7v $1ea[+20]; mov $8v $1ea[+24]; mov $9v $1ea[+28]
+#! ldrb $1v, $2ea -> mov $1v $2ea
+#! ldreq $1v, $2ea ; $3c -> (* ldreq $1v, $2ea *)\nnop
+#! ldr $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! orr $1v, $2v, $3v, lsl $4c -> split dc $3v_l $3v (32-$4c); shl $3v_l $3v_l $4c; or $1v@uint32 $2v $3v_l
+#! orr $1v, $2v, $3v -> or $1v@uint32 $2v $3v
+#! ror $1v, $2v, $3c -> ror $1v@uint32 $2v $3c
+#! stm $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov $1ea $2v; mov $1ea[+4] $3v; mov $1ea[+8] $4v; mov $1ea[+12] $5v;\nmov $1ea[+16] $6v; mov $1ea[+20] $7v; mov $1ea[+24] $8v; mov $1ea[+28] $9v
+#! str $1v, $2ea ; $3c -> mov $2ea $1v
+#! str $1v, $2ea -> mov $2ea $1v
+#! sub sp, sp, $3c ; $4c -> (* sub sp, sp, $3c *)\nnop
+#! sub lr, lr, $1c ; $2c -> (* sub lr, lr, $1c *)\nnop
+#! sub lr, $1v, $2c ; $3c -> (* sub lr, $1v, $2c *)\nnop
+#! sub $1v, pc, $2c -> (* sub $1v, pc, $2c *)\nnop
+
+
+#sha256_block_data_order:
 # r0 = 0x2204c
 # r1 = 0x22074
 # r2 = 0x1
@@ -6,8 +43,8 @@ sha256_block_data_order:
 	#! -> SP = 0x407ffd60
 	sub	r3, pc, #8                                  #! PC = 0x10d80
 	add	r2, r1, r2, lsl #6                          #! PC = 0x10d84
-	push	{r0, r1, r2, r4, r5, r6, r7, r8, r9, r10, r11, lr}#! PC = 0x10d88
-	ldm	r0, {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; Value = 0x6a09e667; PC = 0x10d8c
+	#push	{r0, r1, r2, r4, r5, r6, r7, r8, r9, r10, r11, lr}#! PC = 0x10d88
+	ldm	[r0], {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; Value = 0x6a09e667; PC = 0x10d8c
 	sub	lr, r3, #288	; 0x120                        #! PC = 0x10d90
 	sub	sp, sp, #64	; 0x40                          #! PC = 0x10d94
 	ldrb	r2, [r1, #3]                               #! EA = L0x22077; Value = 0x06050403; PC = 0x10d98
@@ -1998,9 +2035,9 @@ sha256_block_data_order:
 	ldr	r12, [sp, #72]	; 0x48                       #! EA = L0x407ffd38; Value = 0x000220b4; PC = 0x11c7c
 	add	r10, r10, r0                                #! PC = 0x11c80
 	add	r11, r11, r2                                #! PC = 0x11c84
-	stm	r3, {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; PC = 0x11c88
+	stm	[r3], {r4, r5, r6, r7, r8, r9, r10, r11}      #! EA = L0x2204c; PC = 0x11c88
 	cmp	r1, r12                                     #! PC = 0x11c8c
 	sub	lr, lr, #256	; 0x100                        #! PC = 0x11c90
 	#bne	0x10d98 <sha256_block_data_order+24>       #! PC = 0x11c94
 	add	sp, sp, #76	; 0x4c                          #! PC = 0x11c98
-	pop	{r4, r5, r6, r7, r8, r9, r10, r11, pc}      #! PC = 0x11c9c
+	#pop	{r4, r5, r6, r7, r8, r9, r10, r11, pc}      #! PC = 0x11c9c
