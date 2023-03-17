@@ -3,8 +3,12 @@
 def print_parameters (name):
     for i in range (64):
         print ('uint8 {1}{0:02}'.format (i, name),
-               end = '\n' if i == 63 else
+               end = ',\n' if i == 63 else
                      ',\n' if i % 5 == 4 else ', ')
+    for i in range (8):
+        print ('uint32 {0}{1}'.format (name, i),
+               end = '\n' if i == 7 else
+                     ',\n' if i == 3 else ', ')
 
 def print_inputs (base, name):
     for i in range (0, 64):
@@ -33,9 +37,13 @@ def print_outputs (base, name):
                end = '\n' if i % 4 == 3 else ' ')
 
 def print_init (base):
-    inits = [ 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-              0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 ]
-    print_constants (base, inits)
+    for i in range (8):
+        print ('mov L0x{0:x} A{1};'.
+               format (base + 4*i, i),
+               end = '\n' if i % 2 == 1 else ' ')
+#    inits = [ 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+#              0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 ]
+#    print_constants (base, inits)
 
 def print_k256 (base):
     k256 = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,
