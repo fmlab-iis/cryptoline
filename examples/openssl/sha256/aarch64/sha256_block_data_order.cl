@@ -17,7 +17,9 @@ uint8 A35, uint8 A36, uint8 A37, uint8 A38, uint8 A39, uint8 A40, uint8 A41,
 uint8 A42, uint8 A43, uint8 A44, uint8 A45, uint8 A46, uint8 A47, uint8 A48,
 uint8 A49, uint8 A50, uint8 A51, uint8 A52, uint8 A53, uint8 A54, uint8 A55,
 uint8 A56, uint8 A57, uint8 A58, uint8 A59, uint8 A60, uint8 A61, uint8 A62,
-uint8 A63
+uint8 A63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7
 ) =
 {
   true
@@ -46,12 +48,16 @@ join H A63 A62; join L A61 A60; join L0x555556410c H L;
 nondet x29@uint32; nondet x30@uint32; 
 nondet L0x5555564308@uint32; nondet L0x5555552580@uint32;
 
-
+mov L0x55555640a8 A0; mov L0x55555640ac A1;
+mov L0x55555640b0 A2; mov L0x55555640b4 A3;
+mov L0x55555640b8 A4; mov L0x55555640bc A5;
+mov L0x55555640c0 A6; mov L0x55555640c4 A7;
+(*
 mov L0x55555640a8 0x6a09e667@uint32; mov L0x55555640ac 0xbb67ae85@uint32;
 mov L0x55555640b0 0x3c6ef372@uint32; mov L0x55555640b4 0xa54ff53a@uint32;
 mov L0x55555640b8 0x510e527f@uint32; mov L0x55555640bc 0x9b05688c@uint32;
 mov L0x55555640c0 0x1f83d9ab@uint32; mov L0x55555640c4 0x5be0cd19@uint32;
-
+*)
 
 mov L0x5555552480 0x428a2f98@uint32; mov L0x5555552484 0x71374491@uint32;
 mov L0x5555552488 0xb5c0fbcf@uint32; mov L0x555555248c 0xe9b5dba5@uint32;
