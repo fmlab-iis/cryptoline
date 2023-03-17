@@ -168,7 +168,9 @@ uint8 H40, uint8 H41, uint8 H42, uint8 H43, uint8 H44,
 uint8 H45, uint8 H46, uint8 H47, uint8 H48, uint8 H49,
 uint8 H50, uint8 H51, uint8 H52, uint8 H53, uint8 H54,
 uint8 H55, uint8 H56, uint8 H57, uint8 H58, uint8 H59,
-uint8 H60, uint8 H61, uint8 H62, uint8 H63
+uint8 H60, uint8 H61, uint8 H62, uint8 H63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7
 ) =
 {
   true
@@ -334,7 +336,39 @@ join H H55 H54; join L H53 H52; join L0x555555561504 H L;
 join H H59 H58; join L H57 H56; join L0x555555561508 H L;
 join H H63 H62; join L H61 H60; join L0x55555556150c H L;
 
-
+mov L0x7fffffffda60 A0; mov L0x7fffffffda64 A0;
+mov L0x7fffffffda68 A0; mov L0x7fffffffda6c A0;
+mov L0x7fffffffda70 A0; mov L0x7fffffffda74 A0;
+mov L0x7fffffffda78 A0; mov L0x7fffffffda7c A0;
+mov L0x7fffffffda80 A1; mov L0x7fffffffda84 A1;
+mov L0x7fffffffda88 A1; mov L0x7fffffffda8c A1;
+mov L0x7fffffffda90 A1; mov L0x7fffffffda94 A1;
+mov L0x7fffffffda98 A1; mov L0x7fffffffda9c A1;
+mov L0x7fffffffdaa0 A2; mov L0x7fffffffdaa4 A2;
+mov L0x7fffffffdaa8 A2; mov L0x7fffffffdaac A2;
+mov L0x7fffffffdab0 A2; mov L0x7fffffffdab4 A2;
+mov L0x7fffffffdab8 A2; mov L0x7fffffffdabc A2;
+mov L0x7fffffffdac0 A3; mov L0x7fffffffdac4 A3;
+mov L0x7fffffffdac8 A3; mov L0x7fffffffdacc A3;
+mov L0x7fffffffdad0 A3; mov L0x7fffffffdad4 A3;
+mov L0x7fffffffdad8 A3; mov L0x7fffffffdadc A3;
+mov L0x7fffffffdae0 A4; mov L0x7fffffffdae4 A4;
+mov L0x7fffffffdae8 A4; mov L0x7fffffffdaec A4;
+mov L0x7fffffffdaf0 A4; mov L0x7fffffffdaf4 A4;
+mov L0x7fffffffdaf8 A4; mov L0x7fffffffdafc A4;
+mov L0x7fffffffdb00 A5; mov L0x7fffffffdb04 A5;
+mov L0x7fffffffdb08 A5; mov L0x7fffffffdb0c A5;
+mov L0x7fffffffdb10 A5; mov L0x7fffffffdb14 A5;
+mov L0x7fffffffdb18 A5; mov L0x7fffffffdb1c A5;
+mov L0x7fffffffdb20 A6; mov L0x7fffffffdb24 A6;
+mov L0x7fffffffdb28 A6; mov L0x7fffffffdb2c A6;
+mov L0x7fffffffdb30 A6; mov L0x7fffffffdb34 A6;
+mov L0x7fffffffdb38 A6; mov L0x7fffffffdb3c A6;
+mov L0x7fffffffdb40 A7; mov L0x7fffffffdb44 A7;
+mov L0x7fffffffdb48 A7; mov L0x7fffffffdb4c A7;
+mov L0x7fffffffdb50 A7; mov L0x7fffffffdb54 A7;
+mov L0x7fffffffdb58 A7; mov L0x7fffffffdb5c A7;
+(*
 mov L0x7fffffffda60 0x6a09e667@uint32; mov L0x7fffffffda64 0x6a09e667@uint32;
 mov L0x7fffffffda68 0x6a09e667@uint32; mov L0x7fffffffda6c 0x6a09e667@uint32;
 mov L0x7fffffffda70 0x6a09e667@uint32; mov L0x7fffffffda74 0x6a09e667@uint32;
@@ -367,7 +401,7 @@ mov L0x7fffffffdb40 0x5be0cd19@uint32; mov L0x7fffffffdb44 0x5be0cd19@uint32;
 mov L0x7fffffffdb48 0x5be0cd19@uint32; mov L0x7fffffffdb4c 0x5be0cd19@uint32;
 mov L0x7fffffffdb50 0x5be0cd19@uint32; mov L0x7fffffffdb54 0x5be0cd19@uint32;
 mov L0x7fffffffdb58 0x5be0cd19@uint32; mov L0x7fffffffdb5c 0x5be0cd19@uint32;
-
+*)
 
 mov L0x55555555cc00 0x428a2f98@uint32; mov L0x55555555cc04 0x428a2f98@uint32;
 mov L0x55555555cc08 0x428a2f98@uint32; mov L0x55555555cc0c 0x428a2f98@uint32;

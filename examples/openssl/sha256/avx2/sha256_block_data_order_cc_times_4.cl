@@ -11,7 +11,9 @@ uint8 A40, uint8 A41, uint8 A42, uint8 A43, uint8 A44,
 uint8 A45, uint8 A46, uint8 A47, uint8 A48, uint8 A49,
 uint8 A50, uint8 A51, uint8 A52, uint8 A53, uint8 A54,
 uint8 A55, uint8 A56, uint8 A57, uint8 A58, uint8 A59,
-uint8 A60, uint8 A61, uint8 A62, uint8 A63;
+uint8 A60, uint8 A61, uint8 A62, uint8 A63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7;
 uint32 a0, uint32 a1, uint32 a2, uint32 a3,
 uint32 a4, uint32 a5, uint32 a6, uint32 a7
 ) =
@@ -47,11 +49,16 @@ mov L0x5555555590c7 A63;
 nondet rsp@uint32; nondet eax@uint32; nondet edx@uint32; nondet edi@uint32;
 nondet esi@uint32; 
 
+mov L0x555555559060 A0; mov L0x555555559064 A1;
+mov L0x555555559068 A2; mov L0x55555555906c A3;
+mov L0x555555559070 A4; mov L0x555555559074 A5;
+mov L0x555555559078 A6; mov L0x55555555907c A7;
+(*
 mov L0x555555559060 0x6a09e667@uint32; mov L0x555555559064 0xbb67ae85@uint32;
 mov L0x555555559068 0x3c6ef372@uint32; mov L0x55555555906c 0xa54ff53a@uint32;
 mov L0x555555559070 0x510e527f@uint32; mov L0x555555559074 0x9b05688c@uint32;
 mov L0x555555559078 0x1f83d9ab@uint32; mov L0x55555555907c 0x5be0cd19@uint32;
-
+*)
 
 mov L0x555555557020 0x428a2f98@uint32; mov L0x555555557024 0x71374491@uint32;
 mov L0x555555557028 0xb5c0fbcf@uint32; mov L0x55555555702c 0xe9b5dba5@uint32;
@@ -8443,7 +8450,10 @@ uint8 D40, uint8 D41, uint8 D42, uint8 D43, uint8 D44,
 uint8 D45, uint8 D46, uint8 D47, uint8 D48, uint8 D49,
 uint8 D50, uint8 D51, uint8 D52, uint8 D53, uint8 D54,
 uint8 D55, uint8 D56, uint8 D57, uint8 D58, uint8 D59,
-uint8 D60, uint8 D61, uint8 D62, uint8 D63) =
+uint8 D60, uint8 D61, uint8 D62, uint8 D63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7
+) =
 { true && true }
 
 call sha256_block_data_order_cc (
@@ -8451,7 +8461,9 @@ A00, A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13, A14,
 A15, A16, A17, A18, A19, A20, A21, A22, A23, A24, A25, A26, A27, A28, A29,
 A30, A31, A32, A33, A34, A35, A36, A37, A38, A39, A40, A41, A42, A43, A44,
 A45, A46, A47, A48, A49, A50, A51, A52, A53, A54, A55, A56, A57, A58, A59,
-A60, A61, A62, A63, a0, a1, a2, a3, a4, a5, a6, a7
+A60, A61, A62, A63, 
+A0, A1, A2, A3, A4, A5, A6, A7,
+a0, a1, a2, a3, a4, a5, a6, a7
 );
 
 call sha256_block_data_order_cc (
@@ -8459,7 +8471,9 @@ B00, B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14,
 B15, B16, B17, B18, B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29,
 B30, B31, B32, B33, B34, B35, B36, B37, B38, B39, B40, B41, B42, B43, B44,
 B45, B46, B47, B48, B49, B50, B51, B52, B53, B54, B55, B56, B57, B58, B59,
-B60, B61, B62, B63, b0, b1, b2, b3, b4, b5, b6, b7
+B60, B61, B62, B63, 
+A0, A1, A2, A3, A4, A5, A6, A7,
+b0, b1, b2, b3, b4, b5, b6, b7
 );
 
 call sha256_block_data_order_cc (
@@ -8467,7 +8481,9 @@ C00, C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14,
 C15, C16, C17, C18, C19, C20, C21, C22, C23, C24, C25, C26, C27, C28, C29,
 C30, C31, C32, C33, C34, C35, C36, C37, C38, C39, C40, C41, C42, C43, C44,
 C45, C46, C47, C48, C49, C50, C51, C52, C53, C54, C55, C56, C57, C58, C59,
-C60, C61, C62, C63, c0, c1, c2, c3, c4, c5, c6, c7
+C60, C61, C62, C63, 
+A0, A1, A2, A3, A4, A5, A6, A7,
+c0, c1, c2, c3, c4, c5, c6, c7
 );
 
 call sha256_block_data_order_cc (
@@ -8475,7 +8491,9 @@ D00, D01, D02, D03, D04, D05, D06, D07, D08, D09, D10, D11, D12, D13, D14,
 D15, D16, D17, D18, D19, D20, D21, D22, D23, D24, D25, D26, D27, D28, D29,
 D30, D31, D32, D33, D34, D35, D36, D37, D38, D39, D40, D41, D42, D43, D44,
 D45, D46, D47, D48, D49, D50, D51, D52, D53, D54, D55, D56, D57, D58, D59,
-D60, D61, D62, D63, d0, d1, d2, d3, d4, d5, d6, d7
+D60, D61, D62, D63, 
+A0, A1, A2, A3, A4, A5, A6, A7,
+d0, d1, d2, d3, d4, d5, d6, d7
 );
 
 { true && true }
