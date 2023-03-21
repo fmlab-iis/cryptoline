@@ -48,6 +48,8 @@ let apply_remove_range = ref false
 
 let save_rep_uniform_types = ref false
 
+let print_with_types = ref false
+
 let str_to_ids str = (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
 
 let suggest_name name ext id =
@@ -94,6 +96,7 @@ let args = [
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
+    ("-ptyp", Unit (fun () -> print_with_types := true), Common.mk_arg_desc(["     Make types explicit when printing the input specification."]));
     ("-save-rep", String (fun str -> action := SaveREP; save_rep_filename := str),
      Common.mk_arg_desc(["FILENAME";
                          "Save algebraic part of the input specification as root";
@@ -216,7 +219,7 @@ let anon file =
                ((if !apply_remove_algebra then [remove_algebra_spec] else [])
                 @(if !apply_remove_range then [remove_range_spec] else [])) in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec s)
+     print_endline (string_of_spec ~typ:!print_with_types s)
   | PrintSSA ->
      let (vs, s) = Common.parse_and_check file in
      let vs = List.map (ssa_var VM.empty) vs in
@@ -230,13 +233,13 @@ let anon file =
      in
      let s = List.fold_left (|>) init_spec post_processes in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec s)
+     print_endline (string_of_spec ~typ:!print_with_types s)
   | PrintESpec ->
      let s = from_typecheck_espec (espec_from_file file) in
-     print_endline (string_of_espec s)
+     print_endline (string_of_espec ~typ:!print_with_types s)
   | PrintRSpec ->
      let s = from_typecheck_rspec (rspec_from_file file) in
-     print_endline (string_of_rspec s)
+     print_endline (string_of_rspec ~typ:!print_with_types s)
   | PrintDataFlow ->
      let (_, s) = Common.parse_and_check file in
      let s = ssa_spec s in
@@ -270,7 +273,7 @@ let anon file =
   | SaveCuts ->
      let str_of_spec s =
        "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
-       ^ string_of_spec s in
+       ^ string_of_spec ~typ:!print_with_types s in
      let nth_name id = !save_cuts_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
        let rec helper i =
@@ -324,7 +327,7 @@ let anon file =
      let str_of_spec os =
        let vs = vs_of_os os in
        ("proc main(" ^ string_of_inputs vs ^ ") =\n")
-       ^ (string_of_spec os)
+       ^ (string_of_spec ~typ:!print_with_types os)
        ^ "\n" in
      let output sid s =
        let ch = open_out (suggest_name save_rep_filename cryptoline_filename_extension sid) in
