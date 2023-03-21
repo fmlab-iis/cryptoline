@@ -3568,6 +3568,26 @@ let remove_prove_with_cuts es =
     | _ -> true in
   tmap (fun (e, pwss) -> (e, List.filter is_not_cut pwss)) es
 
+let remove_algebra_bexp e = ([], snd e)
+
+let remove_range_bexp e = (fst e, [])
+
+let remove_algebra_instr i =
+  match i with
+  | Iassert e -> Iassert ([], snd e)
+  | Icut e -> Icut ([], snd e)
+  | _ -> i
+
+let remove_range_instr i =
+  match i with
+  | Iassert e -> Iassert (fst e, [])
+  | Icut e -> Icut (fst e, [])
+  | _ -> i
+
+let remove_algebra_program p = List.rev_map remove_algebra_instr (List.rev p)
+
+let remove_range_program p = List.rev_map remove_range_instr (List.rev p)
+
 let remove_cut_spec s =
   let post = (remove_prove_with_cuts (fst s.spost), remove_prove_with_cuts (snd s.spost)) in
   { spre = s.spre; sprog = remove_cut_program s.sprog; spost = post }
@@ -3582,6 +3602,12 @@ let remove_rcut_spec s =
 
 let remove_assert_spec s =
   { spre = s.spre; sprog = remove_assert_program s.sprog; spost = s.spost }
+
+let remove_algebra_spec s =
+  { spre = s.spre; sprog = remove_algebra_program s.sprog; spost = remove_algebra_bexp s.spost }
+
+let remove_range_spec s =
+  { spre = s.spre; sprog = remove_range_program s.sprog; spost = remove_range_bexp s.spost }
 
 
 (** Convert specifications to format that can be accepted by coq-cryptoline *)

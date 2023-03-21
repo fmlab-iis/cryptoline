@@ -8,7 +8,7 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | Simulation
 
 let action = ref Verify
 
@@ -17,6 +17,8 @@ let save_coqcryptoline_filename = ref ""
 let save_bvcryptoline_filename = ref ""
 
 let save_rep_filename = ref ""
+
+let save_cuts_filename = ref ""
 
 let initial_values_string_none = "none"
 
@@ -39,6 +41,10 @@ let apply_remove_cuts = ref false
 let apply_remove_ecuts = ref false
 
 let apply_remove_rcuts = ref false
+
+let apply_remove_algebra = ref false
+
+let apply_remove_range = ref false
 
 let save_rep_uniform_types = ref false
 
@@ -98,12 +104,14 @@ let args = [
     ("-pbtor", String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
                                   action := PrintBtor), Common.mk_arg_desc(["    Print the input program in BTOR format. Input variables are renamed"; "uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
-    ("-pprof", Unit (fun () -> action := PrintProfile), Common.mk_arg_desc(["   Print the profile of a specification."]));
+    ("-pprof", Unit (fun () -> action := PrintProfile), Common.mk_arg_desc(["    Print the profile of a specification."]));
     ("-interactive", Set interactive_simulation,
      Common.mk_arg_desc([""; "Run simulator in interactive mode."]));
     ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
     ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
     ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
+    ("-rmalg", Set apply_remove_algebra, Common.mk_arg_desc(["    Remove all algebraic predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
+    ("-rmrng", Set apply_remove_range, Common.mk_arg_desc(["    Remove all range predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
     ("-sim", String (fun s -> action := Simulation; initial_values_string := if s = initial_values_string_none then "" else s), Common.mk_arg_desc(["INPUTS"; "Simulate the parsed specification starting with a list of initial"; "input values (comma separated), which should be \"none\" if the"; "specification has no input variable."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
@@ -114,6 +122,8 @@ let args = [
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by CoqCryptoLine."]));
     ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
+    ("-save-cuts", String (fun str -> let _ = save_cuts_filename := str in action := SaveCuts),
+     Common.mk_arg_desc(["FILENAME"; "Cut the specification and save cuts separatedly."]));
     ("-vecuts", String (fun str -> verify_ecuts := Some (str_to_ids str)),
      Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
     ("-vea", String (fun str -> verify_eassert_ids := Some (str_to_ids str)),
@@ -202,6 +212,9 @@ let anon file =
      if res then exit 0 else exit 1
   | Parse ->
      let (vs, s) = Common.parse_and_check file in
+     let s = List.fold_left (|>) s
+               ((if !apply_remove_algebra then [remove_algebra_spec] else [])
+                @(if !apply_remove_range then [remove_range_spec] else [])) in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
      print_endline (string_of_spec s)
   | PrintSSA ->
@@ -212,6 +225,8 @@ let anon file =
                           @(if !apply_remove_cuts then [remove_cut_spec] else [])
                           @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
                           @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
+                          @(if !apply_remove_algebra then [remove_algebra_spec] else [])
+                          @(if !apply_remove_range then [remove_range_spec] else [])
      in
      let s = List.fold_left (|>) init_spec post_processes in
      print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
@@ -252,6 +267,34 @@ let anon file =
                         "Has algebraic postcondition: " ^ string_of_bool p.has_algebraic_postcondition;
                         "Has range postcondition: " ^ string_of_bool p.has_range_postcondition
        ])
+  | SaveCuts ->
+     let str_of_spec s =
+       "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
+       ^ string_of_spec s in
+     let nth_name id = !save_cuts_filename ^ "_" ^ string_of_int id in
+     let suggest_name sid =
+       let rec helper i =
+         let fn = nth_name sid ^ "_" ^ string_of_int i ^ cryptoline_filename_extension in
+         if Sys.file_exists fn then helper (i + 1)
+         else fn in
+       let fn = nth_name sid ^ cryptoline_filename_extension in
+       if Sys.file_exists fn then helper 0
+       else fn in
+     let output sid s =
+       let ch = open_out (suggest_name sid) in
+       let _ = output_string ch (str_of_spec s) in
+       let _ = close_out ch in
+       () in
+     let (_, s) = Common.parse_and_check file in
+     let postprocess s =
+       List.fold_left (|>) s
+         ((if !apply_remove_algebra then [remove_algebra_spec] else [])
+          @(if !apply_remove_range then [remove_range_spec] else [])) in
+     let ss = normalize_spec s
+              |> ssa_spec
+              |> (if !apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+              |> cut_spec in
+     List.iteri output (List.rev_map postprocess (List.rev ss))
   | SaveREP ->
      (* Print the algebraic part as root entailment problems *)
      let s = Common.parse_and_check file |> snd |> normalize_spec |> ssa_spec in

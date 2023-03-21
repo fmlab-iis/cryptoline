@@ -1380,7 +1380,13 @@ val cut_safety : rspec -> ((int * rspec) list) list
    The integer associated to a returned specification is its ID.
    All prove-with clauses in one cut are merged and taken into
    consideration when cutting the specification.
-*)
+ *)
+
+val cut_spec : spec -> spec list
+(**
+   [cut_spec s] cuts a specification [s] in SSA. After cutting, prove-with clauses disappear.
+   Note that cutting only algebra or range side is not supported by this function.
+ *)
 
 
 (** {1 Rewriting} *)
@@ -1794,6 +1800,12 @@ val remove_rcut_spec : spec -> spec
 
 val remove_assert_spec : spec -> spec
 (** Remove all assertions in a specification. *)
+
+val remove_algebra_spec : spec -> spec
+(** Remove all algebraic predicates from assertions, cuts, and postconditions in a specification. *)
+
+val remove_range_spec : spec -> spec
+(** Remove all range predicates from assertions, cuts, and postconditions in a specification. *)
 
 
 (** Profiling *)
