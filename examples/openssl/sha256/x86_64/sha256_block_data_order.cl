@@ -10,7 +10,7 @@ xor o@uint32 xx x03;
 proc sigma1 (uint32 x; uint32 o) =
 { true && true }
 ror x17@uint32 x 17;
-ror x19@uint32 x 18;
+ror x19@uint32 x 19;
 split x10 dc x 10;
 xor xx@uint32 x17 x19;
 xor o@uint32 xx x10;
@@ -31,14 +31,15 @@ proc sha256msg2 (uint32 src1_0, uint32 src1_1, uint32 src1_2, uint32 src1_3,
                  uint32 src2_0, uint32 src2_1, uint32 src2_2, uint32 src2_3;
                  uint32 dst_0, uint32 dst_1, uint32 dst_2, uint32 dst_3) =
 { true && true }
-                mov w13 src2_2; mov w14 src2_1; mov w15 src2_0;
-mov w16 src1_3; mov w17 src1_2; mov w18 src1_1; mov w19 src1_0;
-xor x16@uint32 w16 w13; rol w16@uint32 x16 1;
-xor x17@uint32 w17 w14; rol w17@uint32 x17 1;
-xor x18@uint32 w18 w15; rol w18@uint32 x18 1;
-xor x19@uint32 w19 w16; rol w19@uint32 x19 1;
-mov dst_3 w16; mov dst_2 w17; mov dst_1 w18; mov dst_0 w19;
+mov w14 src2_2; mov w15 src2_3;
+mov t16 src1_0; mov t17 src1_1; mov t18 src1_2; mov t19 src1_3;
+call sigma1 (w14, o14); adds dc w16 t16 o14;
+call sigma1 (w15, o15); adds dc w17 t17 o15;
+call sigma1 (w16, o16); adds dc w18 t18 o16;
+call sigma1 (w17, o17); adds dc w19 t19 o17;
+mov dst_3 w19; mov dst_2 w18; mov dst_1 w17; mov dst_0 w16;
 { true && true }
+
 
 
 proc Ch (uint32 x, uint32 y, uint32 z; uint32 o) =
@@ -118,7 +119,6 @@ mov dst_0 f2; mov dst_1 e2; mov dst_2 b2; mov dst_3 a2;
 { true && true }
 
 
-
 proc main (
 uint8 A00, uint8 A01, uint8 A02, uint8 A03, uint8 A04,
 uint8 A05, uint8 A06, uint8 A07, uint8 A08, uint8 A09,
@@ -173,143 +173,79 @@ mov L0x55555555d058 A6; mov L0x55555555d05c A7;
 
 nondet L0x55555555d0e4@uint32; nondet L0x55555555d0e8@uint32;
 nondet L0x55555555d0ec@uint32; 
+
 (* constants *)
 
-mov L0x555555557000 0x00010203@uint32;
-mov L0x555555557004 0x04050607@uint32;
-mov L0x555555557008 0x08090a0b@uint32;
-mov L0x55555555700c 0x0c0d0e0f@uint32;
+mov L0x555555557000 0x00010203@uint32; mov L0x555555557004 0x04050607@uint32;
+mov L0x555555557008 0x08090a0b@uint32; mov L0x55555555700c 0x0c0d0e0f@uint32;
+
 
 (* k256 *)
 
-mov L0x555555556e00 0x428a2f98@uint32;
-mov L0x555555556e04 0x71374491@uint32;
-mov L0x555555556e08 0xb5c0fbcf@uint32;
-mov L0x555555556e0c 0xe9b5dba5@uint32;
-mov L0x555555556e10 0x428a2f98@uint32;
-mov L0x555555556e14 0x71374491@uint32;
-mov L0x555555556e18 0xb5c0fbcf@uint32;
-mov L0x555555556e1c 0xe9b5dba5@uint32;
-mov L0x555555556e20 0x3956c25b@uint32;
-mov L0x555555556e24 0x59f111f1@uint32;
-mov L0x555555556e28 0x923f82a4@uint32;
-mov L0x555555556e2c 0xab1c5ed5@uint32;
-mov L0x555555556e30 0x3956c25b@uint32;
-mov L0x555555556e34 0x59f111f1@uint32;
-mov L0x555555556e38 0x923f82a4@uint32;
-mov L0x555555556e3c 0xab1c5ed5@uint32;
-mov L0x555555556e40 0xd807aa98@uint32;
-mov L0x555555556e44 0x12835b01@uint32;
-mov L0x555555556e48 0x243185be@uint32;
-mov L0x555555556e4c 0x550c7dc3@uint32;
-mov L0x555555556e50 0xd807aa98@uint32;
-mov L0x555555556e54 0x12835b01@uint32;
-mov L0x555555556e58 0x243185be@uint32;
-mov L0x555555556e5c 0x550c7dc3@uint32;
-mov L0x555555556e60 0x72be5d74@uint32;
-mov L0x555555556e64 0x80deb1fe@uint32;
-mov L0x555555556e68 0x9bdc06a7@uint32;
-mov L0x555555556e6c 0xc19bf174@uint32;
-mov L0x555555556e70 0x72be5d74@uint32;
-mov L0x555555556e74 0x80deb1fe@uint32;
-mov L0x555555556e78 0x9bdc06a7@uint32;
-mov L0x555555556e7c 0xc19bf174@uint32;
-mov L0x555555556e80 0xe49b69c1@uint32;
-mov L0x555555556e84 0xefbe4786@uint32;
-mov L0x555555556e88 0x0fc19dc6@uint32;
-mov L0x555555556e8c 0x240ca1cc@uint32;
-mov L0x555555556e90 0xe49b69c1@uint32;
-mov L0x555555556e94 0xefbe4786@uint32;
-mov L0x555555556e98 0x0fc19dc6@uint32;
-mov L0x555555556e9c 0x240ca1cc@uint32;
-mov L0x555555556ea0 0x2de92c6f@uint32;
-mov L0x555555556ea4 0x4a7484aa@uint32;
-mov L0x555555556ea8 0x5cb0a9dc@uint32;
-mov L0x555555556eac 0x76f988da@uint32;
-mov L0x555555556eb0 0x2de92c6f@uint32;
-mov L0x555555556eb4 0x4a7484aa@uint32;
-mov L0x555555556eb8 0x5cb0a9dc@uint32;
-mov L0x555555556ebc 0x76f988da@uint32;
-mov L0x555555556ec0 0x983e5152@uint32;
-mov L0x555555556ec4 0xa831c66d@uint32;
-mov L0x555555556ec8 0xb00327c8@uint32;
-mov L0x555555556ecc 0xbf597fc7@uint32;
-mov L0x555555556ed0 0x983e5152@uint32;
-mov L0x555555556ed4 0xa831c66d@uint32;
-mov L0x555555556ed8 0xb00327c8@uint32;
-mov L0x555555556edc 0xbf597fc7@uint32;
-mov L0x555555556ee0 0xc6e00bf3@uint32;
-mov L0x555555556ee4 0xd5a79147@uint32;
-mov L0x555555556ee8 0x06ca6351@uint32;
-mov L0x555555556eec 0x14292967@uint32;
-mov L0x555555556ef0 0xc6e00bf3@uint32;
-mov L0x555555556ef4 0xd5a79147@uint32;
-mov L0x555555556ef8 0x06ca6351@uint32;
-mov L0x555555556efc 0x14292967@uint32;
-mov L0x555555556f00 0x27b70a85@uint32;
-mov L0x555555556f04 0x2e1b2138@uint32;
-mov L0x555555556f08 0x4d2c6dfc@uint32;
-mov L0x555555556f0c 0x53380d13@uint32;
-mov L0x555555556f10 0x27b70a85@uint32;
-mov L0x555555556f14 0x2e1b2138@uint32;
-mov L0x555555556f18 0x4d2c6dfc@uint32;
-mov L0x555555556f1c 0x53380d13@uint32;
-mov L0x555555556f20 0x650a7354@uint32;
-mov L0x555555556f24 0x766a0abb@uint32;
-mov L0x555555556f28 0x81c2c92e@uint32;
-mov L0x555555556f2c 0x92722c85@uint32;
-mov L0x555555556f30 0x650a7354@uint32;
-mov L0x555555556f34 0x766a0abb@uint32;
-mov L0x555555556f38 0x81c2c92e@uint32;
-mov L0x555555556f3c 0x92722c85@uint32;
-mov L0x555555556f40 0xa2bfe8a1@uint32;
-mov L0x555555556f44 0xa81a664b@uint32;
-mov L0x555555556f48 0xc24b8b70@uint32;
-mov L0x555555556f4c 0xc76c51a3@uint32;
-mov L0x555555556f50 0xa2bfe8a1@uint32;
-mov L0x555555556f54 0xa81a664b@uint32;
-mov L0x555555556f58 0xc24b8b70@uint32;
-mov L0x555555556f5c 0xc76c51a3@uint32;
-mov L0x555555556f60 0xd192e819@uint32;
-mov L0x555555556f64 0xd6990624@uint32;
-mov L0x555555556f68 0xf40e3585@uint32;
-mov L0x555555556f6c 0x106aa070@uint32;
-mov L0x555555556f70 0xd192e819@uint32;
-mov L0x555555556f74 0xd6990624@uint32;
-mov L0x555555556f78 0xf40e3585@uint32;
-mov L0x555555556f7c 0x106aa070@uint32;
-mov L0x555555556f80 0x19a4c116@uint32;
-mov L0x555555556f84 0x1e376c08@uint32;
-mov L0x555555556f88 0x2748774c@uint32;
-mov L0x555555556f8c 0x34b0bcb5@uint32;
-mov L0x555555556f90 0x19a4c116@uint32;
-mov L0x555555556f94 0x1e376c08@uint32;
-mov L0x555555556f98 0x2748774c@uint32;
-mov L0x555555556f9c 0x34b0bcb5@uint32;
-mov L0x555555556fa0 0x391c0cb3@uint32;
-mov L0x555555556fa4 0x4ed8aa4a@uint32;
-mov L0x555555556fa8 0x5b9cca4f@uint32;
-mov L0x555555556fac 0x682e6ff3@uint32;
-mov L0x555555556fb0 0x391c0cb3@uint32;
-mov L0x555555556fb4 0x4ed8aa4a@uint32;
-mov L0x555555556fb8 0x5b9cca4f@uint32;
-mov L0x555555556fbc 0x682e6ff3@uint32;
-mov L0x555555556fc0 0x748f82ee@uint32;
-mov L0x555555556fc4 0x78a5636f@uint32;
-mov L0x555555556fc8 0x84c87814@uint32;
-mov L0x555555556fcc 0x8cc70208@uint32;
-mov L0x555555556fd0 0x748f82ee@uint32;
-mov L0x555555556fd4 0x78a5636f@uint32;
-mov L0x555555556fd8 0x84c87814@uint32;
-mov L0x555555556fdc 0x8cc70208@uint32;
-mov L0x555555556fe0 0x90befffa@uint32;
-mov L0x555555556fe4 0xa4506ceb@uint32;
-mov L0x555555556fe8 0xbef9a3f7@uint32;
-mov L0x555555556fec 0xc67178f2@uint32;
-mov L0x555555556ff0 0x90befffa@uint32;
-mov L0x555555556ff4 0xa4506ceb@uint32;
-mov L0x555555556ff8 0xbef9a3f7@uint32;
-mov L0x555555556ffc 0xc67178f2@uint32;
+mov L0x555555556e00 0x428a2f98@uint32; mov L0x555555556e04 0x71374491@uint32;
+mov L0x555555556e08 0xb5c0fbcf@uint32; mov L0x555555556e0c 0xe9b5dba5@uint32;
+mov L0x555555556e10 0x428a2f98@uint32; mov L0x555555556e14 0x71374491@uint32;
+mov L0x555555556e18 0xb5c0fbcf@uint32; mov L0x555555556e1c 0xe9b5dba5@uint32;
+mov L0x555555556e20 0x3956c25b@uint32; mov L0x555555556e24 0x59f111f1@uint32;
+mov L0x555555556e28 0x923f82a4@uint32; mov L0x555555556e2c 0xab1c5ed5@uint32;
+mov L0x555555556e30 0x3956c25b@uint32; mov L0x555555556e34 0x59f111f1@uint32;
+mov L0x555555556e38 0x923f82a4@uint32; mov L0x555555556e3c 0xab1c5ed5@uint32;
+mov L0x555555556e40 0xd807aa98@uint32; mov L0x555555556e44 0x12835b01@uint32;
+mov L0x555555556e48 0x243185be@uint32; mov L0x555555556e4c 0x550c7dc3@uint32;
+mov L0x555555556e50 0xd807aa98@uint32; mov L0x555555556e54 0x12835b01@uint32;
+mov L0x555555556e58 0x243185be@uint32; mov L0x555555556e5c 0x550c7dc3@uint32;
+mov L0x555555556e60 0x72be5d74@uint32; mov L0x555555556e64 0x80deb1fe@uint32;
+mov L0x555555556e68 0x9bdc06a7@uint32; mov L0x555555556e6c 0xc19bf174@uint32;
+mov L0x555555556e70 0x72be5d74@uint32; mov L0x555555556e74 0x80deb1fe@uint32;
+mov L0x555555556e78 0x9bdc06a7@uint32; mov L0x555555556e7c 0xc19bf174@uint32;
+mov L0x555555556e80 0xe49b69c1@uint32; mov L0x555555556e84 0xefbe4786@uint32;
+mov L0x555555556e88 0x0fc19dc6@uint32; mov L0x555555556e8c 0x240ca1cc@uint32;
+mov L0x555555556e90 0xe49b69c1@uint32; mov L0x555555556e94 0xefbe4786@uint32;
+mov L0x555555556e98 0x0fc19dc6@uint32; mov L0x555555556e9c 0x240ca1cc@uint32;
+mov L0x555555556ea0 0x2de92c6f@uint32; mov L0x555555556ea4 0x4a7484aa@uint32;
+mov L0x555555556ea8 0x5cb0a9dc@uint32; mov L0x555555556eac 0x76f988da@uint32;
+mov L0x555555556eb0 0x2de92c6f@uint32; mov L0x555555556eb4 0x4a7484aa@uint32;
+mov L0x555555556eb8 0x5cb0a9dc@uint32; mov L0x555555556ebc 0x76f988da@uint32;
+mov L0x555555556ec0 0x983e5152@uint32; mov L0x555555556ec4 0xa831c66d@uint32;
+mov L0x555555556ec8 0xb00327c8@uint32; mov L0x555555556ecc 0xbf597fc7@uint32;
+mov L0x555555556ed0 0x983e5152@uint32; mov L0x555555556ed4 0xa831c66d@uint32;
+mov L0x555555556ed8 0xb00327c8@uint32; mov L0x555555556edc 0xbf597fc7@uint32;
+mov L0x555555556ee0 0xc6e00bf3@uint32; mov L0x555555556ee4 0xd5a79147@uint32;
+mov L0x555555556ee8 0x06ca6351@uint32; mov L0x555555556eec 0x14292967@uint32;
+mov L0x555555556ef0 0xc6e00bf3@uint32; mov L0x555555556ef4 0xd5a79147@uint32;
+mov L0x555555556ef8 0x06ca6351@uint32; mov L0x555555556efc 0x14292967@uint32;
+mov L0x555555556f00 0x27b70a85@uint32; mov L0x555555556f04 0x2e1b2138@uint32;
+mov L0x555555556f08 0x4d2c6dfc@uint32; mov L0x555555556f0c 0x53380d13@uint32;
+mov L0x555555556f10 0x27b70a85@uint32; mov L0x555555556f14 0x2e1b2138@uint32;
+mov L0x555555556f18 0x4d2c6dfc@uint32; mov L0x555555556f1c 0x53380d13@uint32;
+mov L0x555555556f20 0x650a7354@uint32; mov L0x555555556f24 0x766a0abb@uint32;
+mov L0x555555556f28 0x81c2c92e@uint32; mov L0x555555556f2c 0x92722c85@uint32;
+mov L0x555555556f30 0x650a7354@uint32; mov L0x555555556f34 0x766a0abb@uint32;
+mov L0x555555556f38 0x81c2c92e@uint32; mov L0x555555556f3c 0x92722c85@uint32;
+mov L0x555555556f40 0xa2bfe8a1@uint32; mov L0x555555556f44 0xa81a664b@uint32;
+mov L0x555555556f48 0xc24b8b70@uint32; mov L0x555555556f4c 0xc76c51a3@uint32;
+mov L0x555555556f50 0xa2bfe8a1@uint32; mov L0x555555556f54 0xa81a664b@uint32;
+mov L0x555555556f58 0xc24b8b70@uint32; mov L0x555555556f5c 0xc76c51a3@uint32;
+mov L0x555555556f60 0xd192e819@uint32; mov L0x555555556f64 0xd6990624@uint32;
+mov L0x555555556f68 0xf40e3585@uint32; mov L0x555555556f6c 0x106aa070@uint32;
+mov L0x555555556f70 0xd192e819@uint32; mov L0x555555556f74 0xd6990624@uint32;
+mov L0x555555556f78 0xf40e3585@uint32; mov L0x555555556f7c 0x106aa070@uint32;
+mov L0x555555556f80 0x19a4c116@uint32; mov L0x555555556f84 0x1e376c08@uint32;
+mov L0x555555556f88 0x2748774c@uint32; mov L0x555555556f8c 0x34b0bcb5@uint32;
+mov L0x555555556f90 0x19a4c116@uint32; mov L0x555555556f94 0x1e376c08@uint32;
+mov L0x555555556f98 0x2748774c@uint32; mov L0x555555556f9c 0x34b0bcb5@uint32;
+mov L0x555555556fa0 0x391c0cb3@uint32; mov L0x555555556fa4 0x4ed8aa4a@uint32;
+mov L0x555555556fa8 0x5b9cca4f@uint32; mov L0x555555556fac 0x682e6ff3@uint32;
+mov L0x555555556fb0 0x391c0cb3@uint32; mov L0x555555556fb4 0x4ed8aa4a@uint32;
+mov L0x555555556fb8 0x5b9cca4f@uint32; mov L0x555555556fbc 0x682e6ff3@uint32;
+mov L0x555555556fc0 0x748f82ee@uint32; mov L0x555555556fc4 0x78a5636f@uint32;
+mov L0x555555556fc8 0x84c87814@uint32; mov L0x555555556fcc 0x8cc70208@uint32;
+mov L0x555555556fd0 0x748f82ee@uint32; mov L0x555555556fd4 0x78a5636f@uint32;
+mov L0x555555556fd8 0x84c87814@uint32; mov L0x555555556fdc 0x8cc70208@uint32;
+mov L0x555555556fe0 0x90befffa@uint32; mov L0x555555556fe4 0xa4506ceb@uint32;
+mov L0x555555556fe8 0xbef9a3f7@uint32; mov L0x555555556fec 0xc67178f2@uint32;
+mov L0x555555556ff0 0x90befffa@uint32; mov L0x555555556ff4 0xa4506ceb@uint32;
+mov L0x555555556ff8 0xbef9a3f7@uint32; mov L0x555555556ffc 0xc67178f2@uint32;
 
 (* #! -> SP = 0x7fffffffd728 *)
 #! 0x7fffffffd728 = 0x7fffffffd728;
@@ -352,9 +288,11 @@ mov xmm2_0 sh0; mov xmm2_1 sh1; mov xmm2_2 sh2; mov xmm2_2 sh3;
 mov xmm8_0 xmm7_0; mov xmm8_1 xmm7_1;
 mov xmm8_2 xmm7_2; mov xmm8_3 xmm7_3;
 (* palignr $0x8,%xmm2,%xmm1                        #! PC = 0x5555555570ec *)
-mov xmm1_3 xmm1_1; mov xmm1_2 xmm1_0; mov xmm1_1 xmm2_3; mov xmm1_0 xmm2_2;
+mov a0 xmm2_2; mov a1 xmm2_3; mov a2 xmm1_0; mov a3 xmm1_1;
+mov xmm1_0 a0; mov xmm1_1 a1; mov xmm1_2 a2; mov xmm1_3 a3;
 (* punpcklqdq %xmm0,%xmm2                          #! PC = 0x5555555570f2 *)
-mov xmm2_2 xmm0_0; mov xmm2_3 xmm0_1;
+mov p0 xmm2_0; mov p1 xmm2_1; mov p2 xmm0_0; mov p3 xmm0_1;
+mov xmm2_0 p0; mov xmm2_1 p1; mov xmm2_2 p2; mov xmm2_3 p3;
 (* #jmp    0x555555557100 <sha256_block_data_order_shaext+64>#! PC = 0x5555555570f6 *)
 #jmp    0x555555557100 <sha256_block_data_order_shaext+64>#! 0x5555555570f6 = 0x5555555570f6;
 (* movdqu (%rsi),%xmm3                             #! EA = L0x55555555d068; Value = 0x0706050403020100; PC = 0x555555557100 *)
@@ -478,7 +416,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm6_0; mov xmm7_1 xmm6_1;
 mov xmm7_2 xmm6_2; mov xmm7_3 xmm6_3;
 (* palignr $0x4,%xmm5,%xmm7                        #! PC = 0x55555555717c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm5_3; mov xmm7_1 xmm5_2; mov xmm7_0 xmm5_1;
+mov a0 xmm5_1; mov a1 xmm5_2; mov a2 xmm5_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm3                              #! PC = 0x555555557183 *)
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
@@ -513,7 +452,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm3_0; mov xmm7_1 xmm3_1;
 mov xmm7_2 xmm3_2; mov xmm7_3 xmm3_3;
 (* palignr $0x4,%xmm6,%xmm7                        #! PC = 0x5555555571a9 *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm6_3; mov xmm7_1 xmm6_2; mov xmm7_0 xmm6_1;
+mov a0 xmm6_1; mov a1 xmm6_2; mov a2 xmm6_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm4                              #! PC = 0x5555555571b0 *)
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
@@ -548,7 +488,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm4_0; mov xmm7_1 xmm4_1;
 mov xmm7_2 xmm4_2; mov xmm7_3 xmm4_3;
 (* palignr $0x4,%xmm3,%xmm7                        #! PC = 0x5555555571d5 *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm3_3; mov xmm7_1 xmm3_2; mov xmm7_0 xmm3_1;
+mov a0 xmm3_1; mov a1 xmm3_2; mov a2 xmm3_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm5                              #! PC = 0x5555555571dc *)
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
@@ -583,7 +524,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm5_0; mov xmm7_1 xmm5_1;
 mov xmm7_2 xmm5_2; mov xmm7_3 xmm5_3;
 (* palignr $0x4,%xmm4,%xmm7                        #! PC = 0x555555557202 *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm4_3; mov xmm7_1 xmm4_2; mov xmm7_0 xmm4_1;
+mov a0 xmm4_1; mov a1 xmm4_2; mov a2 xmm4_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm6                              #! PC = 0x555555557209 *)
 adds dc xmm6_0 xmm6_0 xmm7_0; adds dc xmm6_1 xmm6_1 xmm7_1;
 adds dc xmm6_2 xmm6_2 xmm7_2; adds dc xmm6_3 xmm6_3 xmm7_3;
@@ -618,7 +560,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm6_0; mov xmm7_1 xmm6_1;
 mov xmm7_2 xmm6_2; mov xmm7_3 xmm6_3;
 (* palignr $0x4,%xmm5,%xmm7                        #! PC = 0x55555555722f *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm5_3; mov xmm7_1 xmm5_2; mov xmm7_0 xmm5_1;
+mov a0 xmm5_1; mov a1 xmm5_2; mov a2 xmm5_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm3                              #! PC = 0x555555557236 *)
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
@@ -653,7 +596,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm3_0; mov xmm7_1 xmm3_1;
 mov xmm7_2 xmm3_2; mov xmm7_3 xmm3_3;
 (* palignr $0x4,%xmm6,%xmm7                        #! PC = 0x55555555725c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm6_3; mov xmm7_1 xmm6_2; mov xmm7_0 xmm6_1;
+mov a0 xmm6_1; mov a1 xmm6_2; mov a2 xmm6_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm4                              #! PC = 0x555555557263 *)
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
@@ -688,7 +632,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm4_0; mov xmm7_1 xmm4_1;
 mov xmm7_2 xmm4_2; mov xmm7_3 xmm4_3;
 (* palignr $0x4,%xmm3,%xmm7                        #! PC = 0x55555555728c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm3_3; mov xmm7_1 xmm3_2; mov xmm7_0 xmm3_1;
+mov a0 xmm3_1; mov a1 xmm3_2; mov a2 xmm3_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm5                              #! PC = 0x555555557293 *)
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
@@ -723,7 +668,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm5_0; mov xmm7_1 xmm5_1;
 mov xmm7_2 xmm5_2; mov xmm7_3 xmm5_3;
 (* palignr $0x4,%xmm4,%xmm7                        #! PC = 0x5555555572bc *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm4_3; mov xmm7_1 xmm4_2; mov xmm7_0 xmm4_1;
+mov a0 xmm4_1; mov a1 xmm4_2; mov a2 xmm4_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm6                              #! PC = 0x5555555572c3 *)
 adds dc xmm6_0 xmm6_0 xmm7_0; adds dc xmm6_1 xmm6_1 xmm7_1;
 adds dc xmm6_2 xmm6_2 xmm7_2; adds dc xmm6_3 xmm6_3 xmm7_3;
@@ -758,7 +704,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm6_0; mov xmm7_1 xmm6_1;
 mov xmm7_2 xmm6_2; mov xmm7_3 xmm6_3;
 (* palignr $0x4,%xmm5,%xmm7                        #! PC = 0x5555555572ec *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm5_3; mov xmm7_1 xmm5_2; mov xmm7_0 xmm5_1;
+mov a0 xmm5_1; mov a1 xmm5_2; mov a2 xmm5_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm3                              #! PC = 0x5555555572f3 *)
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
@@ -793,7 +740,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm3_0; mov xmm7_1 xmm3_1;
 mov xmm7_2 xmm3_2; mov xmm7_3 xmm3_3;
 (* palignr $0x4,%xmm6,%xmm7                        #! PC = 0x55555555731c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm6_3; mov xmm7_1 xmm6_2; mov xmm7_0 xmm6_1;
+mov a0 xmm6_1; mov a1 xmm6_2; mov a2 xmm6_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm4                              #! PC = 0x555555557323 *)
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
@@ -828,7 +776,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm4_0; mov xmm7_1 xmm4_1;
 mov xmm7_2 xmm4_2; mov xmm7_3 xmm4_3;
 (* palignr $0x4,%xmm3,%xmm7                        #! PC = 0x55555555734c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm3_3; mov xmm7_1 xmm3_2; mov xmm7_0 xmm3_1;
+mov a0 xmm3_1; mov a1 xmm3_2; mov a2 xmm3_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* paddd  %xmm7,%xmm5                              #! PC = 0x555555557353 *)
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
@@ -863,7 +812,8 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_2 sh3;
 mov xmm7_0 xmm5_0; mov xmm7_1 xmm5_1;
 mov xmm7_2 xmm5_2; mov xmm7_3 xmm5_3;
 (* palignr $0x4,%xmm4,%xmm7                        #! PC = 0x55555555737c *)
-mov xmm7_3 xmm7_0; mov xmm7_2 xmm4_3; mov xmm7_1 xmm4_2; mov xmm7_0 xmm4_1;
+mov a0 xmm4_1; mov a1 xmm4_2; mov a2 xmm4_3; mov a3 xmm7_0;
+mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x555555557382 *)
 call sha256rnds2 (xmm0_0, xmm0_1,
                   xmm1_0, xmm1_1, xmm1_2, xmm1_3,
@@ -938,9 +888,11 @@ mov xmm7_0 sh0; mov xmm7_1 sh1; mov xmm7_2 sh2; mov xmm7_2 sh3;
 mov sh0 xmm1_1; mov sh1 xmm1_0; mov sh2 xmm1_3; mov sh3 xmm1_2;
 mov xmm1_0 sh0; mov xmm1_1 sh1; mov xmm1_2 sh2; mov xmm1_2 sh3;
 (* punpckhqdq %xmm2,%xmm1                          #! PC = 0x5555555573e9 *)
-mov xmm1_0 xmm1_2; mov xmm1_1 xmm1_3; mov xmm1_2 xmm2_2; mov xmm1_3 xmm2_3;
+mov p0 xmm1_2; mov p1 xmm1_3; mov p2 xmm2_2; mov p3 xmm2_3;
+mov xmm1_0 p0; mov xmm1_1 p1; mov xmm1_2 p2; mov xmm1_3 p3;
 (* palignr $0x8,%xmm7,%xmm2                        #! PC = 0x5555555573ed *)
-mov xmm2_3 xmm2_1; mov xmm2_2 xmm2_0; mov xmm2_1 xmm7_3; mov xmm2_0 xmm7_2;
+mov a0 xmm7_2; mov a1 xmm7_3; mov a2 xmm2_0; mov a3 xmm2_1;
+mov xmm2_0 a0; mov xmm2_1 a1; mov xmm2_2 a2; mov xmm2_3 a3;
 (* movdqu %xmm1,(%rdi)                             #! EA = L0x55555555d040; PC = 0x5555555573f3 *)
 mov L0x55555555d040 xmm1_0; mov L0x55555555d044 xmm1_1;
 mov L0x55555555d048 xmm1_2; mov L0x55555555d04c xmm1_3;

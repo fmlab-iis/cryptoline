@@ -10,7 +10,7 @@ xor o@uint32 xx x03;
 proc sigma1 (uint32 x; uint32 o) =
 { true && true }
 ror x17@uint32 x 17;
-ror x19@uint32 x 18;
+ror x19@uint32 x 19;
 split x10 dc x 10;
 xor xx@uint32 x17 x19;
 xor o@uint32 xx x10;
@@ -31,13 +31,13 @@ proc sha256msg2 (uint32 src1_0, uint32 src1_1, uint32 src1_2, uint32 src1_3,
                  uint32 src2_0, uint32 src2_1, uint32 src2_2, uint32 src2_3;
                  uint32 dst_0, uint32 dst_1, uint32 dst_2, uint32 dst_3) =
 { true && true }
-                mov w13 src2_2; mov w14 src2_1; mov w15 src2_0;
-mov w16 src1_3; mov w17 src1_2; mov w18 src1_1; mov w19 src1_0;
-xor x16@uint32 w16 w13; rol w16@uint32 x16 1;
-xor x17@uint32 w17 w14; rol w17@uint32 x17 1;
-xor x18@uint32 w18 w15; rol w18@uint32 x18 1;
-xor x19@uint32 w19 w16; rol w19@uint32 x19 1;
-mov dst_3 w16; mov dst_2 w17; mov dst_1 w18; mov dst_0 w19;
+mov w14 src2_2; mov w15 src2_3;
+mov t16 src1_0; mov t17 src1_1; mov t18 src1_2; mov t19 src1_3;
+call sigma1 (w14, o14); adds dc w16 t16 o14;
+call sigma1 (w15, o15); adds dc w17 t17 o15;
+call sigma1 (w16, o16); adds dc w18 t18 o16;
+call sigma1 (w17, o17); adds dc w19 t19 o17;
+mov dst_3 w19; mov dst_2 w18; mov dst_1 w17; mov dst_0 w16;
 { true && true }
 
 

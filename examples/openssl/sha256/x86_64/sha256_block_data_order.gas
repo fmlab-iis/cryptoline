@@ -22,14 +22,14 @@
 #! movdqu $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
 #! movdqu $1xmm, $2ea -> mov $2ea $1xmm_0; mov $2ea[+4] $1xmm_1;\nmov $2ea[+8] $1xmm_2; mov $2ea[+12] $1xmm_3
 #! paddd $1xmm, $2xmm -> adds dc $2xmm_0 $2xmm_0 $1xmm_0; adds dc $2xmm_1 $2xmm_1 $1xmm_1;\nadds dc $2xmm_2 $2xmm_2 $1xmm_2; adds dc $2xmm_3 $2xmm_3 $1xmm_3
-#! palignr \$0x4, $1xmm, $2xmm -> mov $2xmm_3 $2xmm_0; mov $2xmm_2 $1xmm_3; mov $2xmm_1 $1xmm_2; mov $2xmm_0 $1xmm_1
-#! palignr \$0x8, $1xmm, $2xmm -> mov $2xmm_3 $2xmm_1; mov $2xmm_2 $2xmm_0; mov $2xmm_1 $1xmm_3; mov $2xmm_0 $1xmm_2
+#! palignr \$0x4, $1xmm, $2xmm -> mov a0 $1xmm_1; mov a1 $1xmm_2; mov a2 $1xmm_3; mov a3 $2xmm_0;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
+#! palignr \$0x8, $1xmm, $2xmm -> mov a0 $1xmm_2; mov a1 $1xmm_3; mov a2 $2xmm_0; mov a3 $2xmm_1;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
 #! pshufb $1xmm, $2xmm -> assert true &&\n       and [$1xmm_0 = 0x00010203@32, $1xmm_1 = 0x04050607@32,\n            $1xmm_2 = 0x08090a0b@32, $1xmm_3 = 0x0c0d0e0f@32];\nspl xfe xdc $2xmm_3 16;spl xba x98 $2xmm_2 16;spl x76 x54 $2xmm_1 16;spl x32 x10 $2xmm_0 16;\nspl xf xe xfe 8; spl xd xc xdc 8; spl xb xa xba 8; spl x9 x8 x98 8;\nspl x7 x6 x76 8; spl x5 x4 x54 8; spl x3 x2 x32 8; spl x1 x0 x10 8;\njoin sfe xc xd; join sdc xe xf; join sba x8 x9; join s98 xa xb;\njoin s76 x4 x5; join s54 x6 x7; join s32 x0 x1; join s10 x2 x3;\njoin $2xmm_3 sfe sdc; join $2xmm_2 sba s98; join $2xmm_1 s76 s54; join $2xmm_0 s32 s10
 #! pshufd \$0xe, $1xmm, $2xmm -> mov sh0 $1xmm_2; mov sh1 $1xmm_3; mov sh2 $1xmm_0; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_2 sh3
 #! pshufd \$0x1b, $1xmm, $2xmm -> mov sh0 $1xmm_3; mov sh1 $1xmm_2; mov sh2 $1xmm_1; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_2 sh3
 #! pshufd \$0xb1, $1xmm, $2xmm -> mov sh0 $1xmm_1; mov sh1 $1xmm_0; mov sh2 $1xmm_3; mov sh3 $1xmm_2;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_2 sh3
-#! punpcklqdq $1xmm, $2xmm -> mov $2xmm_2 $1xmm_0; mov $2xmm_3 $1xmm_1
-#! punpckhqdq $1xmm, $2xmm -> mov $2xmm_0 $2xmm_2; mov $2xmm_1 $2xmm_3; mov $2xmm_2 $1xmm_2; mov $2xmm_3 $1xmm_3
+#! punpcklqdq $1xmm, $2xmm -> mov p0 $2xmm_0; mov p1 $2xmm_1; mov p2 $1xmm_0; mov p3 $1xmm_1;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
+#! punpckhqdq $1xmm, $2xmm -> mov p0 $2xmm_2; mov p1 $2xmm_3; mov p2 $1xmm_2; mov p3 $1xmm_3;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
 #! sha256msg1 $1xmm, $2xmm -> call sha256msg1 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
 #! sha256msg2 $1xmm, $2xmm -> call sha256msg2 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
 #! sha256rnds2 \%\%xmm0, $1xmm, $2xmm -> call sha256rnds2 (xmm0_0, xmm0_1,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                  $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
