@@ -1,3 +1,11 @@
+(* csweep popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
+Parsing CryptoLine file:                [OK]            0.016300 seconds
+Checking well-formedness:               [OK]            0.003656 seconds
+Parsing CryptoLine file:                [OK]            0.021329 seconds
+Checking well-formedness:               [OK]            0.009020 seconds
+Equivalence of output group #0:         [OK]            3980.453200 seconds
+Final result:                           [OK]            3980.856954 seconds
+*)
 proc sigma0 (uint32 x; uint32 o) =
 { true && true }
 ror x07@uint32 x  7;
