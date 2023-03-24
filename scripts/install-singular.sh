@@ -15,7 +15,13 @@ pushd ${TOOLS_DIR}
 curl ${SINGULAR_URL} -o ${SINGULAR_TAR_GZ}
 tar zxf ${SINGULAR_TAR_GZ}
 pushd ${SINGULAR_DIR}
-./configure --enable-gfanlib
+curl https://www.flintlib.org/flint-2.6.3.tar.gz -o flint-2.6.3.tar.gz
+tar zxvf flint-2.6.3.tar.gz
+pushd flint-2.6.3
+./configure
+make
+popd
+./configure --enable-gfanlib --with-flint=./flint-2.6.3
 make
 sudo make install
 sudo ldconfig
