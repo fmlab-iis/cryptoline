@@ -1,10 +1,10 @@
 #!/bin/bash
 
 TOOLS_DIR=tools
-BOOLECTOR_VERSION=3.2.0
+BOOLECTOR_VERSION=3.2.2
 BOOLECTOR_TAR_GZ=${BOOLECTOR_VERSION}.tar.gz
 BOOLECTOR_DIR=boolector-${BOOLECTOR_VERSION}
-BOOLECTOR_URL=https://github.com/Boolector/boolector/archive/refs/tags/3.2.0.tar.gz
+BOOLECTOR_URL=https://github.com/Boolector/boolector/archive/refs/tags/3.2.2.tar.gz
 
 sudo apt install -y curl build-essential binutils cmake git
 mkdir -p ${TOOLS_DIR}
