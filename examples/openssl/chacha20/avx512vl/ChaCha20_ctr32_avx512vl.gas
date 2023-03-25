@@ -1,0 +1,509 @@
+ChaCha20_ctr32:
+# %rdi = 0x55555555c080
+# %rsi = 0x55555555c100
+# %rdx = 0x14
+# %rcx = 0x55555555c020
+# %r8  = 0x55555555c040
+# %r9  = 0x7ffef3ff00000000
+	#! -> SP = 0x7fffffffdb28
+	cmp    $0x0,%rdx                                #! PC = 0x555555555440
+	#je     0x5555555557fa <ChaCha20_ctr32+954>     #! PC = 0x555555555444
+	mov    0x6d37(%rip),%r10        # 0x55555555c188 <OPENSSL_ia32cap_P+4>#! EA = L0x55555555c188; Value = 0xd39efffb7ffef3ff; PC = 0x55555555544a
+	bt     $0x30,%r10                               #! PC = 0x555555555451
+	#jb     0x555555557a00 <ChaCha20_avx512>        #! PC = 0x555555555456
+	test   %r10,%r10                                #! PC = 0x55555555545c
+	#js     0x555555557d40 <ChaCha20_avx512vl>      #! PC = 0x55555555545f
+	mov    %rsp,%r9                                 #! PC = 0x555555557d40
+	cmp    $0x80,%rdx                               #! PC = 0x555555557d43
+	#ja     0x5555555589a0 <ChaCha20_8xvl>          #! PC = 0x555555557d4a
+	sub    $0x48,%rsp                               #! PC = 0x555555557d50
+	vbroadcasti128 -0x299d(%rip),%ymm0        # 0x5555555553c0#! EA = L0x5555555553c0; Value = 0x3320646e61707865; PC = 0x555555557d54
+	vbroadcasti128 (%rcx),%ymm1                     #! EA = L0x55555555c020; Value = 0x0000000100000000; PC = 0x555555557d5d
+	vbroadcasti128 0x10(%rcx),%ymm2                 #! EA = L0x55555555c030; Value = 0x0000000500000004; PC = 0x555555557d62
+	vbroadcasti128 (%r8),%ymm3                      #! EA = L0x55555555c040; Value = 0x0000001000000000; PC = 0x555555557d68
+	vmovdqa32 %ymm0,%ymm16                          #! PC = 0x555555557d6d
+	vmovdqa32 %ymm1,%ymm17                          #! PC = 0x555555557d73
+	vmovdqa32 %ymm2,%ymm18                          #! PC = 0x555555557d79
+	vpaddd -0x2ac7(%rip),%ymm3,%ymm3        # 0x5555555552c0#! EA = L0x5555555552c0; Value = 0x0000000000000000; PC = 0x555555557d7f
+	vmovdqa32 -0x2af1(%rip),%ymm20        # 0x5555555552a0#! EA = L0x5555555552a0; Value = 0x0000000000000002; PC = 0x555555557d87
+	mov    $0xa,%r8                                 #! PC = 0x555555557d91
+	vmovdqa32 %ymm3,%ymm19                          #! PC = 0x555555557d98
+	#jmp    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557d9e
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dc0
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557dc4
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557dc8
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557dcf
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557dd3
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557dd7
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557dde
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557de2
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557de6
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557ded
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557df1
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557df5
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557dfc
+	vpshufd $0x39,%ymm1,%ymm1                       #! PC = 0x555555557e01
+	vpshufd $0x93,%ymm3,%ymm3                       #! PC = 0x555555557e06
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e0b
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e0f
+	vprold $0x10,%ymm3,%ymm3                        #! PC = 0x555555557e13
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e1a
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e1e
+	vprold $0xc,%ymm1,%ymm1                         #! PC = 0x555555557e22
+	vpaddd %ymm1,%ymm0,%ymm0                        #! PC = 0x555555557e29
+	vpxor  %ymm0,%ymm3,%ymm3                        #! PC = 0x555555557e2d
+	vprold $0x8,%ymm3,%ymm3                         #! PC = 0x555555557e31
+	vpaddd %ymm3,%ymm2,%ymm2                        #! PC = 0x555555557e38
+	vpxor  %ymm2,%ymm1,%ymm1                        #! PC = 0x555555557e3c
+	vprold $0x7,%ymm1,%ymm1                         #! PC = 0x555555557e40
+	vpshufd $0x4e,%ymm2,%ymm2                       #! PC = 0x555555557e47
+	vpshufd $0x93,%ymm1,%ymm1                       #! PC = 0x555555557e4c
+	vpshufd $0x39,%ymm3,%ymm3                       #! PC = 0x555555557e51
+	dec    %r8                                      #! PC = 0x555555557e56
+	#jne    0x555555557dc0 <ChaCha20_avx512vl+128>  #! PC = 0x555555557e59
+	vpaddd %ymm16,%ymm0,%ymm0                       #! PC = 0x555555557e5f
+	vpaddd %ymm17,%ymm1,%ymm1                       #! PC = 0x555555557e65
+	vpaddd %ymm18,%ymm2,%ymm2                       #! PC = 0x555555557e6b
+	vpaddd %ymm19,%ymm3,%ymm3                       #! PC = 0x555555557e71
+	sub    $0x40,%rdx                               #! PC = 0x555555557e77
+	#jb     0x555555557f20 <ChaCha20_avx512vl+480>  #! PC = 0x555555557e7b
+	vmovdqa %xmm0,(%rsp)                            #! EA = L0x7fffffffdae0; PC = 0x555555557f20
+	vmovdqa %xmm1,0x10(%rsp)                        #! EA = L0x7fffffffdaf0; PC = 0x555555557f25
+	vmovdqa %xmm2,0x20(%rsp)                        #! EA = L0x7fffffffdb00; PC = 0x555555557f2b
+	vmovdqa %xmm3,0x30(%rsp)                        #! EA = L0x7fffffffdb10; PC = 0x555555557f31
+	add    $0x40,%rdx                               #! PC = 0x555555557f37
+	#jmp    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f3b
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c100; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae0; Value = 0xd3ff33445aff1a09; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c080; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c101; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae1; Value = 0x80d3ff33445aff1a; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c081; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c102; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae2; Value = 0x0880d3ff33445aff; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c082; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c103; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae3; Value = 0xe80880d3ff33445a; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c083; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c104; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae4; Value = 0xa7e80880d3ff3344; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c084; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c105; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae5; Value = 0x94a7e80880d3ff33; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c085; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c106; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae6; Value = 0x4794a7e80880d3ff; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c086; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c107; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae7; Value = 0x534794a7e80880d3; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c087; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c108; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae8; Value = 0x56534794a7e80880; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c088; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c109; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdae9; Value = 0xc156534794a7e808; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c089; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10a; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaea; Value = 0x81c156534794a7e8; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08a; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10b; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaeb; Value = 0x7f81c156534794a7; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08b; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10c; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaec; Value = 0xec7f81c156534794; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08c; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10d; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaed; Value = 0x8eec7f81c1565347; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08d; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10e; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaee; Value = 0x158eec7f81c15653; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08e; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c10f; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaef; Value = 0x29158eec7f81c156; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c08f; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c110; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaf0; Value = 0xb329158eec7f81c1; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c090; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c111; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaf1; Value = 0x2bb329158eec7f81; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c091; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c112; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaf2; Value = 0xa62bb329158eec7f; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c092; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	movzbl (%rsi,%r8,1),%eax                        #! EA = L0x55555555c113; Value = 0x4242424242424242; PC = 0x555555557f5b
+	movzbl (%rsp,%r8,1),%ecx                        #! EA = L0x7fffffffdaf3; Value = 0x7ba62bb329158eec; PC = 0x555555557f60
+	lea    0x1(%r8),%r8                             #! PC = 0x555555557f65
+	xor    %ecx,%eax                                #! PC = 0x555555557f69
+	mov    %al,-0x1(%rdi,%r8,1)                     #! EA = L0x55555555c093; PC = 0x555555557f6b
+	dec    %rdx                                     #! PC = 0x555555557f70
+	#jne    0x555555557f5b <ChaCha20_avx512vl+539>  #! PC = 0x555555557f73
+	vmovdqu32 %ymm16,(%rsp)                         #! EA = L0x7fffffffdae0; PC = 0x555555557f75
+	vmovdqu32 %ymm16,0x20(%rsp)                     #! EA = L0x7fffffffdb00; PC = 0x555555557f7c
+	vzeroall                                        #! PC = 0x555555557f84
+	lea    (%r9),%rsp                               #! PC = 0x555555557f87
+	#! <- SP = 0x7fffffffdb28
+	#repz ret                                       #! PC = 0x555555557f8a
