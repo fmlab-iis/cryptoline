@@ -6,7 +6,7 @@ BOOLECTOR_TAR_GZ=${BOOLECTOR_VERSION}.tar.gz
 BOOLECTOR_DIR=boolector-${BOOLECTOR_VERSION}
 BOOLECTOR_URL=https://github.com/Boolector/boolector/archive/refs/tags/3.2.0.tar.gz
 
-sudo apt install -y build-essential cmake git
+sudo apt install -y curl build-essential binutils cmake git
 mkdir -p ${TOOLS_DIR}
 pushd ${TOOLS_DIR}
 curl -L ${BOOLECTOR_URL} -o ${BOOLECTOR_TAR_GZ}
