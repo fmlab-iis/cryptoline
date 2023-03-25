@@ -180,7 +180,7 @@ mov rdx r10;
 (* shr    $0x33,%r10 *)
 split r10 tmp r10 51;
 (* shl    $0xd,%r11 *)
-shl r11 r11 13;
+shl r11 r11 13@uint64;
 (* and    %rbp,%rdx *)
 split dontcare rdx rdx 51;
 assert true && dontcare = r10;
@@ -199,7 +199,7 @@ mov rax rbx;
 (* shr    $0x33,%rbx *)
 split rbx tmp rbx 51;
 (* shl    $0xd,%rcx *)
-shl rcx rcx 13;
+shl rcx rcx 13@uint64;
 (* and    %rbp,%rax *)
 split dontcare rax rax 51;
 assert true && dontcare = rbx;
@@ -218,7 +218,7 @@ mov rbx r12;
 (* shr    $0x33,%r12 *)
 split r12 tmp r12 51;
 (* shl    $0xd,%r13 *)
-shl r13 r13 13;
+shl r13 r13 13@uint64;
 (* and    %rbp,%rbx *)
 split dontcare rbx rbx 51;
 assert true && dontcare = r12;
@@ -237,7 +237,7 @@ mov rcx r8;
 (* shr    $0x33,%r8 *)
 split r8 tmp r8 51;
 (* shl    $0xd,%r9 *)
-shl r9 r9 13;
+shl r9 r9 13@uint64;
 (* and    %rbp,%rcx *)
 split dontcare rcx rcx 51;
 assert true && dontcare = r8;
@@ -256,7 +256,7 @@ mov r10 r14;
 (* shr    $0x33,%r14 *)
 split r14 tmp r14 51;
 (* shl    $0xd,%r15 *)
-shl r15 r15 13;
+shl r15 r15 13@uint64;
 (* and    %rbp,%r10 *)
 split dontcare r10 r10 51;
 assert true && dontcare = r14;
