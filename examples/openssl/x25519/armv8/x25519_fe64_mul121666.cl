@@ -65,13 +65,13 @@ uadcs carry x15 x15 x10 carry;
 (* adc	x16, xzr, x11                               #! PC = 0x4196592 *)
 uadc x16 0@uint64 x11 carry;
 (* add	x8, x16, x16, lsl #3                        #! PC = 0x4196596 *)
-shl x16_x8 x16 3;
+shl x16_x8 x16 3@uint64;
 uadd x8 x16 x16_x8;
 (* add	x8, x16, x8, lsl #1                         #! PC = 0x4196600 *)
-shl x8_x2 x8 1;
+shl x8_x2 x8 1@uint64;
 uadd x8 x16 x8_x2;
 (* adds	x12, x12, x8, lsl #1                       #! PC = 0x4196604 *)
-shl x8_x2 x8 1;
+shl x8_x2 x8 1@uint64;
 uadds carry x12 x12 x8_x2;
 (* adcs	x13, x13, xzr                              #! PC = 0x4196608 *)
 uadcs carry x13 x13 0@uint64 carry;
