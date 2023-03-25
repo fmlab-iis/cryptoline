@@ -30,18 +30,24 @@ To compile and run CryptoLine, the following packages need to be installed.
   + [Boolector](https://boolector.github.io) (recommended, the default to be used)
   + [Z3](https://github.com/Z3Prover/z3)
   + [Mathsat](http://mathsat.fbk.eu)
+- [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) and [aiger](http://fmv.jku.at/aiger) for equivalence checking
 
 
 Installation
 ============
 
-Follow the following instructions to build and install CryptoLine as well as
-the default solver Singular and Boolector on Ubuntu 20.04 LTS.
+On Linux
+---------------------
+
+Follow the instructions below to build and install CryptoLine as well as
+the default solver Singular and Boolector on Ubuntu 23.04.
 
 ```
 $ sudo apt -y install \
-	build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
-	boolector singular
+        build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
+        curl git bc cmake libreadline-dev boolector singular
+$ ./scripts/install-aiger.sh
+$ ./scripts/install-abc.sh
 $ dune build
 $ dune install
 ```
@@ -61,12 +67,26 @@ $ dune uninstall
 Note that Singular and Boolector provided by Ubuntu are pretty old.
 It is recommended to install newer versions of Singular and Boolector.
 Using the scripts install-singular.sh and install-boolector.sh, Singular
-4.1.3p2 and Boolector 3.2.0 can be installed.
+4.1.3p2 and Boolector 3.2.2 can be installed.
 
 ```
-$ scripts/install-singular.sh
-$ scripts/install-boolector.sh
+$ ./scripts/install-singular.sh
+$ ./scripts/install-boolector.sh
 ```
+
+Using Docker
+-------------------------
+
+A Dockerfile is provided in CryptoLine. Run the following commands to build
+a docker image and run a new container from the image.
+
+```
+$ docker build -t cryptoline - < Dockerfile
+$ docker run -it --name cryptoline cryptoline bash
+```
+
+Simple Test
+-----------------
 
 To test the installation of CryptoLine, run the following command in the
 project root.
@@ -147,6 +167,10 @@ the version of the extension.
 
 Reference
 =========
+
+- Vincent Hwang, Jiaxiang Liu, Gregor Seiler, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
+  Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU. 
+  IACR Transactions on Cryptographic Hardware and Embedded Systems. 2022(4): 718-750 (2022).
 - Yu-Fu Fu, Jiaxiang Liu, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
   Signed Cryptographic Program Verification with Typed CryptoLine.
   In Proceedings of the 2019 ACM SIGSAC Conference on Computer and Communications Security (CCS '19).
