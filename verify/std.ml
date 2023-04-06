@@ -167,6 +167,10 @@ let verify_safety s hashopt =
   let _ = if !incremental_safety then vprint "\t Overall\t\t\t" in
   res
 
+(*
+ * groebner: https://www.singular.uni-kl.de/Manual/4-3-2/sing_261.htm#SEC301
+ * reduce: https://www.singular.uni-kl.de/Manual/4-3-2/sing_337.htm#SEC377
+ *)
 let write_singular_input ifile vars gen p =
   let input_text =
     let varseq =
@@ -198,6 +202,9 @@ let write_singular_input ifile vars gen p =
   trace_file ifile;
   trace ""
 
+(*
+ * ideals: https://doc.sagemath.org/html/en/reference/rings/sage/rings/ideal.html
+ *)
 let write_sage_input ifile vars gen p =
   let input_text =
     let varseq =
@@ -216,6 +223,9 @@ let write_sage_input ifile vars gen p =
   trace_file ifile;
   trace ""
 
+(*
+ * ideals: https://magma.maths.usyd.edu.au/magma/handbook/text/413
+ *)
 let write_magma_input ifile vars gen p =
   let input_text =
     let varseq =
@@ -225,24 +235,15 @@ let write_magma_input ifile vars gen p =
     let varlen = max 1 (List.length vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
-    "function is_generator(p, I)\n"
-    ^ "  for q in I do\n"
-    ^ "    if p eq q then\n"
-    ^ "      return true;\n"
-    ^ "    end if;\n"
-    ^ "  end for;\n"
-    ^ "  return false;\n"
-    ^ "end function;\n\n"
-    ^ "R := IntegerRing();\n"
-    ^ "S<" ^ varseq ^ "> := PolynomialRing(R, " ^ string_of_int varlen ^ ");\n"
-    ^ "B := [" ^ generator ^ "];\n"
-    ^ "I := ideal<S|B>;\n"
-    ^ "g := " ^ poly ^ ";\n"
-    ^ "if is_generator(g, B) or g in I then\n"
+    "Z := IntegerRing();\n"
+    ^ "R<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
+    ^ "G := [" ^ generator ^ "];\n"
+    ^ "p := " ^ poly ^ ";\n"
+    ^ "if p in G then\n"
     ^ "  true;\n"
     ^ "else\n"
-    ^ "  J := GroebnerBasis(I);\n"
-    ^ "  g in J;\n"
+    ^ "  I := ideal<R|G>;\n"
+    ^ "  p in I;\n"
     ^ "end if;\n"
     ^ "exit;\n" in
   let ch = open_out ifile in
