@@ -50,7 +50,9 @@ let save_rep_uniform_types = ref false
 
 let print_with_types = ref false
 
-let str_to_ids str = (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
+let str_to_ids str =
+  if str = "-" then Hashset.of_list []
+  else (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
 
 let suggest_name name ext id =
   let nth_name id = !name ^ "_" ^ string_of_int id in
