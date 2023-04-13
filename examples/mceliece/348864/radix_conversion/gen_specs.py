@@ -62,9 +62,6 @@ def pre_vec_mul(stage):
 
 
 def post_vec_mul(stage, lsb_only=True):
-    print('assume modulus = z ** 12 + z ** 3 + 1 && true;')
-    print()
-
     # resulting polynomial after multiplications; type does not matter
     nondet_decls = [f'nondet res{stage}_{i}@bit;' for i in range(64)]
     print_items(nondet_decls, 4)
@@ -79,7 +76,8 @@ def post_vec_mul(stage, lsb_only=True):
     print()
 
     # ecut for twisting
-    print(f'ghost t{stage}@bit: t{stage} = (z ** {2 ** (stage + 1)} + z) * (x ** 2 + x) && true;')
+    x_next = f'x{stage + 1}'
+    print(f'nondet {x_next}@uint12;')
     print()
     print('ecut and [')
     num_conds = 2 ** stage
@@ -95,16 +93,16 @@ def post_vec_mul(stage, lsb_only=True):
         # LHS
         for k, p0, p1, end in pairs:
             var = f'cvrted{stage}'
-            print(f'    ({var}_{p0} + x * {var}_{p1}) * t{stage} ** {k}{end}')
+            print(f'    ({var}_{p0} + x * {var}_{p1}) * ((z ** {2 ** (stage + 1)} + z) * {x_next}) ** {k}{end}')
         print('  ) (')
         # RHS
         for k, p0, p1, end in pairs:
             var = f'res{stage}'
-            print(f'    ({var}_{p0} + x * {var}_{p1}) * (x ** 2 + x) ** {k}{end}')
+            print(f'    ({var}_{p0} + x * {var}_{p1}) * {x_next} ** {k}{end}')
         print('  ) [2, modulus]', end='')
         if m != num_conds - 1:
             print(',')
-    print('\n];')
+    print('\n] prove with [precondition];')
     print()
 
 
@@ -112,9 +110,12 @@ def next_stage_input(stage, lsb_only=True):
     # synthesize input polynomials for the next stage
     num_ghosts = 2 ** (stage + 1)
     deg = 64 // num_ghosts
+
+    print(f'mov x x{stage + 1};')
+    print()
     for m in range(num_ghosts):
         var = f'inp{stage+1}_{m}'
-        print(f'ghost {var}@uint12: {var} = ')
+        print(f'nondet {var}@uint12; assume {var} =')
         terms = [f'res{stage}_{m + k * num_ghosts} * x**{k}' + (' +' if k != deg - 1 else '') for k in range(deg)]
         print_items(terms, 4, 2)
         print('&& true;')

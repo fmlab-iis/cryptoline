@@ -1,22 +1,25 @@
 (* quine: cv -v -disable_safety -slicing -jobs 24 mcbits-radix-conv/radix_conv.vcl
 Condition generated with print_cond.py (output at cond-full.txt).
 
-Parsing Cryptoline file:                [OK]            0.618640 seconds
-Checking well-formedness:               [OK]            0.256133 seconds
-Transforming to SSA form:               [OK]            0.226990 seconds
-Normalizing specification:              [OK]            0.386668 seconds
-Rewriting assignments:                  [OK]            0.484469 seconds
-Verifying range assertions:             [OK]            84.634039 seconds
-Verifying range specification:          [OK]            0.020349 seconds
-Rewriting value-preserved casting:      [OK]            0.041760 seconds
-Verifying algebraic assertions:         [OK]            0.051400 seconds
-Verifying algebraic specification:      [OK]            255.597180 seconds
-Verification result:                    [OK]            342.461235 seconds
+Parsing CryptoLine file:                [OK]            0.629637 seconds
+Checking well-formedness:               [OK]            0.253314 seconds
+Transforming to SSA form:               [OK]            0.316921 seconds
+Normalizing specification:              [OK]            0.338994 seconds
+Rewriting assignments:                  [OK]            0.604782 seconds
+Verifying range assertions:             [OK]            263.851408 seconds
+Verifying range specification:          [OK]            0.030541 seconds
+Rewriting value-preserved casting:      [OK]            0.042472 seconds
+Verifying algebraic assertions:         [OK]            0.339974 seconds
+Verifying algebraic specification:      [OK]            440.263712 seconds
+Verification result:                    [OK]            706.760238 seconds
 
 p.s. Safety conditions (x 23993) are verified separately with -isafety in ~3 hr.
 *)
 
 proc main (
+  uint12 x,
+  uint12 z,
+  uint13 modulus,
   bit in0_0, bit in0_1, bit in0_2, bit in0_3, bit in0_4, bit in0_5, bit in0_6, bit in0_7, bit in0_8, bit in0_9, bit in0_10, bit in0_11, bit in0_12, bit in0_13, bit in0_14, bit in0_15, bit in0_16, bit in0_17, bit in0_18, bit in0_19, bit in0_20, bit in0_21, bit in0_22, bit in0_23, bit in0_24, bit in0_25, bit in0_26, bit in0_27, bit in0_28, bit in0_29, bit in0_30, bit in0_31, bit in0_32, bit in0_33, bit in0_34, bit in0_35, bit in0_36, bit in0_37, bit in0_38, bit in0_39, bit in0_40, bit in0_41, bit in0_42, bit in0_43, bit in0_44, bit in0_45, bit in0_46, bit in0_47, bit in0_48, bit in0_49, bit in0_50, bit in0_51, bit in0_52, bit in0_53, bit in0_54, bit in0_55, bit in0_56, bit in0_57, bit in0_58, bit in0_59, bit in0_60, bit in0_61, bit in0_62, bit in0_63,
   bit in1_0, bit in1_1, bit in1_2, bit in1_3, bit in1_4, bit in1_5, bit in1_6, bit in1_7, bit in1_8, bit in1_9, bit in1_10, bit in1_11, bit in1_12, bit in1_13, bit in1_14, bit in1_15, bit in1_16, bit in1_17, bit in1_18, bit in1_19, bit in1_20, bit in1_21, bit in1_22, bit in1_23, bit in1_24, bit in1_25, bit in1_26, bit in1_27, bit in1_28, bit in1_29, bit in1_30, bit in1_31, bit in1_32, bit in1_33, bit in1_34, bit in1_35, bit in1_36, bit in1_37, bit in1_38, bit in1_39, bit in1_40, bit in1_41, bit in1_42, bit in1_43, bit in1_44, bit in1_45, bit in1_46, bit in1_47, bit in1_48, bit in1_49, bit in1_50, bit in1_51, bit in1_52, bit in1_53, bit in1_54, bit in1_55, bit in1_56, bit in1_57, bit in1_58, bit in1_59, bit in1_60, bit in1_61, bit in1_62, bit in1_63,
   bit in2_0, bit in2_1, bit in2_2, bit in2_3, bit in2_4, bit in2_5, bit in2_6, bit in2_7, bit in2_8, bit in2_9, bit in2_10, bit in2_11, bit in2_12, bit in2_13, bit in2_14, bit in2_15, bit in2_16, bit in2_17, bit in2_18, bit in2_19, bit in2_20, bit in2_21, bit in2_22, bit in2_23, bit in2_24, bit in2_25, bit in2_26, bit in2_27, bit in2_28, bit in2_29, bit in2_30, bit in2_31, bit in2_32, bit in2_33, bit in2_34, bit in2_35, bit in2_36, bit in2_37, bit in2_38, bit in2_39, bit in2_40, bit in2_41, bit in2_42, bit in2_43, bit in2_44, bit in2_45, bit in2_46, bit in2_47, bit in2_48, bit in2_49, bit in2_50, bit in2_51, bit in2_52, bit in2_53, bit in2_54, bit in2_55, bit in2_56, bit in2_57, bit in2_58, bit in2_59, bit in2_60, bit in2_61, bit in2_62, bit in2_63,
@@ -31,7 +34,7 @@ proc main (
   bit in11_0, bit in11_1, bit in11_2, bit in11_3, bit in11_4, bit in11_5, bit in11_6, bit in11_7, bit in11_8, bit in11_9, bit in11_10, bit in11_11, bit in11_12, bit in11_13, bit in11_14, bit in11_15, bit in11_16, bit in11_17, bit in11_18, bit in11_19, bit in11_20, bit in11_21, bit in11_22, bit in11_23, bit in11_24, bit in11_25, bit in11_26, bit in11_27, bit in11_28, bit in11_29, bit in11_30, bit in11_31, bit in11_32, bit in11_33, bit in11_34, bit in11_35, bit in11_36, bit in11_37, bit in11_38, bit in11_39, bit in11_40, bit in11_41, bit in11_42, bit in11_43, bit in11_44, bit in11_45, bit in11_46, bit in11_47, bit in11_48, bit in11_49, bit in11_50, bit in11_51, bit in11_52, bit in11_53, bit in11_54, bit in11_55, bit in11_56, bit in11_57, bit in11_58, bit in11_59, bit in11_60, bit in11_61, bit in11_62, bit in11_63
 ) =
 {
-  true
+  modulus = z ** 12 + z ** 3 + 1
   &&
   true
 }
@@ -53,10 +56,6 @@ mov %L0x7fffffffdae8 [in9_0, in9_1, in9_2, in9_3, in9_4, in9_5, in9_6, in9_7, in
 mov %L0x7fffffffdaf0 [in10_0, in10_1, in10_2, in10_3, in10_4, in10_5, in10_6, in10_7, in10_8, in10_9, in10_10, in10_11, in10_12, in10_13, in10_14, in10_15, in10_16, in10_17, in10_18, in10_19, in10_20, in10_21, in10_22, in10_23, in10_24, in10_25, in10_26, in10_27, in10_28, in10_29, in10_30, in10_31, in10_32, in10_33, in10_34, in10_35, in10_36, in10_37, in10_38, in10_39, in10_40, in10_41, in10_42, in10_43, in10_44, in10_45, in10_46, in10_47, in10_48, in10_49, in10_50, in10_51, in10_52, in10_53, in10_54, in10_55, in10_56, in10_57, in10_58, in10_59, in10_60, in10_61, in10_62, in10_63];
 mov %L0x7fffffffdaf8 [in11_0, in11_1, in11_2, in11_3, in11_4, in11_5, in11_6, in11_7, in11_8, in11_9, in11_10, in11_11, in11_12, in11_13, in11_14, in11_15, in11_16, in11_17, in11_18, in11_19, in11_20, in11_21, in11_22, in11_23, in11_24, in11_25, in11_26, in11_27, in11_28, in11_29, in11_30, in11_31, in11_32, in11_33, in11_34, in11_35, in11_36, in11_37, in11_38, in11_39, in11_40, in11_41, in11_42, in11_43, in11_44, in11_45, in11_46, in11_47, in11_48, in11_49, in11_50, in11_51, in11_52, in11_53, in11_54, in11_55, in11_56, in11_57, in11_58, in11_59, in11_60, in11_61, in11_62, in11_63];
 
-nondet x@uint12;
-nondet z@uint12;
-nondet modulus@uint13;
-
 nondet rb0_0@bit; nondet rb0_1@bit; nondet rb0_2@bit; nondet rb0_3@bit; nondet rb0_4@bit; nondet rb0_5@bit; nondet rb0_6@bit; nondet rb0_7@bit; nondet rb0_8@bit; nondet rb0_9@bit; nondet rb0_10@bit; nondet rb0_11@bit; nondet rb0_12@bit; nondet rb0_13@bit; nondet rb0_14@bit; nondet rb0_15@bit; nondet rb0_16@bit; nondet rb0_17@bit; nondet rb0_18@bit; nondet rb0_19@bit; nondet rb0_20@bit; nondet rb0_21@bit; nondet rb0_22@bit; nondet rb0_23@bit; nondet rb0_24@bit; nondet rb0_25@bit; nondet rb0_26@bit; nondet rb0_27@bit; nondet rb0_28@bit; nondet rb0_29@bit; nondet rb0_30@bit; nondet rb0_31@bit; nondet rb0_32@bit; nondet rb0_33@bit; nondet rb0_34@bit; nondet rb0_35@bit; nondet rb0_36@bit; nondet rb0_37@bit; nondet rb0_38@bit; nondet rb0_39@bit; nondet rb0_40@bit; nondet rb0_41@bit; nondet rb0_42@bit; nondet rb0_43@bit; nondet rb0_44@bit; nondet rb0_45@bit; nondet rb0_46@bit; nondet rb0_47@bit; nondet rb0_48@bit; nondet rb0_49@bit; nondet rb0_50@bit; nondet rb0_51@bit; nondet rb0_52@bit; nondet rb0_53@bit; nondet rb0_54@bit; nondet rb0_55@bit; nondet rb0_56@bit; nondet rb0_57@bit; nondet rb0_58@bit; nondet rb0_59@bit; nondet rb0_60@bit; nondet rb0_61@bit; nondet rb0_62@bit; nondet rb0_63@bit;
 nondet rb1_0@bit; nondet rb1_1@bit; nondet rb1_2@bit; nondet rb1_3@bit; nondet rb1_4@bit; nondet rb1_5@bit; nondet rb1_6@bit; nondet rb1_7@bit; nondet rb1_8@bit; nondet rb1_9@bit; nondet rb1_10@bit; nondet rb1_11@bit; nondet rb1_12@bit; nondet rb1_13@bit; nondet rb1_14@bit; nondet rb1_15@bit; nondet rb1_16@bit; nondet rb1_17@bit; nondet rb1_18@bit; nondet rb1_19@bit; nondet rb1_20@bit; nondet rb1_21@bit; nondet rb1_22@bit; nondet rb1_23@bit; nondet rb1_24@bit; nondet rb1_25@bit; nondet rb1_26@bit; nondet rb1_27@bit; nondet rb1_28@bit; nondet rb1_29@bit; nondet rb1_30@bit; nondet rb1_31@bit; nondet rb1_32@bit; nondet rb1_33@bit; nondet rb1_34@bit; nondet rb1_35@bit; nondet rb1_36@bit; nondet rb1_37@bit; nondet rb1_38@bit; nondet rb1_39@bit; nondet rb1_40@bit; nondet rb1_41@bit; nondet rb1_42@bit; nondet rb1_43@bit; nondet rb1_44@bit; nondet rb1_45@bit; nondet rb1_46@bit; nondet rb1_47@bit; nondet rb1_48@bit; nondet rb1_49@bit; nondet rb1_50@bit; nondet rb1_51@bit; nondet rb1_52@bit; nondet rb1_53@bit; nondet rb1_54@bit; nondet rb1_55@bit; nondet rb1_56@bit; nondet rb1_57@bit; nondet rb1_58@bit; nondet rb1_59@bit; nondet rb1_60@bit; nondet rb1_61@bit; nondet rb1_62@bit; nondet rb1_63@bit;
 nondet rb2_0@bit; nondet rb2_1@bit; nondet rb2_2@bit; nondet rb2_3@bit; nondet rb2_4@bit; nondet rb2_5@bit; nondet rb2_6@bit; nondet rb2_7@bit; nondet rb2_8@bit; nondet rb2_9@bit; nondet rb2_10@bit; nondet rb2_11@bit; nondet rb2_12@bit; nondet rb2_13@bit; nondet rb2_14@bit; nondet rb2_15@bit; nondet rb2_16@bit; nondet rb2_17@bit; nondet rb2_18@bit; nondet rb2_19@bit; nondet rb2_20@bit; nondet rb2_21@bit; nondet rb2_22@bit; nondet rb2_23@bit; nondet rb2_24@bit; nondet rb2_25@bit; nondet rb2_26@bit; nondet rb2_27@bit; nondet rb2_28@bit; nondet rb2_29@bit; nondet rb2_30@bit; nondet rb2_31@bit; nondet rb2_32@bit; nondet rb2_33@bit; nondet rb2_34@bit; nondet rb2_35@bit; nondet rb2_36@bit; nondet rb2_37@bit; nondet rb2_38@bit; nondet rb2_39@bit; nondet rb2_40@bit; nondet rb2_41@bit; nondet rb2_42@bit; nondet rb2_43@bit; nondet rb2_44@bit; nondet rb2_45@bit; nondet rb2_46@bit; nondet rb2_47@bit; nondet rb2_48@bit; nondet rb2_49@bit; nondet rb2_50@bit; nondet rb2_51@bit; nondet rb2_52@bit; nondet rb2_53@bit; nondet rb2_54@bit; nondet rb2_55@bit; nondet rb2_56@bit; nondet rb2_57@bit; nondet rb2_58@bit; nondet rb2_59@bit; nondet rb2_60@bit; nondet rb2_61@bit; nondet rb2_62@bit; nondet rb2_63@bit;
@@ -69,6 +68,9 @@ nondet rb8_0@bit; nondet rb8_1@bit; nondet rb8_2@bit; nondet rb8_3@bit; nondet r
 nondet rb9_0@bit; nondet rb9_1@bit; nondet rb9_2@bit; nondet rb9_3@bit; nondet rb9_4@bit; nondet rb9_5@bit; nondet rb9_6@bit; nondet rb9_7@bit; nondet rb9_8@bit; nondet rb9_9@bit; nondet rb9_10@bit; nondet rb9_11@bit; nondet rb9_12@bit; nondet rb9_13@bit; nondet rb9_14@bit; nondet rb9_15@bit; nondet rb9_16@bit; nondet rb9_17@bit; nondet rb9_18@bit; nondet rb9_19@bit; nondet rb9_20@bit; nondet rb9_21@bit; nondet rb9_22@bit; nondet rb9_23@bit; nondet rb9_24@bit; nondet rb9_25@bit; nondet rb9_26@bit; nondet rb9_27@bit; nondet rb9_28@bit; nondet rb9_29@bit; nondet rb9_30@bit; nondet rb9_31@bit; nondet rb9_32@bit; nondet rb9_33@bit; nondet rb9_34@bit; nondet rb9_35@bit; nondet rb9_36@bit; nondet rb9_37@bit; nondet rb9_38@bit; nondet rb9_39@bit; nondet rb9_40@bit; nondet rb9_41@bit; nondet rb9_42@bit; nondet rb9_43@bit; nondet rb9_44@bit; nondet rb9_45@bit; nondet rb9_46@bit; nondet rb9_47@bit; nondet rb9_48@bit; nondet rb9_49@bit; nondet rb9_50@bit; nondet rb9_51@bit; nondet rb9_52@bit; nondet rb9_53@bit; nondet rb9_54@bit; nondet rb9_55@bit; nondet rb9_56@bit; nondet rb9_57@bit; nondet rb9_58@bit; nondet rb9_59@bit; nondet rb9_60@bit; nondet rb9_61@bit; nondet rb9_62@bit; nondet rb9_63@bit;
 nondet rb10_0@bit; nondet rb10_1@bit; nondet rb10_2@bit; nondet rb10_3@bit; nondet rb10_4@bit; nondet rb10_5@bit; nondet rb10_6@bit; nondet rb10_7@bit; nondet rb10_8@bit; nondet rb10_9@bit; nondet rb10_10@bit; nondet rb10_11@bit; nondet rb10_12@bit; nondet rb10_13@bit; nondet rb10_14@bit; nondet rb10_15@bit; nondet rb10_16@bit; nondet rb10_17@bit; nondet rb10_18@bit; nondet rb10_19@bit; nondet rb10_20@bit; nondet rb10_21@bit; nondet rb10_22@bit; nondet rb10_23@bit; nondet rb10_24@bit; nondet rb10_25@bit; nondet rb10_26@bit; nondet rb10_27@bit; nondet rb10_28@bit; nondet rb10_29@bit; nondet rb10_30@bit; nondet rb10_31@bit; nondet rb10_32@bit; nondet rb10_33@bit; nondet rb10_34@bit; nondet rb10_35@bit; nondet rb10_36@bit; nondet rb10_37@bit; nondet rb10_38@bit; nondet rb10_39@bit; nondet rb10_40@bit; nondet rb10_41@bit; nondet rb10_42@bit; nondet rb10_43@bit; nondet rb10_44@bit; nondet rb10_45@bit; nondet rb10_46@bit; nondet rb10_47@bit; nondet rb10_48@bit; nondet rb10_49@bit; nondet rb10_50@bit; nondet rb10_51@bit; nondet rb10_52@bit; nondet rb10_53@bit; nondet rb10_54@bit; nondet rb10_55@bit; nondet rb10_56@bit; nondet rb10_57@bit; nondet rb10_58@bit; nondet rb10_59@bit; nondet rb10_60@bit; nondet rb10_61@bit; nondet rb10_62@bit; nondet rb10_63@bit;
 nondet rb11_0@bit; nondet rb11_1@bit; nondet rb11_2@bit; nondet rb11_3@bit; nondet rb11_4@bit; nondet rb11_5@bit; nondet rb11_6@bit; nondet rb11_7@bit; nondet rb11_8@bit; nondet rb11_9@bit; nondet rb11_10@bit; nondet rb11_11@bit; nondet rb11_12@bit; nondet rb11_13@bit; nondet rb11_14@bit; nondet rb11_15@bit; nondet rb11_16@bit; nondet rb11_17@bit; nondet rb11_18@bit; nondet rb11_19@bit; nondet rb11_20@bit; nondet rb11_21@bit; nondet rb11_22@bit; nondet rb11_23@bit; nondet rb11_24@bit; nondet rb11_25@bit; nondet rb11_26@bit; nondet rb11_27@bit; nondet rb11_28@bit; nondet rb11_29@bit; nondet rb11_30@bit; nondet rb11_31@bit; nondet rb11_32@bit; nondet rb11_33@bit; nondet rb11_34@bit; nondet rb11_35@bit; nondet rb11_36@bit; nondet rb11_37@bit; nondet rb11_38@bit; nondet rb11_39@bit; nondet rb11_40@bit; nondet rb11_41@bit; nondet rb11_42@bit; nondet rb11_43@bit; nondet rb11_44@bit; nondet rb11_45@bit; nondet rb11_46@bit; nondet rb11_47@bit; nondet rb11_48@bit; nondet rb11_49@bit; nondet rb11_50@bit; nondet rb11_51@bit; nondet rb11_52@bit; nondet rb11_53@bit; nondet rb11_54@bit; nondet rb11_55@bit; nondet rb11_56@bit; nondet rb11_57@bit; nondet rb11_58@bit; nondet rb11_59@bit; nondet rb11_60@bit; nondet rb11_61@bit; nondet rb11_62@bit; nondet rb11_63@bit;
+
+nondet x0@uint12;
+mov x x0;
 
 ghost input_poly@uint12: input_poly =
   (in0_0 * z ** 0 + in1_0 * z ** 1 + in2_0 * z ** 2 + in3_0 * z ** 3 + in4_0 * z ** 4 + in5_0 * z ** 5 + in6_0 * z ** 6 + in7_0 * z ** 7 + in8_0 * z ** 8 + in9_0 * z ** 9 + in10_0 * z ** 10 + in11_0 * z ** 11) * x ** 0 +
@@ -2749,8 +2751,6 @@ ecut eqmod input_poly (
 (* #ret                                            #! PC = 0x555555555380 *)
 #ret                                            #! 0x555555555380 = 0x555555555380;
 
-assume modulus = z ** 12 + z ** 3 + 1 && true;
-
 nondet res0_0@bit; nondet res0_1@bit; nondet res0_2@bit; nondet res0_3@bit;
 nondet res0_4@bit; nondet res0_5@bit; nondet res0_6@bit; nondet res0_7@bit;
 nondet res0_8@bit; nondet res0_9@bit; nondet res0_10@bit; nondet res0_11@bit;
@@ -2835,79 +2835,81 @@ assume and [
   eqmod res0_63 (cvrted0_63 * ((* 0 63 *) z**11 + z**10 + z**9 + z**6 + z**3 + 1)) [2, modulus]
 ] && true;
 
-ghost t0@bit: t0 = (z ** 2 + z) * (x ** 2 + x) && true;
+nondet x1@uint12;
 
 ecut and [
   eqmod (
-    (cvrted0_0 + x * cvrted0_1) * t0 ** 0 +
-    (cvrted0_2 + x * cvrted0_3) * t0 ** 1 +
-    (cvrted0_4 + x * cvrted0_5) * t0 ** 2 +
-    (cvrted0_6 + x * cvrted0_7) * t0 ** 3 +
-    (cvrted0_8 + x * cvrted0_9) * t0 ** 4 +
-    (cvrted0_10 + x * cvrted0_11) * t0 ** 5 +
-    (cvrted0_12 + x * cvrted0_13) * t0 ** 6 +
-    (cvrted0_14 + x * cvrted0_15) * t0 ** 7 +
-    (cvrted0_16 + x * cvrted0_17) * t0 ** 8 +
-    (cvrted0_18 + x * cvrted0_19) * t0 ** 9 +
-    (cvrted0_20 + x * cvrted0_21) * t0 ** 10 +
-    (cvrted0_22 + x * cvrted0_23) * t0 ** 11 +
-    (cvrted0_24 + x * cvrted0_25) * t0 ** 12 +
-    (cvrted0_26 + x * cvrted0_27) * t0 ** 13 +
-    (cvrted0_28 + x * cvrted0_29) * t0 ** 14 +
-    (cvrted0_30 + x * cvrted0_31) * t0 ** 15 +
-    (cvrted0_32 + x * cvrted0_33) * t0 ** 16 +
-    (cvrted0_34 + x * cvrted0_35) * t0 ** 17 +
-    (cvrted0_36 + x * cvrted0_37) * t0 ** 18 +
-    (cvrted0_38 + x * cvrted0_39) * t0 ** 19 +
-    (cvrted0_40 + x * cvrted0_41) * t0 ** 20 +
-    (cvrted0_42 + x * cvrted0_43) * t0 ** 21 +
-    (cvrted0_44 + x * cvrted0_45) * t0 ** 22 +
-    (cvrted0_46 + x * cvrted0_47) * t0 ** 23 +
-    (cvrted0_48 + x * cvrted0_49) * t0 ** 24 +
-    (cvrted0_50 + x * cvrted0_51) * t0 ** 25 +
-    (cvrted0_52 + x * cvrted0_53) * t0 ** 26 +
-    (cvrted0_54 + x * cvrted0_55) * t0 ** 27 +
-    (cvrted0_56 + x * cvrted0_57) * t0 ** 28 +
-    (cvrted0_58 + x * cvrted0_59) * t0 ** 29 +
-    (cvrted0_60 + x * cvrted0_61) * t0 ** 30 +
-    (cvrted0_62 + x * cvrted0_63) * t0 ** 31
+    (cvrted0_0 + x * cvrted0_1) * ((z ** 2 + z) * x1) ** 0 +
+    (cvrted0_2 + x * cvrted0_3) * ((z ** 2 + z) * x1) ** 1 +
+    (cvrted0_4 + x * cvrted0_5) * ((z ** 2 + z) * x1) ** 2 +
+    (cvrted0_6 + x * cvrted0_7) * ((z ** 2 + z) * x1) ** 3 +
+    (cvrted0_8 + x * cvrted0_9) * ((z ** 2 + z) * x1) ** 4 +
+    (cvrted0_10 + x * cvrted0_11) * ((z ** 2 + z) * x1) ** 5 +
+    (cvrted0_12 + x * cvrted0_13) * ((z ** 2 + z) * x1) ** 6 +
+    (cvrted0_14 + x * cvrted0_15) * ((z ** 2 + z) * x1) ** 7 +
+    (cvrted0_16 + x * cvrted0_17) * ((z ** 2 + z) * x1) ** 8 +
+    (cvrted0_18 + x * cvrted0_19) * ((z ** 2 + z) * x1) ** 9 +
+    (cvrted0_20 + x * cvrted0_21) * ((z ** 2 + z) * x1) ** 10 +
+    (cvrted0_22 + x * cvrted0_23) * ((z ** 2 + z) * x1) ** 11 +
+    (cvrted0_24 + x * cvrted0_25) * ((z ** 2 + z) * x1) ** 12 +
+    (cvrted0_26 + x * cvrted0_27) * ((z ** 2 + z) * x1) ** 13 +
+    (cvrted0_28 + x * cvrted0_29) * ((z ** 2 + z) * x1) ** 14 +
+    (cvrted0_30 + x * cvrted0_31) * ((z ** 2 + z) * x1) ** 15 +
+    (cvrted0_32 + x * cvrted0_33) * ((z ** 2 + z) * x1) ** 16 +
+    (cvrted0_34 + x * cvrted0_35) * ((z ** 2 + z) * x1) ** 17 +
+    (cvrted0_36 + x * cvrted0_37) * ((z ** 2 + z) * x1) ** 18 +
+    (cvrted0_38 + x * cvrted0_39) * ((z ** 2 + z) * x1) ** 19 +
+    (cvrted0_40 + x * cvrted0_41) * ((z ** 2 + z) * x1) ** 20 +
+    (cvrted0_42 + x * cvrted0_43) * ((z ** 2 + z) * x1) ** 21 +
+    (cvrted0_44 + x * cvrted0_45) * ((z ** 2 + z) * x1) ** 22 +
+    (cvrted0_46 + x * cvrted0_47) * ((z ** 2 + z) * x1) ** 23 +
+    (cvrted0_48 + x * cvrted0_49) * ((z ** 2 + z) * x1) ** 24 +
+    (cvrted0_50 + x * cvrted0_51) * ((z ** 2 + z) * x1) ** 25 +
+    (cvrted0_52 + x * cvrted0_53) * ((z ** 2 + z) * x1) ** 26 +
+    (cvrted0_54 + x * cvrted0_55) * ((z ** 2 + z) * x1) ** 27 +
+    (cvrted0_56 + x * cvrted0_57) * ((z ** 2 + z) * x1) ** 28 +
+    (cvrted0_58 + x * cvrted0_59) * ((z ** 2 + z) * x1) ** 29 +
+    (cvrted0_60 + x * cvrted0_61) * ((z ** 2 + z) * x1) ** 30 +
+    (cvrted0_62 + x * cvrted0_63) * ((z ** 2 + z) * x1) ** 31
   ) (
-    (res0_0 + x * res0_1) * (x ** 2 + x) ** 0 +
-    (res0_2 + x * res0_3) * (x ** 2 + x) ** 1 +
-    (res0_4 + x * res0_5) * (x ** 2 + x) ** 2 +
-    (res0_6 + x * res0_7) * (x ** 2 + x) ** 3 +
-    (res0_8 + x * res0_9) * (x ** 2 + x) ** 4 +
-    (res0_10 + x * res0_11) * (x ** 2 + x) ** 5 +
-    (res0_12 + x * res0_13) * (x ** 2 + x) ** 6 +
-    (res0_14 + x * res0_15) * (x ** 2 + x) ** 7 +
-    (res0_16 + x * res0_17) * (x ** 2 + x) ** 8 +
-    (res0_18 + x * res0_19) * (x ** 2 + x) ** 9 +
-    (res0_20 + x * res0_21) * (x ** 2 + x) ** 10 +
-    (res0_22 + x * res0_23) * (x ** 2 + x) ** 11 +
-    (res0_24 + x * res0_25) * (x ** 2 + x) ** 12 +
-    (res0_26 + x * res0_27) * (x ** 2 + x) ** 13 +
-    (res0_28 + x * res0_29) * (x ** 2 + x) ** 14 +
-    (res0_30 + x * res0_31) * (x ** 2 + x) ** 15 +
-    (res0_32 + x * res0_33) * (x ** 2 + x) ** 16 +
-    (res0_34 + x * res0_35) * (x ** 2 + x) ** 17 +
-    (res0_36 + x * res0_37) * (x ** 2 + x) ** 18 +
-    (res0_38 + x * res0_39) * (x ** 2 + x) ** 19 +
-    (res0_40 + x * res0_41) * (x ** 2 + x) ** 20 +
-    (res0_42 + x * res0_43) * (x ** 2 + x) ** 21 +
-    (res0_44 + x * res0_45) * (x ** 2 + x) ** 22 +
-    (res0_46 + x * res0_47) * (x ** 2 + x) ** 23 +
-    (res0_48 + x * res0_49) * (x ** 2 + x) ** 24 +
-    (res0_50 + x * res0_51) * (x ** 2 + x) ** 25 +
-    (res0_52 + x * res0_53) * (x ** 2 + x) ** 26 +
-    (res0_54 + x * res0_55) * (x ** 2 + x) ** 27 +
-    (res0_56 + x * res0_57) * (x ** 2 + x) ** 28 +
-    (res0_58 + x * res0_59) * (x ** 2 + x) ** 29 +
-    (res0_60 + x * res0_61) * (x ** 2 + x) ** 30 +
-    (res0_62 + x * res0_63) * (x ** 2 + x) ** 31
+    (res0_0 + x * res0_1) * x1 ** 0 +
+    (res0_2 + x * res0_3) * x1 ** 1 +
+    (res0_4 + x * res0_5) * x1 ** 2 +
+    (res0_6 + x * res0_7) * x1 ** 3 +
+    (res0_8 + x * res0_9) * x1 ** 4 +
+    (res0_10 + x * res0_11) * x1 ** 5 +
+    (res0_12 + x * res0_13) * x1 ** 6 +
+    (res0_14 + x * res0_15) * x1 ** 7 +
+    (res0_16 + x * res0_17) * x1 ** 8 +
+    (res0_18 + x * res0_19) * x1 ** 9 +
+    (res0_20 + x * res0_21) * x1 ** 10 +
+    (res0_22 + x * res0_23) * x1 ** 11 +
+    (res0_24 + x * res0_25) * x1 ** 12 +
+    (res0_26 + x * res0_27) * x1 ** 13 +
+    (res0_28 + x * res0_29) * x1 ** 14 +
+    (res0_30 + x * res0_31) * x1 ** 15 +
+    (res0_32 + x * res0_33) * x1 ** 16 +
+    (res0_34 + x * res0_35) * x1 ** 17 +
+    (res0_36 + x * res0_37) * x1 ** 18 +
+    (res0_38 + x * res0_39) * x1 ** 19 +
+    (res0_40 + x * res0_41) * x1 ** 20 +
+    (res0_42 + x * res0_43) * x1 ** 21 +
+    (res0_44 + x * res0_45) * x1 ** 22 +
+    (res0_46 + x * res0_47) * x1 ** 23 +
+    (res0_48 + x * res0_49) * x1 ** 24 +
+    (res0_50 + x * res0_51) * x1 ** 25 +
+    (res0_52 + x * res0_53) * x1 ** 26 +
+    (res0_54 + x * res0_55) * x1 ** 27 +
+    (res0_56 + x * res0_57) * x1 ** 28 +
+    (res0_58 + x * res0_59) * x1 ** 29 +
+    (res0_60 + x * res0_61) * x1 ** 30 +
+    (res0_62 + x * res0_63) * x1 ** 31
   ) [2, modulus]
-];
+] prove with [precondition];
 
-ghost inp1_0@uint12: inp1_0 =
+mov x x1;
+
+nondet inp1_0@uint12; assume inp1_0 =
   res0_0 * x**0 + res0_2 * x**1 + res0_4 * x**2 + res0_6 * x**3 +
   res0_8 * x**4 + res0_10 * x**5 + res0_12 * x**6 + res0_14 * x**7 +
   res0_16 * x**8 + res0_18 * x**9 + res0_20 * x**10 + res0_22 * x**11 +
@@ -2917,7 +2919,7 @@ ghost inp1_0@uint12: inp1_0 =
   res0_48 * x**24 + res0_50 * x**25 + res0_52 * x**26 + res0_54 * x**27 +
   res0_56 * x**28 + res0_58 * x**29 + res0_60 * x**30 + res0_62 * x**31
 && true;
-ghost inp1_1@uint12: inp1_1 =
+nondet inp1_1@uint12; assume inp1_1 =
   res0_1 * x**0 + res0_3 * x**1 + res0_5 * x**2 + res0_7 * x**3 +
   res0_9 * x**4 + res0_11 * x**5 + res0_13 * x**6 + res0_15 * x**7 +
   res0_17 * x**8 + res0_19 * x**9 + res0_21 * x**10 + res0_23 * x**11 +
@@ -5150,8 +5152,6 @@ ecut and [
 (* #ret                                            #! PC = 0x555555555380 *)
 #ret                                            #! 0x555555555380 = 0x555555555380;
 
-assume modulus = z ** 12 + z ** 3 + 1 && true;
-
 nondet res1_0@bit; nondet res1_1@bit; nondet res1_2@bit; nondet res1_3@bit;
 nondet res1_4@bit; nondet res1_5@bit; nondet res1_6@bit; nondet res1_7@bit;
 nondet res1_8@bit; nondet res1_9@bit; nondet res1_10@bit; nondet res1_11@bit;
@@ -5236,100 +5236,102 @@ assume and [
   eqmod res1_63 (cvrted1_63 * ((* 1 63 *) z**6 + z**3)) [2, modulus]
 ] && true;
 
-ghost t1@bit: t1 = (z ** 4 + z) * (x ** 2 + x) && true;
+nondet x2@uint12;
 
 ecut and [
   eqmod (
-    (cvrted1_0 + x * cvrted1_2) * t1 ** 0 +
-    (cvrted1_4 + x * cvrted1_6) * t1 ** 1 +
-    (cvrted1_8 + x * cvrted1_10) * t1 ** 2 +
-    (cvrted1_12 + x * cvrted1_14) * t1 ** 3 +
-    (cvrted1_16 + x * cvrted1_18) * t1 ** 4 +
-    (cvrted1_20 + x * cvrted1_22) * t1 ** 5 +
-    (cvrted1_24 + x * cvrted1_26) * t1 ** 6 +
-    (cvrted1_28 + x * cvrted1_30) * t1 ** 7 +
-    (cvrted1_32 + x * cvrted1_34) * t1 ** 8 +
-    (cvrted1_36 + x * cvrted1_38) * t1 ** 9 +
-    (cvrted1_40 + x * cvrted1_42) * t1 ** 10 +
-    (cvrted1_44 + x * cvrted1_46) * t1 ** 11 +
-    (cvrted1_48 + x * cvrted1_50) * t1 ** 12 +
-    (cvrted1_52 + x * cvrted1_54) * t1 ** 13 +
-    (cvrted1_56 + x * cvrted1_58) * t1 ** 14 +
-    (cvrted1_60 + x * cvrted1_62) * t1 ** 15
+    (cvrted1_0 + x * cvrted1_2) * ((z ** 4 + z) * x2) ** 0 +
+    (cvrted1_4 + x * cvrted1_6) * ((z ** 4 + z) * x2) ** 1 +
+    (cvrted1_8 + x * cvrted1_10) * ((z ** 4 + z) * x2) ** 2 +
+    (cvrted1_12 + x * cvrted1_14) * ((z ** 4 + z) * x2) ** 3 +
+    (cvrted1_16 + x * cvrted1_18) * ((z ** 4 + z) * x2) ** 4 +
+    (cvrted1_20 + x * cvrted1_22) * ((z ** 4 + z) * x2) ** 5 +
+    (cvrted1_24 + x * cvrted1_26) * ((z ** 4 + z) * x2) ** 6 +
+    (cvrted1_28 + x * cvrted1_30) * ((z ** 4 + z) * x2) ** 7 +
+    (cvrted1_32 + x * cvrted1_34) * ((z ** 4 + z) * x2) ** 8 +
+    (cvrted1_36 + x * cvrted1_38) * ((z ** 4 + z) * x2) ** 9 +
+    (cvrted1_40 + x * cvrted1_42) * ((z ** 4 + z) * x2) ** 10 +
+    (cvrted1_44 + x * cvrted1_46) * ((z ** 4 + z) * x2) ** 11 +
+    (cvrted1_48 + x * cvrted1_50) * ((z ** 4 + z) * x2) ** 12 +
+    (cvrted1_52 + x * cvrted1_54) * ((z ** 4 + z) * x2) ** 13 +
+    (cvrted1_56 + x * cvrted1_58) * ((z ** 4 + z) * x2) ** 14 +
+    (cvrted1_60 + x * cvrted1_62) * ((z ** 4 + z) * x2) ** 15
   ) (
-    (res1_0 + x * res1_2) * (x ** 2 + x) ** 0 +
-    (res1_4 + x * res1_6) * (x ** 2 + x) ** 1 +
-    (res1_8 + x * res1_10) * (x ** 2 + x) ** 2 +
-    (res1_12 + x * res1_14) * (x ** 2 + x) ** 3 +
-    (res1_16 + x * res1_18) * (x ** 2 + x) ** 4 +
-    (res1_20 + x * res1_22) * (x ** 2 + x) ** 5 +
-    (res1_24 + x * res1_26) * (x ** 2 + x) ** 6 +
-    (res1_28 + x * res1_30) * (x ** 2 + x) ** 7 +
-    (res1_32 + x * res1_34) * (x ** 2 + x) ** 8 +
-    (res1_36 + x * res1_38) * (x ** 2 + x) ** 9 +
-    (res1_40 + x * res1_42) * (x ** 2 + x) ** 10 +
-    (res1_44 + x * res1_46) * (x ** 2 + x) ** 11 +
-    (res1_48 + x * res1_50) * (x ** 2 + x) ** 12 +
-    (res1_52 + x * res1_54) * (x ** 2 + x) ** 13 +
-    (res1_56 + x * res1_58) * (x ** 2 + x) ** 14 +
-    (res1_60 + x * res1_62) * (x ** 2 + x) ** 15
+    (res1_0 + x * res1_2) * x2 ** 0 +
+    (res1_4 + x * res1_6) * x2 ** 1 +
+    (res1_8 + x * res1_10) * x2 ** 2 +
+    (res1_12 + x * res1_14) * x2 ** 3 +
+    (res1_16 + x * res1_18) * x2 ** 4 +
+    (res1_20 + x * res1_22) * x2 ** 5 +
+    (res1_24 + x * res1_26) * x2 ** 6 +
+    (res1_28 + x * res1_30) * x2 ** 7 +
+    (res1_32 + x * res1_34) * x2 ** 8 +
+    (res1_36 + x * res1_38) * x2 ** 9 +
+    (res1_40 + x * res1_42) * x2 ** 10 +
+    (res1_44 + x * res1_46) * x2 ** 11 +
+    (res1_48 + x * res1_50) * x2 ** 12 +
+    (res1_52 + x * res1_54) * x2 ** 13 +
+    (res1_56 + x * res1_58) * x2 ** 14 +
+    (res1_60 + x * res1_62) * x2 ** 15
   ) [2, modulus],
   eqmod (
-    (cvrted1_1 + x * cvrted1_3) * t1 ** 0 +
-    (cvrted1_5 + x * cvrted1_7) * t1 ** 1 +
-    (cvrted1_9 + x * cvrted1_11) * t1 ** 2 +
-    (cvrted1_13 + x * cvrted1_15) * t1 ** 3 +
-    (cvrted1_17 + x * cvrted1_19) * t1 ** 4 +
-    (cvrted1_21 + x * cvrted1_23) * t1 ** 5 +
-    (cvrted1_25 + x * cvrted1_27) * t1 ** 6 +
-    (cvrted1_29 + x * cvrted1_31) * t1 ** 7 +
-    (cvrted1_33 + x * cvrted1_35) * t1 ** 8 +
-    (cvrted1_37 + x * cvrted1_39) * t1 ** 9 +
-    (cvrted1_41 + x * cvrted1_43) * t1 ** 10 +
-    (cvrted1_45 + x * cvrted1_47) * t1 ** 11 +
-    (cvrted1_49 + x * cvrted1_51) * t1 ** 12 +
-    (cvrted1_53 + x * cvrted1_55) * t1 ** 13 +
-    (cvrted1_57 + x * cvrted1_59) * t1 ** 14 +
-    (cvrted1_61 + x * cvrted1_63) * t1 ** 15
+    (cvrted1_1 + x * cvrted1_3) * ((z ** 4 + z) * x2) ** 0 +
+    (cvrted1_5 + x * cvrted1_7) * ((z ** 4 + z) * x2) ** 1 +
+    (cvrted1_9 + x * cvrted1_11) * ((z ** 4 + z) * x2) ** 2 +
+    (cvrted1_13 + x * cvrted1_15) * ((z ** 4 + z) * x2) ** 3 +
+    (cvrted1_17 + x * cvrted1_19) * ((z ** 4 + z) * x2) ** 4 +
+    (cvrted1_21 + x * cvrted1_23) * ((z ** 4 + z) * x2) ** 5 +
+    (cvrted1_25 + x * cvrted1_27) * ((z ** 4 + z) * x2) ** 6 +
+    (cvrted1_29 + x * cvrted1_31) * ((z ** 4 + z) * x2) ** 7 +
+    (cvrted1_33 + x * cvrted1_35) * ((z ** 4 + z) * x2) ** 8 +
+    (cvrted1_37 + x * cvrted1_39) * ((z ** 4 + z) * x2) ** 9 +
+    (cvrted1_41 + x * cvrted1_43) * ((z ** 4 + z) * x2) ** 10 +
+    (cvrted1_45 + x * cvrted1_47) * ((z ** 4 + z) * x2) ** 11 +
+    (cvrted1_49 + x * cvrted1_51) * ((z ** 4 + z) * x2) ** 12 +
+    (cvrted1_53 + x * cvrted1_55) * ((z ** 4 + z) * x2) ** 13 +
+    (cvrted1_57 + x * cvrted1_59) * ((z ** 4 + z) * x2) ** 14 +
+    (cvrted1_61 + x * cvrted1_63) * ((z ** 4 + z) * x2) ** 15
   ) (
-    (res1_1 + x * res1_3) * (x ** 2 + x) ** 0 +
-    (res1_5 + x * res1_7) * (x ** 2 + x) ** 1 +
-    (res1_9 + x * res1_11) * (x ** 2 + x) ** 2 +
-    (res1_13 + x * res1_15) * (x ** 2 + x) ** 3 +
-    (res1_17 + x * res1_19) * (x ** 2 + x) ** 4 +
-    (res1_21 + x * res1_23) * (x ** 2 + x) ** 5 +
-    (res1_25 + x * res1_27) * (x ** 2 + x) ** 6 +
-    (res1_29 + x * res1_31) * (x ** 2 + x) ** 7 +
-    (res1_33 + x * res1_35) * (x ** 2 + x) ** 8 +
-    (res1_37 + x * res1_39) * (x ** 2 + x) ** 9 +
-    (res1_41 + x * res1_43) * (x ** 2 + x) ** 10 +
-    (res1_45 + x * res1_47) * (x ** 2 + x) ** 11 +
-    (res1_49 + x * res1_51) * (x ** 2 + x) ** 12 +
-    (res1_53 + x * res1_55) * (x ** 2 + x) ** 13 +
-    (res1_57 + x * res1_59) * (x ** 2 + x) ** 14 +
-    (res1_61 + x * res1_63) * (x ** 2 + x) ** 15
+    (res1_1 + x * res1_3) * x2 ** 0 +
+    (res1_5 + x * res1_7) * x2 ** 1 +
+    (res1_9 + x * res1_11) * x2 ** 2 +
+    (res1_13 + x * res1_15) * x2 ** 3 +
+    (res1_17 + x * res1_19) * x2 ** 4 +
+    (res1_21 + x * res1_23) * x2 ** 5 +
+    (res1_25 + x * res1_27) * x2 ** 6 +
+    (res1_29 + x * res1_31) * x2 ** 7 +
+    (res1_33 + x * res1_35) * x2 ** 8 +
+    (res1_37 + x * res1_39) * x2 ** 9 +
+    (res1_41 + x * res1_43) * x2 ** 10 +
+    (res1_45 + x * res1_47) * x2 ** 11 +
+    (res1_49 + x * res1_51) * x2 ** 12 +
+    (res1_53 + x * res1_55) * x2 ** 13 +
+    (res1_57 + x * res1_59) * x2 ** 14 +
+    (res1_61 + x * res1_63) * x2 ** 15
   ) [2, modulus]
-];
+] prove with [precondition];
 
-ghost inp2_0@uint12: inp2_0 =
+mov x x2;
+
+nondet inp2_0@uint12; assume inp2_0 =
   res1_0 * x**0 + res1_4 * x**1 + res1_8 * x**2 + res1_12 * x**3 +
   res1_16 * x**4 + res1_20 * x**5 + res1_24 * x**6 + res1_28 * x**7 +
   res1_32 * x**8 + res1_36 * x**9 + res1_40 * x**10 + res1_44 * x**11 +
   res1_48 * x**12 + res1_52 * x**13 + res1_56 * x**14 + res1_60 * x**15
 && true;
-ghost inp2_1@uint12: inp2_1 =
+nondet inp2_1@uint12; assume inp2_1 =
   res1_1 * x**0 + res1_5 * x**1 + res1_9 * x**2 + res1_13 * x**3 +
   res1_17 * x**4 + res1_21 * x**5 + res1_25 * x**6 + res1_29 * x**7 +
   res1_33 * x**8 + res1_37 * x**9 + res1_41 * x**10 + res1_45 * x**11 +
   res1_49 * x**12 + res1_53 * x**13 + res1_57 * x**14 + res1_61 * x**15
 && true;
-ghost inp2_2@uint12: inp2_2 =
+nondet inp2_2@uint12; assume inp2_2 =
   res1_2 * x**0 + res1_6 * x**1 + res1_10 * x**2 + res1_14 * x**3 +
   res1_18 * x**4 + res1_22 * x**5 + res1_26 * x**6 + res1_30 * x**7 +
   res1_34 * x**8 + res1_38 * x**9 + res1_42 * x**10 + res1_46 * x**11 +
   res1_50 * x**12 + res1_54 * x**13 + res1_58 * x**14 + res1_62 * x**15
 && true;
-ghost inp2_3@uint12: inp2_3 =
+nondet inp2_3@uint12; assume inp2_3 =
   res1_3 * x**0 + res1_7 * x**1 + res1_11 * x**2 + res1_15 * x**3 +
   res1_19 * x**4 + res1_23 * x**5 + res1_27 * x**6 + res1_31 * x**7 +
   res1_35 * x**8 + res1_39 * x**9 + res1_43 * x**10 + res1_47 * x**11 +
@@ -7095,8 +7097,6 @@ ecut and [
 (* #ret                                            #! PC = 0x555555555380 *)
 #ret                                            #! 0x555555555380 = 0x555555555380;
 
-assume modulus = z ** 12 + z ** 3 + 1 && true;
-
 nondet res2_0@bit; nondet res2_1@bit; nondet res2_2@bit; nondet res2_3@bit;
 nondet res2_4@bit; nondet res2_5@bit; nondet res2_6@bit; nondet res2_7@bit;
 nondet res2_8@bit; nondet res2_9@bit; nondet res2_10@bit; nondet res2_11@bit;
@@ -7181,116 +7181,118 @@ assume and [
   eqmod res2_63 (cvrted2_63 * ((* 2 63 *) z**10 + z**8 + z**7 + z**3 + z**2)) [2, modulus]
 ] && true;
 
-ghost t2@bit: t2 = (z ** 8 + z) * (x ** 2 + x) && true;
+nondet x3@uint12;
 
 ecut and [
   eqmod (
-    (cvrted2_0 + x * cvrted2_4) * t2 ** 0 +
-    (cvrted2_8 + x * cvrted2_12) * t2 ** 1 +
-    (cvrted2_16 + x * cvrted2_20) * t2 ** 2 +
-    (cvrted2_24 + x * cvrted2_28) * t2 ** 3 +
-    (cvrted2_32 + x * cvrted2_36) * t2 ** 4 +
-    (cvrted2_40 + x * cvrted2_44) * t2 ** 5 +
-    (cvrted2_48 + x * cvrted2_52) * t2 ** 6 +
-    (cvrted2_56 + x * cvrted2_60) * t2 ** 7
+    (cvrted2_0 + x * cvrted2_4) * ((z ** 8 + z) * x3) ** 0 +
+    (cvrted2_8 + x * cvrted2_12) * ((z ** 8 + z) * x3) ** 1 +
+    (cvrted2_16 + x * cvrted2_20) * ((z ** 8 + z) * x3) ** 2 +
+    (cvrted2_24 + x * cvrted2_28) * ((z ** 8 + z) * x3) ** 3 +
+    (cvrted2_32 + x * cvrted2_36) * ((z ** 8 + z) * x3) ** 4 +
+    (cvrted2_40 + x * cvrted2_44) * ((z ** 8 + z) * x3) ** 5 +
+    (cvrted2_48 + x * cvrted2_52) * ((z ** 8 + z) * x3) ** 6 +
+    (cvrted2_56 + x * cvrted2_60) * ((z ** 8 + z) * x3) ** 7
   ) (
-    (res2_0 + x * res2_4) * (x ** 2 + x) ** 0 +
-    (res2_8 + x * res2_12) * (x ** 2 + x) ** 1 +
-    (res2_16 + x * res2_20) * (x ** 2 + x) ** 2 +
-    (res2_24 + x * res2_28) * (x ** 2 + x) ** 3 +
-    (res2_32 + x * res2_36) * (x ** 2 + x) ** 4 +
-    (res2_40 + x * res2_44) * (x ** 2 + x) ** 5 +
-    (res2_48 + x * res2_52) * (x ** 2 + x) ** 6 +
-    (res2_56 + x * res2_60) * (x ** 2 + x) ** 7
+    (res2_0 + x * res2_4) * x3 ** 0 +
+    (res2_8 + x * res2_12) * x3 ** 1 +
+    (res2_16 + x * res2_20) * x3 ** 2 +
+    (res2_24 + x * res2_28) * x3 ** 3 +
+    (res2_32 + x * res2_36) * x3 ** 4 +
+    (res2_40 + x * res2_44) * x3 ** 5 +
+    (res2_48 + x * res2_52) * x3 ** 6 +
+    (res2_56 + x * res2_60) * x3 ** 7
   ) [2, modulus],
   eqmod (
-    (cvrted2_1 + x * cvrted2_5) * t2 ** 0 +
-    (cvrted2_9 + x * cvrted2_13) * t2 ** 1 +
-    (cvrted2_17 + x * cvrted2_21) * t2 ** 2 +
-    (cvrted2_25 + x * cvrted2_29) * t2 ** 3 +
-    (cvrted2_33 + x * cvrted2_37) * t2 ** 4 +
-    (cvrted2_41 + x * cvrted2_45) * t2 ** 5 +
-    (cvrted2_49 + x * cvrted2_53) * t2 ** 6 +
-    (cvrted2_57 + x * cvrted2_61) * t2 ** 7
+    (cvrted2_1 + x * cvrted2_5) * ((z ** 8 + z) * x3) ** 0 +
+    (cvrted2_9 + x * cvrted2_13) * ((z ** 8 + z) * x3) ** 1 +
+    (cvrted2_17 + x * cvrted2_21) * ((z ** 8 + z) * x3) ** 2 +
+    (cvrted2_25 + x * cvrted2_29) * ((z ** 8 + z) * x3) ** 3 +
+    (cvrted2_33 + x * cvrted2_37) * ((z ** 8 + z) * x3) ** 4 +
+    (cvrted2_41 + x * cvrted2_45) * ((z ** 8 + z) * x3) ** 5 +
+    (cvrted2_49 + x * cvrted2_53) * ((z ** 8 + z) * x3) ** 6 +
+    (cvrted2_57 + x * cvrted2_61) * ((z ** 8 + z) * x3) ** 7
   ) (
-    (res2_1 + x * res2_5) * (x ** 2 + x) ** 0 +
-    (res2_9 + x * res2_13) * (x ** 2 + x) ** 1 +
-    (res2_17 + x * res2_21) * (x ** 2 + x) ** 2 +
-    (res2_25 + x * res2_29) * (x ** 2 + x) ** 3 +
-    (res2_33 + x * res2_37) * (x ** 2 + x) ** 4 +
-    (res2_41 + x * res2_45) * (x ** 2 + x) ** 5 +
-    (res2_49 + x * res2_53) * (x ** 2 + x) ** 6 +
-    (res2_57 + x * res2_61) * (x ** 2 + x) ** 7
+    (res2_1 + x * res2_5) * x3 ** 0 +
+    (res2_9 + x * res2_13) * x3 ** 1 +
+    (res2_17 + x * res2_21) * x3 ** 2 +
+    (res2_25 + x * res2_29) * x3 ** 3 +
+    (res2_33 + x * res2_37) * x3 ** 4 +
+    (res2_41 + x * res2_45) * x3 ** 5 +
+    (res2_49 + x * res2_53) * x3 ** 6 +
+    (res2_57 + x * res2_61) * x3 ** 7
   ) [2, modulus],
   eqmod (
-    (cvrted2_2 + x * cvrted2_6) * t2 ** 0 +
-    (cvrted2_10 + x * cvrted2_14) * t2 ** 1 +
-    (cvrted2_18 + x * cvrted2_22) * t2 ** 2 +
-    (cvrted2_26 + x * cvrted2_30) * t2 ** 3 +
-    (cvrted2_34 + x * cvrted2_38) * t2 ** 4 +
-    (cvrted2_42 + x * cvrted2_46) * t2 ** 5 +
-    (cvrted2_50 + x * cvrted2_54) * t2 ** 6 +
-    (cvrted2_58 + x * cvrted2_62) * t2 ** 7
+    (cvrted2_2 + x * cvrted2_6) * ((z ** 8 + z) * x3) ** 0 +
+    (cvrted2_10 + x * cvrted2_14) * ((z ** 8 + z) * x3) ** 1 +
+    (cvrted2_18 + x * cvrted2_22) * ((z ** 8 + z) * x3) ** 2 +
+    (cvrted2_26 + x * cvrted2_30) * ((z ** 8 + z) * x3) ** 3 +
+    (cvrted2_34 + x * cvrted2_38) * ((z ** 8 + z) * x3) ** 4 +
+    (cvrted2_42 + x * cvrted2_46) * ((z ** 8 + z) * x3) ** 5 +
+    (cvrted2_50 + x * cvrted2_54) * ((z ** 8 + z) * x3) ** 6 +
+    (cvrted2_58 + x * cvrted2_62) * ((z ** 8 + z) * x3) ** 7
   ) (
-    (res2_2 + x * res2_6) * (x ** 2 + x) ** 0 +
-    (res2_10 + x * res2_14) * (x ** 2 + x) ** 1 +
-    (res2_18 + x * res2_22) * (x ** 2 + x) ** 2 +
-    (res2_26 + x * res2_30) * (x ** 2 + x) ** 3 +
-    (res2_34 + x * res2_38) * (x ** 2 + x) ** 4 +
-    (res2_42 + x * res2_46) * (x ** 2 + x) ** 5 +
-    (res2_50 + x * res2_54) * (x ** 2 + x) ** 6 +
-    (res2_58 + x * res2_62) * (x ** 2 + x) ** 7
+    (res2_2 + x * res2_6) * x3 ** 0 +
+    (res2_10 + x * res2_14) * x3 ** 1 +
+    (res2_18 + x * res2_22) * x3 ** 2 +
+    (res2_26 + x * res2_30) * x3 ** 3 +
+    (res2_34 + x * res2_38) * x3 ** 4 +
+    (res2_42 + x * res2_46) * x3 ** 5 +
+    (res2_50 + x * res2_54) * x3 ** 6 +
+    (res2_58 + x * res2_62) * x3 ** 7
   ) [2, modulus],
   eqmod (
-    (cvrted2_3 + x * cvrted2_7) * t2 ** 0 +
-    (cvrted2_11 + x * cvrted2_15) * t2 ** 1 +
-    (cvrted2_19 + x * cvrted2_23) * t2 ** 2 +
-    (cvrted2_27 + x * cvrted2_31) * t2 ** 3 +
-    (cvrted2_35 + x * cvrted2_39) * t2 ** 4 +
-    (cvrted2_43 + x * cvrted2_47) * t2 ** 5 +
-    (cvrted2_51 + x * cvrted2_55) * t2 ** 6 +
-    (cvrted2_59 + x * cvrted2_63) * t2 ** 7
+    (cvrted2_3 + x * cvrted2_7) * ((z ** 8 + z) * x3) ** 0 +
+    (cvrted2_11 + x * cvrted2_15) * ((z ** 8 + z) * x3) ** 1 +
+    (cvrted2_19 + x * cvrted2_23) * ((z ** 8 + z) * x3) ** 2 +
+    (cvrted2_27 + x * cvrted2_31) * ((z ** 8 + z) * x3) ** 3 +
+    (cvrted2_35 + x * cvrted2_39) * ((z ** 8 + z) * x3) ** 4 +
+    (cvrted2_43 + x * cvrted2_47) * ((z ** 8 + z) * x3) ** 5 +
+    (cvrted2_51 + x * cvrted2_55) * ((z ** 8 + z) * x3) ** 6 +
+    (cvrted2_59 + x * cvrted2_63) * ((z ** 8 + z) * x3) ** 7
   ) (
-    (res2_3 + x * res2_7) * (x ** 2 + x) ** 0 +
-    (res2_11 + x * res2_15) * (x ** 2 + x) ** 1 +
-    (res2_19 + x * res2_23) * (x ** 2 + x) ** 2 +
-    (res2_27 + x * res2_31) * (x ** 2 + x) ** 3 +
-    (res2_35 + x * res2_39) * (x ** 2 + x) ** 4 +
-    (res2_43 + x * res2_47) * (x ** 2 + x) ** 5 +
-    (res2_51 + x * res2_55) * (x ** 2 + x) ** 6 +
-    (res2_59 + x * res2_63) * (x ** 2 + x) ** 7
+    (res2_3 + x * res2_7) * x3 ** 0 +
+    (res2_11 + x * res2_15) * x3 ** 1 +
+    (res2_19 + x * res2_23) * x3 ** 2 +
+    (res2_27 + x * res2_31) * x3 ** 3 +
+    (res2_35 + x * res2_39) * x3 ** 4 +
+    (res2_43 + x * res2_47) * x3 ** 5 +
+    (res2_51 + x * res2_55) * x3 ** 6 +
+    (res2_59 + x * res2_63) * x3 ** 7
   ) [2, modulus]
-];
+] prove with [precondition];
 
-ghost inp3_0@uint12: inp3_0 =
+mov x x3;
+
+nondet inp3_0@uint12; assume inp3_0 =
   res2_0 * x**0 + res2_8 * x**1 + res2_16 * x**2 + res2_24 * x**3 +
   res2_32 * x**4 + res2_40 * x**5 + res2_48 * x**6 + res2_56 * x**7
 && true;
-ghost inp3_1@uint12: inp3_1 =
+nondet inp3_1@uint12; assume inp3_1 =
   res2_1 * x**0 + res2_9 * x**1 + res2_17 * x**2 + res2_25 * x**3 +
   res2_33 * x**4 + res2_41 * x**5 + res2_49 * x**6 + res2_57 * x**7
 && true;
-ghost inp3_2@uint12: inp3_2 =
+nondet inp3_2@uint12; assume inp3_2 =
   res2_2 * x**0 + res2_10 * x**1 + res2_18 * x**2 + res2_26 * x**3 +
   res2_34 * x**4 + res2_42 * x**5 + res2_50 * x**6 + res2_58 * x**7
 && true;
-ghost inp3_3@uint12: inp3_3 =
+nondet inp3_3@uint12; assume inp3_3 =
   res2_3 * x**0 + res2_11 * x**1 + res2_19 * x**2 + res2_27 * x**3 +
   res2_35 * x**4 + res2_43 * x**5 + res2_51 * x**6 + res2_59 * x**7
 && true;
-ghost inp3_4@uint12: inp3_4 =
+nondet inp3_4@uint12; assume inp3_4 =
   res2_4 * x**0 + res2_12 * x**1 + res2_20 * x**2 + res2_28 * x**3 +
   res2_36 * x**4 + res2_44 * x**5 + res2_52 * x**6 + res2_60 * x**7
 && true;
-ghost inp3_5@uint12: inp3_5 =
+nondet inp3_5@uint12; assume inp3_5 =
   res2_5 * x**0 + res2_13 * x**1 + res2_21 * x**2 + res2_29 * x**3 +
   res2_37 * x**4 + res2_45 * x**5 + res2_53 * x**6 + res2_61 * x**7
 && true;
-ghost inp3_6@uint12: inp3_6 =
+nondet inp3_6@uint12; assume inp3_6 =
   res2_6 * x**0 + res2_14 * x**1 + res2_22 * x**2 + res2_30 * x**3 +
   res2_38 * x**4 + res2_46 * x**5 + res2_54 * x**6 + res2_62 * x**7
 && true;
-ghost inp3_7@uint12: inp3_7 =
+nondet inp3_7@uint12; assume inp3_7 =
   res2_7 * x**0 + res2_15 * x**1 + res2_23 * x**2 + res2_31 * x**3 +
   res2_39 * x**4 + res2_47 * x**5 + res2_55 * x**6 + res2_63 * x**7
 && true;
@@ -8592,8 +8594,6 @@ ecut and [
 (* #ret                                            #! PC = 0x555555555380 *)
 #ret                                            #! 0x555555555380 = 0x555555555380;
 
-assume modulus = z ** 12 + z ** 3 + 1 && true;
-
 nondet res3_0@bit; nondet res3_1@bit; nondet res3_2@bit; nondet res3_3@bit;
 nondet res3_4@bit; nondet res3_5@bit; nondet res3_6@bit; nondet res3_7@bit;
 nondet res3_8@bit; nondet res3_9@bit; nondet res3_10@bit; nondet res3_11@bit;
@@ -8678,145 +8678,147 @@ assume and [
   eqmod res3_63 (cvrted3_63 * ((* 3 63 *) z**3)) [2, modulus]
 ] && true;
 
-ghost t3@bit: t3 = (z ** 16 + z) * (x ** 2 + x) && true;
+nondet x4@uint12;
 
 ecut and [
   eqmod (
-    (cvrted3_0 + x * cvrted3_8) * t3 ** 0 +
-    (cvrted3_16 + x * cvrted3_24) * t3 ** 1 +
-    (cvrted3_32 + x * cvrted3_40) * t3 ** 2 +
-    (cvrted3_48 + x * cvrted3_56) * t3 ** 3
+    (cvrted3_0 + x * cvrted3_8) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_16 + x * cvrted3_24) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_32 + x * cvrted3_40) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_48 + x * cvrted3_56) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_0 + x * res3_8) * (x ** 2 + x) ** 0 +
-    (res3_16 + x * res3_24) * (x ** 2 + x) ** 1 +
-    (res3_32 + x * res3_40) * (x ** 2 + x) ** 2 +
-    (res3_48 + x * res3_56) * (x ** 2 + x) ** 3
+    (res3_0 + x * res3_8) * x4 ** 0 +
+    (res3_16 + x * res3_24) * x4 ** 1 +
+    (res3_32 + x * res3_40) * x4 ** 2 +
+    (res3_48 + x * res3_56) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_1 + x * cvrted3_9) * t3 ** 0 +
-    (cvrted3_17 + x * cvrted3_25) * t3 ** 1 +
-    (cvrted3_33 + x * cvrted3_41) * t3 ** 2 +
-    (cvrted3_49 + x * cvrted3_57) * t3 ** 3
+    (cvrted3_1 + x * cvrted3_9) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_17 + x * cvrted3_25) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_33 + x * cvrted3_41) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_49 + x * cvrted3_57) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_1 + x * res3_9) * (x ** 2 + x) ** 0 +
-    (res3_17 + x * res3_25) * (x ** 2 + x) ** 1 +
-    (res3_33 + x * res3_41) * (x ** 2 + x) ** 2 +
-    (res3_49 + x * res3_57) * (x ** 2 + x) ** 3
+    (res3_1 + x * res3_9) * x4 ** 0 +
+    (res3_17 + x * res3_25) * x4 ** 1 +
+    (res3_33 + x * res3_41) * x4 ** 2 +
+    (res3_49 + x * res3_57) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_2 + x * cvrted3_10) * t3 ** 0 +
-    (cvrted3_18 + x * cvrted3_26) * t3 ** 1 +
-    (cvrted3_34 + x * cvrted3_42) * t3 ** 2 +
-    (cvrted3_50 + x * cvrted3_58) * t3 ** 3
+    (cvrted3_2 + x * cvrted3_10) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_18 + x * cvrted3_26) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_34 + x * cvrted3_42) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_50 + x * cvrted3_58) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_2 + x * res3_10) * (x ** 2 + x) ** 0 +
-    (res3_18 + x * res3_26) * (x ** 2 + x) ** 1 +
-    (res3_34 + x * res3_42) * (x ** 2 + x) ** 2 +
-    (res3_50 + x * res3_58) * (x ** 2 + x) ** 3
+    (res3_2 + x * res3_10) * x4 ** 0 +
+    (res3_18 + x * res3_26) * x4 ** 1 +
+    (res3_34 + x * res3_42) * x4 ** 2 +
+    (res3_50 + x * res3_58) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_3 + x * cvrted3_11) * t3 ** 0 +
-    (cvrted3_19 + x * cvrted3_27) * t3 ** 1 +
-    (cvrted3_35 + x * cvrted3_43) * t3 ** 2 +
-    (cvrted3_51 + x * cvrted3_59) * t3 ** 3
+    (cvrted3_3 + x * cvrted3_11) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_19 + x * cvrted3_27) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_35 + x * cvrted3_43) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_51 + x * cvrted3_59) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_3 + x * res3_11) * (x ** 2 + x) ** 0 +
-    (res3_19 + x * res3_27) * (x ** 2 + x) ** 1 +
-    (res3_35 + x * res3_43) * (x ** 2 + x) ** 2 +
-    (res3_51 + x * res3_59) * (x ** 2 + x) ** 3
+    (res3_3 + x * res3_11) * x4 ** 0 +
+    (res3_19 + x * res3_27) * x4 ** 1 +
+    (res3_35 + x * res3_43) * x4 ** 2 +
+    (res3_51 + x * res3_59) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_4 + x * cvrted3_12) * t3 ** 0 +
-    (cvrted3_20 + x * cvrted3_28) * t3 ** 1 +
-    (cvrted3_36 + x * cvrted3_44) * t3 ** 2 +
-    (cvrted3_52 + x * cvrted3_60) * t3 ** 3
+    (cvrted3_4 + x * cvrted3_12) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_20 + x * cvrted3_28) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_36 + x * cvrted3_44) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_52 + x * cvrted3_60) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_4 + x * res3_12) * (x ** 2 + x) ** 0 +
-    (res3_20 + x * res3_28) * (x ** 2 + x) ** 1 +
-    (res3_36 + x * res3_44) * (x ** 2 + x) ** 2 +
-    (res3_52 + x * res3_60) * (x ** 2 + x) ** 3
+    (res3_4 + x * res3_12) * x4 ** 0 +
+    (res3_20 + x * res3_28) * x4 ** 1 +
+    (res3_36 + x * res3_44) * x4 ** 2 +
+    (res3_52 + x * res3_60) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_5 + x * cvrted3_13) * t3 ** 0 +
-    (cvrted3_21 + x * cvrted3_29) * t3 ** 1 +
-    (cvrted3_37 + x * cvrted3_45) * t3 ** 2 +
-    (cvrted3_53 + x * cvrted3_61) * t3 ** 3
+    (cvrted3_5 + x * cvrted3_13) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_21 + x * cvrted3_29) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_37 + x * cvrted3_45) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_53 + x * cvrted3_61) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_5 + x * res3_13) * (x ** 2 + x) ** 0 +
-    (res3_21 + x * res3_29) * (x ** 2 + x) ** 1 +
-    (res3_37 + x * res3_45) * (x ** 2 + x) ** 2 +
-    (res3_53 + x * res3_61) * (x ** 2 + x) ** 3
+    (res3_5 + x * res3_13) * x4 ** 0 +
+    (res3_21 + x * res3_29) * x4 ** 1 +
+    (res3_37 + x * res3_45) * x4 ** 2 +
+    (res3_53 + x * res3_61) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_6 + x * cvrted3_14) * t3 ** 0 +
-    (cvrted3_22 + x * cvrted3_30) * t3 ** 1 +
-    (cvrted3_38 + x * cvrted3_46) * t3 ** 2 +
-    (cvrted3_54 + x * cvrted3_62) * t3 ** 3
+    (cvrted3_6 + x * cvrted3_14) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_22 + x * cvrted3_30) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_38 + x * cvrted3_46) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_54 + x * cvrted3_62) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_6 + x * res3_14) * (x ** 2 + x) ** 0 +
-    (res3_22 + x * res3_30) * (x ** 2 + x) ** 1 +
-    (res3_38 + x * res3_46) * (x ** 2 + x) ** 2 +
-    (res3_54 + x * res3_62) * (x ** 2 + x) ** 3
+    (res3_6 + x * res3_14) * x4 ** 0 +
+    (res3_22 + x * res3_30) * x4 ** 1 +
+    (res3_38 + x * res3_46) * x4 ** 2 +
+    (res3_54 + x * res3_62) * x4 ** 3
   ) [2, modulus],
   eqmod (
-    (cvrted3_7 + x * cvrted3_15) * t3 ** 0 +
-    (cvrted3_23 + x * cvrted3_31) * t3 ** 1 +
-    (cvrted3_39 + x * cvrted3_47) * t3 ** 2 +
-    (cvrted3_55 + x * cvrted3_63) * t3 ** 3
+    (cvrted3_7 + x * cvrted3_15) * ((z ** 16 + z) * x4) ** 0 +
+    (cvrted3_23 + x * cvrted3_31) * ((z ** 16 + z) * x4) ** 1 +
+    (cvrted3_39 + x * cvrted3_47) * ((z ** 16 + z) * x4) ** 2 +
+    (cvrted3_55 + x * cvrted3_63) * ((z ** 16 + z) * x4) ** 3
   ) (
-    (res3_7 + x * res3_15) * (x ** 2 + x) ** 0 +
-    (res3_23 + x * res3_31) * (x ** 2 + x) ** 1 +
-    (res3_39 + x * res3_47) * (x ** 2 + x) ** 2 +
-    (res3_55 + x * res3_63) * (x ** 2 + x) ** 3
+    (res3_7 + x * res3_15) * x4 ** 0 +
+    (res3_23 + x * res3_31) * x4 ** 1 +
+    (res3_39 + x * res3_47) * x4 ** 2 +
+    (res3_55 + x * res3_63) * x4 ** 3
   ) [2, modulus]
-];
+] prove with [precondition];
 
-ghost inp4_0@uint12: inp4_0 =
+mov x x4;
+
+nondet inp4_0@uint12; assume inp4_0 =
   res3_0 * x**0 + res3_16 * x**1 + res3_32 * x**2 + res3_48 * x**3
 && true;
-ghost inp4_1@uint12: inp4_1 =
+nondet inp4_1@uint12; assume inp4_1 =
   res3_1 * x**0 + res3_17 * x**1 + res3_33 * x**2 + res3_49 * x**3
 && true;
-ghost inp4_2@uint12: inp4_2 =
+nondet inp4_2@uint12; assume inp4_2 =
   res3_2 * x**0 + res3_18 * x**1 + res3_34 * x**2 + res3_50 * x**3
 && true;
-ghost inp4_3@uint12: inp4_3 =
+nondet inp4_3@uint12; assume inp4_3 =
   res3_3 * x**0 + res3_19 * x**1 + res3_35 * x**2 + res3_51 * x**3
 && true;
-ghost inp4_4@uint12: inp4_4 =
+nondet inp4_4@uint12; assume inp4_4 =
   res3_4 * x**0 + res3_20 * x**1 + res3_36 * x**2 + res3_52 * x**3
 && true;
-ghost inp4_5@uint12: inp4_5 =
+nondet inp4_5@uint12; assume inp4_5 =
   res3_5 * x**0 + res3_21 * x**1 + res3_37 * x**2 + res3_53 * x**3
 && true;
-ghost inp4_6@uint12: inp4_6 =
+nondet inp4_6@uint12; assume inp4_6 =
   res3_6 * x**0 + res3_22 * x**1 + res3_38 * x**2 + res3_54 * x**3
 && true;
-ghost inp4_7@uint12: inp4_7 =
+nondet inp4_7@uint12; assume inp4_7 =
   res3_7 * x**0 + res3_23 * x**1 + res3_39 * x**2 + res3_55 * x**3
 && true;
-ghost inp4_8@uint12: inp4_8 =
+nondet inp4_8@uint12; assume inp4_8 =
   res3_8 * x**0 + res3_24 * x**1 + res3_40 * x**2 + res3_56 * x**3
 && true;
-ghost inp4_9@uint12: inp4_9 =
+nondet inp4_9@uint12; assume inp4_9 =
   res3_9 * x**0 + res3_25 * x**1 + res3_41 * x**2 + res3_57 * x**3
 && true;
-ghost inp4_10@uint12: inp4_10 =
+nondet inp4_10@uint12; assume inp4_10 =
   res3_10 * x**0 + res3_26 * x**1 + res3_42 * x**2 + res3_58 * x**3
 && true;
-ghost inp4_11@uint12: inp4_11 =
+nondet inp4_11@uint12; assume inp4_11 =
   res3_11 * x**0 + res3_27 * x**1 + res3_43 * x**2 + res3_59 * x**3
 && true;
-ghost inp4_12@uint12: inp4_12 =
+nondet inp4_12@uint12; assume inp4_12 =
   res3_12 * x**0 + res3_28 * x**1 + res3_44 * x**2 + res3_60 * x**3
 && true;
-ghost inp4_13@uint12: inp4_13 =
+nondet inp4_13@uint12; assume inp4_13 =
   res3_13 * x**0 + res3_29 * x**1 + res3_45 * x**2 + res3_61 * x**3
 && true;
-ghost inp4_14@uint12: inp4_14 =
+nondet inp4_14@uint12; assume inp4_14 =
   res3_14 * x**0 + res3_30 * x**1 + res3_46 * x**2 + res3_62 * x**3
 && true;
-ghost inp4_15@uint12: inp4_15 =
+nondet inp4_15@uint12; assume inp4_15 =
   res3_15 * x**0 + res3_31 * x**1 + res3_47 * x**2 + res3_63 * x**3
 && true;
 
@@ -9665,8 +9667,6 @@ ecut and [
 (* #ret                                            #! PC = 0x555555555380 *)
 #ret                                            #! 0x555555555380 = 0x555555555380;
 
-assume modulus = z ** 12 + z ** 3 + 1 && true;
-
 nondet res4_0@bit; nondet res4_1@bit; nondet res4_2@bit; nondet res4_3@bit;
 nondet res4_4@bit; nondet res4_5@bit; nondet res4_6@bit; nondet res4_7@bit;
 nondet res4_8@bit; nondet res4_9@bit; nondet res4_10@bit; nondet res4_11@bit;
@@ -9751,122 +9751,122 @@ assume and [
   eqmod res4_63 (cvrted4_63 * ((* 4 63 *) z**8 + z**5 + z**2 + z)) [2, modulus]
 ] && true;
 
-ghost t4@bit: t4 = (z ** 32 + z) * (x ** 2 + x) && true;
+nondet x5@uint12;
 
 ecut and [
   eqmod (
-    (cvrted4_0 + x * cvrted4_16) * t4 ** 0 +
-    (cvrted4_32 + x * cvrted4_48) * t4 ** 1
+    (cvrted4_0 + x * cvrted4_16) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_32 + x * cvrted4_48) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_0 + x * res4_16) * (x ** 2 + x) ** 0 +
-    (res4_32 + x * res4_48) * (x ** 2 + x) ** 1
+    (res4_0 + x * res4_16) * x5 ** 0 +
+    (res4_32 + x * res4_48) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_1 + x * cvrted4_17) * t4 ** 0 +
-    (cvrted4_33 + x * cvrted4_49) * t4 ** 1
+    (cvrted4_1 + x * cvrted4_17) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_33 + x * cvrted4_49) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_1 + x * res4_17) * (x ** 2 + x) ** 0 +
-    (res4_33 + x * res4_49) * (x ** 2 + x) ** 1
+    (res4_1 + x * res4_17) * x5 ** 0 +
+    (res4_33 + x * res4_49) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_2 + x * cvrted4_18) * t4 ** 0 +
-    (cvrted4_34 + x * cvrted4_50) * t4 ** 1
+    (cvrted4_2 + x * cvrted4_18) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_34 + x * cvrted4_50) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_2 + x * res4_18) * (x ** 2 + x) ** 0 +
-    (res4_34 + x * res4_50) * (x ** 2 + x) ** 1
+    (res4_2 + x * res4_18) * x5 ** 0 +
+    (res4_34 + x * res4_50) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_3 + x * cvrted4_19) * t4 ** 0 +
-    (cvrted4_35 + x * cvrted4_51) * t4 ** 1
+    (cvrted4_3 + x * cvrted4_19) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_35 + x * cvrted4_51) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_3 + x * res4_19) * (x ** 2 + x) ** 0 +
-    (res4_35 + x * res4_51) * (x ** 2 + x) ** 1
+    (res4_3 + x * res4_19) * x5 ** 0 +
+    (res4_35 + x * res4_51) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_4 + x * cvrted4_20) * t4 ** 0 +
-    (cvrted4_36 + x * cvrted4_52) * t4 ** 1
+    (cvrted4_4 + x * cvrted4_20) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_36 + x * cvrted4_52) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_4 + x * res4_20) * (x ** 2 + x) ** 0 +
-    (res4_36 + x * res4_52) * (x ** 2 + x) ** 1
+    (res4_4 + x * res4_20) * x5 ** 0 +
+    (res4_36 + x * res4_52) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_5 + x * cvrted4_21) * t4 ** 0 +
-    (cvrted4_37 + x * cvrted4_53) * t4 ** 1
+    (cvrted4_5 + x * cvrted4_21) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_37 + x * cvrted4_53) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_5 + x * res4_21) * (x ** 2 + x) ** 0 +
-    (res4_37 + x * res4_53) * (x ** 2 + x) ** 1
+    (res4_5 + x * res4_21) * x5 ** 0 +
+    (res4_37 + x * res4_53) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_6 + x * cvrted4_22) * t4 ** 0 +
-    (cvrted4_38 + x * cvrted4_54) * t4 ** 1
+    (cvrted4_6 + x * cvrted4_22) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_38 + x * cvrted4_54) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_6 + x * res4_22) * (x ** 2 + x) ** 0 +
-    (res4_38 + x * res4_54) * (x ** 2 + x) ** 1
+    (res4_6 + x * res4_22) * x5 ** 0 +
+    (res4_38 + x * res4_54) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_7 + x * cvrted4_23) * t4 ** 0 +
-    (cvrted4_39 + x * cvrted4_55) * t4 ** 1
+    (cvrted4_7 + x * cvrted4_23) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_39 + x * cvrted4_55) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_7 + x * res4_23) * (x ** 2 + x) ** 0 +
-    (res4_39 + x * res4_55) * (x ** 2 + x) ** 1
+    (res4_7 + x * res4_23) * x5 ** 0 +
+    (res4_39 + x * res4_55) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_8 + x * cvrted4_24) * t4 ** 0 +
-    (cvrted4_40 + x * cvrted4_56) * t4 ** 1
+    (cvrted4_8 + x * cvrted4_24) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_40 + x * cvrted4_56) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_8 + x * res4_24) * (x ** 2 + x) ** 0 +
-    (res4_40 + x * res4_56) * (x ** 2 + x) ** 1
+    (res4_8 + x * res4_24) * x5 ** 0 +
+    (res4_40 + x * res4_56) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_9 + x * cvrted4_25) * t4 ** 0 +
-    (cvrted4_41 + x * cvrted4_57) * t4 ** 1
+    (cvrted4_9 + x * cvrted4_25) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_41 + x * cvrted4_57) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_9 + x * res4_25) * (x ** 2 + x) ** 0 +
-    (res4_41 + x * res4_57) * (x ** 2 + x) ** 1
+    (res4_9 + x * res4_25) * x5 ** 0 +
+    (res4_41 + x * res4_57) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_10 + x * cvrted4_26) * t4 ** 0 +
-    (cvrted4_42 + x * cvrted4_58) * t4 ** 1
+    (cvrted4_10 + x * cvrted4_26) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_42 + x * cvrted4_58) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_10 + x * res4_26) * (x ** 2 + x) ** 0 +
-    (res4_42 + x * res4_58) * (x ** 2 + x) ** 1
+    (res4_10 + x * res4_26) * x5 ** 0 +
+    (res4_42 + x * res4_58) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_11 + x * cvrted4_27) * t4 ** 0 +
-    (cvrted4_43 + x * cvrted4_59) * t4 ** 1
+    (cvrted4_11 + x * cvrted4_27) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_43 + x * cvrted4_59) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_11 + x * res4_27) * (x ** 2 + x) ** 0 +
-    (res4_43 + x * res4_59) * (x ** 2 + x) ** 1
+    (res4_11 + x * res4_27) * x5 ** 0 +
+    (res4_43 + x * res4_59) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_12 + x * cvrted4_28) * t4 ** 0 +
-    (cvrted4_44 + x * cvrted4_60) * t4 ** 1
+    (cvrted4_12 + x * cvrted4_28) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_44 + x * cvrted4_60) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_12 + x * res4_28) * (x ** 2 + x) ** 0 +
-    (res4_44 + x * res4_60) * (x ** 2 + x) ** 1
+    (res4_12 + x * res4_28) * x5 ** 0 +
+    (res4_44 + x * res4_60) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_13 + x * cvrted4_29) * t4 ** 0 +
-    (cvrted4_45 + x * cvrted4_61) * t4 ** 1
+    (cvrted4_13 + x * cvrted4_29) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_45 + x * cvrted4_61) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_13 + x * res4_29) * (x ** 2 + x) ** 0 +
-    (res4_45 + x * res4_61) * (x ** 2 + x) ** 1
+    (res4_13 + x * res4_29) * x5 ** 0 +
+    (res4_45 + x * res4_61) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_14 + x * cvrted4_30) * t4 ** 0 +
-    (cvrted4_46 + x * cvrted4_62) * t4 ** 1
+    (cvrted4_14 + x * cvrted4_30) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_46 + x * cvrted4_62) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_14 + x * res4_30) * (x ** 2 + x) ** 0 +
-    (res4_46 + x * res4_62) * (x ** 2 + x) ** 1
+    (res4_14 + x * res4_30) * x5 ** 0 +
+    (res4_46 + x * res4_62) * x5 ** 1
   ) [2, modulus],
   eqmod (
-    (cvrted4_15 + x * cvrted4_31) * t4 ** 0 +
-    (cvrted4_47 + x * cvrted4_63) * t4 ** 1
+    (cvrted4_15 + x * cvrted4_31) * ((z ** 32 + z) * x5) ** 0 +
+    (cvrted4_47 + x * cvrted4_63) * ((z ** 32 + z) * x5) ** 1
   ) (
-    (res4_15 + x * res4_31) * (x ** 2 + x) ** 0 +
-    (res4_47 + x * res4_63) * (x ** 2 + x) ** 1
+    (res4_15 + x * res4_31) * x5 ** 0 +
+    (res4_47 + x * res4_63) * x5 ** 1
   ) [2, modulus]
-];
+] prove with [precondition];
 
 (* #jne    0x5555555552e4 <radix_conversions+196>  #! PC = 0x55555555535b *)
 #jne    0x5555555552e4 <radix_conversions+196>  #! 0x55555555535b = 0x55555555535b;
@@ -9875,8 +9875,258 @@ ecut and [
 (* #ret                                            #! PC = 0x55555555536e *)
 #ret                                            #! 0x55555555536e = 0x55555555536e;
 
+# dummy cut to prevent the previous conditions being the pre-condition
+ecut true;
+
+# now, "remind" these conditions...
+mov x x1;
+
+assume inp1_0 =
+  res0_0 * x**0 + res0_2 * x**1 + res0_4 * x**2 + res0_6 * x**3 +
+  res0_8 * x**4 + res0_10 * x**5 + res0_12 * x**6 + res0_14 * x**7 +
+  res0_16 * x**8 + res0_18 * x**9 + res0_20 * x**10 + res0_22 * x**11 +
+  res0_24 * x**12 + res0_26 * x**13 + res0_28 * x**14 + res0_30 * x**15 +
+  res0_32 * x**16 + res0_34 * x**17 + res0_36 * x**18 + res0_38 * x**19 +
+  res0_40 * x**20 + res0_42 * x**21 + res0_44 * x**22 + res0_46 * x**23 +
+  res0_48 * x**24 + res0_50 * x**25 + res0_52 * x**26 + res0_54 * x**27 +
+  res0_56 * x**28 + res0_58 * x**29 + res0_60 * x**30 + res0_62 * x**31
+&& true;
+assume inp1_1 =
+  res0_1 * x**0 + res0_3 * x**1 + res0_5 * x**2 + res0_7 * x**3 +
+  res0_9 * x**4 + res0_11 * x**5 + res0_13 * x**6 + res0_15 * x**7 +
+  res0_17 * x**8 + res0_19 * x**9 + res0_21 * x**10 + res0_23 * x**11 +
+  res0_25 * x**12 + res0_27 * x**13 + res0_29 * x**14 + res0_31 * x**15 +
+  res0_33 * x**16 + res0_35 * x**17 + res0_37 * x**18 + res0_39 * x**19 +
+  res0_41 * x**20 + res0_43 * x**21 + res0_45 * x**22 + res0_47 * x**23 +
+  res0_49 * x**24 + res0_51 * x**25 + res0_53 * x**26 + res0_55 * x**27 +
+  res0_57 * x**28 + res0_59 * x**29 + res0_61 * x**30 + res0_63 * x**31
+&& true;
+
+mov x x2;
+
+assume inp2_0 =
+  res1_0 * x**0 + res1_4 * x**1 + res1_8 * x**2 + res1_12 * x**3 +
+  res1_16 * x**4 + res1_20 * x**5 + res1_24 * x**6 + res1_28 * x**7 +
+  res1_32 * x**8 + res1_36 * x**9 + res1_40 * x**10 + res1_44 * x**11 +
+  res1_48 * x**12 + res1_52 * x**13 + res1_56 * x**14 + res1_60 * x**15
+&& true;
+assume inp2_1 =
+  res1_1 * x**0 + res1_5 * x**1 + res1_9 * x**2 + res1_13 * x**3 +
+  res1_17 * x**4 + res1_21 * x**5 + res1_25 * x**6 + res1_29 * x**7 +
+  res1_33 * x**8 + res1_37 * x**9 + res1_41 * x**10 + res1_45 * x**11 +
+  res1_49 * x**12 + res1_53 * x**13 + res1_57 * x**14 + res1_61 * x**15
+&& true;
+assume inp2_2 =
+  res1_2 * x**0 + res1_6 * x**1 + res1_10 * x**2 + res1_14 * x**3 +
+  res1_18 * x**4 + res1_22 * x**5 + res1_26 * x**6 + res1_30 * x**7 +
+  res1_34 * x**8 + res1_38 * x**9 + res1_42 * x**10 + res1_46 * x**11 +
+  res1_50 * x**12 + res1_54 * x**13 + res1_58 * x**14 + res1_62 * x**15
+&& true;
+assume inp2_3 =
+  res1_3 * x**0 + res1_7 * x**1 + res1_11 * x**2 + res1_15 * x**3 +
+  res1_19 * x**4 + res1_23 * x**5 + res1_27 * x**6 + res1_31 * x**7 +
+  res1_35 * x**8 + res1_39 * x**9 + res1_43 * x**10 + res1_47 * x**11 +
+  res1_51 * x**12 + res1_55 * x**13 + res1_59 * x**14 + res1_63 * x**15
+&& true;
+
+mov x x3;
+
+assume inp3_0 =
+  res2_0 * x**0 + res2_8 * x**1 + res2_16 * x**2 + res2_24 * x**3 +
+  res2_32 * x**4 + res2_40 * x**5 + res2_48 * x**6 + res2_56 * x**7
+&& true;
+assume inp3_1 =
+  res2_1 * x**0 + res2_9 * x**1 + res2_17 * x**2 + res2_25 * x**3 +
+  res2_33 * x**4 + res2_41 * x**5 + res2_49 * x**6 + res2_57 * x**7
+&& true;
+assume inp3_2 =
+  res2_2 * x**0 + res2_10 * x**1 + res2_18 * x**2 + res2_26 * x**3 +
+  res2_34 * x**4 + res2_42 * x**5 + res2_50 * x**6 + res2_58 * x**7
+&& true;
+assume inp3_3 =
+  res2_3 * x**0 + res2_11 * x**1 + res2_19 * x**2 + res2_27 * x**3 +
+  res2_35 * x**4 + res2_43 * x**5 + res2_51 * x**6 + res2_59 * x**7
+&& true;
+assume inp3_4 =
+  res2_4 * x**0 + res2_12 * x**1 + res2_20 * x**2 + res2_28 * x**3 +
+  res2_36 * x**4 + res2_44 * x**5 + res2_52 * x**6 + res2_60 * x**7
+&& true;
+assume inp3_5 =
+  res2_5 * x**0 + res2_13 * x**1 + res2_21 * x**2 + res2_29 * x**3 +
+  res2_37 * x**4 + res2_45 * x**5 + res2_53 * x**6 + res2_61 * x**7
+&& true;
+assume inp3_6 =
+  res2_6 * x**0 + res2_14 * x**1 + res2_22 * x**2 + res2_30 * x**3 +
+  res2_38 * x**4 + res2_46 * x**5 + res2_54 * x**6 + res2_62 * x**7
+&& true;
+assume inp3_7 =
+  res2_7 * x**0 + res2_15 * x**1 + res2_23 * x**2 + res2_31 * x**3 +
+  res2_39 * x**4 + res2_47 * x**5 + res2_55 * x**6 + res2_63 * x**7
+&& true;
+
+mov x x4;
+
+assume inp4_0 =
+  res3_0 * x**0 + res3_16 * x**1 + res3_32 * x**2 + res3_48 * x**3
+&& true;
+assume inp4_1 =
+  res3_1 * x**0 + res3_17 * x**1 + res3_33 * x**2 + res3_49 * x**3
+&& true;
+assume inp4_2 =
+  res3_2 * x**0 + res3_18 * x**1 + res3_34 * x**2 + res3_50 * x**3
+&& true;
+assume inp4_3 =
+  res3_3 * x**0 + res3_19 * x**1 + res3_35 * x**2 + res3_51 * x**3
+&& true;
+assume inp4_4 =
+  res3_4 * x**0 + res3_20 * x**1 + res3_36 * x**2 + res3_52 * x**3
+&& true;
+assume inp4_5 =
+  res3_5 * x**0 + res3_21 * x**1 + res3_37 * x**2 + res3_53 * x**3
+&& true;
+assume inp4_6 =
+  res3_6 * x**0 + res3_22 * x**1 + res3_38 * x**2 + res3_54 * x**3
+&& true;
+assume inp4_7 =
+  res3_7 * x**0 + res3_23 * x**1 + res3_39 * x**2 + res3_55 * x**3
+&& true;
+assume inp4_8 =
+  res3_8 * x**0 + res3_24 * x**1 + res3_40 * x**2 + res3_56 * x**3
+&& true;
+assume inp4_9 =
+  res3_9 * x**0 + res3_25 * x**1 + res3_41 * x**2 + res3_57 * x**3
+&& true;
+assume inp4_10 =
+  res3_10 * x**0 + res3_26 * x**1 + res3_42 * x**2 + res3_58 * x**3
+&& true;
+assume inp4_11 =
+  res3_11 * x**0 + res3_27 * x**1 + res3_43 * x**2 + res3_59 * x**3
+&& true;
+assume inp4_12 =
+  res3_12 * x**0 + res3_28 * x**1 + res3_44 * x**2 + res3_60 * x**3
+&& true;
+assume inp4_13 =
+  res3_13 * x**0 + res3_29 * x**1 + res3_45 * x**2 + res3_61 * x**3
+&& true;
+assume inp4_14 =
+  res3_14 * x**0 + res3_30 * x**1 + res3_46 * x**2 + res3_62 * x**3
+&& true;
+assume inp4_15 =
+  res3_15 * x**0 + res3_31 * x**1 + res3_47 * x**2 + res3_63 * x**3
+&& true;
+
+mov c0 res4_0; mov c1 res4_1; mov c2 res4_2; mov c3 res4_3;
+mov c4 res4_4; mov c5 res4_5; mov c6 res4_6; mov c7 res4_7;
+mov c8 res4_8; mov c9 res4_9; mov c10 res4_10; mov c11 res4_11;
+mov c12 res4_12; mov c13 res4_13; mov c14 res4_14; mov c15 res4_15;
+mov c16 res4_16; mov c17 res4_17; mov c18 res4_18; mov c19 res4_19;
+mov c20 res4_20; mov c21 res4_21; mov c22 res4_22; mov c23 res4_23;
+mov c24 res4_24; mov c25 res4_25; mov c26 res4_26; mov c27 res4_27;
+mov c28 res4_28; mov c29 res4_29; mov c30 res4_30; mov c31 res4_31;
+mov c32 res4_32; mov c33 res4_33; mov c34 res4_34; mov c35 res4_35;
+mov c36 res4_36; mov c37 res4_37; mov c38 res4_38; mov c39 res4_39;
+mov c40 res4_40; mov c41 res4_41; mov c42 res4_42; mov c43 res4_43;
+mov c44 res4_44; mov c45 res4_45; mov c46 res4_46; mov c47 res4_47;
+mov c48 res4_48; mov c49 res4_49; mov c50 res4_50; mov c51 res4_51;
+mov c52 res4_52; mov c53 res4_53; mov c54 res4_54; mov c55 res4_55;
+mov c56 res4_56; mov c57 res4_57; mov c58 res4_58; mov c59 res4_59;
+mov c60 res4_60; mov c61 res4_61; mov c62 res4_62; mov c63 res4_63;
+
+ghost be00@bit: be00 = z**2+z && true;
+
+ghost be10@bit: be10 = z**4+z**3+z**2 && true;
+ghost be11@bit: be11 = z**4+z**2+z && true;
+
+ghost be20@bit: be20 = z**6+z**5+z**4+z**3 && true;
+ghost be21@bit: be21 = z**8+z**6+z**5+z**4+z**3+z**2 && true;
+ghost be22@bit: be22 = z**8+z**4+z**2+z && true;
+
+ghost be30@bit: be30 = z**8+z**7+z**6+z**5+z**4 && true;
+ghost be31@bit: be31 = z**10+z**9+z**8+z**7+z**5+z**4+1 && true;
+ghost be32@bit: be32 = z**10+z**9+z**8+z**7+z**6+z**5+z**2+1 && true;
+ghost be33@bit: be33 = z**8+z**7+z**2+z && true;
+
 {
-  true
+  and [
+    eqmod input_poly
+      c0
+      [2, modulus, x0, x1, x2, x3, x4, x5],
+    eqmod input_poly
+      c0 + c1
+      [2, modulus, x0 - 1, x1, x2, x3, x4, x5],
+    eqmod input_poly
+      (c0 + c2) + z * (c1 + c3)
+      [2, modulus, x0 - z, x1 - 1, x2, x3, x4, x5],
+    eqmod input_poly
+      (c0 + c4 +
+       be00 * (c2 + c6)) +
+      z**2 * (c1 + c5 +
+       be00 * (c3 + c7))
+      [2, modulus, x0 - z**2, x1 - be00, x2 - 1, x3, x4, x5],
+    eqmod input_poly
+      (c0 + c8 +
+       be11 * (c4 + c12) +
+       be10 * (c2 + c10 +
+        be11 * (c6 + c14)) +
+      z**3 * (c1 + c9 +
+       be11 * (c5 + c13) +
+       be10 * (c3 + c11 +
+        be11 * (c7 + c15))))
+      [2, modulus, x0 - z**3, x1 - be10, x2 - be11, x3 - 1, x4, x5],
+    eqmod input_poly
+      (c0 + c16 +
+       be22 * (c8 + c24) +
+       be21 * (c4 + c20 +
+        be22 * (c12 + c28)) +
+       be20 * (c2 + c18 +
+        be22 * (c10 + c26) +
+        be21 * (c6 + c22 +
+         be22 * (c14 + c30))) +
+      z**4 * (c1 + c17 +
+       be22 * (c9 + c25) +
+       be21 * (c5 + c21 +
+        be22 * (c13 + c29)) +
+       be20 * (c3 + c19 +
+        be22 * (c11 + c27) +
+        be21 * (c7 + c23 +
+         be22 * (c15 + c31)))))
+      [2, modulus, x0 - z**4, x1 - be20, x2 - be21, x3 - be22, x4 - 1, x5],
+    eqmod input_poly
+      (c0 + c32 +
+       be33 * (c16 + c48) +
+       be32 * (c8 + c40 +
+        be33 * (c24 + c56)) +
+       be31 * (c4 + c36 +
+        be33 * (c20 + c52) +
+        be32 * (c12 + c44 +
+         be33 * (c28 + c60))) +
+       be30 * (c2 + c34 +
+        be33 * (c18 + c50) +
+        be32 * (c10 + c42 +
+         be33 * (c26 + c58)) +
+        be31 * (c6 + c38 +
+         be33 * (c22 + c54) +
+         be32 * (c14 + c46 +
+          be33 * (c30 + c62)))) +
+      z**5 * (c1 + c33 +
+       be33 * (c17 + c49) +
+       be32 * (c9 + c41 +
+        be33 * (c25 + c57)) +
+       be31 * (c5 + c37 +
+        be33 * (c21 + c53) +
+        be32 * (c13 + c45 +
+         be33 * (c29 + c61))) +
+       be30 * (c3 + c35 +
+        be33 * (c19 + c51) +
+        be32 * (c11 + c43 +
+         be33 * (c27 + c59)) +
+        be31 * (c7 + c39 +
+         be33 * (c23 + c55) +
+         be32 * (c15 + c47 +
+          be33 * (c31 + c63))))))
+      [2, modulus, x0 - z**5, x1 - be30, x2 - be31, x3 - be32, x4 - be33, x5 - 1]
+  ] prove with [precondition, cuts [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]
+
   &&
   true
 }

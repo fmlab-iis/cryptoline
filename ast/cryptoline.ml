@@ -3464,7 +3464,7 @@ let visit_instr visitor i =
         | Irol (v, a, n) -> Irol (visit_var visitor v, visit_atom visitor a, n)
         | Iror (v, a, n) -> Iror (visit_var visitor v, visit_atom visitor a, n)
         | Inondet v -> Inondet (visit_var visitor v)
-        | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, c, visit_atom visitor a1, visit_atom visitor a2)
+        | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, visit_atom visitor c, visit_atom visitor a1, visit_atom visitor a2)
         | Inop -> Inop
         | Iadd (v, a1, a2) -> Iadd (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Iadds (c, v, a1, a2) -> Iadds (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)

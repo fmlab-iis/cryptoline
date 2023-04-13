@@ -3,7 +3,7 @@ FROM ubuntu:23.04
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential ocaml ocaml-dune libzarith-ocaml-dev \
                    liblwt-ocaml-dev curl git bc nano cmake libreadline-dev \
-                   sudo
+                   gdb python3 sudo
 
 WORKDIR /home
 
