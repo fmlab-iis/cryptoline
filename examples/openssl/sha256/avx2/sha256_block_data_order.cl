@@ -1,3 +1,27 @@
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_block_data_order-aarch64.cl
+Parsing CryptoLine file:                [OK]            0.021026 seconds
+Checking well-formedness:               [OK]            0.008745 seconds
+Parsing CryptoLine file:                [OK]            0.015896 seconds
+Checking well-formedness:               [OK]            0.004421 seconds
+Equivalence of output group #0:         [OK]            1149.575065 seconds
+Final result:                           [OK]            1149.980778 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_block_data_order-aarch64.cl
+Parsing CryptoLine file:                [OK]            0.021754 seconds
+Checking well-formedness:               [OK]            0.008521 seconds
+Parsing CryptoLine file:                [OK]            0.015969 seconds
+Checking well-formedness:               [OK]            0.004352 seconds
+Equivalence of output group #0:         [OK]            1180.496576 seconds
+Final result:                           [OK]            1180.921512 seconds
+*)
+(* iprove popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_block_data_order-aarch64.cl
+Parsing CryptoLine file:                [OK]            0.023649 seconds
+Checking well-formedness:               [OK]            0.009397 seconds
+Parsing CryptoLine file:                [OK]            0.017554 seconds
+Checking well-formedness:               [OK]            0.005057 seconds
+Equivalence of output group #0:         [OK]            1252.011837 seconds
+Final result:                           [OK]            1252.501546 seconds
+*)
 (* quine: ~/Work/code/cryptoline/_build/default/cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../cc/sha256_block_data_order.cl
 Parsing CryptoLine file:                [OK]            0.038075 seconds
 Checking well-formedness:               [OK]            0.014155 seconds

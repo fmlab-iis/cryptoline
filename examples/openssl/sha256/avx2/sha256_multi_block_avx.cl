@@ -1,10 +1,44 @@
-(* popper: cv_cec.exe -v -rename_local -ov a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,c0,c1,c2,c3,c4,c5,c6,c7,d0,d1,d2,d3,d4,d5,d6,d7 sha256_block_data_order_cc_times_4.cl sha256_multi_block_avx.cl
-Parsing CryptoLine file:                [OK]            0.035378 seconds
-Checking well-formedness:               [OK]            0.015498 seconds
-Parsing CryptoLine file:                [OK]            0.059176 seconds
-Checking well-formedness:               [OK]            0.016822 seconds
-Converting programs to AIG:             [OK]            2.190439 seconds
-Checking equivalence:                   [OK]            11010.791373 seconds
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7,d0,d1,d2,d3,d4,d5,d6,d7 sha256_multi_block_avx.cl ../sha256_block_data_order-aarch64x4.cl
+Parsing CryptoLine file:                [OK]            0.069664 seconds
+Checking well-formedness:               [OK]            0.017291 seconds
+Parsing CryptoLine file:                [OK]            0.025853 seconds
+Checking well-formedness:               [OK]            0.017359 seconds
+Equivalence of output group #0:         [OK]            1897.856040 seconds
+Equivalence of output group #1:         [OK]            1910.083445 seconds
+Final result:                           [OK]            1912.059829 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7 sha256_multi_block_avx.cl ../sha256_block_data_order-aarch64x4.cl
+Parsing CryptoLine file:                [OK]            0.068766 seconds
+Checking well-formedness:               [OK]            0.017617 seconds
+Parsing CryptoLine file:                [OK]            0.025728 seconds
+Checking well-formedness:               [OK]            0.017337 seconds
+Equivalence of output group #1:         [OK]            926.221083 seconds
+Equivalence of output group #0:         [OK]            935.652813 seconds
+Equivalence of output group #3:         [OK]            941.421448 seconds
+Equivalence of output group #2:         [OK]            949.854694 seconds
+Final result:                           [OK]            951.355843 seconds
+*)
+(* iprove popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7 sha256_multi_block_avx.cl ../sha256_block_data_order-aarch64x4.cl
+Parsing CryptoLine file:                [OK]            0.069916 seconds
+Checking well-formedness:               [OK]            0.017750 seconds
+Parsing CryptoLine file:                [OK]            0.026470 seconds
+Checking well-formedness:               [OK]            0.017396 seconds
+Equivalence of output group #0:         [OK]            933.810555 seconds
+Equivalence of output group #2:         [OK]            992.726840 seconds
+Equivalence of output group #1:         [OK]            1005.419673 seconds
+Equivalence of output group #3:         [OK]            1055.817920 seconds
+Final result:                           [OK]            1057.832913 seconds
+*)
+(* cec popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7 sha256_multi_block_avx.cl ../sha256_block_data_order-aarch64x4.cl
+Parsing CryptoLine file:                [OK]            0.069699 seconds
+Checking well-formedness:               [OK]            0.017558 seconds
+Parsing CryptoLine file:                [OK]            0.025971 seconds
+Checking well-formedness:               [OK]            0.017346 seconds
+Equivalence of output group #1:         [OK]            888.877118 seconds
+Equivalence of output group #0:         [OK]            897.654953 seconds
+Equivalence of output group #2:         [OK]            898.046258 seconds
+Equivalence of output group #3:         [OK]            899.594223 seconds
+Final result:                           [OK]            901.610845 seconds
 *)
 
 proc main (
@@ -20,7 +54,9 @@ uint8 A40, uint8 A41, uint8 A42, uint8 A43, uint8 A44,
 uint8 A45, uint8 A46, uint8 A47, uint8 A48, uint8 A49,
 uint8 A50, uint8 A51, uint8 A52, uint8 A53, uint8 A54,
 uint8 A55, uint8 A56, uint8 A57, uint8 A58, uint8 A59,
-uint8 A60, uint8 A61, uint8 A62, uint8 A63
+uint8 A60, uint8 A61, uint8 A62, uint8 A63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7
 ,
 uint8 B00, uint8 B01, uint8 B02, uint8 B03, uint8 B04,
 uint8 B05, uint8 B06, uint8 B07, uint8 B08, uint8 B09,
@@ -34,7 +70,9 @@ uint8 B40, uint8 B41, uint8 B42, uint8 B43, uint8 B44,
 uint8 B45, uint8 B46, uint8 B47, uint8 B48, uint8 B49,
 uint8 B50, uint8 B51, uint8 B52, uint8 B53, uint8 B54,
 uint8 B55, uint8 B56, uint8 B57, uint8 B58, uint8 B59,
-uint8 B60, uint8 B61, uint8 B62, uint8 B63
+uint8 B60, uint8 B61, uint8 B62, uint8 B63,
+uint32 B0, uint32 B1, uint32 B2, uint32 B3,
+uint32 B4, uint32 B5, uint32 B6, uint32 B7
 ,
 uint8 C00, uint8 C01, uint8 C02, uint8 C03, uint8 C04,
 uint8 C05, uint8 C06, uint8 C07, uint8 C08, uint8 C09,
@@ -48,7 +86,9 @@ uint8 C40, uint8 C41, uint8 C42, uint8 C43, uint8 C44,
 uint8 C45, uint8 C46, uint8 C47, uint8 C48, uint8 C49,
 uint8 C50, uint8 C51, uint8 C52, uint8 C53, uint8 C54,
 uint8 C55, uint8 C56, uint8 C57, uint8 C58, uint8 C59,
-uint8 C60, uint8 C61, uint8 C62, uint8 C63
+uint8 C60, uint8 C61, uint8 C62, uint8 C63,
+uint32 C0, uint32 C1, uint32 C2, uint32 C3,
+uint32 C4, uint32 C5, uint32 C6, uint32 C7
 ,
 uint8 D00, uint8 D01, uint8 D02, uint8 D03, uint8 D04,
 uint8 D05, uint8 D06, uint8 D07, uint8 D08, uint8 D09,
@@ -63,8 +103,8 @@ uint8 D45, uint8 D46, uint8 D47, uint8 D48, uint8 D49,
 uint8 D50, uint8 D51, uint8 D52, uint8 D53, uint8 D54,
 uint8 D55, uint8 D56, uint8 D57, uint8 D58, uint8 D59,
 uint8 D60, uint8 D61, uint8 D62, uint8 D63,
-uint32 A0, uint32 A1, uint32 A2, uint32 A3,
-uint32 A4, uint32 A5, uint32 A6, uint32 A7
+uint32 D0, uint32 D1, uint32 D2, uint32 D3,
+uint32 D4, uint32 D5, uint32 D6, uint32 D7
 ) =
 {
   true
@@ -158,36 +198,36 @@ join H D59 D58; join L D57 D56; join L0x555555561608 H L;
 join H D63 D62; join L D61 D60; join L0x55555556160c H L;
 
 
-mov L0x7fffffffd920 A0; mov L0x7fffffffd924 A0;
-mov L0x7fffffffd928 A0; mov L0x7fffffffd92c A0;
+mov L0x7fffffffd920 A0; mov L0x7fffffffd924 B0;
+mov L0x7fffffffd928 C0; mov L0x7fffffffd92c D0;
 mov L0x7fffffffd930 A0; mov L0x7fffffffd934 A0;
 mov L0x7fffffffd938 A0; mov L0x7fffffffd93c A0;
-mov L0x7fffffffd940 A1; mov L0x7fffffffd944 A1;
-mov L0x7fffffffd948 A1; mov L0x7fffffffd94c A1;
+mov L0x7fffffffd940 A1; mov L0x7fffffffd944 B1;
+mov L0x7fffffffd948 C1; mov L0x7fffffffd94c D1;
 mov L0x7fffffffd950 A1; mov L0x7fffffffd954 A1;
 mov L0x7fffffffd958 A1; mov L0x7fffffffd95c A1;
-mov L0x7fffffffd960 A2; mov L0x7fffffffd964 A2;
-mov L0x7fffffffd968 A2; mov L0x7fffffffd96c A2;
+mov L0x7fffffffd960 A2; mov L0x7fffffffd964 B2;
+mov L0x7fffffffd968 C2; mov L0x7fffffffd96c D2;
 mov L0x7fffffffd970 A2; mov L0x7fffffffd974 A2;
 mov L0x7fffffffd978 A2; mov L0x7fffffffd97c A2;
-mov L0x7fffffffd980 A3; mov L0x7fffffffd984 A3;
-mov L0x7fffffffd988 A3; mov L0x7fffffffd98c A3;
+mov L0x7fffffffd980 A3; mov L0x7fffffffd984 B3;
+mov L0x7fffffffd988 C3; mov L0x7fffffffd98c D3;
 mov L0x7fffffffd990 A3; mov L0x7fffffffd994 A3;
 mov L0x7fffffffd998 A3; mov L0x7fffffffd99c A3;
-mov L0x7fffffffd9a0 A4; mov L0x7fffffffd9a4 A4;
-mov L0x7fffffffd9a8 A4; mov L0x7fffffffd9ac A4;
+mov L0x7fffffffd9a0 A4; mov L0x7fffffffd9a4 B4;
+mov L0x7fffffffd9a8 C4; mov L0x7fffffffd9ac D4;
 mov L0x7fffffffd9b0 A4; mov L0x7fffffffd9b4 A4;
 mov L0x7fffffffd9b8 A4; mov L0x7fffffffd9bc A4;
-mov L0x7fffffffd9c0 A5; mov L0x7fffffffd9c4 A5;
-mov L0x7fffffffd9c8 A5; mov L0x7fffffffd9cc A5;
+mov L0x7fffffffd9c0 A5; mov L0x7fffffffd9c4 B5;
+mov L0x7fffffffd9c8 C5; mov L0x7fffffffd9cc D5;
 mov L0x7fffffffd9d0 A5; mov L0x7fffffffd9d4 A5;
 mov L0x7fffffffd9d8 A5; mov L0x7fffffffd9dc A5;
-mov L0x7fffffffd9e0 A6; mov L0x7fffffffd9e4 A6;
-mov L0x7fffffffd9e8 A6; mov L0x7fffffffd9ec A6;
+mov L0x7fffffffd9e0 A6; mov L0x7fffffffd9e4 B6;
+mov L0x7fffffffd9e8 C6; mov L0x7fffffffd9ec D6;
 mov L0x7fffffffd9f0 A6; mov L0x7fffffffd9f4 A6;
 mov L0x7fffffffd9f8 A6; mov L0x7fffffffd9fc A6;
-mov L0x7fffffffda00 A7; mov L0x7fffffffda04 A7;
-mov L0x7fffffffda08 A7; mov L0x7fffffffda0c A7;
+mov L0x7fffffffda00 A7; mov L0x7fffffffda04 B7;
+mov L0x7fffffffda08 C7; mov L0x7fffffffda0c D7;
 mov L0x7fffffffda10 A7; mov L0x7fffffffda14 A7;
 mov L0x7fffffffda18 A7; mov L0x7fffffffda1c A7;
 (*

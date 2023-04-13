@@ -1,60 +1,58 @@
-(* popper: for i in a b c d e f g h; do echo check "$i"0,"$i"1,"$i"2,"$i"3,"$i"4,"$i"5,"$i"6,"$i"7; ~/Work/code/cryptoline/_build/default/cv_cec.exe -v -ov "$i"0,"$i"1,"$i"2,"$i"3,"$i"4,"$i"5,"$i"6,"$i"7 sha256_block_data_order_cc_times_8.cl  sha256_multi_block_avx2.cl; done
-check a0,a1,a2,a3,a4,a5,a6,a7
-Parsing CryptoLine file:                [OK]            0.039425 seconds
-Checking well-formedness:               [OK]            0.027182 seconds
-Parsing CryptoLine file:                [OK]            0.130483 seconds
-Checking well-formedness:               [OK]            0.037276 seconds
-Converting programs to AIG:             [OK]            0.587346 seconds
-Checking equivalence:                   [OK]            2251.362282 seconds
-check b0,b1,b2,b3,b4,b5,b6,b7
-Parsing CryptoLine file:                [OK]            0.038930 seconds
-Checking well-formedness:               [OK]            0.027287 seconds
-Parsing CryptoLine file:                [OK]            0.130946 seconds
-Checking well-formedness:               [OK]            0.036783 seconds
-Converting programs to AIG:             [OK]            0.600650 seconds
-Checking equivalence:                   [OK]            3263.078005 seconds
-check c0,c1,c2,c3,c4,c5,c6,c7
-Parsing CryptoLine file:                [OK]            0.042189 seconds
-Checking well-formedness:               [OK]            0.029526 seconds
-Parsing CryptoLine file:                [OK]            0.139063 seconds
-Checking well-formedness:               [OK]            0.037155 seconds
-Converting programs to AIG:             [OK]            0.628957 seconds
-Checking equivalence:                   [OK]            1567.414066 seconds
-check d0,d1,d2,d3,d4,d5,d6,d7
-Parsing CryptoLine file:                [OK]            0.038903 seconds
-Checking well-formedness:               [OK]            0.027141 seconds
-Parsing CryptoLine file:                [OK]            0.131007 seconds
-Checking well-formedness:               [OK]            0.036998 seconds
-Converting programs to AIG:             [OK]            0.606589 seconds
-Checking equivalence:                   [OK]            1572.814601 seconds
-check e0,e1,e2,e3,e4,e5,e6,e7
-Parsing CryptoLine file:                [OK]            0.038772 seconds
-Checking well-formedness:               [OK]            0.027569 seconds
-Parsing CryptoLine file:                [OK]            0.132549 seconds
-Checking well-formedness:               [OK]            0.037511 seconds
-Converting programs to AIG:             [OK]            0.602545 seconds
-Checking equivalence:                   [OK]            1586.567461 seconds
-check f0,f1,f2,f3,f4,f5,f6,f7
-Parsing CryptoLine file:                [OK]            0.038614 seconds
-Checking well-formedness:               [OK]            0.026966 seconds
-Parsing CryptoLine file:                [OK]            0.132884 seconds
-Checking well-formedness:               [OK]            0.037009 seconds
-Converting programs to AIG:             [OK]            0.598903 seconds
-Checking equivalence:                   [OK]            1571.565701 seconds
-check g0,g1,g2,g3,g4,g5,g6,g7
-Parsing CryptoLine file:                [OK]            0.038824 seconds
-Checking well-formedness:               [OK]            0.027063 seconds
-Parsing CryptoLine file:                [OK]            0.132456 seconds
-Checking well-formedness:               [OK]            0.036895 seconds
-Converting programs to AIG:             [OK]            0.590940 seconds
-Checking equivalence:                   [OK]            1568.101743 seconds
-check h0,h1,h2,h3,h4,h5,h6,h7
-Parsing CryptoLine file:                [OK]            0.038815 seconds
-Checking well-formedness:               [OK]            0.027061 seconds
-Parsing CryptoLine file:                [OK]            0.132725 seconds
-Checking well-formedness:               [OK]            0.036645 seconds
-Converting programs to AIG:             [OK]            0.593026 seconds
-Checking equivalence:                   [OK]            1574.757131 seconds
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7,d0,d1,d2,d3,d4,d5,d6,d7#e0,e1,e2,e3,e4,e5,e6,e7,f0,f1,f2,f3,f4,f5,f6,f7#g0,g1,g2,g3,g4,g5,g6,g7,h0,h1,h2,h3,h4,h5,h6,h7 sha256_multi_block_avx2.cl ../sha256_block_data_order-aarch64x8.cl
+Parsing CryptoLine file:                [OK]            0.147136 seconds
+Checking well-formedness:               [OK]            0.037516 seconds
+Parsing CryptoLine file:                [OK]            0.036924 seconds
+Checking well-formedness:               [OK]            0.033576 seconds
+Equivalence of output group #3:         [OK]            1895.832811 seconds
+Equivalence of output group #2:         [OK]            1900.639143 seconds
+Equivalence of output group #0:         [OK]            1903.427724 seconds
+Equivalence of output group #1:         [OK]            1921.821899 seconds
+Final result:                           [OK]            1923.965376 seconds
+*)
+(* csweep popper: cv_cec.exe -v -jobs 8 -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7#e0,e1,e2,e3,e4,e5,e6,e7#f0,f1,f2,f3,f4,f5,f6,f7#g0,g1,g2,g3,g4,g5,g6,g7#h0,h1,h2,h3,h4,h5,h6,h7 sha256_multi_block_avx2.cl ../sha256_block_data_order-aarch64x8.cl
+Parsing CryptoLine file:                [OK]            0.144381 seconds
+Checking well-formedness:               [OK]            0.037969 seconds
+Parsing CryptoLine file:                [OK]            0.035412 seconds
+Checking well-formedness:               [OK]            0.033896 seconds
+Equivalence of output group #1:         [OK]            928.858589 seconds
+Equivalence of output group #4:         [OK]            952.922424 seconds
+Equivalence of output group #7:         [OK]            951.485719 seconds
+Equivalence of output group #3:         [OK]            960.952419 seconds
+Equivalence of output group #0:         [OK]            970.302403 seconds
+Equivalence of output group #6:         [OK]            970.339880 seconds
+Equivalence of output group #2:         [OK]            975.782380 seconds
+Equivalence of output group #5:         [OK]            1124.748463 seconds
+Final result:                           [OK]            1128.629233 seconds
+*)
+(* iprove popper: cv_cec.exe -v -jobs 8 -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7#e0,e1,e2,e3,e4,e5,e6,e7#f0,f1,f2,f3,f4,f5,f6,f7#g0,g1,g2,g3,g4,g5,g6,g7#h0,h1,h2,h3,h4,h5,h6,h7 sha256_multi_block_avx2.cl ../sha256_block_data_order-aarch64x8.cl
+Parsing CryptoLine file:                [OK]            0.135298 seconds
+Checking well-formedness:               [OK]            0.036969 seconds
+Parsing CryptoLine file:                [OK]            0.038871 seconds
+Checking well-formedness:               [OK]            0.033191 seconds
+Equivalence of output group #1:         [OK]            872.368534 seconds
+Equivalence of output group #4:         [OK]            911.086184 seconds
+Equivalence of output group #3:         [OK]            915.858011 seconds
+Equivalence of output group #2:         [OK]            919.464929 seconds
+Equivalence of output group #6:         [OK]            936.275057 seconds
+Equivalence of output group #5:         [OK]            964.973252 seconds
+Equivalence of output group #0:         [OK]            1002.646842 seconds
+Equivalence of output group #7:         [OK]            1004.428886 seconds
+Final result:                           [OK]            1009.671340 seconds
+*)
+(* cec popper: cv_cec.exe -v -jobs 8 -ov a0,a1,a2,a3,a4,a5,a6,a7#b0,b1,b2,b3,b4,b5,b6,b7#c0,c1,c2,c3,c4,c5,c6,c7#d0,d1,d2,d3,d4,d5,d6,d7#e0,e1,e2,e3,e4,e5,e6,e7#f0,f1,f2,f3,f4,f5,f6,f7#g0,g1,g2,g3,g4,g5,g6,g7#h0,h1,h2,h3,h4,h5,h6,h7 sha256_multi_block_avx2.cl ../sha256_block_data_order-aarch64x8.cl
+Parsing CryptoLine file:                [OK]            0.144448 seconds
+Checking well-formedness:               [OK]            0.037596 seconds
+Parsing CryptoLine file:                [OK]            0.035901 seconds
+Checking well-formedness:               [OK]            0.033895 seconds
+Equivalence of output group #1:         [OK]            874.822898 seconds
+Equivalence of output group #3:         [OK]            891.347647 seconds
+Equivalence of output group #0:         [OK]            895.499203 seconds
+Equivalence of output group #5:         [OK]            895.798802 seconds
+Equivalence of output group #4:         [OK]            896.554134 seconds
+Equivalence of output group #2:         [OK]            900.655741 seconds
+Equivalence of output group #6:         [OK]            902.237238 seconds
+Equivalence of output group #7:         [OK]            906.934491 seconds
+Final result:                           [OK]            912.199257 seconds
 *)
 
 proc main (
@@ -70,7 +68,9 @@ uint8 A40, uint8 A41, uint8 A42, uint8 A43, uint8 A44,
 uint8 A45, uint8 A46, uint8 A47, uint8 A48, uint8 A49,
 uint8 A50, uint8 A51, uint8 A52, uint8 A53, uint8 A54,
 uint8 A55, uint8 A56, uint8 A57, uint8 A58, uint8 A59,
-uint8 A60, uint8 A61, uint8 A62, uint8 A63
+uint8 A60, uint8 A61, uint8 A62, uint8 A63,
+uint32 A0, uint32 A1, uint32 A2, uint32 A3,
+uint32 A4, uint32 A5, uint32 A6, uint32 A7
 ,
 uint8 B00, uint8 B01, uint8 B02, uint8 B03, uint8 B04,
 uint8 B05, uint8 B06, uint8 B07, uint8 B08, uint8 B09,
@@ -84,7 +84,9 @@ uint8 B40, uint8 B41, uint8 B42, uint8 B43, uint8 B44,
 uint8 B45, uint8 B46, uint8 B47, uint8 B48, uint8 B49,
 uint8 B50, uint8 B51, uint8 B52, uint8 B53, uint8 B54,
 uint8 B55, uint8 B56, uint8 B57, uint8 B58, uint8 B59,
-uint8 B60, uint8 B61, uint8 B62, uint8 B63
+uint8 B60, uint8 B61, uint8 B62, uint8 B63,
+uint32 B0, uint32 B1, uint32 B2, uint32 B3,
+uint32 B4, uint32 B5, uint32 B6, uint32 B7
 ,
 uint8 C00, uint8 C01, uint8 C02, uint8 C03, uint8 C04,
 uint8 C05, uint8 C06, uint8 C07, uint8 C08, uint8 C09,
@@ -98,7 +100,9 @@ uint8 C40, uint8 C41, uint8 C42, uint8 C43, uint8 C44,
 uint8 C45, uint8 C46, uint8 C47, uint8 C48, uint8 C49,
 uint8 C50, uint8 C51, uint8 C52, uint8 C53, uint8 C54,
 uint8 C55, uint8 C56, uint8 C57, uint8 C58, uint8 C59,
-uint8 C60, uint8 C61, uint8 C62, uint8 C63
+uint8 C60, uint8 C61, uint8 C62, uint8 C63,
+uint32 C0, uint32 C1, uint32 C2, uint32 C3,
+uint32 C4, uint32 C5, uint32 C6, uint32 C7
 ,
 uint8 D00, uint8 D01, uint8 D02, uint8 D03, uint8 D04,
 uint8 D05, uint8 D06, uint8 D07, uint8 D08, uint8 D09,
@@ -112,7 +116,9 @@ uint8 D40, uint8 D41, uint8 D42, uint8 D43, uint8 D44,
 uint8 D45, uint8 D46, uint8 D47, uint8 D48, uint8 D49,
 uint8 D50, uint8 D51, uint8 D52, uint8 D53, uint8 D54,
 uint8 D55, uint8 D56, uint8 D57, uint8 D58, uint8 D59,
-uint8 D60, uint8 D61, uint8 D62, uint8 D63
+uint8 D60, uint8 D61, uint8 D62, uint8 D63,
+uint32 D0, uint32 D1, uint32 D2, uint32 D3,
+uint32 D4, uint32 D5, uint32 D6, uint32 D7
 ,
 uint8 E00, uint8 E01, uint8 E02, uint8 E03, uint8 E04,
 uint8 E05, uint8 E06, uint8 E07, uint8 E08, uint8 E09,
@@ -126,7 +132,9 @@ uint8 E40, uint8 E41, uint8 E42, uint8 E43, uint8 E44,
 uint8 E45, uint8 E46, uint8 E47, uint8 E48, uint8 E49,
 uint8 E50, uint8 E51, uint8 E52, uint8 E53, uint8 E54,
 uint8 E55, uint8 E56, uint8 E57, uint8 E58, uint8 E59,
-uint8 E60, uint8 E61, uint8 E62, uint8 E63
+uint8 E60, uint8 E61, uint8 E62, uint8 E63,
+uint32 E0, uint32 E1, uint32 E2, uint32 E3,
+uint32 E4, uint32 E5, uint32 E6, uint32 E7
 ,
 uint8 F00, uint8 F01, uint8 F02, uint8 F03, uint8 F04,
 uint8 F05, uint8 F06, uint8 F07, uint8 F08, uint8 F09,
@@ -140,7 +148,9 @@ uint8 F40, uint8 F41, uint8 F42, uint8 F43, uint8 F44,
 uint8 F45, uint8 F46, uint8 F47, uint8 F48, uint8 F49,
 uint8 F50, uint8 F51, uint8 F52, uint8 F53, uint8 F54,
 uint8 F55, uint8 F56, uint8 F57, uint8 F58, uint8 F59,
-uint8 F60, uint8 F61, uint8 F62, uint8 F63
+uint8 F60, uint8 F61, uint8 F62, uint8 F63,
+uint32 F0, uint32 F1, uint32 F2, uint32 F3,
+uint32 F4, uint32 F5, uint32 F6, uint32 F7
 ,
 uint8 G00, uint8 G01, uint8 G02, uint8 G03, uint8 G04,
 uint8 G05, uint8 G06, uint8 G07, uint8 G08, uint8 G09,
@@ -154,7 +164,9 @@ uint8 G40, uint8 G41, uint8 G42, uint8 G43, uint8 G44,
 uint8 G45, uint8 G46, uint8 G47, uint8 G48, uint8 G49,
 uint8 G50, uint8 G51, uint8 G52, uint8 G53, uint8 G54,
 uint8 G55, uint8 G56, uint8 G57, uint8 G58, uint8 G59,
-uint8 G60, uint8 G61, uint8 G62, uint8 G63
+uint8 G60, uint8 G61, uint8 G62, uint8 G63,
+uint32 G0, uint32 G1, uint32 G2, uint32 G3,
+uint32 G4, uint32 G5, uint32 G6, uint32 G7
 ,
 uint8 H00, uint8 H01, uint8 H02, uint8 H03, uint8 H04,
 uint8 H05, uint8 H06, uint8 H07, uint8 H08, uint8 H09,
@@ -169,8 +181,8 @@ uint8 H45, uint8 H46, uint8 H47, uint8 H48, uint8 H49,
 uint8 H50, uint8 H51, uint8 H52, uint8 H53, uint8 H54,
 uint8 H55, uint8 H56, uint8 H57, uint8 H58, uint8 H59,
 uint8 H60, uint8 H61, uint8 H62, uint8 H63,
-uint32 A0, uint32 A1, uint32 A2, uint32 A3,
-uint32 A4, uint32 A5, uint32 A6, uint32 A7
+uint32 H0, uint32 H1, uint32 H2, uint32 H3,
+uint32 H4, uint32 H5, uint32 H6, uint32 H7
 ) =
 {
   true
@@ -336,38 +348,38 @@ join H H55 H54; join L H53 H52; join L0x555555561504 H L;
 join H H59 H58; join L H57 H56; join L0x555555561508 H L;
 join H H63 H62; join L H61 H60; join L0x55555556150c H L;
 
-mov L0x7fffffffda60 A0; mov L0x7fffffffda64 A0;
-mov L0x7fffffffda68 A0; mov L0x7fffffffda6c A0;
-mov L0x7fffffffda70 A0; mov L0x7fffffffda74 A0;
-mov L0x7fffffffda78 A0; mov L0x7fffffffda7c A0;
-mov L0x7fffffffda80 A1; mov L0x7fffffffda84 A1;
-mov L0x7fffffffda88 A1; mov L0x7fffffffda8c A1;
-mov L0x7fffffffda90 A1; mov L0x7fffffffda94 A1;
-mov L0x7fffffffda98 A1; mov L0x7fffffffda9c A1;
-mov L0x7fffffffdaa0 A2; mov L0x7fffffffdaa4 A2;
-mov L0x7fffffffdaa8 A2; mov L0x7fffffffdaac A2;
-mov L0x7fffffffdab0 A2; mov L0x7fffffffdab4 A2;
-mov L0x7fffffffdab8 A2; mov L0x7fffffffdabc A2;
-mov L0x7fffffffdac0 A3; mov L0x7fffffffdac4 A3;
-mov L0x7fffffffdac8 A3; mov L0x7fffffffdacc A3;
-mov L0x7fffffffdad0 A3; mov L0x7fffffffdad4 A3;
-mov L0x7fffffffdad8 A3; mov L0x7fffffffdadc A3;
-mov L0x7fffffffdae0 A4; mov L0x7fffffffdae4 A4;
-mov L0x7fffffffdae8 A4; mov L0x7fffffffdaec A4;
-mov L0x7fffffffdaf0 A4; mov L0x7fffffffdaf4 A4;
-mov L0x7fffffffdaf8 A4; mov L0x7fffffffdafc A4;
-mov L0x7fffffffdb00 A5; mov L0x7fffffffdb04 A5;
-mov L0x7fffffffdb08 A5; mov L0x7fffffffdb0c A5;
-mov L0x7fffffffdb10 A5; mov L0x7fffffffdb14 A5;
-mov L0x7fffffffdb18 A5; mov L0x7fffffffdb1c A5;
-mov L0x7fffffffdb20 A6; mov L0x7fffffffdb24 A6;
-mov L0x7fffffffdb28 A6; mov L0x7fffffffdb2c A6;
-mov L0x7fffffffdb30 A6; mov L0x7fffffffdb34 A6;
-mov L0x7fffffffdb38 A6; mov L0x7fffffffdb3c A6;
-mov L0x7fffffffdb40 A7; mov L0x7fffffffdb44 A7;
-mov L0x7fffffffdb48 A7; mov L0x7fffffffdb4c A7;
-mov L0x7fffffffdb50 A7; mov L0x7fffffffdb54 A7;
-mov L0x7fffffffdb58 A7; mov L0x7fffffffdb5c A7;
+mov L0x7fffffffda60 A0; mov L0x7fffffffda64 B0;
+mov L0x7fffffffda68 C0; mov L0x7fffffffda6c D0;
+mov L0x7fffffffda70 E0; mov L0x7fffffffda74 F0;
+mov L0x7fffffffda78 G0; mov L0x7fffffffda7c H0;
+mov L0x7fffffffda80 A1; mov L0x7fffffffda84 B1;
+mov L0x7fffffffda88 C1; mov L0x7fffffffda8c D1;
+mov L0x7fffffffda90 E1; mov L0x7fffffffda94 F1;
+mov L0x7fffffffda98 G1; mov L0x7fffffffda9c H1;
+mov L0x7fffffffdaa0 A2; mov L0x7fffffffdaa4 B2;
+mov L0x7fffffffdaa8 C2; mov L0x7fffffffdaac D2;
+mov L0x7fffffffdab0 E2; mov L0x7fffffffdab4 F2;
+mov L0x7fffffffdab8 G2; mov L0x7fffffffdabc H2;
+mov L0x7fffffffdac0 A3; mov L0x7fffffffdac4 B3;
+mov L0x7fffffffdac8 C3; mov L0x7fffffffdacc D3;
+mov L0x7fffffffdad0 E3; mov L0x7fffffffdad4 F3;
+mov L0x7fffffffdad8 G3; mov L0x7fffffffdadc H3;
+mov L0x7fffffffdae0 A4; mov L0x7fffffffdae4 B4;
+mov L0x7fffffffdae8 C4; mov L0x7fffffffdaec D4;
+mov L0x7fffffffdaf0 E4; mov L0x7fffffffdaf4 F4;
+mov L0x7fffffffdaf8 G4; mov L0x7fffffffdafc H4;
+mov L0x7fffffffdb00 A5; mov L0x7fffffffdb04 B5;
+mov L0x7fffffffdb08 C5; mov L0x7fffffffdb0c D5;
+mov L0x7fffffffdb10 E5; mov L0x7fffffffdb14 F5;
+mov L0x7fffffffdb18 G5; mov L0x7fffffffdb1c H5;
+mov L0x7fffffffdb20 A6; mov L0x7fffffffdb24 B6;
+mov L0x7fffffffdb28 C6; mov L0x7fffffffdb2c D6;
+mov L0x7fffffffdb30 E6; mov L0x7fffffffdb34 F6;
+mov L0x7fffffffdb38 G6; mov L0x7fffffffdb3c H6;
+mov L0x7fffffffdb40 A7; mov L0x7fffffffdb44 B7;
+mov L0x7fffffffdb48 C7; mov L0x7fffffffdb4c D7;
+mov L0x7fffffffdb50 E7; mov L0x7fffffffdb54 F7;
+mov L0x7fffffffdb58 G7; mov L0x7fffffffdb5c H7;
 (*
 mov L0x7fffffffda60 0x6a09e667@uint32; mov L0x7fffffffda64 0x6a09e667@uint32;
 mov L0x7fffffffda68 0x6a09e667@uint32; mov L0x7fffffffda6c 0x6a09e667@uint32;
