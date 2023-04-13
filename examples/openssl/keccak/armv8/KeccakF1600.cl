@@ -1,3 +1,19 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.021418 seconds
+Checking well-formedness:               [OK]            0.006742 seconds
+Parsing CryptoLine file:                [OK]            0.012686 seconds
+Checking well-formedness:               [OK]            0.006766 seconds
+Equivalence of output group #0:         [OK]            0.546943 seconds
+Final result:                           [OK]            1.431604 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.021596 seconds
+Checking well-formedness:               [OK]            0.006841 seconds
+Parsing CryptoLine file:                [OK]            0.012736 seconds
+Checking well-formedness:               [OK]            0.006770 seconds
+Equivalence of output group #0:         [OK]            0.556505 seconds
+Final result:                           [OK]            1.443195 seconds
+*)
 proc main
 (
 (* uint64 a00, uint64 a01, uint64 a02, uint64 a03, uint64 a04, *)

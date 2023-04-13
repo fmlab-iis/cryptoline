@@ -1,9 +1,25 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.042743 seconds
+Checking well-formedness:               [OK]            0.016107 seconds
+Parsing CryptoLine file:                [OK]            0.013517 seconds
+Checking well-formedness:               [OK]            0.006557 seconds
+Equivalence of output group #0:         [OK]            256.871849 seconds
+Final result:                           [OK]            257.736944 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.043567 seconds
+Checking well-formedness:               [OK]            0.015743 seconds
+Parsing CryptoLine file:                [OK]            0.013428 seconds
+Checking well-formedness:               [OK]            0.006505 seconds
+Equivalence of output group #0:         [OK]            241.804268 seconds
+Final result:                           [OK]            242.726270 seconds
+*)
+
 (* cv_cec.exe -v -ov1 a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 -ov2 output00,output01,output02,output03,output04,output05,output06,output07,output08,output09,output10,output11,output12,output13,output14,output15,output16,output17,output18,output19,output20,output21,output22,output23,output24 KeccakF1600.cl ../../../../../llvm2cryptoline/examples/XKCP/ref-64bits-fc23735/KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
 Parsing CryptoLine file:                [OK]            0.073003 seconds
 Checking well-formedness:               [OK]            0.023198 seconds
 Parsing CryptoLine file:                [OK]            0.016888 seconds
 Checking well-formedness:               [OK]            0.007423 seconds
-
 Equivalence of output group #0:         [OK]            466.888512 seconds
 Final result:                           [OK]            468.813283 seconds
 *)

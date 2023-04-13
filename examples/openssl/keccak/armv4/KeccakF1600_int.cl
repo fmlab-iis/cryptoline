@@ -1,3 +1,19 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600_int.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.075474 seconds
+Checking well-formedness:               [OK]            0.020248 seconds
+Parsing CryptoLine file:                [OK]            0.014289 seconds
+Checking well-formedness:               [OK]            0.006641 seconds
+Equivalence of output group #0:         [OK]            110.950038 seconds
+Final result:                           [OK]            111.874648 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600_int.cl ../KeccakP-1600-reference_KeccakP1600_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.076375 seconds
+Checking well-formedness:               [OK]            0.020614 seconds
+Parsing CryptoLine file:                [OK]            0.014597 seconds
+Checking well-formedness:               [OK]            0.006690 seconds
+Equivalence of output group #0:         [OK]            91.619454 seconds
+Final result:                           [OK]            92.547300 seconds
+*)
 (* quine: ~/Work/code/cryptoline/_build/default/cv_cec.exe -v -ov a00,a01,a02,a03,a04,a10,a11,a12,a13,a14,a20,a21,a22,a23,a24,a30,a31,a32,a33,a34,a40,a41,a42,a43,a44 KeccakF1600_int.cl ../x86_64/KeccakF1600.cl
 Parsing CryptoLine file:                [OK]            0.142316 seconds
 Checking well-formedness:               [OK]            0.024500 seconds
