@@ -1,3 +1,36 @@
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3#a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
+Parsing CryptoLine file:                [OK]            0.020037 seconds
+Checking well-formedness:               [OK]            0.004319 seconds
+Parsing CryptoLine file:                [OK]            0.021633 seconds
+Checking well-formedness:               [OK]            0.009032 seconds
+Equivalence of output group #1:         [OK]            2601.830616 seconds
+Equivalence of output group #0:         [OK]            2813.580667 seconds
+Final result:                           [OK]            2813.966766 seconds
+*)
+(* csweep popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
+Parsing CryptoLine file:                [OK]            0.020397 seconds
+Checking well-formedness:               [OK]            0.004286 seconds
+Parsing CryptoLine file:                [OK]            0.021761 seconds
+Checking well-formedness:               [OK]            0.009280 seconds
+Equivalence of output group #0:         [OK]            2992.183247 seconds
+Final result:                           [OK]            2992.584790 seconds
+*)
+(* iprove popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
+Parsing CryptoLine file:                [OK]            0.020597 seconds
+Checking well-formedness:               [OK]            0.004280 seconds
+Parsing CryptoLine file:                [OK]            0.022085 seconds
+Checking well-formedness:               [OK]            0.009132 seconds
+Equivalence of output group #0:         [OK]            3005.709840 seconds
+Final result:                           [OK]            3006.109729 seconds
+*)
+(* cec popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
+Parsing CryptoLine file:                [OK]            0.021174 seconds
+Checking well-formedness:               [OK]            0.004250 seconds
+Parsing CryptoLine file:                [OK]            0.021729 seconds
+Checking well-formedness:               [OK]            0.009070 seconds
+Equivalence of output group #0:         [OK]            3033.416568 seconds
+Final result:                           [OK]            3033.815448 seconds
+*)
 proc main (
 uint8 A00, uint8 A01, uint8 A02, uint8 A03, uint8 A04,
 uint8 A05, uint8 A06, uint8 A07, uint8 A08, uint8 A09,
