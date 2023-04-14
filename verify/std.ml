@@ -731,13 +731,13 @@ let verify_spec s =
   let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option
                    -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option) list =
     [spec_to_ssa; normalize_spec]
-    @(if !apply_rewriting then [rewrite_assignments] else [])
+    @(if !apply_rewrite_mov then [rewrite_assignments] else [])
     (* @(if !apply_slicing then [build_var_dep_hash] else []) *)
     @(if !verify_program_safety then [program_safe] else [])
     @(if !verify_rassertion && has_assert s.sprog then [valid_rassert] else [])
     @(if !verify_rpost then [valid_rspec] else [])
     (* It is important that rewriting of value-preserved casting must be done after all range properties. *)
-    @(if !apply_rewriting then [rewrite_vpc] else [])
+    @(if !apply_rewrite_vpc then [rewrite_vpc] else [])
     @(if !verify_eassertion && has_assert s.sprog then [valid_eassert] else [])
     @(if !verify_epost then [valid_espec] else []) in
   let (result, _, _) = List.fold_left

@@ -3842,7 +3842,7 @@ let merge_bexp_prove_with_spec s =
 let spec_to_coqcryptoline s =
   if has_prove_with_spec s then
     (ssa_spec s)
-    |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+    |> (if !Options.Std.apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
     |> cut_spec
     |> List.rev_map merge_spec_post
     |> List.rev
@@ -4119,7 +4119,7 @@ let spec_to_bvcryptoline s =
                with Not_found ->
                  () in
   (ssa_spec s)
-  |> (if !Options.Std.apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+  |> (if !Options.Std.apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
   |> ghost_to_assume
   |> (fun s -> List.rev_append (rev (assertion_specs s)) (cut_spec s))
   |> List.rev_map remove_assert_spec

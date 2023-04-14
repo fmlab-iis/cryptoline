@@ -140,8 +140,20 @@ val macaulay2_path : string ref
 val maple_path : string ref
 (** the path to maple *)
 
-val apply_rewriting : bool ref
-(** [true] to apply rewriting (which replaces variables with expressions) in verifying algebraic specifications *)
+val apply_rewrite_mov : bool ref
+(** [true] to apply rewriting based on mov statements *)
+
+val apply_rewrite_vpc : bool ref
+(** [true] to apply rewriting based on vpc statements *)
+
+val apply_rewrite_poly : bool ref
+(** [true] to apply rewriting polynomials *)
+
+val disable_rewriting : unit -> unit
+(** disable all rewriting *)
+
+val enable_rewriting : unit -> unit
+(** enable all rewriting *)
 
 val two_phase_rewriting : bool ref
 (** [true] to apply two-phase rewriting in verifying algebraic specifications *)

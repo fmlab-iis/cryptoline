@@ -1555,7 +1555,7 @@ let polys_of_espec vgen s =
         pspec.pprog in
     (vgen, List.rev_append (List.rev pre_ps) (List.rev prog_ps_rev)) in
   let do_rewriting generator_ps p modulus_opt =
-    if !apply_rewriting
+    if !apply_rewrite_poly
     then (if !polys_rewrite_replace_eexp then rewrite_assignments' else rewrite_assignments) generator_ps p modulus_opt
     else (generator_ps, p) in
   let rec convert generator_ps post =
@@ -1641,7 +1641,7 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
     (vgen, List.rev_append pre_aps_rev (List.rev prog_aps_rev)) in
   (* A function that performs rewriting *)
   let do_rewriting ideal_aps (post_p_ms_list : (ebexp * eexp * eexp list) list) modulus_opt =
-    if !apply_rewriting
+    if !apply_rewrite_poly
     then (if !polys_rewrite_replace_eexp then rewrite_assignments_two_phase' else rewrite_assignments_two_phase) ideal_aps post_p_ms_list modulus_opt
     else (ideal_aps, post_p_ms_list) in
   (* Perform two-phase rewriting and slicing. *)
