@@ -297,7 +297,7 @@ let anon file =
           @(if !apply_remove_range then [remove_range_spec] else [])) in
      let ss = normalize_spec s
               |> ssa_spec
-              |> (if !apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
+              |> (if !apply_rewrite_vpc then rewrite_mov_ssa_spec else Fun.id)
               |> cut_spec in
      List.iteri output (List.rev_map postprocess (List.rev ss))
   | SaveREP ->
@@ -305,8 +305,8 @@ let anon file =
      let s = Common.parse_and_check file |> snd |> normalize_spec |> ssa_spec in
      let vgen = Verify.Common.vgen_of_spec s in
      let ess = normalize_spec s
-               |> (if !apply_rewriting then rewrite_mov_ssa_spec else Fun.id)
-               |> (if !apply_rewriting then rewrite_vpc_ssa_spec else Fun.id)
+               |> (if !apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
+               |> (if !apply_rewrite_vpc then rewrite_vpc_ssa_spec else Fun.id)
                |> espec_of_spec
                |> (fun s -> tappend (cut_eassert s) (cut_espec s))
                |> tflatten |> List.split |> snd
@@ -314,7 +314,7 @@ let anon file =
                |> tflatten
                |> tmap (fun s -> slice_espec_ssa s None) in
      let ps_of_es es = Verify.Common.bv2z_espec vgen es
-                       |> (fun (vgen, ps) -> if !apply_rewriting then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
+                       |> (fun (vgen, ps) -> if !apply_rewrite_poly then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
                        |> snd in
      let os_of_ps ps = {
          Ast.Cryptoline.spre = (eands (ps.Verify.Common.ppre::ps.Verify.Common.pprog), rtrue);

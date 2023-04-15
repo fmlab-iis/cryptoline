@@ -861,7 +861,11 @@ let run_cli_vespec header s =
                             | _ -> "");
                            (if !Options.Std.algebra_solver_args = "" then ""
                             else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");
-                           (if not !Options.Std.apply_rewriting then "-disable_rewriting"
+                           (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov"
+                            else "");
+                           (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc"
+                            else "");
+                           (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly"
                             else "");
                            (if !Options.Std.carry_constraint then ""
                             else "-no_carry_constraint");
@@ -944,7 +948,11 @@ let run_cli_vrspec header s =
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
                            (if !Options.Std.use_btor then "-btor"
                             else "");
-                           (if not !Options.Std.apply_rewriting then "-disable_rewriting"
+                           (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov"
+                            else "");
+                           (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc"
+                            else "");
+                           (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly"
                             else "");
                            (if !Options.Std.apply_slicing then "-slicing"
                             else "");
