@@ -1,3 +1,11 @@
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab,ac,ad,ae,af chacha20_core.cl ../chacha_salsa20_wordtobyte_entry.cl
+Parsing CryptoLine file:                [OK]            0.008060 seconds
+Checking well-formedness:               [OK]            0.002663 seconds
+Parsing CryptoLine file:                [OK]            0.009529 seconds
+Checking well-formedness:               [OK]            0.004457 seconds
+Equivalence of output group #0:         [OK]            0.116792 seconds
+Final result:                           [OK]            0.338064 seconds
+*)
 proc main (uint32 A0, uint32 A1, uint32 A2, uint32 A3,
            uint32 A4, uint32 A5, uint32 A6, uint32 A7,
            uint32 A8, uint32 A9, uint32 Aa, uint32 Ab,
