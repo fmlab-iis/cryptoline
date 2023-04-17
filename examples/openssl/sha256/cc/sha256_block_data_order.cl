@@ -1,3 +1,11 @@
+(* popper: cv_cec.exe -v -ov a0,a1,a2,a3,a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_block_data_order-aarch64.cl
+Parsing CryptoLine file:                [OK]            0.020282 seconds
+Checking well-formedness:               [OK]            0.004328 seconds
+Parsing CryptoLine file:                [OK]            0.015937 seconds
+Checking well-formedness:               [OK]            0.004507 seconds
+Equivalence of output group #0:         [OK]            3165.696389 seconds
+Final result:                           [OK]            3166.086466 seconds
+*)
 (* popper: cv_cec.exe -v -ov a0,a1,a2,a3#a4,a5,a6,a7 sha256_block_data_order.cl ../sha256_sha256_block_data_order_while.body.cl
 Parsing CryptoLine file:                [OK]            0.020037 seconds
 Checking well-formedness:               [OK]            0.004319 seconds
