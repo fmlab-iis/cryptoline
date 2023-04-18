@@ -1,3 +1,43 @@
+#! %r$1cd = %r$1c
+#! %ebp = %rbp
+#! %edi = %rdi
+#! %esi = %rsi
+#! %ebx = %rbx
+#! %ecx = %rcx
+#! %edx = %rdx
+#! %xmm$1c = %%xmm$1c
+#! %e(\w*) = %%e\1
+#! %r(\w*) = %%r\1
+#! \(%r\w*\) = %%EA
+#! $1c\(%r\w*\) = %%EA
+
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! vmovdqa $1ea, $2xmm -> mov $2xmm_0 $1ea;\nmov $2xmm_1 $1ea[+8]
+#! vmovdqa $1xmm, $2ea -> mov $2ea $1xmm_0;\nmov $2ea[+8] $1xmm_1
+#! vmovdqa $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0;\nmov $2xmm_1 $1xmm_1
+#! vmovdqa64 $1ea, $2xmm -> mov $2xmm_0 $1ea;\nmov $2xmm_1 $1ea[+8]
+#! vmovdqa64 $1xmm, $2ea -> mov $2ea $1xmm_0;\nmov $2ea[+8] $1xmm_1
+#! vmovdqa64 $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0;\nmov $2xmm_1 $1xmm_1
+#! vpternlogq $1c, $2xmm, $3xmm, $4xmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4xmm_0, $3xmm_0, $2xmm_0, table);\ncall vpternlogq64 ($4xmm_1, $3xmm_1, $2xmm_1, table)
+#! vpternlogq $1c, $2ea, $3xmm, $4xmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4xmm_0, $3xmm_0, $2ea, table);\ncall vpternlogq64 ($4xmm_1, $3xmm_1, $2ea[+8], table)
+#! vprolq $1c, $2xmm, $3xmm -> rol $3xmm_0 $2xmm_0 $1c;\nrol $3xmm_1 $2xmm_1 $1c
+#! vprorq $1c, $2xmm, $3xmm -> ror $3xmm_0 $2xmm_0 $1c;\nror $3xmm_1 $2xmm_1 $1c
+#! vpxorq $1xmm, $2xmm, $3xmm -> xor $3xmm_0@uint64 $2xmm_0 $1xmm_0;\nxor $3xmm_1@uint64 $2xmm_1 $1xmm_1
+#! vpxorq $1ea, $2xmm, $3xmm -> xor $3xmm_0@uint64 $2xmm_0 $1ea;\nxor $3xmm_1@uint64 $2xmm_1 $1ea[+8]
+#! vpxor $1xmm, $2xmm, $3xmm -> xor $3xmm_0@uint64 $2xmm_0 $1xmm_0;\nxor $3xmm_1@uint64 $2xmm_1 $1xmm_1
+#! vpxor $1ea, $2xmm, $3xmm -> xor $3xmm_0@uint64 $2xmm_0 $1ea;\nxor $3xmm_1@uint64 $2xmm_1 $1ea[+8]
+#! vpbroadcastq $1v, $2xmm -> mov $2xmm_0 $1v;\nmov $2xmm_1 $1v
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+
+#! KeccakP1600times2_PermuteAll_24rounds: -> nop
+#! endbr64.* -> nop
+#! push.* -> nop
+#! pop.* -> nop
+#! cmp.* -> nop
+
 KeccakP1600times2_PermuteAll_24rounds:
 # %rdi = 0x7fffffffdb80
 # %rsi = 0x0

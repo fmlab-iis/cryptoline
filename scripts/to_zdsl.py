@@ -18,6 +18,7 @@ import cryptoline
 length_random_string = 5
 
 verbose = False
+use_re = False
 
 counters = {}
 
@@ -186,12 +187,14 @@ def parse_subst(line):
   substs = []
   for pattern in line.split(";"):         # use ';' to split patterns in a line
     tokens = list(map(lambda x : x.strip(), pattern.split("=")))
-    lhs = re.escape(tokens[0])
-    lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
-    lhs = lhs.replace('\#', '#')          # arm constants start with '#'
+    if use_re:
+      lhs = tokens[0]
+    else:
+      lhs = re.escape(tokens[0])
+      lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
+      lhs = lhs.replace('\#', '#')          # arm constants start with '#'
     lhs = re.sub(r"(\\ )+", "\\\\s+", lhs)
     rhs = tokens[1]
-    pairs = [(tokens[0], tokens[1])]
     pairs = process_builtin_variables(lhs, rhs, indices)
     # Add word boundary
     for lhs, rhs in pairs:
@@ -313,7 +316,7 @@ def print_instrs(instrs):
     print(instr.to_string())
 
 def main():
-  global verbose
+  global verbose, use_re
 
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
@@ -321,12 +324,14 @@ def main():
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
   parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
   parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
+  parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
   parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
   args = parser.parse_args()
 
   if args.verbose: verbose = True
+  if args.use_re: use_re = True
 
   # Read gas file
   if verbose: t1 = process_time()
