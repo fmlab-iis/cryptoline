@@ -1,5 +1,5 @@
 (*
-on popper, equivalence against XKCP Keccak[1600,24]x2 SSSE3, 2 threads:
+on popper, equivalence against XKCP Keccak-p[1600,24]x2 SSSE3, 2 threads:
 $ ./_build/default/cv_cec.exe -v -jobs 2 \
         -ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24
         KeccakP1600times2_PermuteAll_24rounds_12_rounds_unrolled.cl KeccakP1600times2_PermuteAll_24rounds_2_rounds_unrolled.cl
@@ -10,6 +10,26 @@ Checking well-formedness:		[OK]		0.017611 seconds
 Equivalence of output group #0:		[OK]		785.903484 seconds
 Equivalence of output group #1:		[OK]		793.575348 seconds
 Final result:				[OK]		805.656673 seconds
+
+on popper, equivalence against XKCP C reference, outputs a's, 1 thread:
+Parsing CryptoLine file:		[OK]		1.285871 seconds
+Checking well-formedness:		[OK]		1.702861 seconds
+Parsing CryptoLine file:		[OK]		0.017113 seconds
+Checking well-formedness:		[OK]		0.006476 seconds
+Output group #0:
+  Converting programs to AIG:		[OK]		5.769414 seconds
+  Checking equivalence:			[OK]		549.431187 seconds
+Final result:				[OK]		555.200704 seconds
+
+on popper equivalence against XKCP C reference, outputs b's (with inputs swapped), 1 thread:
+Parsing CryptoLine file:		[OK]		1.283760 seconds
+Checking well-formedness:		[OK]		1.708715 seconds
+Parsing CryptoLine file:		[OK]		0.017107 seconds
+Checking well-formedness:		[OK]		0.006413 seconds
+Output group #0:
+  Converting programs to AIG:		[OK]		5.781087 seconds
+  Checking equivalence:			[OK]		576.277313 seconds
+Final result:				[OK]		582.058529 seconds
 *)
 
 proc vpternlogq64 (uint64 ymmH, uint64 ymmM, uint64 ymmL, uint8 table) =
