@@ -30,8 +30,7 @@ const rho56_1 = 0x080F0E0D0C0B0A09
 
 proc stb64(uint64 x; uint8 x_0, uint8 x_1, uint8 x_2, uint8 x_3, uint8 x_4, uint8 x_5, uint8 x_6, uint8 x_7) =
 { true && true }
-mov tmp x;
-spl tmp x_0 tmp 8;
+spl tmp x_0 x 8;
 spl tmp x_1 tmp 8;
 spl tmp x_2 tmp 8;
 spl tmp x_3 tmp 8;
@@ -40,54 +39,21 @@ spl tmp x_5 tmp 8;
 spl x_7 x_6 tmp 8;
 { true && true }
 
-proc stb64x2(uint64 x_0, uint64 x_1;
-             uint8 x_00, uint8 x_01, uint8 x_02, uint8 x_03, uint8 x_04, uint8 x_05, uint8 x_06, uint8 x_07,
-             uint8 x_08, uint8 x_09, uint8 x_10, uint8 x_11, uint8 x_12, uint8 x_13, uint8 x_14, uint8 x_15) =
-{ true && true }
-call stb64(x_0, x_00, x_01, x_02, x_03, x_04, x_05, x_06, x_07);
-call stb64(x_1, x_08, x_09, x_10, x_11, x_12, x_13, x_14, x_15);
-{ true && true }
-
-proc sel128(uint8 idx,
-            uint8 src_00, uint8 src_01, uint8 src_02, uint8 src_03, uint8 src_04, uint8 src_05, uint8 src_06, uint8 src_07,
-            uint8 src_08, uint8 src_09, uint8 src_10, uint8 src_11, uint8 src_12, uint8 src_13, uint8 src_14, uint8 src_15; uint8 dst) =
+proc sel128(uint8 idx, uint128 src; uint8 dst) =
 { true && true }
 spl idx_7 dontcare idx 7;
 cast idx_7@bit idx_7;
 spl dontcare idx_0t4 idx 4;
-mov dst 0@uint8;
-subb b dontcare idx_0t4 0@uint4;
-cmov dst b dst src_00;
-subb b dontcare idx_0t4 1@uint4;
-cmov dst b dst src_01;
-subb b dontcare idx_0t4 2@uint4;
-cmov dst b dst src_02;
-subb b dontcare idx_0t4 3@uint4;
-cmov dst b dst src_03;
-subb b dontcare idx_0t4 4@uint4;
-cmov dst b dst src_04;
-subb b dontcare idx_0t4 5@uint4;
-cmov dst b dst src_05;
-subb b dontcare idx_0t4 6@uint4;
-cmov dst b dst src_06;
-subb b dontcare idx_0t4 7@uint4;
-cmov dst b dst src_07;
-subb b dontcare idx_0t4 8@uint4;
-cmov dst b dst src_08;
-subb b dontcare idx_0t4 9@uint4;
-cmov dst b dst src_09;
-subb b dontcare idx_0t4 10@uint4;
-cmov dst b dst src_10;
-subb b dontcare idx_0t4 11@uint4;
-cmov dst b dst src_11;
-subb b dontcare idx_0t4 12@uint4;
-cmov dst b dst src_12;
-subb b dontcare idx_0t4 13@uint4;
-cmov dst b dst src_13;
-subb b dontcare idx_0t4 14@uint4;
-cmov dst b dst src_14;
-subb b dontcare idx_0t4 15@uint4;
-cmov dst b dst src_15;
+cast idx_0t4@uint128 idx_0t4;
+shr tmp src idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+shr tmp tmp idx_0t4;
+spl dontcare dst tmp 8;
 cmov dst idx_7 0@uint8 dst;
 { true && true }
 
@@ -104,25 +70,25 @@ join dst src_7 tmp;
 
 proc vpshufb128(uint64 idx_0, uint64 idx_1, uint64 src_0, uint64 src_1; uint64 dst_0, uint64 dst_1) =
 { true && true }
-(* split into bytes *)
-call stb64x2(idx_0, idx_1, idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07, idx_08, idx_09, idx_10, idx_11, idx_12, idx_13, idx_14, idx_15);
-call stb64x2(src_0, src_1, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15);
-call sel128(idx_00, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_00);
-call sel128(idx_01, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_01);
-call sel128(idx_02, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_02);
-call sel128(idx_03, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_03);
-call sel128(idx_04, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_04);
-call sel128(idx_05, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_05);
-call sel128(idx_06, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_06);
-call sel128(idx_07, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_07);
-call sel128(idx_08, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_08);
-call sel128(idx_09, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_09);
-call sel128(idx_10, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_10);
-call sel128(idx_11, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_11);
-call sel128(idx_12, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_12);
-call sel128(idx_13, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_13);
-call sel128(idx_14, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_14);
-call sel128(idx_15, src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07, src_08, src_09, src_10, src_11, src_12, src_13, src_14, src_15, dst_15);
+call stb64(idx_0, idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07);
+call stb64(idx_1, idx_08, idx_09, idx_10, idx_11, idx_12, idx_13, idx_14, idx_15);
+join src src_1 src_0;
+call sel128(idx_00, src, dst_00);
+call sel128(idx_01, src, dst_01);
+call sel128(idx_02, src, dst_02);
+call sel128(idx_03, src, dst_03);
+call sel128(idx_04, src, dst_04);
+call sel128(idx_05, src, dst_05);
+call sel128(idx_06, src, dst_06);
+call sel128(idx_07, src, dst_07);
+call sel128(idx_08, src, dst_08);
+call sel128(idx_09, src, dst_09);
+call sel128(idx_10, src, dst_10);
+call sel128(idx_11, src, dst_11);
+call sel128(idx_12, src, dst_12);
+call sel128(idx_13, src, dst_13);
+call sel128(idx_14, src, dst_14);
+call sel128(idx_15, src, dst_15);
 call jb64(dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07, dst_0);
 call jb64(dst_08, dst_09, dst_10, dst_11, dst_12, dst_13, dst_14, dst_15, dst_1);
 { true && true }

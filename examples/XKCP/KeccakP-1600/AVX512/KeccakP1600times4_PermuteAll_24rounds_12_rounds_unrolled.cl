@@ -1,14 +1,17 @@
 (*
-On popper, equivalence checking against XKCP SSSE3 implementation
-$ ./_build/default/cv_cec.exe -v \
-	-ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24,d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,d24 \
+on popper, equivalence against XKCP Keccak[1600,24]x4 SSSE3, 4 threads:
+$ ./_build/default/cv_cec.exe -v -jobs 4 \
+	-ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24#c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24#d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,d24 \
 	KeccakP1600times4_PermuteAll_24rounds_12_rounds_unrolled.cl KeccakP1600times4_PermuteAll_24rounds_2_rounds_unrolled_fallback_times2.cl
-Parsing CryptoLine file:		[OK]		2.991944 seconds
-Checking well-formedness:		[OK]		3.423496 seconds
-Parsing CryptoLine file:		[OK]		0.107319 seconds
-Checking well-formedness:		[OK]		0.089695 seconds
-Equivalence of output group #0:		[OK]		3387.183593 seconds
-Final result:				[OK]		3407.808169 seconds
+Parsing CryptoLine file:		[OK]		2.948214 seconds
+Checking well-formedness:		[OK]		3.441531 seconds
+Parsing CryptoLine file:		[OK]		0.092241 seconds
+Checking well-formedness:		[OK]		0.035980 seconds
+Equivalence of output group #0:		[OK]		818.456198 seconds
+Equivalence of output group #2:		[OK]		811.865966 seconds
+Equivalence of output group #1:		[OK]		837.496156 seconds
+Equivalence of output group #3:		[OK]		824.962234 seconds
+Final result:				[OK]		865.193241 seconds
 *)
 
 proc vpternlogq64 (uint64 ymmH, uint64 ymmM, uint64 ymmL, uint8 table) =
