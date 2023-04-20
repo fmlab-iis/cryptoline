@@ -1,3 +1,25 @@
+(*
+on popper, equivalence against C reference implementation, outputs a's, 1 thread:
+Parsing CryptoLine file:		[OK]		0.041621 seconds
+Checking well-formedness:		[OK]		0.017193 seconds
+Parsing CryptoLine file:		[OK]		0.012995 seconds
+Checking well-formedness:		[OK]		0.006045 seconds
+Output group #0:
+  Converting programs to AIG:		[OK]		1.145413 seconds
+  Checking equivalence:			[OK]		88.691309 seconds
+Final result:				[OK]		89.836808 seconds
+
+on popper, equivalence against C reference implementation, outputs b's (with inputs swapped), 1 thread:
+Parsing CryptoLine file:		[OK]		0.041779 seconds
+Checking well-formedness:		[OK]		0.017311 seconds
+Parsing CryptoLine file:		[OK]		0.013135 seconds
+Checking well-formedness:		[OK]		0.006237 seconds
+Output group #0:
+  Converting programs to AIG:		[OK]		1.138234 seconds
+  Checking equivalence:			[OK]		105.979737 seconds
+Final result:				[OK]		107.118064 seconds
+*)
+
 const KeccakF1600RoundConstants_00 = 0x0000000000000001
 const KeccakF1600RoundConstants_01 = 0x0000000000008082
 const KeccakF1600RoundConstants_02 = 0x800000000000808a
