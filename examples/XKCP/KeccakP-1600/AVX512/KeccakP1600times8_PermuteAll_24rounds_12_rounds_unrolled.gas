@@ -1,3 +1,49 @@
+# Convert with -re
+
+#! %r$1cd = %r$1c
+#! %edi = %rdi
+#! %esi = %rsi
+#! %ebx = %rbx
+#! %ecx = %rcx
+#! %edx = %rdx
+#! %zmm$1c = %%zmm$1c
+#! %e(\w*) = %%e\1
+#! %r(\w*) = %%r\1
+#! \(%r\w*\) = %%EA
+#! $1c\(%r\w*\) = %%EA
+
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! vmovdqa $1ea, $2zmm -> mov $2zmm_0 $1ea;\nmov $2zmm_1 $1ea[+8];\nmov $2zmm_2 $1ea[+16];\nmov $2zmm_3 $1ea[+24];\nmov $2zmm_4 $1ea[+32];\nmov $2zmm_5 $1ea[+40];\nmov $2zmm_6 $1ea[+48];\nmov $2zmm_7 $1ea[+56]
+#! vmovdqa $1zmm, $2ea -> mov $2ea $1zmm_0;\nmov $2ea[+8] $1zmm_1;\nmov $2ea[+16] $1zmm_2;\nmov $2ea[+24] $1zmm_3;\nmov $2ea[+32] $1zmm_4;\nmov $2ea[+40] $1zmm_5;\nmov $2ea[+48] $1zmm_6;\nmov $2ea[+56] $1zmm_7
+#! vmovdqa $1zmm, $2zmm -> mov $2zmm_0 $1zmm_0;\nmov $2zmm_1 $1zmm_1;\nmov $2zmm_2 $1zmm_2;\nmov $2zmm_3 $1zmm_3;\nmov $2zmm_4 $1zmm_4;\nmov $2zmm_5 $1zmm_5;\nmov $2zmm_6 $1zmm_6;\nmov $2zmm_7 $1zmm_7
+#! vmovdqa64 $1ea, $2zmm -> mov $2zmm_0 $1ea;\nmov $2zmm_1 $1ea[+8];\nmov $2zmm_2 $1ea[+16];\nmov $2zmm_3 $1ea[+24];\nmov $2zmm_4 $1ea[+32];\nmov $2zmm_5 $1ea[+40];\nmov $2zmm_6 $1ea[+48];\nmov $2zmm_7 $1ea[+56]
+#! vmovdqa64 $1zmm, $2ea -> mov $2ea $1zmm_0;\nmov $2ea[+8] $1zmm_1;\nmov $2ea[+16] $1zmm_2;\nmov $2ea[+24] $1zmm_3;\nmov $2ea[+32] $1zmm_4;\nmov $2ea[+40] $1zmm_5;\nmov $2ea[+48] $1zmm_6;\nmov $2ea[+56] $1zmm_7
+#! vmovdqa64 $1zmm, $2zmm -> mov $2zmm_0 $1zmm_0;\nmov $2zmm_1 $1zmm_1;\nmov $2zmm_2 $1zmm_2;\nmov $2zmm_3 $1zmm_3;\nmov $2zmm_4 $1zmm_4;\nmov $2zmm_5 $1zmm_5;\nmov $2zmm_6 $1zmm_6;\nmov $2zmm_7 $1zmm_7
+#! vpternlogq $1c, $2zmm, $3zmm, $4zmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4zmm_0, $3zmm_0, $2zmm_0, table);\ncall vpternlogq64 ($4zmm_1, $3zmm_1, $2zmm_1, table);\ncall vpternlogq64 ($4zmm_2, $3zmm_2, $2zmm_2, table);\ncall vpternlogq64 ($4zmm_3, $3zmm_3, $2zmm_3, table);\ncall vpternlogq64 ($4zmm_4, $3zmm_4, $2zmm_4, table);\ncall vpternlogq64 ($4zmm_5, $3zmm_5, $2zmm_5, table);\ncall vpternlogq64 ($4zmm_6, $3zmm_6, $2zmm_6, table);\ncall vpternlogq64 ($4zmm_7, $3zmm_7, $2zmm_7, table)
+#! vpternlogq $1c, $2ea, $3zmm, $4zmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4zmm_0, $3zmm_0, $2ea, table);\ncall vpternlogq64 ($4zmm_1, $3zmm_1, $2ea[+8], table);\ncall vpternlogq64 ($4zmm_2, $3zmm_2, $2ea[+16], table);\ncall vpternlogq64 ($4zmm_3, $3zmm_3, $2ea[+24], table);\ncall vpternlogq64 ($4zmm_4, $3zmm_4, $2ea[+32], table);\ncall vpternlogq64 ($4zmm_5, $3zmm_5, $2ea[+40], table);\ncall vpternlogq64 ($4zmm_6, $3zmm_6, $2ea[+48], table);\ncall vpternlogq64 ($4zmm_7, $3zmm_7, $2ea[+56], table)
+#! vprolq $1c, $2zmm, $3zmm -> rol $3zmm_0 $2zmm_0 $1c;\nrol $3zmm_1 $2zmm_1 $1c;\nrol $3zmm_2 $2zmm_2 $1c;\nrol $3zmm_3 $2zmm_3 $1c;\nrol $3zmm_4 $2zmm_4 $1c;\nrol $3zmm_5 $2zmm_5 $1c;\nrol $3zmm_6 $2zmm_6 $1c;\nrol $3zmm_7 $2zmm_7 $1c
+#! vprorq $1c, $2zmm, $3zmm -> ror $3zmm_0 $2zmm_0 $1c;\nror $3zmm_1 $2zmm_1 $1c;\nror $3zmm_2 $2zmm_2 $1c;\nror $3zmm_3 $2zmm_3 $1c;\nror $3zmm_4 $2zmm_4 $1c;\nror $3zmm_5 $2zmm_5 $1c;\nror $3zmm_6 $2zmm_6 $1c;\nror $3zmm_7 $2zmm_7 $1c
+#! vpxord $1zmm, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1zmm_0;\nxor $3zmm_1@uint64 $2zmm_1 $1zmm_1;\nxor $3zmm_2@uint64 $2zmm_2 $1zmm_2;\nxor $3zmm_3@uint64 $2zmm_3 $1zmm_3;\nxor $3zmm_4@uint64 $2zmm_4 $1zmm_4;\nxor $3zmm_5@uint64 $2zmm_5 $1zmm_5;\nxor $3zmm_6@uint64 $2zmm_6 $1zmm_6;\nxor $3zmm_7@uint64 $2zmm_7 $1zmm_7
+#! vpxord $1ea, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1ea;\nxor $3zmm_1@uint64 $2zmm_1 $1ea[+8];\nxor $3zmm_2@uint64 $2zmm_2 $1ea[+16];\nxor $3zmm_3@uint64 $2zmm_3 $1ea[+24];\nxor $3zmm_4@uint64 $2zmm_4 $1ea[+32];\nxor $3zmm_5@uint64 $2zmm_5 $1ea[+40];\nxor $3zmm_6@uint64 $2zmm_6 $1ea[+48];\nxor $3zmm_7@uint64 $2zmm_7 $1ea[+56]
+#! vpxorq $1zmm, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1zmm_0;\nxor $3zmm_1@uint64 $2zmm_1 $1zmm_1;\nxor $3zmm_2@uint64 $2zmm_2 $1zmm_2;\nxor $3zmm_3@uint64 $2zmm_3 $1zmm_3;\nxor $3zmm_4@uint64 $2zmm_4 $1zmm_4;\nxor $3zmm_5@uint64 $2zmm_5 $1zmm_5;\nxor $3zmm_6@uint64 $2zmm_6 $1zmm_6;\nxor $3zmm_7@uint64 $2zmm_7 $1zmm_7
+#! vpxorq $1ea, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1ea;\nxor $3zmm_1@uint64 $2zmm_1 $1ea[+8];\nxor $3zmm_2@uint64 $2zmm_2 $1ea[+16];\nxor $3zmm_3@uint64 $2zmm_3 $1ea[+24];\nxor $3zmm_4@uint64 $2zmm_4 $1ea[+32];\nxor $3zmm_5@uint64 $2zmm_5 $1ea[+40];\nxor $3zmm_6@uint64 $2zmm_6 $1ea[+48];\nxor $3zmm_7@uint64 $2zmm_7 $1ea[+56]
+#! vpxor $1zmm, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1zmm_0;\nxor $3zmm_1@uint64 $2zmm_1 $1zmm_1;\nxor $3zmm_2@uint64 $2zmm_2 $1zmm_2;\nxor $3zmm_3@uint64 $2zmm_3 $1zmm_3;\nxor $3zmm_4@uint64 $2zmm_4 $1zmm_4;\nxor $3zmm_5@uint64 $2zmm_5 $1zmm_5;\nxor $3zmm_6@uint64 $2zmm_6 $1zmm_6;\nxor $3zmm_7@uint64 $2zmm_7 $1zmm_7
+#! vpxor $1ea, $2zmm, $3zmm -> xor $3zmm_0@uint64 $2zmm_0 $1ea;\nxor $3zmm_1@uint64 $2zmm_1 $1ea[+8];\nxor $3zmm_2@uint64 $2zmm_2 $1ea[+16];\nxor $3zmm_3@uint64 $2zmm_3 $1ea[+24];\nxor $3zmm_4@uint64 $2zmm_4 $1ea[+32];\nxor $3zmm_5@uint64 $2zmm_5 $1ea[+40];\nxor $3zmm_6@uint64 $2zmm_6 $1ea[+48];\nxor $3zmm_7@uint64 $2zmm_7 $1ea[+56]
+#! vpbroadcastq $1v, $2zmm -> mov $2zmm_0 $1v;\nmov $2zmm_1 $1v;\nmov $2zmm_2 $1v;\nmov $2zmm_3 $1v;\nmov $2zmm_4 $1v;\nmov $2zmm_5 $1v;\nmov $2zmm_6 $1v;\nmov $2zmm_7 $1v
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+#! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
+#! vzeroupper -> mov zmm0_2 0@uint64;\nmov zmm0_3 0@uint64;\nmov zmm0_4 0@uint64;\nmov zmm0_5 0@uint64;\nmov zmm0_6 0@uint64;\nmov zmm0_7 0@uint64;\nmov zmm1_2 0@uint64;\nmov zmm1_3 0@uint64;\nmov zmm1_4 0@uint64;\nmov zmm1_5 0@uint64;\nmov zmm1_6 0@uint64;\nmov zmm1_7 0@uint64;\nmov zmm2_2 0@uint64;\nmov zmm2_3 0@uint64;\nmov zmm2_4 0@uint64;\nmov zmm2_5 0@uint64;\nmov zmm2_6 0@uint64;\nmov zmm2_7 0@uint64;\nmov zmm3_2 0@uint64;\nmov zmm3_3 0@uint64;\nmov zmm3_4 0@uint64;\nmov zmm3_5 0@uint64;\nmov zmm3_6 0@uint64;\nmov zmm3_7 0@uint64;\nmov zmm4_2 0@uint64;\nmov zmm4_3 0@uint64;\nmov zmm4_4 0@uint64;\nmov zmm4_5 0@uint64;\nmov zmm4_6 0@uint64;\nmov zmm4_7 0@uint64;\nmov zmm5_2 0@uint64;\nmov zmm5_3 0@uint64;\nmov zmm5_4 0@uint64;\nmov zmm5_5 0@uint64;\nmov zmm5_6 0@uint64;\nmov zmm5_7 0@uint64;\nmov zmm6_2 0@uint64;\nmov zmm6_3 0@uint64;\nmov zmm6_4 0@uint64;\nmov zmm6_5 0@uint64;\nmov zmm6_6 0@uint64;\nmov zmm6_7 0@uint64;\nmov zmm7_2 0@uint64;\nmov zmm7_3 0@uint64;\nmov zmm7_4 0@uint64;\nmov zmm7_5 0@uint64;\nmov zmm7_6 0@uint64;\nmov zmm7_7 0@uint64;\nmov zmm8_2 0@uint64;\nmov zmm8_3 0@uint64;\nmov zmm8_4 0@uint64;\nmov zmm8_5 0@uint64;\nmov zmm8_6 0@uint64;\nmov zmm8_7 0@uint64;\nmov zmm9_2 0@uint64;\nmov zmm9_3 0@uint64;\nmov zmm9_4 0@uint64;\nmov zmm9_5 0@uint64;\nmov zmm9_6 0@uint64;\nmov zmm9_7 0@uint64;\nmov zmm10_2 0@uint64;\nmov zmm10_3 0@uint64;\nmov zmm10_4 0@uint64;\nmov zmm10_5 0@uint64;\nmov zmm10_6 0@uint64;\nmov zmm10_7 0@uint64;\nmov zmm11_2 0@uint64;\nmov zmm11_3 0@uint64;\nmov zmm11_4 0@uint64;\nmov zmm11_5 0@uint64;\nmov zmm11_6 0@uint64;\nmov zmm11_7 0@uint64;\nmov zmm12_2 0@uint64;\nmov zmm12_3 0@uint64;\nmov zmm12_4 0@uint64;\nmov zmm12_5 0@uint64;\nmov zmm12_6 0@uint64;\nmov zmm12_7 0@uint64;\nmov zmm13_2 0@uint64;\nmov zmm13_3 0@uint64;\nmov zmm13_4 0@uint64;\nmov zmm13_5 0@uint64;\nmov zmm13_6 0@uint64;\nmov zmm13_7 0@uint64;\nmov zmm14_2 0@uint64;\nmov zmm14_3 0@uint64;\nmov zmm14_4 0@uint64;\nmov zmm14_5 0@uint64;\nmov zmm14_6 0@uint64;\nmov zmm14_7 0@uint64
+
+#! KeccakP1600times8_PermuteAll_24rounds: -> nop
+#! endbr64.* -> nop
+#! push.* -> nop
+#! pop.* -> nop
+#! cmp.* -> nop
+#! lea.* -> nop
+
 KeccakP1600times8_PermuteAll_24rounds:
 # %rdi = 0x7fffffffd6c0
 # %rsi = 0x0
