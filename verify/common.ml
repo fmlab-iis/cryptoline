@@ -205,9 +205,7 @@ let exp_cshl w a1 a2 n =
 let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
 let bexp_shl v a p =
   let w = size_of_var v in
-  match p with
-  | Aconst (_, z) -> Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, z)))
-  | Avar _ -> True
+  Eq (w, exp_var v, Shl (w, exp_atom a, exp_atom p))
 let bexp_shls l v a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -216,9 +214,7 @@ let bexp_shls l v a p =
      Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p))))
 let bexp_shr v a p =
   let w = size_of_var v in
-  match p with
-  | Aconst (_, z) -> Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, z)))
-  | Avar _ -> True
+  Eq (w, exp_var v, Lshr (w, exp_atom a, exp_atom p))
 let bexp_shrs v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -227,9 +223,7 @@ let bexp_shrs v l a p =
      Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
 let bexp_sar v a p =
   let w = size_of_var v in
-  match p with
-  | Aconst (_, z) -> Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, z)))
-  | Avar _ -> True
+  Eq (w, exp_var v, Ashr (w, exp_atom a, exp_atom p))
 let bexp_sars v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
@@ -264,11 +258,11 @@ let bexp_cshrs vh vl l a1 a2 p =
 
 let bexp_rol v a n =
   let w = size_of_var v in
-  Eq (w, exp_var v, Rol (w, exp_atom a, Z.to_int n))
+  Eq (w, exp_var v, Rol (w, exp_atom a, exp_atom n))
 
 let bexp_ror v a n =
   let w = size_of_var v in
-  Eq (w, exp_var v, Ror (w, exp_atom a, Z.to_int n))
+  Eq (w, exp_var v, Ror (w, exp_atom a, exp_atom n))
 
 let bexp_cmov v c a1 a2 =
   let w = size_of_var v in
@@ -1281,25 +1275,37 @@ let bv2z_instr aim vgen i =
   | Irol (v, a, n) ->
      begin
        match v.vtyp with
-       | Tuint w -> let ni = Z.to_int n in
-                    if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
-                                         let aim = AIM.add (Avar v, ni) (l, h) aim in
-                                         (vgen, aim, tappend extras [ bv2z_join (evar v) l h ni])
-                    else let (h, vgen) = gen_var vgen in
-                         let h = mkvar ~newvid:true h (uint_t ni) in
-                         (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ])
+       | Tuint w ->
+          begin
+            match n with
+            | Avar _ -> (vgen, aim, [])
+            | Aconst (_, n) ->
+               let ni = Z.to_int n in
+               if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
+                                    let aim = AIM.add (Avar v, ni) (l, h) aim in
+                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h ni])
+               else let (h, vgen) = gen_var vgen in
+                    let h = mkvar ~newvid:true h (uint_t ni) in
+                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ])
+          end
        | Tsint _ -> assert false
      end
   | Iror (v, a, n) ->
      begin
        match v.vtyp with
-       | Tuint w -> let ni = Z.to_int n in
-                    if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a ni in
-                                         let aim = AIM.add (Avar v, w - ni) (l, h) aim in
-                                         (vgen, aim, tappend extras [ bv2z_join (evar v) l h (w - ni)])
-                    else let (h, vgen) = gen_var vgen in
-                         let h = mkvar ~newvid:true h (uint_t ni) in
-                         (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ])
+       | Tuint w ->
+          begin
+            match n with
+            | Avar _ -> (vgen, aim, [])
+            | Aconst (_, n) ->
+               let ni = Z.to_int n in
+               if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a ni in
+                                    let aim = AIM.add (Avar v, w - ni) (l, h) aim in
+                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h (w - ni)])
+               else let (h, vgen) = gen_var vgen in
+                    let h = mkvar ~newvid:true h (uint_t ni) in
+                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ])
+          end
        | Tsint _ -> assert false
      end
   | Inondet v ->

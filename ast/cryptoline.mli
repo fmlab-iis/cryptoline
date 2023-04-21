@@ -569,8 +569,8 @@ type instr =
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
-  | Irol of var * atom * Z.t                                (** Left rotation *)
-  | Iror of var * atom * Z.t                                (** Right rotation *)
+  | Irol of var * atom * atom                               (** Left rotation *)
+  | Iror of var * atom * atom                               (** Right rotation *)
   | Inondet of var                                          (** Nondeterministic assignment *)
   | Icmov of var * atom * atom * atom                       (** Conditional assignment *)
   | Inop                                                    (** No-op *)
@@ -614,7 +614,7 @@ type instr =
    - [Ishl (v, a, n)]: Shift [a] left by [n] and store the result in [v].
                        {ul {- Type: [v] and [a] have the same type.}
                            {- QF_BV: v = shl a n}
-                           {- Algebra: v = a × 2{^n} with soundness conditions:
+                           {- Algebra: True if n is an atom; otherwise v = a × 2{^n} with soundness conditions:
                            {ul {- Unsigned: high n a = 0}
                                {- Signed: sext n (low (size a - n) a) = a}}}}
    - [Ishls (l, v, a, n)]: Shift [a] left by [n] and store the result in [v]. Bits shifted out are stored in [l].
@@ -626,7 +626,7 @@ type instr =
    - [Ishr (v, a, n)]: Shift [a] right logically by [n] and store the result in [v].
                        {ul {- Type: [v] and [a] have the same type.}
                            {- QF_BV: v = lshr a n}
-                           {- Algebra: v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
+                           {- Algebra: True if n is an atom; otherwise v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
                            {ul {- Unsigned: low n a = 0}
                                {- Signed: low n a = 0, high 1 a = 0}}}}
    - [Ishrs (v, l, a, n)]: Shift [a] right logically by [n] and store the result in [v]. Bits shifted out are stored in [l].
@@ -638,7 +638,7 @@ type instr =
    - [Isar (v, a, n)]: Shift [a] right arithmetically by [n].
                        {ul {- Type: [v] and [a] have the same type.}
                            {- QF_BV: v = ashr a n}
-                           {- Algebra: v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
+                           {- Algebra: True if n is an atom; otherwise v × 2{^n} = a (or v = a / 2 if a is a constant) with soundness conditions:
                            {ul {- Unsigned: low n a = 0, high 1 a = 0}
                                {- Signed: low n a = 0}}}}
    - [Isars (v, l, a, n)]: Shift [a] right arithmetically by [n] and store the result in [v]. Bits shifted out are stored in [l].
@@ -668,13 +668,13 @@ type instr =
    - [Irol (v, a, n)]: Rotate [v] to the left by [n] and store the rotated result in [v].
                        {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
                            {- QF_BV: v = rol a n}
-                           {- Algebra:
+                           {- Algebra: True if n is an atom; otherwise
                            {ul {- {!Options.Std.track_split} = [true]: a = l + h × 2{^size a - n}, v = h + l × 2{^n} for some fresh or existing l and h}
                                {- {!Options.Std.track_split} = [false]: v = a × 2{^n} - h × 2{^size a} + h for some fresh h}}}}
    - [Iror (v, a, n)]: Rotate [v] to the right by [n] and store the rotated result in [v].
                        {ul {- Type: [a] is unsigned. [v] and [a] have the same type. [n] is smaller than the size of [a].}
                            {- QF_BV: v = ror a n}
-                           {- Algebra:
+                           {- Algebra: True if n is an atom; otherwise
                            {ul {- {!Options.Std.track_split} = [true]: a = l + h × 2{^n}, v = h + l × 2{^size a - n} for some fresh l and h}
                                {- {!Options.Std.track_split} = [false]: v = a × 2{^size a - n} - h × 2{^size a} + h for some fresh h}}}}
    - [Inondet v]: Assign [v] a nondeterministic value.
