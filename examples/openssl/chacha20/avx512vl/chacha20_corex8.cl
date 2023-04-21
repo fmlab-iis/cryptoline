@@ -1,3 +1,18 @@
+(* popper: cv_cec.exe -v -jobs 16 -ov a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab,ac,ad,ae,af#b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,ba,bb,bc,bd,be,bf#c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb,cc,cd,ce,cf#d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df#e0,e1,e2,e3,e4,e5,e6,e7,e8,e9,ea,eb,ec,ed,ee,ef#f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,fa,fb,fc,fd,fe,ff#g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,ga,gb,gc,gd,ge,gf#h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,ha,hb,hc,hd,he,hf chacha20_corex8.cl ../chacha_salsa20_wordtobyte_entryx8.cl
+Parsing CryptoLine file:                [OK]            0.025806 seconds
+Checking well-formedness:               [OK]            0.009616 seconds
+Parsing CryptoLine file:                [OK]            0.040885 seconds
+Checking well-formedness:               [OK]            0.025029 seconds
+Equivalence of output group #6:         [OK]            0.296786 seconds
+Equivalence of output group #5:         [OK]            0.585848 seconds
+Equivalence of output group #4:         [OK]            0.877842 seconds
+Equivalence of output group #3:         [OK]            1.170313 seconds
+Equivalence of output group #2:         [OK]            1.459444 seconds
+Equivalence of output group #1:         [OK]            1.754089 seconds
+Equivalence of output group #0:         [OK]            2.041897 seconds
+Equivalence of output group #7:         [OK]            0.118352 seconds
+Final result:                           [OK]            2.424357 seconds
+*)
 proc main (uint32 A0, uint32 A1, uint32 A2, uint32 A3,
            uint32 A4, uint32 A5, uint32 A6, uint32 A7,
            uint32 A8, uint32 A9, uint32 Aa, uint32 Ab,

@@ -1,3 +1,26 @@
+(* popper: cv_cec.exe -v -jobs 16 -ov a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab,ac,ad,ae,af#b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,ba,bb,bc,bd,be,bf#c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb,cc,cd,ce,cf#d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df#e0,e1,e2,e3,e4,e5,e6,e7,e8,e9,ea,eb,ec,ed,ee,ef#f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,fa,fb,fc,fd,fe,ff#g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,ga,gb,gc,gd,ge,gf#h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,ha,hb,hc,hd,he,hf#i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,ia,ib,ic,id,ie,if#j0,j1,j2,j3,j4,j5,j6,j7,j8,j9,ja,jb,jc,jd,je,jf#k0,k1,k2,k3,k4,k5,k6,k7,k8,k9,ka,kb,kc,kd,ke,kf#l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,la,lb,lc,ld,le,lf#m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf#n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,na,nb,nc,nd,ne,nf#o0,o1,o2,o3,o4,o5,o6,o7,o8,o9,oa,ob,oc,od,oe,of#p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf chacha20_corex16.cl ../chacha_salsa20_wordtobyte_entryx16.cl
+Parsing CryptoLine file:                [OK]            0.050451 seconds
+Checking well-formedness:               [OK]            0.015511 seconds
+Parsing CryptoLine file:                [OK]            0.071799 seconds
+Checking well-formedness:               [OK]            0.048940 seconds
+Equivalence of output group #14:        [OK]            0.382694 seconds
+Equivalence of output group #13:        [OK]            0.758104 seconds
+Equivalence of output group #12:        [OK]            1.129415 seconds
+Equivalence of output group #11:        [OK]            1.506893 seconds
+Equivalence of output group #10:        [OK]            1.880797 seconds
+Equivalence of output group #9:         [OK]            2.255520 seconds
+Equivalence of output group #8:         [OK]            2.636372 seconds
+Equivalence of output group #7:         [OK]            3.012645 seconds
+Equivalence of output group #6:         [OK]            3.390042 seconds
+Equivalence of output group #5:         [OK]            3.762712 seconds
+Equivalence of output group #4:         [OK]            4.137361 seconds
+Equivalence of output group #3:         [OK]            4.515489 seconds
+Equivalence of output group #2:         [OK]            4.888841 seconds
+Equivalence of output group #1:         [OK]            5.263923 seconds
+Equivalence of output group #0:         [OK]            5.637817 seconds
+Equivalence of output group #15:        [OK]            0.122392 seconds
+Final result:                           [OK]            6.103495 seconds
+*)
 (* quine: cv_cec.exe -jobs 16 -v -ov a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab,ac,ad,ae,af#b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,ba,bb,bc,bd,be,bf#c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb,cc,cd,ce,cf#d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df#e0,e1,e2,e3,e4,e5,e6,e7,e8,e9,ea,eb,ec,ed,ee,ef#f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,fa,fb,fc,fd,fe,ff#g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,ga,gb,gc,gd,ge,gf#h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,ha,hb,hc,hd,he,hf#i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,ia,ib,ic,id,ie,if#j0,j1,j2,j3,j4,j5,j6,j7,j8,j9,ja,jb,jc,jd,je,jf#k0,k1,k2,k3,k4,k5,k6,k7,k8,k9,ka,kb,kc,kd,ke,kf#l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,la,lb,lc,ld,le,lf#m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf#n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,na,nb,nc,nd,ne,nf#o0,o1,o2,o3,o4,o5,o6,o7,o8,o9,oa,ob,oc,od,oe,of#p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf ../chacha_salsa20_wordtobyte_entryx16.cl chacha20_corex16.cl
 Parsing CryptoLine file:                [OK]            0.115121 seconds
 Checking well-formedness:               [OK]            0.063565 seconds
