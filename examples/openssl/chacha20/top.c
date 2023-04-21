@@ -1,3 +1,4 @@
+/* use "env OPENSSL_ia32cap=:0x10000" to enable avx512x16 */
 #include <stdint.h>
 
 uint8_t out[2048], inp[2048];
