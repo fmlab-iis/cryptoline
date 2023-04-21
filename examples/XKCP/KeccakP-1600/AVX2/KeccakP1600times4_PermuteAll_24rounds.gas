@@ -1,3 +1,43 @@
+# Convert with -re
+
+#! %r$1cd = %r$1c
+#! %ebx = %%rbx
+#! %edx = %%rdx
+#! %xmm$1c = %%xmm$1c
+#! %ymm$1c = %%ymm$1c
+#! %r(\w*) = %%r\1
+#! \(%r\w*\) = %%EA
+#! $1c\(%r\w*\) = %%EA
+
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movq $1c, $2ea -> mov $2ea $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! vmovdqa $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+8];\nmov $2ymm_2 $1ea[+16];\nmov $2ymm_3 $1ea[+24]
+#! vmovdqa $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+8] $1ymm_1;\nmov $2ea[+16] $1ymm_2;\nmov $2ea[+24] $1ymm_3
+#! vmovdqa $1ymm, $2ymm -> mov $2ymm_0 $1ymm_0;\nmov $2ymm_1 $1ymm_1;\nmov $2ymm_2 $1ymm_2;\nmov $2ymm_3 $1ymm_3
+#! vmovq $1v, $2xmm -> mov $2xmm_0 $1v;\nmov $2xmm_1 0@uint64
+#! vpxor $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint64 $2ymm_0 $1ymm_0;\nxor $3ymm_1@uint64 $2ymm_1 $1ymm_1;\nxor $3ymm_2@uint64 $2ymm_2 $1ymm_2;\nxor $3ymm_3@uint64 $2ymm_3 $1ymm_3
+#! vpxor $1ea, $2ymm, $3ymm -> xor $3ymm_0@uint64 $2ymm_0 $1ea;\nxor $3ymm_1@uint64 $2ymm_1 $1ea[+8];\nxor $3ymm_2@uint64 $2ymm_2 $1ea[+16];\nxor $3ymm_3@uint64 $2ymm_3 $1ea[+24]
+#! vpor $1ymm, $2ymm, $3ymm -> or $3ymm_0@uint64 $2ymm_0 $1ymm_0;\nor $3ymm_1@uint64 $2ymm_1 $1ymm_1;\nor $3ymm_2@uint64 $2ymm_2 $1ymm_2;\nor $3ymm_3@uint64 $2ymm_3 $1ymm_3
+#! vpsllq $1c, $2ymm, $3ymm -> shl $3ymm_0 $2ymm_0 $1c@uint64;\nshl $3ymm_1 $2ymm_1 $1c@uint64;\nshl $3ymm_2 $2ymm_2 $1c@uint64;\nshl $3ymm_3 $2ymm_3 $1c@uint64
+#! vpsrlq $1c, $2ymm, $3ymm -> shr $3ymm_0 $2ymm_0 $1c@uint64;\nshr $3ymm_1 $2ymm_1 $1c@uint64;\nshr $3ymm_2 $2ymm_2 $1c@uint64;\nshr $3ymm_3 $2ymm_3 $1c@uint64
+#! vpbroadcastq $1xmm, $2ymm -> mov $2ymm_0 $1xmm_0;\nmov $2ymm_1 $1xmm_0;\nmov $2ymm_2 $1xmm_0;\nmov $2ymm_3 $1xmm_0
+#! vpbroadcastq $1v, $2ymm -> mov $2ymm_0 $1v;\nmov $2ymm_1 $1v;\nmov $2ymm_2 $1v;\nmov $2ymm_3 $1v
+#! vpbroadcastq $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+8];\nmov $2ymm_2 $1ea[+16];\nmov $2ymm_3 $1ea[+24]
+#! vpandn $1ymm, $2ymm, $3ymm -> not $2ymm_0n@uint64 $2ymm_0;\nand $3ymm_0@uint64 $2ymm_0n $1ymm_0;\nnot $2ymm_1n@uint64 $2ymm_1;\nand $3ymm_1@uint64 $2ymm_1n $1ymm_1;\nnot $2ymm_2n@uint64 $2ymm_2;\nand $3ymm_2@uint64 $2ymm_2n $1ymm_2;\nnot $2ymm_3n@uint64 $2ymm_3;\nand $3ymm_3@uint64 $2ymm_3n $1ymm_3
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+#! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
+#! vpshufb $1ea, $2ymm, $3ymm -> call vpshufb128($1ea, $1ea[+8], $2ymm_0, $2ymm_1, tmp_0, tmp_1);\ncall vpshufb128($1ea[+16], $1ea[+24], $2ymm_2, $2ymm_3, tmp_2, tmp_3);\nmov $3ymm_0 tmp_0;\nmov $3ymm_1 tmp_1;\nmov $3ymm_2 tmp_2;\nmov $3ymm_3 tmp_3
+#! vzeroupper -> mov ymm0_2 0@uint64;\nmov ymm0_3 0@uint64;\nmov ymm1_2 0@uint64;\nmov ymm1_3 0@uint64;\nmov ymm2_2 0@uint64;\nmov ymm2_3 0@uint64;\nmov ymm3_2 0@uint64;\nmov ymm3_3 0@uint64;\nmov ymm4_2 0@uint64;\nmov ymm4_3 0@uint64;\nmov ymm5_2 0@uint64;\nmov ymm5_3 0@uint64;\nmov ymm6_2 0@uint64;\nmov ymm6_3 0@uint64;\nmov ymm7_2 0@uint64;\nmov ymm7_3 0@uint64;\nmov ymm8_2 0@uint64;\nmov ymm8_3 0@uint64;\nmov ymm9_2 0@uint64;\nmov ymm9_3 0@uint64;\nmov ymm10_2 0@uint64;\nmov ymm10_3 0@uint64;\nmov ymm11_2 0@uint64;\nmov ymm11_3 0@uint64;\nmov ymm12_2 0@uint64;\nmov ymm12_3 0@uint64;\nmov ymm13_2 0@uint64;\nmov ymm13_3 0@uint64;\nmov ymm14_2 0@uint64;\nmov ymm14_3 0@uint64;\nmov ymm15_2 0@uint64;\nmov ymm15_3 0@uint64
+
+#! KeccakP1600times4_PermuteAll_24rounds: -> nop
+#! push.* -> nop
+#! pop.* -> nop
+#! cmp.* -> nop
+#! lea.* -> nop
+
 KeccakP1600times4_PermuteAll_24rounds:
 # %rdi = 0x7fffffffc320
 # %rsi = 0x7fffffffbf70
