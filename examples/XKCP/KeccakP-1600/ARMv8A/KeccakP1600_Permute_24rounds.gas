@@ -1,3 +1,30 @@
+#! [sp] = %%EA
+#! [sp, $1c] = %%EA
+#! [sp, $1c]! = %%EA
+#! [x$1c] = %%EA
+#! [x$1c, $2c] = %%EA
+#! [x$1c, $2c]! = %%EA
+#! x$1c = %%x$1c
+#! w$1c = %%x$1c
+
+#! ldp $1v, $2v, $3ea, $4c -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! ldp $1v, $2v, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! stp $1v, $2v, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! ldr $1v, $2ea -> mov $1v $2ea
+#! str $1v, $2ea -> mov $2ea $1v
+#! mov $1v, $2v .* -> mov $1v $2v
+#! mov $1v, $2c .* -> mov $1v $2c@uint64
+#! eor $1v, $2v, $3v, ror $4c -> ror $3v_r $3v $4c;\nxor $1v@uint64 $2v $3v_r
+#! eor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
+#! eor $1v, $2v, $3c -> xor $1v@uint64 $2v $3c@uint64
+#! ror $1v, $2v, $3c -> ror $1v@uint64 $2v $3c
+#! bic $1v, $2v, $3v -> not $3v_not@uint64 $3v;\nand $1v@uint64 $2v $3v_not
+#! movk $1v, $2c, lsl #16 -> shl tmp $2c@uint64 16;\nand $1v_m@uint64 $1v 0xffffffff0000ffff@uint64;\nor $1v@uint64 $1v_m tmp
+#! movk $1v, $2c, lsl #48 -> shl tmp $2c@uint64 48;\nand $1v_m@uint64 $1v 0x0000ffffffffffff@uint64;\nor $1v@uint64 $1v_m tmp
+#! movk $1v, $2c -> and $1v_m@uint64 $1v 0xffffffffffff0000@uint64;\nor $1v@uint64 $1v_m $2c@uint64
+
+#! KeccakP1600_Permute_24rounds: -> nop
+
 KeccakP1600_Permute_24rounds:
 # x0 = 0x7fffffeb58
 # x1 = 0x0
