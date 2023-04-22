@@ -881,8 +881,8 @@ type instr =
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
-  | Irol of var * atom * Z.t                                (** Left rotation *)
-  | Iror of var * atom * Z.t                                (** Right rotation *)
+  | Irol of var * atom * atom                               (** Left rotation *)
+  | Iror of var * atom * atom                               (** Right rotation *)
   | Inondet of var                                          (** Nondeterministic assignment *)
   | Icmov of var * atom * atom * atom                       (** Conditional assignment *)
   | Inop                                                    (** No-op *)
@@ -1266,8 +1266,8 @@ let string_of_instr ?typ:(typ=false) i =
   | Icshl (vh, vl, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Icshr (vh, vl, a1, a2, n) -> "cshr " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Icshrs (vh, vl, l, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ vstr l ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
-  | Irol (v, a, n) -> Printf.sprintf "rol %s %s %s" (vstr v) (astr a) (Z.to_string n)
-  | Iror (v, a, n) -> Printf.sprintf "ror %s %s %s" (vstr v) (astr a) (Z.to_string n)
+  | Irol (v, a, n) -> Printf.sprintf "rol %s %s %s" (vstr v) (astr a) (astr n)
+  | Iror (v, a, n) -> Printf.sprintf "ror %s %s %s" (vstr v) (astr a) (astr n)
   | Inondet v -> "nondet " ^ string_of_var ~typ:true v
   | Icmov (v, c, a1, a2) -> "cmov " ^ vstr v ^ " " ^ astr c ^ " " ^ astr a1 ^ " " ^ astr a2
   | Inop -> "nop"
@@ -1424,8 +1424,8 @@ let vars_instr i =
      VS.add vh (VS.add vl (VS.union (vars_atom a1) (vars_atom a2)))
   | Icshrs (vh, vl, l, a1, a2, _) ->
      VS.add vh (VS.add vl (VS.add l (VS.union (vars_atom a1) (vars_atom a2))))
-  | Irol (v, a, _)
-    | Iror (v, a, _) -> VS.add v (vars_atom a)
+  | Irol (v, a, n)
+    | Iror (v, a, n) -> VS.add v (VS.union (vars_atom a) (vars_atom n))
   | Inondet v -> VS.singleton v
   | Icmov (v, c, a1, a2) -> VS.add v (VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2)))
   | Inop -> VS.empty
@@ -1523,8 +1523,8 @@ let rvs_instr i =
   | Icshl (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshr (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Irol (_, a, _)
-    | Iror (_, a, _) -> vars_atom a
+  | Irol (_, a, n)
+    | Iror (_, a, n) -> VS.union (vars_atom a) (vars_atom n)
   | Inondet _ -> VS.empty
   | Icmov (_, c, a1, a2) -> VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2))
   | Inop -> VS.empty
@@ -1685,8 +1685,8 @@ let vids_instr i =
      IS.add vh.vid (IS.add vl.vid (IS.union (vids_atom a1) (vids_atom a2)))
   | Icshrs (vh, vl, l, a1, a2, _) ->
      IS.add vh.vid (IS.add vl.vid (IS.add l.vid (IS.union (vids_atom a1) (vids_atom a2))))
-  | Irol (v, a, _)
-    | Iror (v, a, _) -> IS.add v.vid (vids_atom a)
+  | Irol (v, a, n)
+    | Iror (v, a, n) -> IS.add v.vid (IS.union (vids_atom a) (vids_atom n))
   | Inondet v -> IS.singleton v.vid
   | Icmov (v, c, a1, a2) -> IS.add v.vid (IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2)))
   | Inop -> IS.empty
@@ -1784,8 +1784,8 @@ let rvids_instr i =
   | Icshl (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshr (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Irol (_, a, _)
-    | Iror (_, a, _) -> vids_atom a
+  | Irol (_, a, n)
+    | Iror (_, a, n) -> IS.union (vids_atom a) (vids_atom n)
   | Inondet _ -> IS.empty
   | Icmov (_, c, a1, a2) -> IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2))
   | Inop -> IS.empty
@@ -1983,10 +1983,12 @@ let ssa_instr m i =
      (mvh, Icshrs (ssa_var mvh vh, ssa_var mvl vl, ssa_var ml l, a1, a2, n))
   | Irol (v, a, n) ->
      let a = ssa_atom m a in
+     let n = ssa_atom m n in
      let mv = upd_sidx v m in
      (mv, Irol (ssa_var mv v, a, n))
   | Iror (v, a, n) ->
      let a = ssa_atom m a in
+     let n = ssa_atom m n in
      let mv = upd_sidx v m in
      (mv, Iror (ssa_var mv v, a, n))
   | Inondet v ->
@@ -2737,8 +2739,8 @@ let subst_instr am em rm i =
   | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
   | Icshr (vh, vl, a1, a2, n) -> Icshr (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
   | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atom am a1, subst_atom am a2, n)
-  | Irol (v, a, n) -> Irol (subst_lval am v, subst_atom am a, n)
-  | Iror (v, a, n) -> Iror (subst_lval am v, subst_atom am a, n)
+  | Irol (v, a, n) -> Irol (subst_lval am v, subst_atom am a, subst_atom am n)
+  | Iror (v, a, n) -> Iror (subst_lval am v, subst_atom am a, subst_atom am n)
   | Inondet v -> Inondet (subst_lval am v)
   | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atom am c, subst_atom am a1, subst_atom am a2)
   | Inop -> Inop
@@ -3157,10 +3159,12 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
   | Icshrs (vh, vl, l, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
                                      let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                      casts1@casts2@[Icshrs (vh, vl, l, a1, a2, n)]
-  | Irol (v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
-                      casts@[Irol (v, a, n)]
-  | Iror (v, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
-                      casts@[Iror (v, a, n)]
+  | Irol (v, a, n) -> let (casts1, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
+                      let (casts2, n) = auto_cast_atom ~preserve:preserve t v.vtyp n in
+                      casts1@casts2@[Irol (v, a, n)]
+  | Iror (v, a, n) -> let (casts1, a) = auto_cast_atom ~preserve:preserve t v.vtyp a in
+                      let (casts2, n) = auto_cast_atom ~preserve:preserve t v.vtyp n in
+                      casts1@casts2@[Iror (v, a, n)]
   | Inondet _v -> [i]
   | Icmov (v, c, a1, a2) -> let (casts, c) = auto_cast_atom ~preserve:preserve t bit_t c in
                             let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
@@ -3461,8 +3465,8 @@ let visit_instr visitor i =
         | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
         | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
         | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (visit_var visitor vh, visit_var visitor vl, visit_var visitor l, visit_atom visitor a1, visit_atom visitor a2, n)
-        | Irol (v, a, n) -> Irol (visit_var visitor v, visit_atom visitor a, n)
-        | Iror (v, a, n) -> Iror (visit_var visitor v, visit_atom visitor a, n)
+        | Irol (v, a, n) -> Irol (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
+        | Iror (v, a, n) -> Iror (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
         | Inondet v -> Inondet (visit_var visitor v)
         | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, visit_atom visitor c, visit_atom visitor a1, visit_atom visitor a2)
         | Inop -> Inop
@@ -4197,8 +4201,8 @@ let update_variable_id_instr m i =
   | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
   | Icshr (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
   | Icshrs (vh, vl, l, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; Avar l; a1; a2]
-  | Irol (v, a, _) -> update_variable_id_atoms m [Avar v; a]
-  | Iror (v, a, _) -> update_variable_id_atoms m [Avar v; a]
+  | Irol (v, a, n) -> update_variable_id_atoms m [Avar v; a; n]
+  | Iror (v, a, n) -> update_variable_id_atoms m [Avar v; a; n]
   | Inondet v -> update_variable_id_var m v
   | Icmov (v, c, a1, a2) -> update_variable_id_atoms m [Avar v; c; a1; a2]
   | Inop -> m

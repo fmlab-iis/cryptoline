@@ -27,8 +27,8 @@ type exp =
   | Shl of size * exp * exp             (** left shift *)
   | Lshr of size * exp * exp            (** logical right shift *)
   | Ashr of size * exp * exp            (** arithmetic right shift *)
-  | Rol of size * exp * int             (** left rotation *)
-  | Ror of size * exp * int             (** right rotation *)
+  | Rol of size * exp * exp             (** left rotation *)
+  | Ror of size * exp * exp             (** right rotation *)
   | Concat of size * size * exp * exp   (** [Concat (wh, wl, vh, vl)] concatenates bit-vectors [vh] and [vl]. *)
   | Extract of size * int * int * exp   (** [Extract (size_of_exp, i, j, e)] extracts bits of [e] from position [i] down to position [j] where i >= j .*)
   | Slice of size * int * int * exp     (** [Slice (w1, w2, w3, exp)] extracts a slice of the bit-vector [exp] where

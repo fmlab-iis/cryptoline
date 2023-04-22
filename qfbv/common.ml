@@ -29,8 +29,8 @@ type exp =
   | Shl of size * exp * exp
   | Lshr of size * exp * exp
   | Ashr of size * exp * exp
-  | Rol of size * exp * int
-  | Ror of size * exp * int
+  | Rol of size * exp * exp
+  | Ror of size * exp * exp
   | Concat of size * size * exp * exp   (* Concat (wh, wl, vh, vl) *)
   | Extract of size * int * int * exp   (* Extract (size_of_exp, i, j, e) where i >= j *)
   | Slice of size * int * int * exp     (* Slice (w1, w2, w3, exp), w1: the width before the slice, w2: the width of the slice, w3: the width after the slice *)
@@ -127,11 +127,11 @@ let rec string_of_exp (e : exp) : string =
   | Rol (_, e, n) ->
      (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ " rol "
-     ^ string_of_int n
+     ^ (if is_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
   | Ror (_, e, n) ->
      (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ " ror "
-     ^ string_of_int n
+     ^ (if is_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
   | Concat (_w1, _w2, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ "."
@@ -197,8 +197,8 @@ let rec vars_exp e =
   | Lshr (_, e1, e2)
   | Ashr (_, e1, e2)
   | Concat (_, _, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
-  | Rol (_, e, _)
-  | Ror (_, e, _)
+  | Rol (_, e, n)
+  | Ror (_, e, n) -> VS.union (vars_exp e) (vars_exp n)
   | Extract (_, _, _, e)
   | Slice (_, _, _, e)
   | High (_, _, e)
@@ -557,8 +557,14 @@ let rec btor_of_exp m e =
   | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
   | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
-  | Rol (w, e, n) -> m#mkrol w (btor_of_exp m e) (m#mkconstd_for_rotate w (Z.of_int n))
-  | Ror (w, e, n) -> m#mkror w (btor_of_exp m e) (m#mkconstd_for_rotate w (Z.of_int n))
+  | Rol (w, e, n) -> let n = match n with
+                       | Const (w, n) -> m#mkconstd_for_rotate w n
+                       | _ -> btor_of_exp m n in
+                     m#mkrol w (btor_of_exp m e) n
+  | Ror (w, e, n) -> let n = match n with
+                       | Const (w, n) -> m#mkconstd_for_rotate w n
+                       | _ -> btor_of_exp m n in
+                     m#mkror w (btor_of_exp m e) n
   | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
   | Extract (w, i, j, e) -> m#mkextract w i j (btor_of_exp m e)
   | Slice (w1, w2, w3, e) -> m#mkslice w1 w2 w3 (btor_of_exp m e)
@@ -733,10 +739,16 @@ let btor_instr m i =
                                      m#setvar l (m#mklow ni (w2 - ni) a2_btor)
   | Irol (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mkrol w a_btor (m#mkconstd_for_rotate w n))
+                      let n_btor = match n with
+                        | Avar _ -> btor_atom m n
+                        | Aconst (_, z) -> m#mkconstd_for_rotate w z in
+                      m#setvar v (m#mkrol w a_btor n_btor)
   | Iror (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
-                      m#setvar v (m#mkror w a_btor (m#mkconstd_for_rotate w n))
+                      let n_btor = match n with
+                        | Avar _ -> btor_atom m n
+                        | Aconst (_, z) -> m#mkconstd_for_rotate w z in
+                      m#setvar v (m#mkror w a_btor n_btor)
   | Inondet v -> ignore(m#mkvar v)
   | Icmov (v, c, a1, a2) -> let w = size_of_var v in
                             let c_btor = btor_atom m c in
@@ -994,8 +1006,12 @@ let rec smtlib2_of_exp e =
   | Shl (_w, e1, e2) -> bvshl (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Lshr (_w, e1, e2) -> bvlshr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ashr (_w, e1, e2) -> bvashr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
-  | Rol (_, e, n) -> bvrol (smtlib2_of_exp e) n
-  | Ror (_, e, n) -> bvror (smtlib2_of_exp e) n
+  | Rol (_, e, n) -> (match n with
+                      | Const (_, n) -> bvrol (smtlib2_of_exp e) (Z.to_int n)
+                      | _ -> failwith ("SMTLIB2 format does not support rotation by an expression"))
+  | Ror (_, e, n) -> (match n with
+                      | Const (_, n) -> bvror (smtlib2_of_exp e) (Z.to_int n)
+                      | _ -> failwith ("SMTLIB2 format does not support rotation by an expression."))
   | Concat (_w1, _w2, e1, e2) -> bvconcat (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Extract (_w, i, j, e) -> bvextract i j (smtlib2_of_exp e)
   | Slice (w1, w2, w3, e) -> bvslice w1 w2 w3 (smtlib2_of_exp e)

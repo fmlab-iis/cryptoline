@@ -272,7 +272,7 @@
       let n = num cm in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (typ_to_size ty (Z.to_int n))) in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ = 
+      let _ =
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
@@ -304,7 +304,7 @@
       let n = num cm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ = 
+      let _ =
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
@@ -336,7 +336,7 @@
       let n = num cm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ = 
+      let _ =
         let w = size_of_var v in
         if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
@@ -381,7 +381,7 @@
     fun _fm cm vm vxm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = num cm in
+      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, vxm, ym, gm, [lno, Irol (v, a, n)])
 
@@ -389,7 +389,7 @@
     fun _fm cm vm vxm ym gm ->
       let a = resolve_atom_with lno src cm vm ym gm in
       let ty = typ_of_atom a in
-      let n = num cm in
+      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
       let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
       (vm, vxm, ym, gm, [lno, Iror (v, a, n)])
 
@@ -1897,8 +1897,8 @@ instr:
   | CSHRS lval lval lval atom atom const          { (!lnum, `CSHRS ($2, $3, $4, $5, $6, $7)) }
   | lhs DOT lhs DOT lhs EQOP CSHRS atom atom const
                                                   { (!lnum, `CSHRS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
-  | ROL lval atom const                           { (!lnum, `ROL ($2, $3, $4)) }
-  | ROR lval atom const                           { (!lnum, `ROR ($2, $3, $4)) }
+  | ROL lval atom atom                            { (!lnum, `ROL ($2, $3, $4)) }
+  | ROR lval atom atom                            { (!lnum, `ROR ($2, $3, $4)) }
   | SET lcarry                                    { (!lnum, `SET $2) }
   | CLEAR lcarry                                  { (!lnum, `CLEAR $2) }
   | NONDET lval                                   { (!lnum, `NONDET $2) }

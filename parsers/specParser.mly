@@ -111,8 +111,8 @@ instr:
   | CSHL lval lval atom atom const                { [min_int, Icshl ($2, $3, $4, $5, $6)] }
   | CSHR lval lval atom atom const                { [min_int, Icshr ($2, $3, $4, $5, $6)] }
   | CSHRS lval lval lval atom atom const          { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
-  | ROL lval atom const                           { [min_int, Irol ($2, $3, $4)] }
-  | ROR lval atom const                           { [min_int, Iror ($2, $3, $4)] }
+  | ROL lval atom atom                            { [min_int, Irol ($2, $3, $4)] }
+  | ROR lval atom atom                            { [min_int, Iror ($2, $3, $4)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
   | CMOV lval carry atom atom                     { [min_int, Icmov ($2, $3, $4, $5)] }
   | ADD lval atom atom                            { [min_int, Iadd ($2, $3, $4)] }
