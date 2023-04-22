@@ -171,7 +171,7 @@ class ARM64(Extractor):
 class ARM32(Extractor):
     branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
     eapattern = re.compile(r'(?:\[([a-z]+[0-9]*)'
-                               '(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\]'
+                               '(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\s*:\d+)?''\]'
                             '|(?:ld|st)m\w*\.?\w*\s+(\w+)!?,)')
 
     def printHeader(self, function):
@@ -211,7 +211,7 @@ class ARM32(Extractor):
             else: offset = "%s" % frame.read_register(offset)
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += int(offset, 0)
-        if insn["asm"].startswith("ld") :
+        if insn["asm"].startswith("ld"):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
