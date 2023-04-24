@@ -245,6 +245,9 @@ def replace_address_with_offset(line):
     line = line.replace(addr_off, addr)
   return line
 
+def compute(instr):
+  instr.dsl = re.sub(r'`([^`]+)`', lambda m: str(eval(m.group(1))), instr.dsl)
+
 # Translate instructions
 def translate_instrs(tspec, instrs):
   # Apply variable substitutions
@@ -254,6 +257,8 @@ def translate_instrs(tspec, instrs):
     for lhs, rhs in substs.items():
       instr.dsl = re.sub(lhs, rhs, instr.dsl)
     instr.applySubst()
+    # Do some computation
+    compute(instr)
   # Apply translation rules
   skip = 0
   for i in range(len(instrs)):
@@ -282,6 +287,8 @@ def translate_instrs(tspec, instrs):
           instr.dsl = res
         else:
           instr.dsl = res
+        # Do some computation
+        compute(instr)
         break
   return [instr for instr in instrs if instr.asm != "" and instr.dsl != nop_instr]
 
