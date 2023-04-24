@@ -1,3 +1,36 @@
+#! [r$1c] = %%ea
+#! [r$1c :$2c] = %%EA
+#! [r$1c :$2c]! = %%EA
+#! r$1c = %%r$1c
+#! d$1c = %%d$1c
+#! q$1c = %%d`$1c * 2`-%%d`$1c * 2 + 1`
+#! lr = %%lr
+#! pc = %%pc
+
+#! mov $1v, $2v -> mov $1v $2v
+#! movs $1v, $2c -> mov $1v $2c@uint32
+#! vld1.64 \{$1v\}, $2ea -> mov $1v $2ea
+#! vld1.64 {$1v-$2v}, $3ea -> mov $1v $3ea;\nmov $2v $3ea[+8]
+#! vst1.64 {$1v}, $2ea -> mov $2ea $1v
+#! vst1.64 {$1v-$2v}, $3ea -> mov $3ea $1v;\nmov $3ea[+8] $2v
+#! add $1v, $2v, $3c .* -> add $1v $2v $3c@uint32
+#! sub $1v, $2v, $3c .* -> sub $1v $2v $3c@uint32
+#! subs $1v, $2v, $3c -> subs carry $1v $2v $3c@uint32
+#! vadd.i64 $1v, $2v, $3v -> add $1v $2v $3v
+#! vorr $1v-$2v, $3v-$4v, $5v-$6v -> or $1v@uint64 $3v $5v;\nor $2v@uint64 $4v $6v
+#! vorr $1v, $2v, $3v -> or $1v@uint64 $2v $3v
+#! veor $1v-$2v, $3v-$4v, $5v-$6v -> xor $1v@uint64 $3v $5v;\nxor $2v@uint64 $4v $6v
+#! veor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
+#! vsri.64 $1v, $2v, $3c -> shr $2v_shr $2v $3c;\nspl $1v_h $1v_l $1v `64 - $3c`;\njoin $1v_h $1v_h 0@uint`64 - $3c`;\nor $1v@uint64 $1v_h $2v_shr
+#! vshl.s64 $1v, $2v, $3c .* -> shl $1v $2v $3c
+#! vext.8 $1v, $2v, $2v, $3c -> ror $1v $2v `$3c * 8`
+#! vbic $1v-$2v, $3v-$4v, $5v-$6v -> not $5v_c@uint64 $5v;\nand $1v@uint64 $3v $5v_c;\nnot $6v_c@uint64 $6v;\nand $2v@uint64 $4v $6v_c
+#! vbic $1v, $2v, $3v -> not $3v_c@uint64 $3v;\nand $1v@uint64 $2v $3v_c
+
+#! KeccakP1600_Permute_24rounds: -> nop
+#! vpush.* -> nop
+#! vpop.* -> nop
+
 KeccakP1600_Permute_24rounds:
 # r0 = 0x7effec60
 # r1 = 0x64436bc1
