@@ -331,6 +331,7 @@ let anon file =
        ("proc main(" ^ string_of_inputs vs ^ ") =\n")
        ^ (string_of_spec ~typ:!print_with_types os)
        ^ "\n" in
+     let is_rep_spec_nontrivial s = not (is_espec_trivial (espec_of_spec s)) in
      let output sid s =
        let ch = open_out (suggest_name save_rep_filename cryptoline_filename_extension sid) in
        let _ = output_string ch (str_of_spec s) in
@@ -338,6 +339,7 @@ let anon file =
        () in
      tmap ps_of_es ess
      |> tmap os_of_ps
+     |> List.filter is_rep_spec_nontrivial
      |> List.iteri (fun i os -> output i os)
   | SaveCoqCryptoline ->
      let str_of_spec s =
