@@ -47,12 +47,13 @@ reserved_logics = set([
 reserved_words = reserved_instrs.union(reserved_logics)
 
 lvs_patterns = []
-var_pattern = r"(?<!@)\b[a-zA-Z_][a-zA-Z0-9_]*\b"
+var_pattern = r"\b[a-zA-Z_][a-zA-Z0-9_]*(?:\s*@\s*[su]int[0-9]+)?\b"
+typ_pattern = r"[su]int[0-9]+"
 
 for instr_num_lv in reserved_instrs_lvs:
   instr = instr_num_lv[0]
   num_lv = instr_num_lv[1]
-  lvs_patterns.append((re.compile("^" + instr + "".join(["\s+([a-zA-Z0-9_][a-zA-Z0-9_]*)" for i in range(num_lv)]) + "(.*)$"), num_lv))
+  lvs_patterns.append((re.compile("^" + instr + "".join(["\s+([a-zA-Z0-9_][a-zA-Z0-9_]*)(?:\s*@\s*[su]?int[0-9]+)?" for i in range(num_lv)]) + "(.*)$"), num_lv))
 
 # Generate a random ID.
 def random_id(length):
@@ -73,13 +74,16 @@ def break_at(strs, indent, split, delimit = ","):
   res = (delimit + "\n").join(lines)
   return res
 
+def is_type_str(str):
+  return re.match(typ_pattern, str)
+
 # Find variables in an instruction. The instruction is represented by a one line string.
 def vars_of_instr(instr):
   # Find all variables defined in an instruction.
   def vars_in_line(instr):
     vars = set()
     ms = re.findall(var_pattern, instr)
-    vars |= set([x for x in ms if not x.isnumeric()])
+    vars |= set([x for x in ms if not x.isnumeric() and not is_type_str(x)])
     vars = vars - reserved_words
     return vars
   # Find ghost variables defined in an instruction.
