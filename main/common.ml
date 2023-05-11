@@ -49,6 +49,7 @@ let args_verifier =
     ("-disable_rewriting:vpc", Clear apply_rewrite_vpc, mk_arg_desc([""; "Disable rewriting based on vpc statements"]));
     ("-disable_rewriting:poly", Clear apply_rewrite_poly, mk_arg_desc([""; "Disable rewriting polynomials"]));
     ("-expand-poly", Set Options.Std.expand_poly, mk_arg_desc([""; "Expand polynomials before sending them to computer algebra systems"; "(experimental)"]));
+    ("-implicit-const-conversion", Set implicit_const_conversion, mk_arg_desc([""; "Implicitly convert constants to fit into their types"]));
     ("-isafety", Set incremental_safety, mk_arg_desc(["  Verify program safety incrementally."]));
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), mk_arg_desc(["INT"; "Set initial timeout for incremental verification of program safety."]));
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_solver := Macaulay2),

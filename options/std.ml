@@ -173,3 +173,5 @@ let boolector_path = ref "boolector"
 let track_split = ref false
 
 let expand_poly = ref false
+
+let implicit_const_conversion = ref false

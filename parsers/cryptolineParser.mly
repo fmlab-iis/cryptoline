@@ -130,18 +130,12 @@
     fun cm _vm _ym _gm ->
     let n = n_token cm in
     let size = size_of_typ ty in
+    (* Check range *)
+    let _ = if not (!Options.Std.implicit_const_conversion) && (Z.lt n (Ast.Cryptoline.min_of_typ ty) || Z.gt n (Ast.Cryptoline.max_of_typ ty))
+            then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
+                               ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
     (* Normalize the number: convert to non-negative integer *)
-    let n =
-      match ty with
-      | Tuint _ -> if Z.lt n Z.zero
-                   then raise_at lno ("The number " ^ Z.to_string n ^ " is expected to be non-negative")
-                   else n
-      | Tsint w -> if Z.lt n Z.zero
-                   then let n = Z.add n (Z.pow num_two w) in
-                        if Z.lt n Z.zero
-                        then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty)
-                        else n
-                   else n in
+    let n = Utils.Std.to_positive_same_size n size in
     (* Normalize the number: convert to bit vector *)
     let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
     let _ = if List.length bits > size then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in

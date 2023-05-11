@@ -10,6 +10,9 @@ val hex_of_Z : int -> Z.t -> string
 val bin_of_Z : int -> Z.t -> string
 (** [bin_of_Z w n] is the binary representation of [n] with bit width [w]. *)
 
+val to_positive_same_size : Z.t -> int -> Z.t
+(** [to_positive_same_size n size] is a positive integer m < 2{^size} such that the two's complement representations of [n] and m from position 0 (lsb) to position size - 1 are the same. *)
+
 
 (** {1 Strings} *)
 

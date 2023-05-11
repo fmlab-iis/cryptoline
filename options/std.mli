@@ -86,6 +86,8 @@ val auto_cast_preserve_value : bool ref
 val cryptoline_filename_extension : string
 (** the filename extension of a CryptoLine program *)
 
+val implicit_const_conversion : bool ref
+(** [true] to convert constants to desired types implicitly *)
 
 (** {1 Algebra-Specific Options} *)
 

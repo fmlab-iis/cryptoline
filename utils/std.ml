@@ -13,6 +13,9 @@ let bin_of_Z w n =
   let n = Z.erem n (Z.pow (Z.of_int 2) w) in
   Z.format ("%0" ^ string_of_int w ^ "b") n
 
+let to_positive_same_size n size =
+  Z.erem n (Z.pow (Z.of_int 2) size)
+
 
 (** Strings *)
 
