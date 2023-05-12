@@ -19,6 +19,7 @@ length_random_string = 5
 
 verbose = False
 use_re = False
+auto_carries = False
 
 counters = {}
 
@@ -323,22 +324,24 @@ def print_instrs(instrs):
     print(instr.to_string())
 
 def main():
-  global verbose, use_re
+  global verbose, use_re, auto_carries
 
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
-  parser.add_argument("-r", help="a file containing translation rules", dest="rules", default="")
-  parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
-  parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
-  parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
-  parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
+  parser.add_argument("-ac", "--auto-carry", help="automatically insert assertions and assumptions about unused carries", dest="auto_carries", action="store_true")
   parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
+  parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
+  parser.add_argument("-r", help="a file containing translation rules", dest="rules", default="")
+  parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
+  parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
+  parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
   args = parser.parse_args()
 
   if args.verbose: verbose = True
   if args.use_re: use_re = True
+  if args.auto_carries: auto_carries = True
 
   # Read gas file
   if verbose: t1 = process_time()
@@ -374,7 +377,11 @@ def main():
   # Output translation result
   if not args.nomain: print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
   if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
-  print ("\n".join(map((lambda i: i.to_string() + ";"), instrs)) + "\n")
+  instr_strs = list(map((lambda i: i.to_string() + ";"), instrs))
+  instr_strs = flatten([str.split("\n") for str in instr_strs])
+  if auto_carries:
+    instr_strs = cryptoline.assert_unused_carries(instr_strs)
+  print ("\n".join(instr_strs) + "\n")
   if not args.nopost: print ("{\n  true\n  &&\n  true\n}\n")
 
   sys.stdout.close()
