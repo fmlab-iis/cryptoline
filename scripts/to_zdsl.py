@@ -20,6 +20,7 @@ length_random_string = 5
 verbose = False
 use_re = False
 auto_carries = False
+auto_unused = False
 
 counters = {}
 
@@ -324,11 +325,12 @@ def print_instrs(instrs):
     print(instr.to_string())
 
 def main():
-  global verbose, use_re, auto_carries
+  global verbose, use_re, auto_carries, auto_unused
 
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
   parser.add_argument("-ac", "--auto-carry", help="automatically insert assertions and assumptions about unused carries", dest="auto_carries", action="store_true")
+  parser.add_argument("-au", "--auto-unused", help="automatically mark unused variables", dest="auto_unused", action="store_true")
   parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
@@ -342,6 +344,7 @@ def main():
   if args.verbose: verbose = True
   if args.use_re: use_re = True
   if args.auto_carries: auto_carries = True
+  if args.auto_unused: auto_unused = True
 
   # Read gas file
   if verbose: t1 = process_time()
@@ -380,7 +383,9 @@ def main():
   instr_strs = list(map((lambda i: i.to_string() + ";"), instrs))
   instr_strs = flatten([str.split("\n") for str in instr_strs])
   if auto_carries:
-    instr_strs = cryptoline.assert_unused_carries(instr_strs)
+    instr_strs = cryptoline.assert_unused_carries(instr_strs, annot=True)
+  if auto_unused:
+    instr_strs = cryptoline.find_unused_variables(instr_strs, annot=True)
   print ("\n".join(instr_strs) + "\n")
   if not args.nopost: print ("{\n  true\n  &&\n  true\n}\n")
 

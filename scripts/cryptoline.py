@@ -96,9 +96,9 @@ instr_specs = {}
 for s in instr_specs_raw:
     data = instr_specs_raw[s]
     if data[0] == None:
-        instr_specs[s] = { "is-spec": True, "pattern": data[1], 'is-ghost': s == 'ghost'}
+        instr_specs[s] = { "is-annot": True, "pattern": data[1], 'is-ghost': s == 'ghost'}
     else:
-        instr_specs[s] = { "is-spec": False, "num-vars": data[0], "lvs-idx": data[1], "rvs-idx": data[2], "cvs-idx": data[3] }
+        instr_specs[s] = { "is-annot": False, "num-vars": data[0], "lvs-idx": data[1], "rvs-idx": data[2], "cvs-idx": data[3] }
 
 instr_names = [s for s in instr_specs]
 instr_names.sort(reverse=True)
@@ -170,7 +170,7 @@ def filter_variables(strs):
 # - gvs: the set of ghost variables declared
 def get_vars(iname, str):
     s = instr_specs[iname]
-    if s['is-spec']:
+    if s['is-annot']:
         m = re.match(s['pattern'], str)
         if m:
             ms = re.findall(atom_pattern, m.group(1))
@@ -266,15 +266,16 @@ def eexp_of_singular_poly(poly, modulus=0, indent=2, split=4):
     res = ("add [\n{}\n]".format(eexp))
     return res
 
-def assert_unused_carries(instrs):
+def assert_unused_carries(instrs, annot=False):
     res = []
     used = set()
     instrs.reverse()
     for instr in instrs:
         m = is_instr(instr)
         if m:
-            if not instr_specs[m['instr']]['is-spec']:
-                vars = get_vars(m['instr'], m['rest'])
+            vars = get_vars(m['instr'], m['rest'])
+            is_annot = instr_specs[m['instr']]['is-annot']
+            if not is_annot:
                 unused = [c for c in vars['cvs'] if not (c in used)]
                 if len(unused) > 0:
                     res.append("# ### END")
@@ -282,6 +283,27 @@ def assert_unused_carries(instrs):
                     res.append("assert true && and [ {} ];".format(", ".join([f"{c} = 0@1" for c in unused])))
                     res.append("# ### START")
                     res.append("# ### AUTOMATICALLY INSERTED ASSERTION AND ASSUMPTION")
+            if (not is_annot) or annot:
+                used = used - vars['lvs']
+                used = used | vars['rvs']
+        res.append(instr)
+    res.reverse()
+    return res
+
+def find_unused_variables(instrs, annot=False):
+    res = []
+    used = set()
+    instrs.reverse()
+    for instr in instrs:
+        m = is_instr(instr)
+        if m:
+            vars = get_vars(m['instr'], m['rest'])
+            is_annot = instr_specs[m['instr']]['is-annot']
+            if not is_annot:
+                unused = [v for v in vars['lvs'] if not (v in used)]
+                if len(unused) > 0:
+                    res.append("# ### UNUSED VARIABLES: {}".format(", ".join(unused)))
+            if (not is_annot) or annot:
                 used = used - vars['lvs']
                 used = used | vars['rvs']
         res.append(instr)
