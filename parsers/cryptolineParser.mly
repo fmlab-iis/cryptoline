@@ -3051,7 +3051,9 @@ actual_atom:
                                                                                      ^ "The actual parameter must be a variable.")
                                                       | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
   | ID                                            { let lno = !lnum in
-                                                    fun tys _cm vm _ym _gm ->
+                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    else
+                                                      fun tys _cm vm _ym _gm ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          (try
@@ -3059,7 +3061,7 @@ actual_atom:
                                                             if v.vtyp = ty then ((argtys, outtys), [Avar v])
                                                             else raise_at lno ("The variable type of "
                                                                                ^ $1
-                                                                               ^ " is not compatible to the type of the corresponding formal parameter")
+                                                                                  ^ " is not compatible to the type of the corresponding formal parameter")
                                                           with Not_found ->
                                                             raise_at lno ("Failed to determine the type of " ^ $1)
                                                          )
@@ -3067,6 +3069,8 @@ actual_atom:
                                                       | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.")
                                                   }
   | ID OROP NUM DOTDOT NUM                        { let lno = !lnum in
+                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    else
                                                       fun tys _cm vm _ym _gm ->
                                                       let prefix = $1 in
                                                       let st = $3 in
@@ -3115,27 +3119,32 @@ var_expansion:
   ID OROP NUM DOTDOT NUM
   {
     let lno = !lnum in
-    fun _cm vm _ym gm ->
-    let prefix = $1 in
-    let st = $3 in
-    let ed = $5 in
-    let res = List.map
-                (fun i ->
-                  let vname = prefix ^ vars_expansion_infix ^ string_of_int i in
-                  try
-                    SM.find vname vm
-                  with Not_found ->
-                    raise_at lno ("Failed to determine the type of " ^ vname)
-                ) ((Z.to_int st)--(Z.to_int ed)) in
-    let _ = List.iter (fun v -> if not (SM.mem v.vname vm) && not (SM.mem v.vname gm) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
-    res
+    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+    else
+      fun _cm vm _ym gm ->
+      let prefix = $1 in
+      let st = $3 in
+      let ed = $5 in
+      let res = List.map
+                  (fun i ->
+                    let vname = prefix ^ vars_expansion_infix ^ string_of_int i in
+                    try
+                      SM.find vname vm
+                    with Not_found ->
+                      raise_at lno ("Failed to determine the type of " ^ vname)
+                  ) ((Z.to_int st)--(Z.to_int ed)) in
+      let _ = List.iter (fun v -> if not (SM.mem v.vname vm) && not (SM.mem v.vname gm) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
+      res
   }
 ;
 
 defined_var:
-    ID                                            { `AVAR { atmtyphint = None;    atmname = $1; } }
-  | ID AT typ                                     { `AVAR { atmtyphint = Some $3; atmname = $1; } }
-  | typ ID                                        { `AVAR { atmtyphint = Some $1; atmname = $2; } }
+    ID                                            { if $1 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+                                                    else `AVAR { atmtyphint = None;    atmname = $1; } }
+  | ID AT typ                                     { if $1 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+                                                    else `AVAR { atmtyphint = Some $3; atmname = $1; } }
+  | typ ID                                        { if $2 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+                                                    else `AVAR { atmtyphint = Some $1; atmname = $2; } }
 ;
 
 gvars:
@@ -3156,7 +3165,9 @@ gvars:
 gvar:
   typ ID                                          {
                                                     let lno = !lnum in
-                                                    fun _cm vm _ym gm ->
+                                                    if $2 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    else
+                                                      fun _cm vm _ym gm ->
                                                       let ty = $1 in
                                                       let vname = $2 in
                                                       if SM.mem vname vm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
@@ -3165,7 +3176,9 @@ gvar:
                                                   }
 | ID AT typ                                       {
                                                     let lno = !lnum in
-                                                    fun _cm vm _ym gm ->
+                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    else
+                                                      fun _cm vm _ym gm ->
                                                       let ty = $3 in
                                                       let vname = $1 in
                                                       if SM.mem vname vm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
