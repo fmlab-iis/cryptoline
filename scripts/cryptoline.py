@@ -178,10 +178,10 @@ def get_vars(iname, str):
             lvs = set()
             rvs = set(filter_variables(ms))
             cvs = set()
-            gvs = rvs if s['is-ghost'] else []
+            gvs = rvs if s['is-ghost'] else set()
             return { 'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs }
         else:
-            return { 'lvs': [], 'rvs': [], 'cvs': [], 'gvs': [] }
+            return { 'lvs': set(), 'rvs': set(), 'cvs': set(), 'gvs': set() }
     else:
         ms = re.findall(atom_pattern, str)
         ms = [strip_explicit_type(m) for m in ms]
