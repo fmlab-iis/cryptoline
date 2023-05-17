@@ -94,7 +94,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -150,7 +150,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -233,7 +233,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -288,7 +288,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -455,7 +455,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -510,7 +510,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -594,7 +594,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -649,7 +649,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -799,7 +799,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -854,7 +854,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -937,7 +937,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -992,7 +992,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -1143,7 +1143,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -1198,7 +1198,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -1281,7 +1281,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
@@ -1336,7 +1336,7 @@ mov raxo rax;
 
 cast rax@uint64 rax;
 usplit raxh raxl rax 63;
-assert true && raxh * const 64 (2**63) + raxl = raxo;
+assert true && raxh * const 64 (-(2**63)) + raxl = raxo;
 assume raxl - raxh * (2**63) = raxo && true;
 
 cast flagn@uint64 flag;
