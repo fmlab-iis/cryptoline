@@ -16,8 +16,8 @@ mv ${ABC_FILE/.tar.gz/} ${ABC_DIR}
 
 pushd ${ABC_DIR}
 make
-mkdir -p /usr/local/bin/
-install -m 755 -s abc /usr/local/bin/
+sudo mkdir -p /usr/local/bin/
+sudo install -m 755 -s abc /usr/local/bin/
 popd
 
 popd

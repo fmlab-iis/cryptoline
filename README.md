@@ -30,7 +30,7 @@ To compile and run CryptoLine, the following packages need to be installed.
   + [Boolector](https://boolector.github.io) (recommended, the default to be used)
   + [Z3](https://github.com/Z3Prover/z3)
   + [Mathsat](http://mathsat.fbk.eu)
-- [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) and [aiger](http://fmv.jku.at/aiger) for equivalence checking
+- [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) for equivalence checking
 
 
 Installation
@@ -46,7 +46,6 @@ the default solver Singular and Boolector on Ubuntu 23.04.
 $ sudo apt -y install \
         build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
         curl git bc cmake libreadline-dev boolector singular
-$ ./scripts/install-aiger.sh
 $ ./scripts/install-abc.sh
 $ dune build
 $ dune install

@@ -42,13 +42,13 @@ popd
 pushd ${AIGER_DIR}
 ./configure.sh
 make
-mkdir -p /usr/local/bin
-mkdir -p /usr/local/lib
-mkdir -p /usr/local/include
-install -m 755 -s aigand aigdd aigflip aigfuzz aiginfo aigjoin aigmiter aigmove aignm aigor aigreset aigsim aigsplit aigstrip aigtoaig aigtoblif aigtocnf aigtodot aigtosmv aigunconstraint aigunroll andtoaig bliftoaig smvtoaig soltostim wrapstim /usr/local/bin/
+sudo mkdir -p /usr/local/bin
+sudo mkdir -p /usr/local/lib
+sudo mkdir -p /usr/local/include
+sudo install -m 755 -s aigand aigbmc aigdd aigflip aigfuzz aiginfo aigjoin aigmiter aigmove aignm aigor aigreset aigsim aigsplit aigstrip aigtoaig aigtoblif aigtocnf aigtodot aigtosmv aigunconstraint aigunroll andtoaig bliftoaig smvtoaig soltostim wrapstim /usr/local/bin/
 ar rcs libaiger.a `ls *.o`
-install -m 644 libaiger.a /usr/local/lib/
-install -m 644 aiger.h aigfuzz.h simpaig.h /usr/local/include/
+sudo install -m 644 libaiger.a /usr/local/lib/
+sudo install -m 644 aiger.h aigfuzz.h simpaig.h /usr/local/include/
 popd
 
 popd
