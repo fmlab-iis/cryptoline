@@ -160,7 +160,7 @@ def strip_explicit_type(str):
 
 # filter_variables(strs) returns variables in strs
 def filter_variables(strs):
-    return [s for s in strs if re.match(var_pattern, s)]
+    return [s for s in strs if re.match(var_pattern, s) and not s in reserved_words]
 
 # get_vars(iname, str) returns variables in the string of operands for the instruction with name iname.
 # The returned value is a dictionary {'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs} where
