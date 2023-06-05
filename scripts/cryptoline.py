@@ -109,6 +109,9 @@ instr_names = [s for s in instr_specs]
 instr_names.sort(reverse=True)
 instr_names_pattern = "|".join(instr_names)
 
+# Special instr spec for postconditions
+instr_specs["__postcondition__"] = {"is-annot": True, "pattern": r"({[^{]+})", "is-ghost": False}
+
 reserved_logics = set([
     "vars", "neg", "sq", "ext", "uext", "sext",
     "mod", "umod", "srem", "smod", "and", "or", "xor",
@@ -149,11 +152,16 @@ def is_type_str(str):
 
 # is_instr(str) returns {'instr': n, 'rest': s} (n: the instruction name, s: the string of operands) if str is an instruction and None otherwise.
 def is_instr(str):
+    # instructions
     m = re.match(r"^\s*(" + instr_names_pattern + r")\s*(.*)$", str, re.MULTILINE | re.DOTALL)
     if m:
         return { "instr": m.group(1), "rest": m.group(2) }
-    else:
-        return None
+    # postcondition
+    m = re.match(instr_specs["__postcondition__"]["pattern"], str, re.MULTILINE | re.DOTALL)
+    if m:
+        return { "instr": "__postcondition__", "rest": m.group(1) }
+    # others
+    return None
 
 # strip_explicit_type(str) removes explicit type specification in str
 def strip_explicit_type(str):
@@ -338,13 +346,14 @@ def assert_unused_carries(instrs, annot=False, newline=False, check=False, cpath
     res.reverse()
     return res
 
-def find_unused_variables(instrs, annot=False):
+def find_unused_variables(instrs, annot=False, newline=False):
     """
     Add comments to mark unused variables.
 
     Args:
         instrs: a list of instructions
         annot: recognize variable reading in annotations, False by default
+        newline: true if every instr in instrs ends with a newline
 
     Returns:
         a list of instructions with additional comments inserted
@@ -360,7 +369,7 @@ def find_unused_variables(instrs, annot=False):
             if not is_annot:
                 unused = [v for v in vars['lvs'] if not (v in used)]
                 if len(unused) > 0:
-                    res.append("# ### UNUSED VARIABLES: {}".format(", ".join(unused)))
+                    res.append("# ### UNUSED VARIABLES: {}".format(", ".join(unused)) + ("\n" if newline else ""))
             if (not is_annot) or annot:
                 used = used - vars['lvs']
                 used = used | vars['rvs']
