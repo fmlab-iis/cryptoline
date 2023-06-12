@@ -1542,23 +1542,23 @@ let rvs_instr i =
 
 let rvs_program p = List.fold_left (fun res i -> VS.union (rvs_instr i) res) VS.empty p
 
-(* Assigned carry variables. Bit variables are considered carry variables. *)
+(* Carry/borrow variables introduced in an addition or a subtraction instruction. *)
 let lcarries_instr i =
   match i with
-  | Imov (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Iadd (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Iadds (c, v, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Iadc (v, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Iadcs (c, v, _, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Isub (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Isubc (c, v, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Isubb (c, v, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Isbc (v, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Isbcs (c, v, _, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Isbb (v, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Isbbs (c, v, _, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
-  | Imul (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Imuls (c, v, _, _) -> if var_is_bit v then VS.of_list [c; v] else VS.singleton c
+  | Imov _
+  | Iadd _ -> VS.empty
+  | Iadds (c, _, _, _) -> VS.singleton c
+  | Iadc _ -> VS.empty
+  | Iadcs (c, _, _, _, _) -> VS.singleton c
+  | Isub _ -> VS.empty
+  | Isubc (c, _, _, _) -> VS.singleton c
+  | Isubb (c, _, _, _) -> VS.singleton c
+  | Isbc _ -> VS.empty
+  | Isbcs (c, _, _, _, _) -> VS.singleton c
+  | Isbb _ -> VS.empty
+  | Isbbs (c, _, _, _, _) -> VS.singleton c
+  | Imul _ -> VS.empty
+  | Imuls (c, _, _, _) -> VS.singleton c
   | Imull _
   | Imulj _
   | Ishl _
@@ -1573,16 +1573,16 @@ let lcarries_instr i =
   | Icshr _
   | Icshrs _
   | Irol _
-  | Iror _ -> VS.empty
-  | Inondet v -> if var_is_bit v then VS.singleton v else VS.empty
-  | Icmov (v, _, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Inop -> VS.empty
-  | Iand (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Ior (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Ixor (v, _, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Inot (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Icast (_, v, _) -> if var_is_bit v then VS.singleton v else VS.empty
-  | Ivpc (v, _) -> if var_is_bit v then VS.singleton v else VS.empty
+  | Iror _
+  | Inondet _
+  | Icmov _
+  | Inop
+  | Iand _
+  | Ior _
+  | Ixor _
+  | Inot _
+  | Icast _
+  | Ivpc _
   | Ijoin _
   | Iassert _
   | Iassume _
@@ -1590,6 +1590,10 @@ let lcarries_instr i =
   | Ighost _ -> VS.empty
 
 let lcarries_program p = List.fold_left (fun res i -> VS.union (lcarries_instr i) res) VS.empty p
+
+(* Assigned bit variables *)
+let lbits_instr i = VS.filter var_is_bit (lvs_instr i)
+let lbits_program p = List.fold_left (fun res i -> VS.union (lbits_instr i) res) VS.empty p
 
 let gvs_instr i =
   match i with
@@ -1803,23 +1807,23 @@ let rvids_instr i =
 
 let rvids_program p = List.fold_left (fun res i -> IS.union (rvids_instr i) res) IS.empty p
 
-(* Assigned carry variables. Bit variables are considered carry variables. *)
+(* Assigned carry/borrow variables in addition and subtraction instructions. *)
 let lcids_instr i =
   match i with
-  | Imov (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Iadd (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Iadds (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Iadc (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Iadcs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Isub (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Isubc (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Isubb (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Isbc (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Isbcs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Isbb (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Isbbs (c, v, _, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
-  | Imul (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Imuls (c, v, _, _) -> if var_is_bit v then IS.of_list [c.vid; v.vid] else IS.singleton c.vid
+  | Imov _
+  | Iadd _ -> IS.empty
+  | Iadds (c, _, _, _) -> IS.singleton c.vid
+  | Iadc _ -> IS.empty
+  | Iadcs (c, _, _, _, _) -> IS.singleton c.vid
+  | Isub _ -> IS.empty
+  | Isubc (c, _, _, _) -> IS.singleton c.vid
+  | Isubb (c, _, _, _) -> IS.singleton c.vid
+  | Isbc _ -> IS.empty
+  | Isbcs (c, _, _, _, _) -> IS.singleton c.vid
+  | Isbb _ -> IS.empty
+  | Isbbs (c, _, _, _, _) -> IS.singleton c.vid
+  | Imul _ -> IS.empty
+  | Imuls (c, _, _, _) -> IS.singleton c.vid
   | Imull _
   | Imulj _
   | Ishl _
@@ -1834,16 +1838,16 @@ let lcids_instr i =
   | Icshr _
   | Icshrs _
   | Irol _
-  | Iror _ -> IS.empty
-  | Inondet v -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Icmov (v, _, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Inop -> IS.empty
-  | Iand (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Ior (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Ixor (v, _, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Inot (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Icast (_, v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
-  | Ivpc (v, _) -> if var_is_bit v then IS.singleton v.vid else IS.empty
+  | Iror _
+  | Inondet _
+  | Icmov _
+  | Inop
+  | Iand _
+  | Ior _
+  | Ixor _
+  | Inot _
+  | Icast _
+  | Ivpc _
   | Ijoin _
   | Iassert _
   | Iassume _
@@ -1851,6 +1855,12 @@ let lcids_instr i =
   | Ighost _ -> IS.empty
 
 let lcids_program p = List.fold_left (fun res i -> IS.union (lcids_instr i) res) IS.empty p
+
+(* IDs of bit variables assigned in an instruction *)
+let lbids_instr i =
+  VS.fold (fun v res -> IS.add v.vid res) (lbits_instr i) IS.empty
+
+let lbids_program p = List.fold_left (fun res i -> IS.union (lbids_instr i) res) IS.empty p
 
 let vids_spec s = union_iss [vids_bexp s.spre; vids_program s.sprog; vids_bexp_prove_with s.spost]
 let vids_espec s = union_iss [vids_ebexp s.espre; vids_program s.esprog; vids_ebexp_prove_with s.espost]

@@ -1104,10 +1104,22 @@ val rvs_program : program -> VS.t
 (** [rvs_program p] is the set of variables with values read in the program [p]. *)
 
 val lcarries_instr : instr -> VS.t
-(** [lvs_carries i] is the set of carries with new values written in the instruction [i]. *)
+(**
+ * [lcarries_instr i] is the set of carries and borrows assigned in the instruction [i].
+ * Only carries and borrows in addition and subtraction instructions are included.
+ *)
 
 val lcarries_program : program -> VS.t
-(** [lvs_program p] is the set of carries with new values written in the program [p]. *)
+(**
+ * [lcarries_program p] is the set of carries and borrows assigned in the program [p].
+ * Only carries and borrows in addition and subtraction instructions are included.
+ *)
+
+val lbits_instr : instr -> VS.t
+(** [lbits_instr i] is the set of bit variables assigned in the instruction [i]. *)
+
+val lbits_program : program -> VS.t
+(** [lbits_program p] is the set of bit variables assigned in the program [p]. *)
 
 val gvs_instr : instr -> VS.t
 (** [gvs_instr i] is the set of ghost variables defined in the instruction [i]. *)
@@ -1177,6 +1189,12 @@ val lcids_instr : instr -> IS.t
 
 val lcids_program : program -> IS.t
 (** [lcids_program p] is the set of IDs of carries set in the program [p]. *)
+
+val lbids_instr : instr -> IS.t
+(** [lbids_instr i] is the set of IDs of bit variables set in the instruction [i]. *)
+
+val lbids_program : program -> IS.t
+(** [lbids_program p] is the set of IDs of bit variables set in the program [p]. *)
 
 val vids_spec : spec -> IS.t
 (** [vids_spec s] is the set of IDs of variables in the specification [s]. *)

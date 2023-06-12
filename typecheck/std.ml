@@ -165,6 +165,11 @@ let check_join_size lno v ah al =
   else
     None
 
+(*
+ * vs: defined variables
+ * cs: defined bit variables
+ * gs: defined ghost variables
+ *)
 let illformed_instr_reason vs cs gs lno i =
   let _defined_var v =
     if not (VS.mem v vs) then
@@ -176,13 +181,13 @@ let illformed_instr_reason vs cs gs lno i =
     else None in
   let defined_atom a = defined_vars (vars_atom a) in
   let defined_atoms atoms = apply_check_to_atoms defined_atom atoms in
-  let defined_carry a =
+  let defined_bit a =
     match a with
     | Avar y ->
        if not (VS.mem y vs) then
          Some ("Undefined variable: " ^ string_of_var y ^ " at line " ^ (string_of_int lno))
        else if not (VS.mem y cs) then
-         Some ("Not a carry variable: " ^ string_of_var y ^ " at line " ^ (string_of_int lno))
+         Some ("Not a bit variable: " ^ string_of_var y ^ " at line " ^ (string_of_int lno))
        else None
     | Aconst (ty, _n) ->
        if ty = bit_t then None
@@ -242,11 +247,11 @@ let illformed_instr_reason vs cs gs lno i =
     | Iadc (v, a1, a2, y)
       | Isbc (v, a1, a2, y)
       | Isbb (v, a1, a2, y) ->
-       [defined_atoms [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
+       [defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
     | Iadcs (c, v, a1, a2, y)
       | Isbcs (c, v, a1, a2, y)
       | Isbbs (c, v, a1, a2, y) ->
-       [check_diff_lvs lno c v; defined_atoms [a1; a2]; defined_carry y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
+       [check_diff_lvs lno c v; defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
     | Imull (vh, vl, a1, a2) ->
        [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atoms [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
     | Imulj (v, a1, a2) ->
@@ -265,7 +270,7 @@ let illformed_instr_reason vs cs gs lno i =
     | Iror (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
     | Inondet _ -> []
     | Icmov (v, c, a1, a2) ->
-       [defined_carry c; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
+       [defined_bit c; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
     | Inop -> []
     | Iand (v, a1, a2)
       | Ior (v, a1, a2)
@@ -291,7 +296,7 @@ let rec illformed_program_reason vs cs gs p =
   | (lno, hd)::tl ->
      (match illformed_instr_reason vs cs gs lno hd with
       | Some r -> Some (hd, r)
-      | None -> illformed_program_reason (VS.union vs (lvs_instr hd)) (VS.union (VS.diff cs (lvs_instr hd)) (lcarries_instr hd)) (VS.union gs (gvs_instr hd)) tl
+      | None -> illformed_program_reason (VS.union vs (lvs_instr hd)) (VS.union (VS.diff cs (lvs_instr hd)) (lbits_instr hd)) (VS.union gs (gvs_instr hd)) tl
      )
 
 let illformed_eexp_reason vs e =
@@ -350,7 +355,7 @@ let illformed_spec_reason vs s =
   match illformed_bexp_reason vs s.spre with
   | Some r -> Some (IllPrecondition s.spre, r)
   | None ->
-    (match illformed_program_reason vs VS.empty VS.empty s.sprog with
+    (match illformed_program_reason vs (VS.filter var_is_bit vs) VS.empty s.sprog with
      | Some (i, r) -> Some (IllInstruction i, r)
      | None ->
         (match illformed_bexp_prove_with_reason (VS.union vs (vars_lined_program s.sprog)) s.spost with
