@@ -1,0 +1,27 @@
+p256SubInternal:
+# x0 = 0x3
+# x1 = 0x400008fd98
+# x2 = 0x400008fcd8
+# x3 = 0xc0f2affc4e6916c6
+# x4 = 0x6fb94957811842da
+# x5 = 0x6034bcb624b4d157
+# x6 = 0xde2efdc7992efb90
+# x7 = 0xffffffffffffffff
+	#! -> SP = 0x400008fb10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x400008fb10
+	#ret                                            #! PC = 0xc397c

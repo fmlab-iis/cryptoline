@@ -1,0 +1,72 @@
+crypto/elliptic.p256FromMont.abi0:
+# %rdi = 0xc0000b1c90
+# %rsi = 0x-1f071359d2d2aba
+# %rdx = 0xc0000b1c70
+# %rcx = 0xc0000b1c90
+# %r8  = 0x730b757cb45a4873
+# %r9  = 0x-78513a6785b6c363
+	#! -> SP = 0xc0000b1be0
+	mov    0x8(%rsp),%rdi                           #! EA = L0xc0000b1be8; Value = 0x000000c0000b1c70; PC = 0x4c7d60
+	mov    0x20(%rsp),%rsi                          #! EA = L0xc0000b1c00; Value = 0x000000c0000b1c70; PC = 0x4c7d65
+	mov    (%rsi),%r8                               #! EA = L0xc0000b1c70; Value = 0x7850fef942c1d91a; PC = 0x4c7d6a
+	mov    0x8(%rsi),%r9                            #! EA = L0xc0000b1c78; Value = 0x0651d583797f8924; PC = 0x4c7d6d
+	mov    0x10(%rsi),%r10                          #! EA = L0xc0000b1c80; Value = 0x63e1e0c74b8684c2; PC = 0x4c7d71
+	mov    0x18(%rsi),%r11                          #! EA = L0xc0000b1c88; Value = 0x250646e6a77fec67; PC = 0x4c7d75
+	xor    %r12,%r12                                #! PC = 0x4c7d79
+	mov    %r8,%rax                                 #! PC = 0x4c7d7c
+	mov    %r8,%r15                                 #! PC = 0x4c7d7f
+	shl    $0x20,%r8                                #! PC = 0x4c7d82
+	mulq   0x71d73(%rip)        # 0x539b00 <p256const1>#! EA = L0x539b00; PC = 0x4c7d86
+	shr    $0x20,%r15                               #! PC = 0x4c7d8d
+	add    %r8,%r9                                  #! PC = 0x4c7d91
+	adc    %r15,%r10                                #! PC = 0x4c7d94
+	adc    %rax,%r11                                #! PC = 0x4c7d97
+	adc    %rdx,%r12                                #! PC = 0x4c7d9a
+	xor    %r13,%r13                                #! PC = 0x4c7d9d
+	mov    %r9,%rax                                 #! PC = 0x4c7da0
+	mov    %r9,%r15                                 #! PC = 0x4c7da3
+	shl    $0x20,%r9                                #! PC = 0x4c7da6
+	mulq   0x71d4f(%rip)        # 0x539b00 <p256const1>#! EA = L0x539b00; PC = 0x4c7daa
+	shr    $0x20,%r15                               #! PC = 0x4c7db1
+	add    %r9,%r10                                 #! PC = 0x4c7db5
+	adc    %r15,%r11                                #! PC = 0x4c7db8
+	adc    %rax,%r12                                #! PC = 0x4c7dbb
+	adc    %rdx,%r13                                #! PC = 0x4c7dbe
+	xor    %r8,%r8                                  #! PC = 0x4c7dc1
+	mov    %r10,%rax                                #! PC = 0x4c7dc4
+	mov    %r10,%r15                                #! PC = 0x4c7dc7
+	shl    $0x20,%r10                               #! PC = 0x4c7dca
+	mulq   0x71d2b(%rip)        # 0x539b00 <p256const1>#! EA = L0x539b00; PC = 0x4c7dce
+	shr    $0x20,%r15                               #! PC = 0x4c7dd5
+	add    %r10,%r11                                #! PC = 0x4c7dd9
+	adc    %r15,%r12                                #! PC = 0x4c7ddc
+	adc    %rax,%r13                                #! PC = 0x4c7ddf
+	adc    %rdx,%r8                                 #! PC = 0x4c7de2
+	xor    %r9,%r9                                  #! PC = 0x4c7de5
+	mov    %r11,%rax                                #! PC = 0x4c7de8
+	mov    %r11,%r15                                #! PC = 0x4c7deb
+	shl    $0x20,%r11                               #! PC = 0x4c7dee
+	mulq   0x71d07(%rip)        # 0x539b00 <p256const1>#! EA = L0x539b00; PC = 0x4c7df2
+	shr    $0x20,%r15                               #! PC = 0x4c7df9
+	add    %r11,%r12                                #! PC = 0x4c7dfd
+	adc    %r15,%r13                                #! PC = 0x4c7e00
+	adc    %rax,%r8                                 #! PC = 0x4c7e03
+	adc    %rdx,%r9                                 #! PC = 0x4c7e06
+	mov    %r12,%rsi                                #! PC = 0x4c7e09
+	mov    %r13,%r11                                #! PC = 0x4c7e0c
+	mov    %r8,%r14                                 #! PC = 0x4c7e0f
+	mov    %r9,%r15                                 #! PC = 0x4c7e12
+	sub    $0xffffffffffffffff,%r12                 #! PC = 0x4c7e15
+	sbb    0x71cd8(%rip),%r13        # 0x539af8 <p256const0>#! EA = L0x539af8; Value = 0x00000000ffffffff; PC = 0x4c7e19
+	sbb    $0x0,%r8                                 #! PC = 0x4c7e20
+	sbb    0x71cd5(%rip),%r9        # 0x539b00 <p256const1>#! EA = L0x539b00; Value = 0xffffffff00000001; PC = 0x4c7e24
+	cmovb  %rsi,%r12                                #! PC = 0x4c7e2b
+	cmovb  %r11,%r13                                #! PC = 0x4c7e2f
+	cmovb  %r14,%r8                                 #! PC = 0x4c7e33
+	cmovb  %r15,%r9                                 #! PC = 0x4c7e37
+	mov    %r12,(%rdi)                              #! EA = L0xc0000b1c70; PC = 0x4c7e3b
+	mov    %r13,0x8(%rdi)                           #! EA = L0xc0000b1c78; PC = 0x4c7e3e
+	mov    %r8,0x10(%rdi)                           #! EA = L0xc0000b1c80; PC = 0x4c7e42
+	mov    %r9,0x18(%rdi)                           #! EA = L0xc0000b1c88; PC = 0x4c7e46
+	#! <- SP = 0xc0000b1be0
+	#ret                                            #! PC = 0x4c7e4a

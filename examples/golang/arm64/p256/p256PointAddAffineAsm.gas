@@ -1,0 +1,1463 @@
+crypto/elliptic.p256PointAddAffineAsm.abi0:
+# x0 = 0x4000103d98
+# x1 = 0xc
+# x2 = 0x8
+# x3 = 0x4
+# x4 = 0x3
+# x5 = 0xd0f399afe4dd640b
+# x6 = 0x3c5fe1302f76ed45
+# x7 = 0x6f3562f43764fb3d
+	#! -> SP = 0x4000103c30
+	ldr	x16, [x28, #16]                             #! EA = L0x40000021b0; Value = 0x00000040001023a0; PC = 0xc40d0
+	sub	x17, sp, #0xa0                              #! PC = 0xc40d4
+	cmp	x17, x16                                    #! PC = 0xc40d8
+	#b.ls	0xc43ec <crypto/elliptic.p256PointAddAffineAsm+796>  // b.plast#! PC = 0xc40dc
+	sub	x27, sp, #0x120                             #! PC = 0xc40e0
+	str	x30, [x27]                                  #! EA = L0x4000103b10; PC = 0xc40e4
+	mov	sp, x27                                     #! PC = 0xc40e8
+	stur	x29, [sp, #-8]                             #! EA = L0x4000103b08; PC = 0xc40ec
+	sub	x29, sp, #0x8                               #! PC = 0xc40f0
+	ldr	x1, [sp, #320]                              #! EA = L0x4000103c50; Value = 0x0000004000103d98; PC = 0xc40f4
+	ldr	x2, [sp, #344]                              #! EA = L0x4000103c68; Value = 0x0000004000103cd8; PC = 0xc40f8
+	ldr	x17, [sp, #368]                             #! EA = L0x4000103c80; Value = 0x0000000000000000; PC = 0xc40fc
+	ldr	x0, [sp, #376]                              #! EA = L0x4000103c88; Value = 0x0000000000000004; PC = 0xc4100
+	ldr	x13, [sp, #384]                             #! EA = L0x4000103c90; Value = 0x0000000000000003; PC = 0xc4104
+	orr	x11, xzr, #0x1                              #! PC = 0xc4108
+	cmp	x13, xzr                                    #! PC = 0xc410c
+	csel	x13, xzr, x11, eq  // eq = none            #! PC = 0xc4110
+	cmp	x0, xzr                                     #! PC = 0xc4114
+	csel	x0, xzr, x11, eq  // eq = none             #! PC = 0xc4118
+	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc411c
+	add	x27, x27, #0x658                            #! PC = 0xc4120
+	ldr	x15, [x27]                                  #! EA = L0x129658; Value = 0x00000000ffffffff; PC = 0xc4124
+	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc4128
+	add	x27, x27, #0x660                            #! PC = 0xc412c
+	ldr	x16, [x27]                                  #! EA = L0x129660; Value = 0xffffffff00000001; PC = 0xc4130
+	eor	x0, x0, x13, lsl #1                         #! PC = 0xc4134
+	ldp	x23, x24, [x2, #32]                         #! EA = L0x4000103cf8; Value = 0xe673fdb03cfd5d8b; PC = 0xc4138
+	ldp	x25, x26, [x2, #48]                         #! EA = L0x4000103d08; Value = 0xf6ce581ff52305aa; PC = 0xc413c
+	mov	x3, #0xffffffffffffffff    	// #-1          #! PC = 0xc4140
+	subs	x3, x3, x23                                #! PC = 0xc4144
+	sbcs	x4, x15, x24                               #! PC = 0xc4148
+	ngcs	x5, x25                                    #! PC = 0xc414c
+	sbcs	x6, x16, x26                               #! PC = 0xc4150
+	ngc	x11, xzr                                    #! PC = 0xc4154
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc4158
+	adds	x7, x3, x27                                #! PC = 0xc415c
+	adcs	x8, x4, x15                                #! PC = 0xc4160
+	adcs	x9, x5, xzr                                #! PC = 0xc4164
+	adcs	x10, x6, x16                               #! PC = 0xc4168
+	adc	x11, x11, xzr                               #! PC = 0xc416c
+	cmp	x11, xzr                                    #! PC = 0xc4170
+	csel	x3, x7, x3, eq  // eq = none               #! PC = 0xc4174
+	csel	x4, x8, x4, eq  // eq = none               #! PC = 0xc4178
+	csel	x5, x9, x5, eq  // eq = none               #! PC = 0xc417c
+	csel	x6, x10, x6, eq  // eq = none              #! PC = 0xc4180
+	cmp	x17, xzr                                    #! PC = 0xc4184
+	csel	x23, x23, x3, eq  // eq = none             #! PC = 0xc4188
+	csel	x24, x24, x4, eq  // eq = none             #! PC = 0xc418c
+	csel	x25, x25, x5, eq  // eq = none             #! PC = 0xc4190
+	csel	x26, x26, x6, eq  // eq = none             #! PC = 0xc4194
+	stp	x23, x24, [sp, #8]                          #! EA = L0x4000103b18; PC = 0xc4198
+	stp	x25, x26, [sp, #24]                         #! EA = L0x4000103b28; PC = 0xc419c
+	ldp	x19, x20, [x1, #64]                         #! EA = L0x4000103dd8; Value = 0x0000000000000001; PC = 0xc41a0
+	ldp	x21, x22, [x1, #80]                         #! EA = L0x4000103de8; Value = 0xffffffffffffffff; PC = 0xc41a4
+	#bl	0xc3980 <p256SqrInternal>                   #! PC = 0xc41a8
+	#! -> SP = 0x4000103b10
+	mul	x4, x20, x19                                #! PC = 0xc3980
+	umulh	x5, x20, x19                              #! PC = 0xc3984
+	mul	x11, x21, x19                               #! PC = 0xc3988
+	adds	x5, x5, x11                                #! PC = 0xc398c
+	umulh	x6, x21, x19                              #! PC = 0xc3990
+	mul	x11, x22, x19                               #! PC = 0xc3994
+	adcs	x6, x6, x11                                #! PC = 0xc3998
+	umulh	x7, x22, x19                              #! PC = 0xc399c
+	adc	x7, x7, xzr                                 #! PC = 0xc39a0
+	mul	x11, x21, x20                               #! PC = 0xc39a4
+	adds	x6, x6, x11                                #! PC = 0xc39a8
+	umulh	x12, x21, x20                             #! PC = 0xc39ac
+	adcs	x7, x7, x12                                #! PC = 0xc39b0
+	adc	x8, xzr, xzr                                #! PC = 0xc39b4
+	mul	x11, x22, x20                               #! PC = 0xc39b8
+	adds	x7, x7, x11                                #! PC = 0xc39bc
+	umulh	x12, x22, x20                             #! PC = 0xc39c0
+	adc	x8, x8, x12                                 #! PC = 0xc39c4
+	mul	x11, x22, x21                               #! PC = 0xc39c8
+	adds	x8, x8, x11                                #! PC = 0xc39cc
+	umulh	x9, x22, x21                              #! PC = 0xc39d0
+	adc	x9, x9, xzr                                 #! PC = 0xc39d4
+	mov	x10, #0x0                   	// #0          #! PC = 0xc39d8
+	adds	x4, x4, x4                                 #! PC = 0xc39dc
+	adcs	x5, x5, x5                                 #! PC = 0xc39e0
+	adcs	x6, x6, x6                                 #! PC = 0xc39e4
+	adcs	x7, x7, x7                                 #! PC = 0xc39e8
+	adcs	x8, x8, x8                                 #! PC = 0xc39ec
+	adcs	x9, x9, x9                                 #! PC = 0xc39f0
+	adc	x10, x10, xzr                               #! PC = 0xc39f4
+	mul	x3, x19, x19                                #! PC = 0xc39f8
+	umulh	x11, x19, x19                             #! PC = 0xc39fc
+	adds	x4, x4, x11                                #! PC = 0xc3a00
+	mul	x11, x20, x20                               #! PC = 0xc3a04
+	adcs	x5, x5, x11                                #! PC = 0xc3a08
+	umulh	x12, x20, x20                             #! PC = 0xc3a0c
+	adcs	x6, x6, x12                                #! PC = 0xc3a10
+	mul	x11, x21, x21                               #! PC = 0xc3a14
+	adcs	x7, x7, x11                                #! PC = 0xc3a18
+	umulh	x12, x21, x21                             #! PC = 0xc3a1c
+	adcs	x8, x8, x12                                #! PC = 0xc3a20
+	mul	x11, x22, x22                               #! PC = 0xc3a24
+	adcs	x9, x9, x11                                #! PC = 0xc3a28
+	umulh	x12, x22, x22                             #! PC = 0xc3a2c
+	adcs	x10, x10, x12                              #! PC = 0xc3a30
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3a34
+	lsr	x11, x3, #32                                #! PC = 0xc3a38
+	mul	x12, x16, x3                                #! PC = 0xc3a3c
+	umulh	x3, x16, x3                               #! PC = 0xc3a40
+	adcs	x5, x5, x11                                #! PC = 0xc3a44
+	adcs	x6, x6, x12                                #! PC = 0xc3a48
+	adc	x3, x3, xzr                                 #! PC = 0xc3a4c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3a50
+	lsr	x11, x4, #32                                #! PC = 0xc3a54
+	mul	x12, x16, x4                                #! PC = 0xc3a58
+	umulh	x4, x16, x4                               #! PC = 0xc3a5c
+	adcs	x6, x6, x11                                #! PC = 0xc3a60
+	adcs	x3, x3, x12                                #! PC = 0xc3a64
+	adc	x4, x4, xzr                                 #! PC = 0xc3a68
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3a6c
+	lsr	x11, x5, #32                                #! PC = 0xc3a70
+	mul	x12, x16, x5                                #! PC = 0xc3a74
+	umulh	x5, x16, x5                               #! PC = 0xc3a78
+	adcs	x3, x3, x11                                #! PC = 0xc3a7c
+	adcs	x4, x4, x12                                #! PC = 0xc3a80
+	adc	x5, x5, xzr                                 #! PC = 0xc3a84
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3a88
+	lsr	x11, x6, #32                                #! PC = 0xc3a8c
+	mul	x12, x16, x6                                #! PC = 0xc3a90
+	umulh	x6, x16, x6                               #! PC = 0xc3a94
+	adcs	x4, x4, x11                                #! PC = 0xc3a98
+	adcs	x5, x5, x12                                #! PC = 0xc3a9c
+	adc	x6, x6, xzr                                 #! PC = 0xc3aa0
+	adds	x3, x3, x7                                 #! PC = 0xc3aa4
+	adcs	x4, x4, x8                                 #! PC = 0xc3aa8
+	adcs	x5, x5, x9                                 #! PC = 0xc3aac
+	adcs	x6, x6, x10                                #! PC = 0xc3ab0
+	adc	x7, xzr, xzr                                #! PC = 0xc3ab4
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8
+	subs	x11, x3, x27                               #! PC = 0xc3abc
+	sbcs	x12, x4, x15                               #! PC = 0xc3ac0
+	sbcs	x13, x5, xzr                               #! PC = 0xc3ac4
+	sbcs	x14, x6, x16                               #! PC = 0xc3ac8
+	sbcs	x7, x7, xzr                                #! PC = 0xc3acc
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3ad8
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3adc
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3ae0
+	stp	x23, x24, [sp, #72]                         #! EA = L0x4000103b58; PC = 0xc41ac
+	stp	x25, x26, [sp, #88]                         #! EA = L0x4000103b68; PC = 0xc41b0
+	ldp	x19, x20, [x2]                              #! EA = L0x4000103cd8; Value = 0x486d8ffa696946fc; PC = 0xc41b4
+	ldp	x21, x22, [x2, #16]                         #! EA = L0x4000103ce8; Value = 0x7e3d423e90f35a15; PC = 0xc41b8
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc41bc
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	ldp	x19, x20, [x1]                              #! EA = L0x4000103d98; Value = 0xffac3f904eebc127; PC = 0xc41c0
+	ldp	x21, x22, [x1, #16]                         #! EA = L0x4000103da8; Value = 0x66ad77dd87cbbc98; PC = 0xc41c4
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc41c8
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	stp	x19, x20, [sp, #104]                        #! EA = L0x4000103b78; PC = 0xc41cc
+	stp	x21, x22, [sp, #120]                        #! EA = L0x4000103b88; PC = 0xc41d0
+	ldp	x23, x24, [x1, #64]                         #! EA = L0x4000103dd8; Value = 0x0000000000000001; PC = 0xc41d4
+	ldp	x25, x26, [x1, #80]                         #! EA = L0x4000103de8; Value = 0xffffffffffffffff; PC = 0xc41d8
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc41dc
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	ldp	x3, x4, [x1, #64]                           #! EA = L0x4000103dd8; Value = 0x0000000000000001; PC = 0xc41e0
+	ldp	x5, x6, [x1, #80]                           #! EA = L0x4000103de8; Value = 0xffffffffffffffff; PC = 0xc41e4
+	tst	x0, #0x1                                    #! PC = 0xc41e8
+	csel	x23, x3, x23, eq  // eq = none             #! PC = 0xc41ec
+	csel	x24, x4, x24, eq  // eq = none             #! PC = 0xc41f0
+	csel	x25, x5, x25, eq  // eq = none             #! PC = 0xc41f4
+	csel	x26, x6, x26, eq  // eq = none             #! PC = 0xc41f8
+	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc41fc
+	add	x27, x27, #0xd20                            #! PC = 0xc4200
+	ldp	x3, x4, [x27]                               #! EA = L0x129d20; Value = 0x0000000000000001; PC = 0xc4204
+	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc4208
+	add	x27, x27, #0xd30                            #! PC = 0xc420c
+	ldp	x5, x6, [x27]                               #! EA = L0x129d30; Value = 0xffffffffffffffff; PC = 0xc4210
+	tst	x0, #0x2                                    #! PC = 0xc4214
+	csel	x23, x3, x23, eq  // eq = none             #! PC = 0xc4218
+	csel	x24, x4, x24, eq  // eq = none             #! PC = 0xc421c
+	csel	x25, x5, x25, eq  // eq = none             #! PC = 0xc4220
+	csel	x26, x6, x26, eq  // eq = none             #! PC = 0xc4224
+	ldp	x19, x20, [x1, #64]                         #! EA = L0x4000103dd8; Value = 0x0000000000000001; PC = 0xc4228
+	ldp	x21, x22, [x1, #80]                         #! EA = L0x4000103de8; Value = 0xffffffffffffffff; PC = 0xc422c
+	ldr	x11, [sp, #296]                             #! EA = L0x4000103c38; Value = 0x0000004000103d98; PC = 0xc4230
+	stp	x23, x24, [x11, #64]                        #! EA = L0x4000103dd8; PC = 0xc4234
+	stp	x25, x26, [x11, #80]                        #! EA = L0x4000103de8; PC = 0xc4238
+	ldp	x23, x24, [sp, #72]                         #! EA = L0x4000103b58; Value = 0x0000000000000001; PC = 0xc423c
+	ldp	x25, x26, [sp, #88]                         #! EA = L0x4000103b68; Value = 0xffffffffffffffff; PC = 0xc4240
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc4244
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	ldp	x19, x20, [sp, #8]                          #! EA = L0x4000103b18; Value = 0xe673fdb03cfd5d8b; PC = 0xc4248
+	ldp	x21, x22, [sp, #24]                         #! EA = L0x4000103b28; Value = 0xf6ce581ff52305aa; PC = 0xc424c
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc4250
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	stp	x23, x24, [sp, #40]                         #! EA = L0x4000103b38; PC = 0xc4254
+	stp	x25, x26, [sp, #56]                         #! EA = L0x4000103b48; PC = 0xc4258
+	ldp	x19, x20, [x1, #32]                         #! EA = L0x4000103db8; Value = 0xb04c5c1fc983a7eb; PC = 0xc425c
+	ldp	x21, x22, [x1, #48]                         #! EA = L0x4000103dc8; Value = 0x788208311a2ee98e; PC = 0xc4260
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4264
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	stp	x19, x20, [sp, #136]                        #! EA = L0x4000103b98; PC = 0xc4268
+	stp	x21, x22, [sp, #152]                        #! EA = L0x4000103ba8; PC = 0xc426c
+	#bl	0xc3980 <p256SqrInternal>                   #! PC = 0xc4270
+	#! -> SP = 0x4000103b10
+	mul	x4, x20, x19                                #! PC = 0xc3980
+	umulh	x5, x20, x19                              #! PC = 0xc3984
+	mul	x11, x21, x19                               #! PC = 0xc3988
+	adds	x5, x5, x11                                #! PC = 0xc398c
+	umulh	x6, x21, x19                              #! PC = 0xc3990
+	mul	x11, x22, x19                               #! PC = 0xc3994
+	adcs	x6, x6, x11                                #! PC = 0xc3998
+	umulh	x7, x22, x19                              #! PC = 0xc399c
+	adc	x7, x7, xzr                                 #! PC = 0xc39a0
+	mul	x11, x21, x20                               #! PC = 0xc39a4
+	adds	x6, x6, x11                                #! PC = 0xc39a8
+	umulh	x12, x21, x20                             #! PC = 0xc39ac
+	adcs	x7, x7, x12                                #! PC = 0xc39b0
+	adc	x8, xzr, xzr                                #! PC = 0xc39b4
+	mul	x11, x22, x20                               #! PC = 0xc39b8
+	adds	x7, x7, x11                                #! PC = 0xc39bc
+	umulh	x12, x22, x20                             #! PC = 0xc39c0
+	adc	x8, x8, x12                                 #! PC = 0xc39c4
+	mul	x11, x22, x21                               #! PC = 0xc39c8
+	adds	x8, x8, x11                                #! PC = 0xc39cc
+	umulh	x9, x22, x21                              #! PC = 0xc39d0
+	adc	x9, x9, xzr                                 #! PC = 0xc39d4
+	mov	x10, #0x0                   	// #0          #! PC = 0xc39d8
+	adds	x4, x4, x4                                 #! PC = 0xc39dc
+	adcs	x5, x5, x5                                 #! PC = 0xc39e0
+	adcs	x6, x6, x6                                 #! PC = 0xc39e4
+	adcs	x7, x7, x7                                 #! PC = 0xc39e8
+	adcs	x8, x8, x8                                 #! PC = 0xc39ec
+	adcs	x9, x9, x9                                 #! PC = 0xc39f0
+	adc	x10, x10, xzr                               #! PC = 0xc39f4
+	mul	x3, x19, x19                                #! PC = 0xc39f8
+	umulh	x11, x19, x19                             #! PC = 0xc39fc
+	adds	x4, x4, x11                                #! PC = 0xc3a00
+	mul	x11, x20, x20                               #! PC = 0xc3a04
+	adcs	x5, x5, x11                                #! PC = 0xc3a08
+	umulh	x12, x20, x20                             #! PC = 0xc3a0c
+	adcs	x6, x6, x12                                #! PC = 0xc3a10
+	mul	x11, x21, x21                               #! PC = 0xc3a14
+	adcs	x7, x7, x11                                #! PC = 0xc3a18
+	umulh	x12, x21, x21                             #! PC = 0xc3a1c
+	adcs	x8, x8, x12                                #! PC = 0xc3a20
+	mul	x11, x22, x22                               #! PC = 0xc3a24
+	adcs	x9, x9, x11                                #! PC = 0xc3a28
+	umulh	x12, x22, x22                             #! PC = 0xc3a2c
+	adcs	x10, x10, x12                              #! PC = 0xc3a30
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3a34
+	lsr	x11, x3, #32                                #! PC = 0xc3a38
+	mul	x12, x16, x3                                #! PC = 0xc3a3c
+	umulh	x3, x16, x3                               #! PC = 0xc3a40
+	adcs	x5, x5, x11                                #! PC = 0xc3a44
+	adcs	x6, x6, x12                                #! PC = 0xc3a48
+	adc	x3, x3, xzr                                 #! PC = 0xc3a4c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3a50
+	lsr	x11, x4, #32                                #! PC = 0xc3a54
+	mul	x12, x16, x4                                #! PC = 0xc3a58
+	umulh	x4, x16, x4                               #! PC = 0xc3a5c
+	adcs	x6, x6, x11                                #! PC = 0xc3a60
+	adcs	x3, x3, x12                                #! PC = 0xc3a64
+	adc	x4, x4, xzr                                 #! PC = 0xc3a68
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3a6c
+	lsr	x11, x5, #32                                #! PC = 0xc3a70
+	mul	x12, x16, x5                                #! PC = 0xc3a74
+	umulh	x5, x16, x5                               #! PC = 0xc3a78
+	adcs	x3, x3, x11                                #! PC = 0xc3a7c
+	adcs	x4, x4, x12                                #! PC = 0xc3a80
+	adc	x5, x5, xzr                                 #! PC = 0xc3a84
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3a88
+	lsr	x11, x6, #32                                #! PC = 0xc3a8c
+	mul	x12, x16, x6                                #! PC = 0xc3a90
+	umulh	x6, x16, x6                               #! PC = 0xc3a94
+	adcs	x4, x4, x11                                #! PC = 0xc3a98
+	adcs	x5, x5, x12                                #! PC = 0xc3a9c
+	adc	x6, x6, xzr                                 #! PC = 0xc3aa0
+	adds	x3, x3, x7                                 #! PC = 0xc3aa4
+	adcs	x4, x4, x8                                 #! PC = 0xc3aa8
+	adcs	x5, x5, x9                                 #! PC = 0xc3aac
+	adcs	x6, x6, x10                                #! PC = 0xc3ab0
+	adc	x7, xzr, xzr                                #! PC = 0xc3ab4
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8
+	subs	x11, x3, x27                               #! PC = 0xc3abc
+	sbcs	x12, x4, x15                               #! PC = 0xc3ac0
+	sbcs	x13, x5, xzr                               #! PC = 0xc3ac4
+	sbcs	x14, x6, x16                               #! PC = 0xc3ac8
+	sbcs	x7, x7, xzr                                #! PC = 0xc3acc
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3ad8
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3adc
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3ae0
+	stp	x23, x24, [sp, #200]                        #! EA = L0x4000103bd8; PC = 0xc4274
+	stp	x25, x26, [sp, #216]                        #! EA = L0x4000103be8; PC = 0xc4278
+	ldp	x19, x20, [sp, #104]                        #! EA = L0x4000103b78; Value = 0x48c1506a1a7d85d5; PC = 0xc427c
+	ldp	x21, x22, [sp, #120]                        #! EA = L0x4000103b88; Value = 0x178fca6109279d7c; PC = 0xc4280
+	#bl	0xc3980 <p256SqrInternal>                   #! PC = 0xc4284
+	#! -> SP = 0x4000103b10
+	mul	x4, x20, x19                                #! PC = 0xc3980
+	umulh	x5, x20, x19                              #! PC = 0xc3984
+	mul	x11, x21, x19                               #! PC = 0xc3988
+	adds	x5, x5, x11                                #! PC = 0xc398c
+	umulh	x6, x21, x19                              #! PC = 0xc3990
+	mul	x11, x22, x19                               #! PC = 0xc3994
+	adcs	x6, x6, x11                                #! PC = 0xc3998
+	umulh	x7, x22, x19                              #! PC = 0xc399c
+	adc	x7, x7, xzr                                 #! PC = 0xc39a0
+	mul	x11, x21, x20                               #! PC = 0xc39a4
+	adds	x6, x6, x11                                #! PC = 0xc39a8
+	umulh	x12, x21, x20                             #! PC = 0xc39ac
+	adcs	x7, x7, x12                                #! PC = 0xc39b0
+	adc	x8, xzr, xzr                                #! PC = 0xc39b4
+	mul	x11, x22, x20                               #! PC = 0xc39b8
+	adds	x7, x7, x11                                #! PC = 0xc39bc
+	umulh	x12, x22, x20                             #! PC = 0xc39c0
+	adc	x8, x8, x12                                 #! PC = 0xc39c4
+	mul	x11, x22, x21                               #! PC = 0xc39c8
+	adds	x8, x8, x11                                #! PC = 0xc39cc
+	umulh	x9, x22, x21                              #! PC = 0xc39d0
+	adc	x9, x9, xzr                                 #! PC = 0xc39d4
+	mov	x10, #0x0                   	// #0          #! PC = 0xc39d8
+	adds	x4, x4, x4                                 #! PC = 0xc39dc
+	adcs	x5, x5, x5                                 #! PC = 0xc39e0
+	adcs	x6, x6, x6                                 #! PC = 0xc39e4
+	adcs	x7, x7, x7                                 #! PC = 0xc39e8
+	adcs	x8, x8, x8                                 #! PC = 0xc39ec
+	adcs	x9, x9, x9                                 #! PC = 0xc39f0
+	adc	x10, x10, xzr                               #! PC = 0xc39f4
+	mul	x3, x19, x19                                #! PC = 0xc39f8
+	umulh	x11, x19, x19                             #! PC = 0xc39fc
+	adds	x4, x4, x11                                #! PC = 0xc3a00
+	mul	x11, x20, x20                               #! PC = 0xc3a04
+	adcs	x5, x5, x11                                #! PC = 0xc3a08
+	umulh	x12, x20, x20                             #! PC = 0xc3a0c
+	adcs	x6, x6, x12                                #! PC = 0xc3a10
+	mul	x11, x21, x21                               #! PC = 0xc3a14
+	adcs	x7, x7, x11                                #! PC = 0xc3a18
+	umulh	x12, x21, x21                             #! PC = 0xc3a1c
+	adcs	x8, x8, x12                                #! PC = 0xc3a20
+	mul	x11, x22, x22                               #! PC = 0xc3a24
+	adcs	x9, x9, x11                                #! PC = 0xc3a28
+	umulh	x12, x22, x22                             #! PC = 0xc3a2c
+	adcs	x10, x10, x12                              #! PC = 0xc3a30
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3a34
+	lsr	x11, x3, #32                                #! PC = 0xc3a38
+	mul	x12, x16, x3                                #! PC = 0xc3a3c
+	umulh	x3, x16, x3                               #! PC = 0xc3a40
+	adcs	x5, x5, x11                                #! PC = 0xc3a44
+	adcs	x6, x6, x12                                #! PC = 0xc3a48
+	adc	x3, x3, xzr                                 #! PC = 0xc3a4c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3a50
+	lsr	x11, x4, #32                                #! PC = 0xc3a54
+	mul	x12, x16, x4                                #! PC = 0xc3a58
+	umulh	x4, x16, x4                               #! PC = 0xc3a5c
+	adcs	x6, x6, x11                                #! PC = 0xc3a60
+	adcs	x3, x3, x12                                #! PC = 0xc3a64
+	adc	x4, x4, xzr                                 #! PC = 0xc3a68
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3a6c
+	lsr	x11, x5, #32                                #! PC = 0xc3a70
+	mul	x12, x16, x5                                #! PC = 0xc3a74
+	umulh	x5, x16, x5                               #! PC = 0xc3a78
+	adcs	x3, x3, x11                                #! PC = 0xc3a7c
+	adcs	x4, x4, x12                                #! PC = 0xc3a80
+	adc	x5, x5, xzr                                 #! PC = 0xc3a84
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3a88
+	lsr	x11, x6, #32                                #! PC = 0xc3a8c
+	mul	x12, x16, x6                                #! PC = 0xc3a90
+	umulh	x6, x16, x6                               #! PC = 0xc3a94
+	adcs	x4, x4, x11                                #! PC = 0xc3a98
+	adcs	x5, x5, x12                                #! PC = 0xc3a9c
+	adc	x6, x6, xzr                                 #! PC = 0xc3aa0
+	adds	x3, x3, x7                                 #! PC = 0xc3aa4
+	adcs	x4, x4, x8                                 #! PC = 0xc3aa8
+	adcs	x5, x5, x9                                 #! PC = 0xc3aac
+	adcs	x6, x6, x10                                #! PC = 0xc3ab0
+	adc	x7, xzr, xzr                                #! PC = 0xc3ab4
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8
+	subs	x11, x3, x27                               #! PC = 0xc3abc
+	sbcs	x12, x4, x15                               #! PC = 0xc3ac0
+	sbcs	x13, x5, xzr                               #! PC = 0xc3ac4
+	sbcs	x14, x6, x16                               #! PC = 0xc3ac8
+	sbcs	x7, x7, xzr                                #! PC = 0xc3acc
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3ad8
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3adc
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3ae0
+	stp	x23, x24, [sp, #168]                        #! EA = L0x4000103bb8; PC = 0xc4288
+	stp	x25, x26, [sp, #184]                        #! EA = L0x4000103bc8; PC = 0xc428c
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc4290
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	stp	x23, x24, [sp, #232]                        #! EA = L0x4000103bf8; PC = 0xc4294
+	stp	x25, x26, [sp, #248]                        #! EA = L0x4000103c08; PC = 0xc4298
+	ldp	x19, x20, [x1, #32]                         #! EA = L0x4000103db8; Value = 0xb04c5c1fc983a7eb; PC = 0xc429c
+	ldp	x21, x22, [x1, #48]                         #! EA = L0x4000103dc8; Value = 0x788208311a2ee98e; PC = 0xc42a0
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc42a4
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	stp	x23, x24, [sp, #40]                         #! EA = L0x4000103b38; PC = 0xc42a8
+	stp	x25, x26, [sp, #56]                         #! EA = L0x4000103b48; PC = 0xc42ac
+	ldp	x19, x20, [sp, #168]                        #! EA = L0x4000103bb8; Value = 0xf503dd9cd7963009; PC = 0xc42b0
+	ldp	x21, x22, [sp, #184]                        #! EA = L0x4000103bc8; Value = 0x41937a9af514c929; PC = 0xc42b4
+	ldp	x23, x24, [x1]                              #! EA = L0x4000103d98; Value = 0xffac3f904eebc127; PC = 0xc42b8
+	ldp	x25, x26, [x1, #16]                         #! EA = L0x4000103da8; Value = 0x66ad77dd87cbbc98; PC = 0xc42bc
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc42c0
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	stp	x23, x24, [sp, #104]                        #! EA = L0x4000103b78; PC = 0xc42c4
+	stp	x25, x26, [sp, #120]                        #! EA = L0x4000103b88; PC = 0xc42c8
+	adds	x19, x23, x23                              #! PC = 0xc42cc
+	adcs	x20, x24, x24                              #! PC = 0xc42d0
+	adcs	x21, x25, x25                              #! PC = 0xc42d4
+	adcs	x22, x26, x26                              #! PC = 0xc42d8
+	adc	x17, xzr, xzr                               #! PC = 0xc42dc
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc42e0
+	subs	x11, x19, x27                              #! PC = 0xc42e4
+	sbcs	x12, x20, x15                              #! PC = 0xc42e8
+	sbcs	x13, x21, xzr                              #! PC = 0xc42ec
+	sbcs	x14, x22, x16                              #! PC = 0xc42f0
+	sbcs	x17, x17, xzr                              #! PC = 0xc42f4
+	csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc42f8
+	csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc42fc
+	csel	x21, x21, x13, cc  // cc = lo, ul, last    #! PC = 0xc4300
+	csel	x22, x22, x14, cc  // cc = lo, ul, last    #! PC = 0xc4304
+	ldp	x23, x24, [sp, #200]                        #! EA = L0x4000103bd8; Value = 0x7f5806f72bc44a6e; PC = 0xc4308
+	ldp	x25, x26, [sp, #216]                        #! EA = L0x4000103be8; Value = 0x0a6d444fd4125a69; PC = 0xc430c
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4310
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	mov	x23, x19                                    #! PC = 0xc4314
+	mov	x24, x20                                    #! PC = 0xc4318
+	mov	x25, x21                                    #! PC = 0xc431c
+	mov	x26, x22                                    #! PC = 0xc4320
+	ldp	x19, x20, [sp, #232]                        #! EA = L0x4000103bf8; Value = 0x356837bf9155fc15; PC = 0xc4324
+	ldp	x21, x22, [sp, #248]                        #! EA = L0x4000103c08; Value = 0x4a503e7dd6918548; PC = 0xc4328
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc432c
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	ldp	x3, x4, [x1]                                #! EA = L0x4000103d98; Value = 0xffac3f904eebc127; PC = 0xc4330
+	ldp	x5, x6, [x1, #16]                           #! EA = L0x4000103da8; Value = 0x66ad77dd87cbbc98; PC = 0xc4334
+	tst	x0, #0x1                                    #! PC = 0xc4338
+	csel	x19, x3, x19, eq  // eq = none             #! PC = 0xc433c
+	csel	x20, x4, x20, eq  // eq = none             #! PC = 0xc4340
+	csel	x21, x5, x21, eq  // eq = none             #! PC = 0xc4344
+	csel	x22, x6, x22, eq  // eq = none             #! PC = 0xc4348
+	ldp	x3, x4, [x2]                                #! EA = L0x4000103cd8; Value = 0x486d8ffa696946fc; PC = 0xc434c
+	ldp	x5, x6, [x2, #16]                           #! EA = L0x4000103ce8; Value = 0x7e3d423e90f35a15; PC = 0xc4350
+	tst	x0, #0x2                                    #! PC = 0xc4354
+	csel	x19, x3, x19, eq  // eq = none             #! PC = 0xc4358
+	csel	x20, x4, x20, eq  // eq = none             #! PC = 0xc435c
+	csel	x21, x5, x21, eq  // eq = none             #! PC = 0xc4360
+	csel	x22, x6, x22, eq  // eq = none             #! PC = 0xc4364
+	ldr	x11, [sp, #296]                             #! EA = L0x4000103c38; Value = 0x0000004000103d98; PC = 0xc4368
+	stp	x19, x20, [x11]                             #! EA = L0x4000103d98; PC = 0xc436c
+	stp	x21, x22, [x11, #16]                        #! EA = L0x4000103da8; PC = 0xc4370
+	ldp	x23, x24, [sp, #104]                        #! EA = L0x4000103b78; Value = 0x402ba1ab5c9b4fa2; PC = 0xc4374
+	ldp	x25, x26, [sp, #120]                        #! EA = L0x4000103b88; Value = 0xc487993ef8292b0d; PC = 0xc4378
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc437c
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	ldp	x23, x24, [sp, #136]                        #! EA = L0x4000103b98; Value = 0x3627a1907379b59f; PC = 0xc4380
+	ldp	x25, x26, [sp, #152]                        #! EA = L0x4000103ba8; Value = 0x7e4c4feedaf41c1b; PC = 0xc4384
+	#bl	0xc3af0 <p256MulInternal>                   #! PC = 0xc4388
+	#! -> SP = 0x4000103b10
+	mul	x3, x19, x23                                #! PC = 0xc3af0
+	umulh	x4, x19, x23                              #! PC = 0xc3af4
+	mul	x11, x20, x23                               #! PC = 0xc3af8
+	adds	x4, x4, x11                                #! PC = 0xc3afc
+	umulh	x5, x20, x23                              #! PC = 0xc3b00
+	mul	x11, x21, x23                               #! PC = 0xc3b04
+	adcs	x5, x5, x11                                #! PC = 0xc3b08
+	umulh	x6, x21, x23                              #! PC = 0xc3b0c
+	mul	x11, x22, x23                               #! PC = 0xc3b10
+	adcs	x6, x6, x11                                #! PC = 0xc3b14
+	umulh	x7, x22, x23                              #! PC = 0xc3b18
+	adc	x7, x7, xzr                                 #! PC = 0xc3b1c
+	adds	x4, x4, x3, lsl #32                        #! PC = 0xc3b20
+	lsr	x11, x3, #32                                #! PC = 0xc3b24
+	mul	x12, x16, x3                                #! PC = 0xc3b28
+	umulh	x3, x16, x3                               #! PC = 0xc3b2c
+	adcs	x5, x5, x11                                #! PC = 0xc3b30
+	adcs	x6, x6, x12                                #! PC = 0xc3b34
+	adc	x3, x3, xzr                                 #! PC = 0xc3b38
+	mul	x11, x19, x24                               #! PC = 0xc3b3c
+	adds	x4, x4, x11                                #! PC = 0xc3b40
+	umulh	x12, x19, x24                             #! PC = 0xc3b44
+	mul	x11, x20, x24                               #! PC = 0xc3b48
+	adcs	x5, x5, x11                                #! PC = 0xc3b4c
+	umulh	x13, x20, x24                             #! PC = 0xc3b50
+	mul	x11, x21, x24                               #! PC = 0xc3b54
+	adcs	x6, x6, x11                                #! PC = 0xc3b58
+	umulh	x14, x21, x24                             #! PC = 0xc3b5c
+	mul	x11, x22, x24                               #! PC = 0xc3b60
+	adcs	x7, x7, x11                                #! PC = 0xc3b64
+	umulh	x17, x22, x24                             #! PC = 0xc3b68
+	adc	x8, xzr, xzr                                #! PC = 0xc3b6c
+	adds	x5, x5, x12                                #! PC = 0xc3b70
+	adcs	x6, x6, x13                                #! PC = 0xc3b74
+	adcs	x7, x7, x14                                #! PC = 0xc3b78
+	adc	x8, x8, x17                                 #! PC = 0xc3b7c
+	adds	x5, x5, x4, lsl #32                        #! PC = 0xc3b80
+	lsr	x11, x4, #32                                #! PC = 0xc3b84
+	mul	x12, x16, x4                                #! PC = 0xc3b88
+	umulh	x4, x16, x4                               #! PC = 0xc3b8c
+	adcs	x6, x6, x11                                #! PC = 0xc3b90
+	adcs	x3, x3, x12                                #! PC = 0xc3b94
+	adc	x4, x4, xzr                                 #! PC = 0xc3b98
+	mul	x11, x19, x25                               #! PC = 0xc3b9c
+	adds	x5, x5, x11                                #! PC = 0xc3ba0
+	umulh	x12, x19, x25                             #! PC = 0xc3ba4
+	mul	x11, x20, x25                               #! PC = 0xc3ba8
+	adcs	x6, x6, x11                                #! PC = 0xc3bac
+	umulh	x13, x20, x25                             #! PC = 0xc3bb0
+	mul	x11, x21, x25                               #! PC = 0xc3bb4
+	adcs	x7, x7, x11                                #! PC = 0xc3bb8
+	umulh	x14, x21, x25                             #! PC = 0xc3bbc
+	mul	x11, x22, x25                               #! PC = 0xc3bc0
+	adcs	x8, x8, x11                                #! PC = 0xc3bc4
+	umulh	x17, x22, x25                             #! PC = 0xc3bc8
+	adc	x9, xzr, xzr                                #! PC = 0xc3bcc
+	adds	x6, x6, x12                                #! PC = 0xc3bd0
+	adcs	x7, x7, x13                                #! PC = 0xc3bd4
+	adcs	x8, x8, x14                                #! PC = 0xc3bd8
+	adc	x9, x9, x17                                 #! PC = 0xc3bdc
+	adds	x6, x6, x5, lsl #32                        #! PC = 0xc3be0
+	lsr	x11, x5, #32                                #! PC = 0xc3be4
+	mul	x12, x16, x5                                #! PC = 0xc3be8
+	umulh	x5, x16, x5                               #! PC = 0xc3bec
+	adcs	x3, x3, x11                                #! PC = 0xc3bf0
+	adcs	x4, x4, x12                                #! PC = 0xc3bf4
+	adc	x5, x5, xzr                                 #! PC = 0xc3bf8
+	mul	x11, x19, x26                               #! PC = 0xc3bfc
+	adds	x6, x6, x11                                #! PC = 0xc3c00
+	umulh	x12, x19, x26                             #! PC = 0xc3c04
+	mul	x11, x20, x26                               #! PC = 0xc3c08
+	adcs	x7, x7, x11                                #! PC = 0xc3c0c
+	umulh	x13, x20, x26                             #! PC = 0xc3c10
+	mul	x11, x21, x26                               #! PC = 0xc3c14
+	adcs	x8, x8, x11                                #! PC = 0xc3c18
+	umulh	x14, x21, x26                             #! PC = 0xc3c1c
+	mul	x11, x22, x26                               #! PC = 0xc3c20
+	adcs	x9, x9, x11                                #! PC = 0xc3c24
+	umulh	x17, x22, x26                             #! PC = 0xc3c28
+	adc	x10, xzr, xzr                               #! PC = 0xc3c2c
+	adds	x7, x7, x12                                #! PC = 0xc3c30
+	adcs	x8, x8, x13                                #! PC = 0xc3c34
+	adcs	x9, x9, x14                                #! PC = 0xc3c38
+	adc	x10, x10, x17                               #! PC = 0xc3c3c
+	adds	x3, x3, x6, lsl #32                        #! PC = 0xc3c40
+	lsr	x11, x6, #32                                #! PC = 0xc3c44
+	mul	x12, x16, x6                                #! PC = 0xc3c48
+	umulh	x6, x16, x6                               #! PC = 0xc3c4c
+	adcs	x4, x4, x11                                #! PC = 0xc3c50
+	adcs	x5, x5, x12                                #! PC = 0xc3c54
+	adc	x6, x6, xzr                                 #! PC = 0xc3c58
+	adds	x3, x3, x7                                 #! PC = 0xc3c5c
+	adcs	x4, x4, x8                                 #! PC = 0xc3c60
+	adcs	x5, x5, x9                                 #! PC = 0xc3c64
+	adcs	x6, x6, x10                                #! PC = 0xc3c68
+	adc	x7, xzr, xzr                                #! PC = 0xc3c6c
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70
+	subs	x11, x3, x27                               #! PC = 0xc3c74
+	sbcs	x12, x4, x15                               #! PC = 0xc3c78
+	sbcs	x13, x5, xzr                               #! PC = 0xc3c7c
+	sbcs	x14, x6, x16                               #! PC = 0xc3c80
+	sbcs	x7, x7, xzr                                #! PC = 0xc3c84
+	csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88
+	csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c
+	csel	x25, x13, x5, cs  // cs = hs, nlast        #! PC = 0xc3c90
+	csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc3c98
+	ldp	x19, x20, [sp, #40]                         #! EA = L0x4000103b38; Value = 0xdaa0e1bdb4a1a3bd; PC = 0xc438c
+	ldp	x21, x22, [sp, #56]                         #! EA = L0x4000103b48; Value = 0x3c1168807713ec32; PC = 0xc4390
+	#bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4394
+	#! -> SP = 0x4000103b10
+	subs	x3, x23, x19                               #! PC = 0xc3940
+	sbcs	x4, x24, x20                               #! PC = 0xc3944
+	sbcs	x5, x25, x21                               #! PC = 0xc3948
+	sbcs	x6, x26, x22                               #! PC = 0xc394c
+	ngc	x11, xzr                                    #! PC = 0xc3950
+	mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954
+	adds	x7, x3, x27                                #! PC = 0xc3958
+	adcs	x8, x4, x15                                #! PC = 0xc395c
+	adcs	x9, x5, xzr                                #! PC = 0xc3960
+	adc	x10, x6, x16                                #! PC = 0xc3964
+	ands	x11, x11, #0x1                             #! PC = 0xc3968
+	csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c
+	csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970
+	csel	x21, x5, x9, eq  // eq = none              #! PC = 0xc3974
+	csel	x22, x6, x10, eq  // eq = none             #! PC = 0xc3978
+	#! <- SP = 0x4000103b10
+	#ret                                            #! PC = 0xc397c
+	ldp	x3, x4, [x1, #32]                           #! EA = L0x4000103db8; Value = 0xb04c5c1fc983a7eb; PC = 0xc4398
+	ldp	x5, x6, [x1, #48]                           #! EA = L0x4000103dc8; Value = 0x788208311a2ee98e; PC = 0xc439c
+	tst	x0, #0x1                                    #! PC = 0xc43a0
+	csel	x19, x3, x19, eq  // eq = none             #! PC = 0xc43a4
+	csel	x20, x4, x20, eq  // eq = none             #! PC = 0xc43a8
+	csel	x21, x5, x21, eq  // eq = none             #! PC = 0xc43ac
+	csel	x22, x6, x22, eq  // eq = none             #! PC = 0xc43b0
+	ldp	x3, x4, [sp, #8]                            #! EA = L0x4000103b18; Value = 0xe673fdb03cfd5d8b; PC = 0xc43b4
+	ldp	x5, x6, [sp, #24]                           #! EA = L0x4000103b28; Value = 0xf6ce581ff52305aa; PC = 0xc43b8
+	tst	x0, #0x2                                    #! PC = 0xc43bc
+	csel	x19, x3, x19, eq  // eq = none             #! PC = 0xc43c0
+	csel	x20, x4, x20, eq  // eq = none             #! PC = 0xc43c4
+	csel	x21, x5, x21, eq  // eq = none             #! PC = 0xc43c8
+	csel	x22, x6, x22, eq  // eq = none             #! PC = 0xc43cc
+	ldr	x11, [sp, #296]                             #! EA = L0x4000103c38; Value = 0x0000004000103d98; PC = 0xc43d0
+	stp	x19, x20, [x11, #32]                        #! EA = L0x4000103db8; PC = 0xc43d4
+	stp	x21, x22, [x11, #48]                        #! EA = L0x4000103dc8; PC = 0xc43d8
+	ldur	x29, [sp, #-8]                             #! EA = L0x4000103b08; Value = 0x0000004000103c28; PC = 0xc43dc
+	ldr	x30, [sp]                                   #! EA = L0x4000103b10; Value = 0x00000000000c192c; PC = 0xc43e0
+	add	sp, sp, #0x120                              #! PC = 0xc43e4
+	#! <- SP = 0x4000103c30
+	#ret                                            #! PC = 0xc43e8

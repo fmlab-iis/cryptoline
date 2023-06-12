@@ -1,0 +1,99 @@
+crypto/ed25519/internal/edwards25519/field.(*Element).reduce:
+# %rdi = 0x7ffffffffffff
+# %rsi = 0x0
+# %rdx = 0x0
+# %rcx = 0x7ffffffffffed
+# %r8  = 0x7ffffffffffff
+# %r9  = 0x0
+	#! -> SP = 0xc0000b18c0
+	cmp    0x10(%r14),%rsp                          #! EA = L0xc0000021b0; Value = 0x000000c0000b03a0; PC = 0x4d0920
+	#jbe    0x4d09f1 <crypto/ed25519/internal/edwards25519/field.(*Element).reduce+209>#! PC = 0x4d0924
+	sub    $0x10,%rsp                               #! PC = 0x4d092a
+	mov    %rbp,0x8(%rsp)                           #! EA = L0xc0000b18b8; PC = 0x4d092e
+	lea    0x8(%rsp),%rbp                           #! PC = 0x4d0933
+	mov    %rax,0x18(%rsp)                          #! EA = L0xc0000b18c8; PC = 0x4d0938
+	nop                                             #! PC = 0x4d093d
+	xchg   %ax,%ax                                  #! PC = 0x4d093e
+	#call   0x4d21e0 <crypto/ed25519/internal/edwards25519/field.(*Element).carryPropagateGeneric>#! PC = 0x4d0940
+	#! -> SP = 0xc0000b18a8
+	mov    (%rax),%rcx                              #! EA = L0xc0000b18e8; Value = 0x0007ffffffffffed; PC = 0x4d21e0
+	mov    0x8(%rax),%rdx                           #! EA = L0xc0000b18f0; Value = 0x0007ffffffffffff; PC = 0x4d21e3
+	mov    0x10(%rax),%rbx                          #! EA = L0xc0000b18f8; Value = 0x0007ffffffffffff; PC = 0x4d21e7
+	mov    0x18(%rax),%rsi                          #! EA = L0xc0000b1900; Value = 0x0007ffffffffffff; PC = 0x4d21eb
+	mov    0x20(%rax),%rdi                          #! EA = L0xc0000b1908; Value = 0x0007ffffffffffff; PC = 0x4d21ef
+	shr    $0x33,%rdi                               #! PC = 0x4d21f3
+	movabs $0x7ffffffffffff,%r8                     #! PC = 0x4d21f7
+	and    %rcx,%r8                                 #! PC = 0x4d2201
+	lea    (%rdi,%rdi,8),%r9                        #! PC = 0x4d2204
+	lea    (%rdi,%r9,2),%rdi                        #! PC = 0x4d2208
+	add    %r8,%rdi                                 #! PC = 0x4d220c
+	mov    %rdi,(%rax)                              #! EA = L0xc0000b18e8; PC = 0x4d220f
+	shr    $0x33,%rcx                               #! PC = 0x4d2212
+	mov    0x8(%rax),%rdi                           #! EA = L0xc0000b18f0; Value = 0x0007ffffffffffff; PC = 0x4d2216
+	movabs $0x7ffffffffffff,%r8                     #! PC = 0x4d221a
+	and    %r8,%rdi                                 #! PC = 0x4d2224
+	add    %rdi,%rcx                                #! PC = 0x4d2227
+	mov    %rcx,0x8(%rax)                           #! EA = L0xc0000b18f0; PC = 0x4d222a
+	shr    $0x33,%rdx                               #! PC = 0x4d222e
+	mov    0x10(%rax),%rcx                          #! EA = L0xc0000b18f8; Value = 0x0007ffffffffffff; PC = 0x4d2232
+	and    %r8,%rcx                                 #! PC = 0x4d2236
+	add    %rdx,%rcx                                #! PC = 0x4d2239
+	mov    %rcx,0x10(%rax)                          #! EA = L0xc0000b18f8; PC = 0x4d223c
+	shr    $0x33,%rbx                               #! PC = 0x4d2240
+	mov    0x18(%rax),%rcx                          #! EA = L0xc0000b1900; Value = 0x0007ffffffffffff; PC = 0x4d2244
+	and    %r8,%rcx                                 #! PC = 0x4d2248
+	add    %rbx,%rcx                                #! PC = 0x4d224b
+	mov    %rcx,0x18(%rax)                          #! EA = L0xc0000b1900; PC = 0x4d224e
+	shr    $0x33,%rsi                               #! PC = 0x4d2252
+	mov    0x20(%rax),%rcx                          #! EA = L0xc0000b1908; Value = 0x0007ffffffffffff; PC = 0x4d2256
+	and    %r8,%rcx                                 #! PC = 0x4d225a
+	add    %rsi,%rcx                                #! PC = 0x4d225d
+	mov    %rcx,0x20(%rax)                          #! EA = L0xc0000b1908; PC = 0x4d2260
+	#! <- SP = 0xc0000b18a8
+	#ret                                            #! PC = 0x4d2264
+	mov    0x18(%rsp),%rax                          #! EA = L0xc0000b18c8; Value = 0x000000c0000b18e8; PC = 0x4d0945
+	mov    (%rax),%rcx                              #! EA = L0xc0000b18e8; Value = 0x0007ffffffffffed; PC = 0x4d094a
+	lea    0x13(%rcx),%rdx                          #! PC = 0x4d094d
+	shr    $0x33,%rdx                               #! PC = 0x4d0951
+	add    0x8(%rax),%rdx                           #! EA = L0xc0000b18f0; Value = 0x0007ffffffffffff; PC = 0x4d0955
+	shr    $0x33,%rdx                               #! PC = 0x4d0959
+	add    0x10(%rax),%rdx                          #! EA = L0xc0000b18f8; Value = 0x0007ffffffffffff; PC = 0x4d095d
+	shr    $0x33,%rdx                               #! PC = 0x4d0961
+	add    0x18(%rax),%rdx                          #! EA = L0xc0000b1900; Value = 0x0007ffffffffffff; PC = 0x4d0965
+	shr    $0x33,%rdx                               #! PC = 0x4d0969
+	add    0x20(%rax),%rdx                          #! EA = L0xc0000b1908; Value = 0x0007ffffffffffff; PC = 0x4d096d
+	shr    $0x33,%rdx                               #! PC = 0x4d0971
+	lea    (%rdx,%rdx,8),%rbx                       #! PC = 0x4d0975
+	lea    (%rdx,%rbx,2),%rdx                       #! PC = 0x4d0979
+	add    %rdx,%rcx                                #! PC = 0x4d097d
+	mov    %rcx,(%rax)                              #! EA = L0xc0000b18e8; PC = 0x4d0980
+	mov    %rcx,%rdx                                #! PC = 0x4d0983
+	shr    $0x33,%rcx                               #! PC = 0x4d0986
+	add    0x8(%rax),%rcx                           #! EA = L0xc0000b18f0; Value = 0x0007ffffffffffff; PC = 0x4d098a
+	mov    %rcx,0x8(%rax)                           #! EA = L0xc0000b18f0; PC = 0x4d098e
+	movabs $0x7ffffffffffff,%rbx                    #! PC = 0x4d0992
+	and    %rbx,%rdx                                #! PC = 0x4d099c
+	mov    %rdx,(%rax)                              #! EA = L0xc0000b18e8; PC = 0x4d099f
+	mov    %rcx,%rdx                                #! PC = 0x4d09a2
+	shr    $0x33,%rcx                               #! PC = 0x4d09a5
+	add    0x10(%rax),%rcx                          #! EA = L0xc0000b18f8; Value = 0x0007ffffffffffff; PC = 0x4d09a9
+	mov    %rcx,0x10(%rax)                          #! EA = L0xc0000b18f8; PC = 0x4d09ad
+	and    %rbx,%rdx                                #! PC = 0x4d09b1
+	mov    %rdx,0x8(%rax)                           #! EA = L0xc0000b18f0; PC = 0x4d09b4
+	mov    %rcx,%rdx                                #! PC = 0x4d09b8
+	shr    $0x33,%rcx                               #! PC = 0x4d09bb
+	add    0x18(%rax),%rcx                          #! EA = L0xc0000b1900; Value = 0x0007ffffffffffff; PC = 0x4d09bf
+	mov    %rcx,0x18(%rax)                          #! EA = L0xc0000b1900; PC = 0x4d09c3
+	and    %rbx,%rdx                                #! PC = 0x4d09c7
+	mov    %rdx,0x10(%rax)                          #! EA = L0xc0000b18f8; PC = 0x4d09ca
+	mov    %rcx,%rdx                                #! PC = 0x4d09ce
+	shr    $0x33,%rcx                               #! PC = 0x4d09d1
+	add    0x20(%rax),%rcx                          #! EA = L0xc0000b1908; Value = 0x0007ffffffffffff; PC = 0x4d09d5
+	and    %rbx,%rdx                                #! PC = 0x4d09d9
+	mov    %rdx,0x18(%rax)                          #! EA = L0xc0000b1900; PC = 0x4d09dc
+	and    %rcx,%rbx                                #! PC = 0x4d09e0
+	mov    %rbx,0x20(%rax)                          #! EA = L0xc0000b1908; PC = 0x4d09e3
+	mov    0x8(%rsp),%rbp                           #! EA = L0xc0000b18b8; Value = 0x000000c0000b1938; PC = 0x4d09e7
+	add    $0x10,%rsp                               #! PC = 0x4d09ec
+	#! <- SP = 0xc0000b18c0
+	#ret                                            #! PC = 0x4d09f0
