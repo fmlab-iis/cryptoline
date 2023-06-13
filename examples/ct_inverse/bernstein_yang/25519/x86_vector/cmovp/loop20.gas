@@ -1,0 +1,155 @@
+#! (%rdx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rbx) = %%EA
+
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+
+#! %r$1c = %%r$1c
+
+
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v ($1c)@sint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2v -> adds carry $2v $1v $2v
+#! adc $1v, $2v -> adcs carry $2v $1v $2v carry
+#! adc \$0x0, $2v -> adcs carry $2v 0@uint64 $2v carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! adc $1c, $2v -> adcs carry $2v $1c@uint64 $2v carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! and $1v, $2v -> and $2v@uint64 $1v $2v
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mul $1v -> umull rdx rax $1v rax
+#! mulq $1v -> umull rdx rax $1v rax
+#! imul $1v, $2v -> smull dontcare $2v $1v $2v
+#! mulx $1v, $2v, $3v -> umull rdx $3v $1v $2v
+#! adox $1v, $2v -> adcs OF $2v $1v $2v OF
+#! adcx $1v, $2v -> adcs carry $2v $1v $2v carry
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
+#! btr \$0x3f, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v;\nand $2v@uint64 $2v 0x7fffffffffffffff@uint64 
+#! lea  \($1v,$2v\),$3v -> adds dontcare $3v $1v $2v 
+#! lea  1\($1v\),$2v -> adds dontcare $2v $1v 1@sint64
+#! test \$1, $1v -> and T$1v@sint64 0x1@sint64 $1v;\nsubb ZF dontcare T$1v 1@sint64 
+#! cmovne $1v, $2v -> cmov $2v ZF $2v $1v 
+#! cmove $1v, $2v -> cmov $2v ZF $1v $2v
+#! not $1v -> not $1v@sint64 $1v
+#! sar \$1, $1v -> ssplit $1v dontcare $1v 1 
+#! cmovge $1v, $2v -> cmov $2v SFeOF $1v $2v
+#! cmovl $1v, $2v -> cmov $2v SFeOF $2v $1v
+#! cmp \$0, $2v -> subb SFeOF dontcare $2v (-(2)**(63))@sint64
+#! neg $1v -> subb dontcare $1v 0@sint64 $1v
+
+# qhasm: loop20_init:
+._loop20_init:
+
+# qhasm:   fuv = f & ~ _m2p20
+# asm 1: andn  <f=int64#1,<_m2p20=int64#4,>fuv=int64#6
+# asm 2: andn  <f=%rdi,<_m2p20=%rcx,>fuv=%r9
+andn  %rdi,%rcx,%r9
+
+# qhasm:   grs = g & ~ _m2p20
+# asm 1: andn  <g=int64#3,<_m2p20=int64#4,>grs=int64#7
+# asm 2: andn  <g=%rdx,<_m2p20=%rcx,>grs=%rax
+andn  %rdx,%rcx,%rax
+
+# qhasm:   fuv += stack_m2p41
+# asm 1: addq <stack_m2p41=stack64#11,<fuv=int64#6
+# asm 2: addq <stack_m2p41=752(%rsp),<fuv=%r9
+addq 752(%rsp),%r9
+
+# qhasm:   grs += stack_m2p62
+# asm 1: addq <stack_m2p62=stack64#12,<grs=int64#7
+# asm 2: addq <stack_m2p62=760(%rsp),<grs=%rax
+addq 760(%rsp),%rax
+
+# qhasm:   z = -1
+# asm 1: mov  $-1,>z=int64#8
+# asm 2: mov  $-1,>z=%r10
+mov  $-1,%r10
+
+# qhasm:   oldg = grs
+# asm 1: mov  <grs=int64#7,>oldg=int64#9
+# asm 2: mov  <grs=%rax,>oldg=%r11
+mov  %rax,%r11
+
+# qhasm:   h = grs + fuv
+# asm 1: lea  (<grs=int64#7,<fuv=int64#6),>h=int64#10
+# asm 2: lea  (<grs=%rax,<fuv=%r9),>h=%r12
+lea  (%rax,%r9),%r12
+
+# qhasm:               =? grs & 1
+# asm 1: test  $1,<grs=int64#7
+# asm 2: test  $1,<grs=%rax
+test  $1,%rax
+
+# qhasm:   z = m   if !=
+# asm 1: cmovne <m=int64#2,<z=int64#8
+# asm 2: cmovne <m=%rsi,<z=%r10
+cmovne %rsi,%r10
+
+# qhasm:   h = grs if  =
+# asm 1: cmove <grs=int64#7,<h=int64#10
+# asm 2: cmove <grs=%rax,<h=%r12
+cmove %rax,%r12
+
+# qhasm:   mnew = m + 1
+# asm 1: lea  1(<m=int64#2),>mnew=int64#11
+# asm 2: lea  1(<m=%rsi),>mnew=%r13
+lea  1(%rsi),%r13
+
+# qhasm:   grs -= fuv
+# asm 1: sub  <fuv=int64#6,<grs=int64#7
+# asm 2: sub  <fuv=%r9,<grs=%rax
+sub  %r9,%rax
+
+# qhasm:   (int64) grs >>= 1
+# asm 1: sar  $1,<grs=int64#7
+# asm 2: sar  $1,<grs=%rax
+sar  $1,%rax
+
+# qhasm:   (int64) h >>= 1
+# asm 1: sar  $1,<h=int64#10
+# asm 2: sar  $1,<h=%r12
+sar  $1,%r12
+
+# qhasm:   m = -m
+# asm 1: neg  <m=int64#2
+# asm 2: neg  <m=%rsi
+neg  %rsi
+
+# qhasm:                  signed<? z - 0
+# asm 1: cmp  $0,<z=int64#8
+# asm 2: cmp  $0,<z=%r10
+cmp  $0,%r10
+
+# qhasm:   fuv = oldg if !signed<
+# asm 1: cmovge <oldg=int64#9,<fuv=int64#6
+# asm 2: cmovge <oldg=%r11,<fuv=%r9
+cmovge %r11,%r9
+
+# qhasm:   grs = h    if  signed<
+# asm 1: cmovl <h=int64#10,<grs=int64#7
+# asm 2: cmovl <h=%r12,<grs=%rax
+cmovl %r12,%rax
+
+# qhasm:   m = mnew   if  signed<
+# asm 1: cmovl <mnew=int64#11,<m=int64#2
+# asm 2: cmovl <mnew=%r13,<m=%rsi
+cmovl %r13,%rsi

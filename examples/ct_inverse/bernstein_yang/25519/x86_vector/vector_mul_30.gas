@@ -1,0 +1,860 @@
+#! (%rsp) = %%rsp_$1c
+#! $1c(%rsp) = %%rsp_$1c
+
+#! %r$1c = %%r$1c
+#! %xmm$1c = %%xmm$1c
+#! %ymm$1c = %%ymm$1c
+
+#! vmovupd $1v, $2v -> mov $2v_0 $1v_0;\nmov $2v_1 $1v_1;\nmov $2v_2 $1v_2;\nmov $2v_3 $1v_3
+#! vmovapd $1v, $2v -> mov $2v_0 $1v_0;\nmov $2v_1 $1v_1;\nmov $2v_2 $1v_2;\nmov $2v_3 $1v_3
+#! vpinsrq \$0x0, $1v, $2v, $3v -> mov $3v_0 $1v;\nmov $3v_1 $2v_1
+#! vpinsrq \$0x1, $1v, $2v, $3v -> mov $3v_0 $2v_0;\nmov $3v_1 $1v
+#! vpermq \$0x4e, $1v, $2v -> mov tmp_0 $1v_0;\nmov tmp_1 $1v_1;\nmov tmp_2 $1v_2;\nmov tmp_3 $1v_3;\nmov $2v_0 tmp_2;\nmov $2v_1 tmp_3;\nmov $2v_2 tmp_0;\nmov $2v_3 tmp_1
+#! vpermq \$0x50, $1v, $2v -> mov tmp_0 $1v_0;\nmov tmp_1 $1v_1;\nmov $2v_0 tmp_0;\nmov $2v_1 tmp_0;\nmov $2v_2 tmp_1;\nmov $2v_3 tmp_1
+
+#! vpand $1v, $2v, $3v -> and $3v_0@sint64 $1v_0 $2v_0;\nand $3v_1@sint64 $1v_1 $2v_1;\nand $3v_2@sint64 $1v_2 $2v_2;\nand $3v_3@sint64 $1v_3 $2v_3
+#! vpaddq $1v, $2v, $3v -> adds dontcare_0 $3v_0 $1v_0 $2v_0;\nadds dontcare_1 $3v_1 $1v_1 $2v_1;\nadds dontcare_2 $3v_2 $1v_2 $2v_2;\nadds dontcare_3 $3v_3 $1v_3 $2v_3
+#! vpsubq $1v, $2v, $3v -> subb dontcare_0 $3v_0 $2v_0 $1v_0;\nsubb dontcare_1 $3v_1 $2v_1 $1v_1;\nsubb dontcare_2 $3v_2 $2v_2 $1v_2;\nsubb dontcare_3 $3v_3 $2v_3 $1v_3
+#! vpmuldq $1v, $2v, $3v -> cast a_0@sint32 $1v_0;\ncast a_1@sint32 $1v_1;\ncast a_2@sint32 $1v_2;\ncast a_3@sint32 $1v_3;\ncast b_0@sint32 $2v_0;\ncast b_1@sint32 $2v_1;\ncast b_2@sint32 $2v_2;\ncast b_3@sint32 $2v_3;\nsmull h_0 l_0 a_0 b_0;\nsmull h_1 l_1 a_1 b_1;\nsmull h_2 l_2 a_2 b_2;\nsmull h_3 l_3 a_3 b_3;\njoin $3v_0 h_0 l_0;\njoin $3v_1 h_1 l_1;\njoin $3v_2 h_2 l_2;\njoin $3v_3 h_3 l_3
+#! vpsllq $3c, $1v, $2v -> shl $2v_0 $1v_0 $3c;\nshl $2v_1 $1v_1 $3c;\nshl $2v_2 $1v_2 $3c;\nshl $2v_3 $1v_3 $3c
+#! vpsrlq $3c, $1v, $2v -> cast tmp_0@uint64 $1v_0;\ncast tmp_1@uint64 $1v_1;\ncast tmp_2@uint64 $1v_2;\ncast tmp_3@uint64 $1v_3;\nusplit $2v_0 dontcare_0 tmp_0 $3c;\nusplit $2v_1 dontcare_1 tmp_1 $3c;\nusplit $2v_2 dontcare_2 tmp_2 $3c;\nusplit $2v_3 dontcare_3 tmp_3 $3c;\ncast $2v_0@sint64 $2v_0;\ncast $2v_1@sint64 $2v_1;\ncast $2v_2@sint64 $2v_2;\ncast $2v_3@sint64 $2v_3
+
+
+
+
+
+# qhasm: new vvrr
+
+# qhasm: vvrr = v,vvrr[1],0,0
+# asm 1: vpinsrq $0x0,<v=int64#8,<vvrr=reg256#2%128,<vvrr=reg256#2%128
+# asm 2: vpinsrq $0x0,<v=%r10,<vvrr=%xmm1,<vvrr=%xmm1
+vpinsrq $0x0,%r10,%xmm1,%xmm1
+
+# qhasm: vvrr = vvrr[0],r,0,0
+# asm 1: vpinsrq $0x1,<r=int64#10,<vvrr=reg256#2%128,<vvrr=reg256#2%128
+# asm 2: vpinsrq $0x1,<r=%r12,<vvrr=%xmm1,<vvrr=%xmm1
+vpinsrq $0x1,%r12,%xmm1,%xmm1
+
+# qhasm: FVGS0 = stack_FVGS0
+# asm 1: vmovapd <stack_FVGS0=stack256#2,>FVGS0=reg256#3
+# asm 2: vmovapd <stack_FVGS0=32(%rsp),>FVGS0=%ymm2
+vmovapd 32(%rsp),%ymm2
+
+# qhasm: new uuss
+
+# qhasm: uuss = u,uuss[1],0,0
+# asm 1: vpinsrq $0x0,<u=int64#5,<uuss=reg256#4%128,<uuss=reg256#4%128
+# asm 2: vpinsrq $0x0,<u=%r8,<uuss=%xmm3,<uuss=%xmm3
+vpinsrq $0x0,%r8,%xmm3,%xmm3
+
+# qhasm: uuss = uuss[0],s,0,0
+# asm 1: vpinsrq $0x1,<s=int64#9,<uuss=reg256#4%128,<uuss=reg256#4%128
+# asm 2: vpinsrq $0x1,<s=%r11,<uuss=%xmm3,<uuss=%xmm3
+vpinsrq $0x1,%r11,%xmm3,%xmm3
+
+# qhasm: GSFV0 = FVGS0[1,0]
+# asm 1: vpermq $0x4e,<FVGS0=reg256#3,>GSFV0=reg256#5
+# asm 2: vpermq $0x4e,<FVGS0=%ymm2,>GSFV0=%ymm4
+vpermq $0x4e,%ymm2,%ymm4
+
+# qhasm: uuss = uuss[0,0,1,1]
+# asm 1: vpermq $0x50,<uuss=reg256#4,>uuss=reg256#4
+# asm 2: vpermq $0x50,<uuss=%ymm3,>uuss=%ymm3
+vpermq $0x50,%ymm3,%ymm3
+
+# qhasm: vvrr = vvrr[0,0,1,1]
+# asm 1: vpermq $0x50,<vvrr=reg256#2,>vvrr=reg256#2
+# asm 2: vpermq $0x50,<vvrr=%ymm1,>vvrr=%ymm1
+vpermq $0x50,%ymm1,%ymm1
+
+# qhasm: _2p30m1x4 = stack_2p30m1x4
+# asm 1: vmovapd <stack_2p30m1x4=stack256#14,>_2p30m1x4=reg256#6
+# asm 2: vmovapd <stack_2p30m1x4=416(%rsp),>_2p30m1x4=%ymm5
+vmovapd 416(%rsp),%ymm5
+
+# qhasm: uuss0 = uuss & _2p30m1x4
+# asm 1: vpand <uuss=reg256#4,<_2p30m1x4=reg256#6,>uuss0=reg256#7
+# asm 2: vpand <uuss=%ymm3,<_2p30m1x4=%ymm5,>uuss0=%ymm6
+vpand %ymm3,%ymm5,%ymm6
+
+# qhasm: vvrr0 = vvrr & _2p30m1x4
+# asm 1: vpand <vvrr=reg256#2,<_2p30m1x4=reg256#6,>vvrr0=reg256#8
+# asm 2: vpand <vvrr=%ymm1,<_2p30m1x4=%ymm5,>vvrr0=%ymm7
+vpand %ymm1,%ymm5,%ymm7
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS0
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS0=reg256#3,>ta=reg256#9
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS0=%ymm2,>ta=%ymm8
+vpmuldq %ymm6,%ymm2,%ymm8
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV0
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV0=reg256#5,>tb=reg256#10
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV0=%ymm4,>tb=%ymm9
+vpmuldq %ymm7,%ymm4,%ymm9
+
+# qhasm: 4x out0 = ta + tb
+# asm 1: vpaddq <tb=reg256#10,<ta=reg256#9,>out0=reg256#9
+# asm 2: vpaddq <tb=%ymm9,<ta=%ymm8,>out0=%ymm8
+vpaddq %ymm9,%ymm8,%ymm8
+
+# qhasm: _inv19_2p30x4 = stack_inv19_2p30x4
+# asm 1: vmovapd <stack_inv19_2p30x4=stack256#13,>_inv19_2p30x4=reg256#10
+# asm 2: vmovapd <stack_inv19_2p30x4=384(%rsp),>_inv19_2p30x4=%ymm9
+vmovapd 384(%rsp),%ymm9
+
+# qhasm: _19x4 = stack_19x4
+# asm 1: vmovapd <stack_19x4=stack256#1,>_19x4=reg256#11
+# asm 2: vmovapd <stack_19x4=0(%rsp),>_19x4=%ymm10
+vmovapd 0(%rsp),%ymm10
+
+# qhasm: 4x d0 = int32 out0 * int32 _inv19_2p30x4
+# asm 1: vpmuldq <out0=reg256#9,<_inv19_2p30x4=reg256#10,>d0=reg256#12
+# asm 2: vpmuldq <out0=%ymm8,<_inv19_2p30x4=%ymm9,>d0=%ymm11
+vpmuldq %ymm8,%ymm9,%ymm11
+
+# qhasm: d0 &= _2p30m1x4
+# asm 1: vpand <d0=reg256#12,<_2p30m1x4=reg256#6,<d0=reg256#12
+# asm 2: vpand <d0=%ymm11,<_2p30m1x4=%ymm5,<d0=%ymm11
+vpand %ymm11,%ymm5,%ymm11
+
+# qhasm: 4x d0x19 = int32 d0 * int32 _19x4
+# asm 1: vpmuldq <d0=reg256#12,<_19x4=reg256#11,>d0x19=reg256#13
+# asm 2: vpmuldq <d0=%ymm11,<_19x4=%ymm10,>d0x19=%ymm12
+vpmuldq %ymm11,%ymm10,%ymm12
+
+# qhasm: 4x out0 -= d0x19
+# asm 1: vpsubq <d0x19=reg256#13,<out0=reg256#9,<out0=reg256#9
+# asm 2: vpsubq <d0x19=%ymm12,<out0=%ymm8,<out0=%ymm8
+vpsubq %ymm12,%ymm8,%ymm8
+
+# qhasm: 4x carryy = out0 + stack_2p63x4
+# asm 1: vpaddq <stack_2p63x4=stack256#17,<out0=reg256#9,>carryy=reg256#9
+# asm 2: vpaddq <stack_2p63x4=512(%rsp),<out0=%ymm8,>carryy=%ymm8
+vpaddq 512(%rsp),%ymm8,%ymm8
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#9,<carryy=reg256#9
+# asm 2: vpsrlq $30,<carryy=%ymm8,<carryy=%ymm8
+vpsrlq $30,%ymm8,%ymm8
+
+# qhasm: 4x out8plus2 = d0 << 15
+# asm 1: vpsllq $15,<d0=reg256#12,>out8plus2=reg256#12
+# asm 2: vpsllq $15,<d0=%ymm11,>out8plus2=%ymm11
+vpsllq $15,%ymm11,%ymm11
+
+# qhasm: FVGS1 = stack_FVGS1
+# asm 1: vmovapd <stack_FVGS1=stack256#3,>FVGS1=reg256#13
+# asm 2: vmovapd <stack_FVGS1=64(%rsp),>FVGS1=%ymm12
+vmovapd 64(%rsp),%ymm12
+
+# qhasm: GSFV1 = FVGS1[1,0]
+# asm 1: vpermq $0x4e,<FVGS1=reg256#13,>GSFV1=reg256#14
+# asm 2: vpermq $0x4e,<FVGS1=%ymm12,>GSFV1=%ymm13
+vpermq $0x4e,%ymm12,%ymm13
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS1
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS1=reg256#13,>ta=reg256#15
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS1=%ymm12,>ta=%ymm14
+vpmuldq %ymm6,%ymm12,%ymm14
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV1
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV1=reg256#14,>tb=reg256#16
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV1=%ymm13,>tb=%ymm15
+vpmuldq %ymm7,%ymm13,%ymm15
+
+# qhasm: 4x out1plus = ta + tb
+# asm 1: vpaddq <tb=reg256#16,<ta=reg256#15,>out1plus=reg256#15
+# asm 2: vpaddq <tb=%ymm15,<ta=%ymm14,>out1plus=%ymm14
+vpaddq %ymm15,%ymm14,%ymm14
+
+# qhasm: 4x uuss1 = uuss unsigned>> 30
+# asm 1: vpsrlq $30,<uuss=reg256#4,>uuss1=reg256#4
+# asm 2: vpsrlq $30,<uuss=%ymm3,>uuss1=%ymm3
+vpsrlq $30,%ymm3,%ymm3
+
+# qhasm: 4x vvrr1 = vvrr unsigned>> 30
+# asm 1: vpsrlq $30,<vvrr=reg256#2,>vvrr1=reg256#2
+# asm 2: vpsrlq $30,<vvrr=%ymm1,>vvrr1=%ymm1
+vpsrlq $30,%ymm1,%ymm1
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS0
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS0=reg256#3,>ta=reg256#3
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS0=%ymm2,>ta=%ymm2
+vpmuldq %ymm3,%ymm2,%ymm2
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV0
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV0=reg256#5,>tb=reg256#5
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV0=%ymm4,>tb=%ymm4
+vpmuldq %ymm1,%ymm4,%ymm4
+
+# qhasm: 4x out1 = ta + tb
+# asm 1: vpaddq <tb=reg256#5,<ta=reg256#3,>out1=reg256#3
+# asm 2: vpaddq <tb=%ymm4,<ta=%ymm2,>out1=%ymm2
+vpaddq %ymm4,%ymm2,%ymm2
+
+# qhasm: 4x out1 += out1plus
+# asm 1: vpaddq <out1=reg256#3,<out1plus=reg256#15,<out1=reg256#3
+# asm 2: vpaddq <out1=%ymm2,<out1plus=%ymm14,<out1=%ymm2
+vpaddq %ymm2,%ymm14,%ymm2
+
+# qhasm: 4x out1 += carryy
+# asm 1: vpaddq <out1=reg256#3,<carryy=reg256#9,<out1=reg256#3
+# asm 2: vpaddq <out1=%ymm2,<carryy=%ymm8,<out1=%ymm2
+vpaddq %ymm2,%ymm8,%ymm2
+
+# qhasm: 4x d1 = int32 out1 * int32 _inv19_2p30x4
+# asm 1: vpmuldq <out1=reg256#3,<_inv19_2p30x4=reg256#10,>d1=reg256#5
+# asm 2: vpmuldq <out1=%ymm2,<_inv19_2p30x4=%ymm9,>d1=%ymm4
+vpmuldq %ymm2,%ymm9,%ymm4
+
+# qhasm: d1 &= _2p30m1x4
+# asm 1: vpand <d1=reg256#5,<_2p30m1x4=reg256#6,<d1=reg256#5
+# asm 2: vpand <d1=%ymm4,<_2p30m1x4=%ymm5,<d1=%ymm4
+vpand %ymm4,%ymm5,%ymm4
+
+# qhasm: 4x d1x19 = int32 d1 * int32 _19x4
+# asm 1: vpmuldq <d1=reg256#5,<_19x4=reg256#11,>d1x19=reg256#9
+# asm 2: vpmuldq <d1=%ymm4,<_19x4=%ymm10,>d1x19=%ymm8
+vpmuldq %ymm4,%ymm10,%ymm8
+
+# qhasm: 4x out1 -= d1x19
+# asm 1: vpsubq <d1x19=reg256#9,<out1=reg256#3,<out1=reg256#3
+# asm 2: vpsubq <d1x19=%ymm8,<out1=%ymm2,<out1=%ymm2
+vpsubq %ymm8,%ymm2,%ymm2
+
+# qhasm: 4x carryy = out1 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out1=reg256#3,>carryy=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out1=%ymm2,>carryy=%ymm2
+vpaddq %ymm0,%ymm2,%ymm2
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#3,<carryy=reg256#3
+# asm 2: vpsrlq $30,<carryy=%ymm2,<carryy=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: 4x out9 = d1 << 15
+# asm 1: vpsllq $15,<d1=reg256#5,>out9=reg256#5
+# asm 2: vpsllq $15,<d1=%ymm4,>out9=%ymm4
+vpsllq $15,%ymm4,%ymm4
+
+# qhasm: FVGS2 = stack_FVGS2 
+# asm 1: vmovapd <stack_FVGS2=stack256#4,>FVGS2=reg256#9
+# asm 2: vmovapd <stack_FVGS2=96(%rsp),>FVGS2=%ymm8
+vmovapd 96(%rsp),%ymm8
+
+# qhasm: GSFV2 = FVGS2[1,0]
+# asm 1: vpermq $0x4e,<FVGS2=reg256#9,>GSFV2=reg256#10
+# asm 2: vpermq $0x4e,<FVGS2=%ymm8,>GSFV2=%ymm9
+vpermq $0x4e,%ymm8,%ymm9
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS1
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS1=reg256#13,>ta=reg256#11
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS1=%ymm12,>ta=%ymm10
+vpmuldq %ymm3,%ymm12,%ymm10
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV1
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV1=reg256#14,>tb=reg256#13
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV1=%ymm13,>tb=%ymm12
+vpmuldq %ymm1,%ymm13,%ymm12
+
+# qhasm: 4x out2plus = ta + tb
+# asm 1: vpaddq <tb=reg256#13,<ta=reg256#11,>out2plus=reg256#11
+# asm 2: vpaddq <tb=%ymm12,<ta=%ymm10,>out2plus=%ymm10
+vpaddq %ymm12,%ymm10,%ymm10
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS2
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS2=reg256#9,>ta=reg256#13
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS2=%ymm8,>ta=%ymm12
+vpmuldq %ymm6,%ymm8,%ymm12
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV2
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV2=reg256#10,>tb=reg256#14
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV2=%ymm9,>tb=%ymm13
+vpmuldq %ymm7,%ymm9,%ymm13
+
+# qhasm: 4x out2 = ta + tb
+# asm 1: vpaddq <tb=reg256#14,<ta=reg256#13,>out2=reg256#13
+# asm 2: vpaddq <tb=%ymm13,<ta=%ymm12,>out2=%ymm12
+vpaddq %ymm13,%ymm12,%ymm12
+
+# qhasm: 4x out2 += out2plus
+# asm 1: vpaddq <out2=reg256#13,<out2plus=reg256#11,<out2=reg256#13
+# asm 2: vpaddq <out2=%ymm12,<out2plus=%ymm10,<out2=%ymm12
+vpaddq %ymm12,%ymm10,%ymm12
+
+# qhasm: 4x out2 += carryy
+# asm 1: vpaddq <out2=reg256#13,<carryy=reg256#3,<out2=reg256#13
+# asm 2: vpaddq <out2=%ymm12,<carryy=%ymm2,<out2=%ymm12
+vpaddq %ymm12,%ymm2,%ymm12
+
+# qhasm: 4x carryy = out2 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out2=reg256#13,>carryy=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out2=%ymm12,>carryy=%ymm2
+vpaddq %ymm0,%ymm12,%ymm2
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#3,<carryy=reg256#3
+# asm 2: vpsrlq $30,<carryy=%ymm2,<carryy=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: FVGS3 = stack_FVGS3 
+# asm 1: vmovapd <stack_FVGS3=stack256#5,>FVGS3=reg256#11
+# asm 2: vmovapd <stack_FVGS3=128(%rsp),>FVGS3=%ymm10
+vmovapd 128(%rsp),%ymm10
+
+# qhasm: GSFV3 = FVGS3[1,0]
+# asm 1: vpermq $0x4e,<FVGS3=reg256#11,>GSFV3=reg256#14
+# asm 2: vpermq $0x4e,<FVGS3=%ymm10,>GSFV3=%ymm13
+vpermq $0x4e,%ymm10,%ymm13
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS2
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS2=reg256#9,>ta=reg256#9
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS2=%ymm8,>ta=%ymm8
+vpmuldq %ymm3,%ymm8,%ymm8
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV2
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV2=reg256#10,>tb=reg256#10
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV2=%ymm9,>tb=%ymm9
+vpmuldq %ymm1,%ymm9,%ymm9
+
+# qhasm: 4x out3plus = ta + tb
+# asm 1: vpaddq <tb=reg256#10,<ta=reg256#9,>out3plus=reg256#9
+# asm 2: vpaddq <tb=%ymm9,<ta=%ymm8,>out3plus=%ymm8
+vpaddq %ymm9,%ymm8,%ymm8
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS3
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS3=reg256#11,>ta=reg256#10
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS3=%ymm10,>ta=%ymm9
+vpmuldq %ymm6,%ymm10,%ymm9
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV3
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV3=reg256#14,>tb=reg256#15
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV3=%ymm13,>tb=%ymm14
+vpmuldq %ymm7,%ymm13,%ymm14
+
+# qhasm: 4x out3 = ta + tb
+# asm 1: vpaddq <tb=reg256#15,<ta=reg256#10,>out3=reg256#10
+# asm 2: vpaddq <tb=%ymm14,<ta=%ymm9,>out3=%ymm9
+vpaddq %ymm14,%ymm9,%ymm9
+
+# qhasm: 4x out3 += out3plus
+# asm 1: vpaddq <out3=reg256#10,<out3plus=reg256#9,<out3=reg256#10
+# asm 2: vpaddq <out3=%ymm9,<out3plus=%ymm8,<out3=%ymm9
+vpaddq %ymm9,%ymm8,%ymm9
+
+# qhasm: 4x out3 += carryy
+# asm 1: vpaddq <out3=reg256#10,<carryy=reg256#3,<out3=reg256#10
+# asm 2: vpaddq <out3=%ymm9,<carryy=%ymm2,<out3=%ymm9
+vpaddq %ymm9,%ymm2,%ymm9
+
+# qhasm: out2 &= _2p30m1x4
+# asm 1: vpand <out2=reg256#13,<_2p30m1x4=reg256#6,<out2=reg256#13
+# asm 2: vpand <out2=%ymm12,<_2p30m1x4=%ymm5,<out2=%ymm12
+vpand %ymm12,%ymm5,%ymm12
+
+# qhasm: 4x carryy = out3 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out3=reg256#10,>carryy=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out3=%ymm9,>carryy=%ymm2
+vpaddq %ymm0,%ymm9,%ymm2
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#3,<carryy=reg256#3
+# asm 2: vpsrlq $30,<carryy=%ymm2,<carryy=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: out3 &= _2p30m1x4
+# asm 1: vpand <out3=reg256#10,<_2p30m1x4=reg256#6,<out3=reg256#10
+# asm 2: vpand <out3=%ymm9,<_2p30m1x4=%ymm5,<out3=%ymm9
+vpand %ymm9,%ymm5,%ymm9
+
+# qhasm: stack_FVGS1 = out3
+# asm 1: vmovapd <out3=reg256#10,>stack_FVGS1=stack256#3
+# asm 2: vmovapd <out3=%ymm9,>stack_FVGS1=64(%rsp)
+vmovapd %ymm9,64(%rsp)
+
+# qhasm: 4x ta = out3 << 30
+# asm 1: vpsllq $30,<out3=reg256#10,>ta=reg256#9
+# asm 2: vpsllq $30,<out3=%ymm9,>ta=%ymm8
+vpsllq $30,%ymm9,%ymm8
+
+# qhasm: 4x ta += out2
+# asm 1: vpaddq <ta=reg256#9,<out2=reg256#13,<ta=reg256#9
+# asm 2: vpaddq <ta=%ymm8,<out2=%ymm12,<ta=%ymm8
+vpaddq %ymm8,%ymm12,%ymm8
+
+# qhasm: stack_fxgx = ta
+# asm 1: vmovapd <ta=reg256#9,>stack_fxgx=stack256#20
+# asm 2: vmovapd <ta=%ymm8,>stack_fxgx=608(%rsp)
+vmovapd %ymm8,608(%rsp)
+
+# qhasm: FVGS4 = stack_FVGS4 
+# asm 1: vmovapd <stack_FVGS4=stack256#6,>FVGS4=reg256#9
+# asm 2: vmovapd <stack_FVGS4=160(%rsp),>FVGS4=%ymm8
+vmovapd 160(%rsp),%ymm8
+
+# qhasm: GSFV4 = FVGS4[1,0]
+# asm 1: vpermq $0x4e,<FVGS4=reg256#9,>GSFV4=reg256#10
+# asm 2: vpermq $0x4e,<FVGS4=%ymm8,>GSFV4=%ymm9
+vpermq $0x4e,%ymm8,%ymm9
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS3
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS3=reg256#11,>ta=reg256#11
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS3=%ymm10,>ta=%ymm10
+vpmuldq %ymm3,%ymm10,%ymm10
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV3
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV3=reg256#14,>tb=reg256#14
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV3=%ymm13,>tb=%ymm13
+vpmuldq %ymm1,%ymm13,%ymm13
+
+# qhasm: 4x out4plus = ta + tb
+# asm 1: vpaddq <tb=reg256#14,<ta=reg256#11,>out4plus=reg256#11
+# asm 2: vpaddq <tb=%ymm13,<ta=%ymm10,>out4plus=%ymm10
+vpaddq %ymm13,%ymm10,%ymm10
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS4
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS4=reg256#9,>ta=reg256#14
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS4=%ymm8,>ta=%ymm13
+vpmuldq %ymm6,%ymm8,%ymm13
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV4
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV4=reg256#10,>tb=reg256#15
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV4=%ymm9,>tb=%ymm14
+vpmuldq %ymm7,%ymm9,%ymm14
+
+# qhasm: 4x out4 = ta + tb
+# asm 1: vpaddq <tb=reg256#15,<ta=reg256#14,>out4=reg256#14
+# asm 2: vpaddq <tb=%ymm14,<ta=%ymm13,>out4=%ymm13
+vpaddq %ymm14,%ymm13,%ymm13
+
+# qhasm: 4x out4 += out4plus
+# asm 1: vpaddq <out4=reg256#14,<out4plus=reg256#11,<out4=reg256#14
+# asm 2: vpaddq <out4=%ymm13,<out4plus=%ymm10,<out4=%ymm13
+vpaddq %ymm13,%ymm10,%ymm13
+
+# qhasm: 4x out4 += carryy
+# asm 1: vpaddq <out4=reg256#14,<carryy=reg256#3,<out4=reg256#14
+# asm 2: vpaddq <out4=%ymm13,<carryy=%ymm2,<out4=%ymm13
+vpaddq %ymm13,%ymm2,%ymm13
+
+# qhasm: 4x carryy = out4 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out4=reg256#14,>carryy=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out4=%ymm13,>carryy=%ymm2
+vpaddq %ymm0,%ymm13,%ymm2
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#3,<carryy=reg256#3
+# asm 2: vpsrlq $30,<carryy=%ymm2,<carryy=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: FVGS5 = stack_FVGS5 
+# asm 1: vmovapd <stack_FVGS5=stack256#7,>FVGS5=reg256#11
+# asm 2: vmovapd <stack_FVGS5=192(%rsp),>FVGS5=%ymm10
+vmovapd 192(%rsp),%ymm10
+
+# qhasm: GSFV5 = FVGS5[1,0]
+# asm 1: vpermq $0x4e,<FVGS5=reg256#11,>GSFV5=reg256#15
+# asm 2: vpermq $0x4e,<FVGS5=%ymm10,>GSFV5=%ymm14
+vpermq $0x4e,%ymm10,%ymm14
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS4
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS4=reg256#9,>ta=reg256#9
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS4=%ymm8,>ta=%ymm8
+vpmuldq %ymm3,%ymm8,%ymm8
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV4
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV4=reg256#10,>tb=reg256#10
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV4=%ymm9,>tb=%ymm9
+vpmuldq %ymm1,%ymm9,%ymm9
+
+# qhasm: 4x out5plus = ta + tb
+# asm 1: vpaddq <tb=reg256#10,<ta=reg256#9,>out5plus=reg256#9
+# asm 2: vpaddq <tb=%ymm9,<ta=%ymm8,>out5plus=%ymm8
+vpaddq %ymm9,%ymm8,%ymm8
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS5
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS5=reg256#11,>ta=reg256#10
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS5=%ymm10,>ta=%ymm9
+vpmuldq %ymm6,%ymm10,%ymm9
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV5
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV5=reg256#15,>tb=reg256#16
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV5=%ymm14,>tb=%ymm15
+vpmuldq %ymm7,%ymm14,%ymm15
+
+# qhasm: 4x out5 = ta + tb
+# asm 1: vpaddq <tb=reg256#16,<ta=reg256#10,>out5=reg256#10
+# asm 2: vpaddq <tb=%ymm15,<ta=%ymm9,>out5=%ymm9
+vpaddq %ymm15,%ymm9,%ymm9
+
+# qhasm: 4x out5 += out5plus
+# asm 1: vpaddq <out5=reg256#10,<out5plus=reg256#9,<out5=reg256#10
+# asm 2: vpaddq <out5=%ymm9,<out5plus=%ymm8,<out5=%ymm9
+vpaddq %ymm9,%ymm8,%ymm9
+
+# qhasm: 4x out5 += carryy
+# asm 1: vpaddq <out5=reg256#10,<carryy=reg256#3,<out5=reg256#10
+# asm 2: vpaddq <out5=%ymm9,<carryy=%ymm2,<out5=%ymm9
+vpaddq %ymm9,%ymm2,%ymm9
+
+# qhasm: 4x carryy = out5 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out5=reg256#10,>carryy=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out5=%ymm9,>carryy=%ymm2
+vpaddq %ymm0,%ymm9,%ymm2
+
+# qhasm: 4x carryy unsigned>>= 30
+# asm 1: vpsrlq $30,<carryy=reg256#3,<carryy=reg256#3
+# asm 2: vpsrlq $30,<carryy=%ymm2,<carryy=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: out5 &= _2p30m1x4
+# asm 1: vpand <out5=reg256#10,<_2p30m1x4=reg256#6,<out5=reg256#10
+# asm 2: vpand <out5=%ymm9,<_2p30m1x4=%ymm5,<out5=%ymm9
+vpand %ymm9,%ymm5,%ymm9
+
+# qhasm: out4 &= _2p30m1x4
+# asm 1: vpand <out4=reg256#14,<_2p30m1x4=reg256#6,<out4=reg256#14
+# asm 2: vpand <out4=%ymm13,<_2p30m1x4=%ymm5,<out4=%ymm13
+vpand %ymm13,%ymm5,%ymm13
+
+# qhasm: stack_FVGS2 = out4
+# asm 1: vmovapd <out4=reg256#14,>stack_FVGS2=stack256#4
+# asm 2: vmovapd <out4=%ymm13,>stack_FVGS2=96(%rsp)
+vmovapd %ymm13,96(%rsp)
+
+# qhasm: 4x ta = out5 << 30
+# asm 1: vpsllq $30,<out5=reg256#10,>ta=reg256#9
+# asm 2: vpsllq $30,<out5=%ymm9,>ta=%ymm8
+vpsllq $30,%ymm9,%ymm8
+
+# qhasm: 4x ta += out4
+# asm 1: vpaddq <ta=reg256#9,<out4=reg256#14,<ta=reg256#9
+# asm 2: vpaddq <ta=%ymm8,<out4=%ymm13,<ta=%ymm8
+vpaddq %ymm8,%ymm13,%ymm8
+
+# qhasm: stack_fygy = ta
+# asm 1: vmovapd <ta=reg256#9,>stack_fygy=stack256#21
+# asm 2: vmovapd <ta=%ymm8,>stack_fygy=640(%rsp)
+vmovapd %ymm8,640(%rsp)
+
+# qhasm: FVGS6 = stack_FVGS6 
+# asm 1: vmovapd <stack_FVGS6=stack256#8,>FVGS6=reg256#9
+# asm 2: vmovapd <stack_FVGS6=224(%rsp),>FVGS6=%ymm8
+vmovapd 224(%rsp),%ymm8
+
+# qhasm: GSFV6 = FVGS6[1,0]
+# asm 1: vpermq $0x4e,<FVGS6=reg256#9,>GSFV6=reg256#14
+# asm 2: vpermq $0x4e,<FVGS6=%ymm8,>GSFV6=%ymm13
+vpermq $0x4e,%ymm8,%ymm13
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS5
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS5=reg256#11,>ta=reg256#11
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS5=%ymm10,>ta=%ymm10
+vpmuldq %ymm3,%ymm10,%ymm10
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV5
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV5=reg256#15,>tb=reg256#15
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV5=%ymm14,>tb=%ymm14
+vpmuldq %ymm1,%ymm14,%ymm14
+
+# qhasm: 4x out6plus = ta + tb
+# asm 1: vpaddq <tb=reg256#15,<ta=reg256#11,>out6plus=reg256#11
+# asm 2: vpaddq <tb=%ymm14,<ta=%ymm10,>out6plus=%ymm10
+vpaddq %ymm14,%ymm10,%ymm10
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS6
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS6=reg256#9,>ta=reg256#15
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS6=%ymm8,>ta=%ymm14
+vpmuldq %ymm6,%ymm8,%ymm14
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV6
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV6=reg256#14,>tb=reg256#16
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV6=%ymm13,>tb=%ymm15
+vpmuldq %ymm7,%ymm13,%ymm15
+
+# qhasm: 4x out6 = ta + tb
+# asm 1: vpaddq <tb=reg256#16,<ta=reg256#15,>out6=reg256#15
+# asm 2: vpaddq <tb=%ymm15,<ta=%ymm14,>out6=%ymm14
+vpaddq %ymm15,%ymm14,%ymm14
+
+# qhasm: 4x out6 += out6plus
+# asm 1: vpaddq <out6=reg256#15,<out6plus=reg256#11,<out6=reg256#15
+# asm 2: vpaddq <out6=%ymm14,<out6plus=%ymm10,<out6=%ymm14
+vpaddq %ymm14,%ymm10,%ymm14
+
+# qhasm: 4x out6 += carryy
+# asm 1: vpaddq <out6=reg256#15,<carryy=reg256#3,<out6=reg256#15
+# asm 2: vpaddq <out6=%ymm14,<carryy=%ymm2,<out6=%ymm14
+vpaddq %ymm14,%ymm2,%ymm14
+
+# qhasm: 4x carryz = out6 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out6=reg256#15,>carryz=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out6=%ymm14,>carryz=%ymm2
+vpaddq %ymm0,%ymm14,%ymm2
+
+# qhasm: 4x carryz unsigned>>= 30
+# asm 1: vpsrlq $30,<carryz=reg256#3,<carryz=reg256#3
+# asm 2: vpsrlq $30,<carryz=%ymm2,<carryz=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: stack_FVGS3 = out5
+# asm 1: vmovapd <out5=reg256#10,>stack_FVGS3=stack256#5
+# asm 2: vmovapd <out5=%ymm9,>stack_FVGS3=128(%rsp)
+vmovapd %ymm9,128(%rsp)
+
+# qhasm: FVGS7 = stack_FVGS7 
+# asm 1: vmovapd <stack_FVGS7=stack256#9,>FVGS7=reg256#10
+# asm 2: vmovapd <stack_FVGS7=256(%rsp),>FVGS7=%ymm9
+vmovapd 256(%rsp),%ymm9
+
+# qhasm: GSFV7 = FVGS7[1,0]
+# asm 1: vpermq $0x4e,<FVGS7=reg256#10,>GSFV7=reg256#11
+# asm 2: vpermq $0x4e,<FVGS7=%ymm9,>GSFV7=%ymm10
+vpermq $0x4e,%ymm9,%ymm10
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS6
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS6=reg256#9,>ta=reg256#9
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS6=%ymm8,>ta=%ymm8
+vpmuldq %ymm3,%ymm8,%ymm8
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV6
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV6=reg256#14,>tb=reg256#14
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV6=%ymm13,>tb=%ymm13
+vpmuldq %ymm1,%ymm13,%ymm13
+
+# qhasm: 4x out7plus = ta + tb
+# asm 1: vpaddq <tb=reg256#14,<ta=reg256#9,>out7plus=reg256#9
+# asm 2: vpaddq <tb=%ymm13,<ta=%ymm8,>out7plus=%ymm8
+vpaddq %ymm13,%ymm8,%ymm8
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS7
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS7=reg256#10,>ta=reg256#14
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS7=%ymm9,>ta=%ymm13
+vpmuldq %ymm6,%ymm9,%ymm13
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV7
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV7=reg256#11,>tb=reg256#16
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV7=%ymm10,>tb=%ymm15
+vpmuldq %ymm7,%ymm10,%ymm15
+
+# qhasm: 4x out7 = ta + tb
+# asm 1: vpaddq <tb=reg256#16,<ta=reg256#14,>out7=reg256#14
+# asm 2: vpaddq <tb=%ymm15,<ta=%ymm13,>out7=%ymm13
+vpaddq %ymm15,%ymm13,%ymm13
+
+# qhasm: 4x out7 += out7plus
+# asm 1: vpaddq <out7=reg256#14,<out7plus=reg256#9,<out7=reg256#14
+# asm 2: vpaddq <out7=%ymm13,<out7plus=%ymm8,<out7=%ymm13
+vpaddq %ymm13,%ymm8,%ymm13
+
+# qhasm: 4x out7 += carryz
+# asm 1: vpaddq <out7=reg256#14,<carryz=reg256#3,<out7=reg256#14
+# asm 2: vpaddq <out7=%ymm13,<carryz=%ymm2,<out7=%ymm13
+vpaddq %ymm13,%ymm2,%ymm13
+
+# qhasm: 4x carryz = out7 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out7=reg256#14,>carryz=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out7=%ymm13,>carryz=%ymm2
+vpaddq %ymm0,%ymm13,%ymm2
+
+# qhasm: 4x carryz unsigned>>= 30
+# asm 1: vpsrlq $30,<carryz=reg256#3,<carryz=reg256#3
+# asm 2: vpsrlq $30,<carryz=%ymm2,<carryz=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: out6 &= _2p30m1x4
+# asm 1: vpand <out6=reg256#15,<_2p30m1x4=reg256#6,<out6=reg256#15
+# asm 2: vpand <out6=%ymm14,<_2p30m1x4=%ymm5,<out6=%ymm14
+vpand %ymm14,%ymm5,%ymm14
+
+# qhasm: stack_FVGS4 = out6
+# asm 1: vmovapd <out6=reg256#15,>stack_FVGS4=stack256#6
+# asm 2: vmovapd <out6=%ymm14,>stack_FVGS4=160(%rsp)
+vmovapd %ymm14,160(%rsp)
+
+# qhasm: FVGS8 = stack_FVGS8 
+# asm 1: vmovapd <stack_FVGS8=stack256#10,>FVGS8=reg256#9
+# asm 2: vmovapd <stack_FVGS8=288(%rsp),>FVGS8=%ymm8
+vmovapd 288(%rsp),%ymm8
+
+# qhasm: GSFV8 = FVGS8[1,0]
+# asm 1: vpermq $0x4e,<FVGS8=reg256#9,>GSFV8=reg256#15
+# asm 2: vpermq $0x4e,<FVGS8=%ymm8,>GSFV8=%ymm14
+vpermq $0x4e,%ymm8,%ymm14
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS7
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS7=reg256#10,>ta=reg256#10
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS7=%ymm9,>ta=%ymm9
+vpmuldq %ymm3,%ymm9,%ymm9
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV7
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV7=reg256#11,>tb=reg256#11
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV7=%ymm10,>tb=%ymm10
+vpmuldq %ymm1,%ymm10,%ymm10
+
+# qhasm: 4x out8plus = ta + tb
+# asm 1: vpaddq <tb=reg256#11,<ta=reg256#10,>out8plus=reg256#10
+# asm 2: vpaddq <tb=%ymm10,<ta=%ymm9,>out8plus=%ymm9
+vpaddq %ymm10,%ymm9,%ymm9
+
+# qhasm: 4x ta = int32 uuss0 * int32 FVGS8
+# asm 1: vpmuldq <uuss0=reg256#7,<FVGS8=reg256#9,>ta=reg256#7
+# asm 2: vpmuldq <uuss0=%ymm6,<FVGS8=%ymm8,>ta=%ymm6
+vpmuldq %ymm6,%ymm8,%ymm6
+
+# qhasm: 4x tb = int32 vvrr0 * int32 GSFV8
+# asm 1: vpmuldq <vvrr0=reg256#8,<GSFV8=reg256#15,>tb=reg256#8
+# asm 2: vpmuldq <vvrr0=%ymm7,<GSFV8=%ymm14,>tb=%ymm7
+vpmuldq %ymm7,%ymm14,%ymm7
+
+# qhasm: 4x out8 = ta + tb
+# asm 1: vpaddq <tb=reg256#8,<ta=reg256#7,>out8=reg256#7
+# asm 2: vpaddq <tb=%ymm7,<ta=%ymm6,>out8=%ymm6
+vpaddq %ymm7,%ymm6,%ymm6
+
+# qhasm: 4x out8 += out8plus
+# asm 1: vpaddq <out8=reg256#7,<out8plus=reg256#10,<out8=reg256#7
+# asm 2: vpaddq <out8=%ymm6,<out8plus=%ymm9,<out8=%ymm6
+vpaddq %ymm6,%ymm9,%ymm6
+
+# qhasm: 4x out8 += carryz
+# asm 1: vpaddq <out8=reg256#7,<carryz=reg256#3,<out8=reg256#7
+# asm 2: vpaddq <out8=%ymm6,<carryz=%ymm2,<out8=%ymm6
+vpaddq %ymm6,%ymm2,%ymm6
+
+# qhasm: 4x out8 += out8plus2
+# asm 1: vpaddq <out8=reg256#7,<out8plus2=reg256#12,<out8=reg256#7
+# asm 2: vpaddq <out8=%ymm6,<out8plus2=%ymm11,<out8=%ymm6
+vpaddq %ymm6,%ymm11,%ymm6
+
+# qhasm: 4x carryz = out8 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out8=reg256#7,>carryz=reg256#3
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out8=%ymm6,>carryz=%ymm2
+vpaddq %ymm0,%ymm6,%ymm2
+
+# qhasm: 4x carryz unsigned>>= 30
+# asm 1: vpsrlq $30,<carryz=reg256#3,<carryz=reg256#3
+# asm 2: vpsrlq $30,<carryz=%ymm2,<carryz=%ymm2
+vpsrlq $30,%ymm2,%ymm2
+
+# qhasm: out7 &= _2p30m1x4
+# asm 1: vpand <out7=reg256#14,<_2p30m1x4=reg256#6,<out7=reg256#14
+# asm 2: vpand <out7=%ymm13,<_2p30m1x4=%ymm5,<out7=%ymm13
+vpand %ymm13,%ymm5,%ymm13
+
+# qhasm: stack_FVGS5 = out7
+# asm 1: vmovapd <out7=reg256#14,>stack_FVGS5=stack256#7
+# asm 2: vmovapd <out7=%ymm13,>stack_FVGS5=192(%rsp)
+vmovapd %ymm13,192(%rsp)
+
+# qhasm: 4x ta = int32 uuss1 * int32 FVGS8
+# asm 1: vpmuldq <uuss1=reg256#4,<FVGS8=reg256#9,>ta=reg256#4
+# asm 2: vpmuldq <uuss1=%ymm3,<FVGS8=%ymm8,>ta=%ymm3
+vpmuldq %ymm3,%ymm8,%ymm3
+
+# qhasm: 4x tb = int32 vvrr1 * int32 GSFV8
+# asm 1: vpmuldq <vvrr1=reg256#2,<GSFV8=reg256#15,>tb=reg256#2
+# asm 2: vpmuldq <vvrr1=%ymm1,<GSFV8=%ymm14,>tb=%ymm1
+vpmuldq %ymm1,%ymm14,%ymm1
+
+# qhasm: 4x out9plus = ta + tb
+# asm 1: vpaddq <tb=reg256#2,<ta=reg256#4,>out9plus=reg256#2
+# asm 2: vpaddq <tb=%ymm1,<ta=%ymm3,>out9plus=%ymm1
+vpaddq %ymm1,%ymm3,%ymm1
+
+# qhasm: 4x out9 += out9plus
+# asm 1: vpaddq <out9=reg256#5,<out9plus=reg256#2,<out9=reg256#5
+# asm 2: vpaddq <out9=%ymm4,<out9plus=%ymm1,<out9=%ymm4
+vpaddq %ymm4,%ymm1,%ymm4
+
+# qhasm: 4x out9 += carryz
+# asm 1: vpaddq <out9=reg256#5,<carryz=reg256#3,<out9=reg256#5
+# asm 2: vpaddq <out9=%ymm4,<carryz=%ymm2,<out9=%ymm4
+vpaddq %ymm4,%ymm2,%ymm4
+
+# qhasm: 4x out10 = out9 + _2p63m2p33x4 
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out9=reg256#5,>out10=reg256#2
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out9=%ymm4,>out10=%ymm1
+vpaddq %ymm0,%ymm4,%ymm1
+
+# qhasm: 4x out10 unsigned>>= 30
+# asm 1: vpsrlq $30,<out10=reg256#2,<out10=reg256#2
+# asm 2: vpsrlq $30,<out10=%ymm1,<out10=%ymm1
+vpsrlq $30,%ymm1,%ymm1
+
+# qhasm: out8 &= _2p30m1x4
+# asm 1: vpand <out8=reg256#7,<_2p30m1x4=reg256#6,<out8=reg256#7
+# asm 2: vpand <out8=%ymm6,<_2p30m1x4=%ymm5,<out8=%ymm6
+vpand %ymm6,%ymm5,%ymm6
+
+# qhasm: stack_FVGS6 = out8
+# asm 1: vmovapd <out8=reg256#7,>stack_FVGS6=stack256#8
+# asm 2: vmovapd <out8=%ymm6,>stack_FVGS6=224(%rsp)
+vmovapd %ymm6,224(%rsp)
+
+# qhasm: _32767x4 = stack_32767x4
+# asm 1: vmovapd <stack_32767x4=stack256#12,>_32767x4=reg256#3
+# asm 2: vmovapd <stack_32767x4=352(%rsp),>_32767x4=%ymm2
+vmovapd 352(%rsp),%ymm2
+
+# qhasm: _2p48x4 = stack_2p48x4
+# asm 1: vmovapd <stack_2p48x4=stack256#16,>_2p48x4=reg256#4
+# asm 2: vmovapd <stack_2p48x4=480(%rsp),>_2p48x4=%ymm3
+vmovapd 480(%rsp),%ymm3
+
+# qhasm: 4x carryy = out10 + _2p63m2p33x4
+# asm 1: vpaddq <_2p63m2p33x4=reg256#1,<out10=reg256#2,>carryy=reg256#7
+# asm 2: vpaddq <_2p63m2p33x4=%ymm0,<out10=%ymm1,>carryy=%ymm6
+vpaddq %ymm0,%ymm1,%ymm6
+
+# qhasm: 4x carryy unsigned>>= 15
+# asm 1: vpsrlq $15,<carryy=reg256#7,<carryy=reg256#7
+# asm 2: vpsrlq $15,<carryy=%ymm6,<carryy=%ymm6
+vpsrlq $15,%ymm6,%ymm6
+
+# qhasm: 4x carryy -= _2p48x4
+# asm 1: vpsubq <_2p48x4=reg256#4,<carryy=reg256#7,<carryy=reg256#7
+# asm 2: vpsubq <_2p48x4=%ymm3,<carryy=%ymm6,<carryy=%ymm6
+vpsubq %ymm3,%ymm6,%ymm6
+
+# qhasm: 4x out10 -= stack_2p33x4
+# asm 1: vpsubq <stack_2p33x4=stack256#15,<out10=reg256#2,<out10=reg256#2
+# asm 2: vpsubq <stack_2p33x4=448(%rsp),<out10=%ymm1,<out10=%ymm1
+vpsubq 448(%rsp),%ymm1,%ymm1
+
+# qhasm: out9 &= _2p30m1x4
+# asm 1: vpand <out9=reg256#5,<_2p30m1x4=reg256#6,<out9=reg256#5
+# asm 2: vpand <out9=%ymm4,<_2p30m1x4=%ymm5,<out9=%ymm4
+vpand %ymm4,%ymm5,%ymm4
+
+# qhasm: out10 &= _32767x4
+# asm 1: vpand <out10=reg256#2,<_32767x4=reg256#3,<out10=reg256#2
+# asm 2: vpand <out10=%ymm1,<_32767x4=%ymm2,<out10=%ymm1
+vpand %ymm1,%ymm2,%ymm1
+
+# qhasm: 4x carryy = int32 carryy * int32 stack_0_19x4
+# asm 1: vpmuldq <stack_0_19x4=stack256#11,<carryy=reg256#7,>carryy=reg256#3
+# asm 2: vpmuldq <stack_0_19x4=320(%rsp),<carryy=%ymm6,>carryy=%ymm2
+vpmuldq 320(%rsp),%ymm6,%ymm2
+
+# qhasm: 4x out2 += carryy
+# asm 1: vpaddq <out2=reg256#13,<carryy=reg256#3,<out2=reg256#13
+# asm 2: vpaddq <out2=%ymm12,<carryy=%ymm2,<out2=%ymm12
+vpaddq %ymm12,%ymm2,%ymm12
+
+# qhasm: stack_FVGS7 = out9
+# asm 1: vmovapd <out9=reg256#5,>stack_FVGS7=stack256#9
+# asm 2: vmovapd <out9=%ymm4,>stack_FVGS7=256(%rsp)
+vmovapd %ymm4,256(%rsp)
+
+# qhasm: stack_FVGS8 = out10
+# asm 1: vmovapd <out10=reg256#2,>stack_FVGS8=stack256#10
+# asm 2: vmovapd <out10=%ymm1,>stack_FVGS8=288(%rsp)
+vmovapd %ymm1,288(%rsp)
+
+# qhasm: stack_FVGS0 = out2
+# asm 1: vmovapd <out2=reg256#13,>stack_FVGS0=stack256#2
+# asm 2: vmovapd <out2=%ymm12,>stack_FVGS0=32(%rsp)
+vmovapd %ymm12,32(%rsp)
+
+

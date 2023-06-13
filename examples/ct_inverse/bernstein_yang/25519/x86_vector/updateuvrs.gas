@@ -1,0 +1,166 @@
+#! (%rsi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rsp) = %%rsp_$1c
+#! (%rbx) = %%EA
+#! $1c(%rbx) = %%EA
+
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+
+#! %r$1c = %%r$1c
+
+
+#! mov $1v, $2v -> mov $2v $1v
+#! movq $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2v -> adds carry $2v $1v $2v
+#! add $1c, $2v -> adds carry $2v $1c@uint64 $2v
+#! adc $1v, $2v -> adcs carry $2v $1v $2v carry
+#! adc \$0x0, $2v -> adcs carry $2v 0@uint64 $2v carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! adc $1c, $2v -> adcs carry $2v $1c@uint64 $2v carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! and $1v, $2v -> and $2v@uint64 $1v $2v
+#! and $1c, $2v -> and $2v@uint64 $1c@uint64 $2v
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mul $1v -> umull rdx rax $1v rax
+#! mulq $1v -> umull rdx rax $1v rax
+#! mulx $1v, $2v, $3v -> umull rdx $3v $1v $2v
+#! adox $1v, $2v -> adcs OF $2v $1v $2v OF
+#! adcx $1v, $2v -> adcs carry $2v $1v $2v carry
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
+#! btr \$63, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v;\nand $2v@uint64 $2v 0x7fffffffffffffff@uint64 
+#! lea  \($1v,$2v\),$3v -> adds dontcare $3v $1v $2v 
+#! lea  \-1\($1v\),$2v -> subb dontcare $2v $1v 1@sint64
+#! test \$1, $1v -> and T$1v@sint64 0x1@sint64 $1v;\nsubb ZF dontcare T$1v 1@sint64 
+#! cmovne $1v, $2v -> cmov $2v ZF $2v $1v 
+#! cmove $1v, $2v -> cmov $2v ZF $1v $2v
+#! not $1v -> not $1v@sint64 $1v
+#! sar $2c, $1v -> ssplit $1v dontcare $1v $2c 
+#! cmovge $1v, $2v -> cmov $2v SFeOF $1v $2v
+#! cmovl $1v, $2v -> cmov $2v SFeOF $2v $1v
+#! cmp \$0, $2v -> subb SFeOF dontcare $2v (-(2)**(63))@sint64
+#! shrd $1c, $2v, $3v -> join tmp $2v $3v;\nusplit tmp dontcare tmp $1c;\ncast $3v@uint64 tmp
+#! imul $1v, $2v -> smull dontcare $2v $1v $2v;\nassert true && (sext $2v 64) = slimbs 64 [$2v, dontcare];\nassume true && (sext $2v 64) = slimbs 64 [$2v, dontcare];\nassume $2v = $1v * tmp && true
+#! imulq $1v, $2v -> smull dontcare $2v $1v $2v;\nassert true && (sext $2v 64) = slimbs 64 [$2v, dontcare];\nassume true && (sext $2v 64) = slimbs 64 [$2v, dontcare];\nassume $2v = $1v * tmp && true
+
+# qhasm:   t0 = stack_uuss[0]
+# asm 1: movq <stack_uuss=stack256#18,>t0=int64#11
+# asm 2: movq <stack_uuss=544(%rsp),>t0=%r13
+movq 544(%rsp),%r13
+
+# qhasm:   t0 *= u
+# asm 1: imul  <u=int64#7,<t0=int64#11
+# asm 2: imul  <u=%rax,<t0=%r13
+imul  %rax,%r13
+
+# qhasm:   t1 = stack_vvrr[2]
+# asm 1: movq <stack_vvrr=stack256#19,>t1=int64#12
+# asm 2: movq <stack_vvrr=592(%rsp),>t1=%r14
+movq 592(%rsp),%r14
+
+# qhasm:   t1 *= v
+# asm 1: imul  <v=int64#9,<t1=int64#12
+# asm 2: imul  <v=%r11,<t1=%r14
+imul  %r11,%r14
+
+# qhasm:   rtimesoldv = stack_vvrr[0]
+# asm 1: movq <stack_vvrr=stack256#19,>rtimesoldv=int64#13
+# asm 2: movq <stack_vvrr=576(%rsp),>rtimesoldv=%r15
+movq 576(%rsp),%r15
+
+# qhasm:   u *= rtimesoldv
+# asm 1: imul  <rtimesoldv=int64#13,<u=int64#7
+# asm 2: imul  <rtimesoldv=%r15,<u=%rax
+imul  %r15,%rax
+
+# qhasm:   stimesolds = stack_uuss[2]
+# asm 1: movq <stack_uuss=stack256#18,>stimesolds=int64#14
+# asm 2: movq <stack_uuss=560(%rsp),>stimesolds=%rbx
+movq 560(%rsp),%rbx
+
+# qhasm:   v *= stimesolds
+# asm 1: imul  <stimesolds=int64#14,<v=int64#9
+# asm 2: imul  <stimesolds=%rbx,<v=%r11
+imul  %rbx,%r11
+
+# qhasm:   rtimesoldv *= r
+# asm 1: imul  <r=int64#8,<rtimesoldv=int64#13
+# asm 2: imul  <r=%r10,<rtimesoldv=%r15
+imul  %r10,%r15
+
+# qhasm:   stimesolds *= s
+# asm 1: imul  <s=int64#10,<stimesolds=int64#14
+# asm 2: imul  <s=%r12,<stimesolds=%rbx
+imul  %r12,%rbx
+
+# qhasm:   r *= stack_uuss[0]
+# asm 1: imulq <stack_uuss=stack256#18,<r=int64#8
+# asm 2: imulq <stack_uuss=544(%rsp),<r=%r10
+imulq 544(%rsp),%r10
+
+# qhasm:   s *= stack_vvrr[2]
+# asm 1: imulq <stack_vvrr=stack256#19,<s=int64#10
+# asm 2: imulq <stack_vvrr=592(%rsp),<s=%r12
+imulq 592(%rsp),%r12
+
+# qhasm:   v += u
+# asm 1: add  <u=int64#7,<v=int64#9
+# asm 2: add  <u=%rax,<v=%r11
+add  %rax,%r11
+
+# qhasm:   u = t0 + t1
+# asm 1: lea  (<t0=int64#11,<t1=int64#12),>u=int64#7
+# asm 2: lea  (<t0=%r13,<t1=%r14),>u=%rax
+lea  (%r13,%r14),%rax
+
+# qhasm:   r += s
+# asm 1: add  <s=int64#10,<r=int64#8
+# asm 2: add  <s=%r12,<r=%r10
+add  %r12,%r10
+
+# qhasm:   s = rtimesoldv + stimesolds
+# asm 1: lea  (<rtimesoldv=int64#13,<stimesolds=int64#14),>s=int64#10
+# asm 2: lea  (<rtimesoldv=%r15,<stimesolds=%rbx),>s=%r12
+lea  (%r15,%rbx),%r12
+
+# qhasm: first_loop:
+._first_loop:
+
+# qhasm:   inplace stack_vvrr[0] = v
+# asm 1: movq <v=int64#9,<stack_vvrr=stack256#19
+# asm 2: movq <v=%r11,<stack_vvrr=576(%rsp)
+movq %r11,576(%rsp)
+
+# qhasm:   inplace stack_uuss[0] = u
+# asm 1: movq <u=int64#7,<stack_uuss=stack256#18
+# asm 2: movq <u=%rax,<stack_uuss=544(%rsp)
+movq %rax,544(%rsp)
+
+# qhasm:   inplace stack_uuss[2] = s
+# asm 1: movq <s=int64#10,<stack_uuss=stack256#18
+# asm 2: movq <s=%r12,<stack_uuss=560(%rsp)
+movq %r12,560(%rsp)
+
+# qhasm:   inplace stack_vvrr[2] = r
+# asm 1: movq <r=int64#8,<stack_vvrr=stack256#19
+# asm 2: movq <r=%r10,<stack_vvrr=592(%rsp)
+movq %r10,592(%rsp)

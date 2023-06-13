@@ -1,0 +1,868 @@
+#! $1c(%rsp) = %%rsp_$1c
+#! $1c(%rdi) = %%rdi_$1c
+
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+
+#! %r$1c = %%r$1c
+
+
+#! mov $1v, $2v -> mov $2v $1v
+#! movq $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2v -> adds carry $2v $1v $2v
+#! add $1c, $2v -> adds carry $2v $1c@uint64 $2v
+#! adc $1v, $2v -> adcs carry $2v $1v $2v carry
+#! adc \$0x0, $2v -> adcs carry $2v 0@uint64 $2v carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! adc $1c, $2v -> adcs carry $2v $1c@uint64 $2v carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! and $1v, $2v -> and $2v@uint64 $1v $2v
+#! and $1c, $2v -> and $2v@uint64 $1c@uint64 $2v
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mul $1v -> umull rdx rax $1v rax
+#! mulq $1v -> umull rdx rax $1v rax
+#! imul $1v, $2v -> smull dontcare $2v $1v $2v
+#! mulx $1v, $2v, $3v -> umull rdx $3v $1v $2v
+#! adox $1v, $2v -> adcs OF $2v $1v $2v OF
+#! adcx $1v, $2v -> adcs carry $2v $1v $2v carry
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
+#! btr \$63, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v;\nand $2v@uint64 $2v 0x7fffffffffffffff@uint64 
+#! lea  \($1v,$2v\),$3v -> adds dontcare $3v $1v $2v 
+#! lea  \-1\($1v\),$2v -> subb dontcare $2v $1v 1@sint64
+#! test \$1, $1v -> and T$1v@sint64 0x1@sint64 $1v;\nsubb ZF dontcare T$1v 1@sint64 
+#! cmovne $1v, $2v -> cmov $2v ZF $2v $1v 
+#! cmove $1v, $2v -> cmov $2v ZF $1v $2v
+#! not $1v -> not $1v@sint64 $1v
+#! sar $2c, $1v -> ssplit $1v dontcare $1v $2c 
+#! cmovge $1v, $2v -> cmov $2v SFeOF $1v $2v
+#! cmovl $1v, $2v -> cmov $2v SFeOF $2v $1v
+#! cmp \$0, $2v -> subb SFeOF dontcare $2v (-(2)**(63))@sint64
+#! imul $1v -> smull rdx rax $1v rax
+#! shrd $1c, $2v, $3v -> join tmp $2v $3v;\nusplit tmp dontcare tmp $1c;\ncast $3v@uint64 tmp
+#! shl $1c, $2v -> and $2v@uint64 $2v (2**(64-$1c)-1)@sint64;\nshl $2v $2v $1c
+#! shld $1c, $2v, $3v -> join tmp $3v $2v;\nusplit tmp dontcare tmp (64-$1c);\ncast $3v@sint64 tmp
+
+# qhasm: cneg:
+#._cneg:
+
+# qhasm: rax = stack_FVGS8[1]
+# asm 1: movq <stack_FVGS8=stack256#10,>rax=int64#7
+# asm 2: movq <stack_FVGS8=296(%rsp),>rax=%rax
+movq 296(%rsp),%rax
+
+# qhasm: (int128) rdx rax = rax * u
+# asm 1: imul <u=int64#8
+# asm 2: imul <u=%r10
+imul %r10
+
+# qhasm: a4 = rdx
+# asm 1: mov  <rdx=int64#3,>a4=int64#1
+# asm 2: mov  <rdx=%rdx,>a4=%rdi
+mov  %rdx,%rdi
+
+# qhasm: a3 = rax
+# asm 1: mov  <rax=int64#7,>a3=int64#2
+# asm 2: mov  <rax=%rax,>a3=%rsi
+mov  %rax,%rsi
+
+# qhasm: rax = stack_FVGS8[3]
+# asm 1: movq <stack_FVGS8=stack256#10,>rax=int64#7
+# asm 2: movq <stack_FVGS8=312(%rsp),>rax=%rax
+movq 312(%rsp),%rax
+
+# qhasm: (int128) rdx rax = rax * v
+# asm 1: imul <v=int64#9
+# asm 2: imul <v=%r11
+imul %r11
+
+# qhasm: carry? a3 += rax
+# asm 1: add  <rax=int64#7,<a3=int64#2
+# asm 2: add  <rax=%rax,<a3=%rsi
+add  %rax,%rsi
+
+# qhasm:        a4 += rdx + carry
+# asm 1: adc <rdx=int64#3,<a4=int64#1
+# asm 2: adc <rdx=%rdx,<a4=%rdi
+adc %rdx,%rdi
+
+# qhasm: a4 = (a4.a3) << 48
+# asm 1: shld $48,<a3=int64#2,<a4=int64#1
+# asm 2: shld $48,<a3=%rsi,<a4=%rdi
+shld $48,%rsi,%rdi
+
+# qhasm: a3 <<= 48
+# asm 1: shl  $48,<a3=int64#2
+# asm 2: shl  $48,<a3=%rsi
+shl  $48,%rsi
+
+# qhasm: rax = stack_FVGS6[1]
+# asm 1: movq <stack_FVGS6=stack256#8,>rax=int64#7
+# asm 2: movq <stack_FVGS6=232(%rsp),>rax=%rax
+movq 232(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS7[1]
+# asm 1: movq <stack_FVGS7=stack256#9,>t0=int64#3
+# asm 2: movq <stack_FVGS7=264(%rsp),>t0=%rdx
+movq 264(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * u
+# asm 1: imul <u=int64#8
+# asm 2: imul <u=%r10
+imul %r10
+
+# qhasm: t2 = rdx
+# asm 1: mov  <rdx=int64#3,>t2=int64#4
+# asm 2: mov  <rdx=%rdx,>t2=%rcx
+mov  %rdx,%rcx
+
+# qhasm: t1 = rax
+# asm 1: mov  <rax=int64#7,>t1=int64#5
+# asm 2: mov  <rax=%rax,>t1=%r8
+mov  %rax,%r8
+
+# qhasm: rax = stack_FVGS6[3]
+# asm 1: movq <stack_FVGS6=stack256#8,>rax=int64#7
+# asm 2: movq <stack_FVGS6=248(%rsp),>rax=%rax
+movq 248(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS7[3]
+# asm 1: movq <stack_FVGS7=stack256#9,>t0=int64#3
+# asm 2: movq <stack_FVGS7=280(%rsp),>t0=%rdx
+movq 280(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * v
+# asm 1: imul <v=int64#9
+# asm 2: imul <v=%r11
+imul %r11
+
+# qhasm: carry? t1 += rax
+# asm 1: add  <rax=int64#7,<t1=int64#5
+# asm 2: add  <rax=%rax,<t1=%r8
+add  %rax,%r8
+
+# qhasm:        t2 += rdx + carry
+# asm 1: adc <rdx=int64#3,<t2=int64#4
+# asm 2: adc <rdx=%rdx,<t2=%rcx
+adc %rdx,%rcx
+
+# qhasm: a2 = t1
+# asm 1: mov  <t1=int64#5,>a2=int64#6
+# asm 2: mov  <t1=%r8,>a2=%r9
+mov  %r8,%r9
+
+# qhasm: t1 = (t2 t1) >> 12
+# asm 1: shrd $12,<t2=int64#4,<t1=int64#5
+# asm 2: shrd $12,<t2=%rcx,<t1=%r8
+shrd $12,%rcx,%r8
+
+# qhasm: a2 <<= 52
+# asm 1: shl  $52,<a2=int64#6
+# asm 2: shl  $52,<a2=%r9
+shl  $52,%r9
+
+# qhasm: (int64) t2 >>= 12
+# asm 1: sar  $12,<t2=int64#4
+# asm 2: sar  $12,<t2=%rcx
+sar  $12,%rcx
+
+# qhasm: carry? a3 += t1
+# asm 1: add  <t1=int64#5,<a3=int64#2
+# asm 2: add  <t1=%r8,<a3=%rsi
+add  %r8,%rsi
+
+# qhasm:        a4 += t2 + carry
+# asm 1: adc <t2=int64#4,<a4=int64#1
+# asm 2: adc <t2=%rcx,<a4=%rdi
+adc %rcx,%rdi
+
+# qhasm: rax = stack_FVGS4[1]
+# asm 1: movq <stack_FVGS4=stack256#6,>rax=int64#7
+# asm 2: movq <stack_FVGS4=168(%rsp),>rax=%rax
+movq 168(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS5[1]
+# asm 1: movq <stack_FVGS5=stack256#7,>t0=int64#3
+# asm 2: movq <stack_FVGS5=200(%rsp),>t0=%rdx
+movq 200(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * u
+# asm 1: imul <u=int64#8
+# asm 2: imul <u=%r10
+imul %r10
+
+# qhasm: t2 = rdx
+# asm 1: mov  <rdx=int64#3,>t2=int64#4
+# asm 2: mov  <rdx=%rdx,>t2=%rcx
+mov  %rdx,%rcx
+
+# qhasm: t1 = rax
+# asm 1: mov  <rax=int64#7,>t1=int64#5
+# asm 2: mov  <rax=%rax,>t1=%r8
+mov  %rax,%r8
+
+# qhasm: rax = stack_FVGS4[3]
+# asm 1: movq <stack_FVGS4=stack256#6,>rax=int64#7
+# asm 2: movq <stack_FVGS4=184(%rsp),>rax=%rax
+movq 184(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS5[3]
+# asm 1: movq <stack_FVGS5=stack256#7,>t0=int64#3
+# asm 2: movq <stack_FVGS5=216(%rsp),>t0=%rdx
+movq 216(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * v
+# asm 1: imul <v=int64#9
+# asm 2: imul <v=%r11
+imul %r11
+
+# qhasm: carry? t1 += rax
+# asm 1: add  <rax=int64#7,<t1=int64#5
+# asm 2: add  <rax=%rax,<t1=%r8
+add  %rax,%r8
+
+# qhasm:        t2 += rdx + carry
+# asm 1: adc <rdx=int64#3,<t2=int64#4
+# asm 2: adc <rdx=%rdx,<t2=%rcx
+adc %rdx,%rcx
+
+# qhasm: a1 = t1
+# asm 1: mov  <t1=int64#5,>a1=int64#10
+# asm 2: mov  <t1=%r8,>a1=%r12
+mov  %r8,%r12
+
+# qhasm: t1 = (t2 t1) >> 8
+# asm 1: shrd $8,<t2=int64#4,<t1=int64#5
+# asm 2: shrd $8,<t2=%rcx,<t1=%r8
+shrd $8,%rcx,%r8
+
+# qhasm: a1 <<= 56
+# asm 1: shl  $56,<a1=int64#10
+# asm 2: shl  $56,<a1=%r12
+shl  $56,%r12
+
+# qhasm: h = t2
+# asm 1: mov  <t2=int64#4,>h=int64#3
+# asm 2: mov  <t2=%rcx,>h=%rdx
+mov  %rcx,%rdx
+
+# qhasm: (int64) t2 >>= 8
+# asm 1: sar  $8,<t2=int64#4
+# asm 2: sar  $8,<t2=%rcx
+sar  $8,%rcx
+
+# qhasm: (int64) h >>= 63
+# asm 1: sar  $63,<h=int64#3
+# asm 2: sar  $63,<h=%rdx
+sar  $63,%rdx
+
+# qhasm: carry? a2 += t1
+# asm 1: add  <t1=int64#5,<a2=int64#6
+# asm 2: add  <t1=%r8,<a2=%r9
+add  %r8,%r9
+
+# qhasm: carry? a3 += t2 + carry
+# asm 1: adc <t2=int64#4,<a3=int64#2
+# asm 2: adc <t2=%rcx,<a3=%rsi
+adc %rcx,%rsi
+
+# qhasm:        a4 += h + carry
+# asm 1: adc <h=int64#3,<a4=int64#1
+# asm 2: adc <h=%rdx,<a4=%rdi
+adc %rdx,%rdi
+
+# qhasm: rax = stack_FVGS2[1]
+# asm 1: movq <stack_FVGS2=stack256#4,>rax=int64#7
+# asm 2: movq <stack_FVGS2=104(%rsp),>rax=%rax
+movq 104(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS3[1]
+# asm 1: movq <stack_FVGS3=stack256#5,>t0=int64#3
+# asm 2: movq <stack_FVGS3=136(%rsp),>t0=%rdx
+movq 136(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * u
+# asm 1: imul <u=int64#8
+# asm 2: imul <u=%r10
+imul %r10
+
+# qhasm: t2 = rdx
+# asm 1: mov  <rdx=int64#3,>t2=int64#4
+# asm 2: mov  <rdx=%rdx,>t2=%rcx
+mov  %rdx,%rcx
+
+# qhasm: t1 = rax
+# asm 1: mov  <rax=int64#7,>t1=int64#5
+# asm 2: mov  <rax=%rax,>t1=%r8
+mov  %rax,%r8
+
+# qhasm: rax = stack_FVGS2[3]
+# asm 1: movq <stack_FVGS2=stack256#4,>rax=int64#7
+# asm 2: movq <stack_FVGS2=120(%rsp),>rax=%rax
+movq 120(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS3[3]
+# asm 1: movq <stack_FVGS3=stack256#5,>t0=int64#3
+# asm 2: movq <stack_FVGS3=152(%rsp),>t0=%rdx
+movq 152(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * v
+# asm 1: imul <v=int64#9
+# asm 2: imul <v=%r11
+imul %r11
+
+# qhasm: carry? t1 += rax
+# asm 1: add  <rax=int64#7,<t1=int64#5
+# asm 2: add  <rax=%rax,<t1=%r8
+add  %rax,%r8
+
+# qhasm:        t2 += rdx + carry
+# asm 1: adc <rdx=int64#3,<t2=int64#4
+# asm 2: adc <rdx=%rdx,<t2=%rcx
+adc %rdx,%rcx
+
+# qhasm: a0 = t1
+# asm 1: mov  <t1=int64#5,>a0=int64#11
+# asm 2: mov  <t1=%r8,>a0=%r13
+mov  %r8,%r13
+
+# qhasm: t1 = (t2 t1) >> 4
+# asm 1: shrd $4,<t2=int64#4,<t1=int64#5
+# asm 2: shrd $4,<t2=%rcx,<t1=%r8
+shrd $4,%rcx,%r8
+
+# qhasm: a0 <<= 60
+# asm 1: shl  $60,<a0=int64#11
+# asm 2: shl  $60,<a0=%r13
+shl  $60,%r13
+
+# qhasm: h = t2
+# asm 1: mov  <t2=int64#4,>h=int64#3
+# asm 2: mov  <t2=%rcx,>h=%rdx
+mov  %rcx,%rdx
+
+# qhasm: (int64) t2 >>= 4
+# asm 1: sar  $4,<t2=int64#4
+# asm 2: sar  $4,<t2=%rcx
+sar  $4,%rcx
+
+# qhasm: (int64) h >>= 63
+# asm 1: sar  $63,<h=int64#3
+# asm 2: sar  $63,<h=%rdx
+sar  $63,%rdx
+
+# qhasm: carry? a1 += t1
+# asm 1: add  <t1=int64#5,<a1=int64#10
+# asm 2: add  <t1=%r8,<a1=%r12
+add  %r8,%r12
+
+# qhasm: carry? a2 += t2 + carry
+# asm 1: adc <t2=int64#4,<a2=int64#6
+# asm 2: adc <t2=%rcx,<a2=%r9
+adc %rcx,%r9
+
+# qhasm: carry? a3 += h + carry
+# asm 1: adc <h=int64#3,<a3=int64#2
+# asm 2: adc <h=%rdx,<a3=%rsi
+adc %rdx,%rsi
+
+# qhasm:        a4 += h + carry
+# asm 1: adc <h=int64#3,<a4=int64#1
+# asm 2: adc <h=%rdx,<a4=%rdi
+adc %rdx,%rdi
+
+# qhasm: rax = stack_FVGS0[1]
+# asm 1: movq <stack_FVGS0=stack256#2,>rax=int64#7
+# asm 2: movq <stack_FVGS0=40(%rsp),>rax=%rax
+movq 40(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS1[1]
+# asm 1: movq <stack_FVGS1=stack256#3,>t0=int64#3
+# asm 2: movq <stack_FVGS1=72(%rsp),>t0=%rdx
+movq 72(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * u
+# asm 1: imul <u=int64#8
+# asm 2: imul <u=%r10
+imul %r10
+
+# qhasm: t2 = rdx
+# asm 1: mov  <rdx=int64#3,>t2=int64#4
+# asm 2: mov  <rdx=%rdx,>t2=%rcx
+mov  %rdx,%rcx
+
+# qhasm: t1 = rax
+# asm 1: mov  <rax=int64#7,>t1=int64#5
+# asm 2: mov  <rax=%rax,>t1=%r8
+mov  %rax,%r8
+
+# qhasm: rax = stack_FVGS0[3]
+# asm 1: movq <stack_FVGS0=stack256#2,>rax=int64#7
+# asm 2: movq <stack_FVGS0=56(%rsp),>rax=%rax
+movq 56(%rsp),%rax
+
+# qhasm: t0 = stack_FVGS1[3]
+# asm 1: movq <stack_FVGS1=stack256#3,>t0=int64#3
+# asm 2: movq <stack_FVGS1=88(%rsp),>t0=%rdx
+movq 88(%rsp),%rdx
+
+# qhasm: t0 <<= 30
+# asm 1: shl  $30,<t0=int64#3
+# asm 2: shl  $30,<t0=%rdx
+shl  $30,%rdx
+
+# qhasm: rax += t0
+# asm 1: add  <t0=int64#3,<rax=int64#7
+# asm 2: add  <t0=%rdx,<rax=%rax
+add  %rdx,%rax
+
+# qhasm: (int128) rdx rax = rax * v
+# asm 1: imul <v=int64#9
+# asm 2: imul <v=%r11
+imul %r11
+
+# qhasm: carry? t1 += rax
+# asm 1: add  <rax=int64#7,<t1=int64#5
+# asm 2: add  <rax=%rax,<t1=%r8
+add  %rax,%r8
+
+# qhasm:        t2 += rdx + carry
+# asm 1: adc <rdx=int64#3,<t2=int64#4
+# asm 2: adc <rdx=%rdx,<t2=%rcx
+adc %rdx,%rcx
+
+# qhasm: h = t2
+# asm 1: mov  <t2=int64#4,>h=int64#3
+# asm 2: mov  <t2=%rcx,>h=%rdx
+mov  %rcx,%rdx
+
+# qhasm: (int64) h >>= 63
+# asm 1: sar  $63,<h=int64#3
+# asm 2: sar  $63,<h=%rdx
+sar  $63,%rdx
+
+# qhasm: carry? a0 += t1
+# asm 1: add  <t1=int64#5,<a0=int64#11
+# asm 2: add  <t1=%r8,<a0=%r13
+add  %r8,%r13
+
+# qhasm: carry? a1 += t2 + carry
+# asm 1: adc <t2=int64#4,<a1=int64#10
+# asm 2: adc <t2=%rcx,<a1=%r12
+adc %rcx,%r12
+
+# qhasm: carry? a2 += h + carry
+# asm 1: adc <h=int64#3,<a2=int64#6
+# asm 2: adc <h=%rdx,<a2=%r9
+adc %rdx,%r9
+
+# qhasm: carry? a3 += h + carry
+# asm 1: adc <h=int64#3,<a3=int64#2
+# asm 2: adc <h=%rdx,<a3=%rsi
+adc %rdx,%rsi
+
+# qhasm:        a4 += h + carry
+# asm 1: adc <h=int64#3,<a4=int64#1
+# asm 2: adc <h=%rdx,<a4=%rdi
+adc %rdx,%rdi
+
+# qhasm: carry? a3 reset bit 63
+# asm 1: btr  $63,<a3=int64#2
+# asm 2: btr  $63,<a3=%rsi
+btr  $63,%rsi
+
+# qhasm: a4 += a4 + carry
+# asm 1: adc <a4=int64#1,<a4=int64#1
+# asm 2: adc <a4=%rdi,<a4=%rdi
+adc %rdi,%rdi
+
+# qhasm: h = a4
+# asm 1: mov  <a4=int64#1,>h=int64#4
+# asm 2: mov  <a4=%rdi,>h=%rcx
+mov  %rdi,%rcx
+
+# qhasm: rax = 19
+# asm 1: mov  $19,>rax=int64#7
+# asm 2: mov  $19,>rax=%rax
+mov  $19,%rax
+
+# qhasm: (int128) rdx rax = rax * a4
+# asm 1: imul <a4=int64#1
+# asm 2: imul <a4=%rdi
+imul %rdi
+
+# qhasm: (int64) h >>= 63
+# asm 1: sar  $63,<h=int64#4
+# asm 2: sar  $63,<h=%rcx
+sar  $63,%rcx
+
+# qhasm: a4 = 0
+# asm 1: xor  >a4=int64#1,>a4=int64#1
+# asm 2: xor  >a4=%rdi,>a4=%rdi
+xor  %rdi,%rdi
+
+# qhasm: carry?   a0 += rax
+# asm 1: add  <rax=int64#7,<a0=int64#11
+# asm 2: add  <rax=%rax,<a0=%r13
+add  %rax,%r13
+
+# qhasm: carry?   a1 += rdx + carry
+# asm 1: adc <rdx=int64#3,<a1=int64#10
+# asm 2: adc <rdx=%rdx,<a1=%r12
+adc %rdx,%r12
+
+# qhasm: carry?   a2 += h + carry
+# asm 1: adc <h=int64#4,<a2=int64#6
+# asm 2: adc <h=%rcx,<a2=%r9
+adc %rcx,%r9
+
+# qhasm: carry?   a3 += h + carry
+# asm 1: adc <h=int64#4,<a3=int64#2
+# asm 2: adc <h=%rcx,<a3=%rsi
+adc %rcx,%rsi
+
+# qhasm:          a4 += h + carry
+# asm 1: adc <h=int64#4,<a4=int64#1
+# asm 2: adc <h=%rcx,<a4=%rdi
+adc %rcx,%rdi
+
+# qhasm: carry? a3 reset bit 63
+# asm 1: btr  $63,<a3=int64#2
+# asm 2: btr  $63,<a3=%rsi
+btr  $63,%rsi
+
+# qhasm: a4 += a4 + carry
+# asm 1: adc <a4=int64#1,<a4=int64#1
+# asm 2: adc <a4=%rdi,<a4=%rdi
+adc %rdi,%rdi
+
+# qhasm: h = a4
+# asm 1: mov  <a4=int64#1,>h=int64#4
+# asm 2: mov  <a4=%rdi,>h=%rcx
+mov  %rdi,%rcx
+
+# qhasm: rax = 19
+# asm 1: mov  $19,>rax=int64#7
+# asm 2: mov  $19,>rax=%rax
+mov  $19,%rax
+
+# qhasm: (int128) rdx rax = rax * a4
+# asm 1: imul <a4=int64#1
+# asm 2: imul <a4=%rdi
+imul %rdi
+
+# qhasm: (int64) h >>= 63
+# asm 1: sar  $63,<h=int64#4
+# asm 2: sar  $63,<h=%rcx
+sar  $63,%rcx
+
+# qhasm: carry?   a0 += rax
+# asm 1: add  <rax=int64#7,<a0=int64#11
+# asm 2: add  <rax=%rax,<a0=%r13
+add  %rax,%r13
+
+# qhasm: carry?   a1 += rdx + carry
+# asm 1: adc <rdx=int64#3,<a1=int64#10
+# asm 2: adc <rdx=%rdx,<a1=%r12
+adc %rdx,%r12
+
+# qhasm: carry?   a2 += h + carry
+# asm 1: adc <h=int64#4,<a2=int64#6
+# asm 2: adc <h=%rcx,<a2=%r9
+adc %rcx,%r9
+
+# qhasm: carry?   a3 += h + carry
+# asm 1: adc <h=int64#4,<a3=int64#2
+# asm 2: adc <h=%rcx,<a3=%rsi
+adc %rcx,%rsi
+
+# qhasm:          a4 += h + carry
+# asm 1: adc <h=int64#4,<a4=int64#1
+# asm 2: adc <h=%rcx,<a4=%rdi
+adc %rcx,%rdi
+
+# qhasm:   z = 0
+# asm 1: xor  >z=int64#1,>z=int64#1
+# asm 2: xor  >z=%rdi,>z=%rdi
+xor  %rdi,%rdi
+
+# qhasm: a4 = -19
+# asm 1: mov  $-19,>a4=int64#3
+# asm 2: mov  $-19,>a4=%rdx
+mov  $-19,%rdx
+
+# qhasm: a5 = -1
+# asm 1: mov  $-1,>a5=int64#4
+# asm 2: mov  $-1,>a5=%rcx
+mov  $-1,%rcx
+
+# qhasm: a6 = 9223372036854775807
+# asm 1: mov  $9223372036854775807,>a6=int64#5
+# asm 2: mov  $9223372036854775807,>a6=%r8
+mov  $9223372036854775807,%r8
+
+# qhasm: signed<? a3 - 0
+# asm 1: cmp  $0,<a3=int64#2
+# asm 2: cmp  $0,<a3=%rsi
+cmp  $0,%rsi
+
+# qhasm: a4 = z if !signed<
+# asm 1: cmovge <z=int64#1,<a4=int64#3
+# asm 2: cmovge <z=%rdi,<a4=%rdx
+cmovge %rdi,%rdx
+
+# qhasm: a5 = z if !signed<
+# asm 1: cmovge <z=int64#1,<a5=int64#4
+# asm 2: cmovge <z=%rdi,<a5=%rcx
+cmovge %rdi,%rcx
+
+# qhasm: a6 = z if !signed<
+# asm 1: cmovge <z=int64#1,<a6=int64#5
+# asm 2: cmovge <z=%rdi,<a6=%r8
+cmovge %rdi,%r8
+
+# qhasm: carry? a0 += a4
+# asm 1: add  <a4=int64#3,<a0=int64#11
+# asm 2: add  <a4=%rdx,<a0=%r13
+add  %rdx,%r13
+
+# qhasm: carry? a1 += a5 + carry
+# asm 1: adc <a5=int64#4,<a1=int64#10
+# asm 2: adc <a5=%rcx,<a1=%r12
+adc %rcx,%r12
+
+# qhasm: carry? a2 += a5 + carry
+# asm 1: adc <a5=int64#4,<a2=int64#6
+# asm 2: adc <a5=%rcx,<a2=%r9
+adc %rcx,%r9
+
+# qhasm:        a3 += a6 + carry
+# asm 1: adc <a6=int64#5,<a3=int64#2
+# asm 2: adc <a6=%r8,<a3=%rsi
+adc %r8,%rsi
+
+# qhasm: carry?   a0 += 19
+# asm 1: add  $19,<a0=int64#11
+# asm 2: add  $19,<a0=%r13
+add  $19,%r13
+
+# qhasm: carry?   a1 += 0 + carry
+# asm 1: adc $0,<a1=int64#10
+# asm 2: adc $0,<a1=%r12
+adc $0,%r12
+
+# qhasm: carry?   a2 += 0 + carry
+# asm 1: adc $0,<a2=int64#6
+# asm 2: adc $0,<a2=%r9
+adc $0,%r9
+
+# qhasm:          a3 += 0 + carry
+# asm 1: adc $0,<a3=int64#2
+# asm 2: adc $0,<a3=%rsi
+adc $0,%rsi
+
+# qhasm: t0 = a3
+# asm 1: mov  <a3=int64#2,>t0=int64#1
+# asm 2: mov  <a3=%rsi,>t0=%rdi
+mov  %rsi,%rdi
+
+# qhasm: (int64) t0 >>= 63
+# asm 1: sar  $63,<t0=int64#1
+# asm 2: sar  $63,<t0=%rdi
+sar  $63,%rdi
+
+# qhasm: a3 reset bit 63
+# asm 1: btr  $63,<a3=int64#2
+# asm 2: btr  $63,<a3=%rsi
+btr  $63,%rsi
+
+# qhasm: t0 &= 19
+# asm 1: and  $19,<t0=int64#1
+# asm 2: and  $19,<t0=%rdi
+and  $19,%rdi
+
+# qhasm: carry? a0 += t0
+# asm 1: add  <t0=int64#1,<a0=int64#11
+# asm 2: add  <t0=%rdi,<a0=%r13
+add  %rdi,%r13
+
+# qhasm: carry? a1 += 0 + carry
+# asm 1: adc $0,<a1=int64#10
+# asm 2: adc $0,<a1=%r12
+adc $0,%r12
+
+# qhasm: carry? a2 += 0 + carry
+# asm 1: adc $0,<a2=int64#6
+# asm 2: adc $0,<a2=%r9
+adc $0,%r9
+
+# qhasm:        a3 += 0 + carry
+# asm 1: adc $0,<a3=int64#2
+# asm 2: adc $0,<a3=%rsi
+adc $0,%rsi
+
+# qhasm: carry?   a0 -= 19
+# asm 1: sub  $19,<a0=int64#11
+# asm 2: sub  $19,<a0=%r13
+sub  $19,%r13
+
+# qhasm: carry?   a1 -= 0 - carry
+# asm 1: sbb  $0,<a1=int64#10
+# asm 2: sbb  $0,<a1=%r12
+sbb  $0,%r12
+
+# qhasm: carry?   a2 -= 0 - carry
+# asm 1: sbb  $0,<a2=int64#6
+# asm 2: sbb  $0,<a2=%r9
+sbb  $0,%r9
+
+# qhasm: 	 a3 -= 0 - carry
+# asm 1: sbb  $0,<a3=int64#2
+# asm 2: sbb  $0,<a3=%rsi
+sbb  $0,%rsi
+
+# qhasm: t2 = stack_out
+# asm 1: movq <stack_out=stack64#1,>t2=int64#1
+# asm 2: movq <stack_out=672(%rsp),>t2=%rdi
+movq 672(%rsp),%rdi
+
+# qhasm: mem64[t2 +  0] = a0
+# asm 1: movq   <a0=int64#11,0(<t2=int64#1)
+# asm 2: movq   <a0=%r13,0(<t2=%rdi)
+movq   %r13,0(%rdi)
+
+# qhasm: mem64[t2 +  8] = a1
+# asm 1: movq   <a1=int64#10,8(<t2=int64#1)
+# asm 2: movq   <a1=%r12,8(<t2=%rdi)
+movq   %r12,8(%rdi)
+
+# qhasm: mem64[t2 + 16] = a2
+# asm 1: movq   <a2=int64#6,16(<t2=int64#1)
+# asm 2: movq   <a2=%r9,16(<t2=%rdi)
+movq   %r9,16(%rdi)
+
+# qhasm: mem64[t2 + 24] = a3
+# asm 1: movq   <a3=int64#2,24(<t2=int64#1)
+# asm 2: movq   <a3=%rsi,24(<t2=%rdi)
+movq   %rsi,24(%rdi)
+
+# qhasm: caller_r11 = stack_r11
+# asm 1: movq <stack_r11=stack64#2,>caller_r11=int64#9
+# asm 2: movq <stack_r11=680(%rsp),>caller_r11=%r11
+movq 680(%rsp),%r11
+
+# qhasm: caller_r12 = stack_r12
+# asm 1: movq <stack_r12=stack64#3,>caller_r12=int64#10
+# asm 2: movq <stack_r12=688(%rsp),>caller_r12=%r12
+movq 688(%rsp),%r12
+
+# qhasm: caller_r13 = stack_r13
+# asm 1: movq <stack_r13=stack64#4,>caller_r13=int64#11
+# asm 2: movq <stack_r13=696(%rsp),>caller_r13=%r13
+movq 696(%rsp),%r13
+
+# qhasm: caller_r14 = stack_r14
+# asm 1: movq <stack_r14=stack64#5,>caller_r14=int64#12
+# asm 2: movq <stack_r14=704(%rsp),>caller_r14=%r14
+movq 704(%rsp),%r14
+
+# qhasm: caller_r15 = stack_r15
+# asm 1: movq <stack_r15=stack64#6,>caller_r15=int64#13
+# asm 2: movq <stack_r15=712(%rsp),>caller_r15=%r15
+movq 712(%rsp),%r15
+
+# qhasm: caller_rbx = stack_rbx
+# asm 1: movq <stack_rbx=stack64#7,>caller_rbx=int64#14
+# asm 2: movq <stack_rbx=720(%rsp),>caller_rbx=%rbx
+movq 720(%rsp),%rbx
+
+# qhasm: caller_rbp = stack_rbp
+# asm 1: movq <stack_rbp=stack64#8,>caller_rbp=int64#15
+# asm 2: movq <stack_rbp=728(%rsp),>caller_rbp=%rbp
+movq 728(%rsp),%rbp
+
+# qhasm: return
+add %r11,%rsp
+#ret
+

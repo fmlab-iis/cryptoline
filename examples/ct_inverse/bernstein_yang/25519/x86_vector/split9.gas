@@ -1,0 +1,319 @@
+#! (%rsi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdx) = %%rdx_$1c
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rsp) = %%rsp_$1c
+#! (%rbx) = %%EA
+#! $1c(%rbx) = %%EA
+
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %rsi = %%rsi
+#! %rdi = %%rdi
+#! %rsp = %%rsp
+#! %r$1c = %%r$1c
+
+#! %ymm$1c = %%ymm$1c
+#! vmovupd $1v, $2v -> mov $2v_0 $1v_0;\nmov $2v_1 $1v_1;\nmov $2v_2 $1v_2;\nmov $2v_3 $1v_3
+#! vmovapd $1v, $2v -> mov $2v_0 $1v_0;\nmov $2v_1 $1v_1;\nmov $2v_2 $1v_2;\nmov $2v_3 $1v_3
+
+
+#! mov $1v, $2v -> mov $2v $1v
+#! movq $1v, $2v -> mov $2v $1v
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! movabs $1c, $2v -> mov $2v $1c@uint64
+#! add $1v, $2v -> adds carry $2v $1v $2v
+#! adc $1v, $2v -> adcs carry $2v $1v $2v carry
+#! adc \$0x0, $2v -> adcs carry $2v 0@uint64 $2v carry;\nassert true && carry = 0@1;\nassume carry = 0 && true
+#! adc $1c, $2v -> adcs carry $2v $1c@uint64 $2v carry
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! and $1v, $2v -> and $2v@uint64 $1v $2v
+#! andn $1v, $2v, $3v -> not tmp@uint64 $2v;\nand $3v@uint64 tmp $1v
+#! and $1c, $2v -> and $2v@uint64 $1c@uint64 $2v
+#! xor $1v, $1v -> mov $1v 0@uint64
+#! xor $1v, $2v -> xor $2v@uint64 $1v $2v
+#! mul $1v -> umull rdx rax $1v rax
+#! mulq $1v -> umull rdx rax $1v rax
+#! imul $1v, $2v -> smull dontcare $2v $1v $2v
+#! mulx $1v, $2v, $3v -> umull rdx $3v $1v $2v
+#! adox $1v, $2v -> adcs OF $2v $1v $2v OF
+#! adcx $1v, $2v -> adcs carry $2v $1v $2v carry
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
+#! btr \$0x3f, $2v -> subb carry dontcare 0x7fffffffffffffff@uint64 $2v;\nand $2v@uint64 $2v 0x7fffffffffffffff@uint64 
+#! lea  \($1v,$2v\),$3v -> adds dontcare $3v $1v $2v 
+#! lea  \-1\($1v\),$2v -> subb dontcare $2v $1v 1@sint64
+#! test \$1, $1v -> and T$1v@sint64 0x1@sint64 $1v;\nsubb ZF dontcare T$1v 1@sint64 
+#! cmovne $1v, $2v -> cmov $2v ZF $2v $1v 
+#! cmove $1v, $2v -> cmov $2v ZF $1v $2v
+#! not $1v -> not $1v@sint64 $1v
+#! sar $1c, $2v -> ssplit $2v dontcare $2v $1c 
+#! shr $1c, $2v -> usplit $2v dontcare $2v $1c 
+#! shl $1c, $2v -> shl $2v $2v $1c 
+#! cmovge $1v, $2v -> cmov $2v SFeOF $1v $2v
+#! cmovl $1v, $2v -> cmov $2v SFeOF $2v $1v
+#! cmp \$0, $2v -> subb SFeOF dontcare $2v (-(2)**(63))@sint64
+#! shrd $1c, $2v, $3v -> join tmp $2v $3v;\nusplit tmp dontcare tmp $1c;\ncast $3v@uint64 tmp
+
+
+# qhasm: t0 = -1152921504606846976
+# asm 1: mov  $-1152921504606846976,>t0=int64#6
+# asm 2: mov  $-1152921504606846976,>t0=%r9
+mov  $-1152921504606846976,%r9
+
+# qhasm: g = a0 & ~ t0
+# asm 1: andn  <a0=int64#2,<t0=int64#6,>g=int64#6
+# asm 2: andn  <a0=%rsi,<t0=%r9,>g=%r9
+andn  %rsi,%r9,%r9
+
+# qhasm: d1 = mem256[ input_2 + 288 ]
+# asm 1: vmovupd   288(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   288(<input_2=%rdx),>d1=%ymm0
+vmovupd   288(%rdx),%ymm0
+
+# qhasm: stack_FVGS0 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS0=stack256#2
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS0=32(%rsp)
+vmovapd %ymm0,32(%rsp)
+
+# qhasm: t0 = a0
+# asm 1: mov  <a0=int64#2,>t0=int64#7
+# asm 2: mov  <a0=%rsi,>t0=%rax
+mov  %rsi,%rax
+
+# qhasm: t0 &= 1073741823
+# asm 1: and  $1073741823,<t0=int64#7
+# asm 2: and  $1073741823,<t0=%rax
+and  $1073741823,%rax
+
+# qhasm: inplace stack_FVGS0[2] = t0
+# asm 1: movq <t0=int64#7,<stack_FVGS0=stack256#2
+# asm 2: movq <t0=%rax,<stack_FVGS0=48(%rsp)
+movq %rax,48(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 320 ]
+# asm 1: vmovupd   320(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   320(<input_2=%rdx),>d1=%ymm0
+vmovupd   320(%rdx),%ymm0
+
+# qhasm: stack_FVGS1 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS1=stack256#3
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS1=64(%rsp)
+vmovapd %ymm0,64(%rsp)
+
+# qhasm: t0 = a0
+# asm 1: mov  <a0=int64#2,>t0=int64#7
+# asm 2: mov  <a0=%rsi,>t0=%rax
+mov  %rsi,%rax
+
+# qhasm: (uint64) t0 >>= 30
+# asm 1: shr  $30,<t0=int64#7
+# asm 2: shr  $30,<t0=%rax
+shr  $30,%rax
+
+# qhasm: t0 &= 1073741823
+# asm 1: and  $1073741823,<t0=int64#7
+# asm 2: and  $1073741823,<t0=%rax
+and  $1073741823,%rax
+
+# qhasm: inplace stack_FVGS1[2] = t0
+# asm 1: movq <t0=int64#7,<stack_FVGS1=stack256#3
+# asm 2: movq <t0=%rax,<stack_FVGS1=80(%rsp)
+movq %rax,80(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 352 ]
+# asm 1: vmovupd   352(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   352(<input_2=%rdx),>d1=%ymm0
+vmovupd   352(%rdx),%ymm0
+
+# qhasm: stack_FVGS2 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS2=stack256#4
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS2=96(%rsp)
+vmovapd %ymm0,96(%rsp)
+
+# qhasm: a0 = (a1 a0) >> 60
+# asm 1: shrd $60,<a1=int64#4,<a0=int64#2
+# asm 2: shrd $60,<a1=%rcx,<a0=%rsi
+shrd $60,%rcx,%rsi
+
+# qhasm: a0 &= 1073741823
+# asm 1: and  $1073741823,<a0=int64#2
+# asm 2: and  $1073741823,<a0=%rsi
+and  $1073741823,%rsi
+
+# qhasm: inplace stack_FVGS2[2] = a0
+# asm 1: movq <a0=int64#2,<stack_FVGS2=stack256#4
+# asm 2: movq <a0=%rsi,<stack_FVGS2=112(%rsp)
+movq %rsi,112(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 384 ]
+# asm 1: vmovupd   384(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   384(<input_2=%rdx),>d1=%ymm0
+vmovupd   384(%rdx),%ymm0
+
+# qhasm: stack_FVGS3 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS3=stack256#5
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS3=128(%rsp)
+vmovapd %ymm0,128(%rsp)
+
+# qhasm: t0 = a1
+# asm 1: mov  <a1=int64#4,>t0=int64#2
+# asm 2: mov  <a1=%rcx,>t0=%rsi
+mov  %rcx,%rsi
+
+# qhasm: (uint64) t0 >>= 26
+# asm 1: shr  $26,<t0=int64#2
+# asm 2: shr  $26,<t0=%rsi
+shr  $26,%rsi
+
+# qhasm: t0 &= 1073741823
+# asm 1: and  $1073741823,<t0=int64#2
+# asm 2: and  $1073741823,<t0=%rsi
+and  $1073741823,%rsi
+
+# qhasm: inplace stack_FVGS3[2] = t0
+# asm 1: movq <t0=int64#2,<stack_FVGS3=stack256#5
+# asm 2: movq <t0=%rsi,<stack_FVGS3=144(%rsp)
+movq %rsi,144(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 416 ]
+# asm 1: vmovupd   416(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   416(<input_2=%rdx),>d1=%ymm0
+vmovupd   416(%rdx),%ymm0
+
+# qhasm: stack_FVGS4 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS4=stack256#6
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS4=160(%rsp)
+vmovapd %ymm0,160(%rsp)
+
+# qhasm: a1 = (a2 a1) >> 56
+# asm 1: shrd $56,<a2=int64#5,<a1=int64#4
+# asm 2: shrd $56,<a2=%r8,<a1=%rcx
+shrd $56,%r8,%rcx
+
+# qhasm: a1 &= 1073741823
+# asm 1: and  $1073741823,<a1=int64#4
+# asm 2: and  $1073741823,<a1=%rcx
+and  $1073741823,%rcx
+
+# qhasm: inplace stack_FVGS4[2] = a1
+# asm 1: movq <a1=int64#4,<stack_FVGS4=stack256#6
+# asm 2: movq <a1=%rcx,<stack_FVGS4=176(%rsp)
+movq %rcx,176(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 448 ]
+# asm 1: vmovupd   448(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   448(<input_2=%rdx),>d1=%ymm0
+vmovupd   448(%rdx),%ymm0
+
+# qhasm: stack_FVGS5 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS5=stack256#7
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS5=192(%rsp)
+vmovapd %ymm0,192(%rsp)
+
+# qhasm: t0 = a2
+# asm 1: mov  <a2=int64#5,>t0=int64#2
+# asm 2: mov  <a2=%r8,>t0=%rsi
+mov  %r8,%rsi
+
+# qhasm: (uint64) t0 >>= 22
+# asm 1: shr  $22,<t0=int64#2
+# asm 2: shr  $22,<t0=%rsi
+shr  $22,%rsi
+
+# qhasm: t0 &= 1073741823
+# asm 1: and  $1073741823,<t0=int64#2
+# asm 2: and  $1073741823,<t0=%rsi
+and  $1073741823,%rsi
+
+# qhasm: inplace stack_FVGS5[2] = t0
+# asm 1: movq <t0=int64#2,<stack_FVGS5=stack256#7
+# asm 2: movq <t0=%rsi,<stack_FVGS5=208(%rsp)
+movq %rsi,208(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 480 ]
+# asm 1: vmovupd   480(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   480(<input_2=%rdx),>d1=%ymm0
+vmovupd   480(%rdx),%ymm0
+
+# qhasm: stack_FVGS6 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS6=stack256#8
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS6=224(%rsp)
+vmovapd %ymm0,224(%rsp)
+
+# qhasm: a2 = (a3 a2) >> 52
+# asm 1: shrd $52,<a3=int64#1,<a2=int64#5
+# asm 2: shrd $52,<a3=%rdi,<a2=%r8
+shrd $52,%rdi,%r8
+
+# qhasm: a2 &= 1073741823
+# asm 1: and  $1073741823,<a2=int64#5
+# asm 2: and  $1073741823,<a2=%r8
+and  $1073741823,%r8
+
+# qhasm: inplace stack_FVGS6[2] = a2
+# asm 1: movq <a2=int64#5,<stack_FVGS6=stack256#8
+# asm 2: movq <a2=%r8,<stack_FVGS6=240(%rsp)
+movq %r8,240(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 512 ]
+# asm 1: vmovupd   512(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   512(<input_2=%rdx),>d1=%ymm0
+vmovupd   512(%rdx),%ymm0
+
+# qhasm: stack_FVGS7 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS7=stack256#9
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS7=256(%rsp)
+vmovapd %ymm0,256(%rsp)
+
+# qhasm: t0 = a3
+# asm 1: mov  <a3=int64#1,>t0=int64#2
+# asm 2: mov  <a3=%rdi,>t0=%rsi
+mov  %rdi,%rsi
+
+# qhasm: (uint64) t0 >>= 18
+# asm 1: shr  $18,<t0=int64#2
+# asm 2: shr  $18,<t0=%rsi
+shr  $18,%rsi
+
+# qhasm: t0 &= 1073741823
+# asm 1: and  $1073741823,<t0=int64#2
+# asm 2: and  $1073741823,<t0=%rsi
+and  $1073741823,%rsi
+
+# qhasm: inplace stack_FVGS7[2] = t0
+# asm 1: movq <t0=int64#2,<stack_FVGS7=stack256#9
+# asm 2: movq <t0=%rsi,<stack_FVGS7=272(%rsp)
+movq %rsi,272(%rsp)
+
+# qhasm: d1 = mem256[ input_2 + 544]
+# asm 1: vmovupd   544(<input_2=int64#3),>d1=reg256#1
+# asm 2: vmovupd   544(<input_2=%rdx),>d1=%ymm0
+vmovupd   544(%rdx),%ymm0
+
+# qhasm: stack_FVGS8 = d1
+# asm 1: vmovapd <d1=reg256#1,>stack_FVGS8=stack256#10
+# asm 2: vmovapd <d1=%ymm0,>stack_FVGS8=288(%rsp)
+vmovapd %ymm0,288(%rsp)
+
+# qhasm: (uint64) a3 >>= 48
+# asm 1: shr  $48,<a3=int64#1
+# asm 2: shr  $48,<a3=%rdi
+shr  $48,%rdi
+
+# qhasm: inplace stack_FVGS8[2] = a3
+# asm 1: movq <a3=int64#1,<stack_FVGS8=stack256#10
+# asm 2: movq <a3=%rdi,<stack_FVGS8=304(%rsp)
+movq %rdi,304(%rsp)
+
