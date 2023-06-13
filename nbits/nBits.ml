@@ -27,3 +27,7 @@ let udivB_eucl = udivB
 let udivB = udivB'
 
 let sdivB_eucl = sdivB'
+
+let eqB bs1 bs2 = eq_op bitseq_eqType (Obj.magic bs1) (Obj.magic bs2)
+
+let neB bs1 bs2 = not (eqB bs1 bs2)

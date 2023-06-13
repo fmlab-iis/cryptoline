@@ -18,6 +18,7 @@ type exp =
   | Or of size * exp * exp              (** bit-wise OR *)
   | Xor of size * exp * exp             (** bit-wise XOR *)
   | Neg of size * exp                   (** negation *)
+  | Comp of size * exp * exp            (** equality, the expression is one bit *)
   | Add of size * exp * exp             (** addition *)
   | Sub of size * exp * exp             (** subtraction *)
   | Mul of size * exp * exp             (** multiplication *)
@@ -92,13 +93,13 @@ class btor_manager :
     method mkconstd_for_shift : size -> Z.t -> int
     method mkconstd_for_rotate : size -> Z.t -> int
     method mkeq : size -> int -> int
+    method mkne : size -> int -> int
     method mkextract : size -> int -> int -> int -> int
     method mkhigh : size -> int -> int -> int
     method mklow : size -> int -> int -> int
     method mkmod : size -> int -> int -> int
     method mkmul : size -> int -> int -> int
     method mkneg : size -> int -> int
-    method mkneq : size -> int -> int
     method mknot : size -> int -> int
     method mkor : size -> int -> int -> int
     method mkrol : size -> int -> int -> int

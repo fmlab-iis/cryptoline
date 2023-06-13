@@ -65,6 +65,7 @@
                             "mulj" "umulj" "smulj"
                             "spl" "uspl" "sspl"
                             "split" "usplit" "ssplit"
+                            "seteq" "setne"
                             "shl" "lsl" "shls"
                             "shr" "shrs"
                             "sar" "sars"

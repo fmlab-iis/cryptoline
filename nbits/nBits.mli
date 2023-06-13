@@ -79,6 +79,14 @@ val ones : int -> bits
 (** [ones n] is a bit vector containing all 1's. The width of the bit vector is [n]. *)
 
 
+(** {1 Equality} *)
+
+val eqB : bits -> bits -> bool
+(** [eqB bs1 bs2] is true if [bs1] is equal to [bs2]. *)
+
+val neB : bits -> bits -> bool
+(** [neB bs1 bs2] is true if [bs1] is not equal to [bs2]. *)
+
 (** {1 Low-level operations} *)
 
 val lsb : bits -> bool

@@ -904,6 +904,9 @@ type instr =
   | Imulj of var * atom * atom                              (** Full-multiplication *)
   | Isplit of var * var * atom * Z.t                        (** Split and extend *)
   | Ispl of var * var * atom * Z.t                          (** Split without extension *)
+  (* Comparison *)
+  | Iseteq of var * atom * atom                             (** Equality *)
+  | Isetne of var * atom * atom                             (** Inequality *)
   (* Instructions that cannot be translated to polynomials *)
   | Iand of var * atom * atom                               (** Bit-wise AND *)
   | Ior of var * atom * atom                                (** Bit-wise OR *)
@@ -1288,6 +1291,9 @@ let string_of_instr ?typ:(typ=false) i =
   | Imulj (v, a1, a2) -> "mulj " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Isplit (vh, vl, a, n) -> "split " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Ispl (vh, vl, a, n) -> "spl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
+  (* Comparison *)
+  | Iseteq (v, a1, a2) -> "seteq " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
+  | Isetne (v, a1, a2) -> "setne " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   (* Instructions that cannot be translated to polynomials *)
   | Iand (v, a1, a2) -> "and " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Ior (v, a1, a2) -> "or " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
@@ -1418,6 +1424,8 @@ let vars_instr i =
      VS.add c (VS.add v (VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom y)))
   | Isplit (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
   | Ispl (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
+  | Iseteq (v, a1, a2)
+  | Isetne (v, a1, a2) -> VS.add v (VS.union (vars_atom a1) (vars_atom a2))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
@@ -1472,6 +1480,8 @@ let lvs_instr i =
   | Isars (v, l, _, _) -> VS.add l (VS.singleton v)
   | Isplit (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
   | Ispl (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
+  | Iseteq (v, _, _)
+    | Isetne (v, _, _) -> VS.singleton v
   | Icshl (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
   | Icshr (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
   | Icshrs (vh, vl, l, _, _, _) -> VS.add vh (VS.add vl (VS.singleton l))
@@ -1520,6 +1530,8 @@ let rvs_instr i =
   | Isars (_, _, a, _) -> vars_atom a
   | Isplit (_, _, a, _) -> vars_atom a
   | Ispl (_, _, a, _) -> vars_atom a
+  | Iseteq (_, a1, a2)
+    | Isetne (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshl (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshr (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
@@ -1569,6 +1581,8 @@ let lcarries_instr i =
   | Isars _
   | Isplit _
   | Ispl _
+  | Iseteq _
+  | Isetne _
   | Icshl _
   | Icshr _
   | Icshrs _
@@ -1683,6 +1697,8 @@ let vids_instr i =
      IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom y)))
   | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
   | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
+  | Iseteq (v, a1, a2)
+    | Isetne (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
@@ -1737,6 +1753,8 @@ let lvids_instr i =
   | Isars (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
   | Isplit (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Ispl (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Iseteq (v, _, _)
+    | Isetne (v, _, _) -> IS.singleton v.vid
   | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Icshr (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Icshrs (vh, vl, l, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.singleton l.vid))
@@ -1785,6 +1803,8 @@ let rvids_instr i =
   | Isars (_, _, a, _) -> vids_atom a
   | Isplit (_, _, a, _) -> vids_atom a
   | Ispl (_, _, a, _) -> vids_atom a
+  | Iseteq (_, a1, a2)
+    | Isetne (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshl (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshr (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
@@ -1834,6 +1854,8 @@ let lcids_instr i =
   | Isars _
   | Isplit _
   | Ispl _
+  | Iseteq _
+  | Isetne _
   | Icshl _
   | Icshr _
   | Icshrs _
@@ -2110,6 +2132,16 @@ let ssa_instr m i =
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Ispl (ssa_var mh vh, ssa_var ml vl, a, n))
+  | Iseteq (v, a1, a2) ->
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let m = upd_sidx v m in
+     (m, Iseteq (ssa_var m v, a1, a2))
+  | Isetne (v, a1, a2) ->
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let m = upd_sidx v m in
+     (m, Isetne (ssa_var m v, a1, a2))
   | Iand (v, a1, a2) ->
      let a1 = ssa_atom m a1 in
      let a2 = ssa_atom m a2 in
@@ -2771,6 +2803,8 @@ let subst_instr am em rm i =
   | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
   | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
+  | Iseteq (v, a1, a2) -> Iseteq (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Isetne (v, a1, a2) -> Isetne (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atom am a1, subst_atom am a2)
@@ -3236,6 +3270,11 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
                              casts@[Isplit (vh, vl, a, n)]
   | Ispl (vh, vl, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t vh.vtyp a in
                            casts@[Ispl (vh, vl, a, n)]
+  (* Comparison *)
+  | Iseteq (v, a1, a2) -> let (casts, a2) = auto_cast_atom ~preserve:preserve t (typ_of_atom a1) a2 in
+                          casts@[Iseteq (v, a1, a2)]
+  | Isetne (v, a1, a2) -> let (casts, a2) = auto_cast_atom ~preserve:preserve t (typ_of_atom a1) a2 in
+                          casts@[Isetne (v, a1, a2)]
   (* Instructions that cannot be translated to polynomials *)
   | Iand (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
                         let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
@@ -3497,6 +3536,9 @@ let visit_instr visitor i =
         | Imulj (v, a1, a2) -> Imulj (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Isplit (vh, vl, a, n) -> Isplit (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
         | Ispl (vh, vl, a, n) -> Ispl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
+        (* Comparison *)
+        | Iseteq (v, a1, a2) -> Iseteq (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Isetne (v, a1, a2) -> Isetne (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         (* Instructions that cannot be translated to polynomials *)
         | Iand (v, a1, a2) -> Iand (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
@@ -4053,6 +4095,9 @@ let bvcryptoline_of_instr i =
   | Imulj _ -> raise (UnsupportedException "Instruction mulj is not supported by BvCryptoLine.")
   | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a) (Z.to_int n)
   | Ispl _ -> raise (UnsupportedException "Instruction spl is not supported by BvCryptoLine.")
+  (* Comparison *)
+  | Iseteq _ -> raise (UnsupportedException "Instruction seteq is not supported by BvCryptoLine.")
+  | Isetne _ -> raise (UnsupportedException "Instruction setne is not supported by BvCryptoLine.")
   (* Instructions that cannot be translated to polynomials *)
   | Iand _ -> raise (UnsupportedException "Instruction and is not supported by BvCryptoLine.")
   | Ior _ -> raise (UnsupportedException "Instruction or is not supported by BvCryptoLine.")
@@ -4234,6 +4279,8 @@ let update_variable_id_instr m i =
   | Imulj (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Isplit (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
   | Ispl (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
+  | Iseteq (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Isetne (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Iand (v, a1, a2)
   | Ior (v, a1, a2)
   | Ixor (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]

@@ -20,6 +20,7 @@ type exp =
   | Or of size * exp * exp
   | Xor of size * exp * exp
   | Neg of size * exp
+  | Comp of size * exp * exp
   | Add of size * exp * exp
   | Sub of size * exp * exp
   | Mul of size * exp * exp
@@ -88,6 +89,7 @@ let rec string_of_exp (e : exp) : string =
      ^ " ^ "
      ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Neg (_w, e) -> if is_atomic e then "-" ^ string_of_exp e ^ "" else "-(" ^ string_of_exp e ^ ")"
+  | Comp (_, e1, e2) -> string_of_exp e1 ^ " == " ^ string_of_exp e2
   | Add (_w, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " + "
@@ -187,6 +189,7 @@ let rec vars_exp e =
   | Or (_, e1, e2)
   | Xor (_, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
   | Neg (_, e) -> vars_exp e
+  | Comp (_, e1, e2)
   | Add (_, e1, e2)
   | Sub (_, e1, e2)
   | Mul (_, e1, e2)
@@ -496,7 +499,7 @@ object(self)
     let _ = self#addstmt (Printf.sprintf "%d eq 1 %d %d" bv e1 e2) in
     bv
 
-  method mkneq e1 e2 =
+  method mkne e1 e2 =
     let bv = self#newvar in
     let _ = self#addstmt (Printf.sprintf "%d ne 1 %d %d" bv e1 e2) in
     bv
@@ -545,6 +548,7 @@ let rec btor_of_exp m e =
   | Or (w, e1, e2) -> m#mkor w (btor_of_exp m e1) (btor_of_exp m e2)
   | Xor (w, e1, e2) -> m#mkxor w (btor_of_exp m e1) (btor_of_exp m e2)
   | Neg (w, e) -> m#mkneg w (btor_of_exp m e)
+  | Comp (_, e1, e2) -> m#mkeq (btor_of_exp m e1) (btor_of_exp m e2)
   | Add (w, e1, e2) -> m#mkadd w (btor_of_exp m e1) (btor_of_exp m e2)
   | Sub (w, e1, e2) -> m#mksub w (btor_of_exp m e1) (btor_of_exp m e2)
   | Mul (w, e1, e2) -> m#mkmul w (btor_of_exp m e1) (btor_of_exp m e2)
@@ -853,6 +857,12 @@ let btor_instr m i =
                            let a_btor = btor_atom m a in
                            m#setvar vh (m#mkhigh ni (w - ni) a_btor);
                            m#setvar vl (m#mklow ni (w - ni) a_btor)
+  | Iseteq (v, a1, a2) -> let a1_btor = btor_atom m a1 in
+                          let a2_btor = btor_atom m a2 in
+                          m#setvar v (m#mkeq a1_btor a2_btor)
+  | Isetne (v, a1, a2) -> let a1_btor = btor_atom m a1 in
+                          let a2_btor = btor_atom m a2 in
+                          m#setvar v (m#mkne a1_btor a2_btor)
   | Iand (v, a1, a2) -> let w = size_of_var v in
                         let a1_btor = btor_atom m a1 in
                         let a2_btor = btor_atom m a2 in
@@ -943,6 +953,7 @@ let bvsle e1 e2 = "(bvsle " ^ e1 ^ " " ^ e2 ^ ")"
 let bvsgt e1 e2 = "(bvsgt " ^ e1 ^ " " ^ e2 ^ ")"
 let bvsge e1 e2 = "(bvsge " ^ e1 ^ " " ^ e2 ^ ")"
 let bveq e1 e2 = "(= " ^ e1 ^ " " ^ e2 ^ ")"
+let bvcomp e1 e2 = "(bvcomp " ^ e1 ^ " " ^ e2 ^ ")"
 let bvlneg e = "(not " ^ e ^ ")"
 let bvneq e1 e2 = bvlneg (bveq e1 e2)
 let bvconj e1 e2 = "(and " ^ e1 ^ " " ^ e2 ^ ")"
@@ -997,6 +1008,7 @@ let rec smtlib2_of_exp e =
   | Or (_w, e1, e2) -> bvor (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Xor (_w, e1, e2) -> bvxor (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Neg (_w, e) -> bvneg (smtlib2_of_exp e)
+  | Comp (_, e1, e2) -> bvcomp (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Add (_w, e1, e2) -> bvadd (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Sub (_w, e1, e2) -> bvsub (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Mul (_w, e1, e2) -> bvmul (smtlib2_of_exp e1) (smtlib2_of_exp e2)
@@ -1424,6 +1436,10 @@ object(self)
                   ^ "size 2 = " ^ string_of_int (List.length as2)) in
     (clauses, r)
 
+  method bit_blast_comp w as1 as2 =
+    let (clauses, r) = self#bit_blast_eq w as1 as2 in
+    (clauses, [r])
+
   method bit_blast_ult w as1 as2 =
     let r = self#mk_atom in
     let wahr = self#mk_atom in
@@ -1523,6 +1539,11 @@ object(self)
        let (clauses1, e) = self#bit_blast_exp e in
        let (clauses2, rs) = self#bit_blast_neg w e in
        (clauses1@@clauses2, rs)
+    | Comp (w, e1, e2) ->
+       let (clauses1, e1) = self#bit_blast_exp e1 in
+       let (clauses2, e2) = self#bit_blast_exp e2 in
+       let (clauses3, rs) = self#bit_blast_comp w e1 e2 in
+       (clauses1@@clauses2@@clauses3, rs)
     | Add (w, e1, e2) ->
        let (clauses1, e1) = self#bit_blast_exp e1 in
        let (clauses2, e2) = self#bit_blast_exp e2 in

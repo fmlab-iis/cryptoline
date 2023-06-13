@@ -260,6 +260,10 @@ let illformed_instr_reason vs cs gs lno i =
        [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atom a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
     | Ispl (vh, vl, a, n) ->
        [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atom a) (Z.to_int n); defined_atom a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
+    | Iseteq (v, a1, a2) ->
+       [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_bit_var lno v; const_in_range [a1; a2]]
+    | Isetne (v, a1, a2) ->
+       [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_bit_var lno v; const_in_range [a1; a2]]
     | Icshl (vh, vl, a1, a2, n) ->
        [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
     | Icshr (vh, vl, a1, a2, n) ->

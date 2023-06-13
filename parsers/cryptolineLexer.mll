@@ -101,6 +101,8 @@
               "rcut"                       , RCUT;
               "ghost"                      , GHOST;
               "nop"                        , NOP;
+              "seteq"                      , SETEQ;
+              "setne"                      , SETNE;
               (********** Logical Expressions **********)
               "vars"                       , VARS;
               "neg"                        , NEG;

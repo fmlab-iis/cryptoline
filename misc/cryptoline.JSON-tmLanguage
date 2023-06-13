@@ -270,6 +270,11 @@
           "comment": "bitwise instuctions"
         },
         {
+          "match": "\\b(seteq|setne)\\b",
+          "name": "entity.name.function.instruction",
+          "comment": "equality instuctions"
+        },
+        {
           "match": "\\b(cast|vpc|join)\\b",
           "name": "entity.name.function.instruction",
           "comment": "casting instuctions"

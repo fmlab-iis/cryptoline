@@ -264,6 +264,11 @@
                     "comment": "arithmetic instructions"
                 },
                 {
+                    "match": "\\b(seteq|setne)\\b",
+                    "name": "entity.name.function.instruction",
+                    "comment": "equality instuctions"
+                },
+                {
                     "match": "\\b(and|or|not)\\b",
                     "name": "entity.name.function.instruction",
                     "comment": "bitwise instuctions"

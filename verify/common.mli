@@ -30,7 +30,8 @@ type poly_spec =
   {
     ppre : ebexp;             (** precondition *)
     pprog : ebexp list;       (** program *)
-    ppost : ebexp             (** postcondition *)
+    ppost : ebexp;            (** postcondition *)
+    pextra : eexp list        (** extra polynomials to be multiplied to each atomic postcondition *)
   }
 (** a specification composed of polynomial equations *)
 

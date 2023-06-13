@@ -592,6 +592,9 @@ type instr =
   | Imulj of var * atom * atom                              (** Full-multiplication *)
   | Isplit of var * var * atom * Z.t                        (** Split and extend *)
   | Ispl of var * var * atom * Z.t                          (** Split without extension *)
+  (* Comparison, no polynomial encoding *)
+  | Iseteq of var * atom * atom                             (** Equality *)
+  | Isetne of var * atom * atom                             (** Inequality *)
   (* Instructions that cannot be translated to polynomials *)
   | Iand of var * atom * atom                               (** Bit-wise AND *)
   | Ior of var * atom * atom                                (** Bit-wise OR *)
@@ -798,6 +801,14 @@ type instr =
                             {ul {- Type: [vh] and [a] have the same sign. [vl] is unsigned. [vh] and [vl] are of sizes (size - n) and n respectively.}
                                 {- QF_BV: vh = high (size a - n) a, vl = low n a}
                                 {- Algebra: vh × 2{^n} + vl = a}}
+   - [Iseteq (r, a1, a2)]: [r] is 1 if [a1] equals [a2]; otherwise [r] is 0
+                        {ul {- Type: [a1] and [a2] have the same type. [r] is [Tuint 1]}
+                            {- QF_BV: (= r (bvcomp a1 a2)) (SMTLIB), r eq 1 a1 a2 (BTOR)}
+                            {- Algebra: True}}
+   - [Isetne (r, a1, a2)]: [r] is 0 if [a1] equals [a2]; otherwise [r] is 1
+                        {ul {- Type: [a1] and [a2] have the same type. [r] is [Tuint 1]}
+                            {- QF_BV: (= r (bvnot (bvcomp a1 a2))) (SMTLIB), r ne 1 a1 a2 (BTOR)}
+                            {- Algebra: True}}
    - [Iand (v, a1, a2)]: Assign [v] the bit-wise AND of [a1] and [a2].
                          {ul {- Type: [v], [a1], and [a2] can be any type.}
                              {- QF_BV: v = and a1 a2}

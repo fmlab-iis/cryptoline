@@ -156,6 +156,15 @@
     in
     Aconst (ty, n)
 
+  (*
+  resolve_* cm vm vxm ym gm:
+  - cm: constant map
+  - vm: variable map
+  - vxm: vector variable map
+  - ym: carry variable map
+  - gm: ghost variable map
+   *)
+
   let resolve_var_with lno (`AVAR {atmtyphint; atmname}) _cm vm _ym gm =
     let v =
       try
@@ -575,6 +584,20 @@
           raise_at lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
       in
       (vm, vxm, ym, gm, [lno, Ispl (vh, vl, a, n)])
+
+  let parse_seteq_at lno dest src1 src2 =
+    fun _fm cm vm vxm ym gm ->
+      let a1 = resolve_atom_with lno src1 cm vm ym gm in
+      let a2 = resolve_atom_with lno src2 cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some bit_t) in
+      (vm, vxm, ym, gm, [lno, Iseteq (v, a1, a2)])
+
+  let parse_setne_at lno dest src1 src2 =
+    fun _fm cm vm vxm ym gm ->
+      let a1 = resolve_atom_with lno src1 cm vm ym gm in
+      let a2 = resolve_atom_with lno src2 cm vm ym gm in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some bit_t) in
+      (vm, vxm, ym, gm, [lno, Isetne (v, a1, a2)])
 
   let parse_uadd_at lno dest src1 src2 =
     fun _fm cm vm vxm ym gm ->
@@ -1523,6 +1546,10 @@
         unpack_vinstr_21n parse_split_at lno destH destL src num fm cm vm vxm ym gm
       | `SPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_spl_at lno destH destL src num fm cm vm vxm ym gm
+      | `SETEQ (`LVPLAIN dest, src1, src2) ->
+         parse_seteq_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `SETNE (`LVPLAIN dest, src1, src2) ->
+         parse_setne_at lno dest src1 src2 fm cm vm vxm ym gm
       | `UADD (`LVPLAIN dest, src1, src2) ->
          parse_uadd_at lno dest src1 src2 fm cm vm vxm ym gm
       | `VUADD (dest, src1, src2) ->
@@ -1678,7 +1705,7 @@
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
 %token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
-%token CUT ECUT RCUT NOP
+%token CUT ECUT RCUT NOP SETEQ SETNE
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
 /* Predicates */
@@ -1702,7 +1729,7 @@
 %right NEGOP NOTOP
 %left MODOP
 %nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS
-%nonassoc EQ EQMOD
+%nonassoc SETEQ SETNE EQ EQMOD
 %nonassoc UMINUS
 
 %start spec
@@ -1941,6 +1968,8 @@ instr:
   | lhs DOT lhs EQOP SPLIT atom const             { (!lnum, `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SPL lval lval atom const                      { (!lnum, `SPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SPL atom const               { (!lnum, `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SETEQ lval atom atom                          { (!lnum, `SETEQ ($2, $3, $4)) }
+  | SETNE lval atom atom                          { (!lnum, `SETNE ($2, $3, $4)) }
   | UADD lval atom atom                           { (!lnum, `UADD ($2, $3, $4)) }
   | UADD lval_v atom_v atom_v                     { (!lnum, `VUADD ($2, $3, $4)) }
   | lhs EQOP UADD atom atom                       { (!lnum, `UADD (`LVPLAIN $1, $4, $5)) }

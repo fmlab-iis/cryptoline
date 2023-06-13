@@ -387,6 +387,12 @@ let bexp_spl vh vl a p =
   Conj
     ((Eq (w - p, exp_var vh, High (p, w - p, exp_atom a))),
      (Eq (p, exp_var vl, Low (p, w - p, exp_atom a))))
+let bexp_seteq v a1 a2 =
+  let w = size_of_atom a1 in
+  Eq (1, exp_var v, (Comp (w, exp_atom a1, exp_atom a2)))
+let bexp_setne v a1 a2 =
+  let w = size_of_atom a1 in
+  Eq (1, exp_var v, (Not (1, Comp (w, exp_atom a1, exp_atom a2))))
 let bexp_and v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, And (w, exp_atom a1, exp_atom a2))
@@ -491,6 +497,8 @@ let bexp_instr i =
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
   | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
+  | Iseteq (v, a1, a2) -> bexp_seteq v a1 a2
+  | Isetne (v, a1, a2) -> bexp_setne v a1 a2
   | Iand (v, a1, a2) -> bexp_and v a1 a2
   | Ior (v, a1, a2) -> bexp_or v a1 a2
   | Ixor (v, a1, a2) -> bexp_xor v a1 a2
@@ -743,6 +751,8 @@ let bexp_instr_safe i =
     | Imulj _ -> True
   | Isplit _ -> True
   | Ispl _ -> True
+  | Iseteq _ -> True
+  | Isetne _ -> True
   | Iand _ -> True
   | Ior _ -> True
   | Ixor _ -> True
@@ -955,15 +965,15 @@ let rewrite_assignments ideal p moduli =
    and moduli [moduli].
    @param ideal_aps a list [[(p1, a1); ...; (pn, an)]] of annotated polynomials
                     where [pi] is a polynomial and [ai] is its annotation
-   @param post_p_ms_list a list [[(post1, p1, ms1); ...; (postn, pn, msn)]]
-                         where [posti] is a postcondition, [pi] is a polynomial
-                         asserted to be [0] modulo the moduli [msi]
+   @param post_p_ms_list a list [[(post1, sc1, p1, ms1); ...; (postn, scn, pn, msn)]]
+                         where [posti] is a postcondition, [sci] is the initial slicing criteria
+                         [pi] is a polynomial asserted to be [0] modulo the moduli [msi]
    @param moduli moduli in the postcondition
    @return rewritten [(ideal_aps, post_p_ms_list)]
  *)
-let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * eexp * eexp list) list) moduli =
+let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * IS.t * eexp * eexp list) list) moduli =
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
-  let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, p, ms) -> ((post, p, ms), (vids_eexp p, (List.map vids_eexp ms)))) (List.rev post_p_ms_list) in
+  let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, sc, p, ms) -> ((post, sc, p, ms), (vids_eexp p, (List.map vids_eexp ms)))) (List.rev post_p_ms_list) in
   let subst_poly_vs (v, e) (poly, vs) = if IS.mem v.vid vs
                                         then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
                                         else (poly, vs) in
@@ -972,10 +982,10 @@ let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * eexp * ee
   let subst_apoly_vss (v, e) apoly_vss = List.rev (List.rev_map (subst_apoly_vs (v, e)) apoly_vss) in
   let subst_post_p_ms_vs_list (v, e) post_p_ms_vs_list =
     List.rev_map
-      (fun ((post, p, ms), (vs, ms_vs)) -> let (p', vs') = subst_poly_vs (v, e) (p, vs) in
-                                           let ms_ms_vs' = List.map2 (fun m m_vs -> subst_poly_vs (v, e) (m, m_vs)) ms ms_vs in
-                                           let (ms', ms_vs') = List.split ms_ms_vs' in
-                                           ((post, p', ms'), (vs', ms_vs')))
+      (fun ((post, sc, p, ms), (vs, ms_vs)) -> let (p', vs') = subst_poly_vs (v, e) (p, vs) in
+                                               let ms_ms_vs' = List.map2 (fun m m_vs -> subst_poly_vs (v, e) (m, m_vs)) ms ms_vs in
+                                               let (ms', ms_vs') = List.split ms_ms_vs' in
+                                               ((post, sc, p', ms'), (vs', ms_vs')))
       (List.rev post_p_ms_vs_list) in
   let rec do_rewrite finished_aps_vs_rev ideal_aps_vs post_p_ms_vs_list =
     match ideal_aps_vs with
@@ -1001,9 +1011,9 @@ let rewrite_assignments' ideal p moduli =
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
-let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * eexp * eexp list) list) moduli =
+let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * IS.t * eexp * eexp list) list) moduli =
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
-  let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, p, ms) -> ((post, p, ms), vids_eexp p)) (List.rev post_p_ms_list) in
+  let add_vids_post_p_ms_list post_p_ms_list  = List.rev_map (fun (post, sc, p, ms) -> ((post, sc, p, ms), vids_eexp p)) (List.rev post_p_ms_list) in
   let subst_poly_vs (sub, sub_vs, e, e_vs) (poly, vs) = if IS.disjoint sub_vs vs then (poly, vs)
                                                         else (replace_eexp [(sub, e)] poly, IS.union (IS.diff vs sub_vs) e_vs) in
   let subst_apoly_vs pat ((poly, annot), vs) = let (poly', vs') = subst_poly_vs pat (poly, vs) in
@@ -1011,13 +1021,13 @@ let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * eexp * e
   let subst_apoly_vss pat apoly_vss = List.rev (List.rev_map (subst_apoly_vs pat) apoly_vss) in
   let subst_post_p_ms_vs_list pat post_p_ms_vs_list =
     List.rev_map
-      (fun ((post, p, ms), vs) -> let (p', vs') = subst_poly_vs pat (p, vs) in
-                                  ((post, p', ms), vs'))
+      (fun ((post, sc, p, ms), vs) -> let (p', vs') = subst_poly_vs pat (p, vs) in
+                                      ((post, sc, p', ms), vs'))
       (List.rev post_p_ms_vs_list) in
   let get_others finished_aps_vs_rev tl post_p_ms_vs_list : eexp list =
     let ps1 : eexp list = fst (List.split (fst (List.split finished_aps_vs_rev))) in
     let ps2 : eexp list = fst (List.split (fst (List.split tl))) in
-    let ps3 : eexp list = tflatten (List.map (fun (_, p, ms) -> p::ms) (fst (List.split post_p_ms_vs_list))) in
+    let ps3 : eexp list = tflatten (List.map (fun (_, _, p, ms) -> p::ms) (fst (List.split post_p_ms_vs_list))) in
     List.rev_append ps1 (List.rev_append ps2 ps3) in
   let rec do_rewrite finished_aps_vs_rev ideal_aps_vs post_p_ms_vs_list =
     match ideal_aps_vs with
@@ -1047,7 +1057,7 @@ let bv2z_cast vgen aim ot v a =
   match v.vtyp, typ_of_atom a with
   | Tuint wv, Tuint wa ->
      if wv >= wa then
-       (vgen, aim, [Eeq (evar v, bv2z_atom a)])
+       (vgen, aim, [Eeq (evar v, bv2z_atom a)], [])
      else
        let (discarded, vgen) =
          match ot with
@@ -1056,7 +1066,7 @@ let bv2z_cast vgen aim ot v a =
             let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv])
+       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tuint wv, Tsint wa ->
      (* a_sign and discarded have different meanings but the polynomial equation is equivalent. *)
      if wv >= wa then
@@ -1067,7 +1077,7 @@ let bv2z_cast vgen aim ot v a =
             let a_sign = mkvar ~newvid:true a_sign bit_t in
             (a_sign, vgen)
          | Some t -> (t, vgen) in
-       (vgen, aim, [bv2z_join (evar v) (evar a_sign) (bv2z_atom a) wv])
+       (vgen, aim, [bv2z_join (evar v) (evar a_sign) (bv2z_atom a) wv], [])
      else
        let (discarded, vgen) =
          match ot with
@@ -1076,10 +1086,10 @@ let bv2z_cast vgen aim ot v a =
             let discarded = mkvar ~newvid:true discarded (int_t (wa - wv)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv])
+       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tsint wv, Tuint wa ->
      if wv > wa then
-       (vgen, aim, [Eeq (evar v, bv2z_atom a)])
+       (vgen, aim, [Eeq (evar v, bv2z_atom a)], [])
      else
        let (discarded, vgen) =
          match ot with
@@ -1088,10 +1098,10 @@ let bv2z_cast vgen aim ot v a =
             let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv + 1)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv])
+       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tsint wv, Tsint wa ->
      if wv >= wa then
-       (vgen, aim, [Eeq (evar v, bv2z_atom a)])
+       (vgen, aim, [Eeq (evar v, bv2z_atom a)], [])
      else
        let (discarded, vgen) =
          match ot with
@@ -1100,13 +1110,13 @@ let bv2z_cast vgen aim ot v a =
             let discarded = mkvar ~newvid:true discarded (int_t (wa - wv + 1)) in
             (discarded, vgen)
          | Some t -> (t, vgen) in
-       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv])
+       (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
 
-let bv2z_vpc vgen aim v a = (vgen, aim, [Eeq (evar v, bv2z_atom a)])
+let bv2z_vpc vgen aim v a = (vgen, aim, [Eeq (evar v, bv2z_atom a)], [])
 
 (* With c = c^2, we cannot prove c(c - 1) = 0 (mod 2^64). *)
 (* With c(c - 1) = 0, we can prove c(c - 1) = 0 (mod 2^64) but c(c - 1) will remain in the generator. *)
-let bv2z_is_carry c =
+let bv2z_is_bit c =
   Eeq (emul (evar c) (esub (evar c) (econst Z.one)), econst Z.zero)
 
 (* Find the split of [a] at position [n] in [aim].
@@ -1122,86 +1132,93 @@ let find_split_or_gen vgen aim a n =
        let aim = AIM.add (a, n) (h, l) aim in
        (vgen, aim, h, l, [ eeq (bv2z_atom a) (eadd l (emul2pow h n)) ])
 
+(*
+  Returns (vgen, aim, bexps, exps) where
+  - vgen: the new variable generator
+  - aim: a map from (a, i) to (vh, vl) indicating a previous split of atom a at position i into destination variables vh and vl
+  - bexps: polynomial equations abstracting the semantics of the instruction
+  - exps: additional polynomials assumed to be nonzero. Each atomic postcondition will be multiplied by exps.
+*)
 let bv2z_instr aim vgen i =
   let carry_constr c =
     if !carry_constraint
-    then [bv2z_is_carry c]
+    then [bv2z_is_bit c]
     else [] in
   match i with
-  | Imov (v, a) -> (vgen, aim, [bv2z_assign v (bv2z_atom a)])
+  | Imov (v, a) -> (vgen, aim, [bv2z_assign v (bv2z_atom a)], [])
   | Ishl (v, a, n) ->
      if atom_is_const n then
        let w = size_of_var v in
        let ni = Z.to_int (const_of_atom n) in
        if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
-                            (vgen, aim, tappend extras [ eeq h (econst Z.zero); eeq (evar v) (emul2pow l ni) ])
-       else (vgen, aim, [bv2z_assign v (emul2pow (bv2z_atom a) ni)])
+                            (vgen, aim, tappend extras [ eeq h (econst Z.zero); eeq (evar v) (emul2pow l ni) ], [])
+       else (vgen, aim, [bv2z_assign v (emul2pow (bv2z_atom a) ni)], [])
      else
-       (vgen, aim, [])
+       (vgen, aim, [], [])
   | Ishls (l, v, a, n) ->
      let ni = Z.to_int n in
      begin
        if !track_split then
          match v.vtyp with
          | Tuint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a (w - ni) in
-                      (vgen, aim, tappend extras [ eeq (evar l) ha; eeq (evar v) (emul2pow la ni) ])
+                      (vgen, aim, tappend extras [ eeq (evar l) ha; eeq (evar v) (emul2pow la ni) ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a (w - ni) in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      (vgen, aim, tappend extras [ eeq (evar l) ha; eeq (evar v) (eadd (emul2pow la ni) (emul2pow (evar d) w)) ])
+                      (vgen, aim, tappend extras [ eeq (evar l) ha; eeq (evar v) (eadd (emul2pow la ni) (emul2pow (evar d) w)) ], [])
        else
          match v.vtyp with
          | Tuint w -> (vgen, aim, [ eeq
                                       (eadd (evar v) (emul2pow (evar l) w))
-                                      (emul2pow (bv2z_atom a) ni) ])
+                                      (emul2pow (bv2z_atom a) ni) ], [])
          | Tsint w -> let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
                       (vgen, aim, [eeq
                                      (eadds [evar v; emul2pow (evar d) w; emul2pow (evar l) w])
                                      (emul2pow (bv2z_atom a) ni)
-                      ])
+                      ], [])
      end
   | Ishr (v, a, n) ->
      if atom_is_const n then
        let ni = Z.to_int (const_of_atom n) in
        if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) ni in
-                               (vgen, aim, [eeq (evar v) (econst a_shifted)])
+                               (vgen, aim, [eeq (evar v) (econst a_shifted)], [])
        else if !track_split then let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                                 (vgen, aim, tappend extras [ eeq (evar v) ha; eeq la (econst Z.zero) ])
-       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)])
+                                 (vgen, aim, tappend extras [ eeq (evar v) ha; eeq la (econst Z.zero) ], [])
+       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
      else
-       (vgen, aim, [])
+       (vgen, aim, [], [])
   | Ishrs (v, l, a, n) ->
      let ni = Z.to_int n in
      begin
        if !track_split then
          match v.vtyp with
          | Tuint _ -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      (vgen, aim, tappend extras [ eeq (evar v) ha; eeq (evar l) la ])
+                      (vgen, aim, tappend extras [ eeq (evar v) ha; eeq (evar l) la ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      (vgen, aim, tappend extras [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ])
+                      (vgen, aim, tappend extras [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
        else
          match v.vtyp with
-         | Tuint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)])
+         | Tuint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)], [])
          | Tsint w -> let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
                                      (bv2z_atom a)
-                      ])
+                      ], [])
      end
   | Isar (v, a, n) ->
      if atom_is_const n then
        let ni = Z.to_int (const_of_atom n) in
        if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) ni in
-                               (vgen, aim, [eeq (evar v) (econst a_shifted)])
+                               (vgen, aim, [eeq (evar v) (econst a_shifted)], [])
        else if !track_split then let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                                 (vgen, aim, tappend extras [ eeq (evar v) ha; eeq la (econst Z.zero) ])
-       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)])
+                                 (vgen, aim, tappend extras [ eeq (evar v) ha; eeq la (econst Z.zero) ], [])
+       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
      else
-       (vgen, aim, [])
+       (vgen, aim, [], [])
   | Isars (v, l, a, n) ->
      let ni = Z.to_int n in
      begin
@@ -1210,17 +1227,17 @@ let bv2z_instr aim vgen i =
          | Tuint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      (vgen, aim, tappend extras [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ])
+                      (vgen, aim, tappend extras [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
          | Tsint _ -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      (vgen, aim, tappend extras [ eeq (evar v) ha; eeq (evar l) la ])
+                      (vgen, aim, tappend extras [ eeq (evar v) ha; eeq (evar l) la ], [])
        else
          match v.vtyp with
          | Tuint w -> let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
-                                     (bv2z_atom a)])
-         | Tsint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)])
+                                     (bv2z_atom a)], [])
+         | Tsint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)], [])
      end
   | Icshl (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
@@ -1231,8 +1248,8 @@ let bv2z_instr aim vgen i =
                           (vgen, aim, tappend extras2 [ eeq h1 (econst Z.zero);
                                                         bv2z_join (evar vh) l1 h2 ni;
                                                         eeq (evar vl) l2 ]
-                                      |> tappend extras1)
-     else (vgen, aim, [bv2z_split vh vl (eadd (emul2pow (bv2z_atom a1) w) (bv2z_atom a2)) (w - ni)])
+                                      |> tappend extras1, [])
+     else (vgen, aim, [bv2z_split vh vl (eadd (emul2pow (bv2z_atom a1) w) (bv2z_atom a2)) (w - ni)], [])
   | Icshr (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
      let ni = Z.to_int n in
@@ -1241,10 +1258,10 @@ let bv2z_instr aim vgen i =
                           (vgen, aim, tappend extras2 [ eeq l2 (econst Z.zero);
                                                         eeq (evar vh) h1;
                                                         bv2z_join (evar vl) l1 h2 (w - ni) ]
-                                      |> tappend extras1)
+                                      |> tappend extras1, [])
      else (vgen, aim, [ eeq
                           (emul (limbs w [evar vl; evar vh]) (econst (e2pow ni)))
-                          (limbs w [bv2z_atom a2; bv2z_atom a1]) ])
+                          (limbs w [bv2z_atom a2; bv2z_atom a1]) ], [])
   | Icshrs (vh, vl, l, a1, a2, n) ->
      let w = size_of_var vh in
      let ni = Z.to_int n in
@@ -1259,18 +1276,18 @@ let bv2z_instr aim vgen i =
                           (vgen, aim, tappend extras2 [ eeq (evar vh) vh_exp;
                                                         bv2z_join (evar vl) l1 h2 (w - ni);
                                                         eeq (evar l) l2 ]
-                                      |> tappend extras1)
+                                      |> tappend extras1, [])
      else
        begin
          match vh.vtyp with
          | Tuint w -> (vgen, aim, [eeq
                                      (eadd (emul (limbs w [evar vl; evar vh]) (econst (e2pow ni))) (evar l))
-                                     (limbs w [bv2z_atom a2; bv2z_atom a1])])
+                                     (limbs w [bv2z_atom a2; bv2z_atom a1])], [])
          | Tsint w -> let (discarded, vgen) = gen_var vgen in
                       let discarded = mkvar ~newvid:true discarded (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow ni)); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
-                                     (limbs w [bv2z_atom a2; bv2z_atom a1])])
+                                     (limbs w [bv2z_atom a2; bv2z_atom a1])], [])
        end
   | Irol (v, a, n) ->
      begin
@@ -1278,15 +1295,15 @@ let bv2z_instr aim vgen i =
        | Tuint w ->
           begin
             match n with
-            | Avar _ -> (vgen, aim, [])
+            | Avar _ -> (vgen, aim, [], [])
             | Aconst (_, n) ->
                let ni = Z.to_int n in
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
                                     let aim = AIM.add (Avar v, ni) (l, h) aim in
-                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h ni])
+                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h ni], [])
                else let (h, vgen) = gen_var vgen in
                     let h = mkvar ~newvid:true h (uint_t ni) in
-                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ])
+                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ], [])
           end
        | Tsint _ -> assert false
      end
@@ -1296,117 +1313,127 @@ let bv2z_instr aim vgen i =
        | Tuint w ->
           begin
             match n with
-            | Avar _ -> (vgen, aim, [])
+            | Avar _ -> (vgen, aim, [], [])
             | Aconst (_, n) ->
                let ni = Z.to_int n in
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a ni in
                                     let aim = AIM.add (Avar v, w - ni) (l, h) aim in
-                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h (w - ni)])
+                                    (vgen, aim, tappend extras [ bv2z_join (evar v) l h (w - ni)], [])
                else let (h, vgen) = gen_var vgen in
                     let h = mkvar ~newvid:true h (uint_t ni) in
-                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ])
+                    (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ], [])
           end
        | Tsint _ -> assert false
      end
   | Inondet v ->
-     if var_is_bit v then (vgen, aim, carry_constr v)
-     else (vgen, aim, [])
+     if var_is_bit v then (vgen, aim, carry_constr v, [])
+     else (vgen, aim, [], [])
   | Icmov (v, c, a1, a2) ->
      (vgen, aim, [bv2z_assign
                     v
                     (eadd
                        (emul (bv2z_atom c) (bv2z_atom a1))
-                       (emul (esub (econst Z.one) (bv2z_atom c)) (bv2z_atom a2)))])
-  | Inop -> (vgen, aim, [])
+                       (emul (esub (econst Z.one) (bv2z_atom c)) (bv2z_atom a2)))], [])
+  | Inop -> (vgen, aim, [], [])
   | Iadd (v, a1, a2) ->
-     (vgen, aim, [bv2z_assign v (eadd (bv2z_atom a1) (bv2z_atom a2))])
+     (vgen, aim, [bv2z_assign v (eadd (bv2z_atom a1) (bv2z_atom a2))], [])
   | Iadds (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_split c v (eadd (bv2z_atom a1) (bv2z_atom a2)) w]
-                               @(carry_constr c))
+                               @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))], []))
   | Iadc (v, a1, a2, y) ->
-     (vgen, aim, [bv2z_assign v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))])
+     (vgen, aim, [bv2z_assign v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
   | Iadcs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_split c v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) w]
-                               @(carry_constr c))
+                               @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
   | Isub (v, a1, a2) ->
-     (vgen, aim, [bv2z_assign v (esub (bv2z_atom a1) (bv2z_atom a2))])
+     (vgen, aim, [bv2z_assign v (esub (bv2z_atom a1) (bv2z_atom a2))], [])
   | Isubc (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
-                               @(carry_constr c))
+                               @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
   | Isubb (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_join (evar v) (evar c) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
-                               @(carry_constr c))
+                               @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
   | Isbc (v, a1, a2, y) ->
-     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))])
+     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], [])
   | Isbcs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w ->
          (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y))) w]
-                @(carry_constr c))
+                @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], []))
   | Isbb (v, a1, a2, y) ->
-     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))])
+     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
   | Isbbs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_join (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) (eneg (evar c)) (evar v) w]
-                               @(carry_constr c))
+                               @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))]))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
   | Imul (v, a1, a2) ->
-     (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))])
+     (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Imuls (_, v, a1, a2) ->
      let (d, vgen) = gen_var vgen in
      let d = mkvar ~newvid:true d (typ_of_var v) in
-     (vgen, aim, [eeq (limbs (size_of_var v) [evar v; evar d]) (emul (bv2z_atom a1) (bv2z_atom a2))])
+     (vgen, aim, [eeq (limbs (size_of_var v) [evar v; evar d]) (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Imull (vh, vl, a1, a2) ->
      let w = size_of_var vl in
-     (vgen, aim, [bv2z_split vh vl (emul (bv2z_atom a1) (bv2z_atom a2)) w])
+     (vgen, aim, [bv2z_split vh vl (emul (bv2z_atom a1) (bv2z_atom a2)) w], [])
   | Imulj (v, a1, a2) ->
-     (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))])
+     (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Isplit (vh, vl, a, n) ->
      let ni = Z.to_int n in
      if !track_split && AIM.mem (a, ni) aim then let (h, l) = AIM.find (a, ni) aim in
-                                                 (vgen, aim, [ eeq (evar vh) h; eeq (evar vl) l ])
+                                                 (vgen, aim, [ eeq (evar vh) h; eeq (evar vl) l ], [])
      else let aim = AIM.add (a, ni) (evar vh, evar vl) aim in
-          (vgen, aim, [ bv2z_split vh vl (bv2z_atom a) ni ])
+          (vgen, aim, [ bv2z_split vh vl (bv2z_atom a) ni ], [])
   | Ispl (vh, vl, a, n) ->
      let ni = Z.to_int n in
      if !track_split && AIM.mem (a, ni) aim then let (h, l) = AIM.find (a, ni) aim in
-                                                 (vgen, aim, [ eeq (evar vh) h; eeq (evar vl) l ])
+                                                 (vgen, aim, [ eeq (evar vh) h; eeq (evar vl) l ], [])
      else let aim = AIM.add (a, ni) (evar vh, evar vl) aim in
-          (vgen, aim, [ bv2z_split vh vl (bv2z_atom a) ni ])
+          (vgen, aim, [ bv2z_split vh vl (bv2z_atom a) ni ], [])
+  | Iseteq (v, a1, a2) ->
+     let (c, vgen) = gen_var vgen in
+     let c = mkvar ~newvid:true c bit_t in
+     (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst Z.one)));
+                  bv2z_is_bit v], [evar c])
+  | Isetne (v, a1, a2) ->
+     let (c, vgen) = gen_var vgen in
+     let c = mkvar ~newvid:true c bit_t in
+     (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar v));
+                  bv2z_is_bit v], [evar c])
   | Iand _
     | Ior _
-    | Ixor _ -> (vgen, aim, [])
+    | Ixor _ -> (vgen, aim, [], [])
   | Inot (v, a) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, aim, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atom a))])
-      | Tsint _w -> (vgen, aim, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst Z.one))]))
+      | Tuint w -> (vgen, aim, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atom a))], [])
+      | Tsint _w -> (vgen, aim, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst Z.one))], []))
   | Icast (t, v, a) ->
      bv2z_cast vgen aim t v a
   | Ivpc (v, a) ->
@@ -1417,48 +1444,52 @@ let bv2z_instr aim vgen i =
      let al = bv2z_atom al in
      let aim = if !track_split then AIM.add (Avar v, nl) (ah, al) aim
                else aim in
-     (vgen, aim, [ bv2z_join (evar v) ah al nl ])
-  | Iassert _e -> (vgen, aim, [])
-  | Iassume e -> (vgen, aim, split_eand (eqn_bexp e))
+     (vgen, aim, [ bv2z_join (evar v) ah al nl ], [])
+  | Iassert _e -> (vgen, aim, [], [])
+  | Iassume e -> (vgen, aim, split_eand (eqn_bexp e), [])
   | Icut (_hd::_tl, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
-  | Icut _ -> (vgen, aim, []) (* Ignore other cases of Icut. *)
-  | Ighost (_, e) -> (vgen, aim, split_eand (eqn_bexp e))
+  | Icut _ -> (vgen, aim, [], []) (* Ignore other cases of Icut. *)
+  | Ighost (_, e) -> (vgen, aim, split_eand (eqn_bexp e), [])
 
 let bv2z_program_annot vgen p =
-  let (vgen, _, ies_rev) = List.fold_left (
-                            fun (vgen, aim, ies_rev) i ->
-                            let (vgen, aim, es) = bv2z_instr aim vgen i in
-                            (vgen, aim, (i, es)::ies_rev)
-                          ) (vgen, AIM.empty, []) p in
-  (vgen, List.rev ies_rev)
+  let (vgen, _, ies_rev, ps_rev) = List.fold_left (
+                            fun (vgen, aim, ies_rev, ps_rev) i ->
+                            let (vgen, aim, es, ps) = bv2z_instr aim vgen i in
+                            (vgen, aim, (i, es)::ies_rev, List.rev_append ps ps_rev)
+                          ) (vgen, AIM.empty, [], []) p in
+  (vgen, List.rev ies_rev, List.rev ps_rev)
 
 let bv2z_program vgen p =
-  let (vgen, ies) = bv2z_program_annot vgen p in
-  (vgen, tflatten (snd (List.split ies)))
+  let (vgen, ies, ps) = bv2z_program_annot vgen p in
+  (vgen, tflatten (snd (List.split ies)), ps)
 
 (* Annotated root entailment problems. The annotations are used in two-phase rewriting. *)
 type poly_spec_annot =
   { appre : ebexp;
     approg : (instr * ebexp list) list;
-    appost : ebexp }
+    appost : ebexp;
+    apextra : eexp list }
 
 (* Root entailment problems *)
 type poly_spec =
   { ppre : ebexp;
     pprog : ebexp list;
-    ppost : ebexp }
+    ppost : ebexp;
+    pextra : eexp list }
 
 let bv2z_espec_annot vgen s =
-  let (vgen, ies) = bv2z_program_annot vgen s.esprog in
+  let (vgen, ies, ps) = bv2z_program_annot vgen s.esprog in
   (vgen, { appre = s.espre;
            approg = ies;
-           appost = ebexp_prove_with_eands s.espost })
+           appost = ebexp_prove_with_eands s.espost;
+           apextra = ps })
 
 let bv2z_espec vgen s =
-  let (vgen, es) = bv2z_program vgen s.esprog in
+  let (vgen, es, ps) = bv2z_program vgen s.esprog in
   (vgen, { ppre = s.espre;
            pprog = es;
-           ppost = ebexp_prove_with_eands s.espost })
+           ppost = ebexp_prove_with_eands s.espost;
+           pextra = ps })
 
 (* Returns the new vgen, created temporary variables, and polynomials.
    We need created temporary variables to quantify them in redlog. *)
@@ -1568,11 +1599,11 @@ let polys_of_espec vgen s =
     match post with
     | Etrue -> []
     | Eeq (e1, e2) ->
-       let (ideal, p) = do_rewriting generator_ps (esub e1 e2) [] in
+       let (ideal, p) = do_rewriting generator_ps (emuls ((esub e1 e2)::pspec.pextra)) [] in
        let vars = vars_in_order (ideal@[p]) in
        [(post, vars, ideal, p)]
     | Eeqmod (e1, e2, ms) ->
-       let (ideal, p) = do_rewriting (List.rev_append ms generator_ps) (esub e1 e2) ms in
+       let (ideal, p) = do_rewriting (List.rev_append ms generator_ps) (emuls ((esub e1 e2)::pspec.pextra)) ms in
        let vars = vars_in_order (ideal@[p]) in
        [(post, vars, ideal, p)]
     | Eand (e1, e2) ->
@@ -1646,18 +1677,29 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
                                  apspec.approg in
     (vgen, List.rev_append pre_aps_rev (List.rev prog_aps_rev)) in
   (* A function that performs rewriting *)
-  let do_rewriting ideal_aps (post_p_ms_list : (ebexp * eexp * eexp list) list) modulus_opt =
+  let do_rewriting ideal_aps (post_p_ms_list : (ebexp * IS.t * eexp * eexp list) list) modulus_opt =
     if !apply_rewrite_poly
     then (if !polys_rewrite_replace_eexp then rewrite_assignments_two_phase' else rewrite_assignments_two_phase) ideal_aps post_p_ms_list modulus_opt
     else (ideal_aps, post_p_ms_list) in
   (* Perform two-phase rewriting and slicing. *)
   let convert ideal_aps post =
-    let rec split_post e =
-      match e with
-      | Etrue -> []
-      | Eeq (e1, e2) -> [(e, esub e1 e2, [])]
-      | Eeqmod (e1, e2, ms) -> [(e, esub e1 e2, ms)]
-      | Eand (e1, e2) -> (split_post e1)@(split_post e2) in
+    (*
+     * Split the postcondition into a sequence of tuples [(post, sc, p, ms); ...] where
+     * - post: an atomic predicate in the postcondition
+     * - sc: the initial slicing criteria for the atomic predicate
+     * - p: the polynomial form of the atomic predicate. Same as in post, p may be
+     *      multiplied by extra polynomials from the negations in the premises
+     * - ms: the moduli in the atomic predicate
+     *)
+    let split_post e =
+      let sc = List.fold_left (fun sc e -> IS.union sc (vids_eexp e)) IS.empty apspec.apextra in
+      let rec helper e =
+        match e with
+        | Etrue -> []
+        | Eeq (e1, e2) -> [(e, IS.union (vids_ebexp e) sc, emuls ((esub e1 e2)::apspec.apextra), [])]
+        | Eeqmod (e1, e2, ms) -> [(e, IS.union (vids_ebexp e) sc, emuls ((esub e1 e2)::apspec.apextra), ms)]
+        | Eand (e1, e2) -> (helper e1)@(helper e2) in
+      helper e in
     (* First phase rewriting, do not consider moduli *)
     let first_phase_rewriting ideal_aps post_p_ms_list = do_rewriting ideal_aps post_p_ms_list [] in
     (* Second phase rewriting, add moduli *)
@@ -1665,20 +1707,20 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
       let add_dummy_annot m = (m, (Inop, IS.empty, IS.empty)) in
       let remove_annots aps = fst (List.split aps) in
       List.rev (List.rev_map
-                  (fun (post, p, ms) ->
+                  (fun (post, sc, p, ms) ->
                     let sliced_ideal_aps =
                       if !Options.Std.apply_slicing && not sliced then
-                        let vids = program_pre_vids_sat (vids_ebexp post) ebexp_vids_sat s.espre (List.rev s.esprog) in
+                        let vids = program_pre_vids_sat sc ebexp_vids_sat s.espre (List.rev s.esprog) in
                         slice_entailments ideal_aps vids
                       else ideal_aps in
                     match ms with
                     | [] -> (* skip rewriting in this case *)
                        let sliced_ideal = remove_annots sliced_ideal_aps in
                        (post, vars_in_order (sliced_ideal@[p]), sliced_ideal, p)
-                    | _ -> let (rewritten_ideal_aps, post_p_ms_list) = do_rewriting (List.rev_append (List.rev_map add_dummy_annot (List.rev ms)) sliced_ideal_aps) [(post, p, ms)] ms in
+                    | _ -> let (rewritten_ideal_aps, post_p_ms_list) = do_rewriting (List.rev_append (List.rev_map add_dummy_annot (List.rev ms)) sliced_ideal_aps) [(post, sc, p, ms)] ms in
                            (match post_p_ms_list with
-                            | (post, p, _)::[] -> let rewritten_ideal = remove_annots rewritten_ideal_aps in
-                                                  (post, vars_in_order (rewritten_ideal@[p]), rewritten_ideal, p)
+                            | (post, _, p, _)::[] -> let rewritten_ideal = remove_annots rewritten_ideal_aps in
+                                                     (post, vars_in_order (rewritten_ideal@[p]), rewritten_ideal, p)
                             | _ -> failwith("Unexpected case"))
                   ) post_p_ms_list) in
     let post_p_ms_list = split_post post in
@@ -1930,12 +1972,13 @@ let eqmods_to_eqs vgen ebs =
 let poly_spec_elim_eqmod vgen ps =
   let (vgen, newvars1, pre) = eqmod_to_eq vgen ps.ppre in
   let (vgen, newvars2, prog) = eqmods_to_eqs vgen ps.pprog in
-  (vgen, List.rev_append (List.rev newvars1) newvars2, { ppre = pre; pprog = prog; ppost = ps.ppost })
+  (vgen, List.rev_append (List.rev newvars1) newvars2, { ppre = pre; pprog = prog; ppost = ps.ppost; pextra = ps.pextra  })
 
 let poly_spec_elim_eand_prog ps =
   { ppre = ps.ppre;
     pprog = tflatten (List.rev_map split_eand (List.rev ps.pprog));
-    ppost = ps.ppost }
+    ppost = ps.ppost;
+    pextra = ps.pextra }
 
 let rewrite_poly_spec vgen ps =
   let add_varset eb = (eb, vids_ebexp eb) in
@@ -1982,7 +2025,8 @@ let rewrite_poly_spec vgen ps =
     |> (fun (pres_vs, prog_vs, post_vs) -> rewrite_using_prog (pres_vs, [], post_vs) prog_vs)
     |> (fun (pres_vs, prog_vs, post_vs) -> { ppre = List.split pres_vs |> fst |> eands;
                                              pprog = List.split prog_vs |> fst;
-                                             ppost = fst post_vs }) in
+                                             ppost = fst post_vs;
+                                             pextra = [] }) in
   let (vgen, _, ps) = poly_spec_elim_eand_prog ps |> poly_spec_elim_eqmod vgen in
   (vgen, do_rewrite (add_varsets (split_eand ps.ppre), add_varsets ps.pprog, add_varset ps.ppost))
 

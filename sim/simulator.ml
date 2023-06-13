@@ -304,6 +304,14 @@ let simulate_instr m i =
      let n = Z.to_int n in
      let (bsh, bsl) = (high (size_of_atom a - n) bs, low n bs) in
      VM.add vh bsh (VM.add vl bsl m)
+  | Iseteq (v, a1, a2) ->
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     VM.add v [eqB bs1 bs2] m
+  | Isetne (v, a1, a2) ->
+     let bs1 = value_of_atom m a1 in
+     let bs2 = value_of_atom m a2 in
+     VM.add v [neB bs1 bs2] m
   | Iand (v, a1, a2) ->
      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in
