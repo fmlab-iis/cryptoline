@@ -1,4 +1,37 @@
-transpose_64x64_asm:
+#! $1c(%rip) = %%EA
+#! (%rip) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! %xmm$1c = %%xmm$1c
+#! %rsi = %%rsi
+
+#! mov $1v, $2ea -> mov $2ea $1v
+#! movdqa $1ea, $2xmm -> join $2xmm $1ea[+8] $1ea
+#! movdqu $1xmm, $2ea -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nmov $2ea $1xmmL;\nmov $2ea[+8] $1xmmH
+#! movddup $1ea, $2xmm -> join $2xmm $1ea $1ea
+#! pextrq \$0x0, $1xmm, $2v -> split extdc $1xmmL $1xmm 64;\ncast $2v@uint64 $1xmmL
+#! psllq \$0x1, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 63;\nsplit slldcL $1xmmL $1xmmL 63;\nshl $1xmmH $1xmmH 1;\nshl $1xmmL $1xmmL 1;\njoin $1xmm $1xmmH $1xmmL
+#! psrlq \$0x1, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $1xmmH srldcH $1xmmH 1;\nsplit $1xmmL srldcL $1xmmL 1;\njoin $1xmm $1xmmH $1xmmL
+#! psllq \$0x2, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 62;\nsplit slldcL $1xmmL $1xmmL 62;\nshl $1xmmH $1xmmH 2;\nshl $1xmmL $1xmmL 2;\njoin $1xmm $1xmmH $1xmmL
+#! psrlq \$0x2, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $1xmmH srldcH $1xmmH 2;\nsplit $1xmmL srldcL $1xmmL 2;\njoin $1xmm $1xmmH $1xmmL
+#! psllq \$0x4, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 60;\nsplit slldcL $1xmmL $1xmmL 60;\nshl $1xmmH $1xmmH 4;\nshl $1xmmL $1xmmL 4;\njoin $1xmm $1xmmH $1xmmL
+#! psrlq \$0x4, $1xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $1xmmH srldcH $1xmmH 4;\nsplit $1xmmL srldcL $1xmmL 4;\njoin $1xmm $1xmmH $1xmmL
+#! vpand $1xmm, $2xmm, $3xmm -> and $3xmm@uint128 $2xmm $1xmm
+#! vpor $1xmm, $2xmm, $3xmm -> or $3xmm@uint128 $2xmm $1xmm
+#! vpslld \$0x10, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\nsplit $1xmmHH $1xmmHL $1xmmH 32;\nsplit $1xmmLH $1xmmLL $1xmmL 32;\ncast $1xmmHH@uint32 $1xmmHH;\ncast $1xmmHL@uint32 $1xmmHL;\ncast $1xmmLH@uint32 $1xmmLH;\ncast $1xmmLL@uint32 $1xmmLL;\nsplit slldcHH $1xmmHH $1xmmHH 16;\nsplit slldcHL $1xmmHL $1xmmHL 16;\nsplit slldcLH $1xmmLH $1xmmLH 16;\nsplit slldcLL $1xmmLL $1xmmLL 16;\nshl $1xmmHH $1xmmHH 16;\nshl $1xmmHL $1xmmHL 16;\nshl $1xmmLH $1xmmLH 16;\nshl $1xmmLL $1xmmLL 16;\njoin $2xmmH $1xmmHH $1xmmHL;\njoin $2xmmL $1xmmLH $1xmmLL;\njoin $2xmm $2xmmH $2xmmL
+#! vpsrld \$0x10, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\nsplit $1xmmHH $1xmmHL $1xmmH 32;\nsplit $1xmmLH $1xmmLL $1xmmL 32;\ncast $1xmmHH@uint32 $1xmmHH;\ncast $1xmmHL@uint32 $1xmmHL;\ncast $1xmmLH@uint32 $1xmmLH;\ncast $1xmmLL@uint32 $1xmmLL;\nsplit $1xmmHH srldcHH $1xmmHH 16;\nsplit $1xmmHL srldcHL $1xmmHL 16;\nsplit $1xmmLH srldcLH $1xmmLH 16;\nsplit $1xmmLL srldcLL $1xmmLL 16;\njoin $2xmmH $1xmmHH $1xmmHL;\njoin $2xmmL $1xmmLH $1xmmLL;\njoin $2xmm $2xmmH $2xmmL
+#! vpsllq \$0x8, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 56;\nsplit slldcL $1xmmL $1xmmL 56;\nshl $2xmmH $1xmmH 8;\nshl $2xmmL $1xmmL 8;\njoin $2xmm $2xmmH $2xmmL
+#! vpsrlq \$0x8, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $2xmmH srldcH $1xmmH 8;\nsplit $2xmmL srldcL $1xmmL 8;\njoin $2xmm $2xmmH $2xmmL
+#! vpsllq \$0x10, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 48;\nsplit slldcL $1xmmL $1xmmL 48;\nshl $2xmmH $1xmmH 16;\nshl $2xmmL $1xmmL 16;\njoin $2xmm $2xmmH $2xmmL
+#! vpsrlq \$0x10, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $2xmmH srldcH $1xmmH 16;\nsplit $2xmmL srldcL $1xmmL 16;\njoin $2xmm $2xmmH $2xmmL
+#! vpsllq \$0x20, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit slldcH $1xmmH $1xmmH 32;\nsplit slldcL $1xmmL $1xmmL 32;\nshl $2xmmH $1xmmH 32;\nshl $2xmmL $1xmmL 32;\njoin $2xmm $2xmmH $2xmmL
+#! vpsrlq \$0x20, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\ncast $1xmmH@uint64 $1xmmH;\ncast $1xmmL@uint64 $1xmmL;\nsplit $2xmmH srldcH $1xmmH 32;\nsplit $2xmmL srldcL $1xmmL 32;\njoin $2xmm $2xmmH $2xmmL
+#! vpsllw \$0x8, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\nsplit $1xmmHH $1xmmHL $1xmmH 32;\nsplit $1xmmLH $1xmmLL $1xmmL 32;\nsplit $1xmmHHH $1xmmHHL $1xmmHH 16;\nsplit $1xmmHLH $1xmmHLL $1xmmHL 16;\nsplit $1xmmLHH $1xmmLHL $1xmmLH 16;\nsplit $1xmmLLH $1xmmLLL $1xmmLL 16;\ncast $1xmmHHH@uint16 $1xmmHHH;\ncast $1xmmHHL@uint16 $1xmmHHL;\ncast $1xmmHLH@uint16 $1xmmHLH;\ncast $1xmmHLL@uint16 $1xmmHLL;\ncast $1xmmLHH@uint16 $1xmmLHH;\ncast $1xmmLHL@uint16 $1xmmLHL;\ncast $1xmmLLH@uint16 $1xmmLLH;\ncast $1xmmLLL@uint16 $1xmmLLL;\nsplit slldcHHH $1xmmHHH $1xmmHHH 8;\nsplit slldcHHL $1xmmHHL $1xmmHHL 8;\nsplit slldcHLH $1xmmHLH $1xmmHLH 8;\nsplit slldcHLL $1xmmHLL $1xmmHLL 8;\nsplit slldcLHH $1xmmLHH $1xmmLHH 8;\nsplit slldcLHL $1xmmLHL $1xmmLHL 8;\nsplit slldcLLH $1xmmLLH $1xmmLLH 8;\nsplit slldcLLL $1xmmLLL $1xmmLLL 8;\nshl $1xmmHHH $1xmmHHH 8;\nshl $1xmmHHL $1xmmHHL 8;\nshl $1xmmHLH $1xmmHLH 8;\nshl $1xmmHLL $1xmmHLL 8;\nshl $1xmmLHH $1xmmLHH 8;\nshl $1xmmLHL $1xmmLHL 8;\nshl $1xmmLLH $1xmmLLH 8;\nshl $1xmmLLL $1xmmLLL 8;\njoin $2xmmHH $1xmmHHH $1xmmHHL;\njoin $2xmmHL $1xmmHLH $1xmmHLL;\njoin $2xmmLH $1xmmLHH $1xmmLHL;\njoin $2xmmLL $1xmmLLH $1xmmLLL;\njoin $2xmmH $2xmmHH $2xmmHL;\njoin $2xmmL $2xmmLH $2xmmLL;\njoin $2xmm $2xmmH $2xmmL
+#! vpsrlw \$0x8, $1xmm, $2xmm -> split $1xmmH $1xmmL $1xmm 64;\nsplit $1xmmHH $1xmmHL $1xmmH 32;\nsplit $1xmmLH $1xmmLL $1xmmL 32;\nsplit $1xmmHHH $1xmmHHL $1xmmHH 16;\nsplit $1xmmHLH $1xmmHLL $1xmmHL 16;\nsplit $1xmmLHH $1xmmLHL $1xmmLH 16;\nsplit $1xmmLLH $1xmmLLL $1xmmLL 16;\ncast $1xmmHHH@uint16 $1xmmHHH;\ncast $1xmmHHL@uint16 $1xmmHHL;\ncast $1xmmHLH@uint16 $1xmmHLH;\ncast $1xmmHLL@uint16 $1xmmHLL;\ncast $1xmmLHH@uint16 $1xmmLHH;\ncast $1xmmLHL@uint16 $1xmmLHL;\ncast $1xmmLLH@uint16 $1xmmLLH;\ncast $1xmmLLL@uint16 $1xmmLLL;\nsplit $1xmmHHH srldcHHH $1xmmHHH 8;\nsplit $1xmmHHL srldcHHL $1xmmHHL 8;\nsplit $1xmmHLH srldcHLH $1xmmHLH 8;\nsplit $1xmmHLL srldcHLL $1xmmHLL 8;\nsplit $1xmmLHH srldcLHH $1xmmLHH 8;\nsplit $1xmmLHL srldcLHL $1xmmLHL 8;\nsplit $1xmmLLH srldcLLH $1xmmLLH 8;\nsplit $1xmmLLL srldcLLL $1xmmLLL 8;\njoin $2xmmHH $1xmmHHH $1xmmHHL;\njoin $2xmmHL $1xmmHLH $1xmmHLL;\njoin $2xmmLH $1xmmLHH $1xmmLHL;\njoin $2xmmLL $1xmmLLH $1xmmLLL;\njoin $2xmmH $2xmmHH $2xmmHL;\njoin $2xmmL $2xmmLH $2xmmLL;\njoin $2xmm $2xmmH $2xmmL
+#! vpunpcklqdq $1xmm, $2xmm, $3xmm -> split unpckdcL $2xmmL $2xmm 64;\nsplit unpckdcH $1xmmL $1xmm 64;\ncast $2xmmL@uint64 $2xmmL;\ncast $1xmmL@uint64 $1xmmL;\njoin $3xmm $1xmmL $2xmmL
+
+
+#transpose_64x64_asm:
 # %rdi = 0x7fffffff05b0
 # %rsi = 0x-2b42df746b743bc6
 # %rdx = 0xc36
@@ -6,10 +39,10 @@ transpose_64x64_asm:
 # %r8  = 0x-3ec964eb41d5f3c1
 # %r9  = 0x-2a6ed961f1d33e31
 	#! -> SP = 0x7fffffff0478
-	mov    %rsp,%r11                                #! PC = 0x55555557c880
-	and    $0x1f,%r11                               #! PC = 0x55555557c883
-	add    $0x0,%r11                                #! PC = 0x55555557c887
-	sub    %r11,%rsp                                #! PC = 0x55555557c88b
+	#mov    %rsp,%r11                                #! PC = 0x55555557c880
+	#and    $0x1f,%r11                               #! PC = 0x55555557c883
+	#add    $0x0,%r11                                #! PC = 0x55555557c887
+	#sub    %r11,%rsp                                #! PC = 0x55555557c88b
 	movdqa 0x1000a(%rip),%xmm0        # 0x55555558c8a0#! EA = L0x55555558c8a0; Value = 0x00000000ffffffff; PC = 0x55555557c88e
 	movdqa 0x10022(%rip),%xmm1        # 0x55555558c8c0#! EA = L0x55555558c8c0; Value = 0xffffffff00000000; PC = 0x55555557c896
 	movdqa 0xffba(%rip),%xmm2        # 0x55555558c860#! EA = L0x55555558c860; Value = 0x0000ffff0000ffff; PC = 0x55555557c89e
@@ -1686,6 +1719,6 @@ transpose_64x64_asm:
 	movdqu %xmm0,0x1e0(%rdi)                        #! EA = L0x7fffffff0790; PC = 0x55555557eaa4
 	vpunpcklqdq %xmm1,%xmm4,%xmm0                   #! PC = 0x55555557eaac
 	movdqu %xmm0,0x1f0(%rdi)                        #! EA = L0x7fffffff07a0; PC = 0x55555557eab0
-	add    %r11,%rsp                                #! PC = 0x55555557eab8
+	#add    %r11,%rsp                                #! PC = 0x55555557eab8
 	#! <- SP = 0x7fffffff0478
 	#retq                                           #! PC = 0x55555557eabb
