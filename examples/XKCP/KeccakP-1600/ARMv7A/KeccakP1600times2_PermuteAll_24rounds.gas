@@ -1,11 +1,44 @@
+#! [r$1c] = %%ea
+#! [r$1c :$2c], r4 = %%EA
+#! [r$1c :$2c] = %%EA
+#! [r$1c :$2c]! = %%EA
+#! r$1c = %%r$1c
+#! q$1c = %%q$1c
+#! lr = %%lr
+#! pc = %%pc
+#! sp = %%sp
+
+#! add $1v, $2v, $3c .* -> nop
+#! mov %%r4, $1c ; $2c -> nop
+#! mov $1v, $2v -> nop
+#! sub $1v, $2v, $3c .* -> nop
+#! subs $1v, $2v, $3c .* -> nop
+#! vld1.64 {d0-d3}, $1ea -> mov q0_0 $1ea; mov q0_1 $1ea[+8]; mov q1_0 $1ea[+16]; mov q1_1 $1ea[+24]
+#! vld1.64 {d4-d7}, $1ea -> mov q2_0 $1ea; mov q2_1 $1ea[+8]; mov q3_0 $1ea[+16]; mov q3_1 $1ea[+24]
+#! vld1.64 {d8-d11}, $1ea -> mov q4_0 $1ea; mov q4_1 $1ea[+8]; mov q5_0 $1ea[+16]; mov q5_1 $1ea[+24]
+#! vld1.64 {d$1c-d$2c}, $3ea -> mov q`$1c // 2`_0 $3ea; mov q`$1c // 2`_1 $3ea[+8]
+#! vld1.64 {d30}, $1ea -> mov q15_0 $1ea
+#! vld1.64 {d31}, $1ea -> mov q15_1 $1ea
+#! vadd.i64 $1v, $2v, $3v -> add $1v_0 $2v_0 $3v_0; add $1v_1 $2v_1 $3v_1
+#! veor $1v, $2v, $3v -> xor $1v_0@uint64 $2v_0 $3v_0; xor $1v_1@uint64 $2v_1 $3v_1
+#! vsri.64 $1v, $2v, $3c -> spl $2v_0_shr dc $2v_0 $3c;\nspl $1v_0_h dc $1v_0 `64 - $3c`;\njoin $1v_0 $1v_0_h $2v_0_shr;\nspl $2v_1_shr dc $2v_1 $3c;\nspl $1v_1_h dc $1v_1 `64 - $3c`;\njoin $1v_1 $1v_1_h $2v_1_shr
+#! vshl.s64 $1v, $2v, $3c .* -> shl $1v_0 $2v_0 $3c; shl $1v_1 $2v_1 $3c
+#! vbic $1v, $2v, $3v -> not $3v_0_c@uint64 $3v_0;\nand $1v_0@uint64 $2v_0 $3v_0_c;\nnot $3v_1_c@uint64 $3v_1;\nand $1v_1@uint64 $2v_1 $3v_1_c
+#! vst1.64 {d$1c-d$2c}, $3ea -> mov $3ea q`$1c // 2`_0; mov $3ea[+8] q`$1c // 2`_1
+#! KeccakP1600times2_PermuteAll_24rounds: -> nop
+#! push.* -> nop
+#! pop.* -> nop
+#! vpush.* -> nop
+#! vpop.* -> nop
+
 KeccakP1600times2_PermuteAll_24rounds:
 # r0 = 0x7effec40
 # r1 = 0x648ac8e7
 # r2 = 0x0
 # r3 = 0x648ac8e7
 	#! -> SP = 0x7effec30
-	sub	r1, pc, #264	; 0x108                        #! PC = 0x25500
-	movs	r2, #24                                    #! PC = 0x25504
+	#sub	r1, pc, #264	; 0x108                        #! PC = 0x25500
+	#movs	r2, #24                                    #! PC = 0x25504
 	#b	0x25800 <KeccakP1600times2_PermuteAll>       #! PC = 0x25508
 	vpush	{d8-d15}                                  #! PC = 0x25800
 	push	{r4, r5, r6, r7}                           #! PC = 0x25804
