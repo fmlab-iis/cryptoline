@@ -1,3 +1,13 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23 KeccakP1600times2_PermuteAll_24rounds.cl ../KeccakP-1600-reference_KeccakP1600times2_Permute_24rounds.cl
+Parsing CryptoLine file:                [OK]            0.051394 seconds
+Checking well-formedness:               [OK]            0.011845 seconds
+Parsing CryptoLine file:                [OK]            0.018181 seconds
+Checking well-formedness:               [OK]            0.012840 seconds
+Equivalence of output group #0:         [OK]            0.912952 seconds
+Equivalence of output group #1:         [OK]            0.550782 seconds
+Final result:                           [OK]            2.332702 seconds
+*)
+
 const KeccakF1600RoundConstants_00 = 0x0000000000000001
 const KeccakF1600RoundConstants_01 = 0x0000000000008082
 const KeccakF1600RoundConstants_02 = 0x800000000000808a
