@@ -1,3 +1,14 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24#c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24#d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23 ../KeccakP-1600-reference_KeccakP1600times4_Permute_24rounds.cl KeccakP1600times4_PermuteAll_24rounds_12_rounds_unrolled.cl
+Parsing CryptoLine file:                [OK]            0.026855 seconds
+Checking well-formedness:               [OK]            0.027414 seconds
+Parsing CryptoLine file:                [OK]            2.877769 seconds
+Checking well-formedness:               [OK]            3.294116 seconds
+Equivalence of output group #0:         [OK]            596.747988 seconds
+Equivalence of output group #1:         [OK]            595.057806 seconds
+Equivalence of output group #2:         [OK]            595.551772 seconds
+Equivalence of output group #3:         [OK]            756.470522 seconds
+Final result:                           [OK]            794.452771 seconds
+*)
 (*
 on popper, equivalence against XKCP Keccak[1600,24]x4 SSSE3, 4 threads:
 $ ./_build/default/cv_cec.exe -v -jobs 4 \

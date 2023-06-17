@@ -1,3 +1,18 @@
+(* popper: cv_cec.exe -jobs 8 -v -ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24#c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24#d00,d01,d02,d03,d04,d05,d06,d07,d08,d09,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20,d21,d22,d23,d24#e00,e01,e02,e03,e04,e05,e06,e07,e08,e09,e10,e11,e12,e13,e14,e15,e16,e17,e18,e19,e20,e21,e22,e23,e24#f00,f01,f02,f03,f04,f05,f06,f07,f08,f09,f10,f11,f12,f13,f14,f15,f16,f17,f18,f19,f20,f21,f22,f23,f24#g00,g01,g02,g03,g04,g05,g06,g07,g08,g09,g10,g11,g12,g13,g14,g15,g16,g17,g18,g19,g20,g21,g22,g23,g24#h00,h01,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11,h12,h13,h14,h15,h16,h17,h18,h19,h20,h21,h22,h23,h24 ../KeccakP-1600-reference_KeccakP1600times8_Permute_24rounds.cl KeccakP1600times8_PermuteAll_24rounds_12_rounds_unrolled.cl
+Parsing CryptoLine file:                [OK]            0.038716 seconds
+Checking well-formedness:               [OK]            0.053784 seconds
+Parsing CryptoLine file:                [OK]            7.242025 seconds
+Checking well-formedness:               [OK]            7.251286 seconds
+Equivalence of output group #0:         [OK]            610.508333 seconds
+Equivalence of output group #1:         [OK]            657.818005 seconds
+Equivalence of output group #2:         [OK]            671.664195 seconds
+Equivalence of output group #4:         [OK]            693.999854 seconds
+Equivalence of output group #5:         [OK]            676.858681 seconds
+Equivalence of output group #6:         [OK]            664.523532 seconds
+Equivalence of output group #3:         [OK]            727.858965 seconds
+Equivalence of output group #7:         [OK]            673.418658 seconds
+Final result:                           [OK]            821.182965 seconds
+*)
 (*
 on popper, equivalence against XKCP Keccak[1600,24]x8 SSSE3, 8 threads:
 Parsing CryptoLine file:		[OK]		7.363872 seconds

@@ -1,3 +1,12 @@
+(* popper: cv_cec.exe -v -ov a00,a01,a02,a03,a04,a05,a06,a07,a08,a09,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24#b00,b01,b02,b03,b04,b05,b06,b07,b08,b09,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24  ../KeccakP-1600-reference_KeccakP1600times2_Permute_24rounds.cl KeccakP1600times2_PermuteAll_24rounds_12_rounds_unrolled.cl
+Parsing CryptoLine file:                [OK]            0.018708 seconds
+Checking well-formedness:               [OK]            0.014455 seconds
+Parsing CryptoLine file:                [OK]            1.260195 seconds
+Checking well-formedness:               [OK]            1.674806 seconds
+Equivalence of output group #1:         [OK]            555.725123 seconds
+Equivalence of output group #0:         [OK]            561.420080 seconds
+Final result:                           [OK]            567.043007 seconds
+*)
 (*
 on popper, equivalence against XKCP Keccak-p[1600,24]x2 SSSE3, 2 threads:
 $ ./_build/default/cv_cec.exe -v -jobs 2 \
