@@ -156,15 +156,49 @@ def parse_tspec_line(line):
 def parse_tspec_comment(line):
   return parse_tspec_line(re.sub(r"^#!", "", line))
 
+# Constructs a tspec from a list of variable substitution rules and a list of instruction translation rules
+def mk_tspec(substs, rules):
+  return (collections.OrderedDict(substs), collections.OrderedDict(rules))
+
+# Sort variable substitution rules in a tspec
+def sort_tspec(tspec):
+  substs = sorted(tspec[0].items(), key=lambda rule: len(rule[0]), reverse=True)
+  rules = tspec[1]
+  return (collections.OrderedDict(substs), rules)
+
+# Merge the second tspec into the first tspec.
+# The rules in the first tpsec have higher priorities.
+def merge_tspec(tspec1, tspec2):
+  substs = collections.OrderedDict(tspec1[0])
+  rules = collections.OrderedDict(tspec1[1])
+  for k, v in tspec2[0].items():
+    if not (k in substs):
+      substs[k] = v
+  for k, v in tspec2[1].items():
+    if not (k in rules):
+      rules[k] = v
+  return sort_tspec((substs, rules))
+
 # Parse translation specification in a file
+# Variable substitution rules: sort by length (longer rules have higher priorities)
+# Instruction translation rules: apply by appearance order
 def parse_tspec(fn, line_parser, line_filter):
   substs = []
   rules = []
   with open(fn) as f:
     lines = map(line_parser, [item for item in f.readlines() if line_filter(item)])
-    substs, rules = zip(*lines)
-  substs = sorted(flatten(substs), key=lambda rule: len(rule[0]), reverse=True)
-  return (collections.OrderedDict(substs), collections.OrderedDict(flatten(rules)))
+    substs_set = set()
+    rules_set = set()
+    for line_substs, line_rules in lines:
+      for k, v in line_substs:
+        if not (k in substs_set):
+          substs_set.add(k)
+          substs.append((k, v))
+      for k, v in line_rules:
+        if not (k in rules_set):
+          rules_set.add(k)
+          rules.append((k, v))
+  return sort_tspec(mk_tspec(substs, rules))
 
 # Parse translation specification in an external file
 def parse_external_tspec(fn):
@@ -300,6 +334,8 @@ def parse_gas(fn):
   instrs = []
   substs = []
   rules = []
+  substs_set = set()
+  rules_set = set()
   for line in lines:
     if is_empty_line(line):
       continue
@@ -307,8 +343,14 @@ def parse_gas(fn):
       continue
     elif is_tspec_comment(line):
       (line_substs, line_rules) = parse_tspec_comment(line)
-      substs = substs + [line_substs]
-      rules = rules + [line_rules]
+      for k, v in line_substs:
+        if not (k in substs_set):
+          substs_set.add(k)
+          substs.append((k, v))
+      for k, v in line_rules:
+        if not (k in rules_set):
+          rules_set.add(k)
+          rules.append((k, v))
     else:
       line = line.strip()
       instr = Instr(line, line)
@@ -317,8 +359,7 @@ def parse_gas(fn):
       if local_subst_comment:
         for subst in parse_subst(local_subst_comment.group(1)):
           instr.addSubst(subst)
-  substs = sorted(flatten(substs), key=lambda rule: len(rule[0]), reverse=True)
-  return ((collections.OrderedDict(substs), collections.OrderedDict(flatten(rules))), instrs)
+  return (sort_tspec(mk_tspec(substs, rules)), instrs)
 
 def print_instrs(instrs):
   for instr in instrs:
@@ -335,7 +376,7 @@ def main():
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
   parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
-  parser.add_argument("-r", help="a file containing translation rules", dest="rules", default="")
+  parser.add_argument("-r", action="append", help="a file containing translation rules. Multiple -r arguments can be provided. A rule of a pattern in a former file has a higher priority than another rule of the same pattern in a latter file.", dest="rules", default=[])
   parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
   parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
@@ -353,7 +394,9 @@ def main():
   if verbose: sys.stderr.write("Time in reading gas file: {}\n".format(t2 - t1))
 
   # Parse external translation rules
-  if (args.rules != ""): tspec = parse_external_tspec(args.rules)
+  for rule_file in args.rules:
+    ts = parse_external_tspec(rule_file)
+    tspec = merge_tspec(tspec, ts)
   if verbose:
     print("Translation rules in regex:")
     for i in tspec[0]:
