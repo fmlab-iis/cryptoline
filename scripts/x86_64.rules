@@ -1,0 +1,91 @@
+# address patterns
+
+#! $1c(%r$2c) = %%EA
+#! (%r$1c) = %%EA
+#! $1c(%rbp) = %%EA
+#! (%rbp) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! -$1c(%rip) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%rsp) = %%EA
+
+# registers
+
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %rbx = %%rbx
+#! %rdi = %%rdi
+#! %rcx = %%rcx
+#! %rdx = %%rdx
+#! %rbp = %%rbp
+#! %xmm$1c = %%xmm$1c
+#! %ymm$1c = %%ymm$1c
+
+# scalar instructions
+
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! add $1c, $2v -> adds carry $2v $2v $1c@uint64
+#! add $1ea, $2v -> adds carry $2v $2v $1ea
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! adc $1ea, $2v -> adcs carry $2v $2v $1ea carry
+#! adcx $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adox $1v, $2v -> adcs overflow $2v $2v $1v overflow
+#! and $1v, $2v -> and $2v@uint64 $2v $1v
+#! andn $1v, $2v, $3v -> not $2v_n@uint64 $2v; and $3v@uint64 $2v_n $1v
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! cmove $1v, $2v -> cmov $2v zero $1v $2v
+#! cmovne $1v, $2v -> cmov $2v zero $2v $1v
+#! dec $1v -> subb overflow $1v $1v 1@uint64
+#! imul $1v, $2v -> mull dontcare $2v $1v $2v
+#! lea $1ea, $2v -> mov $2v, $1ea
+#! mov $1c, $2v -> mov $2v $1c@uint64
+#! mov $1c, $2ea -> mov $2ea $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2ea -> mov $2ea $1v
+#! mul $1v -> mull rdx rax rax $1v;\nsubc carry dc rdx 1@uint64; mov overflow carry
+#! mulq $1v -> mull rdx rax rax $1v
+#! mulq $1ea -> mull rdx rax rax $1ea
+#! mulx $1v, $2v, $3v -> mull $3v $2v rdx $1v
+#! sub $1v, $2v -> subb carry $2v $2v $1v
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sub $1ea, $2v -> subb carry $2v $2v $1ea
+#! sub $1v, $2ea -> subb carry $2ea $2ea $1v
+#! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea
+#! shlx $1c, $2v, $3v -> split dc $3v $2v (64-$1c);\nshl $3v $3v $1c@uint64
+#! shl $1c, $2v -> split dc $2v $2v (64-$1c);\nshl $2v $2v $1c@uint64
+#! shrx $1c, $2v, $3v -> split $3v dc $2v $1c
+#! shr $1c, $2v -> split $2v dc $1c
+#! test $1v, $1v -> subb zero dontcare $1v 1@uint64
+#! test \$0x1, $1v -> and tmp@uint64 0x1@uint64 $1v;\nsubb zero dontcare tmp 0x1@uint64
+#! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+
+# vector instructions
+# w = 16 bits, d = 32 bits, q = 64 bits
+
+#! movdqa $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0; mov $2xmm_1 $1xmm_1;\nmov $2xmm_2 $1xmm_2; mov $2xmm_3 $1xmm_3
+#! movdqa $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
+#! movdqu $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
+#! movdqu $1xmm, $2ea -> mov $2ea $1xmm_0; mov $2ea[+4] $1xmm_1;\nmov $2ea[+8] $1xmm_2; mov $2ea[+12] $1xmm_3
+#! paddd $1xmm, $2xmm -> adds dc $2xmm_0 $2xmm_0 $1xmm_0; adds dc $2xmm_1 $2xmm_1 $1xmm_1;\nadds dc $2xmm_2 $2xmm_2 $1xmm_2; adds dc $2xmm_3 $2xmm_3 $1xmm_3
+#! palignr \$0x4, $1xmm, $2xmm -> mov a0 $1xmm_1; mov a1 $1xmm_2; mov a2 $1xmm_3; mov a3 $2xmm_0;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
+#! palignr \$0x8, $1xmm, $2xmm -> mov a0 $1xmm_2; mov a1 $1xmm_3; mov a2 $2xmm_0; mov a3 $2xmm_1;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
+#! pshufb $1xmm, $2xmm -> assert true &&\n       and [$1xmm_0 = 0x00010203@32, $1xmm_1 = 0x04050607@32,\n            $1xmm_2 = 0x08090a0b@32, $1xmm_3 = 0x0c0d0e0f@32];\nspl xfe xdc $2xmm_3 16;spl xba x98 $2xmm_2 16;spl x76 x54 $2xmm_1 16;spl x32 x10 $2xmm_0 16;\nspl xf xe xfe 8; spl xd xc xdc 8; spl xb xa xba 8; spl x9 x8 x98 8;\nspl x7 x6 x76 8; spl x5 x4 x54 8; spl x3 x2 x32 8; spl x1 x0 x10 8;\njoin sfe xc xd; join sdc xe xf; join sba x8 x9; join s98 xa xb;\njoin s76 x4 x5; join s54 x6 x7; join s32 x0 x1; join s10 x2 x3;\njoin $2xmm_3 sfe sdc; join $2xmm_2 sba s98; join $2xmm_1 s76 s54; join $2xmm_0 s32 s10
+#! pshufd \$0xe, $1xmm, $2xmm -> mov sh0 $1xmm_2; mov sh1 $1xmm_3; mov sh2 $1xmm_0; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
+#! pshufd \$0x1b, $1xmm, $2xmm -> mov sh0 $1xmm_3; mov sh1 $1xmm_2; mov sh2 $1xmm_1; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
+#! pshufd \$0xb1, $1xmm, $2xmm -> mov sh0 $1xmm_1; mov sh1 $1xmm_0; mov sh2 $1xmm_3; mov sh3 $1xmm_2;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
+#! punpcklqdq $1xmm, $2xmm -> mov p0 $2xmm_0; mov p1 $2xmm_1; mov p2 $1xmm_0; mov p3 $1xmm_1;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
+#! punpckhqdq $1xmm, $2xmm -> mov p0 $2xmm_2; mov p1 $2xmm_3; mov p2 $1xmm_2; mov p3 $1xmm_3;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
