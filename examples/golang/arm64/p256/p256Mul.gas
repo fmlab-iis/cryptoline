@@ -1,4 +1,4 @@
-crypto/elliptic.p256Mul.abi0:
+#crypto/elliptic.p256Mul.abi0:
 # x0 = 0x400008fb88
 # x1 = 0x4
 # x2 = 0x18
@@ -14,10 +14,10 @@ crypto/elliptic.p256Mul.abi0:
 	ldr	x0, [sp, #24]                               #! EA = L0x400008fb38; Value = 0x000000400008fb88; PC = 0xc3e5c
 	ldr	x1, [sp, #48]                               #! EA = L0x400008fb50; Value = 0x000000400008fd08; PC = 0xc3e60
 	ldr	x2, [sp, #72]                               #! EA = L0x400008fb68; Value = 0x000000400008fdd8; PC = 0xc3e64
-	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc3e68
+	#adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc3e68
 	add	x27, x27, #0x658                            #! PC = 0xc3e6c
 	ldr	x15, [x27]                                  #! EA = L0x129658; Value = 0x00000000ffffffff; PC = 0xc3e70
-	adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc3e74
+	#adrp	x27, 0x129000 <runtime.gcbss+1171>         #! PC = 0xc3e74
 	add	x27, x27, #0x660                            #! PC = 0xc3e78
 	ldr	x16, [x27]                                  #! EA = L0x129660; Value = 0xffffffff00000001; PC = 0xc3e7c
 	ldp	x19, x20, [x1]                              #! EA = L0x400008fd08; Value = 0x63667ad9c2dbb11b; PC = 0xc3e80
