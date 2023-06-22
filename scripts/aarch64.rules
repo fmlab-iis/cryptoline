@@ -47,6 +47,7 @@
 #! lsr $1v, $2v, $3c -> split $1v dcL $2v $3c
 #! mov $1v, wzr -> mov $1v 0@uint32
 #! mov $1v, xzr -> mov $1v 0@uint64
+#! mov $1v, $2v -> mov $1v $2v
 #! mov $1v, $2c // -> mov $1v $2c@uint64
 #! mov $1v, $2c -> mov $1v $2c@uint64
 #! mul $1v, $2v, $3v -> mull dcH $1v $2v $3v
