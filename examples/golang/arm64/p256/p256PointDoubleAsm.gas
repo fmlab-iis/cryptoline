@@ -1,4 +1,7 @@
-crypto/elliptic.p256PointDoubleAsm.abi0:
+#! cmp %%x17, %%x16 -> nop
+#! adrp .* -> nop
+
+#crypto/elliptic.p256PointDoubleAsm.abi0:
 # x0 = 0x4000057dc8
 # x1 = 0x40000576e8
 # x2 = 0xc

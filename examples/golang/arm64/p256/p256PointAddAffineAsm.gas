@@ -1,4 +1,11 @@
-crypto/elliptic.p256PointAddAffineAsm.abi0:
+#! cmp %%x17, %%x16 -> nop
+#! adrp .* -> nop
+
+#! lsr $1v, $2v, $3c -> split $1v dcL $2v $3c;\nassert true && $1v = dcH; assume $1v = dcH && true
+#! umulh $1v, $2v, $3v -> mull $1v dcL $2v $3v;\nassert true && $1v = dcH; assume $1v = dcH && true
+
+
+#crypto/elliptic.p256PointAddAffineAsm.abi0:
 # x0 = 0x4000103d98
 # x1 = 0xc
 # x2 = 0x8
