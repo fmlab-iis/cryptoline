@@ -34,12 +34,20 @@
 #! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
 #! adcs $1v, $2c, $3v -> adcs carry $1v $2c@uint64 $3v carry
 #! adcs $1v, $2v, $3c -> adcs carry $1v $2v $3c@uint64 carry
+#! adcs $1v, $2v, xzr -> adcs carry $1v $2v 0@uint64 carry
 #! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! ands $1v, $2v, $3c -> and $1v@uint64 $2v $3c@uint64; subc zero dc 0@uint64 $1v
 #! bic $1v, $2v, $3v -> not $3v_n@uint64 $3v; and $1v@uint64 $2v $3v_n
+#! cmp $1v, xzr -> subc zero dc 0@uint64 $1v
 #! csel $1v, $2v, $3v, cc  // .* -> cmov $1v carry $3v $2v
 #! csel $1v, $2v, $3v, cs  // .* -> cmov $1v carry $2v $3v
-#! eor $1v, $2v, $3v, ror $4c -> ror $3v_r@uint64 $3v $4c; xor $1v@uint64 $2v $3v_r
+#! csel $1v, $2v, $3v, eq // .*  -> cmov $1v zero $2v $3v
+#! csel $1v, $2v, xzr, eq // .*  -> cmov $1v zero $2v 0@uint64
+#! csel $1v, xzr, $2v, eq // .*  -> cmov $1v zero 0@uint64 $2v
+#! eor $1v, $2v, $3v, lsl $4c -> split dc $3v_L $3v `64 - $4c`; shl $3v_S $3v_L $4c; xor $1v@uint64 $2v $3v_L
+#! eor $1v, $2v, $3v, ror $4c -> ror $3v_R@uint64 $3v $4c; xor $1v@uint64 $2v $3v_R
 #! eor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
+#! extr $1v, $2v, $3v, $4c -> spl dc extr_H $2v $4c; spl extr_L dc $3v $4c; join $1v extr_H extr_L
 #! ldp $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+8]
 #! ldr $1v, $2ea -> mov $1v $2ea
 #! ldur $1v, $2ea -> mov $1v $2ea
@@ -51,8 +59,13 @@
 #! mov $1v, $2c // -> mov $1v $2c@uint64
 #! mov $1v, $2c -> mov $1v $2c@uint64
 #! mul $1v, $2v, $3v -> mull dcH $1v $2v $3v
+#! ngc $1v, $2v -> sbcs dc $1v 0@uint64 $2v carry
+#! ngc $1v, xzr -> sbcs dc $1v 0@uint64 0@uint64 carry
+#! ngcs $1v, $2v -> sbcs carry $1v 0@uint64 $2v carry
 #! umulh $1v, $2v, $3v -> mull $1v dcL $2v $3v
 #! orr $1v, $2v, $3v -> or $1v@uint64 $2v $3v
+#! orr $1v, $2v, $3c -> or $1v@uint64 $2v $3c@uint64
+#! orr $1v, xzr, $2c -> mov $1v $2c@uint64
 #! ror $1v, $2v, $3c -> ror $1v@uint64 $2v $3c
 #! sub $1v, $2v, $3v -> sub $1v $2v $3v
 #! sub $1v, $2c, $3v -> sub $1v $2c@uint64 $3v
@@ -72,6 +85,7 @@
 #! stp $1v, $2v, $3ea -> mov $3ea $1v; mov $3ea[+8] $2v
 #! str $1v, $2ea -> mov $2ea $1v
 #! stur $1v, $2ea -> mov $2ea $1v
+#! tst $1v, $2c -> and tst_t@uint64 $1v $2c@uint64; subc zero dc 0@uint64 tst_t
 
 # vector instructions
 # b = 8 bits, s = 32 bits, d = 64 bits
