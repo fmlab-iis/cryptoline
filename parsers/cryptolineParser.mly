@@ -1830,6 +1830,7 @@ post:
 formals:
     fvars                                         { fun lno -> ($1 lno, []) }
   | fvars SEMICOLON fvars                         { fun lno -> ($1 lno, $3 lno) }
+  | SEMICOLON fvars                               { fun lno -> ([], $2 lno) }
   |                                               { fun _lno -> ([], []) }
 ;
 
