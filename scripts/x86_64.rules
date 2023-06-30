@@ -54,6 +54,7 @@
 #! mov $1v, $2v -> mov $2v $1v
 #! mov $1ea, $2v -> mov $2v $1ea
 #! mov $1v, $2ea -> mov $2ea $1v
+#! movabs $1c, $2v -> mov $2v $1c@uint64
 #! mul $1v -> mull rdx rax rax $1v;\nsubc carry dc rdx 1@uint64; mov overflow carry
 #! mulq $1v -> mull rdx rax rax $1v
 #! mulq $1ea -> mull rdx rax rax $1ea
