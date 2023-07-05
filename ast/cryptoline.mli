@@ -270,6 +270,8 @@ type rbinop =
   | Rshl     (** left shift *)
   | Rlshr    (** logical right shift *)
   | Rashr    (** arithmetic right shift *) (* *)
+  | Rrol     (** left rotation *)
+  | Rror     (** right rotation *)
 (** range binary operators *)
 
 type rexp =
@@ -279,6 +281,7 @@ type rexp =
   | Rbinop of size * rbinop * rexp * rexp    (** binary operation on expressions of a specified bit-width *)
   | Ruext of size * rexp * int               (** [Ruext (w, e, i)] extends an unsigned expression [e] of width [w] by size [i] *)
   | Rsext of size * rexp * int               (** [Rsext (w, e, i)] extends a signed expression [e] of width [w] by size [i] *) (* *)
+  | Rconcat of size * size * rexp * rexp     (** concatenation (a high followed by a low) *)
 (** Range expressions *)
 
 val size_of_rexp : rexp -> size
@@ -331,6 +334,15 @@ val rlshr : size -> rexp -> rexp -> rexp
 
 val rashr : size -> rexp -> rexp -> rexp
 (** [rashr w e1 e2] is [Rbinop (w, Rashr, e1, e2)]. *)
+
+val rrol : size -> rexp -> rexp -> rexp
+(** [rrol w e1 e2] is [Rbinop (w, Rrol, e1, e2)]. *)
+
+val rror : size -> rexp -> rexp -> rexp
+(** [rror w e1 e2] is [Rbinop (w, Rror, e1, e2)]. *)
+
+val rconcat : size -> size -> rexp -> rexp -> rexp
+(** [rconcat w e1 e2] is [Rbinop (w, Rconcat, e1, e2)]. *)
 
 val rsq : size -> rexp -> rexp
 (** [rsq w e] is [Rbinop (w, Rmul, e, e)]. *)

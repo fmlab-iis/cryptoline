@@ -128,6 +128,7 @@
               "lsr"                        , SHR;
               "sar"                        , SAR;
               "asr"                        , SAR;
+              "concat"                     , CONCAT;
               (********** Predicates **********)
               "true"                       , TRUE;
               "eq"                         , EQ;

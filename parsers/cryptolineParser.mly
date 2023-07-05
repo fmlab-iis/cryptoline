@@ -1704,7 +1704,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP SETEQ SETNE
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1728,7 +1728,7 @@
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
-%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS
+%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS ROL ROR CONCAT
 %nonassoc SETEQ SETNE EQ EQMOD
 %nonassoc UMINUS
 
@@ -2827,6 +2827,34 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
+  | ROL rexp rexp                                 { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rrol, e1, e2) }
+  | ROR rexp rexp                                 { let lno = !lnum in
+                                                    fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rror, e1, e2) }
+  | CONCAT rexp rexp                              { fun cm vm ym gm ->
+                                                      let e1 = $2 cm vm ym gm in
+                                                      let e2 = $3 cm vm ym gm in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      Rconcat (w1, w2, e1, e2) }
   | ADD LSQUARE rexps RSQUARE                     { let lno = !lnum in
                                                     fun cm vm ym gm ->
                                                       let es = $3 cm vm ym gm in

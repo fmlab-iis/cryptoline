@@ -208,6 +208,8 @@ type rbinop =
   | Rshl
   | Rlshr
   | Rashr
+  | Rrol
+  | Rror
 
 type rcmpop =
   | Rult
@@ -548,6 +550,7 @@ type rexp =
   | Rbinop of size * rbinop * rexp * rexp
   | Ruext of size * rexp * int
   | Rsext of size * rexp * int
+  | Rconcat of size * size * rexp * rexp
 
 let size_of_rexp e =
   match e with
@@ -556,7 +559,8 @@ let size_of_rexp e =
   | Runop (w, _, _) -> w
   | Rbinop (w, _, _, _) -> w
   | Ruext (w, _, i)
-  | Rsext (w, _, i) -> w + i
+    | Rsext (w, _, i) -> w + i
+  | Rconcat (w1, w2, _, _) -> w1 + w2
 
 let rvar v = Rvar v
 let rconst w n = Rconst (w, n)
@@ -574,6 +578,9 @@ let rxorb w e1 e2 = Rbinop (w, Rxorb, e1, e2)
 let rshl w e1 e2 = Rbinop (w, Rshl, e1, e2)
 let rlshr w e1 e2 = Rbinop (w, Rlshr, e1, e2)
 let rashr w e1 e2 = Rbinop (w, Rashr, e1, e2)
+let rrol w e1 e2 = Rbinop (w, Rrol, e1, e2)
+let rror w e1 e2 = Rbinop (w, Rror, e1, e2)
+let rconcat w1 w2 e1 e2 = Rconcat (w1, w2, e1, e2)
 let rsq w e = Rbinop (w, Rmul, e, e)
 (*let radds w es = List.fold_left (fun res e -> radd w e res) (rconst w Z.zero) es
 let rmuls w es = List.fold_left (fun res e -> rmul w e res) (rconst w Z.one) es*)
@@ -605,6 +612,7 @@ let rec eq_rexp e1 e2 =
   | Rbinop (w1, op1, e1a, e1b), Rbinop (w2, op2, e2a, e2b) -> w1 = w2 && op1 = op2 && eq_rexp e1a e2a && eq_rexp e1b e2b
   | Ruext (w1, e1, n1), Ruext (w2, e2, n2)
     | Rsext (w1, e1, n1), Rsext (w2, e2, n2) -> w1 = w2 && eq_rexp e1 e2 && n1 = n2
+  | Rconcat (w1, w2, e1, e2), Rconcat (u1, u2, f1, f2) -> w1 = u1 && w2 = u2 && eq_rexp e1 f1 && eq_rexp e2 f2
   | _, _ -> false
 
 
@@ -1155,6 +1163,8 @@ let string_of_rbinop op =
   | Rshl -> "shl"
   | Rlshr -> "lshr"
   | Rashr -> "ashr"
+  | Rrol -> "rol"
+  | Rror -> "ror"
 
 let rec string_of_eexp ?typ:(typ=false) e =
   match e with
@@ -1167,13 +1177,15 @@ let rec string_of_eexp ?typ:(typ=false) e =
      ^ (if ebinop_eexp_open op e2 then string_of_eexp ~typ:typ e2 else "(" ^ string_of_eexp ~typ:typ e2 ^ ")")
 
 let rec string_of_rexp ?typ:(typ=false) e =
+  let se e = if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")" in
   match e with
   | Rvar v -> string_of_var ~typ:typ v
   | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
-  | Runop (_w, op, e) -> string_of_runop op ^ " " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")")
-  | Rbinop (_w, op, e1, e2) -> string_of_rbinop op ^ " (" ^ string_of_rexp ~typ:typ e1 ^ ") (" ^ string_of_rexp ~typ:typ e2 ^ ")"
-  | Ruext (_w, e, i) -> "uext " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
-  | Rsext (_w, e, i) -> "sext " ^ (if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")") ^ " " ^ string_of_int i
+  | Runop (_, op, e) -> string_of_runop op ^ " " ^ se e
+  | Rbinop (_, op, e1, e2) -> string_of_rbinop op ^ " " ^ se e1 ^ " " ^ se e2 ^ ")"
+  | Ruext (_, e, i) -> "uext " ^ se e ^ " " ^ string_of_int i
+  | Rsext (_, e, i) -> "sext " ^ se e ^ " " ^ string_of_int i
+  | Rconcat (_, _, e1, e2) -> "concat " ^ se e1 ^ " " ^ se e2
 
 let rec string_of_ebexp ?typ:(typ=false) e =
   match e with
@@ -1365,7 +1377,8 @@ let rec vars_rexp e =
   | Runop (_, _, e) -> vars_rexp e
   | Rbinop (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
   | Ruext (_, e, _)
-  | Rsext (_, e, _) -> vars_rexp e
+    | Rsext (_, e, _) -> vars_rexp e
+  | Rconcat (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
 
 let rec vars_ebexp e =
   match e with
@@ -1646,7 +1659,8 @@ let rec vids_rexp e =
   | Runop (_, _, e) -> vids_rexp e
   | Rbinop (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
   | Ruext (_, e, _)
-  | Rsext (_, e, _) -> vids_rexp e
+    | Rsext (_, e, _) -> vids_rexp e
+  | Rconcat (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
 
 let rec vids_rbexp e =
   match e with
@@ -1933,6 +1947,7 @@ let rec ssa_rexp m e =
   | Rbinop (w, op, e1, e2) -> Rbinop (w, op, ssa_rexp m e1, ssa_rexp m e2)
   | Ruext (w, e, i) -> Ruext (w, ssa_rexp m e, i)
   | Rsext (w, e, i) -> Rsext (w, ssa_rexp m e, i)
+  | Rconcat (w1, w2, e1, e2) -> Rconcat (w1, w2, ssa_rexp m e1, ssa_rexp m e2)
 
 let rec ssa_ebexp m e =
   match e with
@@ -2732,6 +2747,7 @@ let rec subst_rexp rm e =
   | Rbinop (w, op, e1, e2) -> Rbinop (w, op, subst_rexp rm e1, subst_rexp rm e2)
   | Ruext (w, e, i) -> Ruext (w, subst_rexp rm e, i)
   | Rsext (w, e, i) -> Rsext (w, subst_rexp rm e, i)
+  | Rconcat (w1, w2, e1, e2) -> Rconcat (w1, w2, subst_rexp rm e1, subst_rexp rm e2)
 
 let rec subst_ebexp em e =
   match e with
@@ -3434,7 +3450,8 @@ let rec visit_rexp visitor e =
         | Runop (size, op, e) -> Runop (size, op, visit_rexp visitor e)
         | Rbinop (size, op, e1, e2) -> Rbinop (size, op, visit_rexp visitor e1, visit_rexp visitor e2)
         | Ruext (size, e, n) -> Ruext (size, visit_rexp visitor e, n)
-        | Rsext (size, e, n) -> Rsext (size, visit_rexp visitor e, n))
+        | Rsext (size, e, n) -> Rsext (size, visit_rexp visitor e, n)
+        | Rconcat (w1, w2, e1, e2) -> Rconcat (w1, w2, visit_rexp visitor e1, visit_rexp visitor e2))
 
 let rec visit_ebexp visitor e =
   let act = visitor#vebexp e in
@@ -3939,6 +3956,7 @@ let rec is_rexp_over_const e =
   | Rbinop (_, _, e1, e2) -> (is_rexp_over_const e1) && (is_rexp_over_const e2)
   | Ruext (_, e, _)
     | Rsext (_, e, _) -> is_rexp_over_const e
+  | Rconcat (_, _, e1, e2) -> (is_rexp_over_const e1) && (is_rexp_over_const e2)
 let rec eval_rexp_const e =
   match e with
   | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
@@ -3961,11 +3979,16 @@ let rec eval_rexp_const e =
                                | Rxorb -> xorB v1 v2
                                | Rshl -> shlBB v1 v2
                                | Rlshr -> shrBB v1 v2
-                               | Rashr -> sarBB v1 v2)
+                               | Rashr -> sarBB v1 v2
+                               | Rrol -> rolB (Z.to_int (unsigned v2)) v1
+                               | Rror -> rorB (Z.to_int (unsigned v2)) v1)
   | Ruext (_, e, i) -> let v = eval_rexp_const e in
                        zext i v
   | Rsext (_, e, i) -> let v = eval_rexp_const e in
                        sext i v
+  | Rconcat (_, _, e1, e2) -> let v1 = eval_rexp_const e1 in
+                              let v2 = eval_rexp_const e2 in
+                              tappend v2 v1
 let bvcryptoline_of_var v = string_of_var v
 let bvcryptoline_of_eunop op =
   match op with
@@ -4018,6 +4041,8 @@ let bvcryptoline_of_rbinop op =
   | Rshl -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
   | Rlshr -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
   | Rashr -> raise (UnsupportedException "Shift operations over range expressions are not supported by BvCryptoLine.")
+  | Rrol -> raise (UnsupportedException "Rotation operations over range expressions are not supported by BvCryptoLine.")
+  | Rror -> raise (UnsupportedException "Rotation operations over range expressions are not supported by BvCryptoLine.")
 let bvcryptoline_of_rcmpop op =
   match op with
   | Rult -> "bvult"
@@ -4037,6 +4062,7 @@ let rec bvcryptoline_of_rexp e =
   | Rbinop (_, op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_rbinop op) (bvcryptoline_of_rexp e1) (bvcryptoline_of_rexp e2)
   | Ruext (_, e, i) -> Printf.sprintf "(bvrExt _ %s %d)" (bvcryptoline_of_rexp e) i
   | Rsext _ -> raise (UnsupportedException "Signed extension is not supported by BvCryptoLine.")
+  | Rconcat _ -> raise (UnsupportedException "Concatenation over range expressions are not supported by BvCryptoLine.")
 let rec bvcryptoline_of_rbexp e =
   match e with
   | Rtrue -> "bvrTrue"
@@ -4218,7 +4244,8 @@ let rec update_variable_id_rexp m e =
   | Runop (_, _, e) -> update_variable_id_rexp m e
   | Rbinop (_, _, e1, e2) -> update_variable_id_rexp (update_variable_id_rexp m e1) e2
   | Ruext (_, e, _)
-  | Rsext (_, e, _) -> update_variable_id_rexp m e
+    | Rsext (_, e, _) -> update_variable_id_rexp m e
+  | Rconcat (_, _, e1, e2) -> update_variable_id_rexp (update_variable_id_rexp m e1) e2
 
 let rec update_variable_id_rbexp m e =
   match e with

@@ -326,6 +326,7 @@ let illformed_rexp_reason vs e =
     | Runop (w, _op, e) -> [well_size w e; well_rexp e]
     | Rbinop (w, _op, e1, e2) -> [well_size w e1; well_size w e2; well_rexp e1; well_rexp e2]
     | Ruext (w, e, _i) | Rsext (w, e, _i) -> [well_size w e; well_rexp e]
+    | Rconcat (w1, w2, e1, e2) -> [well_size w1 e1; well_size w2 e2; well_rexp e1; well_rexp e2]
   in
   chain_reasons (helper e)
 let illformed_rbexp_reason vs e =

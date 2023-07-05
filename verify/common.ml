@@ -75,9 +75,13 @@ let rec exp_rexp e =
       | Rxorb -> Xor (w, exp_rexp e1, exp_rexp e2)
       | Rshl -> Shl (w, exp_rexp e1, exp_rexp e2)
       | Rlshr -> Lshr (w, exp_rexp e1, exp_rexp e2)
-      | Rashr -> Ashr (w, exp_rexp e1, exp_rexp e2))
+      | Rashr -> Ashr (w, exp_rexp e1, exp_rexp e2)
+      | Rrol -> Rol (w, exp_rexp e1, exp_rexp e2)
+      | Rror -> Ror (w, exp_rexp e1, exp_rexp e2)
+     )
   | Ruext (w, e, i) -> ZeroExtend (w, i, exp_rexp e)
   | Rsext (w, e, i) -> SignExtend (w, i, exp_rexp e)
+  | Rconcat (w1, w2, e1, e2) -> Concat (w1, w2, exp_rexp e1, exp_rexp e2)
 
 let rec bexp_rbexp e =
   match e with
