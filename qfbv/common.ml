@@ -725,6 +725,15 @@ let btor_instr m i =
                                  let shifted = m#mksll (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd_for_shift (w1 + w2) n) in
                                  m#setvar vh (m#mkhigh w2 w1 shifted);
                                  m#setvar vl (m#mksrl w2 (m#mklow w2 w1 shifted) (m#mkconstd_for_shift w2 n))
+  | Icshls (l, vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
+                                     let w2 = size_of_var vl in
+                                     let ni = Z.to_int n in
+                                     let a1_btor = btor_atom m a1 in
+                                     let a2_btor = btor_atom m a2 in
+                                     let shifted = m#mksll (w1 + w2) (m#mkconcat w1 w2 a1_btor a2_btor) (m#mkconstd_for_shift (w1 + w2) n) in
+                                     m#setvar vh (m#mkhigh w2 w1 shifted);
+                                     m#setvar vl (m#mksrl w2 (m#mklow w2 w1 shifted) (m#mkconstd_for_shift w2 n));
+                                     m#setvar l (m#mkhigh (w1 - ni) ni a1_btor)
   | Icshr (vh, vl, a1, a2, n) -> let w1 = size_of_var vh in
                                  let w2 = size_of_var vl in
                                  let a1_btor = btor_atom m a1 in

@@ -579,6 +579,7 @@ type instr =
   | Isar of var * atom * atom                               (** Arithmetic right shift *)
   | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
+  | Icshls of var * var * var * atom * atom * Z.t           (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
   | Irol of var * atom * atom                               (** Left rotation *)
@@ -668,6 +669,12 @@ type instr =
                                       {- Algebra: vh × 2{^size a1 - n} + vl = a1 × 2{^size a1} + a2 with soundness conditions:
                                       {ul {- Unsigned: n ≤ size a1, high n a1 = 0}
                                           {- Signed: n ≤ size a1, sex (low (size a1 - n) a1) n = a1}}}}
+   - [Icshls (l, vh, vl, a1, a2, n)]: Concatenate [a1] (high) and [a2] (low), shift the concatenation left by [n], store the high bits in [vh], store the low bits (logically) shifted right by [n] in [vl], and store the shifted out [n] bits of [a1] in [l].
+                                      {ul {- Type: [l], [vh], and [a1] have the same type. [vl] and [a2] are unsigned. [vh], [vl], [a1], and [a2] have the same size.}
+                                          {- QF_BV: l = high n a1, vh = high (size a1) (shl (concat a1 a2) n), vl = shr (low (size a1) (shl (concat a1 a2) n)) n}
+                                          {- Algebra:
+                                          {ul {- Unsigned: limbs w [vl × 2{^n}, vh, l] = limbs w [a2, a1] × 2{^n}}
+                                              {- Signed: limbs w [vl × 2{^n}, vh + d × 2{^w}, l] = limbs w [a2, a1] × 2{^n}}}}}
    - [Icshr (vh, vl, a1, a2, n)]: Concatenate [a1] (high) and [a2] (low), (logically) shift the concatenation right by [n], store the high bits in [vh], and store the low bits in [vl].
                                   {ul {- Type: [vh] and [a1] have the same type. [vl] and [a2] have the same unsigned type. [vh] and [vl] have the same size.}
                                       {- QF_BV: vh = lshr a1 n, vl = concate (low n a1) (high (size a1 - n) a2)}

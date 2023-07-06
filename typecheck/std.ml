@@ -266,6 +266,8 @@ let illformed_instr_reason vs cs gs lno i =
        [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_bit_var lno v; const_in_range [a1; a2]]
     | Icshl (vh, vl, a1, a2, n) ->
        [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
+    | Icshls (l, vh, vl, a1, a2, n) ->
+       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_same_sign [Avar l; Avar vh]; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a1 n]
     | Icshr (vh, vl, a1, a2, n) ->
        [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
     | Icshrs (vh, vl, l, a1, a2, n) ->

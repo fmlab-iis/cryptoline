@@ -18,6 +18,7 @@ function usage {
     echo "    -poly1305         Verify poly1305 examples."
     echo "    -simple           Verify some simple examples."
     echo "    -supercop         Verify supercop examples."
+    echo "    -tests            Verify simple tests."
     echo "    -x86_64-mont      Verify x86_64-mont (Montgomery multiplication) examples."
     echo
     echo "    For examples that do not require a specific SAT solver, use the following"
@@ -86,6 +87,9 @@ for arg in "$@"; do
                 ;;
             -supercop)
                 enabled+=('@supercop')
+                ;;
+            -tests)
+                enabled+=('@tests')
                 ;;
             -x86_64-mont)
                 enabled+=('@x86_64-mont')
@@ -203,6 +207,8 @@ pairs=(
     '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/donna/crypto_scalarmult_curve25519_donna_fmul.cl:@supercop'
     '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/sandy2x/crypto_scalarmult_curve25519_sandy2x_fe51_mul.cl:@supercop'
     '-v -btor -no_carry_constraint -isafety:examples/supercop/crypto_scalarmult/curve25519/sandy2x/crypto_scalarmult_curve25519_sandy2x_fe51_nsquare.cl:@supercop'
+    '-v -track-split:examples/tests/test-join-spl-concat.cl:@tests'
+    '-v -track-split:examples/tests/test-rol-ror.cl:@tests'
 )
 
 offset=0

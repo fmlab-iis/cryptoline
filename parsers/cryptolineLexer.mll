@@ -76,7 +76,9 @@
               "sar"                        , SAR;
               "sars"                       , SARS;
               "cshl"                       , CSHL;
+              "cshls"                      , CSHLS;
               "clsl"                       , CSHL;
+              "clsls"                      , CSHLS;
               "cshr"                       , CSHR;
               "cshrs"                      , CSHRS;
               "rol"                        , ROL;

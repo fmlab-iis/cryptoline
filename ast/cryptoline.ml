@@ -887,6 +887,7 @@ type instr =
   | Isar of var * atom * atom                               (** Arithmetic right shift *)
   | Isars of var * var * atom * Z.t                         (** Arithmetic right shift *)
   | Icshl of var * var * atom * atom * Z.t                  (** Concatenated left shift *)
+  | Icshls of var * var * var * atom * atom * Z.t           (** Concatenated left shift *)
   | Icshr of var * var * atom * atom * Z.t                  (** Concatenated right shift *)
   | Icshrs of var * var * var * atom * atom * Z.t           (** Concatenated right shift *)
   | Irol of var * atom * atom                               (** Left rotation *)
@@ -1279,8 +1280,9 @@ let string_of_instr ?typ:(typ=false) i =
   | Isar (v, a1, a2) -> "sar " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Isars (v, l, a, n) -> "sars " ^ vstr v ^ " " ^ vstr l ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Icshl (vh, vl, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
+  | Icshls (l, vh, vl, a1, a2, n) -> "cshls " ^ vstr l ^ " " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Icshr (vh, vl, a1, a2, n) -> "cshr " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
-  | Icshrs (vh, vl, l, a1, a2, n) -> "cshl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ vstr l ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
+  | Icshrs (vh, vl, l, a1, a2, n) -> "cshrs " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ vstr l ^ " " ^ astr a1 ^ " " ^ astr a2 ^ " " ^ Z.to_string n
   | Irol (v, a, n) -> Printf.sprintf "rol %s %s %s" (vstr v) (astr a) (astr n)
   | Iror (v, a, n) -> Printf.sprintf "ror %s %s %s" (vstr v) (astr a) (astr n)
   | Inondet v -> "nondet " ^ string_of_var ~typ:true v
@@ -1443,7 +1445,8 @@ let vars_instr i =
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
      VS.add vh (VS.add vl (VS.union (vars_atom a1) (vars_atom a2)))
-  | Icshrs (vh, vl, l, a1, a2, _) ->
+  | Icshls (l, vh, vl, a1, a2, _)
+    | Icshrs (vh, vl, l, a1, a2, _) ->
      VS.add vh (VS.add vl (VS.add l (VS.union (vars_atom a1) (vars_atom a2))))
   | Irol (v, a, n)
     | Iror (v, a, n) -> VS.add v (VS.union (vars_atom a) (vars_atom n))
@@ -1496,6 +1499,7 @@ let lvs_instr i =
   | Iseteq (v, _, _)
     | Isetne (v, _, _) -> VS.singleton v
   | Icshl (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
+  | Icshls (l, vh, vl, _, _, _) -> VS.add vh (VS.add vl (VS.singleton l))
   | Icshr (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
   | Icshrs (vh, vl, l, _, _, _) -> VS.add vh (VS.add vl (VS.singleton l))
   | Irol (v, _, _)
@@ -1546,6 +1550,7 @@ let rvs_instr i =
   | Iseteq (_, a1, a2)
     | Isetne (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshl (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Icshls (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshr (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
   | Irol (_, a, n)
@@ -1597,6 +1602,7 @@ let lcarries_instr i =
   | Iseteq _
   | Isetne _
   | Icshl _
+  | Icshls _
   | Icshr _
   | Icshrs _
   | Irol _
@@ -1717,7 +1723,8 @@ let vids_instr i =
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
      IS.add vh.vid (IS.add vl.vid (IS.union (vids_atom a1) (vids_atom a2)))
-  | Icshrs (vh, vl, l, a1, a2, _) ->
+  | Icshls (l, vh, vl, a1, a2, _)
+    | Icshrs (vh, vl, l, a1, a2, _) ->
      IS.add vh.vid (IS.add vl.vid (IS.add l.vid (IS.union (vids_atom a1) (vids_atom a2))))
   | Irol (v, a, n)
     | Iror (v, a, n) -> IS.add v.vid (IS.union (vids_atom a) (vids_atom n))
@@ -1770,6 +1777,7 @@ let lvids_instr i =
   | Iseteq (v, _, _)
     | Isetne (v, _, _) -> IS.singleton v.vid
   | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Icshls (l, vh, vl, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.singleton l.vid))
   | Icshr (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Icshrs (vh, vl, l, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.singleton l.vid))
   | Irol (v, _, _)
@@ -1820,6 +1828,7 @@ let rvids_instr i =
   | Iseteq (_, a1, a2)
     | Isetne (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshl (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Icshls (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshr (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
   | Irol (_, a, n)
@@ -1871,6 +1880,7 @@ let lcids_instr i =
   | Iseteq _
   | Isetne _
   | Icshl _
+  | Icshls _
   | Icshr _
   | Icshrs _
   | Irol _
@@ -2015,6 +2025,13 @@ let ssa_instr m i =
      let ml = upd_sidx vl m in
      let mh = upd_sidx vh ml in
      (mh, Icshl (ssa_var mh vh, ssa_var ml vl, a1, a2, n))
+  | Icshls (l, vh, vl, a1, a2, n) ->
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let ml = upd_sidx l m in
+     let mvl = upd_sidx vl ml in
+     let mvh = upd_sidx vh mvl in
+     (mvh, Icshls (ssa_var ml l, ssa_var mvh vh, ssa_var mvl vl, a1, a2, n))
   | Icshr (vh, vl, a1, a2, n) ->
      let a1 = ssa_atom m a1 in
      let a2 = ssa_atom m a2 in
@@ -2795,6 +2812,7 @@ let subst_instr am em rm i =
   | Isar (v, a1, a2) -> Isar (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Isars (v, l, a, n) -> Isars (subst_lval am v, subst_lval am l, subst_atom am a, n)
   | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
+  | Icshls (l, vh, vl, a1, a2, n) -> Icshls (subst_lval am l, subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
   | Icshr (vh, vl, a1, a2, n) -> Icshr (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
   | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atom am a1, subst_atom am a2, n)
   | Irol (v, a, n) -> Irol (subst_lval am v, subst_atom am a, subst_atom am n)
@@ -3213,6 +3231,9 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
   | Icshl (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
                                  let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                  casts1@casts2@[Icshl (vh, vl, a1, a2, n)]
+  | Icshls (l, vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
+                                     let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
+                                     casts1@casts2@[Icshls (l, vh, vl, a1, a2, n)]
   | Icshr (vh, vl, a1, a2, n) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t vh.vtyp a1 in
                                  let (casts2, a2) = auto_cast_atom ~preserve:preserve t vl.vtyp a2 in
                                  casts1@casts2@[Icshr (vh, vl, a1, a2, n)]
@@ -3529,6 +3550,7 @@ let visit_instr visitor i =
         | Isar (v, a1, a2) -> Isar (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
         | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
         | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
+        | Icshls (l, vh, vl, a1, a2, n) -> Icshls (visit_var visitor l, visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
         | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
         | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (visit_var visitor vh, visit_var visitor vl, visit_var visitor l, visit_atom visitor a1, visit_atom visitor a2, n)
         | Irol (v, a, n) -> Irol (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
@@ -4093,6 +4115,7 @@ let bvcryptoline_of_instr i =
   | Isar _ -> raise (UnsupportedException "Instruction sar is not supported by BvCryptoLine.")
   | Isars _ -> raise (UnsupportedException "Instruction sars is not supported by BvCryptoLine.")
   | Icshl (vh, vl, a1, a2, n) -> Printf.sprintf "(bvConcatShl %s %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2) (Z.to_int n)
+  | Icshls _ -> raise (UnsupportedException "Instruction cshls is not supported by BvCryptoLine.")
   | Icshr _ -> raise (UnsupportedException "Instruction cshr is not supported by BvCryptoLine.")
   | Icshrs _ -> raise (UnsupportedException "Instruction cshrs is not supported by BvCryptoLine.")
   | Irol _ -> raise (UnsupportedException "Instruction rol is not supported by BvCryptoLine.")
@@ -4281,6 +4304,7 @@ let update_variable_id_instr m i =
   | Isar (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Isars (v, l, a, _) -> update_variable_id_atoms m [Avar v; Avar l; a]
   | Icshl (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
+  | Icshls (l, vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; Avar l; a1; a2]
   | Icshr (vh, vl, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
   | Icshrs (vh, vl, l, a1, a2, _) -> update_variable_id_atoms m [Avar vh; Avar vl; Avar l; a1; a2]
   | Irol (v, a, n) -> update_variable_id_atoms m [Avar v; a; n]

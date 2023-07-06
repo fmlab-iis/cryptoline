@@ -359,6 +359,17 @@
         resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
       (vm, vxm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
 
+  let parse_cshls_at lno lostL destH destL src1 src2 num =
+    fun _fm cm vm vxm ym gm ->
+      let a1 = resolve_atom_with lno src1 cm vm ym gm in
+      let a2 = resolve_atom_with lno src2 cm vm ym gm in
+      let ty = typ_of_atom a1 in
+      let n = num cm in
+      let (vm, ym, gm, l) = resolve_lv_with lno lostL cm vm ym gm (Some (typ_to_size ty (Z.to_int n))) in
+      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
+      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
+      (vm, vxm, ym, gm, [lno, Icshls (l, vh, vl, a1, a2, n)])
+
   let parse_cshr_at lno destH destL src1 src2 num =
     fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atom_with lno src1 cm vm ym gm in
@@ -1478,6 +1489,8 @@
          parse_isars_at lno dest lost src num fm cm vm vxm ym gm
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
          parse_cshl_at lno destH destL src1 src2 num fm cm vm vxm ym gm
+      | `CSHLS (`LVPLAIN lostL, `LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
+         parse_cshls_at lno lostL destH destL src1 src2 num fm cm vm vxm ym gm
       | `CSHR (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
          parse_cshr_at lno destH destL src1 src2 num fm cm vm vxm ym gm
       | `CSHRS (`LVPLAIN destH, `LVPLAIN destL, `LVPLAIN lostL, src1, src2, num) ->
@@ -1704,7 +1717,7 @@
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHLS CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP SETEQ SETNE
 /* Logical Expressions */
 %token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
@@ -1914,6 +1927,9 @@ instr:
   | lhs lhs EQOP SARS atom const                  { (!lnum, `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | CSHL lval lval atom atom const                { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP CSHL atom atom const         { (!lnum, `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHLS lval lval lval atom atom const          { (!lnum, `CSHLS ($2, $3, $4, $5, $6, $7)) }
+  | lhs DOT lhs DOT lhs EQOP CSHLS atom atom const
+                                                  { (!lnum, `CSHLS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
   | CSHR lval lval atom atom const                { (!lnum, `CSHR ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP CSHR atom atom const         { (!lnum, `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
   | CSHRS lval lval lval atom atom const          { (!lnum, `CSHRS ($2, $3, $4, $5, $6, $7)) }
@@ -2135,6 +2151,7 @@ instr:
   | SAR error                                     { raise_at !lnum ("Bad sar instruction") }
   | SARS error                                    { raise_at !lnum ("Bad sars instruction") }
   | CSHL error                                    { raise_at !lnum ("Bad cshl instruction") }
+  | CSHLS error                                   { raise_at !lnum ("Bad cshls instruction") }
   | CSHR error                                    { raise_at !lnum ("Bad cshr instruction") }
   | CSHRS error                                   { raise_at !lnum ("Bad cshrs instruction") }
   | ROL error                                     { raise_at !lnum ("Bad rol instruction") }
