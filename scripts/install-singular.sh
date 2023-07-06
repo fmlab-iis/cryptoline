@@ -15,7 +15,7 @@ pushd ${TOOLS_DIR}
 curl ${SINGULAR_URL} -o ${SINGULAR_TAR_GZ}
 tar zxf ${SINGULAR_TAR_GZ}
 pushd ${SINGULAR_DIR}
-curl https://www.flintlib.org/flint-2.6.3.tar.gz -o flint-2.6.3.tar.gz
+curl https://flintlib.org/flint-2.6.3.tar.gz -o flint-2.6.3.tar.gz
 tar zxvf flint-2.6.3.tar.gz
 pushd flint-2.6.3
 ./configure
