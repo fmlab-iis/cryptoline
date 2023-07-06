@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Tested on:
+# - Ubuntu: 22.04, 23.04
+
 TOOLS_DIR=tools
 BOOLECTOR_VERSION=3.2.2
 BOOLECTOR_TAR_GZ=${BOOLECTOR_VERSION}.tar.gz
