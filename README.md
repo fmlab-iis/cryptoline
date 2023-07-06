@@ -37,15 +37,18 @@ Installation
 ============
 
 On Linux
----------------------
+--------
 
 Follow the instructions below to build and install CryptoLine as well as
-the default solver Singular and Boolector on Ubuntu 23.04.
+the computer algebra system Singular and the SMT QF_BV solver Boolector
+on Ubuntu 23.04.
 
 ```
 $ sudo apt -y install \
         build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
-        curl git bc cmake libreadline-dev boolector singular
+        curl git bc cmake libreadline-dev python3 gdb
+$ ./scripts/install-boolector.sh
+$ ./scripts/install-singular.sh
 $ ./scripts/install-abc.sh
 $ dune build
 $ dune install
@@ -63,18 +66,8 @@ To uninstall CryptoLine, run the following command.
 $ dune uninstall
 ```
 
-Note that Singular and Boolector provided by Ubuntu are pretty old.
-It is recommended to install newer versions of Singular and Boolector.
-Using the scripts install-singular.sh and install-boolector.sh, Singular
-4.1.3p2 and Boolector 3.2.2 can be installed.
-
-```
-$ ./scripts/install-singular.sh
-$ ./scripts/install-boolector.sh
-```
-
 Using Docker
--------------------------
+------------
 
 A Dockerfile is provided in CryptoLine. Run the following commands to build
 a docker image and run a new container from the image.
@@ -85,7 +78,7 @@ $ docker run -it --name cryptoline cryptoline bash
 ```
 
 Simple Test
------------------
+-----------
 
 To test the installation of CryptoLine, run the following command in the
 project root.
