@@ -2042,7 +2042,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
@@ -2822,7 +2823,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
@@ -5240,7 +5242,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
@@ -5290,7 +5293,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
@@ -5336,7 +5340,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
@@ -5722,7 +5727,8 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+(* NOTE: don't care *)
+adcs dc x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
