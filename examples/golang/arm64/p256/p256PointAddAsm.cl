@@ -2019,6 +2019,15 @@ cmov x26 carry x14 x6;
 mov x19 L0x400018f4c8; mov x20 L0x400018f4d0;
 (* ldp	x21, x22, [sp, #312]                        #! EA = L0x400018f4d8; Value = 0xfc062acfba037883; PC = 0xc4788 *)
 mov x21 L0x400018f4d8; mov x22 L0x400018f4e0;
+
+(* NOTE: save inputs *)
+ghost x19o0@uint64, x20o0@uint64, x21o0@uint64, x22o0@uint64,
+      x23o0@uint64, x24o0@uint64, x25o0@uint64, x26o0@uint64 :
+  and [x19o0=x19, x20o0=x20, x21o0=x21, x22o0=x22,
+       x23o0=x23, x24o0=x24, x25o0=x25, x26o0=x26] &&
+  and [x19o0=x19, x20o0=x20, x21o0=x21, x22o0=x22,
+       x23o0=x23, x24o0=x24, x25o0=x25, x26o0=x26];
+  
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc478c *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc478c = 0xc478c;
 (* #! -> SP = 0x400018f3a0 *)
@@ -2058,6 +2067,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o0, x24o0, x25o0, x26o0, 0@64] -
+              limbs 64 [x19o0, x20o0, x21o0, x22o0, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o0, x24o0, x25o0, x26o0] -
+             limbs 64 [x19o0, x20o0, x21o0, x22o0]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+              
 (* stp	x19, x20, [sp, #136]                        #! EA = L0x400018f428; PC = 0xc4790 *)
 mov L0x400018f428 x19; mov L0x400018f430 x20;
 (* stp	x21, x22, [sp, #152]                        #! EA = L0x400018f438; PC = 0xc4794 *)
@@ -2800,6 +2821,15 @@ mov L0x400018f518 x25; mov L0x400018f520 x26;
 mov x19 L0x400018f4e8; mov x20 L0x400018f4f0;
 (* ldp	x21, x22, [sp, #344]                        #! EA = L0x400018f4f8; Value = 0xfb50b2cdb28031fe; PC = 0xc4810 *)
 mov x21 L0x400018f4f8; mov x22 L0x400018f500;
+
+(* NOTE: save inputs *)
+ghost x19o1@uint64, x20o1@uint64, x21o1@uint64, x22o1@uint64,
+      x23o1@uint64, x24o1@uint64, x25o1@uint64, x26o1@uint64 :
+  and [x19o1=x19, x20o1=x20, x21o1=x21, x22o1=x22,
+       x23o1=x23, x24o1=x24, x25o1=x25, x26o1=x26] &&
+  and [x19o1=x19, x20o1=x20, x21o1=x21, x22o1=x22,
+       x23o1=x23, x24o1=x24, x25o1=x25, x26o1=x26];
+
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4814 *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc4814 = 0xc4814;
 (* #! -> SP = 0x400018f3a0 *)
@@ -2839,6 +2869,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o1, x24o1, x25o1, x26o1, 0@64] -
+              limbs 64 [x19o1, x20o1, x21o1, x22o1, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o1, x24o1, x25o1, x26o1] -
+             limbs 64 [x19o1, x20o1, x21o1, x22o1]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+
 (* stp	x19, x20, [sp, #104]                        #! EA = L0x400018f408; PC = 0xc4818 *)
 mov L0x400018f408 x19; mov L0x400018f410 x20;
 (* stp	x21, x22, [sp, #120]                        #! EA = L0x400018f418; PC = 0xc481c *)
@@ -5219,6 +5261,15 @@ cmov x22 carry x14 x22;
 mov x23 L0x400018f468; mov x24 L0x400018f470;
 (* ldp	x25, x26, [sp, #216]                        #! EA = L0x400018f478; Value = 0x0960d645f89e8d33; PC = 0xc4938 *)
 mov x25 L0x400018f478; mov x26 L0x400018f480;
+
+(* NOTE: save inputs *)
+ghost x19o2@uint64, x20o2@uint64, x21o2@uint64, x22o2@uint64,
+      x23o2@uint64, x24o2@uint64, x25o2@uint64, x26o2@uint64 :
+  and [x19o2=x19, x20o2=x20, x21o2=x21, x22o2=x22,
+       x23o2=x23, x24o2=x24, x25o2=x25, x26o2=x26] &&
+  and [x19o2=x19, x20o2=x20, x21o2=x21, x22o2=x22,
+       x23o2=x23, x24o2=x24, x25o2=x25, x26o2=x26];
+
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc493c *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc493c = 0xc493c;
 (* #! -> SP = 0x400018f3a0 *)
@@ -5258,6 +5309,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o2, x24o2, x25o2, x26o2, 0@64] -
+              limbs 64 [x19o2, x20o2, x21o2, x22o2, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o2, x24o2, x25o2, x26o2] -
+             limbs 64 [x19o2, x20o2, x21o2, x22o2]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+
 (* mov	x23, x19                                    #! PC = 0xc4940 *)
 mov x23 x19;
 (* mov	x24, x20                                    #! PC = 0xc4944 *)
@@ -5270,6 +5333,15 @@ mov x26 x22;
 mov x19 L0x400018f488; mov x20 L0x400018f490;
 (* ldp	x21, x22, [sp, #248]                        #! EA = L0x400018f498; Value = 0x66792325cc3d5597; PC = 0xc4954 *)
 mov x21 L0x400018f498; mov x22 L0x400018f4a0;
+
+(* NOTE: save inputs *)
+ghost x19o3@uint64, x20o3@uint64, x21o3@uint64, x22o3@uint64,
+      x23o3@uint64, x24o3@uint64, x25o3@uint64, x26o3@uint64 :
+  and [x19o3=x19, x20o3=x20, x21o3=x21, x22o3=x22,
+       x23o3=x23, x24o3=x24, x25o3=x25, x26o3=x26] &&
+  and [x19o3=x19, x20o3=x20, x21o3=x21, x22o3=x22,
+       x23o3=x23, x24o3=x24, x25o3=x25, x26o3=x26];
+
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4958 *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc4958 = 0xc4958;
 (* #! -> SP = 0x400018f3a0 *)
@@ -5309,6 +5381,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o3, x24o3, x25o3, x26o3, 0@64] -
+              limbs 64 [x19o3, x20o3, x21o3, x22o3, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o3, x24o3, x25o3, x26o3] -
+             limbs 64 [x19o3, x20o3, x21o3, x22o3]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+
 (* stp	x19, x20, [x2]                              #! EA = L0x400018f6e8; PC = 0xc495c *)
 mov L0x400018f6e8 x19; mov L0x400018f6f0 x20;
 (* stp	x21, x22, [x2, #16]                         #! EA = L0x400018f6f8; PC = 0xc4960 *)
@@ -5317,6 +5401,15 @@ mov L0x400018f6f8 x21; mov L0x400018f700 x22;
 mov x23 L0x400018f508; mov x24 L0x400018f510;
 (* ldp	x25, x26, [sp, #376]                        #! EA = L0x400018f518; Value = 0x924bcba595071e89; PC = 0xc4968 *)
 mov x25 L0x400018f518; mov x26 L0x400018f520;
+
+(* NOTE: save inputs *)
+ghost x19o4@uint64, x20o4@uint64, x21o4@uint64, x22o4@uint64,
+      x23o4@uint64, x24o4@uint64, x25o4@uint64, x26o4@uint64 :
+  and [x19o4=x19, x20o4=x20, x21o4=x21, x22o4=x22,
+       x23o4=x23, x24o4=x24, x25o4=x25, x26o4=x26] &&
+  and [x19o4=x19, x20o4=x20, x21o4=x21, x22o4=x22,
+       x23o4=x23, x24o4=x24, x25o4=x25, x26o4=x26];
+
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc496c *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc496c = 0xc496c;
 (* #! -> SP = 0x400018f3a0 *)
@@ -5356,6 +5449,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o4, x24o4, x25o4, x26o4, 0@64] -
+              limbs 64 [x19o4, x20o4, x21o4, x22o4, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o4, x24o4, x25o4, x26o4] -
+             limbs 64 [x19o4, x20o4, x21o4, x22o4]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+
 (* ldp	x23, x24, [sp, #136]                        #! EA = L0x400018f428; Value = 0x7f3ed4753d9effad; PC = 0xc4970 *)
 mov x23 L0x400018f428; mov x24 L0x400018f430;
 (* ldp	x25, x26, [sp, #152]                        #! EA = L0x400018f438; Value = 0x8f550e86b4187b7d; PC = 0xc4974 *)
@@ -5704,6 +5809,15 @@ cmov x26 carry x14 x6;
 mov x19 L0x400018f3c8; mov x20 L0x400018f3d0;
 (* ldp	x21, x22, [sp, #56]                         #! EA = L0x400018f3d8; Value = 0x23938b455f6f0a33; PC = 0xc4980 *)
 mov x21 L0x400018f3d8; mov x22 L0x400018f3e0;
+
+(* NOTE: save inputs *)
+ghost x19o5@uint64, x20o5@uint64, x21o5@uint64, x22o5@uint64,
+      x23o5@uint64, x24o5@uint64, x25o5@uint64, x26o5@uint64 :
+  and [x19o5=x19, x20o5=x20, x21o5=x21, x22o5=x22,
+       x23o5=x23, x24o5=x24, x25o5=x25, x26o5=x26] &&
+  and [x19o5=x19, x20o5=x20, x21o5=x21, x22o5=x22,
+       x23o5=x23, x24o5=x24, x25o5=x25, x26o5=x26];
+
 (* #bl	0xc3940 <p256SubInternal>                   #! PC = 0xc4984 *)
 #bl	0xc3940 <p256SubInternal>                   #! 0xc4984 = 0xc4984;
 (* #! -> SP = 0x400018f3a0 *)
@@ -5743,6 +5857,18 @@ cmov x22 zero x6 x10;
 #! 0x400018f3a0 = 0x400018f3a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* NOTE: summarize in algebraic equations *)
+assert true
+    && eqsmod limbs 64 [x19, x20, x21, x22, 0@64]
+              limbs 64 [x23o5, x24o5, x25o5, x26o5, 0@64] -
+              limbs 64 [x19o5, x20o5, x21o5, x22o5, 0@64]
+              limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assert eqmod limbs 64 [x19, x20, x21, x22]
+             limbs 64 [x23o5, x24o5, x25o5, x26o5] -
+             limbs 64 [x19o5, x20o5, x21o5, x22o5]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
+
 (* stp	x19, x20, [x2, #32]                         #! EA = L0x400018f708; PC = 0xc4988 *)
 mov L0x400018f708 x19; mov L0x400018f710 x20;
 (* stp	x21, x22, [x2, #48]                         #! EA = L0x400018f718; PC = 0xc498c *)
@@ -5762,9 +5888,37 @@ adds dc sp sp 0x1a0@uint64;
 (* #ret                                            #! PC = 0xc49a4 *)
 #ret                                            #! 0xc49a4 = 0xc49a4;
 
+mov x3_0 L0x400018f6e8; mov x3_1 L0x400018f6f0;
+mov x3_2 L0x400018f6f8; mov x3_3 L0x400018f700;
+mov y3_0 L0x400018f708; mov y3_1 L0x400018f710;
+mov y3_2 L0x400018f718; mov y3_3 L0x400018f720;
+mov z3_0 L0x400018f728; mov z3_1 L0x400018f730;
+mov z3_2 L0x400018f738; mov z3_3 L0x400018f740;
+
+(*
+https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-2007-bl
+source 2007 Bernstein--Lange
+assume Z1=1
+assume Z2=1
+compute H = X2-X1
+compute HH = H^2
+compute I = 4 HH
+compute J = H I
+compute r = 2 (Y2-Y1)
+compute V = X1 I
+compute X3 = r^2-J-2 V
+compute Y3 = r (V-X3)-2 Y1 J
+compute Z3 = 2 H
+*)
+
 {
   true
-  &&
-  true
+&&
+  and [limbs 64 [x3_0, x3_1, x3_2, x3_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64],
+       limbs 64 [y3_0, y3_1, y3_2, y3_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64],
+       limbs 64 [z3_0, z3_1, z3_2, z3_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]]
 }
 
