@@ -1183,7 +1183,7 @@ let rec string_of_rexp ?typ:(typ=false) e =
   | Rvar v -> string_of_var ~typ:typ v
   | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
   | Runop (_, op, e) -> string_of_runop op ^ " " ^ se e
-  | Rbinop (_, op, e1, e2) -> string_of_rbinop op ^ " " ^ se e1 ^ " " ^ se e2 ^ ")"
+  | Rbinop (_, op, e1, e2) -> string_of_rbinop op ^ " " ^ se e1 ^ " " ^ se e2
   | Ruext (_, e, i) -> "uext " ^ se e ^ " " ^ string_of_int i
   | Rsext (_, e, i) -> "sext " ^ se e ^ " " ^ string_of_int i
   | Rconcat (_, _, e1, e2) -> "concat " ^ se e1 ^ " " ^ se e2
