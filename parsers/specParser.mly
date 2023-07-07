@@ -16,23 +16,24 @@
 
 %token <string> COMMENT
 %token <Z.t> NUM
-%token <string> ID PATH
+%token <string> ID VEC_ID PATH
 %token <int> UINT SINT
 %token BIT
-%token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOTDOT VBAR COLON
+%token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV
+%token BROADCAST
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
-%token SHL SHLS SHR SHRS SAR SARS CSHL CSHR CSHRS ROL ROR SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT ASSUME GHOST
-%token CUT ECUT RCUT NOP
+%token SHL SHLS SHR SHRS SAR SARS CSHL CSHLS CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
+%token CUT ECUT RCUT NOP SETEQ SETNE
 /* Logical Expressions */
-%token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE
+%token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP
+%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
 %token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF
@@ -43,13 +44,14 @@
 %left OROP
 %left XOROP
 %left ANDOP
+%left SHLOP SHROP SAROP
 %left ADDOP SUBOP
 %left MULOP
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
-%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE
-%nonassoc EQ EQMOD
+%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS ROL ROR CONCAT
+%nonassoc SETEQ SETNE EQ EQMOD
 %nonassoc UMINUS
 
 %start espec
@@ -109,12 +111,15 @@ instr:
   | SAR lval atom atom                            { [min_int, Isar ($2, $3, $4)] }
   | SARS lval lval atom const                     { [min_int, Isars ($2, $3, $4, $5)] }
   | CSHL lval lval atom atom const                { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | CSHLS lval lval lval atom atom const          { [min_int, Icshls ($2, $3, $4, $5, $6, $7)] }
   | CSHR lval lval atom atom const                { [min_int, Icshr ($2, $3, $4, $5, $6)] }
   | CSHRS lval lval lval atom atom const          { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
   | ROL lval atom atom                            { [min_int, Irol ($2, $3, $4)] }
   | ROR lval atom atom                            { [min_int, Iror ($2, $3, $4)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
   | CMOV lval carry atom atom                     { [min_int, Icmov ($2, $3, $4, $5)] }
+  | SETEQ lval atom atom                          { [min_int, Iseteq ($2, $3, $4)] }
+  | SETNE lval atom atom                          { [min_int, Isetne ($2, $3, $4)] }
   | ADD lval atom atom                            { [min_int, Iadd ($2, $3, $4)] }
   | ADDS lcarry lval atom atom                    { [min_int, Iadds ($2, $3, $4, $5)] }
   | ADC lval atom atom carry                      { [min_int, Iadc ($2, $3, $4, $5)] }
@@ -141,6 +146,8 @@ instr:
   | VPC lval_or_lcarry atom                       { [min_int, Ivpc ($2, $3)] }
   | JOIN lval atom atom                           { [min_int, Ijoin ($2, $3, $4)] }
   | ASSERT bexp_prove_with                        { let ((e, r), epwss, rpwss) = $2 in [min_int, Iassert ([(e, epwss)], [(r, rpwss)])] }
+  | EASSERT ebexp_prove_with                      { [min_int, Iassert ([$2], [])] }
+  | RASSERT rbexp_prove_with                      { [min_int, Iassert ([], [$2])] }
   | ASSUME bexp                                   { [min_int, Iassume ($2)] }
   | CUT bexp_prove_with                           { let ((e, r), epwss, rpwss) = $2 in [min_int, Icut ([(e, epwss)], [(r, rpwss)])] }
   | ECUT ebexp_prove_with                         { let (e, epwss) = $2 in [min_int, Icut ([(e, epwss)], [])] }
@@ -526,6 +533,31 @@ rexp:
                                                     let e2 = $3 in
                                                     let w1 = size_of_rexp e1 in
                                                     Rbinop (w1, Rxorb, e1, e2) }
+  | SHL rexp rexp                                 { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    Rbinop (w1, Rshl, e1, e2) }
+  | SHR rexp rexp                                 { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    Rbinop (w1, Rlshr, e1, e2) }
+  | SAR rexp rexp                                 { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    Rbinop (w1, Rashr, e1, e2) }
+  | ROL rexp rexp                                 { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    Rbinop (w1, Rrol, e1, e2) }
+  | ROR rexp rexp                                 { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    Rbinop (w1, Rror, e1, e2) }
+  | CONCAT rexp rexp                              { let e1 = $2 in
+                                                    let e2 = $3 in
+                                                    let w1 = size_of_rexp e1 in
+                                                    let w2 = size_of_rexp e2 in
+                                                    Rconcat (w1, w2, e1, e2) }
   | ADD LSQUARE rexps RSQUARE                     { let es = $3 in
                                                     match es with
                                                     | [] -> raise (Failure "No range expression is passed to bvradds.")

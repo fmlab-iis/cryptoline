@@ -13,6 +13,7 @@
               "const"                      , CONST;
               "assign"                     , MOV;
               "mov"                        , MOV;
+              "broadcast"                  , BROADCAST;
               "add"                        , ADD;
               "adds"                       , ADDS;
               "adc"                        , ADC;
@@ -68,12 +69,16 @@
               "sspl"                       , SSPL;
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;
+              "lsl"                        , SHL;
               "shls"                       , SHLS;
               "shr"                        , SHR;
               "shrs"                       , SHRS;
               "sar"                        , SAR;
               "sars"                       , SARS;
               "cshl"                       , CSHL;
+              "cshls"                      , CSHLS;
+              "clsl"                       , CSHL;
+              "clsls"                      , CSHLS;
               "cshr"                       , CSHR;
               "cshrs"                      , CSHRS;
               "rol"                        , ROL;
@@ -90,12 +95,16 @@
               "vpc"                        , VPC;
               "join"                       , JOIN;
               "assert"                     , ASSERT;
+              "eassert"                    , EASSERT;
+              "rassert"                    , RASSERT;
               "assume"                     , ASSUME;
               "cut"                        , CUT;
               "ecut"                       , ECUT;
               "rcut"                       , RCUT;
               "ghost"                      , GHOST;
               "nop"                        , NOP;
+              "seteq"                      , SETEQ;
+              "setne"                      , SETNE;
               (********** Logical Expressions **********)
               "vars"                       , VARS;
               "neg"                        , NEG;
@@ -117,6 +126,11 @@
               "sle"                        , SLE;
               "sgt"                        , SGT;
               "sge"                        , SGE;
+              "shr"                        , SHR;
+              "lsr"                        , SHR;
+              "sar"                        , SAR;
+              "asr"                        , SAR;
+              "concat"                     , CONCAT;
               (********** Predicates **********)
               "true"                       , TRUE;
               "eq"                         , EQ;
@@ -148,9 +162,11 @@
 
 let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
+let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
-let path = (['a'-'z' 'A'-'Z' '_' '/'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*) | (['"'][^ '"']+['"'])
+let identity_vec = '%' identity
+let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
@@ -196,6 +212,7 @@ token = parse
   | ':'                            { upd_cnum lexbuf; COLON }
   | "&&"                           { upd_cnum lexbuf; VBAR }
   | '|'                            { upd_cnum lexbuf; OROP }
+  | '.'                            { upd_cnum lexbuf; DOT }
   | ".."                           { upd_cnum lexbuf; DOTDOT }
   (* Operators *)
   | '+'                            { upd_cnum lexbuf; ADDOP }
@@ -213,6 +230,9 @@ token = parse
   | ">s"                           { upd_cnum lexbuf; SGTOP }
   | "<="                           { upd_cnum lexbuf; ULEOP }
   | ">="                           { upd_cnum lexbuf; UGEOP }
+  | "<<"                           { upd_cnum lexbuf; SHLOP }
+  | ">>a"                          { upd_cnum lexbuf; SAROP }
+  | ">>"                           { upd_cnum lexbuf; SHROP }
   | "<"                            { upd_cnum lexbuf; ULTOP }
   | ">"                            { upd_cnum lexbuf; UGTOP }
   | '='                            { upd_cnum lexbuf; EQOP }
@@ -228,6 +248,10 @@ token = parse
   | "int" ((number+) as w)         { upd_cnum lexbuf; SINT (int_of_string w) }
   | "bit"                          { upd_cnum lexbuf; BIT }
   (* Numbers *)
+  | "0b" ((bin+) as bin)           {
+                                     let _ = upd_cnum lexbuf in
+                                     NUM (Z.of_string_base 2 bin)
+                                   }
   | "0x" ((hex+) as hex)           {
                                      let _ = upd_cnum lexbuf in
                                      NUM (Z.of_string_base 16 hex)
@@ -239,6 +263,7 @@ token = parse
                                      with Not_found ->
                                        ID id
                                    }
+  | identity_vec as id             { upd_cnum lexbuf; VEC_ID id }
   | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
                                      upd_cnum lexbuf; PATH p }
   | eof                            { EOF }

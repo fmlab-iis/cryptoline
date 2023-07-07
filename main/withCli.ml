@@ -5,7 +5,7 @@ open Ast.Cryptoline
 open Typecheck.Std
 open Parsers.Std
 
-type action = VerifyESpec | VerifyRSpec | VerifySafety
+type action = VerifyESpec | VerifyRSpec | VerifySafety | ParseESpec | ParseRSpec
 
 let action = ref VerifyESpec
 
@@ -13,6 +13,8 @@ let parse_action str =
   if str = "vespec" then action := VerifyESpec
   else if str = "vrspec" then action := VerifyRSpec
   else if str = "vsafety" then action := VerifySafety
+  else if str = "pespec" then action := ParseESpec
+  else if str = "prspec" then action := ParseRSpec
   else failwith("Unknown command: " ^ str)
 
 let instr_index = ref 0
@@ -63,14 +65,20 @@ let anon file =
   | VerifySafety ->
      let spec = from_typecheck_rspec (rspec_from_file file) in
      let spec = normalize_rspec spec in
-     try
-       (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
-       | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
-       | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
-       | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
-       | _ -> failwith "Unfinished tasks. Should not happen!")
-     with Qfbv.Common.TimeoutException ->
-       print_endline "timeout"
+     (try
+        (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
+         | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
+         | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
+         | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
+         | _ -> failwith "Unfinished tasks. Should not happen!")
+      with Qfbv.Common.TimeoutException ->
+        print_endline "timeout")
+  | ParseESpec ->
+     let spec = from_typecheck_espec (espec_from_file file) in
+     print_endline (string_of_espec spec)
+  | ParseRSpec ->
+     let spec = from_typecheck_rspec (rspec_from_file file) in
+     print_endline (string_of_rspec spec)
 (*
 let _ =
   parse args anon usage
