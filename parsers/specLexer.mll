@@ -210,7 +210,7 @@ token = parse
   | ','                            { upd_cnum lexbuf; COMMA }
   | ';'                            { upd_cnum lexbuf; SEMICOLON }
   | ':'                            { upd_cnum lexbuf; COLON }
-  | "&&"                           { upd_cnum lexbuf; VBAR }
+  | "&&"['&']*                     { upd_cnum lexbuf; VBAR }
   | '|'                            { upd_cnum lexbuf; OROP }
   | '.'                            { upd_cnum lexbuf; DOT }
   | ".."                           { upd_cnum lexbuf; DOTDOT }
