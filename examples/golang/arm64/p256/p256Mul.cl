@@ -376,20 +376,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3c64 *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3c68 *)
-adcs carry x6 x6 x10 carry;
+adcs carry0 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3c6c *)
-adc x7 0@uint64 0@uint64 carry;
-
-cut eqmod limbs 64 [0, 0, 0, 0, x3, x4, x5, x6, x7]
-          limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3]
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] &&
-    limbs 64 [x3, x4, x5, x6, x7] <u
-    2@320 * limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
-
-ghost x3o@uint64, x4o@uint64, x5o@uint64, x6o@uint64, x7o@uint64 :
-      and [x3o=x3, x4o=x4, x5o=x5, x6o=x6, x7o=x7] && 
-      and [x3o=x3, x4o=x4, x5o=x5, x6o=x6, x7o=x7];
-       
+adc x7 0@uint64 0@uint64 carry0;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3c74 *)
@@ -399,9 +388,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3c7c *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3c80 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry1 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3c84 *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry1;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry1 = 0@1];
+assume (carry - 1)*carry1 = 0 && true;
+assert true && uext carry 1 = uext carry0 1 + uext carry1 1;
+assume carry = carry0 + carry1 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c *)
@@ -410,15 +406,6 @@ cmov x24 carry x12 x4;
 cmov x25 carry x13 x5;
 (* csel	x26, x14, x6, cs  // cs = hs, nlast        #! PC = 0xc3c94 *)
 cmov x26 carry x14 x6;
-
-assert true
-    && eqmod limbs 64 [x23, x24, x25, x26, 0@64]
-             limbs 64 [x3o, x4o, x5o, x6o, x7o]
-             limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
-assume eqmod limbs 64 [x23, x24, x25, x26]
-             limbs 64 [x3o, x4o, x5o, x6o, x7o]
-             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3] && true;
-
 (* #! <- SP = 0x400008fb20 *)
 #! 0x400008fb20 = 0x400008fb20;
 (* #ret                                            #! PC = 0xc3c98 *)
