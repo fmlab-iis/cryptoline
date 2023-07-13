@@ -3,26 +3,39 @@ const P256_1 = 0x00000000ffffffff
 const P256_2 = 0x0000000000000000
 const P256_3 = 0xffffffff00000001
 
-proc main (uint64 x1_0, uint64 x1_1, uint64 x1_2, uint64 x1_3,
-           uint64 y1_0, uint64 y1_1, uint64 y1_2, uint64 y1_3,
-           uint64 z1_0, uint64 z1_1, uint64 z1_2, uint64 z1_3) =
+proc main (uint64 xR_0, uint64 xR_1, uint64 xR_2, uint64 xR_3,
+           uint64 yR_0, uint64 yR_1, uint64 yR_2, uint64 yR_3,
+           uint64 zR_0, uint64 zR_1, uint64 zR_2, uint64 zR_3) =
 {
   true
-  &&
-  and [limbs 64 [x1_0,x1_1,x1_2,x1_3] <u
+&&
+  and [limbs 64 [xR_0,xR_1,xR_2,xR_3] <u
        limbs 64 [$P256_0@64,$P256_1@64,$P256_2@64,$P256_3@64],
-       limbs 64 [y1_0,y1_1,y1_2,y1_3] <u
+       limbs 64 [yR_0,yR_1,yR_2,yR_3] <u
        limbs 64 [$P256_0@64,$P256_1@64,$P256_2@64,$P256_3@64],
-       limbs 64 [z1_0,z1_1,z1_2,z1_3] <u
+       limbs 64 [zR_0,zR_1,zR_2,zR_3] <u
        limbs 64 [$P256_0@64,$P256_1@64,$P256_2@64,$P256_3@64]]
 }
 
-mov L0x4000057dc8 x1_0; mov L0x4000057dd0 x1_1;
-mov L0x4000057dd8 x1_2; mov L0x4000057de0 x1_3;
-mov L0x4000057de8 y1_0; mov L0x4000057df0 y1_1;
-mov L0x4000057df8 y1_2; mov L0x4000057e00 y1_3;
-mov L0x4000057e08 z1_0; mov L0x4000057e10 z1_1;
-mov L0x4000057e18 z1_2; mov L0x4000057e20 z1_3;
+ghost x_0@uint64, x_1@uint64, x_2@uint64, x_3@uint64,
+      y_0@uint64, y_1@uint64, y_2@uint64, y_3@uint64,
+      z_0@uint64, z_1@uint64, z_2@uint64, z_3@uint64 :
+      and [eqmod limbs 64 [xR_0, xR_1, xR_2, xR_3]
+                 2**256 * limbs 64 [x_0, x_1, x_2, x_3]
+                 limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
+           eqmod limbs 64 [yR_0, yR_1, yR_2, yR_3]
+                 2**256 * limbs 64 [y_0, y_1, y_2, y_3]
+                 limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
+           eqmod limbs 64 [zR_0, zR_1, zR_2, zR_3]
+                 2**256 * limbs 64 [z_0, z_1, z_2, z_3]
+                 limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]] && true;
+
+mov L0x4000057dc8 xR_0; mov L0x4000057dd0 xR_1;
+mov L0x4000057dd8 xR_2; mov L0x4000057de0 xR_3;
+mov L0x4000057de8 yR_0; mov L0x4000057df0 yR_1;
+mov L0x4000057df8 yR_2; mov L0x4000057e00 yR_3;
+mov L0x4000057e08 zR_0; mov L0x4000057e10 zR_1;
+mov L0x4000057e18 zR_2; mov L0x4000057e20 zR_3;
 
 mov L0x129658 $P256_1@uint64;
 mov L0x129660 $P256_3@uint64;
@@ -301,9 +314,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3aac *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3ab0 *)
-adcs carry x6 x6 x10 carry;
+adcs carry0 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3ab4 *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry0;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3abc *)
@@ -313,9 +326,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3ac4 *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3ac8 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry1 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3acc *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry1;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry1 = 0@1];
+assume (carry - 1)*carry1 = 0 && true;
+assert true && uext carry 1 = uext carry0 1 + uext carry1 1;
+assume carry = carry0 + carry1 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4 *)
@@ -332,6 +352,16 @@ cmov x26 carry x14 x6;
 mov L0x40000574e8 x23; mov L0x40000574f0 x24;
 (* stp	x25, x26, [sp, #88]                         #! EA = L0x40000574f8; PC = 0xc443c *)
 mov L0x40000574f8 x25; mov L0x4000057500 x26;
+
+(* 0 *)
+cut eqmod limbs 64 [L0x40000574e8, L0x40000574f0, L0x40000574f8, L0x4000057500]
+          2**256 * (limbs 64 [z_0, z_1, z_2, z_3])**2
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x40000574e8, L0x40000574f0, L0x40000574f8, L0x4000057500] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x19, x20, [x1]                              #! EA = L0x4000057dc8; Value = 0x4ee5f8e3ffacff77; PC = 0xc4440 *)
 mov x19 L0x4000057dc8; mov x20 L0x4000057dd0;
 (* ldp	x21, x22, [x1, #16]                         #! EA = L0x4000057dd8; Value = 0x42857eb1dc4dccb1; PC = 0xc4444 *)
@@ -343,9 +373,9 @@ adcs carry x20 x20 x24 carry;
 (* adcs	x21, x21, x25                              #! PC = 0xc4450 *)
 adcs carry x21 x21 x25 carry;
 (* adcs	x22, x22, x26                              #! PC = 0xc4454 *)
-adcs carry x22 x22 x26 carry;
+adcs carry2 x22 x22 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc4458 *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry2;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc445c *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc4460 *)
@@ -355,9 +385,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc4468 *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc446c *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry3 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc4470 *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry3;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry3 = 0@1];
+assume (carry - 1)*carry3 = 0 && true;
+assert true && uext carry 1 = uext carry2 1 + uext carry3 1;
+assume carry = carry2 + carry3 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc4474 *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc4478 *)
@@ -370,6 +407,16 @@ cmov x22 carry x14 x22;
 mov L0x40000574c8 x19; mov L0x40000574d0 x20;
 (* stp	x21, x22, [sp, #56]                         #! EA = L0x40000574d8; PC = 0xc4488 *)
 mov L0x40000574d8 x21; mov L0x40000574e0 x22;
+
+(* 1 *)
+cut eqmod limbs 64 [L0x40000574c8, L0x40000574d0, L0x40000574d8, L0x40000574e0]
+          2**256*(limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x40000574c8, L0x40000574d0, L0x40000574d8, L0x40000574e0] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x19, x20, [x1, #64]                         #! EA = L0x4000057e08; Value = 0x0000000000000001; PC = 0xc448c *)
 mov x19 L0x4000057e08; mov x20 L0x4000057e10;
 (* ldp	x21, x22, [x1, #80]                         #! EA = L0x4000057e18; Value = 0xffffffffffffffff; PC = 0xc4490 *)
@@ -691,9 +738,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3c64 *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3c68 *)
-adcs carry x6 x6 x10 carry;
+adcs carry4 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3c6c *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry4;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3c74 *)
@@ -703,9 +750,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3c7c *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3c80 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry5 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3c84 *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry5;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry5 = 0@1];
+assume (carry - 1)*carry5 = 0 && true;
+assert true && uext carry 1 = uext carry4 1 + uext carry5 1;
+assume carry = carry4 + carry5 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c *)
@@ -718,6 +772,16 @@ cmov x26 carry x14 x6;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc3c98 *)
 #ret                                            #! 0xc3c98 = 0xc3c98;
+
+(* 2 *)
+cut eqmod limbs 64 [x23, x24, x25, x26]
+          2**256 * limbs 64 [y_0,y_1,y_2,y_3] * limbs 64 [z_0,z_1,z_2,z_3]
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [x23, x24, x25, x26] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* adds	x19, x23, x23                              #! PC = 0xc44a0 *)
 adds carry x19 x23 x23;
 (* adcs	x20, x24, x24                              #! PC = 0xc44a4 *)
@@ -725,9 +789,9 @@ adcs carry x20 x24 x24 carry;
 (* adcs	x21, x25, x25                              #! PC = 0xc44a8 *)
 adcs carry x21 x25 x25 carry;
 (* adcs	x22, x26, x26                              #! PC = 0xc44ac *)
-adcs carry x22 x26 x26 carry;
+adcs carry6 x22 x26 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc44b0 *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry6;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc44b4 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc44b8 *)
@@ -737,9 +801,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc44c0 *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc44c4 *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry7 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc44c8 *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry7;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry7 = 0@1];
+assume (carry - 1)*carry7 = 0 && true;
+assert true && uext carry 1 = uext carry6 1 + uext carry7 1;
+assume carry = carry6 + carry7 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc44cc *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc44d0 *)
@@ -752,6 +823,16 @@ cmov x22 carry x14 x22;
 mov L0x4000057728 x19; mov L0x4000057730 x20;
 (* stp	x21, x22, [x0, #80]                         #! EA = L0x4000057738; PC = 0xc44e0 *)
 mov L0x4000057738 x21; mov L0x4000057740 x22;
+
+(* 3 *)
+cut eqmod limbs 64 [L0x4000057728, L0x4000057730, L0x4000057738, L0x4000057740]
+          2 * 2**256 * limbs 64 [y_0,y_1,y_2,y_3] * limbs 64 [z_0,z_1,z_2,z_3]
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x4000057728, L0x4000057730, L0x4000057738, L0x4000057740] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x23, x24, [x1]                              #! EA = L0x4000057dc8; Value = 0x4ee5f8e3ffacff77; PC = 0xc44e4 *)
 mov x23 L0x4000057dc8; mov x24 L0x4000057dd0;
 (* ldp	x25, x26, [x1, #16]                         #! EA = L0x4000057dd8; Value = 0x42857eb1dc4dccb1; PC = 0xc44e8 *)
@@ -771,9 +852,9 @@ sbcs carry x4 x24 x20 carry;
 (* sbcs	x5, x25, x21                               #! PC = 0xc3948 *)
 sbcs carry x5 x25 x21 carry;
 (* sbcs	x6, x26, x22                               #! PC = 0xc394c *)
-sbcs carry x6 x26 x22 carry;
+sbcs carry8 x6 x26 x22 carry;
 (* ngc	x11, xzr                                    #! PC = 0xc3950 *)
-sbcs dc x11 0@uint64 0@uint64 carry;
+sbcs dc x11 0@uint64 0@uint64 carry8;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954 *)
 mov x27 0xffffffffffffffff@uint64;
 (* adds	x7, x3, x27                                #! PC = 0xc3958 *)
@@ -783,9 +864,17 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+adcs dc9 x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
+
+(* NOTE: more identities *)
+assert true && zero = carry8;
+assume zero = carry8 && true;
+(* assert true && or [dc9 = 1@1, carry8 = 1@1]; *)
+(* assert true && (dc9 - 1@1)*(carry8 - 1@1) = 0@1; *)
+assume (dc9- 1)*(carry8- 1)= 0 && true;
+
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
 cmov x19 zero x3 x7;
 (* csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970 *)
@@ -798,6 +887,16 @@ cmov x22 zero x6 x10;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* 4 *)
+cut eqmod limbs 64 [x19, x20, x21, x22]
+          2**256 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [0] ]
+ && limbs 64 [x19, x20, x21, x22] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [0] ];
+
 (* ldp	x23, x24, [sp, #40]                         #! EA = L0x40000574c8; Value = 0x4ee5f8e3ffacff78; PC = 0xc44f8 *)
 mov x23 L0x40000574c8; mov x24 L0x40000574d0;
 (* ldp	x25, x26, [sp, #56]                         #! EA = L0x40000574d8; Value = 0x42857eb1dc4dccb1; PC = 0xc44fc *)
@@ -1115,9 +1214,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3c64 *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3c68 *)
-adcs carry x6 x6 x10 carry;
+adcs carry10 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3c6c *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry10;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3c74 *)
@@ -1127,9 +1226,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3c7c *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3c80 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry11 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3c84 *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry11;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry11 = 0@1];
+assume (carry - 1)*carry11 = 0 && true;
+assert true && uext carry 1 = uext carry10 1 + uext carry11 1;
+assume carry = carry10 + carry11 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c *)
@@ -1142,6 +1248,17 @@ cmov x26 carry x14 x6;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc3c98 *)
 #ret                                            #! 0xc3c98 = 0xc3c98;
+
+(* 5 *)
+cut eqmod limbs 64 [x23, x24, x25, x26]
+          2**256 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                   (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [1] ]
+ && limbs 64 [x23, x24, x25, x26] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [1] ];
+
 (* adds	x19, x23, x23                              #! PC = 0xc4504 *)
 adds carry x19 x23 x23;
 (* adcs	x20, x24, x24                              #! PC = 0xc4508 *)
@@ -1149,9 +1266,9 @@ adcs carry x20 x24 x24 carry;
 (* adcs	x21, x25, x25                              #! PC = 0xc450c *)
 adcs carry x21 x25 x25 carry;
 (* adcs	x22, x26, x26                              #! PC = 0xc4510 *)
-adcs carry x22 x26 x26 carry;
+adcs carry12 x22 x26 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc4514 *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry12;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc4518 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc451c *)
@@ -1161,9 +1278,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc4524 *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc4528 *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry13 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc452c *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry13;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry13 = 0@1];
+assume (carry - 1)*carry13 = 0 && true;
+assert true && uext carry 1 = uext carry12 1 + uext carry13 1;
+assume carry = carry12 + carry13 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc4530 *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc4534 *)
@@ -1179,9 +1303,9 @@ adcs carry x20 x20 x24 carry;
 (* adcs	x21, x21, x25                              #! PC = 0xc4548 *)
 adcs carry x21 x21 x25 carry;
 (* adcs	x22, x22, x26                              #! PC = 0xc454c *)
-adcs carry x22 x22 x26 carry;
+adcs carry14 x22 x22 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc4550 *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry14;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc4554 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc4558 *)
@@ -1191,9 +1315,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc4560 *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc4564 *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry15 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc4568 *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry15;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry15 = 0@1];
+assume (carry - 1)*carry15 = 0 && true;
+assert true && uext carry 1 = uext carry14 1 + uext carry15 1;
+assume carry = carry14 + carry15 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc456c *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc4570 *)
@@ -1206,6 +1337,17 @@ cmov x22 carry x14 x22;
 mov L0x40000574c8 x19; mov L0x40000574d0 x20;
 (* stp	x21, x22, [sp, #56]                         #! EA = L0x40000574d8; PC = 0xc4580 *)
 mov L0x40000574d8 x21; mov L0x40000574e0 x22;
+
+(* 6 *)
+cut eqmod limbs 64 [L0x40000574c8, L0x40000574d0, L0x40000574d8, L0x40000574e0]
+          2**256 *3*(limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                    (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x40000574c8, L0x40000574d0, L0x40000574d8, L0x40000574e0] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x23, x24, [x1, #32]                         #! EA = L0x4000057de8; Value = 0x65539690f3f15509; PC = 0xc4584 *)
 mov x23 L0x4000057de8; mov x24 L0x4000057df0;
 (* ldp	x25, x26, [x1, #48]                         #! EA = L0x4000057df8; Value = 0xdb0e41600c1d22c6; PC = 0xc4588 *)
@@ -1217,9 +1359,9 @@ adcs carry x20 x24 x24 carry;
 (* adcs	x21, x25, x25                              #! PC = 0xc4594 *)
 adcs carry x21 x25 x25 carry;
 (* adcs	x22, x26, x26                              #! PC = 0xc4598 *)
-adcs carry x22 x26 x26 carry;
+adcs carry16 x22 x26 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc459c *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry16;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc45a0 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc45a4 *)
@@ -1229,9 +1371,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc45ac *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc45b0 *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry17 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc45b4 *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry17;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry17 = 0@1];
+assume (carry - 1)*carry17 = 0 && true;
+assert true && uext carry 1 = uext carry16 1 + uext carry17 1;
+assume carry = carry16 + carry17 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc45b8 *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc45bc *)
@@ -1487,9 +1636,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3aac *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3ab0 *)
-adcs carry x6 x6 x10 carry;
+adcs carry18 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3ab4 *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry18;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3abc *)
@@ -1499,9 +1648,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3ac4 *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3ac8 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry19 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3acc *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry19;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry19 = 0@1];
+assume (carry - 1)*carry19 = 0 && true;
+assert true && uext carry 1 = uext carry18 1 + uext carry19 1;
+assume carry = carry18 + carry19 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4 *)
@@ -1518,6 +1674,16 @@ cmov x26 carry x14 x6;
 mov L0x40000574a8 x23; mov L0x40000574b0 x24;
 (* stp	x25, x26, [sp, #24]                         #! EA = L0x40000574b8; PC = 0xc45d0 *)
 mov L0x40000574b8 x25; mov L0x40000574c0 x26;
+
+(* 7 *)
+cut eqmod limbs 64 [L0x40000574a8, L0x40000574b0, L0x40000574b8, L0x40000574c0]
+          2**256 * 4 * limbs 64 [y_0,y_1,y_2,y_3]**2
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x40000574a8, L0x40000574b0, L0x40000574b8, L0x40000574c0] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* mov	x19, x23                                    #! PC = 0xc45d4 *)
 mov x19 x23;
 (* mov	x20, x24                                    #! PC = 0xc45d8 *)
@@ -1773,9 +1939,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3aac *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3ab0 *)
-adcs carry x6 x6 x10 carry;
+adcs carry20 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3ab4 *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry20;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3abc *)
@@ -1785,9 +1951,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3ac4 *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3ac8 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry21 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3acc *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry21;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry21 = 0@1];
+assume (carry - 1)*carry21 = 0 && true;
+assert true && uext carry 1 = uext carry20 1 + uext carry21 1;
+assume carry = carry20 + carry21 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4 *)
@@ -1800,6 +1973,20 @@ cmov x26 carry x14 x6;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc3ae0 *)
 #ret                                            #! 0xc3ae0 = 0xc3ae0;
+
+(* 8 *)
+cut eqmod limbs 64 [x23, x24, x25, x26]
+          2**256 * 16 * limbs 64 [y_0,y_1,y_2,y_3]**4
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [x23, x24, x25, x26] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
+ghost x23o@uint64, x24o@uint64, x25o@uint64, x26o@uint64 :
+      and [x23o=x23, x24o=x24, x25o=x25, x26o=x26]
+   && and [x23o=x23, x24o=x24, x25o=x25, x26o=x26];
+
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc45e8 *)
 mov x27 0xffffffffffffffff@uint64;
 (* adds	x11, x23, x27                              #! PC = 0xc45ec *)
@@ -1813,7 +2000,9 @@ adcs carry x14 x26 x16 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc45fc *)
 adc x17 0@uint64 0@uint64 carry;
 (* tst	x23, #0x1                                   #! PC = 0xc4600 *)
-and tst_t@uint64 x23 0x1@uint64; subc zero dc 0@uint64 tst_t;
+(* and tst_t@uint64 x23 0x1@uint64; subc zero dc 0@uint64 tst_t; *)
+(* NOTE: manual translation *)
+split dc tst_t x23 1; subc zero dc 0@uint64 tst_t;
 (* csel	x11, x23, x11, eq  // eq = none            #! PC = 0xc4604 *)
 cmov x11 zero x23 x11;
 (* csel	x12, x24, x12, eq  // eq = none            #! PC = 0xc4608 *)
@@ -1823,7 +2012,9 @@ cmov x13 zero x25 x13;
 (* csel	x14, x26, x14, eq  // eq = none            #! PC = 0xc4610 *)
 cmov x14 zero x26 x14;
 (* and	x17, x17, x23                               #! PC = 0xc4614 *)
-and x17@uint64 x17 x23;
+(* and x17@uint64 x17 x23; *)
+(* NOTE: manual translation *)
+subc z dc 0@uint64 x17; cmov x17 z 0@uint64 tst_t;
 (* extr	x23, x12, x11, #1                          #! PC = 0xc4618 *)
 spl dc extr_H x12 1; spl extr_L dc x11 1; join x23 extr_H extr_L;
 (* extr	x24, x13, x12, #1                          #! PC = 0xc461c *)
@@ -1836,6 +2027,26 @@ spl dc extr_H x17 1; spl extr_L dc x14 1; join x26 extr_H extr_L;
 mov L0x4000057708 x23; mov L0x4000057710 x24;
 (* stp	x25, x26, [x0, #48]                         #! EA = L0x4000057718; PC = 0xc462c *)
 mov L0x4000057718 x25; mov L0x4000057720 x26;
+
+assert true
+    && eqmod 2@320 *
+             limbs 64 [x23, x24, x25, x26, 0@64]
+             limbs 64 [x23o, x24o, x25o, x26o, 0@64]
+             limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64, 0@64];
+assume eqmod 2 * limbs 64 [x23, x24, x25, x26]
+             limbs 64 [x23o, x24o, x25o, x26o]
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    && true;
+
+(* 9 *)
+cut eqmod limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720]
+          2**256 * 8 * limbs 64 [y_0,y_1,y_2,y_3]**4
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x19, x20, [x1]                              #! EA = L0x4000057dc8; Value = 0x4ee5f8e3ffacff77; PC = 0xc4630 *)
 mov x19 L0x4000057dc8; mov x20 L0x4000057dd0;
 (* ldp	x21, x22, [x1, #16]                         #! EA = L0x4000057dd8; Value = 0x42857eb1dc4dccb1; PC = 0xc4634 *)
@@ -2157,9 +2368,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3c64 *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3c68 *)
-adcs carry x6 x6 x10 carry;
+adcs carry22 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3c6c *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry22;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3c74 *)
@@ -2169,9 +2380,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3c7c *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3c80 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry23 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3c84 *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry23;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry23 = 0@1];
+assume (carry - 1)*carry23 = 0 && true;
+assert true && uext carry 1 = uext carry22 1 + uext carry23 1;
+assume carry = carry22 + carry23 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c *)
@@ -2188,6 +2406,16 @@ cmov x26 carry x14 x6;
 mov L0x40000574a8 x23; mov L0x40000574b0 x24;
 (* stp	x25, x26, [sp, #24]                         #! EA = L0x40000574b8; PC = 0xc4648 *)
 mov L0x40000574b8 x25; mov L0x40000574c0 x26;
+
+(* 10 *)
+cut eqmod limbs 64 [L0x40000574a8, L0x40000574b0, L0x40000574b8, L0x40000574c0]
+          2**256 * 4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [7] ]
+ && limbs 64 [L0x40000574a8, L0x40000574b0, L0x40000574b8, L0x40000574c0] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [7] ];
+
 (* adds	x19, x23, x23                              #! PC = 0xc464c *)
 adds carry x19 x23 x23;
 (* adcs	x20, x24, x24                              #! PC = 0xc4650 *)
@@ -2195,9 +2423,9 @@ adcs carry x20 x24 x24 carry;
 (* adcs	x21, x25, x25                              #! PC = 0xc4654 *)
 adcs carry x21 x25 x25 carry;
 (* adcs	x22, x26, x26                              #! PC = 0xc4658 *)
-adcs carry x22 x26 x26 carry;
+adcs carry24 x22 x26 x26 carry;
 (* adc	x17, xzr, xzr                               #! PC = 0xc465c *)
-adc x17 0@uint64 0@uint64 carry;
+adc x17 0@uint64 0@uint64 carry24;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc4660 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x19, x27                              #! PC = 0xc4664 *)
@@ -2207,9 +2435,16 @@ sbcs carry x12 x20 x15 carry;
 (* sbcs	x13, x21, xzr                              #! PC = 0xc466c *)
 sbcs carry x13 x21 0@uint64 carry;
 (* sbcs	x14, x22, x16                              #! PC = 0xc4670 *)
-sbcs carry x14 x22 x16 carry;
+sbcs carry25 x14 x22 x16 carry;
 (* sbcs	x17, x17, xzr                              #! PC = 0xc4674 *)
-sbcs carry x17 x17 0@uint64 carry;
+sbcs carry x17 x17 0@uint64 carry25;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry25 = 0@1];
+assume (carry - 1)*carry25 = 0 && true;
+assert true && uext carry 1 = uext carry24 1 + uext carry25 1;
+assume carry = carry24 + carry25 && true;
+
 (* csel	x19, x19, x11, cc  // cc = lo, ul, last    #! PC = 0xc4678 *)
 cmov x19 carry x11 x19;
 (* csel	x20, x20, x12, cc  // cc = lo, ul, last    #! PC = 0xc467c *)
@@ -2222,6 +2457,16 @@ cmov x22 carry x14 x22;
 mov L0x4000057508 x19; mov L0x4000057510 x20;
 (* stp	x21, x22, [sp, #120]                        #! EA = L0x4000057518; PC = 0xc468c *)
 mov L0x4000057518 x21; mov L0x4000057520 x22;
+
+(* 11 *)
+cut eqmod limbs 64 [L0x4000057508, L0x4000057510, L0x4000057518, L0x4000057520]
+          2**256 * 8 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts ]
+ && limbs 64 [L0x4000057508, L0x4000057510, L0x4000057518, L0x4000057520] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition ];
+
 (* ldp	x19, x20, [sp, #40]                         #! EA = L0x40000574c8; Value = 0xace92713dfbddb64; PC = 0xc4690 *)
 mov x19 L0x40000574c8; mov x20 L0x40000574d0;
 (* ldp	x21, x22, [sp, #56]                         #! EA = L0x40000574d8; Value = 0xbb60517a73b6b82c; PC = 0xc4694 *)
@@ -2473,9 +2718,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3aac *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3ab0 *)
-adcs carry x6 x6 x10 carry;
+adcs carry26 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3ab4 *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry26;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3ab8 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3abc *)
@@ -2485,9 +2730,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3ac4 *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3ac8 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry27 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3acc *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry27;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry27 = 0@1];
+assume (carry - 1)*carry27 = 0 && true;
+assert true && uext carry 1 = uext carry26 1 + uext carry27 1;
+assume carry = carry26 + carry27 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3ad0 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3ad4 *)
@@ -2500,6 +2752,18 @@ cmov x26 carry x14 x6;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc3ae0 *)
 #ret                                            #! 0xc3ae0 = 0xc3ae0;
+
+(* 12 *)
+cut eqmod limbs 64 [x23, x24, x25, x26]
+          2**256 *
+          9 * ((limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+               (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2))**2
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [6] ]
+ && limbs 64 [x23, x24, x25, x26] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [6] ];
+
 (* ldp	x19, x20, [sp, #104]                        #! EA = L0x4000057508; Value = 0x480968ea96e9c714; PC = 0xc469c *)
 mov x19 L0x4000057508; mov x20 L0x4000057510;
 (* ldp	x21, x22, [sp, #120]                        #! EA = L0x4000057518; Value = 0x5bd3ec6b4d3a67a6; PC = 0xc46a0 *)
@@ -2515,9 +2779,9 @@ sbcs carry x4 x24 x20 carry;
 (* sbcs	x5, x25, x21                               #! PC = 0xc3948 *)
 sbcs carry x5 x25 x21 carry;
 (* sbcs	x6, x26, x22                               #! PC = 0xc394c *)
-sbcs carry x6 x26 x22 carry;
+sbcs carry28 x6 x26 x22 carry;
 (* ngc	x11, xzr                                    #! PC = 0xc3950 *)
-sbcs dc x11 0@uint64 0@uint64 carry;
+sbcs dc x11 0@uint64 0@uint64 carry28;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954 *)
 mov x27 0xffffffffffffffff@uint64;
 (* adds	x7, x3, x27                                #! PC = 0xc3958 *)
@@ -2527,9 +2791,17 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+adcs dc29 x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
+
+(* NOTE: more identities *)
+assert true && zero = carry28;
+assume zero = carry28 && true;
+(* assert true && or [dc29 = 1@1, carry28 = 1@1]; *)
+(* assert true && (dc29 - 1@1)*(carry28 - 1@1) = 0@1; *)
+assume (dc29- 1)*(carry28- 1)= 0 && true;
+
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
 cmov x19 zero x3 x7;
 (* csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970 *)
@@ -2546,6 +2818,19 @@ cmov x22 zero x6 x10;
 mov L0x40000576e8 x19; mov L0x40000576f0 x20;
 (* stp	x21, x22, [x0, #16]                         #! EA = L0x40000576f8; PC = 0xc46ac *)
 mov L0x40000576f8 x21; mov L0x4000057700 x22;
+
+(* 13 *)
+cut eqmod limbs 64 [L0x40000576e8, L0x40000576f0, L0x40000576f8, L0x4000057700]
+          2**256 *
+          (9 * ((limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2))**2 -
+           8 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [11] ]
+ && limbs 64 [L0x40000576e8, L0x40000576f0, L0x40000576f8, L0x4000057700] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [11] ];
+
 (* ldp	x23, x24, [sp, #8]                          #! EA = L0x40000574a8; Value = 0x2404b4754b74e38a; PC = 0xc46b0 *)
 mov x23 L0x40000574a8; mov x24 L0x40000574b0;
 (* ldp	x25, x26, [sp, #24]                         #! EA = L0x40000574b8; Value = 0xade9f635a69d33d3; PC = 0xc46b4 *)
@@ -2561,9 +2846,9 @@ sbcs carry x4 x24 x20 carry;
 (* sbcs	x5, x25, x21                               #! PC = 0xc3948 *)
 sbcs carry x5 x25 x21 carry;
 (* sbcs	x6, x26, x22                               #! PC = 0xc394c *)
-sbcs carry x6 x26 x22 carry;
+sbcs carry30 x6 x26 x22 carry;
 (* ngc	x11, xzr                                    #! PC = 0xc3950 *)
-sbcs dc x11 0@uint64 0@uint64 carry;
+sbcs dc x11 0@uint64 0@uint64 carry30;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954 *)
 mov x27 0xffffffffffffffff@uint64;
 (* adds	x7, x3, x27                                #! PC = 0xc3958 *)
@@ -2573,9 +2858,17 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+adcs dc31 x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
+
+(* NOTE: more identities *)
+assert true && zero = carry30;
+assume zero = carry30 && true;
+(* assert true && or [dc31 = 1@1, carry30 = 1@1]; *)
+(* assert true && (dc31 - 1@1)*(carry30 - 1@1) = 0@1; *)
+assume (dc31- 1)*(carry30- 1)= 0 && true;
+
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
 cmov x19 zero x3 x7;
 (* csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970 *)
@@ -2588,6 +2881,20 @@ cmov x22 zero x6 x10;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc397c *)
 #ret                                            #! 0xc397c = 0xc397c;
+
+(* 14 *)
+cut eqmod limbs 64 [x19, x20, x21, x22]
+          2**256 *
+          (4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2 -
+           9 * ((limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2))**2 +
+           8 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [10] ]
+ && limbs 64 [x19, x20, x21, x22] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [10] ];
+
 (* ldp	x23, x24, [sp, #40]                         #! EA = L0x40000574c8; Value = 0xace92713dfbddb64; PC = 0xc46bc *)
 mov x23 L0x40000574c8; mov x24 L0x40000574d0;
 (* ldp	x25, x26, [sp, #56]                         #! EA = L0x40000574d8; Value = 0xbb60517a73b6b82c; PC = 0xc46c0 *)
@@ -2905,9 +3212,9 @@ adcs carry x4 x4 x8 carry;
 (* adcs	x5, x5, x9                                 #! PC = 0xc3c64 *)
 adcs carry x5 x5 x9 carry;
 (* adcs	x6, x6, x10                                #! PC = 0xc3c68 *)
-adcs carry x6 x6 x10 carry;
+adcs carry32 x6 x6 x10 carry;
 (* adc	x7, xzr, xzr                                #! PC = 0xc3c6c *)
-adc x7 0@uint64 0@uint64 carry;
+adc x7 0@uint64 0@uint64 carry32;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3c70 *)
 mov x27 0xffffffffffffffff@uint64;
 (* subs	x11, x3, x27                               #! PC = 0xc3c74 *)
@@ -2917,9 +3224,16 @@ sbcs carry x12 x4 x15 carry;
 (* sbcs	x13, x5, xzr                               #! PC = 0xc3c7c *)
 sbcs carry x13 x5 0@uint64 carry;
 (* sbcs	x14, x6, x16                               #! PC = 0xc3c80 *)
-sbcs carry x14 x6 x16 carry;
+sbcs carry33 x14 x6 x16 carry;
 (* sbcs	x7, x7, xzr                                #! PC = 0xc3c84 *)
-sbcs carry x7 x7 0@uint64 carry;
+sbcs carry x7 x7 0@uint64 carry33;
+
+(* NOTE: more identities *)
+assert true && or [carry = 1@1, carry33 = 0@1];
+assume (carry - 1)*carry33 = 0 && true;
+assert true && uext carry 1 = uext carry32 1 + uext carry33 1;
+assume carry = carry32 + carry33 && true;
+
 (* csel	x23, x11, x3, cs  // cs = hs, nlast        #! PC = 0xc3c88 *)
 cmov x23 carry x11 x3;
 (* csel	x24, x12, x4, cs  // cs = hs, nlast        #! PC = 0xc3c8c *)
@@ -2932,6 +3246,22 @@ cmov x26 carry x14 x6;
 #! 0x40000574a0 = 0x40000574a0;
 (* #ret                                            #! PC = 0xc3c98 *)
 #ret                                            #! 0xc3c98 = 0xc3c98;
+
+(* 15 *)
+cut eqmod limbs 64 [x23, x24, x25, x26]
+          2**256 *
+          3 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+              (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2) *
+          (4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2 -
+           9 * ((limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2))**2 +
+           8 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [6] ]
+ && limbs 64 [x23, x24, x25, x26] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [6] ];
+
 (* ldp	x19, x20, [x0, #32]                         #! EA = L0x4000057708; Value = 0xf9e14c4b774666aa; PC = 0xc46c8 *)
 mov x19 L0x4000057708; mov x20 L0x4000057710;
 (* ldp	x21, x22, [x0, #48]                         #! EA = L0x4000057718; Value = 0x277b36e370b8af63; PC = 0xc46cc *)
@@ -2947,9 +3277,9 @@ sbcs carry x4 x24 x20 carry;
 (* sbcs	x5, x25, x21                               #! PC = 0xc3948 *)
 sbcs carry x5 x25 x21 carry;
 (* sbcs	x6, x26, x22                               #! PC = 0xc394c *)
-sbcs carry x6 x26 x22 carry;
+sbcs carry34 x6 x26 x22 carry;
 (* ngc	x11, xzr                                    #! PC = 0xc3950 *)
-sbcs dc x11 0@uint64 0@uint64 carry;
+sbcs dc x11 0@uint64 0@uint64 carry34;
 (* mov	x27, #0xffffffffffffffff    	// #-1         #! PC = 0xc3954 *)
 mov x27 0xffffffffffffffff@uint64;
 (* adds	x7, x3, x27                                #! PC = 0xc3958 *)
@@ -2959,9 +3289,17 @@ adcs carry x8 x4 x15 carry;
 (* adcs	x9, x5, xzr                                #! PC = 0xc3960 *)
 adcs carry x9 x5 0@uint64 carry;
 (* adc	x10, x6, x16                                #! PC = 0xc3964 *)
-adc x10 x6 x16 carry;
+adcs dc35 x10 x6 x16 carry;
 (* ands	x11, x11, #0x1                             #! PC = 0xc3968 *)
 and x11@uint64 x11 0x1@uint64; subc zero dc 0@uint64 x11;
+
+(* NOTE: more identities *)
+assert true && zero = carry34;
+assume zero = carry34 && true;
+(* assert true && or [dc35 = 1@1, carry34 = 1@1]; *)
+(* assert true && (dc35 - 1@1)*(carry34 - 1@1) = 0@1; *)
+assume (dc35- 1)*(carry34- 1)= 0 && true;
+
 (* csel	x19, x3, x7, eq  // eq = none              #! PC = 0xc396c *)
 cmov x19 zero x3 x7;
 (* csel	x20, x4, x8, eq  // eq = none              #! PC = 0xc3970 *)
@@ -2987,9 +3325,70 @@ mov x30 L0x40000574a0;
 (* #ret                                            #! PC = 0xc46e4 *)
 #ret                                            #! 0xc46e4 = 0xc46e4;
 
+(* 16 *)
+cut eqmod limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720]
+          2**256 *
+          (3 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+               (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2) *
+           (4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2 -
+            9 * ((limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                 (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2))**2 +
+            8 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2) -
+            8 * limbs 64 [y_0,y_1,y_2,y_3]**4)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    prove with [ precondition, all ghosts, cuts [9] ]
+ && limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720] <u
+    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
+    prove with [ precondition, cuts [9] ];
+
+mov rx_0 L0x40000576e8; mov rx_1 L0x40000576f0;
+mov rx_2 L0x40000576f8; mov rx_3 L0x4000057700;
+mov ry_0 L0x4000057708; mov ry_1 L0x4000057710;
+mov ry_2 L0x4000057718; mov ry_3 L0x4000057720;
+mov rz_0 L0x4000057728; mov rz_1 L0x4000057730;
+mov rz_2 L0x4000057738; mov rz_3 L0x4000057740;
 {
-  true
-  &&
-  true
+  and [(* RX = 2**256 * (9*((X-Z**2)*(X+Z**2))**2 - 8*X*Y**2) *)
+       eqmod limbs 64 [L0x40000576e8, L0x40000576f0, L0x40000576f8, L0x4000057700]
+             2**256 *
+             (9 * ((limbs 64 [x_0,x_1,x_2,x_3]-limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                   (limbs 64 [x_0,x_1,x_2,x_3]+limbs 64 [z_0,z_1,z_2,z_3]**2))**2 -
+              8 * limbs 64 [x_0,x_1,x_2,x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2)
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3],
+       (* RY = 2**256 *
+               (3*(X-Z**2)*(X+Z**2)*
+                (4*X*Y**2-9*((X-Z**2)*(X+Z**2))**2+8*X*Y**2-8*Y**4)) *)
+       eqmod limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720]
+             2**256 *
+             (3 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                  (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2) *
+              (4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2 -
+               9 * ((limbs 64 [x_0,x_1,x_2,x_3]-limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                    (limbs 64 [x_0,x_1,x_2,x_3]+limbs 64 [z_0,z_1,z_2,z_3]**2))**2 +
+               8 * limbs 64 [x_0,x_1,x_2,x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2) -
+               8 * limbs 64 [y_0,y_1,y_2,y_3]**4)
+             limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3],
+       (* RZ = 2**256 *
+               (3*(X-Z**2)*(X+Z**2)*(4*X*Y**2-9*((X-Z**2)*(X+Z**2))**2+8*X*Z**2)-
+                8*Y**4) *)
+       eqmod limbs 64 [L0x4000057708, L0x4000057710, L0x4000057718, L0x4000057720]
+             2**256 *
+             (3 * (limbs 64 [x_0,x_1,x_2,x_3] - limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                  (limbs 64 [x_0,x_1,x_2,x_3] + limbs 64 [z_0,z_1,z_2,z_3]**2) *
+              (4 * limbs 64 [x_0, x_1, x_2, x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2 -
+               9 * ((limbs 64 [x_0,x_1,x_2,x_3]-limbs 64 [z_0,z_1,z_2,z_3]**2) *
+                    (limbs 64 [x_0,x_1,x_2,x_3]+limbs 64 [z_0,z_1,z_2,z_3]**2))**2 +
+               8 * limbs 64 [x_0,x_1,x_2,x_3] * limbs 64 [y_0,y_1,y_2,y_3]**2) -
+               8 * limbs 64 [y_0,y_1,y_2,y_3]**4)
+          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]]
+  prove with [ cuts [3, 13, 16] ]
+&&
+  and [limbs 64 [rx_0, rx_1, rx_2, rx_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64],
+       limbs 64 [ry_0, ry_1, ry_2, ry_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64],
+       limbs 64 [rz_0, rz_1, rz_2, rz_3] <u
+       limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]]
+  prove with [ cuts [3, 13, 16] ]
 }
 
