@@ -97,7 +97,7 @@ proc main (bit a000,bit a001,bit a002,bit a003,bit a004,bit a005,bit a006,bit a0
            bit b00, bit b01, bit b02, bit b03, bit b04, bit b05, bit b06, bit b07,
            bit Z) =
 {
-  b00 = 0
+  true
   &&
   true
 }
