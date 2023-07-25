@@ -1,0 +1,29 @@
+p256SubInternal:
+# %rdi = 0x2cc09c0444c8eb00
+# %rsi = 0x-1fa4cf7f0f3b1e95
+# %rdx = 0x7538a2fc0af3072a
+# %rcx = 0x1212d3cfac379637
+# %r8  = 0x614f67877de03a5d
+# %r9  = 0x7538a2fc802baa26
+	#! -> SP = 0xc0000c39b0
+	xor    %rax,%rax                                #! PC = 0x4c8040
+	sub    %r14,%r10                                #! PC = 0x4c8043
+	sbb    %r15,%r11                                #! PC = 0x4c8046
+	sbb    %rdi,%r12                                #! PC = 0x4c8049
+	sbb    %rsi,%r13                                #! PC = 0x4c804c
+	sbb    $0x0,%rax                                #! PC = 0x4c804f
+	mov    %r10,%rbx                                #! PC = 0x4c8053
+	mov    %r11,%rcx                                #! PC = 0x4c8056
+	mov    %r12,%r8                                 #! PC = 0x4c8059
+	mov    %r13,%r9                                 #! PC = 0x4c805c
+	add    $0xffffffffffffffff,%r10                 #! PC = 0x4c805f
+	adc    0x71a8e(%rip),%r11        # 0x539af8 <p256const0>#! EA = L0x539af8; Value = 0x00000000ffffffff; PC = 0x4c8063
+	adc    $0x0,%r12                                #! PC = 0x4c806a
+	adc    0x71a8b(%rip),%r13        # 0x539b00 <p256const1>#! EA = L0x539b00; Value = 0xffffffff00000001; PC = 0x4c806e
+	and    $0x1,%rax                                #! PC = 0x4c8075
+	cmove  %rbx,%r10                                #! PC = 0x4c8079
+	cmove  %rcx,%r11                                #! PC = 0x4c807d
+	cmove  %r8,%r12                                 #! PC = 0x4c8081
+	cmove  %r9,%r13                                 #! PC = 0x4c8085
+	#! <- SP = 0xc0000c39b0
+	#ret                                            #! PC = 0x4c8089
