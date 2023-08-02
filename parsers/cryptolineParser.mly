@@ -1270,6 +1270,17 @@
     let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
     (aliasing_instrs, tmp_names, src_safe, vm_safe)
 
+  let gen_tmp_movs_3 lno (rwpairs_: (string list * (atom_t * atom_t * atom_t)) list) vm relmtyp =
+    let rwpairs = List.rev (List.fold_left (fun l (wws, (rr1, rr2, rr3)) -> (wws, rr3)::([], rr2)::([], rr1)::l) [] rwpairs_) in
+    let (aliasing_instrs, tmp_names, src_safe_single, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let rec to_pairs_rev acc xs = match xs with
+      | [] -> acc
+      | _::[] | _::_::[] ->
+         raise_at lno "Internal error: Incorrect number of source operands."
+      | c::x::y::tail -> to_pairs_rev ((c, x, y)::acc) tail in
+    let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
+    (aliasing_instrs, tmp_names, src_safe, vm_safe)
+
   let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
     let srclen = List.length src1 in
     let _ = if (List.length src2) <> srclen then
@@ -1382,6 +1393,39 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
+  let unpack_vinstr_1c2 mapper lno dest_tok carry_tok src1_tok src2_tok fm cm vm vxm ym gm =
+    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
+    let (relmtyp, srclen) = src_typ_vec in
+    let vcarry = resolve_vec_with lno carry_tok fm cm vm vxm ym gm in
+    let _ =
+      if List.length (snd vcarry) <> srclen then
+        raise_at lno "Carry vector should be as long as the source vector."
+      else () in
+
+    let (vxm' , dest_names , _) = resolve_lv_vec_with lno dest_tok  fm cm vm vxm ym gm (Some src_typ_vec) in
+
+    let _ = if (List.length dest_names) <> srclen then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+
+    let rwpairs = List.map2 (fun d (c, (s1, s2)) -> ([d], (c, s1, s2)))
+                            dest_names
+                            (List.combine (snd vcarry)
+                                          (List.combine src1 src2)) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) =
+      gen_tmp_movs_3 lno rwpairs vm relmtyp in
+
+    let map_func (vm, ym, gm) (lvname, (rc, rv1, rv2)) = (
+      let lvtoken = {lvname=lvname; lvtyphint=None} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rc rv1 rv2 fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+  
   let unpack_vmull mapper lno destH_tok destL_tok src1_tok src2_tok fm cm vm vxm ym gm =
     let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
     let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
@@ -1507,6 +1551,8 @@
          parse_nondet_at lno dest fm cm vm vxm ym gm
       | `CMOV (`LVPLAIN dest, carry, src1, src2) ->
          parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
+      | `VCMOV (dest, carry, src1, src2) ->
+         unpack_vinstr_1c2 parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
       | `ADD (`LVPLAIN dest, src1, src2) ->
          parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
       | `VADD (dest, src1, src2) ->
@@ -1657,12 +1703,20 @@
          parse_sspl_at lno destH destL src num fm cm vm vxm ym gm
       | `AND (`LVPLAIN dest, src1, src2) ->
          parse_and_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VAND (dest, src1, src2) ->
+         unpack_vinstr_12 parse_and_at lno dest src1 src2 fm cm vm vxm ym gm
       | `OR (`LVPLAIN dest, src1, src2) ->
          parse_or_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VOR (dest, src1, src2) ->
+         unpack_vinstr_12 parse_or_at lno dest src1 src2 fm cm vm vxm ym gm
       | `XOR (`LVPLAIN dest, src1, src2) ->
          parse_xor_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VXOR (dest, src1, src2) ->
+         unpack_vinstr_12 parse_xor_at lno dest src1 src2 fm cm vm vxm ym gm
       | `NOT (`LVPLAIN dest, src) ->
          parse_not_at lno dest src fm cm vm vxm ym gm
+      | `VNOT (dest, src) ->
+         unpack_vinstr_11 parse_not_at lno dest src fm cm vm vxm ym gm
       | `CAST (optlv, `LV dest, src) ->
          parse_cast_at lno optlv dest src fm cm vm vxm ym gm
       | `VCAST (optlv, dest, src) -> (
@@ -1941,6 +1995,7 @@ instr:
   | CLEAR lcarry                                  { (!lnum, `CLEAR $2) }
   | NONDET lval                                   { (!lnum, `NONDET $2) }
   | CMOV lval carry atom atom                     { (!lnum, `CMOV ($2, $3, $4, $5)) }
+  | CMOV lval_v carry_v atom_v atom_v             { (!lnum, `VCMOV ($2, $3, $4, $5)) }
   | lhs EQOP CMOV carry atom atom                 { (!lnum, `CMOV (`LVPLAIN $1, $4, $5, $6)) }
   | ADD lval atom atom                            { (!lnum, `ADD ($2, $3, $4)) }
   | ADD lval_v atom_v atom_v                      { (!lnum, `VADD ($2, $3, $4)) }
@@ -2068,12 +2123,16 @@ instr:
   | SSPL lval lval atom const                     { (!lnum, `SSPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SSPL atom const              { (!lnum, `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | AND lval atom atom                            { (!lnum, `AND ($2, $3, $4)) }
+  | AND lval_v atom_v atom_v                      { (!lnum, `VAND ($2, $3, $4)) }
   | lhs EQOP AND atom atom                        { (!lnum, `AND (`LVPLAIN $1, $4, $5)) }
   | OR lval atom atom                             { (!lnum, `OR ($2, $3, $4)) }
+  | OR lval_v atom_v atom_v                      { (!lnum, `VOR ($2, $3, $4)) }
   | lhs EQOP OR atom atom                         { (!lnum, `OR (`LVPLAIN $1, $4, $5)) }
   | XOR lval atom atom                            { (!lnum, `XOR ($2, $3, $4)) }
+  | XOR lval_v atom_v atom_v                      { (!lnum, `VXOR ($2, $3, $4)) }
   | lhs EQOP XOR atom atom                        { (!lnum, `XOR (`LVPLAIN $1, $4, $5)) }
   | NOT lval atom                                 { (!lnum, `NOT ($2, $3)) }
+  | NOT lval_v atom_v                             { (!lnum, `VNOT ($2, $3)) }
   | lhs EQOP NOT atom                             { (!lnum, `NOT (`LVPLAIN $1, $4)) }
   | CAST lval_or_lcarry atom                      { (!lnum, `CAST (None, $2, $3)) }
   // XXX: the "[]" is to workaround a r/r conflict
@@ -3300,6 +3359,10 @@ complex_const:
 
 carry:
     atom                                          { $1 }
+;
+
+carry_v:
+    atom_v                                        { $1 }
 ;
 
 typ:
