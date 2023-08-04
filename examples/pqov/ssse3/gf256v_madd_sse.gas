@@ -5,24 +5,55 @@
 #! $1c(%rip) = %%EA
 #! $1c(%rbp) = %%EA
 #! %xmm$1c = %%xmm$1c
+#! %eax = %rax
+#! %rax = %%rax
+#! %ecx = %rcx
+#! %rcx = %%rcx
+#! %dl = %%rdx
+#! %edx = %rdx
+#! %rdx = %%rdx
+#! %rdi = %%rdi
+#! %esi = %rsi
+#! %rsi = %%rsi
+#! %r$1cd = %r$1c
+#! %r$1c = %%r$1c
+
 
 #! add $1c, %rsp -> nop
-#! mov %fs:0x28,%rax -> nop
+#! add \$0x10, %%rax -> nop
+#! add \$0x10, %%rsi -> nop
+#! add %%rdx, %%r12 -> nop
+#! cmp .* -> nop
+#! lea \(%%rsi,%%rdx,1\), %%rdi -> nop
+#! lea %%EA, %%rdi -> nop
+#! leave .* -> nop
+#! mov %fs:0x28,%%rax -> nop
+#! mov %rsp, %rbp -> nop
 #! pop .* -> nop
 #! push .* -> nop
+#! shr \$0x4, %%rdx -> nop
+#! shl \$0x4, %%rdx -> nop
+#! sub %fs:0x28,%%rax -> nop
 #! sub $1c, %rsp -> nop
+#! test %%r13, %%r13 -> nop
 
+#! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
+#! mov $1v, $2v -> mov $2v $1v
+#! movzbl $1v, $2v -> mov $2v $1v
+#! xor $1v, $1v -> mov $1v 0@uint64
+
+#! movd %%rsi, $2xmm -> mov %$2xmm [rsi,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n           0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8]
 #! movaps $1xmm, $2ea -> mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %$1xmm;\nmov $2ea[+0] r0; mov $2ea[+1] r1; mov $2ea[+2] r2;\nmov $2ea[+3] r3; mov $2ea[+4] r4; mov $2ea[+5] r5;\nmov $2ea[+6] r6; mov $2ea[+7] r7; mov $2ea[+8] r8;\nmov $2ea[+9] r9; mov $2ea[+10] ra; mov $2ea[+11] rb;\nmov $2ea[+12] rc; mov $2ea[+13] rd; mov $2ea[+14] re;\nmov $2ea[+15] rf
-#! movdqa $1ea, $2xmm -> mov %$2xmm [$1ea[+0], $1ea[+1], $1ea[+2], $1ea[+3],\n         $1ea[+4], $1ea[+5], $1ea[+6], $1ea[+7],\n         $1ea[+8], $1ea[+9], $1ea[+10], $1ea[+11],\n         $1ea[+12], $1ea[+13], $1ea[+14], $1ea[+15]]
-#! movdqu $1ea, $2xmm -> mov %$2xmm [$1ea[+0], $1ea[+1], $1ea[+2], $1ea[+3],\n         $1ea[+4], $1ea[+5], $1ea[+6], $1ea[+7],\n         $1ea[+8], $1ea[+9], $1ea[+10], $1ea[+11],\n         $1ea[+12], $1ea[+13], $1ea[+14], $1ea[+15]]
+#! movdqa $1ea, $2xmm -> mov %$2xmm [$1ea[+0], $1ea[+1], $1ea[+2], $1ea[+3],\n           $1ea[+4], $1ea[+5], $1ea[+6], $1ea[+7],\n           $1ea[+8], $1ea[+9], $1ea[+10], $1ea[+11],\n           $1ea[+12], $1ea[+13], $1ea[+14], $1ea[+15]]
+#! movdqu $1ea, $2xmm -> mov %$2xmm [$1ea[+0], $1ea[+1], $1ea[+2], $1ea[+3],\n           $1ea[+4], $1ea[+5], $1ea[+6], $1ea[+7],\n           $1ea[+8], $1ea[+9], $1ea[+10], $1ea[+11],\n           $1ea[+12], $1ea[+13], $1ea[+14], $1ea[+15]]
 #! movups $1xmm, $2ea -> mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %$1xmm;\nmov $2ea[+0] r0; mov $2ea[+1] r1; mov $2ea[+2] r2;\nmov $2ea[+3] r3; mov $2ea[+4] r4; mov $2ea[+5] r5;\nmov $2ea[+6] r6; mov $2ea[+7] r7; mov $2ea[+8] r8;\nmov $2ea[+9] r9; mov $2ea[+10] ra; mov $2ea[+11] rb;\nmov $2ea[+12] rc; mov $2ea[+13] rd; mov $2ea[+14] re;\nmov $2ea[+15] rf
 #! movdqa $1xmm, $2xmm -> mov %$2xmm %$1xmm
 #! pand $1xmm, $2xmm -> and %$2xmm@uint8[16] %$2xmm %$1xmm
-#! pcmpeqb $1xmm, $2xmm -> subb %dc %diff %$2xmm %$1xmm; subb %nz %dc [0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n              0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8] %diff;\ncmov %$2xmm %nz [0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,\n                0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8]\n               [0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n                0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8]
+#! pcmpeqb $1xmm, $2xmm -> subb %dc %diff %$2xmm %$1xmm;\nsubc %nz %dc [0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n              0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8]\n             %diff;\ncmov %$2xmm %nz [0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,\n                0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,\n                0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8,\n                0xff@uint8,0xff@uint8,0xff@uint8,0xff@uint8]\n           [0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n            0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8]
 #! pshufb $1xmm, $2xmm -> mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %$1xmm;\nmov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %$2xmm;\ncall vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,\n                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,\n                 d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);\nmov %$2xmm [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df]
-#! psrlw $1c, $2xmm -> mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %$1xmm;\njoin s0 r1 r0; shr s0 s0 $1c@uint16; spl t1 t0 s0 8;\njoin s1 r3 r2; shr s1 s1 $1c@uint16; spl t3 t2 s1 8;\njoin s2 r5 r4; shr s2 s2 $1c@uint16; spl t5 t4 s2 8;\njoin s3 r7 r6; shr s3 s3 $1c@uint16; spl t7 t6 s3 8;\njoin s4 r9 r8; shr s4 s4 $1c@uint16; spl t9 t8 s4 8;\njoin s5 rb ra; shr s5 s5 $1c@uint16; spl tb ta s5 8;\njoin s6 rd rc; shr s6 s6 $1c@uint16; spl td tc s6 8;\njoin s7 rf re; shr s7 s7 $1c@uint16; spl tf te s7 8;\nmov %$2xmm [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf]
-#! pxor $1xmm, $1xmm -> mov %$1xmm [0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8,\n           0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8, 0@uint8]
-#! pxor $1xmm, $2xmm -> pxor %$2xmm@uint8[16] %$2xmm %$1xmm
+#! psrlw $1c, $2xmm -> mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %$2xmm;\njoin s0 r1 r0; shr s0 s0 $1c@uint16; spl t1 t0 s0 8;\njoin s1 r3 r2; shr s1 s1 $1c@uint16; spl t3 t2 s1 8;\njoin s2 r5 r4; shr s2 s2 $1c@uint16; spl t5 t4 s2 8;\njoin s3 r7 r6; shr s3 s3 $1c@uint16; spl t7 t6 s3 8;\njoin s4 r9 r8; shr s4 s4 $1c@uint16; spl t9 t8 s4 8;\njoin s5 rb ra; shr s5 s5 $1c@uint16; spl tb ta s5 8;\njoin s6 rd rc; shr s6 s6 $1c@uint16; spl td tc s6 8;\njoin s7 rf re; shr s7 s7 $1c@uint16; spl tf te s7 8;\nmov %$2xmm [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf]
+#! pxor $1xmm, $1xmm -> mov %$1xmm [0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,\n           0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8,0@uint8]
+#! pxor $1xmm, $2xmm -> xor %$2xmm@uint8[16] %$2xmm %$1xmm
 
 #gf256v_madd_sse:
 # %rdi = 0x7fffffffa490
