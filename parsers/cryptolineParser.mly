@@ -1319,7 +1319,7 @@
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
 
-    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
+    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
@@ -1328,7 +1328,7 @@
     let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
 
     let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
-      let lvtoken = {lvname; lvtyphint=None} in
+      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
       let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
       ((vm, ym, gm), instrs)
     ) in
