@@ -296,10 +296,10 @@ mov %xmm5 [L0x555555566020, L0x555555566021, L0x555555566022, L0x555555566023,
            L0x555555566028, L0x555555566029, L0x55555556602a, L0x55555556602b,
            L0x55555556602c, L0x55555556602d, L0x55555556602e, L0x55555556602f];
 (* pshufb %xmm0,%xmm1                              #! PC = 0x555555556173 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* movdqa 0xfea0(%rip),%xmm3        # 0x555555566020#! EA = L0x555555566020; Value = 0x0101010101010101; PC = 0x555555556178 *)
@@ -310,88 +310,88 @@ mov %xmm3 [L0x555555566020, L0x555555566021, L0x555555566022, L0x555555566023,
 (* movdqa %xmm1,%xmm4                              #! PC = 0x555555556180 *)
 mov %xmm4 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x555555556184 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* movdqa %xmm1,%xmm2                              #! PC = 0x555555556189 *)
 mov %xmm2 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x55555555618d *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm5,%xmm4                              #! PC = 0x555555556192 *)
 and %xmm4@uint8[16] %xmm4 %xmm5;
 (* movdqa %xmm1,%xmm8                              #! PC = 0x555555556196 *)
 mov %xmm8 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x55555555619b *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm5,%xmm2                              #! PC = 0x5555555561a0 *)
 and %xmm2@uint8[16] %xmm2 %xmm5;
 (* movdqa %xmm1,%xmm7                              #! PC = 0x5555555561a4 *)
 mov %xmm7 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x5555555561a8 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm5,%xmm8                              #! PC = 0x5555555561ad *)
 and %xmm8@uint8[16] %xmm8 %xmm5;
 (* movdqa %xmm1,%xmm9                              #! PC = 0x5555555561b2 *)
 mov %xmm9 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x5555555561b7 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm5,%xmm7                              #! PC = 0x5555555561bc *)
 and %xmm7@uint8[16] %xmm7 %xmm5;
 (* movdqa %xmm1,%xmm6                              #! PC = 0x5555555561c0 *)
 mov %xmm6 %xmm1;
 (* psrlw  $0x1,%xmm1                               #! PC = 0x5555555561c4 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm1 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm5,%xmm9                              #! PC = 0x5555555561c9 *)
 and %xmm9@uint8[16] %xmm9 %xmm5;
@@ -407,15 +407,15 @@ mov %xmm1 [L0x5555555680f0, L0x5555555680f1, L0x5555555680f2, L0x5555555680f3,
            L0x5555555680f8, L0x5555555680f9, L0x5555555680fa, L0x5555555680fb,
            L0x5555555680fc, L0x5555555680fd, L0x5555555680fe, L0x5555555680ff];
 (* psrlw  $0x1,%xmm0                               #! PC = 0x5555555561e3 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
-join s0 r1 r0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x1@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x1@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x1@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
+join s0 m1 m0; shr s0 s0 0x1@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x1@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x1@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x1@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x1@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x1@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x1@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x1@uint16; spl tf te s7 8;
 mov %xmm0 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pcmpeqb %xmm3,%xmm7                             #! PC = 0x5555555561e8 *)
 subb %dc %diff %xmm7 %xmm3;
@@ -592,13 +592,13 @@ mov %xmm5 [L0x555555568100, L0x555555568101, L0x555555568102, L0x555555568103,
            L0x555555568108, L0x555555568109, L0x55555556810a, L0x55555556810b,
            L0x55555556810c, L0x55555556810d, L0x55555556810e, L0x55555556810f];
 (* movaps %xmm1,0x10(%rdi)                         #! EA = L0x7fffffffa3a0; PC = 0x5555555562a7 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-mov L0x7fffffffa3a0 r0; mov L0x7fffffffa3a1 r1; mov L0x7fffffffa3a2 r2;
-mov L0x7fffffffa3a3 r3; mov L0x7fffffffa3a4 r4; mov L0x7fffffffa3a5 r5;
-mov L0x7fffffffa3a6 r6; mov L0x7fffffffa3a7 r7; mov L0x7fffffffa3a8 r8;
-mov L0x7fffffffa3a9 r9; mov L0x7fffffffa3aa ra; mov L0x7fffffffa3ab rb;
-mov L0x7fffffffa3ac rc; mov L0x7fffffffa3ad rd; mov L0x7fffffffa3ae re;
-mov L0x7fffffffa3af rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+mov L0x7fffffffa3a0 m0; mov L0x7fffffffa3a1 m1; mov L0x7fffffffa3a2 m2;
+mov L0x7fffffffa3a3 m3; mov L0x7fffffffa3a4 m4; mov L0x7fffffffa3a5 m5;
+mov L0x7fffffffa3a6 m6; mov L0x7fffffffa3a7 m7; mov L0x7fffffffa3a8 m8;
+mov L0x7fffffffa3a9 m9; mov L0x7fffffffa3aa ma; mov L0x7fffffffa3ab mb;
+mov L0x7fffffffa3ac mc; mov L0x7fffffffa3ad md; mov L0x7fffffffa3ae me;
+mov L0x7fffffffa3af mf;
 (* pand   %xmm8,%xmm3                              #! PC = 0x5555555562ab *)
 and %xmm3@uint8[16] %xmm3 %xmm8;
 (* pxor   %xmm3,%xmm2                              #! PC = 0x5555555562b0 *)
@@ -653,13 +653,13 @@ xor %xmm0@uint8[16] %xmm0 %xmm3;
 (* pxor   %xmm2,%xmm0                              #! PC = 0x55555555630a *)
 xor %xmm0@uint8[16] %xmm0 %xmm2;
 (* movaps %xmm0,(%rdi)                             #! EA = L0x7fffffffa390; PC = 0x55555555630e *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
-mov L0x7fffffffa390 r0; mov L0x7fffffffa391 r1; mov L0x7fffffffa392 r2;
-mov L0x7fffffffa393 r3; mov L0x7fffffffa394 r4; mov L0x7fffffffa395 r5;
-mov L0x7fffffffa396 r6; mov L0x7fffffffa397 r7; mov L0x7fffffffa398 r8;
-mov L0x7fffffffa399 r9; mov L0x7fffffffa39a ra; mov L0x7fffffffa39b rb;
-mov L0x7fffffffa39c rc; mov L0x7fffffffa39d rd; mov L0x7fffffffa39e re;
-mov L0x7fffffffa39f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
+mov L0x7fffffffa390 m0; mov L0x7fffffffa391 m1; mov L0x7fffffffa392 m2;
+mov L0x7fffffffa393 m3; mov L0x7fffffffa394 m4; mov L0x7fffffffa395 m5;
+mov L0x7fffffffa396 m6; mov L0x7fffffffa397 m7; mov L0x7fffffffa398 m8;
+mov L0x7fffffffa399 m9; mov L0x7fffffffa39a ma; mov L0x7fffffffa39b mb;
+mov L0x7fffffffa39c mc; mov L0x7fffffffa39d md; mov L0x7fffffffa39e me;
+mov L0x7fffffffa39f mf;
 (* #! <- SP = 0x7fffffffa388 *)
 #! 0x7fffffffa388 = 0x7fffffffa388;
 (* #ret                                            #! PC = 0x555555556311 *)
@@ -702,21 +702,21 @@ mov %xmm2 [L0x7fffffffa440, L0x7fffffffa441, L0x7fffffffa442, L0x7fffffffa443,
 (* movdqa %xmm3,%xmm0                              #! PC = 0x555555556384 *)
 mov %xmm0 %xmm3;
 (* movaps %xmm1,-0x30(%rbp)                        #! EA = L0x7fffffffa390; PC = 0x555555556388 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-mov L0x7fffffffa390 r0; mov L0x7fffffffa391 r1; mov L0x7fffffffa392 r2;
-mov L0x7fffffffa393 r3; mov L0x7fffffffa394 r4; mov L0x7fffffffa395 r5;
-mov L0x7fffffffa396 r6; mov L0x7fffffffa397 r7; mov L0x7fffffffa398 r8;
-mov L0x7fffffffa399 r9; mov L0x7fffffffa39a ra; mov L0x7fffffffa39b rb;
-mov L0x7fffffffa39c rc; mov L0x7fffffffa39d rd; mov L0x7fffffffa39e re;
-mov L0x7fffffffa39f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+mov L0x7fffffffa390 m0; mov L0x7fffffffa391 m1; mov L0x7fffffffa392 m2;
+mov L0x7fffffffa393 m3; mov L0x7fffffffa394 m4; mov L0x7fffffffa395 m5;
+mov L0x7fffffffa396 m6; mov L0x7fffffffa397 m7; mov L0x7fffffffa398 m8;
+mov L0x7fffffffa399 m9; mov L0x7fffffffa39a ma; mov L0x7fffffffa39b mb;
+mov L0x7fffffffa39c mc; mov L0x7fffffffa39d md; mov L0x7fffffffa39e me;
+mov L0x7fffffffa39f mf;
 (* movaps %xmm3,-0x20(%rbp)                        #! EA = L0x7fffffffa3a0; PC = 0x555555556390 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm3;
-mov L0x7fffffffa3a0 r0; mov L0x7fffffffa3a1 r1; mov L0x7fffffffa3a2 r2;
-mov L0x7fffffffa3a3 r3; mov L0x7fffffffa3a4 r4; mov L0x7fffffffa3a5 r5;
-mov L0x7fffffffa3a6 r6; mov L0x7fffffffa3a7 r7; mov L0x7fffffffa3a8 r8;
-mov L0x7fffffffa3a9 r9; mov L0x7fffffffa3aa ra; mov L0x7fffffffa3ab rb;
-mov L0x7fffffffa3ac rc; mov L0x7fffffffa3ad rd; mov L0x7fffffffa3ae re;
-mov L0x7fffffffa3af rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm3;
+mov L0x7fffffffa3a0 m0; mov L0x7fffffffa3a1 m1; mov L0x7fffffffa3a2 m2;
+mov L0x7fffffffa3a3 m3; mov L0x7fffffffa3a4 m4; mov L0x7fffffffa3a5 m5;
+mov L0x7fffffffa3a6 m6; mov L0x7fffffffa3a7 m7; mov L0x7fffffffa3a8 m8;
+mov L0x7fffffffa3a9 m9; mov L0x7fffffffa3aa ma; mov L0x7fffffffa3ab mb;
+mov L0x7fffffffa3ac mc; mov L0x7fffffffa3ad md; mov L0x7fffffffa3ae me;
+mov L0x7fffffffa3af mf;
 (* #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! PC = 0x555555556394 *)
 #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! 0x555555556394 = 0x555555556394;
 (* #! -> SP = 0x7fffffffa388 *)
@@ -729,32 +729,32 @@ mov %xmm3 [L0x555555566030, L0x555555566031, L0x555555566032, L0x555555566033,
 (* movdqa %xmm2,%xmm4                              #! PC = 0x555555556328 *)
 mov %xmm4 %xmm2;
 (* psrlw  $0x4,%xmm2                               #! PC = 0x55555555632c *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
-join s0 r1 r0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x4@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x4@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x4@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
+join s0 m1 m0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x4@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x4@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x4@uint16; spl tf te s7 8;
 mov %xmm2 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm3,%xmm4                              #! PC = 0x555555556331 *)
 and %xmm4@uint8[16] %xmm4 %xmm3;
 (* pand   %xmm3,%xmm2                              #! PC = 0x555555556335 *)
 and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm4;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pxor   %xmm1,%xmm0                              #! PC = 0x555555556343 *)
@@ -774,13 +774,13 @@ mov %xmm1 [L0x7fffffffa390, L0x7fffffffa391, L0x7fffffffa392, L0x7fffffffa393,
            L0x7fffffffa398, L0x7fffffffa399, L0x7fffffffa39a, L0x7fffffffa39b,
            L0x7fffffffa39c, L0x7fffffffa39d, L0x7fffffffa39e, L0x7fffffffa39f];
 (* movups %xmm0,-0x10(%rdi)                        #! EA = L0x7fffffffa440; PC = 0x5555555563a3 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
-mov L0x7fffffffa440 r0; mov L0x7fffffffa441 r1; mov L0x7fffffffa442 r2;
-mov L0x7fffffffa443 r3; mov L0x7fffffffa444 r4; mov L0x7fffffffa445 r5;
-mov L0x7fffffffa446 r6; mov L0x7fffffffa447 r7; mov L0x7fffffffa448 r8;
-mov L0x7fffffffa449 r9; mov L0x7fffffffa44a ra; mov L0x7fffffffa44b rb;
-mov L0x7fffffffa44c rc; mov L0x7fffffffa44d rd; mov L0x7fffffffa44e re;
-mov L0x7fffffffa44f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
+mov L0x7fffffffa440 m0; mov L0x7fffffffa441 m1; mov L0x7fffffffa442 m2;
+mov L0x7fffffffa443 m3; mov L0x7fffffffa444 m4; mov L0x7fffffffa445 m5;
+mov L0x7fffffffa446 m6; mov L0x7fffffffa447 m7; mov L0x7fffffffa448 m8;
+mov L0x7fffffffa449 m9; mov L0x7fffffffa44a ma; mov L0x7fffffffa44b mb;
+mov L0x7fffffffa44c mc; mov L0x7fffffffa44d md; mov L0x7fffffffa44e me;
+mov L0x7fffffffa44f mf;
 (* #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! PC = 0x5555555563aa *)
 #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! 0x5555555563aa = 0x5555555563aa;
 (* movdqu (%rdi),%xmm2                             #! EA = L0x7fffffffa450; Value = 0x69cb9a859269e9c5; PC = 0x555555556380 *)
@@ -791,21 +791,21 @@ mov %xmm2 [L0x7fffffffa450, L0x7fffffffa451, L0x7fffffffa452, L0x7fffffffa453,
 (* movdqa %xmm3,%xmm0                              #! PC = 0x555555556384 *)
 mov %xmm0 %xmm3;
 (* movaps %xmm1,-0x30(%rbp)                        #! EA = L0x7fffffffa390; PC = 0x555555556388 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-mov L0x7fffffffa390 r0; mov L0x7fffffffa391 r1; mov L0x7fffffffa392 r2;
-mov L0x7fffffffa393 r3; mov L0x7fffffffa394 r4; mov L0x7fffffffa395 r5;
-mov L0x7fffffffa396 r6; mov L0x7fffffffa397 r7; mov L0x7fffffffa398 r8;
-mov L0x7fffffffa399 r9; mov L0x7fffffffa39a ra; mov L0x7fffffffa39b rb;
-mov L0x7fffffffa39c rc; mov L0x7fffffffa39d rd; mov L0x7fffffffa39e re;
-mov L0x7fffffffa39f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+mov L0x7fffffffa390 m0; mov L0x7fffffffa391 m1; mov L0x7fffffffa392 m2;
+mov L0x7fffffffa393 m3; mov L0x7fffffffa394 m4; mov L0x7fffffffa395 m5;
+mov L0x7fffffffa396 m6; mov L0x7fffffffa397 m7; mov L0x7fffffffa398 m8;
+mov L0x7fffffffa399 m9; mov L0x7fffffffa39a ma; mov L0x7fffffffa39b mb;
+mov L0x7fffffffa39c mc; mov L0x7fffffffa39d md; mov L0x7fffffffa39e me;
+mov L0x7fffffffa39f mf;
 (* movaps %xmm3,-0x20(%rbp)                        #! EA = L0x7fffffffa3a0; PC = 0x555555556390 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm3;
-mov L0x7fffffffa3a0 r0; mov L0x7fffffffa3a1 r1; mov L0x7fffffffa3a2 r2;
-mov L0x7fffffffa3a3 r3; mov L0x7fffffffa3a4 r4; mov L0x7fffffffa3a5 r5;
-mov L0x7fffffffa3a6 r6; mov L0x7fffffffa3a7 r7; mov L0x7fffffffa3a8 r8;
-mov L0x7fffffffa3a9 r9; mov L0x7fffffffa3aa ra; mov L0x7fffffffa3ab rb;
-mov L0x7fffffffa3ac rc; mov L0x7fffffffa3ad rd; mov L0x7fffffffa3ae re;
-mov L0x7fffffffa3af rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm3;
+mov L0x7fffffffa3a0 m0; mov L0x7fffffffa3a1 m1; mov L0x7fffffffa3a2 m2;
+mov L0x7fffffffa3a3 m3; mov L0x7fffffffa3a4 m4; mov L0x7fffffffa3a5 m5;
+mov L0x7fffffffa3a6 m6; mov L0x7fffffffa3a7 m7; mov L0x7fffffffa3a8 m8;
+mov L0x7fffffffa3a9 m9; mov L0x7fffffffa3aa ma; mov L0x7fffffffa3ab mb;
+mov L0x7fffffffa3ac mc; mov L0x7fffffffa3ad md; mov L0x7fffffffa3ae me;
+mov L0x7fffffffa3af mf;
 (* #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! PC = 0x555555556394 *)
 #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! 0x555555556394 = 0x555555556394;
 (* #! -> SP = 0x7fffffffa388 *)
@@ -818,32 +818,32 @@ mov %xmm3 [L0x555555566030, L0x555555566031, L0x555555566032, L0x555555566033,
 (* movdqa %xmm2,%xmm4                              #! PC = 0x555555556328 *)
 mov %xmm4 %xmm2;
 (* psrlw  $0x4,%xmm2                               #! PC = 0x55555555632c *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
-join s0 r1 r0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x4@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x4@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x4@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
+join s0 m1 m0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x4@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x4@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x4@uint16; spl tf te s7 8;
 mov %xmm2 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm3,%xmm4                              #! PC = 0x555555556331 *)
 and %xmm4@uint8[16] %xmm4 %xmm3;
 (* pand   %xmm3,%xmm2                              #! PC = 0x555555556335 *)
 and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm4;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pxor   %xmm1,%xmm0                              #! PC = 0x555555556343 *)
@@ -863,13 +863,13 @@ mov %xmm1 [L0x7fffffffa390, L0x7fffffffa391, L0x7fffffffa392, L0x7fffffffa393,
            L0x7fffffffa398, L0x7fffffffa399, L0x7fffffffa39a, L0x7fffffffa39b,
            L0x7fffffffa39c, L0x7fffffffa39d, L0x7fffffffa39e, L0x7fffffffa39f];
 (* movups %xmm0,-0x10(%rdi)                        #! EA = L0x7fffffffa450; PC = 0x5555555563a3 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
-mov L0x7fffffffa450 r0; mov L0x7fffffffa451 r1; mov L0x7fffffffa452 r2;
-mov L0x7fffffffa453 r3; mov L0x7fffffffa454 r4; mov L0x7fffffffa455 r5;
-mov L0x7fffffffa456 r6; mov L0x7fffffffa457 r7; mov L0x7fffffffa458 r8;
-mov L0x7fffffffa459 r9; mov L0x7fffffffa45a ra; mov L0x7fffffffa45b rb;
-mov L0x7fffffffa45c rc; mov L0x7fffffffa45d rd; mov L0x7fffffffa45e re;
-mov L0x7fffffffa45f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
+mov L0x7fffffffa450 m0; mov L0x7fffffffa451 m1; mov L0x7fffffffa452 m2;
+mov L0x7fffffffa453 m3; mov L0x7fffffffa454 m4; mov L0x7fffffffa455 m5;
+mov L0x7fffffffa456 m6; mov L0x7fffffffa457 m7; mov L0x7fffffffa458 m8;
+mov L0x7fffffffa459 m9; mov L0x7fffffffa45a ma; mov L0x7fffffffa45b mb;
+mov L0x7fffffffa45c mc; mov L0x7fffffffa45d md; mov L0x7fffffffa45e me;
+mov L0x7fffffffa45f mf;
 (* #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! PC = 0x5555555563aa *)
 #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! 0x5555555563aa = 0x5555555563aa;
 (* movdqu (%rdi),%xmm2                             #! EA = L0x7fffffffa460; Value = 0x1840d01d46f38356; PC = 0x555555556380 *)
@@ -880,21 +880,21 @@ mov %xmm2 [L0x7fffffffa460, L0x7fffffffa461, L0x7fffffffa462, L0x7fffffffa463,
 (* movdqa %xmm3,%xmm0                              #! PC = 0x555555556384 *)
 mov %xmm0 %xmm3;
 (* movaps %xmm1,-0x30(%rbp)                        #! EA = L0x7fffffffa390; PC = 0x555555556388 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm1;
-mov L0x7fffffffa390 r0; mov L0x7fffffffa391 r1; mov L0x7fffffffa392 r2;
-mov L0x7fffffffa393 r3; mov L0x7fffffffa394 r4; mov L0x7fffffffa395 r5;
-mov L0x7fffffffa396 r6; mov L0x7fffffffa397 r7; mov L0x7fffffffa398 r8;
-mov L0x7fffffffa399 r9; mov L0x7fffffffa39a ra; mov L0x7fffffffa39b rb;
-mov L0x7fffffffa39c rc; mov L0x7fffffffa39d rd; mov L0x7fffffffa39e re;
-mov L0x7fffffffa39f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm1;
+mov L0x7fffffffa390 m0; mov L0x7fffffffa391 m1; mov L0x7fffffffa392 m2;
+mov L0x7fffffffa393 m3; mov L0x7fffffffa394 m4; mov L0x7fffffffa395 m5;
+mov L0x7fffffffa396 m6; mov L0x7fffffffa397 m7; mov L0x7fffffffa398 m8;
+mov L0x7fffffffa399 m9; mov L0x7fffffffa39a ma; mov L0x7fffffffa39b mb;
+mov L0x7fffffffa39c mc; mov L0x7fffffffa39d md; mov L0x7fffffffa39e me;
+mov L0x7fffffffa39f mf;
 (* movaps %xmm3,-0x20(%rbp)                        #! EA = L0x7fffffffa3a0; PC = 0x555555556390 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm3;
-mov L0x7fffffffa3a0 r0; mov L0x7fffffffa3a1 r1; mov L0x7fffffffa3a2 r2;
-mov L0x7fffffffa3a3 r3; mov L0x7fffffffa3a4 r4; mov L0x7fffffffa3a5 r5;
-mov L0x7fffffffa3a6 r6; mov L0x7fffffffa3a7 r7; mov L0x7fffffffa3a8 r8;
-mov L0x7fffffffa3a9 r9; mov L0x7fffffffa3aa ra; mov L0x7fffffffa3ab rb;
-mov L0x7fffffffa3ac rc; mov L0x7fffffffa3ad rd; mov L0x7fffffffa3ae re;
-mov L0x7fffffffa3af rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm3;
+mov L0x7fffffffa3a0 m0; mov L0x7fffffffa3a1 m1; mov L0x7fffffffa3a2 m2;
+mov L0x7fffffffa3a3 m3; mov L0x7fffffffa3a4 m4; mov L0x7fffffffa3a5 m5;
+mov L0x7fffffffa3a6 m6; mov L0x7fffffffa3a7 m7; mov L0x7fffffffa3a8 m8;
+mov L0x7fffffffa3a9 m9; mov L0x7fffffffa3aa ma; mov L0x7fffffffa3ab mb;
+mov L0x7fffffffa3ac mc; mov L0x7fffffffa3ad md; mov L0x7fffffffa3ae me;
+mov L0x7fffffffa3af mf;
 (* #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! PC = 0x555555556394 *)
 #call   0x555555556320 <linear_transform_8x8_128b.constprop.0>#! 0x555555556394 = 0x555555556394;
 (* #! -> SP = 0x7fffffffa388 *)
@@ -907,32 +907,32 @@ mov %xmm3 [L0x555555566030, L0x555555566031, L0x555555566032, L0x555555566033,
 (* movdqa %xmm2,%xmm4                              #! PC = 0x555555556328 *)
 mov %xmm4 %xmm2;
 (* psrlw  $0x4,%xmm2                               #! PC = 0x55555555632c *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
-join s0 r1 r0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
-join s1 r3 r2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
-join s2 r5 r4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
-join s3 r7 r6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
-join s4 r9 r8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
-join s5 rb ra; shr s5 s5 0x4@uint16; spl tb ta s5 8;
-join s6 rd rc; shr s6 s6 0x4@uint16; spl td tc s6 8;
-join s7 rf re; shr s7 s7 0x4@uint16; spl tf te s7 8;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
+join s0 m1 m0; shr s0 s0 0x4@uint16; spl t1 t0 s0 8;
+join s1 m3 m2; shr s1 s1 0x4@uint16; spl t3 t2 s1 8;
+join s2 m5 m4; shr s2 s2 0x4@uint16; spl t5 t4 s2 8;
+join s3 m7 m6; shr s3 s3 0x4@uint16; spl t7 t6 s3 8;
+join s4 m9 m8; shr s4 s4 0x4@uint16; spl t9 t8 s4 8;
+join s5 mb ma; shr s5 s5 0x4@uint16; spl tb ta s5 8;
+join s6 md mc; shr s6 s6 0x4@uint16; spl td tc s6 8;
+join s7 mf me; shr s7 s7 0x4@uint16; spl tf te s7 8;
 mov %xmm2 [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc, td, te, tf];
 (* pand   %xmm3,%xmm4                              #! PC = 0x555555556331 *)
 and %xmm4@uint8[16] %xmm4 %xmm3;
 (* pand   %xmm3,%xmm2                              #! PC = 0x555555556335 *)
 and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm4;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm2;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
 call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
-                 r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,ra,rb,rc,rd,re,rf,
+                 m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb,mc,md,me,mf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pxor   %xmm1,%xmm0                              #! PC = 0x555555556343 *)
@@ -952,13 +952,13 @@ mov %xmm1 [L0x7fffffffa390, L0x7fffffffa391, L0x7fffffffa392, L0x7fffffffa393,
            L0x7fffffffa398, L0x7fffffffa399, L0x7fffffffa39a, L0x7fffffffa39b,
            L0x7fffffffa39c, L0x7fffffffa39d, L0x7fffffffa39e, L0x7fffffffa39f];
 (* movups %xmm0,-0x10(%rdi)                        #! EA = L0x7fffffffa460; PC = 0x5555555563a3 *)
-mov [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, ra, rb, rc, rd, re, rf] %xmm0;
-mov L0x7fffffffa460 r0; mov L0x7fffffffa461 r1; mov L0x7fffffffa462 r2;
-mov L0x7fffffffa463 r3; mov L0x7fffffffa464 r4; mov L0x7fffffffa465 r5;
-mov L0x7fffffffa466 r6; mov L0x7fffffffa467 r7; mov L0x7fffffffa468 r8;
-mov L0x7fffffffa469 r9; mov L0x7fffffffa46a ra; mov L0x7fffffffa46b rb;
-mov L0x7fffffffa46c rc; mov L0x7fffffffa46d rd; mov L0x7fffffffa46e re;
-mov L0x7fffffffa46f rf;
+mov [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb, mc, md, me, mf] %xmm0;
+mov L0x7fffffffa460 m0; mov L0x7fffffffa461 m1; mov L0x7fffffffa462 m2;
+mov L0x7fffffffa463 m3; mov L0x7fffffffa464 m4; mov L0x7fffffffa465 m5;
+mov L0x7fffffffa466 m6; mov L0x7fffffffa467 m7; mov L0x7fffffffa468 m8;
+mov L0x7fffffffa469 m9; mov L0x7fffffffa46a ma; mov L0x7fffffffa46b mb;
+mov L0x7fffffffa46c mc; mov L0x7fffffffa46d md; mov L0x7fffffffa46e me;
+mov L0x7fffffffa46f mf;
 (* #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! PC = 0x5555555563aa *)
 #jne    0x555555556380 <linearmap_8x8_sse.constprop.0+48>#! 0x5555555563aa = 0x5555555563aa;
 (* #jne    0x5555555563c0 <linearmap_8x8_sse.constprop.0+112>#! PC = 0x5555555563af *)
