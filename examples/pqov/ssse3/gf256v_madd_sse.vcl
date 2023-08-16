@@ -1,31 +1,33 @@
-(* popper: cv_cec.exe -v -jobs 24 -ov r00,r01#r02,r03#r04,r05#r06,r07#r08,r09#r0a,r0b#r0c,r0d#r0e,r0f#r10,r11#r12,r13#r14,r15#r16,r17#r18,r19#r1a,r1b#r1c,r1d#r1e,r1f#r20,r21#r22,r23#r24,r25#r26,r27#r28,r29#r2a,r2b _gf256v_madd_u64.cl gf256v_madd_sse.vcl
-Parsing CryptoLine file:                [OK]            0.208719 seconds
-Checking well-formedness:               [OK]            0.088657 seconds
-Parsing CryptoLine file:                [OK]            0.013827 seconds
-Checking well-formedness:               [OK]            0.005338 seconds
-Equivalence of output group #0:         [OK]            64.298350 seconds
-Equivalence of output group #11:        [OK]            64.809250 seconds
-Equivalence of output group #14:        [OK]            65.126065 seconds
-Equivalence of output group #17:        [OK]            65.837924 seconds
-Equivalence of output group #2:         [OK]            68.318284 seconds
-Equivalence of output group #10:        [OK]            67.447088 seconds
-Equivalence of output group #5:         [OK]            68.063554 seconds
-Equivalence of output group #1:         [OK]            68.609096 seconds
-Equivalence of output group #12:        [OK]            67.546899 seconds
-Equivalence of output group #3:         [OK]            68.682703 seconds
-Equivalence of output group #7:         [OK]            68.276393 seconds
-Equivalence of output group #6:         [OK]            68.502765 seconds
-Equivalence of output group #9:         [OK]            68.183086 seconds
-Equivalence of output group #8:         [OK]            68.741987 seconds
-Equivalence of output group #15:        [OK]            68.006753 seconds
-Equivalence of output group #20:        [OK]            67.817045 seconds
-Equivalence of output group #13:        [OK]            68.730782 seconds
-Equivalence of output group #19:        [OK]            68.083850 seconds
-Equivalence of output group #21:        [OK]            68.562174 seconds
-Equivalence of output group #16:        [OK]            69.400126 seconds
-Equivalence of output group #18:        [OK]            69.208308 seconds
-Equivalence of output group #4:         [OK]            78.046181 seconds
-Final result:                           [OK]            78.649015 seconds
+(* quine: cv_cec.exe -jobs 48 -v -ov r00,r01#r02,r03#r04,r05#r06,r07#r08,r09#r0a,r0b#r0c,r0d#r0e,r0f#r10,r11#r12,r13#r14,r15#r16,r17#r18,r19#r1a,r1b#r1c,r1d#r1e,r1f#r20,r21#r22,r23#r24,r25#r26,r27#r28,r29#r2a,r2b#r2c,r2d#r2e,r2f _gf256v_madd_u64.cl gf256v_madd_sse.vcl
+Parsing CryptoLine file:                [OK]            0.330717 seconds
+Checking well-formedness:               [OK]            0.212321 seconds
+Parsing CryptoLine file:                [OK]            0.020664 seconds
+Checking well-formedness:               [OK]            0.006527 seconds
+Equivalence of output group #3:         [OK]            109.964551 seconds
+Equivalence of output group #0:         [OK]            112.583585 seconds
+Equivalence of output group #5:         [OK]            111.572884 seconds
+Equivalence of output group #7:         [OK]            113.893764 seconds
+Equivalence of output group #9:         [OK]            113.670636 seconds
+Equivalence of output group #1:         [OK]            116.589106 seconds
+Equivalence of output group #13:        [OK]            114.328966 seconds
+Equivalence of output group #15:        [OK]            114.551119 seconds
+Equivalence of output group #16:        [OK]            115.157781 seconds
+Equivalence of output group #17:        [OK]            115.014197 seconds
+Equivalence of output group #22:        [OK]            113.283333 seconds
+Equivalence of output group #19:        [OK]            114.435014 seconds
+Equivalence of output group #20:        [OK]            114.746710 seconds
+Equivalence of output group #2:         [OK]            121.564412 seconds
+Equivalence of output group #6:         [OK]            121.395018 seconds
+Equivalence of output group #8:         [OK]            121.542662 seconds
+Equivalence of output group #11:        [OK]            120.698343 seconds
+Equivalence of output group #14:        [OK]            120.015228 seconds
+Equivalence of output group #18:        [OK]            118.711345 seconds
+Equivalence of output group #23:        [OK]            117.668774 seconds
+Equivalence of output group #21:        [OK]            118.430394 seconds
+Equivalence of output group #4:         [OK]            137.179025 seconds
+Equivalence of output group #10:        [OK]            145.154933 seconds
+Equivalence of output group #12:        [OK]            146.002404 seconds
+Final result:                           [OK]            149.881345 seconds
 *)
 
 proc sel128 (uint128 src, uint8 idx; uint8 dst) =
