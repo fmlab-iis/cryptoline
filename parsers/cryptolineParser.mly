@@ -1290,6 +1290,18 @@
     else () in
     ((relmtyp, srclen), src1, src2)
 
+  let unpack_vinstr_1 mapper lno dest_tok fm cm vm vxm ym gm =
+    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm None in
+
+    let map_func (vm, ym, gm) lvname = (
+      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) =
+      List.fold_left_map map_func (vm, ym, gm) dest_names in
+    (vm', vxm', ym', gm', List.concat iss)
+
   let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
@@ -1545,10 +1557,16 @@
          parse_ror_at lno dest src num fm cm vm vxm ym gm
       | `SET (`LVCARRY dest) ->
          parse_set_at lno dest fm cm vm vxm ym gm
+      | `VSET (dest) ->
+         unpack_vinstr_1 parse_set_at lno dest fm cm vm vxm ym gm
       | `CLEAR (`LVCARRY dest) ->
          parse_clear_at lno dest fm cm vm vxm ym gm
+      | `VCLEAR (dest) ->
+         unpack_vinstr_1 parse_clear_at lno dest fm cm vm vxm ym gm
       | `NONDET (`LVPLAIN dest) ->
          parse_nondet_at lno dest fm cm vm vxm ym gm
+      | `VNONDET (dest) ->
+         unpack_vinstr_1 parse_nondet_at lno dest fm cm vm vxm ym gm
       | `CMOV (`LVPLAIN dest, carry, src1, src2) ->
          parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
       | `VCMOV (dest, carry, src1, src2) ->
@@ -1992,8 +2010,11 @@ instr:
   | ROL lval atom atom                            { (!lnum, `ROL ($2, $3, $4)) }
   | ROR lval atom atom                            { (!lnum, `ROR ($2, $3, $4)) }
   | SET lcarry                                    { (!lnum, `SET $2) }
+  | SET lcarry_v                                  { (!lnum, `VSET $2) }
   | CLEAR lcarry                                  { (!lnum, `CLEAR $2) }
+  | CLEAR lcarry_v                                { (!lnum, `VCLEAR $2) }
   | NONDET lval                                   { (!lnum, `NONDET $2) }
+  | NONDET lval_v                                 { (!lnum, `VNONDET $2) }
   | CMOV lval carry atom atom                     { (!lnum, `CMOV ($2, $3, $4, $5)) }
   | CMOV lval_v carry_v atom_v atom_v             { (!lnum, `VCMOV ($2, $3, $4, $5)) }
   | lhs EQOP CMOV carry atom atom                 { (!lnum, `CMOV (`LVPLAIN $1, $4, $5, $6)) }
