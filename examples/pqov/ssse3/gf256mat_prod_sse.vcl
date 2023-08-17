@@ -1,43 +1,77 @@
-(* popper: cv_cec.exe -v -jobs 48 -ov c00,c01#c02,c03#c04,c05#c06,c07#c08,c09#c0a,c0b#c0c,c0d#c0e,c0f#c10,c11#c12,c13#c14,c15#c16,c17#c18,c19#c1a,c1b#c1c,c1d#c1e,c1f#c20,c21#c22,c23#c24,c25#c26,c27#c28,c29#c2a,c2b#c2c,c2d#c2e,c2f#c30,c31#c32,c33#c34,c35#c36,c37#c38,c39#c3a,c3b#c3c,c3d#c3e,c3f#c40,c41#c42,c43 gf256_prod.vcl gf256mat_prod_sse.vcl
-Parsing CryptoLine file:                [OK]            0.594961 seconds
-Checking well-formedness:               [OK]            0.503843 seconds
-Parsing CryptoLine file:                [OK]            4.930213 seconds
-Checking well-formedness:               [OK]            0.356499 seconds
-Equivalence of output group #1:         [OK]            580.086049 seconds
-Equivalence of output group #0:         [OK]            712.406311 seconds
-Equivalence of output group #2:         [OK]            860.709227 seconds
-Equivalence of output group #8:         [OK]            835.290451 seconds
-Equivalence of output group #11:        [OK]            801.094545 seconds
-Equivalence of output group #15:        [OK]            748.340509 seconds
-Equivalence of output group #12:        [OK]            799.706604 seconds
-Equivalence of output group #16:        [OK]            737.145926 seconds
-Equivalence of output group #14:        [OK]            769.587948 seconds
-Equivalence of output group #4:         [OK]            925.306484 seconds
-Equivalence of output group #5:         [OK]            912.749760 seconds
-Equivalence of output group #20:        [OK]            677.015744 seconds
-Equivalence of output group #19:        [OK]            692.890898 seconds
-Equivalence of output group #21:        [OK]            661.868438 seconds
-Equivalence of output group #3:         [OK]            948.889524 seconds
-Equivalence of output group #6:         [OK]            904.587488 seconds
-Equivalence of output group #24:        [OK]            618.123438 seconds
-Equivalence of output group #9:         [OK]            861.542466 seconds
-Equivalence of output group #13:        [OK]            799.165239 seconds
-Equivalence of output group #7:         [OK]            892.190147 seconds
-Equivalence of output group #10:        [OK]            848.172780 seconds
-Equivalence of output group #29:        [OK]            541.569965 seconds
-Equivalence of output group #27:        [OK]            573.894930 seconds
-Equivalence of output group #30:        [OK]            525.826384 seconds
-Equivalence of output group #32:        [OK]            493.464973 seconds
-Equivalence of output group #33:        [OK]            481.354561 seconds
-Equivalence of output group #25:        [OK]            612.609189 seconds
-Equivalence of output group #31:        [OK]            516.240026 seconds
-Equivalence of output group #18:        [OK]            734.124529 seconds
-Equivalence of output group #17:        [OK]            751.273382 seconds
-Equivalence of output group #23:        [OK]            657.260197 seconds
-Equivalence of output group #22:        [OK]            677.056171 seconds
-Equivalence of output group #26:        [OK]            611.004735 seconds
-Equivalence of output group #28:        [OK]            580.438038 seconds
-Final result:                           [OK]            1038.912436 seconds
+(* popper: cv_cec.exe -v -jobs 72 -ov c00#c01#c02#c03#c04#c05#c06#c07#c08#c09#c0a#c0b#c0c#c0d#c0e#c0f#c10#c11#c12#c13#c14#c15#c16#c17#c18#c19#c1a#c1b#c1c#c1d#c1e#c1f#c20#c21#c22#c23#c24#c25#c26#c27#c28#c29#c2a#c2b#c2c#c2d#c2e#c2f#c30#c31#c32#c33#c34#c35#c36#c37#c38#c39#c3a#c3b#c3c#c3d#c3e#c3f#c40#c41#c42#c43 gf256_prod.vcl gf256mat_prod_sse.vcl
+Parsing CryptoLine file:                [OK]            0.603370 seconds
+Checking well-formedness:               [OK]            0.509933 seconds
+Parsing CryptoLine file:                [OK]            4.924434 seconds
+Checking well-formedness:               [OK]            0.355972 seconds
+Equivalence of output group #58:        [OK]            99.079808 seconds
+Equivalence of output group #57:        [OK]            110.106911 seconds
+Equivalence of output group #56:        [OK]            121.210856 seconds
+Equivalence of output group #55:        [OK]            132.173047 seconds
+Equivalence of output group #54:        [OK]            143.890201 seconds
+Equivalence of output group #53:        [OK]            156.540277 seconds
+Equivalence of output group #52:        [OK]            169.736242 seconds
+Equivalence of output group #51:        [OK]            182.581815 seconds
+Equivalence of output group #50:        [OK]            195.202699 seconds
+Equivalence of output group #49:        [OK]            208.350258 seconds
+Equivalence of output group #48:        [OK]            220.137798 seconds
+Equivalence of output group #47:        [OK]            232.092030 seconds
+Equivalence of output group #46:        [OK]            244.321132 seconds
+Equivalence of output group #45:        [OK]            256.624037 seconds
+Equivalence of output group #44:        [OK]            269.391846 seconds
+Equivalence of output group #43:        [OK]            281.851099 seconds
+Equivalence of output group #42:        [OK]            293.739526 seconds
+Equivalence of output group #41:        [OK]            305.693353 seconds
+Equivalence of output group #40:        [OK]            317.742818 seconds
+Equivalence of output group #39:        [OK]            329.882825 seconds
+Equivalence of output group #38:        [OK]            342.051836 seconds
+Equivalence of output group #37:        [OK]            354.050732 seconds
+Equivalence of output group #36:        [OK]            365.998970 seconds
+Equivalence of output group #35:        [OK]            378.167204 seconds
+Equivalence of output group #34:        [OK]            390.136268 seconds
+Equivalence of output group #33:        [OK]            403.099501 seconds
+Equivalence of output group #32:        [OK]            415.057014 seconds
+Equivalence of output group #31:        [OK]            427.229298 seconds
+Equivalence of output group #30:        [OK]            439.095326 seconds
+Equivalence of output group #29:        [OK]            451.302020 seconds
+Equivalence of output group #28:        [OK]            463.077136 seconds
+Equivalence of output group #27:        [OK]            474.718509 seconds
+Equivalence of output group #26:        [OK]            487.663233 seconds
+Equivalence of output group #25:        [OK]            499.104338 seconds
+Equivalence of output group #24:        [OK]            510.937015 seconds
+Equivalence of output group #23:        [OK]            522.583332 seconds
+Equivalence of output group #22:        [OK]            534.359783 seconds
+Equivalence of output group #21:        [OK]            545.914084 seconds
+Equivalence of output group #20:        [OK]            557.603663 seconds
+Equivalence of output group #19:        [OK]            569.704500 seconds
+Equivalence of output group #18:        [OK]            581.619582 seconds
+Equivalence of output group #17:        [OK]            593.421266 seconds
+Equivalence of output group #16:        [OK]            604.714936 seconds
+Equivalence of output group #15:        [OK]            616.741828 seconds
+Equivalence of output group #14:        [OK]            628.311071 seconds
+Equivalence of output group #13:        [OK]            640.059573 seconds
+Equivalence of output group #12:        [OK]            651.274440 seconds
+Equivalence of output group #11:        [OK]            662.712183 seconds
+Equivalence of output group #10:        [OK]            673.972544 seconds
+Equivalence of output group #9:         [OK]            684.860178 seconds
+Equivalence of output group #8:         [OK]            695.762743 seconds
+Equivalence of output group #7:         [OK]            707.332603 seconds
+Equivalence of output group #6:         [OK]            718.013670 seconds
+Equivalence of output group #5:         [OK]            729.021256 seconds
+Equivalence of output group #4:         [OK]            739.623627 seconds
+Equivalence of output group #3:         [OK]            750.355249 seconds
+Equivalence of output group #2:         [OK]            760.990406 seconds
+Equivalence of output group #1:         [OK]            771.728977 seconds
+Equivalence of output group #0:         [OK]            782.749113 seconds
+Equivalence of output group #59:        [OK]            92.257535 seconds
+Equivalence of output group #60:        [OK]            92.778756 seconds
+Equivalence of output group #61:        [OK]            93.072789 seconds
+Equivalence of output group #62:        [OK]            95.281765 seconds
+Equivalence of output group #63:        [OK]            92.271876 seconds
+Equivalence of output group #64:        [OK]            94.593461 seconds
+Equivalence of output group #65:        [OK]            92.894918 seconds
+Equivalence of output group #66:        [OK]            92.211694 seconds
+Equivalence of output group #67:        [OK]            93.234020 seconds
+Final result:                           [OK]            886.882528 seconds
 *)
 
 proc sel128 (uint128 src, uint8 idx; uint8 dst) =
