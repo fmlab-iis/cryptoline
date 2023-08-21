@@ -1,42 +1,42 @@
 (* @laptop: 
 cv_cec -jobs 16 -v -ov r00,r01#r02,r03#r04,r05#r06,r07#r08,r09#r0a,r0b#r0c,r0d#r0e,r0f#r10,r11#r12,r13#r14,r15#r16,r17#r18,r19#r1a,r1b#r1c,r1d#r1e,r1f#r20,r21#r22,r23#r24,r25#r26,r27#r28,r29#r2a,r2b#r2c,r2d#r2e,r2f#r30,r31#r32,r33#r34,r35#r36,r37#r38,r39#r3a,r3b#r3c,r3d#r3e,r3f  _gf256v_madd_u64.cl gf256v_madd_avx2.vcl
-Parsing CryptoLine file:		[OK]		0.224736 seconds
-Checking well-formedness:		[OK]		0.181263 seconds
-Parsing CryptoLine file:		[OK]		0.063386 seconds
-Checking well-formedness:		[OK]		0.005276 seconds
-Equivalence of output group #5:		[OK]		217.781362 seconds
-Equivalence of output group #2:		[OK]		229.968330 seconds
-Equivalence of output group #1:		[OK]		230.543572 seconds
-Equivalence of output group #7:		[OK]		230.651640 seconds
-Equivalence of output group #6:		[OK]		231.469680 seconds
-Equivalence of output group #8:		[OK]		231.252219 seconds
-Equivalence of output group #9:		[OK]		231.268463 seconds
-Equivalence of output group #11:		[OK]		231.323231 seconds
-Equivalence of output group #13:		[OK]		231.075007 seconds
-Equivalence of output group #10:		[OK]		232.244212 seconds
-Equivalence of output group #12:		[OK]		232.025371 seconds
-Equivalence of output group #4:		[OK]		234.596137 seconds
-Equivalence of output group #15:		[OK]		231.829467 seconds
-Equivalence of output group #14:		[OK]		232.145660 seconds
-Equivalence of output group #3:		[OK]		245.823798 seconds
-Equivalence of output group #0:		[OK]		271.684214 seconds
-Equivalence of output group #16:		[OK]		225.400357 seconds
-Equivalence of output group #17:		[OK]		224.540347 seconds
-Equivalence of output group #18:		[OK]		289.720567 seconds
-Equivalence of output group #21:		[OK]		289.884399 seconds
-Equivalence of output group #19:		[OK]		291.734436 seconds
-Equivalence of output group #23:		[OK]		289.965218 seconds
-Equivalence of output group #24:		[OK]		289.889618 seconds
-Equivalence of output group #22:		[OK]		290.858067 seconds
-Equivalence of output group #20:		[OK]		291.586964 seconds
-Equivalence of output group #25:		[OK]		290.091025 seconds
-Equivalence of output group #27:		[OK]		289.628274 seconds
-Equivalence of output group #29:		[OK]		289.037476 seconds
-Equivalence of output group #26:		[OK]		290.030356 seconds
-Equivalence of output group #28:		[OK]		290.185785 seconds
-Equivalence of output group #30:		[OK]		284.094525 seconds
-Equivalence of output group #31:		[OK]		271.510764 seconds
-Final result:				[OK]		543.728625 seconds
+Parsing CryptoLine file:		[OK]		0.191978 seconds
+Checking well-formedness:		[OK]		0.137749 seconds
+Parsing CryptoLine file:		[OK]		0.048250 seconds
+Checking well-formedness:		[OK]		0.004025 seconds
+Equivalence of output group #5:		[OK]		163.132651 seconds
+Equivalence of output group #2:		[OK]		170.821291 seconds
+Equivalence of output group #1:		[OK]		171.852314 seconds
+Equivalence of output group #6:		[OK]		172.075807 seconds
+Equivalence of output group #7:		[OK]		172.143637 seconds
+Equivalence of output group #8:		[OK]		172.264310 seconds
+Equivalence of output group #10:		[OK]		172.144446 seconds
+Equivalence of output group #9:		[OK]		172.680084 seconds
+Equivalence of output group #11:		[OK]		172.397678 seconds
+Equivalence of output group #13:		[OK]		172.745613 seconds
+Equivalence of output group #14:		[OK]		172.737110 seconds
+Equivalence of output group #12:		[OK]		173.478177 seconds
+Equivalence of output group #4:		[OK]		175.251417 seconds
+Equivalence of output group #15:		[OK]		173.319964 seconds
+Equivalence of output group #3:		[OK]		183.577479 seconds
+Equivalence of output group #0:		[OK]		202.064302 seconds
+Equivalence of output group #16:		[OK]		171.531384 seconds
+Equivalence of output group #17:		[OK]		171.451351 seconds
+Equivalence of output group #18:		[OK]		222.175679 seconds
+Equivalence of output group #19:		[OK]		222.030781 seconds
+Equivalence of output group #20:		[OK]		222.183807 seconds
+Equivalence of output group #21:		[OK]		221.844819 seconds
+Equivalence of output group #24:		[OK]		221.218237 seconds
+Equivalence of output group #23:		[OK]		221.599916 seconds
+Equivalence of output group #22:		[OK]		222.153941 seconds
+Equivalence of output group #26:		[OK]		220.626631 seconds
+Equivalence of output group #25:		[OK]		220.947173 seconds
+Equivalence of output group #29:		[OK]		220.663917 seconds
+Equivalence of output group #28:		[OK]		221.101044 seconds
+Equivalence of output group #27:		[OK]		221.373001 seconds
+Equivalence of output group #30:		[OK]		216.793505 seconds
+Equivalence of output group #31:		[OK]		208.140087 seconds
+Final result:				[OK]		410.611513 seconds
 *)
 
 
@@ -77,6 +77,7 @@ spl ymms_ah ymms_al ymms_a 8;  spl ymms_bh ymms_bl ymms_b 8;
 spl ymms_ch ymms_cl ymms_c 8;  spl ymms_dh ymms_dl ymms_d 8;
 spl ymms_eh ymms_el ymms_e 8;  spl ymms_fh ymms_fl ymms_f 8;
 { true && true }
+
 
 (*
  * convert a byte-vector ymm (of type uint8[32])
@@ -459,22 +460,22 @@ and %ymm0 %ymm1 %ymm5;
 (* vpsrlw $0x1,%ymm1,%ymm4                         #! PC = 0x55555555c19d *)
 mov [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
      ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f] %ymm1;
-shr ymm4_0 ymm1_0 0x1@uint16;
-shr ymm4_1 ymm1_1 0x1@uint16;
-shr ymm4_2 ymm1_2 0x1@uint16;
-shr ymm4_3 ymm1_3 0x1@uint16;
-shr ymm4_4 ymm1_4 0x1@uint16;
-shr ymm4_5 ymm1_5 0x1@uint16;
-shr ymm4_6 ymm1_6 0x1@uint16;
-shr ymm4_7 ymm1_7 0x1@uint16;
-shr ymm4_8 ymm1_8 0x1@uint16;
-shr ymm4_9 ymm1_9 0x1@uint16;
-shr ymm4_a ymm1_a 0x1@uint16;
-shr ymm4_b ymm1_b 0x1@uint16;
-shr ymm4_c ymm1_c 0x1@uint16;
-shr ymm4_d ymm1_d 0x1@uint16;
-shr ymm4_e ymm1_e 0x1@uint16;
-shr ymm4_f ymm1_f 0x1@uint16;
+shrs ymm4_0 dontcare ymm1_0 0x1;
+shrs ymm4_1 dontcare ymm1_1 0x1;
+shrs ymm4_2 dontcare ymm1_2 0x1;
+shrs ymm4_3 dontcare ymm1_3 0x1;
+shrs ymm4_4 dontcare ymm1_4 0x1;
+shrs ymm4_5 dontcare ymm1_5 0x1;
+shrs ymm4_6 dontcare ymm1_6 0x1;
+shrs ymm4_7 dontcare ymm1_7 0x1;
+shrs ymm4_8 dontcare ymm1_8 0x1;
+shrs ymm4_9 dontcare ymm1_9 0x1;
+shrs ymm4_a dontcare ymm1_a 0x1;
+shrs ymm4_b dontcare ymm1_b 0x1;
+shrs ymm4_c dontcare ymm1_c 0x1;
+shrs ymm4_d dontcare ymm1_d 0x1;
+shrs ymm4_e dontcare ymm1_e 0x1;
+shrs ymm4_f dontcare ymm1_f 0x1;
 mov %ymm4 [ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
            ymm4_8, ymm4_9, ymm4_a, ymm4_b, ymm4_c, ymm4_d, ymm4_e, ymm4_f];
 (* vpand  %ymm1,%ymm7,%ymm2                        #! PC = 0x55555555c1a2 *)
@@ -1030,7 +1031,7 @@ nop;
 (* #jmp    0x55555555f4c0 <linearmap_8x8_accu_ymm.constprop.0>#! PC = 0x55555555f578 *)
 #jmp    0x55555555f4c0 <linearmap_8x8_accu_ymm.constprop.0>#! 0x55555555f578 = 0x55555555f578;
 (* shr    $0x5,%edx                                #! PC = 0x55555555f4c0 *)
-shr rdx rdx (0x5)@uint64;
+shrs rdx dontcare rdx (0x5);
 (* #je     0x55555555f528 <linearmap_8x8_accu_ymm.constprop.0+104>#! PC = 0x55555555f4c3 *)
 #je     0x55555555f528 <linearmap_8x8_accu_ymm.constprop.0+104>#! 0x55555555f4c3 = 0x55555555f4c3;
 (* lea    0x8(%rsp),%r10                           #! PC = 0x55555555f4c5 *)
@@ -1046,7 +1047,7 @@ mov rdx rdx;
 (* push -0x8(r10) *)
 nop;
 (* shl    $0x5,%rdx                                #! PC = 0x55555555f4d8 *)
-shl rdx rdx (0x5)@uint64;
+shls dontcare rdx rdx (0x5);
 (* vmovdqa %ymm1,%ymm6                             #! PC = 0x55555555f4dc *)
 mov %ymm6 %ymm1;
 (* push   %rbp                                     #! EA = L0x7fffffffc8d0; PC = 0x55555555f4e0 *)
@@ -1091,22 +1092,22 @@ and %ymm4 %ymm3 %ymm2;
 (* vpsrlw $0x4,%ymm2,%ymm2                         #! PC = 0x55555555f49c *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-shr ymm2_0 ymm2_0 0x4@uint16;
-shr ymm2_1 ymm2_1 0x4@uint16;
-shr ymm2_2 ymm2_2 0x4@uint16;
-shr ymm2_3 ymm2_3 0x4@uint16;
-shr ymm2_4 ymm2_4 0x4@uint16;
-shr ymm2_5 ymm2_5 0x4@uint16;
-shr ymm2_6 ymm2_6 0x4@uint16;
-shr ymm2_7 ymm2_7 0x4@uint16;
-shr ymm2_8 ymm2_8 0x4@uint16;
-shr ymm2_9 ymm2_9 0x4@uint16;
-shr ymm2_a ymm2_a 0x4@uint16;
-shr ymm2_b ymm2_b 0x4@uint16;
-shr ymm2_c ymm2_c 0x4@uint16;
-shr ymm2_d ymm2_d 0x4@uint16;
-shr ymm2_e ymm2_e 0x4@uint16;
-shr ymm2_f ymm2_f 0x4@uint16;
+shrs ymm2_0 dontcare ymm2_0 0x4;
+shrs ymm2_1 dontcare ymm2_1 0x4;
+shrs ymm2_2 dontcare ymm2_2 0x4;
+shrs ymm2_3 dontcare ymm2_3 0x4;
+shrs ymm2_4 dontcare ymm2_4 0x4;
+shrs ymm2_5 dontcare ymm2_5 0x4;
+shrs ymm2_6 dontcare ymm2_6 0x4;
+shrs ymm2_7 dontcare ymm2_7 0x4;
+shrs ymm2_8 dontcare ymm2_8 0x4;
+shrs ymm2_9 dontcare ymm2_9 0x4;
+shrs ymm2_a dontcare ymm2_a 0x4;
+shrs ymm2_b dontcare ymm2_b 0x4;
+shrs ymm2_c dontcare ymm2_c 0x4;
+shrs ymm2_d dontcare ymm2_d 0x4;
+shrs ymm2_e dontcare ymm2_e 0x4;
+shrs ymm2_f dontcare ymm2_f 0x4;
 mov %ymm2 [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
            ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f];
 (* vpand  %ymm3,%ymm2,%ymm2                        #! PC = 0x55555555f4a1 *)
@@ -1147,7 +1148,7 @@ call ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0
              ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
              ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f);
 mov %ymm0 [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
-            ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f];
+           ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f];
 (* vpshufb %ymm2,%ymm1,%ymm1                       #! PC = 0x55555555f4aa *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
@@ -1184,7 +1185,7 @@ call ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1
              ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
              ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f);
 mov %ymm1 [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
-            ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f];
+           ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f];
 (* vpxor  %ymm1,%ymm0,%ymm0                        #! PC = 0x55555555f4af *)
 xor %ymm0 %ymm1 %ymm0;
 (* #! <- SP = 0x7fffffffc8b8 *)
@@ -1248,22 +1249,22 @@ and %ymm4 %ymm3 %ymm2;
 (* vpsrlw $0x4,%ymm2,%ymm2                         #! PC = 0x55555555f49c *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-shr ymm2_0 ymm2_0 0x4@uint16;
-shr ymm2_1 ymm2_1 0x4@uint16;
-shr ymm2_2 ymm2_2 0x4@uint16;
-shr ymm2_3 ymm2_3 0x4@uint16;
-shr ymm2_4 ymm2_4 0x4@uint16;
-shr ymm2_5 ymm2_5 0x4@uint16;
-shr ymm2_6 ymm2_6 0x4@uint16;
-shr ymm2_7 ymm2_7 0x4@uint16;
-shr ymm2_8 ymm2_8 0x4@uint16;
-shr ymm2_9 ymm2_9 0x4@uint16;
-shr ymm2_a ymm2_a 0x4@uint16;
-shr ymm2_b ymm2_b 0x4@uint16;
-shr ymm2_c ymm2_c 0x4@uint16;
-shr ymm2_d ymm2_d 0x4@uint16;
-shr ymm2_e ymm2_e 0x4@uint16;
-shr ymm2_f ymm2_f 0x4@uint16;
+shrs ymm2_0 dontcare ymm2_0 0x4;
+shrs ymm2_1 dontcare ymm2_1 0x4;
+shrs ymm2_2 dontcare ymm2_2 0x4;
+shrs ymm2_3 dontcare ymm2_3 0x4;
+shrs ymm2_4 dontcare ymm2_4 0x4;
+shrs ymm2_5 dontcare ymm2_5 0x4;
+shrs ymm2_6 dontcare ymm2_6 0x4;
+shrs ymm2_7 dontcare ymm2_7 0x4;
+shrs ymm2_8 dontcare ymm2_8 0x4;
+shrs ymm2_9 dontcare ymm2_9 0x4;
+shrs ymm2_a dontcare ymm2_a 0x4;
+shrs ymm2_b dontcare ymm2_b 0x4;
+shrs ymm2_c dontcare ymm2_c 0x4;
+shrs ymm2_d dontcare ymm2_d 0x4;
+shrs ymm2_e dontcare ymm2_e 0x4;
+shrs ymm2_f dontcare ymm2_f 0x4;
 mov %ymm2 [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
            ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f];
 (* vpand  %ymm3,%ymm2,%ymm2                        #! PC = 0x55555555f4a1 *)
@@ -1304,7 +1305,7 @@ call ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0
              ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
              ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f);
 mov %ymm0 [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
-            ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f];
+           ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f];
 (* vpshufb %ymm2,%ymm1,%ymm1                       #! PC = 0x55555555f4aa *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
@@ -1341,7 +1342,7 @@ call ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1
              ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
              ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f);
 mov %ymm1 [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
-            ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f];
+           ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f];
 (* vpxor  %ymm1,%ymm0,%ymm0                        #! PC = 0x55555555f4af *)
 xor %ymm0 %ymm1 %ymm0;
 (* #! <- SP = 0x7fffffffc8b8 *)
