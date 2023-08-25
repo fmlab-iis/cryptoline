@@ -365,6 +365,25 @@ def print_instrs(instrs):
   for instr in instrs:
     print(instr.to_string())
 
+def string_of_typed_arg(v, vtypes, default):
+  """
+  Return the string representation of a typed procedure argument.
+
+  Args:
+    v: a procedure argument
+    vtypes: a partial map from a variable to its type
+    default: a default type
+
+  Returns:
+    the string representation of v
+  """
+  if v in vtypes:
+    return vtypes[v] + " " + v
+  elif default:
+    return default + " " + v
+  else:
+    return v
+
 def main():
   global verbose, use_re, auto_carries, auto_unused
 
@@ -379,6 +398,7 @@ def main():
   parser.add_argument("-r", action="append", help="a file containing translation rules. Multiple -r arguments can be provided. A rule of a pattern in a former file has a higher priority than another rule of the same pattern in a latter file.", dest="rules", default=[])
   parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
+  parser.add_argument("-vt", help="the type of a specific input variable", nargs=2, metavar=('VAR', 'TYPE'), action="append")
   parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
   args = parser.parse_args()
 
@@ -386,6 +406,11 @@ def main():
   if args.use_re: use_re = True
   if args.auto_carries: auto_carries = True
   if args.auto_unused: auto_unused = True
+
+  vtypes = {}
+  if args.vt:
+      for (var, typ) in args.vt:
+          vtypes[var] = typ
 
   # Read gas file
   if verbose: t1 = process_time()
@@ -405,7 +430,6 @@ def main():
       print("  {} -> {}".format(i, tspec[1][i]))
 
   # Redirect output to a file
-  type_suffix = "" if args.type == "" else ("@" + args.type)
   if (args.output != ""): sys.stdout = open(args.output, 'w')
 
   # Translate instructions
@@ -421,7 +445,7 @@ def main():
   if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
 
   # Output translation result
-  if not args.nomain: print ("proc main (%s) =" % ", ".join([i + type_suffix for i in inputs]))
+  if not args.nomain: print ("proc main (%s) =" % ", ".join([string_of_typed_arg(i, vtypes, args.type) for i in inputs]))
   if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
   instr_strs = list(map((lambda i: i.to_string() + ";"), instrs))
   instr_strs = flatten([str.split("\n") for str in instr_strs])
