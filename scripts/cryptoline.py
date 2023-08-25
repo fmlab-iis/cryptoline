@@ -91,6 +91,7 @@ instr_specs_raw = {
     "cast":   (2, [0], [1], []),
     "vpc":    (2, [0], [1], []),
     "join":   (3, [0], [1, 2], []),
+    "broadcast": (3, [0], [1, 2], []),
     "assert": (None, r"(.*)"),
     "assume": (None, r"(.*)"),
     "cut":    (None, r"(.*)"),
@@ -126,8 +127,14 @@ reserved_logics = set([
 reserved_words = set(instr_names).union(reserved_logics)
 
 var_pattern = r"\b[a-zA-Z_][a-zA-Z0-9_]*(?:\s*@\s*[su]int[0-9]+)?\b"
-typ_pattern = r"[su]int[0-9]+"
-atom_pattern = r"\b(?:[a-zA-Z_][a-zA-Z0-9_]*|0x[a-fA-F0-9]+|0b[01]+|[0-9]+)(?:\s*@\s*[su]int[0-9]+)?|[(][^@]*[)](?:\s*@\s*[su]int[0-9]+)\b"
+typ_pattern = r"[su]int[0-9]+(?:\s*\[\s*[0-9]+\s*\])?"
+atom_pattern = r"\b(?:[a-zA-Z_][a-zA-Z0-9_]*|0x[a-fA-F0-9]+|0b[01]+|[0-9]+)(?:\s*@\s*" + typ_pattern + r")?|[(][^@]*[)](?:\s*@\s*" + typ_pattern + r")\b"
+vector_pattern = r"\[\s*[^,\[\]]*(?:\s*,\s*[^,\[\]]*)+\s*\]"
+atom_vector_pattern = r"(" + vector_pattern + r")|(" + atom_pattern + r")"
+
+# Flatten a list of lists
+def flatten(vs):
+  return [num for elem in vs for num in elem]
 
 # Generate a random ID.
 def random_id(length):
@@ -173,9 +180,35 @@ def strip_explicit_type(str):
     else:
         return str
 
+def strip_explicit_types(strs):
+    return [strip_explicit_type(s) for s in strs]
+
 # filter_variables(strs) returns variables in strs
 def filter_variables(strs):
     return [s for s in strs if re.match(var_pattern, s, re.MULTILINE | re.DOTALL) and not s in reserved_words]
+
+def filter_variables_of_arguments(args):
+    return flatten([filter_variables(arg) for arg in args])
+
+# Return variables in each argument.
+# For example, if the input string (arguments of some instruction) is
+# `%xmm1 [rsi, rdi, rax]`, the output will be [[xmm1], [rsi, rdi, rax]].
+# The i-th element of the returned list is the i-th argument in the instruction.
+# Each argument may contain more than one variables.
+def find_variables_per_argument(str):
+    res = []
+    ms = re.findall(atom_vector_pattern, str, re.MULTILINE | re.DOTALL)
+    if ms:
+        for m in ms:
+            if m[0]:
+                # a vector
+                vs = re.findall(atom_pattern, m[0], re.MULTILINE | re.DOTALL)
+                res.append(vs)
+            elif m[1]:
+                # a scalar
+                vs = [m[1]]
+                res.append(vs)
+    return res
 
 # get_vars(iname, str) returns variables in the string of operands for the instruction with name iname.
 # The returned value is a dictionary {'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs} where
@@ -188,21 +221,21 @@ def get_vars(iname, str):
     if s['is-annot']:
         m = re.match(s['pattern'], str, re.MULTILINE | re.DOTALL)
         if m:
-            ms = re.findall(atom_pattern, m.group(1), re.MULTILINE | re.DOTALL)
-            ms = [strip_explicit_type(m) for m in ms]
+            ms = find_variables_per_argument(m.group(1))
+            ms = [strip_explicit_types(m) for m in ms]
             lvs = set()
-            rvs = set(filter_variables(ms))
+            rvs = set(filter_variables_of_arguments(ms))
             cvs = set()
             gvs = rvs if s['is-ghost'] else set()
             return { 'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs }
         else:
             return { 'lvs': set(), 'rvs': set(), 'cvs': set(), 'gvs': set() }
     else:
-        ms = re.findall(atom_pattern, str, re.MULTILINE | re.DOTALL)
-        ms = [strip_explicit_type(m) for m in ms]
-        lvs = set(filter_variables([ms[i] for i in s['lvs-idx']]))
-        rvs = set(filter_variables([ms[i] for i in s['rvs-idx']]))
-        cvs = set(filter_variables([ms[i] for i in s['cvs-idx']]))
+        ms = find_variables_per_argument(str)
+        ms = [strip_explicit_types(m) for m in ms]
+        lvs = set(filter_variables_of_arguments([ms[i] for i in s['lvs-idx']]))
+        rvs = set(filter_variables_of_arguments([ms[i] for i in s['rvs-idx']]))
+        cvs = set(filter_variables_of_arguments([ms[i] for i in s['cvs-idx']]))
         gvs = set()
         return { 'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs }
 

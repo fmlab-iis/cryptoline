@@ -416,7 +416,7 @@ def main():
 
   # Calculate program inputs
   if verbose: t1 = process_time()
-  inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split("\n") for instr in instrs]))
+  inputs = cryptoline.inputs_of_program(flatten([instr.dsl.split(";") for instr in instrs]))
   if verbose: t2 = process_time()
   if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
 
