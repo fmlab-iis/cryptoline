@@ -314,11 +314,21 @@ let simulate_instr m i =
   | Iseteq (v, a1, a2) ->
      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in
-     VM.add v [eqB bs1 bs2] m
+     let sv = size_of_var v in
+     let bit_eq = of_bit (eqB bs1 bs2) in
+     if sv = 1 then
+       VM.add v bit_eq m
+     else
+       VM.add v (subB (zeros sv) (zext (sv - 1) bit_eq)) m
   | Isetne (v, a1, a2) ->
      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in
-     VM.add v [neB bs1 bs2] m
+     let sv = size_of_var v in
+     let bit_ne = of_bit (neB bs1 bs2) in
+     if sv = 1 then
+       VM.add v bit_ne m
+     else
+       VM.add v (subB (zeros sv) (zext (sv - 1) bit_ne)) m
   | Iand (v, a1, a2) ->
      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in

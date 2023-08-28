@@ -408,10 +408,26 @@ let bexp_spl vh vl a p =
      (Eq (p, exp_var vl, Low (p, w - p, exp_atom a))))
 let bexp_seteq v a1 a2 =
   let w = size_of_atom a1 in
-  Eq (1, exp_var v, (Comp (w, exp_atom a1, exp_atom a2)))
+  let sv = size_of_var v in
+  if sv = 1 then
+    Eq (sv, exp_var v, (Comp (w, exp_atom a1, exp_atom a2)))
+  else
+    Eq (sv,
+        exp_var v,
+        (Sub (sv,
+              Const (sv, Z.zero),
+              ZeroExtend (1, sv - 1, Comp (w, exp_atom a1, exp_atom a2)))))
 let bexp_setne v a1 a2 =
   let w = size_of_atom a1 in
-  Eq (1, exp_var v, (Not (1, Comp (w, exp_atom a1, exp_atom a2))))
+  let sv = size_of_var v in
+  if sv = 1 then
+    Eq (1, exp_var v, (Not (1, Comp (w, exp_atom a1, exp_atom a2))))
+  else
+    Eq (sv,
+        exp_var v,
+        Sub (sv,
+             Const (sv, Z.zero),
+             ZeroExtend (1, sv - 1, Not (1, Comp (w, exp_atom a1, exp_atom a2)))))
 let bexp_and v a1 a2 =
   let w = size_of_var v in
   Eq (w, exp_var v, And (w, exp_atom a1, exp_atom a2))
@@ -1487,15 +1503,35 @@ let bv2z_instr aim vgen i =
      else let aim = AIM.add (a, ni) (evar vh, evar vl) aim in
           (vgen, aim, [ bv2z_split vh vl (bv2z_atom a) ni ], [])
   | Iseteq (v, a1, a2) ->
-     let (c, vgen) = gen_var vgen in
-     let c = mkvar ~newvid:true c bit_t in
-     (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst Z.one)));
-                  bv2z_is_bit v], [evar c])
+     let sv = size_of_var v in
+     if sv = 1 then
+       let (c, vgen) = gen_var vgen in
+       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst Z.one)));
+                    bv2z_is_bit v], [evar c])
+     else
+       let (c, vgen) = gen_var vgen in
+       let (t, vgen) = gen_var vgen in
+       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       let t = mkvar ~newvid:true t bit_t in
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar t) (econst Z.one)));
+                    bv2z_is_bit t;
+                    eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow sv) Z.one)))], [evar c])
   | Isetne (v, a1, a2) ->
-     let (c, vgen) = gen_var vgen in
-     let c = mkvar ~newvid:true c bit_t in
-     (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar v));
-                  bv2z_is_bit v], [evar c])
+     let sv = size_of_var v in
+     if sv = 1 then
+       let (c, vgen) = gen_var vgen in
+       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar v));
+                    bv2z_is_bit v], [evar c])
+     else
+       let (c, vgen) = gen_var vgen in
+       let (t, vgen) = gen_var vgen in
+       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       let t = mkvar ~newvid:true t bit_t in
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar t));
+                    bv2z_is_bit t;
+                    eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow (size_of_var v)) Z.one)))], [evar c])
   | Iand _
     | Ior _
     | Ixor _ -> (vgen, aim, [], [])

@@ -224,6 +224,8 @@ pairs=(
     '-v -track-split:examples/tests/track-split-ushls.cl:@tests'
     '-v -track-split:examples/tests/track-split-ushr.cl:@tests'
     '-v -track-split:examples/tests/track-split-ushrs.cl:@tests'
+    '-v:examples/tests/test-seteq.cl:@tests'
+    '-v:examples/tests/test-setne.cl:@tests'
 )
 
 offset=0

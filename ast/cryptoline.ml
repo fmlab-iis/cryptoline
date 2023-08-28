@@ -1306,8 +1306,8 @@ let string_of_instr ?typ:(typ=false) i =
   | Isplit (vh, vl, a, n) -> "split " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Ispl (vh, vl, a, n) -> "spl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   (* Comparison *)
-  | Iseteq (v, a1, a2) -> "seteq " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
-  | Isetne (v, a1, a2) -> "setne " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
+  | Iseteq (v, a1, a2) -> "seteq " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
+  | Isetne (v, a1, a2) -> "setne " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   (* Instructions that cannot be translated to polynomials *)
   | Iand (v, a1, a2) -> "and " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Ior (v, a1, a2) -> "or " ^ string_of_var ~typ:true v ^ " " ^ astr a1 ^ " " ^ astr a2

@@ -600,14 +600,24 @@
     fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atom_with lno src1 cm vm ym gm in
       let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some bit_t) in
+      (* If the type of dest is not explicitly specified, use the default type (bit_t) for seteq. *)
+      let dest_typ =
+        match dest.lvtyphint with
+          None -> (Some bit_t)
+        | Some ty -> (Some ty) in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm dest_typ in
       (vm, vxm, ym, gm, [lno, Iseteq (v, a1, a2)])
 
   let parse_setne_at lno dest src1 src2 =
     fun _fm cm vm vxm ym gm ->
       let a1 = resolve_atom_with lno src1 cm vm ym gm in
       let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some bit_t) in
+      (* If the type of dest is not explicitly specified, use the default type (bit_t) for setne. *)
+      let dest_typ =
+        match dest.lvtyphint with
+          None -> (Some bit_t)
+        | Some ty -> (Some ty) in
+      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm dest_typ in
       (vm, vxm, ym, gm, [lno, Isetne (v, a1, a2)])
 
   let parse_uadd_at lno dest src1 src2 =
