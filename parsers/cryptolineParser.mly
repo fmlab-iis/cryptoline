@@ -1358,6 +1358,50 @@
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
 
+  (*
+   * one destination variable, two source atoms
+   * Type of destination variable is bit[srclen] by default when its type is not explicitly specified.
+   *)
+  let unpack_vinstr_1n2 mapper lno (dest_tok:  [< `LVVECT of vec_prim_t
+               | `LVVLIT of lval_t list ]) src1_tok src2_tok fm cm vm vxm ym gm =
+    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
+    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+    let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
+    let (relmtyp, srclen) = src_typ_vec in
+    let hint_typ =
+      match dest_tok with
+        `LVVECT {vectyphint; _} ->
+         (match vectyphint with
+          | None -> Some (bit_t, srclen)
+          | Some ty -> Some ty)
+      | `LVVLIT lvs ->
+         let tyopt = List.fold_left (fun r v ->
+                                      match v with
+                                      | `LVPLAIN lv ->
+                                         (match r, lv.lvtyphint with
+                                          | Some _, None -> r
+                                          | Some ty, Some vt -> if ty = vt then Some ty
+                                                                else raise_at lno "Types of vector elements are inconsistent."
+                                          | None, _ -> lv.lvtyphint)) None lvs in
+         (match tyopt with
+          | None -> Some (bit_t, List.length lvs)
+          | Some ty -> Some (ty, List.length lvs))
+    in
+    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm hint_typ in
+    let _ = if (List.length dest_names) <> srclen then
+      raise_at lno "Destination vector should be as long as the source vector."
+    else () in
+    let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
+    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
+    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
+      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
+      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
+      ((vm, ym, gm), instrs)
+    ) in
+    let ((vm', ym', gm'), iss) = (
+      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+
   let unpack_vinstr_21n mapper lno dest1_tok dest2_tok src_tok num fm cm vm vxm ym gm =
     let (relmtyp, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
     let src_typ_vec = (relmtyp, List.length src) in
@@ -1447,7 +1491,7 @@
     let ((vm', ym', gm'), iss) = (
       List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
     (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
-  
+
   let unpack_vmull mapper lno destH_tok destL_tok src1_tok src2_tok fm cm vm vxm ym gm =
     let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
     let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
@@ -1635,8 +1679,12 @@
          parse_spl_at lno destH destL src num fm cm vm vxm ym gm
       | `SETEQ (`LVPLAIN dest, src1, src2) ->
          parse_seteq_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VSETEQ (dest, src1, src2) ->
+         unpack_vinstr_1n2 parse_seteq_at lno dest src1 src2 fm cm vm vxm ym gm
       | `SETNE (`LVPLAIN dest, src1, src2) ->
          parse_setne_at lno dest src1 src2 fm cm vm vxm ym gm
+      | `VSETNE (dest, src1, src2) ->
+         unpack_vinstr_1n2 parse_setne_at lno dest src1 src2 fm cm vm vxm ym gm
       | `UADD (`LVPLAIN dest, src1, src2) ->
          parse_uadd_at lno dest src1 src2 fm cm vm vxm ym gm
       | `VUADD (dest, src1, src2) ->
@@ -2072,7 +2120,9 @@ instr:
   | SPL lval lval atom const                      { (!lnum, `SPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SPL atom const               { (!lnum, `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SETEQ lval atom atom                          { (!lnum, `SETEQ ($2, $3, $4)) }
+  | SETEQ lval_v atom_v atom_v                    { (!lnum, `VSETEQ ($2, $3, $4)) }
   | SETNE lval atom atom                          { (!lnum, `SETNE ($2, $3, $4)) }
+  | SETNE lval_v atom_v atom_v                    { (!lnum, `VSETNE ($2, $3, $4)) }
   | UADD lval atom atom                           { (!lnum, `UADD ($2, $3, $4)) }
   | UADD lval_v atom_v atom_v                     { (!lnum, `VUADD ($2, $3, $4)) }
   | lhs EQOP UADD atom atom                       { (!lnum, `UADD (`LVPLAIN $1, $4, $5)) }
