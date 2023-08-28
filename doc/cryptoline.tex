@@ -234,81 +234,98 @@ signed greater than ($\sgtop$), and signed greater than or equal to
 \]
 
 There are numerous \emph{instructions} supported by \cryptoline.
-$\imov\ x\ a$ assigns destination variable $x$ by the value of the
-source atom $a$.
-$\icmov\ x\ c\ a_1\ a_2$ assigns destination variable $x$ by the value of the
-source atom $a_1$ if the condition bit $c$ is $1$, and otherwise by
-the value of the source atom $a_2$.
-$\iadd\ x\ a_1\ a_2$ assigns $x$ by the addition of the source atoms
-$a_1$ and $a_2$.
-Note that $\iadd$ may overflow.
-$\iadds\ c\ x\ a_1\ a_2$ assigns $x$ by the addition of the source atoms
-$a_1$ and $a_2$ with carry bit $c$ set.
-$\iadc\ x\ a_1\ a_2\ y$ assigns $x$ by the addition of the carry bit $y$
-and the source atoms $a_1$ and $a_2$.
-$\iadcs$ is the same as $\iadc$ except the carry bit is set.
-There are also instructions $\isub$ for subtraction; $\isubc$, $\isbc$
-and $\isbcs$ for subtraction with carry; $\isubb$, $\isbb$, and
-$\isbbs$ for subtraction with borrow.
-$\imul$ and $\imuls$ are half multiplication operations.
-The differenace is that $\imuls$ sets the carry bit if the
-multiplication under- or over-flow.
-$\imull$ is full multiplication with results split into high part and
-low part.
-$\imulj$ is also full multiplication without splitting the results.
-$\inondet$ assigns a variable by a nondeterministic value.
-$\iset\ x$ assigns the bit variable $x$ by $1$ while $\iclear\ x$
-assigns the bit variable $x$ by $0$.
-$\ishl x a n$ shifts the source atom $a$ left by $n$ and stores the
-results in $x$.
-$\ishls o x a n$ is the same as $\ishls x a n$ except that the bits
-shifted out are stored in $o$.
-$\ishr x a n$ shifts the source atom $a$ right logically by $n$ and
-stores the results in $x$.
-$\ishrs x o a n$ is the same as $\ishr x a n$ except that the bits
-shifted out are stored in $o$.
-$\isar$ and $\isars$ are the same as $\ishr$ and $\ishrs$ respectively
-except that the right shift is arithmetic.
-$\icshl x_h x_l a_1 a_2 n$ concatenates the source atoms $a_1$ (high
-bits) and $a_2$ (low bits), shifts the concatenation left by $n$,
-stores the high bits of the shifted concatenation in $x_h$, and stores
-the low bits shifted right by $n$ in $x_l$.
-$\icshr x_h x_l a_1 a_2 n$ concatenates the source atoms $a_1$ (high
-bits) and $a_2$ (low bits), shifts the concatenation right logically
-by $n$, stores the high bits of the shifted concatenation in $x_h$,
-and stores the low bits in $x_l$.
-$\icshr x_h x_l o a_1 a_2 n$ is the same as $\icshr x_h x_l a_1 a_2 n$
-except that the bits shifted out are stored in $o$.
-$\ispl x_h x_l a n$ splits the source atom $a$ at position $n$, stores
-the high bits in $x_h$, and stores the low bits in $x_l$.
-$\isplit$ is the same as $\ispl$ except that the high bits and the low
-bits are extended to the size of $a$.
-While the low bits are always zero extended, the high bits are sign
-extended if $a$ is signed and otherwise zero extended.
-$\ijoin x a_1 a_2$ assigns $x$ by the concatenation of the source
-atoms $a_1$ (high bits) and $a_2$ (low bits).
-$\iand$, $\ior$, $\inot$, and $\ixor$ are bit-wise operations.
-$\icast t x a$ assigns $x$ by the source atom $a$ casted to the type
-$t$.
-$\ivpc t x a$ is the same as $\icast t x a$ except that the integer
-interpretation of $x$ must be the same as the integer interpretation
-of $a$.
-$\iassert$ tells \cryptoline to verify the specified predicate.
-$\iassume$ tells \cryptoline to assume the specified predicate.
-$\icut\ e\ \band\ r$ is an alias of one $\iecut\ e$ followed by a
-$\ircut\ r$.
-For $\iecut$, \cryptoline verifies the specified algebraic predicate
-and starts afresh with the predicate assumed when verifying algebraic
-properties.
-Similarly for $\ircut$, \cryptoline verifies the specified range
-predicate and starts afresh with the predicate assumed when verifying
-range properties.
-$\ighost$ can introduce logical variables that must only be used in
-specifications such as $\iassert$, $\iassume$, $\icut$, $\iecut$,
-$\ircut$, and postconditions.
-The predicate in a $\ighost$ instruction is always assumed.
-$\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined procedure $p$
-with arguments $a_1, a_2, \ldots, a_n$.
+\begin{itemize}
+\item $\imov\ x\ a$ assigns destination variable $x$ by the value of
+  the source atom $a$.
+\item $\icmov\ x\ c\ a_1\ a_2$ assigns destination variable $x$ by the
+  value of the source atom $a_1$ if the condition bit $c$ is $1$, and
+  otherwise by the value of the source atom $a_2$.
+\item $\iadd\ x\ a_1\ a_2$ assigns $x$ by the addition of the source
+  atoms $a_1$ and $a_2$.
+  Note that $\iadd$ may overflow.
+\item $\iadds\ c\ x\ a_1\ a_2$ assigns $x$ by the addition of the
+  source atoms $a_1$ and $a_2$ with carry bit $c$ set.
+\item $\iadc\ x\ a_1\ a_2\ y$ assigns $x$ by the addition of the carry
+  bit $y$ and the source atoms $a_1$ and $a_2$.
+\item $\iadcs$ is the same as $\iadc$ except the carry bit is set.
+\item There are also instructions $\isub$ for subtraction; $\isubc$,
+  $\isbc$ and $\isbcs$ for subtraction with carry; $\isubb$, $\isbb$,
+  and $\isbbs$ for subtraction with borrow.
+\item $\imul$ and $\imuls$ are half multiplication operations.
+  The differenace is that $\imuls$ sets the carry bit if the
+  multiplication under- or over-flow.
+\item $\imull$ is full multiplication with results split into high
+  part and low part.
+\item $\imulj$ is also full multiplication without splitting the
+  results.
+\item $\inondet$ assigns a variable by a nondeterministic value.
+\item $\iset\ x$ assigns the bit variable $x$ by $1$ while $\iclear\
+  x$ assigns the bit variable $x$ by $0$.
+\item $\ishl\ x\ a\ n$ shifts the source atom $a$ left by $n$ and
+  stores the results in $x$.
+\item $\ishls\ o\ x\ a\ n$ is the same as $\ishls\ x\ a\ n$ except
+  that the bits shifted out are stored in $o$.
+\item $\ishr\ x\ a\ n$ shifts the source atom $a$ right logically by
+  $n$ and stores the results in $x$.
+\item $\ishrs\ x\ o\ a\ n$ is the same as $\ishr\ x\ a\ n$ except that
+  the bits shifted out are stored in $o$.
+\item $\isar$ and $\isars$ are the same as $\ishr$ and $\ishrs$
+  respectively except that the right shift is arithmetic.
+\item $\icshl\ x_h\ x_l\ a_1\ a_2\ n$ concatenates the source atoms
+  $a_1$ (high bits) and $a_2$ (low bits), shifts the concatenation
+  left by $n$, stores the high bits of the shifted concatenation in
+  $x_h$, and stores the low bits shifted right by $n$ in $x_l$.
+\item $\icshls\ x_o\ x_h\ x_l\ a_1\ a_2\ n$ is the same as $\icshl\
+  x_h\ x_l\ a_1\ a_2\ n$ except that the bits shifted out are stored
+  in $x_o$.
+\item $\icshr\ x_h\ x_l\ a_1\ a_2\ n$ concatenates the source atoms
+  $a_1$ (high bits) and $a_2$ (low bits), shifts the concatenation
+  right logically by $n$, stores the high bits of the shifted
+  concatenation in $x_h$, and stores the low bits in $x_l$.
+\item $\icshrs\ x_h\ x_l\ x_o\ a_1\ a_2\ n$ is the same as $\icshr\
+  x_h\ x_l\ a_1\ a_2\ n$ except that the bits shifted out are stored
+  in $x_o$.
+\item $\ispl\ x_h\ x_l\ a\ n$ splits the source atom $a$ at position
+  $n$, stores the high bits in $x_h$, and stores the low bits in
+  $x_l$.
+\item $\isplit$ is the same as $\ispl$ except that the high bits and
+  the low bits are extended to the size of $a$.
+  While the low bits are always zero extended, the high bits are sign
+  extended if $a$ is signed and otherwise zero extended.
+\item $\ijoin\ x\ a_1\ a_2$ assigns $x$ by the concatenation of the
+  source atoms $a_1$ (high bits) and $a_2$ (low bits).
+\item $\iseteq\ r\ a_1\ a_2$ sets $r$ to all $1$'s if $a_1$ equals
+  $a_2$, and to all $0$'s otherwise.
+  The type of the destination variable is $\bit$ by default if its
+  type is not specified explicitly.
+\item $\isetne\ r\ a_1\ a_2$ sets $r$ to all $1$'s if $a_1$ does not
+  equal $a_2$, and to all $0$'s otherwise.
+  The type of the destination variable is $\bit$ by default if its
+  type is not specified explicitly.
+\item $\iand$, $\ior$, $\inot$, and $\ixor$ are bit-wise operations.
+\item $\icast\ t\ x\ a$ assigns $x$ by the source atom $a$ casted to the
+  type $t$.
+\item $\ivpc\ t\ x\ a$ is the same as $\icast\ t\ x\ a$ except that
+  the integer interpretation of $x$ must be the same as the integer
+  interpretation of $a$.
+\item $\iassert$ tells \cryptoline to verify the specified predicate.
+\item $\iassume$ tells \cryptoline to assume the specified predicate.
+\item $\icut\ e\ \band\ r$ is an alias of one $\iecut\ e$ followed by
+  a $\ircut\ r$.
+  For $\iecut$, \cryptoline verifies the specified algebraic predicate
+  and starts afresh with the predicate assumed when verifying algebraic
+  properties.
+  Similarly for $\ircut$, \cryptoline verifies the specified range
+  predicate and starts afresh with the predicate assumed when verifying
+  range properties.
+\item $\ighost$ can introduce logical variables that must only be used
+  in specifications such as $\iassert$, $\iassume$, $\icut$, $\iecut$,
+  $\ircut$, and postconditions.
+  The predicate in a $\ighost$ instruction is always assumed.
+\item $\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined
+  procedure $p$ with arguments $a_1, a_2, \ldots, a_n$.
+\end{itemize}
+
 \[
 \begin{array}{rclcl}
   \instr &  ::= & \pmb\imov\ \lval\ \atom
@@ -337,12 +354,15 @@ with arguments $a_1, a_2, \ldots, a_n$.
          & \mid & \pmb\ishrs\ \lval\ \lval\ \atom\ \const \\
          & \mid & \pmb\isar\ \lval\ \atom\ \const
          & \mid & \pmb\isars\ \lval\ \lval\ \atom\ \const \\
-         & \mid & \pmb\icshl\ \lval\ \lval\ \atom\ \atom\ \const \\
+         & \mid & \pmb\icshl\ \lval\ \lval\ \atom\ \atom\ \const
+         & \mid & \pmb\icshls\ \lval\ \lval\ \lval\ \atom\ \atom\ \const \\
          & \mid & \pmb\icshr\ \lval\ \lval\ \atom\ \atom\ \const
          & \mid & \pmb\icshrs\ \lval\ \lval\ \lval\ \atom\ \atom\ \const \\
          & \mid & \pmb\ispl\ \lval\ \lval\ \atom\ \const
          & \mid & \pmb\isplit\ \lval\ \lval\ \atom\ \const \\
          & \mid & \pmb\ijoin\ \lval\ \lval\ \atom\ \const \\
+         & \mid & \pmb\iseteq\ \lval\ \atom\ \atom
+         & \mid & \pmb\isetne\ \lval\ \atom\ \atom \\
          & \mid & \pmb\iand\ \lval\ \atom\ \atom
          & \mid & \pmb\ior\ \lval\ \atom\ \atom \\
          & \mid & \pmb\ixor\ \lval\ \atom \atom
