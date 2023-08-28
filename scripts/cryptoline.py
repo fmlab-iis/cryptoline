@@ -126,9 +126,9 @@ reserved_logics = set([
 
 reserved_words = set(instr_names).union(reserved_logics)
 
-var_pattern = r"\b[a-zA-Z_][a-zA-Z0-9_]*(?:\s*@\s*[su]int[0-9]+)?\b"
+var_pattern = r"(?:\b|%)[a-zA-Z_][a-zA-Z0-9_]*(?:\s*@\s*[su]int[0-9]+)?\b"
 typ_pattern = r"[su]int[0-9]+(?:\s*\[\s*[0-9]+\s*\])?"
-atom_pattern = r"\b(?:[a-zA-Z_][a-zA-Z0-9_]*|0x[a-fA-F0-9]+|0b[01]+|[0-9]+)(?:\s*@\s*" + typ_pattern + r")?|[(][^@]*[)](?:\s*@\s*" + typ_pattern + r")\b"
+atom_pattern = r"(?:\b|%)(?:[a-zA-Z_][a-zA-Z0-9_]*|0x[a-fA-F0-9]+|0b[01]+|[0-9]+)(?:\s*@\s*" + typ_pattern + r")?|[(][^@]*[)](?:\s*@\s*" + typ_pattern + r")\b"
 vector_pattern = r"\[\s*[^,\[\]]*(?:\s*,\s*[^,\[\]]*)+\s*\]"
 atom_vector_pattern = r"(" + vector_pattern + r")|(" + atom_pattern + r")"
 
@@ -528,6 +528,7 @@ class Lexer:
         (r'rcut', COMMAND),
         (r'ghost', COMMAND),
         (r'nop', COMMAND),
+        (r'call', COMMAND),
         (r'vars', OP),
         (r'neg', OP),
         (r'sq', OP),
@@ -554,7 +555,6 @@ class Lexer:
         (r'eqsrem', OP),
         (r'eq', OP),
         (r'proc', OP),
-        (r'call', OP),
         (r'ulimbs', OP),
         (r'slimbs', OP),
         (r'limbs', OP),
@@ -630,7 +630,7 @@ class Lexer:
         (r'\(?\s*-?\s*[0-9]+\s*\)?', NUMBER)
     ]
     rules2 = [
-        (r'\b[a-zA-Z_]([a-zA-Z_]|[0-9])*\b', ID)
+        (r'(?:\b|%)[a-zA-Z_]([a-zA-Z_]|[0-9])*\b', ID)
     ]
     rules = []
     def __init__(self, filename):
@@ -655,7 +655,8 @@ class Lexer:
                     break
             if not matched:
                 if len(str) > 0:
-                    raise f"Failed to parse: {str}"
+                    print(f"Failed to parse: {str}")
+                    raise "Failed to parse"
                 else:
                     break
     def eof(self):
