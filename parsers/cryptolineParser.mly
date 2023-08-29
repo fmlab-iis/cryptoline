@@ -1073,7 +1073,88 @@
         try
           SM.find fname fm
         with Not_found ->
-          raise_at lno ("Call an undefined function '" ^ fname ^ "'.") in
+          raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
+      (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+      let actuals = actuals_token (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) cm vm ym gm in
+      let formals = f.fargs@f.fouts in
+      (* Check the number of actual parameters *)
+      let _ =
+        if List.length actuals != List.length formals then
+          raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
+      (* Check types of actual parameters, this should be done in parsing actual parameters *)
+      let _ =
+        List.iter2 (fun formal actual ->
+                     if not (is_type_compatible formal actual) then
+                       raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
+                                     ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+                   formals actuals in
+      (* create ghost variables for actual variables *)
+      let ghost_actuals =
+        let ghost_suffix = Int.to_string (Random.int 10000) in
+        let mk_ghostvar a =
+          match a with
+          | Avar v -> mkvar (v.vname ^ ghost_suffix) (typ_of_var v)
+          | Aconst (typ, _) -> mkvar ("g_" ^ ghost_suffix) typ in
+        List.rev (List.rev_map mk_ghostvar actuals) in
+      let ghost_instr =
+        let ghost_bexp =
+          let mk_eeq a gvar =
+            match a with
+            | Avar avar -> eeq (evar avar) (evar gvar)
+            | Aconst (_, z) -> eeq (econst z) (evar gvar) in
+          let mk_req a gvar =
+            match a with
+            | Avar avar -> req (size_of_var avar) (rvar avar) (rvar gvar)
+            | Aconst (typ, z) ->
+               let sz = size_of_typ typ in
+               req sz (rconst sz z) (rvar gvar) in
+          (List.fold_left2 (fun r avar gvar -> eand r (mk_eeq avar gvar))
+                           etrue actuals ghost_actuals,
+           List.fold_left2 (fun r avar gvar -> rand r (mk_req avar gvar))
+                           rtrue actuals ghost_actuals) in
+        let ghostVS = List.fold_left (fun r gvar -> VS.add gvar r)
+                                     VS.empty ghost_actuals in
+        Ighost (ghostVS, ghost_bexp) in
+      let assert_instr =
+        let assert_pats =
+          List.combine formals
+                       (List.rev (List.rev_map mkatom_var ghost_actuals)) in
+        let (_, em, rm) = subst_maps_of_list assert_pats in
+        let to_prove_with (ebexp, rbexp) = ([(ebexp, [])], [(rbexp, [])]) in
+        Iassert (subst_bexp_prove_with em rm (to_prove_with f.fpre)) in
+      let (_, actual_outs) =
+        Utils.Std.partition_at actuals (List.length f.fargs) in
+      let (ghost_args, _) =
+        Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
+      let nondet_instrs =
+        List.fold_left (fun r ovar -> (lno, Inondet ovar)::r)
+                       [] (List.rev_map var_of_atom actual_outs) in
+      let assume_instr =
+        let assume_pats =
+          List.combine formals
+                       (List.rev_append (List.rev_map mkatom_var ghost_args)
+                                        actual_outs) in
+        let (_, em, rm) = subst_maps_of_list assume_pats in
+        let from_prove_with (ebexp_prove_withs, rbexp_prove_withs) =
+          let ebexps = List.rev_map fst ebexp_prove_withs in
+          let rbexps = List.rev_map fst rbexp_prove_withs in
+          let ebexp = List.fold_left (fun e ret -> Eand (e, ret)) Etrue ebexps in
+          let rbexp = List.fold_left (fun r ret -> Rand (r, ret)) Rtrue rbexps in
+          (ebexp, rbexp) in
+        Iassume (subst_bexp em rm (from_prove_with f.fpost)) in
+      (vm, vxm, ym, gm,
+       [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
+         [(lno, assume_instr)])
+  let parse_inline_at lno fname_token actuals_token =
+    fun fm cm vm vxm ym gm ->
+      (* The function name *)
+      let fname = fname_token in
+      (* The function definition *)
+      let f =
+        try
+          SM.find fname fm
+        with Not_found ->
+          raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
       (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
       let actuals = actuals_token (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) cm vm ym gm in
       (* Rename local variables *)
@@ -1100,7 +1181,7 @@
       (* Check the number of actual parameters *)
       let _ =
         if List.length actuals != List.length formals then
-          raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
+          raise_at lno ("Failed to inline the function " ^ fname ^ ": numbers of arguments mismatch.") in
       (* Check types of actual parameters, this should be done in parsing actual parameters *)
       let _ =
         List.iter2 (fun formal actual ->
@@ -1821,6 +1902,8 @@
          parse_ghost_at lno gvars bexp fm cm vm vxm ym gm
       | `CALL (id, actuals) ->
          parse_call_at lno id actuals fm cm vm vxm ym gm
+      | `INLINE (id, actuals) ->
+         parse_inline_at lno id actuals fm cm vm vxm ym gm
       | `NOP -> (vm, vxm, ym, gm, [])
       (*| _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")*)
 
@@ -1856,7 +1939,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
-%token AT PROC CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
+%token AT PROC INLINE CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF
 
 %left LOROP
@@ -2235,6 +2318,7 @@ instr:
   | GHOST gvars COLON bexp                        { (!lnum, `GHOST ($2, $4)) }
   /* Extensions */
   | CALL ID LPAR actuals RPAR                     { (!lnum, `CALL ($2, $4)) }
+  | INLINE ID LPAR actuals RPAR                   { (!lnum, `INLINE ($2, $4)) }
   | NOP                                           { (!lnum, `NOP) }
   /* Errors */
   | MOV error                                     { raise_at !lnum ("Bad mov instruction") }
@@ -2299,6 +2383,8 @@ instr:
   | NONDET error                                  { raise_at !lnum ("Bad nondet instruction") }
   | CALL ID LPAR error                            { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
   | CALL error                                    { raise_at !lnum ("Bad call instruction") }
+  | INLINE ID LPAR error                          { raise_at !lnum (("Invalid actuals in the inline instruction: " ^ $2)) }
+  | INLINE error                                  { raise_at !lnum ("Bad inline instruction") }
 ;
 
 ebexp_prove_with_list:

@@ -64,3 +64,12 @@ let tappend xs ys = List.rev_append (List.rev xs) ys
 let tmap f xs = List.rev_map f xs |> List.rev
 
 let (@@) ls1 ls2 = tappend ls1 ls2
+
+let partition_at xs n =
+  let _ = assert (0 <= n) in
+  let _ = assert (n <= List.length xs) in
+  let (rev_ret_h, rev_ret_t, _) =
+    List.fold_left (fun (h, t, m) x ->
+        if m > 0 then (x::h, t, pred m) else (h, x::t, m)) ([], [], n) xs in
+  (List.rev rev_ret_h, List.rev rev_ret_t)
+

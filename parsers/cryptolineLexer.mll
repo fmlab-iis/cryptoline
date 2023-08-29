@@ -140,6 +140,7 @@
               "eqsrem"                     , EQSREM;
               (********** Others **********)
               "proc"                       , PROC;
+              "inline"                     , INLINE;
               "call"                       , CALL;
               "ulimbs"                     , ULIMBS;
               "slimbs"                     , SLIMBS;
