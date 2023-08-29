@@ -34,7 +34,7 @@
   let raise_at lno msg = raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
 
   let vm_of_list (vs : var list) = List.fold_left (fun m v -> SM.add v.vname v m) SM.empty vs
-  let vm_of_vs (vs : VS.t) = vm_of_list (VS.elements vs)
+  let _vm_of_vs (vs : VS.t) = vm_of_list (VS.elements vs)
   let vs_of_vm vm = SM.fold (fun _ v vs -> VS.add v vs) vm VS.empty
 
   let _some_pass reasons =
@@ -68,6 +68,46 @@
    *)
 (*   type atom_token_t = Z.t SM.t -> var SM.t -> var SM.t -> var SM.t -> atom *)
 
+  let string_of_typ_vec t =
+    let (ty, n) = t in
+    string_of_typ ty ^ "[" ^ string_of_int n ^ "]"
+
+  type parsing_context =
+    {
+      mutable cfuns: func SM.t;       (* a map from function name to function definition *)
+      mutable cconsts: Z.t SM.t;      (* a map from constant name to constant value *)
+      mutable cvars: var SM.t;        (* a map from variable name to variable *)
+      mutable cvecs: typ_vec SM.t;    (* a map from vector name to its type *)
+      mutable ccarries: var SM.t;     (* a map from carry name to carry variable *)
+      mutable cghosts: var SM.t       (* a map from ghost name to ghost variable *)
+    }
+
+  let empty_parsing_context () =
+    {
+      cfuns = SM.empty;
+      cconsts = SM.empty;
+      cvars = SM.empty;
+      cvecs = SM.empty;
+      ccarries = SM.empty;
+      cghosts = SM.empty
+    }
+
+  let _string_of_parsing_context ctx =
+    String.concat "\n" [
+                    "Procedures:";
+                    String.concat "\n" (List.rev (SM.fold (fun fn _ res -> ("  " ^ fn)::res) ctx.cfuns []));
+                    "Constants:";
+                    String.concat "\n" (List.rev (SM.fold (fun cn cv res -> ("  " ^ cn ^ " = " ^ Z.to_string cv)::res) ctx.cconsts []));
+                    "Variables:";
+                    String.concat "\n" (List.rev (SM.fold (fun _ v res -> ("  " ^ string_of_var ~typ:true v)::res) ctx.cvars []));
+                    "Vectors:";
+                    String.concat "\n" (List.rev (SM.fold (fun vn vt res -> ("  " ^ vn ^ "@" ^ string_of_typ_vec vt)::res) ctx.cvecs []));
+                    "Carries:";
+                    String.concat "\n" (List.rev (SM.fold (fun _ v res -> ("  " ^ string_of_var ~typ:true v)::res) ctx.ccarries []));
+                    "Ghosts:";
+                    String.concat "\n" (List.rev (SM.fold (fun _ v res -> ("  " ^ string_of_var ~typ:true v)::res) ctx.cghosts []))
+                  ]
+
   type lv_prim_t = {
     lvtyphint: typ option;
     lvname: string;
@@ -86,7 +126,7 @@
   type aconst_prim_t = {
     atmtyphint: typ option;
     (* FIXME *)
-    atmvalue: Z.t SM.t -> Z.t;
+    atmvalue: parsing_context -> Z.t;
   }
 
   type lval_t = [
@@ -126,9 +166,8 @@
 
   let remove_keys_from_map (names: string list) (vm: 'b SM.t) = List.fold_left (fun map k -> SM.remove k map) vm names
 
-  let parse_typed_const lno ty n_token =
-    fun cm _vm _ym _gm ->
-    let n = n_token cm in
+  let parse_typed_const ctx lno ty n_token =
+    let n = n_token ctx in
     let size = size_of_typ ty in
     (* Check range *)
     let _ = if not (!Options.Std.implicit_const_conversion) && (Z.lt n (Ast.Cryptoline.min_of_typ ty) || Z.gt n (Ast.Cryptoline.max_of_typ ty))
@@ -156,23 +195,14 @@
     in
     Aconst (ty, n)
 
-  (*
-  resolve_* cm vm vxm ym gm:
-  - cm: constant map
-  - vm: variable map
-  - vxm: vector variable map
-  - ym: carry variable map
-  - gm: ghost variable map
-   *)
-
-  let resolve_var_with lno (`AVAR {atmtyphint; atmname}) _cm vm _ym gm =
+  let resolve_var_with ctx lno (`AVAR {atmtyphint; atmname}) =
     let v =
       try
-        SM.find atmname vm
+        SM.find atmname ctx.cvars
       with Not_found ->
         begin
           try
-            SM.find atmname gm
+            SM.find atmname ctx.cghosts
           with Not_found ->
             raise_at lno ("Variable " ^ atmname ^ " is undefined.")
         end in
@@ -184,23 +214,22 @@
         else () in
     v
 
-  let resolve_atom_with ?typ lno (a: atom_t) cm vm ym gm =
+  let resolve_atom_with ctx lno ?typ (a: atom_t) =
     match a with
     (* FIXME *)
     | `ACONST c -> (match c.atmtyphint, typ with
                     | Some ty, _
-                      | None, Some ty -> parse_typed_const lno ty c.atmvalue cm vm ym gm
+                      | None, Some ty -> parse_typed_const ctx lno ty c.atmvalue
                     | _, _ -> raise_at lno ("Failed to determine the type of constant"))
-    | `AVAR v -> Avar (resolve_var_with lno (`AVAR v) cm vm ym gm)
+    | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
 
-  let resolve_lv_with lno {lvname; lvtyphint} _cm vm ym gm ty_opt =
-    if SM.mem lvname gm then
+  let resolve_lv_with ctx lno {lvname; lvtyphint} ty_opt =
+    if SM.mem lvname ctx.cghosts then
       raise_at lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
       let ty = (match (ty_opt, lvtyphint) with
-      | (None, None) ->
-         raise_at lno ("Failed to determine the type of " ^ lvname)
+      | (None, None) -> raise_at lno ("Failed to determine the type of " ^ lvname)
       | (None, Some hinted_ty) -> hinted_ty
       | (Some determined_ty, None) -> determined_ty
       | (Some determined_ty, Some hinted_ty) ->
@@ -211,13 +240,17 @@
         else determined_ty) in
       let v = mkvar lvname ty in
       (* It is possible that the lval is actually a bit variable *)
-      (if var_is_bit v then
-        (SM.add lvname v vm, SM.add lvname v ym, gm, v)
+      if var_is_bit v then
+        let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
+        let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
+        v
       else
-        (SM.add lvname v vm, SM.remove lvname ym, gm, v))
+        let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
+        let _ = ctx.ccarries <- SM.remove lvname ctx.ccarries in
+        v
 
-  let resolve_lcarry_with lno {lvname; lvtyphint} _cm vm ym gm =
-    if SM.mem lvname gm then
+  let resolve_lcarry_with ctx lno {lvname; lvtyphint} =
+    if SM.mem lvname ctx.cghosts then
       raise_at lno ("The carry variable " ^ lvname ^ " has been defined as a ghost variable.")
     else
       let _ = (match lvtyphint with
@@ -230,10 +263,12 @@
                         ^ string_of_typ hinted_ty)
         else ()) in
       let v = mkvar lvname bit_t in
-      (SM.add lvname v vm, SM.add lvname v ym, gm, v)
+      let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
+      let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
+      v
 
-  let resolve_lv_or_lcarry_with lno {lvname; lvtyphint} _cm vm ym gm =
-    if SM.mem lvname gm then
+  let resolve_lv_or_lcarry_with ctx lno {lvname; lvtyphint} =
+    if SM.mem lvname ctx.cghosts then
       raise_at lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
@@ -241,1008 +276,916 @@
       | None -> raise_at lno ("Failed to determine the type of " ^ lvname)
       | Some ty ->
          let v = mkvar lvname ty in
-         if var_is_bit v then (SM.add lvname v vm, SM.add lvname v ym, gm, v)
-         else (SM.add lvname v vm, SM.remove lvname ym, gm, v)
+         if var_is_bit v then
+           let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
+           let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
+           v
+         else
+           let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
+           let _ = ctx.ccarries <- SM.remove lvname ctx.ccarries in
+           v
 
-  let parse_imov_at lno dest src =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imov (v, a)])
+  let parse_imov_at ctx lno dest src =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imov (v, a)]
 
-  let parse_ishl_at lno dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
-        match a2 with
-        | Aconst (_, z) ->
-           let w = size_of_var v in
-           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-             raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+  let parse_ishl_at ctx lno dest src num =
+    let a1 = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a1 in
+    let a2 = resolve_atom_with ctx lno ~typ:ty num in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let _ =
+      match a2 with
+      | Aconst (_, z) ->
+         let w = size_of_var v in
+         if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-        | _ -> ()
-      in
-      (vm, vxm, ym, gm, [lno, Ishl (v, a1, a2)])
+      | _ -> ()
+    in
+    [lno, Ishl (v, a1, a2)]
 
-  let parse_ishls_at lno lost dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = num cm in
-      let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (typ_to_size ty (Z.to_int n))) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
-      in
-      (vm, vxm, ym, gm, [lno, Ishls (l, v, a, n)])
+  let parse_ishls_at ctx lno lost dest src num =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let n = num ctx in
+    let l = resolve_lv_with ctx lno lost (Some (typ_to_size ty (Z.to_int n))) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let _ =
+      let w = size_of_var v in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+    in
+    [lno, Ishls (l, v, a, n)]
 
-  let parse_ishr_at lno dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
-        match a2 with
-        | Aconst (_, z) ->
-           let w = size_of_var v in
-           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-             raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+  let parse_ishr_at ctx lno dest src num =
+    let a1 = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a1 in
+    let a2 = resolve_atom_with ctx lno ~typ:ty num in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let _ =
+      match a2 with
+      | Aconst (_, z) ->
+         let w = size_of_var v in
+         if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-        | _ -> ()
-      in
-      (vm, vxm, ym, gm, [lno, Ishr (v, a1, a2)])
+      | _ -> ()
+    in
+    [lno, Ishr (v, a1, a2)]
 
-  let parse_ishrs_at lno dest lost src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = num cm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
-      in
-      (vm, vxm, ym, gm, [lno, Ishrs (v, l, a, n)])
+  let parse_ishrs_at ctx lno dest lost src num =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let n = num ctx in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let l = resolve_lv_with ctx lno lost (Some (Tuint (Z.to_int n))) in
+    let _ =
+      let w = size_of_var v in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+    in
+    [lno, Ishrs (v, l, a, n)]
 
-  let parse_isar_at lno dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let a2 = resolve_atom_with ~typ:ty lno num cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let _ =
-        match a2 with
-        | Aconst (_, z) ->
-           let w = size_of_var v in
-           if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-             raise_at lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+  let parse_isar_at ctx lno dest src num =
+    let a1 = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a1 in
+    let a2 = resolve_atom_with ctx lno ~typ:ty num in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let _ =
+      match a2 with
+      | Aconst (_, z) ->
+         let w = size_of_var v in
+         if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-        | _ -> ()
-      in
-      (vm, vxm, ym, gm, [lno, Isar (v, a1, a2)])
+      | _ -> ()
+    in
+    [lno, Isar (v, a1, a2)]
 
-  let parse_isars_at lno dest lost src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = num cm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      let (vm, ym, gm, l) = resolve_lv_with lno lost cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
-        let w = size_of_var v in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
-                        ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
-      in
-      (vm, vxm, ym, gm, [lno, Isars (v, l, a, n)])
+  let parse_isars_at ctx lno dest lost src num =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let n = num ctx in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    let l = resolve_lv_with ctx lno lost (Some (Tuint (Z.to_int n))) in
+    let _ =
+      let w = size_of_var v in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+                      ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
+    in
+    [lno, Isars (v, l, a, n)]
 
-  let parse_cshl_at lno destH destL src1 src2 num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let n = num cm in
-      let (vm, ym, gm, vh) =
-        resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) =
-        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, vxm, ym, gm, [lno, Icshl (vh, vl, a1, a2, n)])
+  let parse_cshl_at ctx lno destH destL src1 src2 num =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let n = num ctx in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    [lno, Icshl (vh, vl, a1, a2, n)]
 
-  let parse_cshls_at lno lostL destH destL src1 src2 num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let n = num cm in
-      let (vm, ym, gm, l) = resolve_lv_with lno lostL cm vm ym gm (Some (typ_to_size ty (Z.to_int n))) in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, vxm, ym, gm, [lno, Icshls (l, vh, vl, a1, a2, n)])
+  let parse_cshls_at ctx lno lostL destH destL src1 src2 num =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let n = num ctx in
+    let l = resolve_lv_with ctx lno lostL (Some (typ_to_size ty (Z.to_int n))) in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    [lno, Icshls (l, vh, vl, a1, a2, n)]
 
-  let parse_cshr_at lno destH destL src1 src2 num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let n = num cm in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, vxm, ym, gm, [lno, Icshr (vh, vl, a1, a2, n)])
+  let parse_cshr_at ctx lno destH destL src1 src2 num =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let n = num ctx in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    [lno, Icshr (vh, vl, a1, a2, n)]
 
-  let parse_cshrs_at lno destH destL lostL src1 src2 num =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let n = num cm in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      let (vm, ym, gm, l) = resolve_lv_with lno lostL cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      (vm, vxm, ym, gm, [lno, Icshrs (vh, vl, l, a1, a2, n)])
+  let parse_cshrs_at ctx lno destH destL lostL src1 src2 num =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let n = num ctx in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    let l = resolve_lv_with ctx lno lostL (Some (Tuint (Z.to_int n))) in
+    [lno, Icshrs (vh, vl, l, a1, a2, n)]
 
-  let parse_rol_at lno dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Irol (v, a, n)])
+  let parse_rol_at ctx lno dest src num =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let n = resolve_atom_with ctx lno ~typ:ty num in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Irol (v, a, n)]
 
-  let parse_ror_at lno dest src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let ty = typ_of_atom a in
-      let n = resolve_atom_with ~typ:ty lno num cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iror (v, a, n)])
+  let parse_ror_at ctx lno dest src num =
+    let a = resolve_atom_with ctx lno src in
+    let ty = typ_of_atom a in
+    let n = resolve_atom_with ctx lno ~typ:ty num in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iror (v, a, n)]
 
-  let parse_set_at lno dest =
-    fun _fm cm vm vxm ym gm ->
-      let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
-      (vm, vxm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.one)) ])
+  let parse_set_at ctx lno dest =
+    let c = resolve_lcarry_with ctx lno dest in
+    [lno, Imov (c, Aconst (bit_t, Z.one)) ]
 
-  let parse_clear_at lno dest =
-    fun _fm cm vm vxm ym gm ->
-      let (vm, ym, gm, c) = resolve_lcarry_with lno dest cm vm ym gm in
-      (vm, vxm, ym, gm, [lno, Imov (c, Aconst (bit_t, Z.zero))])
+  let parse_clear_at ctx lno dest =
+    let c = resolve_lcarry_with ctx lno dest in
+    [lno, Imov (c, Aconst (bit_t, Z.zero))]
 
-  let parse_nondet_at lno dest =
-    fun _fm cm vm vxm ym gm ->
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, vxm, ym, gm, [lno, Inondet v])
+  let parse_nondet_at ctx lno dest =
+    let v = resolve_lv_with ctx lno dest None in
+    [lno, Inondet v]
 
-  let parse_cmov_at lno dest carry src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let c = resolve_atom_with lno carry cm vm ym gm in
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Icmov (v, c, a1, a2)])
+  let parse_cmov_at ctx lno dest carry src1 src2 =
+    let c = resolve_atom_with ctx lno carry in
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Icmov (v, c, a1, a2)]
 
-  let parse_add_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
+  let parse_add_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadd (v, a1, a2)]
 
-  let parse_adds_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
+  let parse_adds_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadds (c, v, a1, a2)]
 
-  let parse_adc_at lno dest src1 src2 (carry : atom_t) =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
+  let parse_adc_at ctx lno dest src1 src2 (carry : atom_t) =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadc (v, a1, a2, y)]
 
-  let parse_adcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
+  let parse_adcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadcs (c, v, a1, a2, y)]
 
-  let parse_sub_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
+  let parse_sub_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isub (v, a1, a2)]
 
-  let parse_subc_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
+  let parse_subc_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubc (c, v, a1, a2)]
 
-  let parse_subb_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
+  let parse_subb_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubb (c, v, a1, a2)]
 
-  let parse_sbc_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
+  let parse_sbc_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbc (v, a1, a2, y)]
 
-  let parse_sbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
+  let parse_sbcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbcs (c, v, a1, a2, y)]
 
-  let parse_sbb_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
+  let parse_sbb_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbb (v, a1, a2, y)]
 
-  let parse_sbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
+  let parse_sbbs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbbs (c, v, a1, a2, y)]
 
-  let parse_mul_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
+  let parse_mul_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imul (v, a1, a2)]
 
-  let parse_muls_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
+  let parse_muls_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imuls (c, v, a1, a2)]
 
-  let parse_mull_at lno destH destL src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) =
-        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
+  let parse_mull_at ctx lno destH destL src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    [lno, Imull (vh, vl, a1, a2)]
 
-  let parse_mulj_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_of_atom a1 in
-      let (vm, ym, gm, v) =
-        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
+  let parse_mulj_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_of_atom a1 in
+    let v = resolve_lv_with ctx lno dest (Some (to_double_size ty)) in
+    [lno, Imulj (v, a1, a2)]
 
-  let parse_split_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_of_atom a in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) =
-        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      let _ =
-        let w = size_of_var vl in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+  let parse_split_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_of_atom a in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    let _ =
+      let w = size_of_var vl in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+    in
+    [lno, Isplit (vh, vl, a, n)]
+
+  let parse_spl_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_of_atom a in
+    let w = size_of_typ ty in
+    let vh = resolve_lv_with ctx lno destH (Some (typ_to_size ty (w - Z.to_int n))) in
+    let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
+    let _ =
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+    in
+    [lno, Ispl (vh, vl, a, n)]
+
+  let parse_seteq_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    (* If the type of dest is not explicitly specified, use the default type (bit_t) for seteq. *)
+    let dest_typ =
+      match dest.lvtyphint with
+        None -> (Some bit_t)
+      | Some ty -> (Some ty) in
+    let v = resolve_lv_with ctx lno dest dest_typ in
+    [lno, Iseteq (v, a1, a2)]
+
+  let parse_setne_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    (* If the type of dest is not explicitly specified, use the default type (bit_t) for setne. *)
+    let dest_typ =
+      match dest.lvtyphint with
+        None -> (Some bit_t)
+      | Some ty -> (Some ty) in
+    let v = resolve_lv_with ctx lno dest dest_typ in
+    [lno, Isetne (v, a1, a2)]
+
+  let parse_uadd_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadd (v, a1, a2)]
+
+  let parse_uadds_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadds (c, v, a1, a2)]
+
+  let parse_uadc_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadc (v, a1, a2, y)]
+
+  let parse_uadcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadcs (c, v, a1, a2, y)]
+
+  let parse_usub_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isub (v, a1, a2)]
+
+  let parse_usubc_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubc (c, v, a1, a2)]
+
+  let parse_usubb_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubb (c, v, a1, a2)]
+
+  let parse_usbc_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbc (v, a1, a2, y)]
+
+  let parse_usbcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbcs (c, v, a1, a2, y)]
+
+  let parse_usbb_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbb (v, a1, a2, y)]
+
+  let parse_usbbs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbbs (c, v, a1, a2, y)]
+
+  let parse_umul_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imul (v, a1, a2)]
+
+  let parse_umuls_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imuls (c, v, a1, a2)]
+
+  let parse_umull_at ctx lno destH destL src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some ty) in
+    [lno, Imull (vh, vl, a1, a2)]
+
+  let parse_umulj_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_unsigned (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some (to_double_size ty)) in
+    [lno, Imulj (v, a1, a2)]
+
+  let parse_usplit_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_to_unsigned (typ_of_atom a) in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some ty) in
+    let _ =
+      let w = size_of_var vl in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+    in
+    [lno, Isplit (vh, vl, a, n)]
+
+  let parse_uspl_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_to_unsigned (typ_of_atom a) in
+    let w = size_of_typ ty in
+    let vh = resolve_lv_with ctx lno destH (Some (Tuint (w - Z.to_int n))) in
+    let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
+    let _ =
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+    in
+    [lno, Ispl (vh, vl, a, n)]
+
+  let parse_sadd_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadd (v, a1, a2)]
+
+  let parse_sadds_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadds (c, v, a1, a2)]
+
+  let parse_sadc_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadc (v, a1, a2, y)]
+
+  let parse_sadcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Iadcs (c, v, a1, a2, y)]
+
+  let parse_ssub_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isub (v, a1, a2)]
+
+  let parse_ssubc_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubc (c, v, a1, a2)]
+
+  let parse_ssubb_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isubb (c, v, a1, a2)]
+
+  let parse_ssbc_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbc (v, a1, a2, y)]
+
+  let parse_ssbcs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbcs (c, v, a1, a2, y)]
+
+  let parse_ssbb_at ctx lno dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbb (v, a1, a2, y)]
+
+  let parse_ssbbs_at ctx lno flag dest src1 src2 carry =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let y = resolve_atom_with ctx lno carry in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Isbbs (c, v, a1, a2, y)]
+
+  let parse_smul_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imul (v, a1, a2)]
+
+  let parse_smuls_at ctx lno flag dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let c = resolve_lcarry_with ctx lno flag in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Imuls (c, v, a1, a2)]
+
+  let parse_smull_at ctx lno destH destL src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    [lno, Imull (vh, vl, a1, a2)]
+
+  let parse_smulj_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let ty = typ_to_signed (typ_of_atom a1) in
+    let v = resolve_lv_with ctx lno dest (Some (to_double_size ty)) in
+    [lno, Imulj (v, a1, a2)]
+
+  let parse_ssplit_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_to_signed (typ_of_atom a) in
+    let vh = resolve_lv_with ctx lno destH (Some ty) in
+    let vl = resolve_lv_with ctx lno destL (Some (to_uint ty)) in
+    let _ =
+      let w = size_of_var vl in
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
+        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+    in
+    [lno, Isplit (vh, vl, a, n)]
+
+  let parse_sspl_at ctx lno destH destL src num =
+    let a = resolve_atom_with ctx lno src in
+    let n = num ctx in
+    let ty = typ_to_signed (typ_of_atom a) in
+    let w = size_of_typ ty in
+    let vh = resolve_lv_with ctx lno destH (Some (Tsint (w - Z.to_int n))) in
+    let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
+    let _ =
+      if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
           raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
+    in
+    [lno, Ispl (vh, vl, a, n)]
 
-  let parse_spl_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_of_atom a in
-      let w = size_of_typ ty in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (typ_to_size ty (w - Z.to_int n))) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Ispl (vh, vl, a, n)])
+  let parse_and_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let v = resolve_lv_with ctx lno dest None in
+    [lno, Iand (v, a1, a2)]
 
-  let parse_seteq_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      (* If the type of dest is not explicitly specified, use the default type (bit_t) for seteq. *)
-      let dest_typ =
-        match dest.lvtyphint with
-          None -> (Some bit_t)
-        | Some ty -> (Some ty) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm dest_typ in
-      (vm, vxm, ym, gm, [lno, Iseteq (v, a1, a2)])
+  let parse_or_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let v = resolve_lv_with ctx lno dest None in
+    [lno, Ior (v, a1, a2)]
 
-  let parse_setne_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      (* If the type of dest is not explicitly specified, use the default type (bit_t) for setne. *)
-      let dest_typ =
-        match dest.lvtyphint with
-          None -> (Some bit_t)
-        | Some ty -> (Some ty) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm dest_typ in
-      (vm, vxm, ym, gm, [lno, Isetne (v, a1, a2)])
+  let parse_xor_at ctx lno dest src1 src2 =
+    let a1 = resolve_atom_with ctx lno src1 in
+    let a2 = resolve_atom_with ctx lno src2 in
+    let v = resolve_lv_with ctx lno dest None in
+    [lno, Ixor (v, a1, a2)]
 
-  let parse_uadd_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
+  let parse_not_at ctx lno dest src =
+    let a = resolve_atom_with ctx lno src in
+    let v = resolve_lv_with ctx lno dest None in
+    [lno, Inot (v, a)]
 
-  let parse_uadds_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
+  let parse_cast_at ctx lno optlv dest src =
+    let a = resolve_atom_with ctx lno src in
+    let v = resolve_lv_or_lcarry_with ctx lno dest in
+	(* determine the type of the discarded part *)
+    let od_typ =
+	  match typ_of_var v, typ_of_atom a with
+	  | Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
+	  | Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1)
+                              else Some (Tsint (wa - wv))
+	  | Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa))
+                              else if wv = wa then Some bit_t
+                              else Some (Tuint (wa - wv))
+	  | Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa))
+                              else Some (Tsint (wa - wv + 1)) in
+    let od =
+	  match optlv with
+	  | None -> None
+	  | Some (`LV od) ->
+		 let d = resolve_lv_with ctx lno od od_typ in
+		 Some d in
+	(* the discarded part must be a ghost variable *)
+	let _ = apply_to_some (fun d -> ctx.cghosts <- SM.add d.vname d ctx.cghosts) od in
+    [lno, Icast (od, v, a)]
 
-  let parse_uadc_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
+  let parse_vpc_at ctx lno dest src =
+    let a = resolve_atom_with ctx lno src in
+    let v = resolve_lv_or_lcarry_with ctx lno dest in
+    [lno, Ivpc (v, a)]
 
-  let parse_uadcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
+  let parse_join_at ctx lno dest srcH srcL =
+    let ah = resolve_atom_with ctx lno srcH in
+    let al = resolve_atom_with ctx lno srcL in
+    let ty = typ_map ((+) (size_of_atom al)) (typ_of_atom ah) in
+    let v = resolve_lv_with ctx lno dest (Some ty) in
+    [lno, Ijoin (v, ah, al)]
 
-  let parse_usub_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
+  let parse_assert_at ctx lno bexp_prove_with_list_token =
+    [lno, Iassert (bexp_prove_with_list_token ctx)]
 
-  let parse_usubc_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
+  let parse_eassert_at ctx lno ebexp_prove_with_list_token =
+    [lno, Iassert (ebexp_prove_with_list_token ctx, [])]
 
-  let parse_usubb_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
+  let parse_rassert_at ctx lno rbexp_prove_with_list_token =
+    [lno, Iassert ([], rbexp_prove_with_list_token ctx)]
 
-  let parse_usbc_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
+  let parse_assume_at ctx lno bexp_token =
+    [lno, Iassume (bexp_token ctx)]
 
-  let parse_usbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
+  let parse_cut_at ctx lno bexp_prove_with_list_token =
+    let (ecuts, rcuts) = bexp_prove_with_list_token ctx in
+    [lno, Icut (ecuts, rcuts)]
 
-  let parse_usbb_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
+  let parse_ecut_at ctx lno ebexp_prove_with_list_token =
+    let ecuts = ebexp_prove_with_list_token ctx in
+    [lno, Icut (ecuts, [])]
 
-  let parse_usbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
+  let parse_rcut_at ctx lno rbexp_prove_with_list_token =
+    let rcuts = rbexp_prove_with_list_token ctx in
+    [lno, Icut ([], rcuts)]
 
-  let parse_umul_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
-
-  let parse_umuls_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
-
-  let parse_umull_at lno destH destL src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
-
-  let parse_umulj_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_unsigned (typ_of_atom a1) in
-      let (vm, ym, gm, v) =
-        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
-
-  let parse_usplit_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_to_unsigned (typ_of_atom a) in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some ty) in
-      let _ =
-        let w = size_of_var vl in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
-
-  let parse_uspl_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_to_unsigned (typ_of_atom a) in
-      let w = size_of_typ ty in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (Tuint (w - Z.to_int n))) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Ispl (vh, vl, a, n)])
-
-  let parse_sadd_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadd (v, a1, a2)])
-
-  let parse_sadds_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadds (c, v, a1, a2)])
-
-  let parse_sadc_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadc (v, a1, a2, y)])
-
-  let parse_sadcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Iadcs (c, v, a1, a2, y)])
-
-  let parse_ssub_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isub (v, a1, a2)])
-
-  let parse_ssubc_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubc (c, v, a1, a2)])
-
-  let parse_ssubb_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isubb (c, v, a1, a2)])
-
-  let parse_ssbc_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbc (v, a1, a2, y)])
-
-  let parse_ssbcs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbcs (c, v, a1, a2, y)])
-
-  let parse_ssbb_at lno dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbb (v, a1, a2, y)])
-
-  let parse_ssbbs_at lno flag dest src1 src2 carry =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let y = resolve_atom_with lno carry cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Isbbs (c, v, a1, a2, y)])
-
-  let parse_smul_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imul (v, a1, a2)])
-
-  let parse_smuls_at lno flag dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, c) = resolve_lcarry_with lno flag cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Imuls (c, v, a1, a2)])
-
-  let parse_smull_at lno destH destL src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) =
-        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      (vm, vxm, ym, gm, [lno, Imull (vh, vl, a1, a2)])
-
-  let parse_smulj_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let ty = typ_to_signed (typ_of_atom a1) in
-      let (vm, ym, gm, v) =
-        resolve_lv_with lno dest cm vm ym gm (Some (to_double_size ty)) in
-      (vm, vxm, ym, gm, [lno, Imulj (v, a1, a2)])
-
-  let parse_ssplit_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_to_signed (typ_of_atom a) in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some ty) in
-      let (vm, ym, gm, vl) =
-        resolve_lv_with lno destL cm vm ym gm (Some (to_uint ty)) in
-      let _ =
-        let w = size_of_var vl in
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Isplit (vh, vl, a, n)])
-
-  let parse_sspl_at lno destH destL src num =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let n = num cm in
-      let ty = typ_to_signed (typ_of_atom a) in
-      let w = size_of_typ ty in
-      let (vm, ym, gm, vh) = resolve_lv_with lno destH cm vm ym gm (Some (Tsint (w - Z.to_int n))) in
-      let (vm, ym, gm, vl) = resolve_lv_with lno destL cm vm ym gm (Some (Tuint (Z.to_int n))) in
-      let _ =
-        if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
-      in
-      (vm, vxm, ym, gm, [lno, Ispl (vh, vl, a, n)])
-
-  let parse_and_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, vxm, ym, gm, [lno, Iand (v, a1, a2)])
-
-  let parse_or_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, vxm, ym, gm, [lno, Ior (v, a1, a2)])
-
-  let parse_xor_at lno dest src1 src2 =
-    fun _fm cm vm vxm ym gm ->
-      let a1 = resolve_atom_with lno src1 cm vm ym gm in
-      let a2 = resolve_atom_with lno src2 cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, vxm, ym, gm, [lno, Ixor (v, a1, a2)])
-
-  let parse_not_at lno dest src =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_with lno dest cm vm ym gm None in
-      (vm, vxm, ym, gm, [lno, Inot (v, a)])
-
-  let parse_cast_at lno optlv dest src =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let (vm, ym, gm, v) =
-        resolve_lv_or_lcarry_with lno dest cm vm ym gm in
-	  (* determine the type of the discarded part *)
-      let od_typ =
-	match typ_of_var v, typ_of_atom a with
-	| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
-	| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1)
-                                else Some (Tsint (wa - wv))
-	| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa))
-                                else if wv = wa then Some bit_t
-                                else Some (Tuint (wa - wv))
-	| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa))
-                                else Some (Tsint (wa - wv + 1)) in
-      let (vm, ym, gm, od) =
-		match optlv with
-		| None -> (vm, ym, gm, None)
-		| Some (`LV od) ->
-		   let (vm, ym, gm, d) =
-                     resolve_lv_with lno od cm vm ym gm od_typ in
-		   (vm, ym, gm, Some d) in
-	  (* the discarded part must be a ghost variable *)
-	  let gm = apply_to_option (fun d -> SM.add d.vname d gm) gm od in
-      (vm, vxm, ym, gm, [lno, Icast (od, v, a)])
-
-  let parse_vpc_at lno dest src =
-    fun _fm cm vm vxm ym gm ->
-      let a = resolve_atom_with lno src cm vm ym gm in
-      let (vm, ym, gm, v) = resolve_lv_or_lcarry_with lno dest cm vm ym gm in
-      (vm, vxm, ym, gm, [lno, Ivpc (v, a)])
-
-  let parse_join_at lno dest srcH srcL =
-    fun _fm cm vm vxm ym gm ->
-      let ah = resolve_atom_with lno srcH cm vm ym gm in
-      let al = resolve_atom_with lno srcL cm vm ym gm in
-      let ty = typ_map ((+) (size_of_atom al)) (typ_of_atom ah) in
-      let (vm, ym, gm, v) =
-        resolve_lv_with lno dest cm vm ym gm (Some ty) in
-      (vm, vxm, ym, gm, [lno, Ijoin (v, ah, al)])
-
-  let parse_assert_at lno bexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-      (vm, vxm, ym, gm, [lno, Iassert (bexp_prove_with_list_token cm vm ym gm)])
-
-  let parse_eassert_at lno ebexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-      (vm, vxm, ym, gm, [lno, Iassert (ebexp_prove_with_list_token cm vm ym gm, [])])
-
-  let parse_rassert_at lno rbexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-      (vm, vxm, ym, gm, [lno, Iassert ([], rbexp_prove_with_list_token cm vm ym gm)])
-
-  let parse_assume_at lno bexp_token =
-    fun _fm cm vm vxm ym gm ->
-      (vm, vxm, ym, gm, [lno, Iassume (bexp_token cm vm ym gm)])
-
-  let parse_cut_at lno bexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-      let (ecuts, rcuts) = bexp_prove_with_list_token cm vm ym gm in
-      (vm, vxm, ym, gm, [lno, Icut (ecuts, rcuts)])
-
-  let parse_ecut_at lno ebexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-    let ecuts = ebexp_prove_with_list_token cm vm ym gm in
-    (vm, vxm, ym, gm, [lno, Icut (ecuts, [])])
-
-  let parse_rcut_at lno rbexp_prove_with_list_token =
-    fun _fm cm vm vxm ym gm ->
-      let rcuts = rbexp_prove_with_list_token cm vm ym gm in
-      (vm, vxm, ym, gm, [lno, Icut ([], rcuts)])
-
-  let parse_ghost_at lno gvars_token bexp_token =
-    fun _fm cm vm vxm ym gm ->
-      let gvars = gvars_token cm vm ym gm in
-      let gm = vm_of_vs (VS.union gvars (vs_of_vm gm)) in
-      let e = bexp_token cm vm ym gm in
-      let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
-      let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
-      if List.length bad_ebexps > 0 then raise_at lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
-      else if List.length bad_rbexps > 0 then raise_at lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
-      else (vm, vxm, ym, gm, [lno, Ighost (gvars, e)])
+  let parse_ghost_at ctx lno gvars_token bexp_token =
+    let gvars = gvars_token ctx in
+    let _ = VS.iter (fun g -> ctx.cghosts <- SM.add g.vname g ctx.cghosts) gvars in
+    let e = bexp_token ctx in
+    let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
+    let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
+    if List.length bad_ebexps > 0 then raise_at lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
+    else if List.length bad_rbexps > 0 then raise_at lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
+    else [lno, Ighost (gvars, e)]
 
   let is_type_compatible formal actual =
     match actual with
     | Avar v -> formal.vtyp = v.vtyp
     | Aconst (ty, _n) -> formal.vtyp = ty
 
-  let parse_call_at lno fname_token actuals_token =
-    fun fm cm vm vxm ym gm ->
-      (* The function name *)
-      let fname = fname_token in
-      (* The function definition *)
-      let f =
-        try
-          SM.find fname fm
-        with Not_found ->
-          raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
-      (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-      let actuals = actuals_token (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) cm vm ym gm in
-      let formals = f.fargs@f.fouts in
-      (* Check the number of actual parameters *)
-      let _ =
-        if List.length actuals != List.length formals then
-          raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
-      (* Check types of actual parameters, this should be done in parsing actual parameters *)
-      let _ =
-        List.iter2 (fun formal actual ->
-                     if not (is_type_compatible formal actual) then
-                       raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
-                                     ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
-                   formals actuals in
-      (* create ghost variables for actual variables *)
-      let ghost_actuals =
-        let ghost_suffix = Int.to_string (Random.int 10000) in
-        let mk_ghostvar a =
+  let parse_call_at ctx lno fname_token actuals_token =
+    (* The function name *)
+    let fname = fname_token in
+    (* The function definition *)
+    let f =
+      try
+        SM.find fname ctx.cfuns
+      with Not_found ->
+        raise_at lno ("Call an undefined function '" ^ fname ^ "'.") in
+    (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+    let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
+    let formals = f.fargs@f.fouts in
+    (* Check the number of actual parameters *)
+    let _ =
+      if List.length actuals != List.length formals then
+        raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
+    (* Check types of actual parameters, this should be done in parsing actual parameters *)
+    let _ =
+      List.iter2 (fun formal actual ->
+                   if not (is_type_compatible formal actual) then
+                     raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
+                                   ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+                 formals actuals in
+    (* create ghost variables for actual variables *)
+    let ghost_actuals =
+      let ghost_suffix = Int.to_string (Random.int 10000) in
+      let mk_ghostvar a =
+        match a with
+        | Avar v -> mkvar (v.vname ^ ghost_suffix) (typ_of_var v)
+        | Aconst (typ, _) -> mkvar ("g_" ^ ghost_suffix) typ in
+      List.rev (List.rev_map mk_ghostvar actuals) in
+    let ghost_instr =
+      let ghost_bexp =
+        let mk_eeq a gvar =
           match a with
-          | Avar v -> mkvar (v.vname ^ ghost_suffix) (typ_of_var v)
-          | Aconst (typ, _) -> mkvar ("g_" ^ ghost_suffix) typ in
-        List.rev (List.rev_map mk_ghostvar actuals) in
-      let ghost_instr =
-        let ghost_bexp =
-          let mk_eeq a gvar =
-            match a with
-            | Avar avar -> eeq (evar avar) (evar gvar)
-            | Aconst (_, z) -> eeq (econst z) (evar gvar) in
-          let mk_req a gvar =
-            match a with
-            | Avar avar -> req (size_of_var avar) (rvar avar) (rvar gvar)
-            | Aconst (typ, z) ->
-               let sz = size_of_typ typ in
-               req sz (rconst sz z) (rvar gvar) in
-          (List.fold_left2 (fun r avar gvar -> eand r (mk_eeq avar gvar))
-                           etrue actuals ghost_actuals,
-           List.fold_left2 (fun r avar gvar -> rand r (mk_req avar gvar))
-                           rtrue actuals ghost_actuals) in
-        let ghostVS = List.fold_left (fun r gvar -> VS.add gvar r)
-                                     VS.empty ghost_actuals in
-        Ighost (ghostVS, ghost_bexp) in
-      let assert_instr =
-        let assert_pats =
-          List.combine formals
-                       (List.rev (List.rev_map mkatom_var ghost_actuals)) in
-        let (_, em, rm) = subst_maps_of_list assert_pats in
-        let to_prove_with (ebexp, rbexp) = ([(ebexp, [])], [(rbexp, [])]) in
-        Iassert (subst_bexp_prove_with em rm (to_prove_with f.fpre)) in
-      let (_, actual_outs) =
-        Utils.Std.partition_at actuals (List.length f.fargs) in
-      let (ghost_args, _) =
-        Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
-      let nondet_instrs =
-        List.fold_left (fun r ovar -> (lno, Inondet ovar)::r)
-                       [] (List.rev_map var_of_atom actual_outs) in
-      let assume_instr =
-        let assume_pats =
-          List.combine formals
-                       (List.rev_append (List.rev_map mkatom_var ghost_args)
-                                        actual_outs) in
-        let (_, em, rm) = subst_maps_of_list assume_pats in
-        let from_prove_with (ebexp_prove_withs, rbexp_prove_withs) =
-          let ebexps = List.rev_map fst ebexp_prove_withs in
-          let rbexps = List.rev_map fst rbexp_prove_withs in
-          let ebexp = List.fold_left (fun e ret -> Eand (e, ret)) Etrue ebexps in
-          let rbexp = List.fold_left (fun r ret -> Rand (r, ret)) Rtrue rbexps in
-          (ebexp, rbexp) in
-        Iassume (subst_bexp em rm (from_prove_with f.fpost)) in
-      (vm, vxm, ym, gm,
-       [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
-         [(lno, assume_instr)])
-  let parse_inline_at lno fname_token actuals_token =
-    fun fm cm vm vxm ym gm ->
-      (* The function name *)
-      let fname = fname_token in
-      (* The function definition *)
-      let f =
-        try
-          SM.find fname fm
-        with Not_found ->
-          raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
-      (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-      let actuals = actuals_token (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) cm vm ym gm in
-      (* Rename local variables *)
-      let (fbody, fargs, fouts, fvs, fys, fgs) =
-        if !Options.Std.rename_local then
-          let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
-          let fargs = List.map rename_var f.fargs in
-          let fouts = List.map rename_var f.fouts in
-          let fvs = VS.map rename_var (vs_of_vm f.fvm) in
-          let fys = VS.map rename_var (vs_of_vm f.fym) in
-          let fgs = VS.map rename_var (vs_of_vm f.fgm) in
-          let local_renamer = object (* (self) *)
-                                inherit nop_visitor
-                                method! vvar v = ChangeTo (rename_var v)
-                              end in
-          let fbody = visit_lined_program local_renamer f.fbody in
-          (fbody, fargs, fouts, fvs, fys, fgs)
-        else
-          (f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
-      (* Formal parameters after renaming *)
-      let inputs = fargs in
-      let outputs = fouts in
-      let formals = inputs@outputs in
-      (* Check the number of actual parameters *)
-      let _ =
-        if List.length actuals != List.length formals then
-          raise_at lno ("Failed to inline the function " ^ fname ^ ": numbers of arguments mismatch.") in
-      (* Check types of actual parameters, this should be done in parsing actual parameters *)
-      let _ =
-        List.iter2 (fun formal actual ->
-                     if not (is_type_compatible formal actual) then
-                       raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
-                                     ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
-                   formals actuals in
-      (* Check naming conflicts *)
-      let _ =
-        let (vsclash, ysclash, gsclash) =
-          let actvars = List.fold_left (fun res a -> VS.union res (vars_atom a)) VS.empty actuals in
-          (* variables not replaced by formal parameters cannot have the same name as the name of any actual parameter *)
-          let unrenamed_vs = VS.diff fvs (VS.of_list formals) in
-          let unrenamed_ys = VS.diff fys (VS.of_list formals) in
-          let unrenamed_gs = VS.diff fgs (VS.of_list formals) in
-          let vsclash = VS.inter actvars unrenamed_vs in
-          let ysclash = VS.inter actvars unrenamed_ys in
-          let gsclash = VS.inter actvars unrenamed_gs in
-          (vsclash, ysclash, gsclash) in
-        if not (VS.is_empty gsclash) then
-          let v = VS.choose gsclash in
-          raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a ghost variable in function " ^ fname ^ ".")
-        else if not (VS.is_empty ysclash) then
-          let v = VS.choose ysclash in
-          raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a carry in function " ^ fname ^ ".")
-        else if not (VS.is_empty vsclash) then
-          let v = VS.choose vsclash in
-          raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined in function " ^ fname ^ ".")
-      in
-      let pats = List.combine formals actuals in
-      let vs = vs_of_vm vm in
-      let ys = vs_of_vm ym in
-      let gs = vs_of_vm gm in
-      (* Check undefined variables *)
-      let _ =
-        let undefined =
-          List.flatten (List.map (fun (formal, actual) ->
-                                   match actual with
-                                   | Avar v -> if mem_var formal inputs && not (VS.mem v vs) then [v] else []
-                                   | _ -> []
-                                 ) pats) in
-        if List.length undefined > 0 then
-          raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
-      in
-      let (am, em, rm) = subst_maps_of_list pats in
-      let p = subst_lined_program am em rm fbody in
-      (* Update variable types *)
-      let subst_varmap vm =
-        (*
-         * subst_lval fails if the corresponding actual parameter of a formal parameter is a constant.
-         * In this case, no variable type will be updated.
-         *)
-        VS.of_list (List.flatten (List.map (fun v -> try [subst_lval am v] with _ -> []) (VS.elements vm))) in
-      let update_varset vs vsp =
-        (* To update variable types, we need to remove variables with new types first. *)
-        VS.union (VS.diff vs vsp) vsp in
-      let vsp = subst_varmap fvs in
-      let ysp = subst_varmap fys in
-      let gsp = subst_varmap fgs in
-      (* FIXME: update vxm *)
-      (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p)
+          | Avar avar -> eeq (evar avar) (evar gvar)
+          | Aconst (_, z) -> eeq (econst z) (evar gvar) in
+        let mk_req a gvar =
+          match a with
+          | Avar avar -> req (size_of_var avar) (rvar avar) (rvar gvar)
+          | Aconst (typ, z) ->
+             let sz = size_of_typ typ in
+             req sz (rconst sz z) (rvar gvar) in
+        (List.fold_left2 (fun r avar gvar -> eand r (mk_eeq avar gvar))
+                         etrue actuals ghost_actuals,
+         List.fold_left2 (fun r avar gvar -> rand r (mk_req avar gvar))
+                         rtrue actuals ghost_actuals) in
+      let ghostVS = List.fold_left (fun r gvar -> VS.add gvar r)
+                                   VS.empty ghost_actuals in
+      Ighost (ghostVS, ghost_bexp) in
+    let assert_instr =
+      let assert_pats =
+        List.combine formals
+                     (List.rev (List.rev_map mkatom_var ghost_actuals)) in
+      let (_, em, rm) = subst_maps_of_list assert_pats in
+      let to_prove_with (ebexp, rbexp) = ([(ebexp, [])], [(rbexp, [])]) in
+      Iassert (subst_bexp_prove_with em rm (to_prove_with f.fpre)) in
+    let (_, actual_outs) =
+      Utils.Std.partition_at actuals (List.length f.fargs) in
+    let (ghost_args, _) =
+      Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
+    let nondet_instrs =
+      List.fold_left (fun r ovar -> (lno, Inondet ovar)::r)
+                     [] (List.rev_map var_of_atom actual_outs) in
+    let assume_instr =
+      let assume_pats =
+        List.combine formals
+                     (List.rev_append (List.rev_map mkatom_var ghost_args)
+                                      actual_outs) in
+      let (_, em, rm) = subst_maps_of_list assume_pats in
+      let from_prove_with (ebexp_prove_withs, rbexp_prove_withs) =
+        let ebexps = List.rev_map fst ebexp_prove_withs in
+        let rbexps = List.rev_map fst rbexp_prove_withs in
+        let ebexp = List.fold_left (fun e ret -> Eand (e, ret)) Etrue ebexps in
+        let rbexp = List.fold_left (fun r ret -> Rand (r, ret)) Rtrue rbexps in
+        (ebexp, rbexp) in
+      Iassume (subst_bexp em rm (from_prove_with f.fpost)) in
+    [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
+      [(lno, assume_instr)]
+
+  let parse_inline_at ctx lno fname_token actuals_token =
+    (* The function name *)
+    let fname = fname_token in
+    (* The function definition *)
+    let f =
+      try
+        SM.find fname ctx.cfuns
+      with Not_found ->
+        raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
+    (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+    let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
+    (* Rename local variables *)
+    let (fbody, fargs, fouts, fvs, fys, fgs) =
+      if !Options.Std.rename_local then
+        let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
+        let fargs = List.map rename_var f.fargs in
+        let fouts = List.map rename_var f.fouts in
+        let fvs = VS.map rename_var (vs_of_vm f.fvm) in
+        let fys = VS.map rename_var (vs_of_vm f.fym) in
+        let fgs = VS.map rename_var (vs_of_vm f.fgm) in
+        let local_renamer = object (* (self) *)
+            inherit nop_visitor
+            method! vvar v = ChangeTo (rename_var v)
+          end in
+        let fbody = visit_lined_program local_renamer f.fbody in
+        (fbody, fargs, fouts, fvs, fys, fgs)
+      else
+        (f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
+    (* Formal parameters after renaming *)
+    let inputs = fargs in
+    let outputs = fouts in
+    let formals = inputs@outputs in
+    (* Check the number of actual parameters *)
+    let _ =
+      if List.length actuals != List.length formals then
+        raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
+    (* Check types of actual parameters, this should be done in parsing actual parameters *)
+    let _ =
+      List.iter2 (fun formal actual ->
+                   if not (is_type_compatible formal actual) then
+                     raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
+                                   ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+                 formals actuals in
+    (* Check naming conflicts *)
+    let _ =
+      let (vsclash, ysclash, gsclash) =
+        let actvars = List.fold_left (fun res a -> VS.union res (vars_atom a)) VS.empty actuals in
+        (* variables not replaced by formal parameters cannot have the same name as the name of any actual parameter *)
+        let unrenamed_vs = VS.diff fvs (VS.of_list formals) in
+        let unrenamed_ys = VS.diff fys (VS.of_list formals) in
+        let unrenamed_gs = VS.diff fgs (VS.of_list formals) in
+        let vsclash = VS.inter actvars unrenamed_vs in
+        let ysclash = VS.inter actvars unrenamed_ys in
+        let gsclash = VS.inter actvars unrenamed_gs in
+        (vsclash, ysclash, gsclash) in
+      if not (VS.is_empty gsclash) then
+        let v = VS.choose gsclash in
+        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a ghost variable in function " ^ fname ^ ".")
+      else if not (VS.is_empty ysclash) then
+        let v = VS.choose ysclash in
+        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a carry in function " ^ fname ^ ".")
+      else if not (VS.is_empty vsclash) then
+        let v = VS.choose vsclash in
+        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined in function " ^ fname ^ ".")
+    in
+    let pats = List.combine formals actuals in
+    (* Check undefined variables *)
+    let _ =
+      let undefined =
+        List.flatten (List.map (fun (formal, actual) ->
+                                 match actual with
+                                 | Avar v -> if mem_var formal inputs && not (SM.mem v.vname ctx.cvars) then [v] else []
+                                 | _ -> []
+                               ) pats) in
+      if List.length undefined > 0 then
+        raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
+    in
+    let (am, em, rm) = subst_maps_of_list pats in
+    let p = subst_lined_program am em rm fbody in
+    (* Update variable types *)
+    let subst_varmap vs =
+      (*
+       * subst_lval fails if the corresponding actual parameter of a formal parameter is a constant.
+       * In this case, no variable type will be updated.
+       *)
+      VS.of_list (List.flatten (List.map (fun v -> try [subst_lval am v] with _ -> []) (VS.elements vs))) in
+    let _update_varset vs vsp =
+      (* To update variable types, we need to remove variables with new types first. *)
+      VS.union (VS.diff vs vsp) vsp in
+    let vsp = subst_varmap fvs in
+    let ysp = subst_varmap fys in
+    let gsp = subst_varmap fgs in
+    (* FIXME: update vxm *)
+    let _ = VS.iter (fun v -> ctx.cvars <- SM.add v.vname v ctx.cvars) vsp in
+    let _ = VS.iter (fun v -> ctx.ccarries <- SM.add v.vname v ctx.ccarries) ysp in
+    let _ = VS.iter (fun v -> ctx.cghosts <- SM.add v.vname v ctx.cghosts) gsp in
+    (* (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p) *)
+    p
 
   let vec_name_fn vname =
     let n = String.length vname in
@@ -1254,87 +1197,88 @@
     let (t, n) = tv in
       Printf.sprintf "%s[%d]" (string_of_typ t) n
 
-  let resolve_lv_vec_with lno dest_tok _fm _cm _vm (vxm: 't) _ym _gm src_vtyp_opt : 't * string list * typ =
+  let resolve_lv_vec_with ctx lno dest_tok src_vtyp_opt : typ * string list =
     match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
-      let vtyp = match (src_vtyp_opt, vectyphint) with
-        | (None, None) -> raise_at lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
-        | (None, Some hinted_vtyp) -> hinted_vtyp
-        | (Some src_vtyp, None) -> src_vtyp
-        | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
-            raise_at lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
-                                         (string_of_typ_vec hinted_vtyp)
-                                         vecname
-                                         (string_of_typ_vec src_vtyp))
-          else hinted_vtyp) in
-      let (elmtyp, srclen) = vtyp in
-      let names = List.map (vec_name_fn vecname) (1 -- srclen) in
-      (SM.add vecname vtyp vxm, names, elmtyp)
+       let vtyp = match (src_vtyp_opt, vectyphint) with
+         | (None, None) -> raise_at lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
+         | (None, Some hinted_vtyp) -> hinted_vtyp
+         | (Some src_vtyp, None) -> src_vtyp
+         | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
+                                                   raise_at lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
+                                                                                (string_of_typ_vec hinted_vtyp)
+                                                                                vecname
+                                                                                (string_of_typ_vec src_vtyp))
+                                                 else hinted_vtyp) in
+       let (elmtyp, srclen) = vtyp in
+       let names = List.map (vec_name_fn vecname) (1 -- srclen) in
+       let _ = ctx.cvecs <- SM.add vecname vtyp ctx.cvecs in
+       (elmtyp, names)
     | `LVVLIT lvs ->
-      let relmtyp = match src_vtyp_opt with
-      | None -> raise_at lno "Internal error: Missing type information to resolve a vector lval."
-      | Some (tp, _) -> tp in
-      let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
-        let _ = match lvtyphint with
-        | None -> ()
-        | Some hinted_ty -> if relmtyp <> hinted_ty then
-          raise_at lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
-                                       (string_of_typ hinted_ty)
-                                       lvname
-                                       (string_of_typ relmtyp))
-          else () in
-        lvname) lvs in
-      (vxm, names, relmtyp)
+       let relmtyp = match src_vtyp_opt with
+         | None -> raise_at lno "Internal error: Missing type information to resolve a vector lval."
+         | Some (tp, _) -> tp in
+       let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
+                              let _ = match lvtyphint with
+                                | None -> ()
+                                | Some hinted_ty -> if relmtyp <> hinted_ty then
+                                                      raise_at lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
+                                                                                   (string_of_typ hinted_ty)
+                                                                                   lvname
+                                                                                   (string_of_typ relmtyp))
+                                                    else () in
+                              lvname) lvs in
+       (relmtyp, names)
 
-  let resolve_vec_with lno src_tok _fm cm vm vxm ym gm : typ * atom_t list =
+  let resolve_vec_with ctx lno src_tok : typ * atom_t list =
     match src_tok with
     | `AVECT {vecname; vectyphint} ->
-      let tv = try
-        SM.find vecname vxm
-      with Not_found ->
-        raise_at lno ("Vector variable " ^ vecname ^ " is undefined.")
-      in
-      let _ = match vectyphint with
-      | None -> ()
-      | Some hinted_ty ->
-          if tv <> hinted_ty then
-            raise_at lno ("The type of variable " ^ vecname ^ " is inconsistent.")
-          else () in
-        let (rtyphint, rlen) = tv in
-        let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
-        let rvs = List.map gen_avar (1 -- rlen) in
-        (rtyphint, rvs)
+       let tv = try
+           SM.find vecname ctx.cvecs
+         with Not_found ->
+           raise_at lno ("Vector variable " ^ vecname ^ " is undefined.")
+       in
+       let _ = match vectyphint with
+         | None -> ()
+         | Some hinted_ty ->
+            if tv <> hinted_ty then
+              raise_at lno ("The type of variable " ^ vecname ^ " is inconsistent.")
+            else () in
+       let (rtyphint, rlen) = tv in
+       let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
+       let rvs = List.map gen_avar (1 -- rlen) in
+       (rtyphint, rvs)
     | `AVLIT rvs ->
-      match rvs with
-      | [] -> raise_at lno "A vector literal cannot be empty."
-      | _ ->
-        let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with lno a cm vm ym gm)) rvs in
-        let rtyphint = List.hd relmtyps in
-        let _ = List.iteri (fun i t ->
-          if t <> rtyphint then
-            raise_at lno (
-              Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
-                             (string_of_typ rtyphint)
-                             (string_of_typ t)
-                             i)
-          else ()) relmtyps
-        in (rtyphint, rvs)
+       match rvs with
+       | [] -> raise_at lno "A vector literal cannot be empty."
+       | _ ->
+          let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
+          let rtyphint = List.hd relmtyps in
+          let _ = List.iteri (fun i t ->
+                               if t <> rtyphint then
+                                 raise_at lno (
+                                            Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
+                                                           (string_of_typ rtyphint)
+                                                           (string_of_typ t)
+                                                           i)
+                               else ()) relmtyps
+          in (rtyphint, rvs)
 
   (* Given a list of (writes, read), make a series of aliasing movs on colliding names.
-     Besides instructions, it also returns some context after rewriting *)
-  let gen_tmp_movs lno (rwpairs: (string list * atom_t) list) vm relmtyp =
+     Bsesides instructions, it also returns some context after rewriting *)
+  let gen_tmp_movs ctx lno (rwpairs: (string list * atom_t) list) relmtyp =
     let rewrite_rws (tainted, submap) (wws, a) =
       let (submap', a') = match a with
-      | `AVAR ({atmname; _} as var) when SS.mem atmname tainted ->
-        let tmp_name = atmname ^ "_" in
-        let _ = if SM.mem tmp_name vm then
-          raise_at lno (
-            Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
-                          tmp_name)
-          else () in
-        (SM.add tmp_name var submap, `AVAR {var with atmname=tmp_name})
-      | `AVAR _
-      | `ACONST _ -> (submap, a) in
+        | `AVAR ({atmname; _} as var) when SS.mem atmname tainted ->
+           let tmp_name = atmname ^ "_" in
+           let _ = if SM.mem tmp_name ctx.cvars then
+                     raise_at lno (
+                                Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
+                                               tmp_name)
+                   else () in
+           (SM.add tmp_name var submap, `AVAR {var with atmname=tmp_name})
+        | `AVAR _
+          | `ACONST _ -> (submap, a) in
       let tainted' = List.fold_left (fun set name -> SS.add name set) tainted wws in
       ((tainted', submap'), a') in
 
@@ -1342,35 +1286,35 @@
     let tmp_names = SM.fold (fun k _ names -> k::names) tmp_to_orig [] in
 
     (* Add introduced temp. variables into variable map *)
-    let vm_safe = SM.fold (fun k _ map -> SM.add k (mkvar k relmtyp) map) tmp_to_orig vm in
+    let _ = SM.iter (fun k _ -> ctx.cvars <- SM.add k (mkvar k relmtyp) ctx.cvars) tmp_to_orig in
     (* Save into temp. variables with mov instructions *)
     let aliasing_instrs = List.rev (
       SM.fold (fun tmp_name orig instrs ->
-        let instr = (lno, Imov (SM.find tmp_name vm_safe, Avar (mkvar orig.atmname relmtyp))) in
+        let instr = (lno, Imov (SM.find tmp_name ctx.cvars, Avar (mkvar orig.atmname relmtyp))) in
         instr::instrs) tmp_to_orig []) in
 
-    (aliasing_instrs, tmp_names, src_safe, vm_safe)
+    (aliasing_instrs, tmp_names, src_safe)
 
-  let gen_tmp_movs_2 lno (rwpairs_: (string list * (atom_t * atom_t)) list) vm relmtyp =
+  let gen_tmp_movs_2 ctx lno (rwpairs_: (string list * (atom_t * atom_t)) list) relmtyp =
     let rwpairs = List.rev (List.fold_left (fun l (wws, (rr1, rr2)) -> (wws, rr2)::([], rr1)::l) [] rwpairs_) in
-    let (aliasing_instrs, tmp_names, src_safe_single, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe_single) = gen_tmp_movs ctx lno rwpairs relmtyp in
     let rec to_pairs_rev acc xs = match xs with
       | [] -> acc
       | _::[] -> raise_at lno "Internal error: Incorrect number of source operands."
       | x::y::tail -> to_pairs_rev ((x, y)::acc) tail in
     let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
-    (aliasing_instrs, tmp_names, src_safe, vm_safe)
+    (aliasing_instrs, tmp_names, src_safe)
 
-  let gen_tmp_movs_3 lno (rwpairs_: (string list * (atom_t * atom_t * atom_t)) list) vm relmtyp =
+  let gen_tmp_movs_3 ctx lno (rwpairs_: (string list * (atom_t * atom_t * atom_t)) list) relmtyp =
     let rwpairs = List.rev (List.fold_left (fun l (wws, (rr1, rr2, rr3)) -> (wws, rr3)::([], rr2)::([], rr1)::l) [] rwpairs_) in
-    let (aliasing_instrs, tmp_names, src_safe_single, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe_single) = gen_tmp_movs ctx lno rwpairs relmtyp in
     let rec to_pairs_rev acc xs = match xs with
       | [] -> acc
       | _::[] | _::_::[] ->
          raise_at lno "Internal error: Incorrect number of source operands."
       | c::x::y::tail -> to_pairs_rev ((c, x, y)::acc) tail in
     let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
-    (aliasing_instrs, tmp_names, src_safe, vm_safe)
+    (aliasing_instrs, tmp_names, src_safe)
 
   let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
     let srclen = List.length src1 in
@@ -1381,72 +1325,60 @@
     else () in
     ((relmtyp, srclen), src1, src2)
 
-  let unpack_vinstr_1 mapper lno dest_tok fm cm vm vxm ym gm =
-    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm None in
+  let unpack_vinstr_1 mapper ctx lno dest_tok =
+    let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok None in
 
-    let map_func (vm, ym, gm) lvname = (
-      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) =
-      List.fold_left_map map_func (vm, ym, gm) dest_names in
-    (vm', vxm', ym', gm', List.concat iss)
+    let map_func lvname = mapper ctx lno {lvname; lvtyphint=Some dest_typ} in
+    let iss = List.rev (List.rev_map map_func dest_names) in
+    List.concat iss
 
-  let unpack_vinstr_11 mapper lno dest_tok src_tok fm cm vm vxm ym gm =
-    let (relmtyp, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_11 mapper ctx lno dest_tok src_tok =
+    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
+    let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> (List.length src) then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) (lvname, rv) = (
-      let lvtoken = {lvname; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
+    let map_func (lvname, rv) = mapper ctx lno {lvname; lvtyphint=None} rv in
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
     (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
     (* Clean up temp. names so that they are invisible to latter parts of the source *)
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vinstr_12 mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_12 mapper ctx lno dest_tok src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
 
-    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some src_typ_vec) in
+    let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
-      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let map_func (lvname, (rv1, rv2)) = mapper ctx lno {lvname; lvtyphint=Some dest_typ} rv1 rv2 in
+    let iss = (
+        List.rev (List.rev_map map_func (List.combine dest_names src_safe))) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
   (*
    * one destination variable, two source atoms
    * Type of destination variable is bit[srclen] by default when its type is not explicitly specified.
    *)
-  let unpack_vinstr_1n2 mapper lno (dest_tok:  [< `LVVECT of vec_prim_t
-               | `LVVLIT of lval_t list ]) src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_1n2 mapper ctx lno (dest_tok:  [< `LVVECT of vec_prim_t
+               | `LVVLIT of lval_t list ]) src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
     let hint_typ =
@@ -1468,26 +1400,22 @@
           | None -> Some (bit_t, List.length lvs)
           | Some ty -> Some (ty, List.length lvs))
     in
-    let (vxm', dest_names, dest_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm hint_typ in
+    let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok hint_typ in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
-    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
-      let lvtoken = {lvname; lvtyphint=Some dest_typ} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
+    let map_func (lvname, (rv1, rv2)) = mapper ctx lno {lvname; lvtyphint=Some dest_typ} rv1 rv2 in
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vinstr_21n mapper lno dest1_tok dest2_tok src_tok num fm cm vm vxm ym gm =
-    let (relmtyp, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_21n mapper ctx lno dest1_tok dest2_tok src_tok num =
+    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
     let src_typ_vec = (relmtyp, List.length src) in
-    let (vxm_i, dest1_names, _) = resolve_lv_vec_with lno dest1_tok fm cm vm vxm   ym gm (Some src_typ_vec) in
-    let (vxm',  dest2_names, _) = resolve_lv_vec_with lno dest2_tok fm cm vm vxm_i ym gm (Some src_typ_vec) in
+    let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some src_typ_vec) in
+    let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some src_typ_vec) in
 
     let _ = if ((List.length dest1_names) <> (List.length src) ||
                 (List.length dest2_names) <> (List.length src)) then
@@ -1495,28 +1423,27 @@
     else () in
 
     let rwpairs = List.map2 (fun (d1, d2) s -> ([d1; d2], s)) (List.combine dest1_names dest2_names) src in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) ((lvname1, lvname2), rv) = (
+    let map_func ((lvname1, lvname2), rv) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
       let lvtoken2 = {lvname=lvname2; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv num fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
+      mapper ctx lno lvtoken1 lvtoken2 rv num
     ) in
     let dest_names = List.combine dest1_names dest2_names in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vinstr_c12 mapper lno carry_tok dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_c12 mapper ctx lno carry_tok dest_tok src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
 
     let carry_typ_vec = (bit_t, srclen) in
-    let (vxm_i, carry_names, _) = resolve_lv_vec_with lno carry_tok fm cm vm vxm   ym gm (Some carry_typ_vec) in
-    let (vxm' , dest_names , _) = resolve_lv_vec_with lno dest_tok  fm cm vm vxm_i ym gm (Some src_typ_vec) in
+    let (_, carry_names) = resolve_lv_vec_with ctx lno carry_tok (Some carry_typ_vec) in
+    let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1527,31 +1454,30 @@
     let rwpairs = List.map2 (fun (c, d) (s1, s2) -> ([c; d], (s1, s2)))
                             (List.combine carry_names dest_names)
                             (List.combine src1 src2) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
+    let map_func ((lvname1, lvname2), (rv1, rv2)) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
       let lvtoken2 = {lvname=lvname2; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
+      mapper ctx lno lvtoken1 lvtoken2 rv1 rv2
     ) in
     let dest_names = List.combine carry_names dest_names in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vinstr_1c2 mapper lno dest_tok carry_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vinstr_1c2 mapper ctx lno dest_tok carry_tok src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
-    let vcarry = resolve_vec_with lno carry_tok fm cm vm vxm ym gm in
+    let vcarry = resolve_vec_with ctx lno carry_tok in
     let _ =
       if List.length (snd vcarry) <> srclen then
         raise_at lno "Carry vector should be as long as the source vector."
       else () in
 
-    let (vxm' , dest_names , _) = resolve_lv_vec_with lno dest_tok  fm cm vm vxm ym gm (Some src_typ_vec) in
+    let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1561,29 +1487,25 @@
                             dest_names
                             (List.combine (snd vcarry)
                                           (List.combine src1 src2)) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) =
-      gen_tmp_movs_3 lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) =
+      gen_tmp_movs_3 ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) (lvname, (rc, rv1, rv2)) = (
-      let lvtoken = {lvname=lvname; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rc rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let map_func (lvname, (rc, rv1, rv2)) = mapper ctx lno {lvname=lvname; lvtyphint=None} rc rv1 rv2 in
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vmull mapper lno destH_tok destL_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vmull mapper ctx lno destH_tok destL_tok src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
 
     (* XXX: is destL always unsigned? *)
     let src_typ_vec = (relmtyp, List.length src1) in
     let destL_typ = (to_uint relmtyp, srclen) in
-    let (vxm_i, destH_names, _) = resolve_lv_vec_with lno destH_tok fm cm vm vxm   ym gm (Some src_typ_vec) in
-    let (vxm',  destL_names, _) = resolve_lv_vec_with lno destL_tok fm cm vm vxm_i ym gm (Some destL_typ) in
+    let (_, destH_names) = resolve_lv_vec_with ctx lno destH_tok (Some src_typ_vec) in
+    let (_, destL_names) = resolve_lv_vec_with ctx lno destL_tok (Some destL_typ) in
 
     let _ = if ((List.length destH_names) <> srclen ||
                 (List.length destL_names) <> srclen) then
@@ -1593,328 +1515,320 @@
     let rwpairs = List.map2 (fun (dh, dl) (s1, s2) -> ([dh; dl], (s1, s2)))
                             (List.combine destH_names destL_names)
                             (List.combine src1 src2) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
     let dest_names = List.combine destH_names destL_names in
 
-    let map_func (vm, ym, gm) ((lvname1, lvname2), (rv1, rv2)) = (
+    let map_func ((lvname1, lvname2), (rv1, rv2)) = (
       let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
       let lvtoken2 = {lvname=lvname2; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken1 lvtoken2 rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
+      mapper ctx lno lvtoken1 lvtoken2 rv1 rv2
     ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let unpack_vmulj mapper lno dest_tok src1_tok src2_tok fm cm vm vxm ym gm =
-    let vatm1 = resolve_vec_with lno src1_tok fm cm vm vxm ym gm in
-    let vatm2 = resolve_vec_with lno src2_tok fm cm vm vxm ym gm in
+  let unpack_vmulj mapper ctx lno dest_tok src1_tok src2_tok =
+    let vatm1 = resolve_vec_with ctx lno src1_tok in
+    let vatm2 = resolve_vec_with ctx lno src2_tok in
     let (src_typ_vec, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
     let (relmtyp, srclen) = src_typ_vec in
     let dst_typ_vec = (to_double_size relmtyp, srclen) in
 
-    let (vxm', dest_names, _) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm (Some dst_typ_vec) in
+    let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some dst_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs_2 lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) (lvname, (rv1, rv2)) = (
-      let lvtoken = {lvname; lvtyphint=None} in
-      let (vm, _, ym, gm, instrs) = mapper lno lvtoken rv1 rv2 fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let map_func (lvname, (rv1, rv2)) = mapper ctx lno {lvname; lvtyphint=None} rv1 rv2 in
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let parse_vcast_at lno dest_tok src_tok fm cm vm vxm ym gm =
-    let (relmtyp, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
-    let (vxm', dest_names, tar_typ) = resolve_lv_vec_with lno dest_tok fm cm vm vxm ym gm None in
+  let parse_vcast_at ctx lno dest_tok src_tok =
+    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
+    let (tar_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok None in
 
     let _ = if (List.length dest_names) <> (List.length src) then
       raise_at lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
-    let (aliasing_instrs, tmp_names, src_safe, vm_safe) = gen_tmp_movs lno rwpairs vm relmtyp in
+    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
 
-    let map_func (vm, ym, gm) (lvname, rv) = (
-      let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
-      let (vm, _, ym, gm, instrs) = parse_cast_at lno None lvtoken rv fm cm vm vxm ym gm in
-      ((vm, ym, gm), instrs)
-    ) in
-    let ((vm', ym', gm'), iss) = (
-      List.fold_left_map map_func (vm_safe, ym, gm) (List.combine dest_names src_safe)) in
-    (remove_keys_from_map tmp_names vm', vxm', ym', gm', List.concat (aliasing_instrs::iss))
+    let map_func (lvname, rv) = (
+        let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
+        parse_cast_at ctx lno None lvtoken rv
+      ) in
+    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+    List.concat (aliasing_instrs::iss)
 
-  let parse_vbroadcast_at lno dest_tok num src_tok fm cm vm vxm ym gm =
-    let n = num cm in
+  let parse_vbroadcast_at ctx lno dest_tok num src_tok =
+    let n = num ctx in
     (* type check is done when unpacking, so relmtyp is not needed here *)
-    let (_, src) = resolve_vec_with lno src_tok fm cm vm vxm ym gm in
+    let (_, src) = resolve_vec_with ctx lno src_tok in
     let len = List.length src in
     let src_padded = `AVLIT (List.init (Z.to_int n) (fun i -> List.nth src (i mod len))) in
-    unpack_vinstr_11 parse_imov_at lno dest_tok src_padded fm cm vm vxm ym gm
+    unpack_vinstr_11 parse_imov_at ctx lno dest_tok src_padded
 
-  let recognize_instr_at lno instr fm cm vm vxm ym gm =
+  let recognize_instr_at ctx lno instr =
       match instr with
       | `MOV (`LVPLAIN dest, src) ->
-        parse_imov_at lno dest src fm cm vm vxm ym gm
+        parse_imov_at ctx lno dest src
       | `VMOV (dest, src) ->
-        unpack_vinstr_11 parse_imov_at lno dest src fm cm vm vxm ym gm
+        unpack_vinstr_11 parse_imov_at ctx lno dest src
       | `VBROADCAST (dest, num, src) ->
-        parse_vbroadcast_at lno dest num src fm cm vm vxm ym gm
+        parse_vbroadcast_at ctx lno dest num src
       | `SHL (`LVPLAIN dest, src, num) ->
-         parse_ishl_at lno dest src num fm cm vm vxm ym gm
+         parse_ishl_at ctx lno dest src num
       | `SHLS (`LVPLAIN lost, `LVPLAIN dest, src, num) ->
-         parse_ishls_at lno lost dest src num fm cm vm vxm ym gm
+         parse_ishls_at ctx lno lost dest src num
       | `SHR (`LVPLAIN dest, src, num) ->
-         parse_ishr_at lno dest src num fm cm vm vxm ym gm
+         parse_ishr_at ctx lno dest src num
       | `SHRS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
-         parse_ishrs_at lno dest lost src num fm cm vm vxm ym gm
+         parse_ishrs_at ctx lno dest lost src num
       | `SAR (`LVPLAIN dest, src, num) ->
-         parse_isar_at lno dest src num fm cm vm vxm ym gm
+         parse_isar_at ctx lno dest src num
       | `SARS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
-         parse_isars_at lno dest lost src num fm cm vm vxm ym gm
+         parse_isars_at ctx lno dest lost src num
       | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
-         parse_cshl_at lno destH destL src1 src2 num fm cm vm vxm ym gm
+         parse_cshl_at ctx lno destH destL src1 src2 num
       | `CSHLS (`LVPLAIN lostL, `LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
-         parse_cshls_at lno lostL destH destL src1 src2 num fm cm vm vxm ym gm
+         parse_cshls_at ctx lno lostL destH destL src1 src2 num
       | `CSHR (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
-         parse_cshr_at lno destH destL src1 src2 num fm cm vm vxm ym gm
+         parse_cshr_at ctx lno destH destL src1 src2 num
       | `CSHRS (`LVPLAIN destH, `LVPLAIN destL, `LVPLAIN lostL, src1, src2, num) ->
-         parse_cshrs_at lno destH destL lostL src1 src2 num fm cm vm vxm ym gm
+         parse_cshrs_at ctx lno destH destL lostL src1 src2 num
       | `ROL (`LVPLAIN dest, src, num) ->
-         parse_rol_at lno dest src num fm cm vm vxm ym gm
+         parse_rol_at ctx lno dest src num
       | `ROR (`LVPLAIN dest, src, num) ->
-         parse_ror_at lno dest src num fm cm vm vxm ym gm
+         parse_ror_at ctx lno dest src num
       | `SET (`LVCARRY dest) ->
-         parse_set_at lno dest fm cm vm vxm ym gm
+         parse_set_at ctx lno dest
       | `VSET (dest) ->
-         unpack_vinstr_1 parse_set_at lno dest fm cm vm vxm ym gm
+         unpack_vinstr_1 parse_set_at ctx lno dest
       | `CLEAR (`LVCARRY dest) ->
-         parse_clear_at lno dest fm cm vm vxm ym gm
+         parse_clear_at ctx lno dest
       | `VCLEAR (dest) ->
-         unpack_vinstr_1 parse_clear_at lno dest fm cm vm vxm ym gm
+         unpack_vinstr_1 parse_clear_at ctx lno dest
       | `NONDET (`LVPLAIN dest) ->
-         parse_nondet_at lno dest fm cm vm vxm ym gm
+         parse_nondet_at ctx lno dest
       | `VNONDET (dest) ->
-         unpack_vinstr_1 parse_nondet_at lno dest fm cm vm vxm ym gm
+         unpack_vinstr_1 parse_nondet_at ctx lno dest
       | `CMOV (`LVPLAIN dest, carry, src1, src2) ->
-         parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
+         parse_cmov_at ctx lno dest carry src1 src2
       | `VCMOV (dest, carry, src1, src2) ->
-         unpack_vinstr_1c2 parse_cmov_at lno dest carry src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_1c2 parse_cmov_at ctx lno dest carry src1 src2
       | `ADD (`LVPLAIN dest, src1, src2) ->
-         parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_add_at ctx lno dest src1 src2
       | `VADD (dest, src1, src2) ->
-         unpack_vinstr_12 parse_add_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_add_at ctx lno dest src1 src2
       | `ADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_adds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_adds_at ctx lno flag dest src1 src2
       | `VADDS (flag, dest, src1, src2) ->
-         unpack_vinstr_c12 parse_adds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_c12 parse_adds_at ctx lno flag dest src1 src2
       | `ADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_adc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_adc_at ctx lno dest src1 src2 carry
       | `ADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_adcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_adcs_at ctx lno flag dest src1 src2 carry
       | `SUB (`LVPLAIN dest, src1, src2) ->
-         parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_sub_at ctx lno dest src1 src2
       | `VSUB (dest, src1, src2) ->
-         unpack_vinstr_12 parse_sub_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_sub_at ctx lno dest src1 src2
       | `SUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_subc_at ctx lno flag dest src1 src2
       | `VSUBC (flag, dest, src1, src2) ->
-         unpack_vinstr_c12 parse_subc_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_c12 parse_subc_at ctx lno flag dest src1 src2
       | `SUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_subb_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_subb_at ctx lno flag dest src1 src2
       | `VSUBB (flag, dest, src1, src2) ->
-         unpack_vinstr_c12 parse_subb_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_c12 parse_subb_at ctx lno flag dest src1 src2
       | `SBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sbc_at ctx lno dest src1 src2 carry
       | `SBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sbcs_at ctx lno flag dest src1 src2 carry
       | `SBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sbb_at ctx lno dest src1 src2 carry
       | `SBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sbbs_at ctx lno flag dest src1 src2 carry
       | `MUL (`LVPLAIN dest, src1, src2) ->
-         parse_mul_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_mul_at ctx lno dest src1 src2
       | `VMUL (dest, src1, src2) ->
-         unpack_vinstr_12 parse_mul_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_mul_at ctx lno dest src1 src2
       | `MULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_muls_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_muls_at ctx lno flag dest src1 src2
       | `MULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         parse_mull_at ctx lno destH destL src1 src2
       | `VMULL (destH, destL, src1, src2) ->
-         unpack_vmull parse_mull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_mull_at ctx lno destH destL src1 src2
       | `MULJ (`LVPLAIN dest, src1, src2) ->
-         parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_mulj_at ctx lno dest src1 src2
       | `VMULJ (dest, src1, src2) ->
-         unpack_vmulj parse_mulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vmulj parse_mulj_at ctx lno dest src1 src2
       | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_split_at lno destH destL src num fm cm vm vxm ym gm
+         parse_split_at ctx lno destH destL src num
       | `VSPLIT (destH, destL, src, num) ->
-        unpack_vinstr_21n parse_split_at lno destH destL src num fm cm vm vxm ym gm
+        unpack_vinstr_21n parse_split_at ctx lno destH destL src num
       | `SPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_spl_at lno destH destL src num fm cm vm vxm ym gm
+         parse_spl_at ctx lno destH destL src num
       | `SETEQ (`LVPLAIN dest, src1, src2) ->
-         parse_seteq_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_seteq_at ctx lno dest src1 src2
       | `VSETEQ (dest, src1, src2) ->
-         unpack_vinstr_1n2 parse_seteq_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_1n2 parse_seteq_at ctx lno dest src1 src2
       | `SETNE (`LVPLAIN dest, src1, src2) ->
-         parse_setne_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_setne_at ctx lno dest src1 src2
       | `VSETNE (dest, src1, src2) ->
-         unpack_vinstr_1n2 parse_setne_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_1n2 parse_setne_at ctx lno dest src1 src2
       | `UADD (`LVPLAIN dest, src1, src2) ->
-         parse_uadd_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_uadd_at ctx lno dest src1 src2
       | `VUADD (dest, src1, src2) ->
-         unpack_vinstr_12 parse_uadd_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_uadd_at ctx lno dest src1 src2
       | `UADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_uadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_uadds_at ctx lno flag dest src1 src2
       | `VUADDS (flag, dest, src1, src2) ->
-         unpack_vinstr_c12 parse_uadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_c12 parse_uadds_at ctx lno flag dest src1 src2
       | `UADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_uadc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_uadc_at ctx lno dest src1 src2 carry
       | `UADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_uadcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_uadcs_at ctx lno flag dest src1 src2 carry
       | `USUB (`LVPLAIN dest, src1, src2) ->
-         parse_usub_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_usub_at ctx lno dest src1 src2
       | `USUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_usubc_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_usubc_at ctx lno flag dest src1 src2
       | `USUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_usubb_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_usubb_at ctx lno flag dest src1 src2
       | `USBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_usbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_usbc_at ctx lno dest src1 src2 carry
       | `USBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_usbcs_at ctx lno flag dest src1 src2 carry
       | `USBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_usbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_usbb_at ctx lno dest src1 src2 carry
       | `USBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_usbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_usbbs_at ctx lno flag dest src1 src2 carry
       | `UMUL (`LVPLAIN dest, src1, src2) ->
-         parse_umul_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_umul_at ctx lno dest src1 src2
       | `VUMUL (dest, src1, src2) ->
-         unpack_vinstr_12 parse_umul_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_umul_at ctx lno dest src1 src2
       | `UMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_umuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_umuls_at ctx lno flag dest src1 src2
       | `UMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         parse_umull_at ctx lno destH destL src1 src2
       | `VUMULL (destH, destL, src1, src2) ->
-         unpack_vmull parse_umull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_umull_at ctx lno destH destL src1 src2
       | `UMULJ (`LVPLAIN dest, src1, src2) ->
-         parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_umulj_at ctx lno dest src1 src2
       | `VUMULJ (dest, src1, src2) ->
-         unpack_vmulj parse_umulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vmulj parse_umulj_at ctx lno dest src1 src2
       | `USPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_usplit_at lno destH destL src num fm cm vm vxm ym gm
+         parse_usplit_at ctx lno destH destL src num
       | `VUSPLIT (destH, destL, src, num) ->
-         unpack_vinstr_21n parse_usplit_at lno destH destL src num fm cm vm vxm ym gm
+         unpack_vinstr_21n parse_usplit_at ctx lno destH destL src num
       | `USPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_uspl_at lno destH destL src num fm cm vm vxm ym gm
+         parse_uspl_at ctx lno destH destL src num
       | `SADD (`LVPLAIN dest, src1, src2) ->
-         parse_sadd_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_sadd_at ctx lno dest src1 src2
       | `VSADD (dest, src1, src2) ->
-         unpack_vinstr_12 parse_sadd_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_sadd_at ctx lno dest src1 src2
       | `SADDS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_sadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_sadds_at ctx lno flag dest src1 src2
       | `VSADDS (flag, dest, src1, src2) ->
-         unpack_vinstr_c12 parse_sadds_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_c12 parse_sadds_at ctx lno flag dest src1 src2
       | `SADC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_sadc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sadc_at ctx lno dest src1 src2 carry
       | `SADCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_sadcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_sadcs_at ctx lno flag dest src1 src2 carry
       | `SSUB (`LVPLAIN dest, src1, src2) ->
-         parse_ssub_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_ssub_at ctx lno dest src1 src2
       | `SSUBC (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_ssubc_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_ssubc_at ctx lno flag dest src1 src2
       | `SSUBB (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_ssubb_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_ssubb_at ctx lno flag dest src1 src2
       | `SSBC (`LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbc_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_ssbc_at ctx lno dest src1 src2 carry
       | `SSBCS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbcs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_ssbcs_at ctx lno flag dest src1 src2 carry
       | `SSBB (`LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbb_at lno dest src1 src2 carry fm cm vm vxm ym gm
+         parse_ssbb_at ctx lno dest src1 src2 carry
       | `SSBBS (`LVCARRY flag, `LVPLAIN dest, src1, src2, carry) ->
-         parse_ssbbs_at lno flag dest src1 src2 carry fm cm vm vxm ym gm
+         parse_ssbbs_at ctx lno flag dest src1 src2 carry
       | `SMUL (`LVPLAIN dest, src1, src2) ->
-         parse_smul_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_smul_at ctx lno dest src1 src2
       | `VSMUL (dest, src1, src2) ->
-         unpack_vinstr_12 parse_smul_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_smul_at ctx lno dest src1 src2
       | `SMULS (`LVCARRY flag, `LVPLAIN dest, src1, src2) ->
-         parse_smuls_at lno flag dest src1 src2 fm cm vm vxm ym gm
+         parse_smuls_at ctx lno flag dest src1 src2
       | `SMULL (`LVPLAIN destH, `LVPLAIN destL, src1, src2) ->
-         parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         parse_smull_at ctx lno destH destL src1 src2
       | `VSMULL (destH, destL, src1, src2) ->
-         unpack_vmull parse_smull_at lno destH destL src1 src2 fm cm vm vxm ym gm
+         unpack_vmull parse_smull_at ctx lno destH destL src1 src2
       | `SMULJ (`LVPLAIN dest, src1, src2) ->
-         parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_smulj_at ctx lno dest src1 src2
       | `VSMULJ (dest, src1, src2) ->
-         unpack_vmulj parse_smulj_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vmulj parse_smulj_at ctx lno dest src1 src2
       | `SSPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_ssplit_at lno destH destL src num fm cm vm vxm ym gm
+         parse_ssplit_at ctx lno destH destL src num
       | `VSSPLIT (destH, destL, src, num) ->
-        unpack_vinstr_21n parse_ssplit_at lno destH destL src num fm cm vm vxm ym gm
+        unpack_vinstr_21n parse_ssplit_at ctx lno destH destL src num
       | `SSPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
-         parse_sspl_at lno destH destL src num fm cm vm vxm ym gm
+         parse_sspl_at ctx lno destH destL src num
       | `AND (`LVPLAIN dest, src1, src2) ->
-         parse_and_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_and_at ctx lno dest src1 src2
       | `VAND (dest, src1, src2) ->
-         unpack_vinstr_12 parse_and_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_and_at ctx lno dest src1 src2
       | `OR (`LVPLAIN dest, src1, src2) ->
-         parse_or_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_or_at ctx lno dest src1 src2
       | `VOR (dest, src1, src2) ->
-         unpack_vinstr_12 parse_or_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_or_at ctx lno dest src1 src2
       | `XOR (`LVPLAIN dest, src1, src2) ->
-         parse_xor_at lno dest src1 src2 fm cm vm vxm ym gm
+         parse_xor_at ctx lno dest src1 src2
       | `VXOR (dest, src1, src2) ->
-         unpack_vinstr_12 parse_xor_at lno dest src1 src2 fm cm vm vxm ym gm
+         unpack_vinstr_12 parse_xor_at ctx lno dest src1 src2
       | `NOT (`LVPLAIN dest, src) ->
-         parse_not_at lno dest src fm cm vm vxm ym gm
+         parse_not_at ctx lno dest src
       | `VNOT (dest, src) ->
-         unpack_vinstr_11 parse_not_at lno dest src fm cm vm vxm ym gm
+         unpack_vinstr_11 parse_not_at ctx lno dest src
       | `CAST (optlv, `LV dest, src) ->
-         parse_cast_at lno optlv dest src fm cm vm vxm ym gm
+         parse_cast_at ctx lno optlv dest src
       | `VCAST (optlv, dest, src) -> (
         match optlv with
         | Some _ -> raise_at lno "Internal error: optlv should be None in vcast."
-        | None -> parse_vcast_at lno dest src fm cm vm vxm ym gm)
+        | None -> parse_vcast_at ctx lno dest src)
       | `VPC (`LV dest, src) ->
-         parse_vpc_at lno dest src fm cm vm vxm ym gm
+         parse_vpc_at ctx lno dest src
       | `JOIN (`LVPLAIN dest, srcH, srcL) ->
-         parse_join_at lno dest srcH srcL fm cm vm vxm ym gm
+         parse_join_at ctx lno dest srcH srcL
       | `ASSERT bexp_prove_with_list ->
-         parse_assert_at lno bexp_prove_with_list fm cm vm vxm ym gm
+         parse_assert_at ctx lno bexp_prove_with_list
       | `EASSERT ebexp_prove_with_list ->
-         parse_eassert_at lno ebexp_prove_with_list fm cm vm vxm ym gm
+         parse_eassert_at ctx lno ebexp_prove_with_list
       | `RASSERT rbexp_prove_with_list ->
-         parse_rassert_at lno rbexp_prove_with_list fm cm vm vxm ym gm
+         parse_rassert_at ctx lno rbexp_prove_with_list
       | `ASSUME bexp ->
-         parse_assume_at lno bexp fm cm vm vxm ym gm
+         parse_assume_at ctx lno bexp
       | `CUT bexp_prove_with_list ->
-         parse_cut_at lno bexp_prove_with_list fm cm vm vxm ym gm
+         parse_cut_at ctx lno bexp_prove_with_list
       | `ECUT ebexp_prove_with_list ->
-         parse_ecut_at lno ebexp_prove_with_list fm cm vm vxm ym gm
+         parse_ecut_at ctx lno ebexp_prove_with_list
       | `RCUT rbexp_prove_with_list ->
-         parse_rcut_at lno rbexp_prove_with_list fm cm vm vxm ym gm
+         parse_rcut_at ctx lno rbexp_prove_with_list
       | `GHOST (gvars, bexp) ->
-         parse_ghost_at lno gvars bexp fm cm vm vxm ym gm
+         parse_ghost_at ctx lno gvars bexp
       | `CALL (id, actuals) ->
-         parse_call_at lno id actuals fm cm vm vxm ym gm
+         parse_call_at ctx lno id actuals
       | `INLINE (id, actuals) ->
-         parse_inline_at lno id actuals fm cm vm vxm ym gm
-      | `NOP -> (vm, vxm, ym, gm, [])
+         parse_inline_at ctx lno id actuals
+      | `NOP -> []
       (*| _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")*)
 
-  let parse_instrs instrs fm cm vm ym gm =
-    let reducer (vm0, vxm0, ym0, gm0, prog_rev) (lno, instr0) =
-      let (vm, vxm, ym, gm, prog) =
-        recognize_instr_at lno instr0 fm cm vm0 vxm0 ym0 gm0 in
-      (vm, vxm, ym, gm, List.rev_append prog prog_rev) in
-    let vxm = SM.empty in
-    let (vm, _vxm, ym, gm, prog_rev) = List.fold_left reducer (vm, vxm, ym, gm, []) instrs in
-    (vm, ym, gm, List.rev prog_rev)
+  let parse_instrs ctx instrs =
+    let reducer prog_rev (lno, instr0) =
+      let prog = recognize_instr_at ctx lno instr0 in
+      (List.rev_append prog prog_rev) in
+    let prog_rev = List.fold_left reducer [] instrs in
+    List.rev prog_rev
 
 %}
 
@@ -1977,9 +1891,10 @@ spec:
      * fm: a map from a name to a function
      * cm: a map from a name to a constant
      *)
-    let (fm, _cm) = $1 SM.empty SM.empty in
+    let ctx = empty_parsing_context() in
+    let _ = $1 ctx in
     try
-      let m = SM.find main fm in
+      let m = SM.find main ctx.cfuns in
       (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost })
     with Not_found ->
       raise (ParseError "A main function is required.")
@@ -1989,68 +1904,69 @@ spec:
 procs:
   proc procs
   {
-    fun fm cm ->
-      let (fm, cm) = $1 fm cm in
-      let (fm, cm) = $2 fm cm in
-      (fm, cm)
+    fun ctx ->
+      let _ = $1 ctx in
+      let _ = $2 ctx in
+      ()
   }
-  | { fun fm cm -> (fm, cm) }
+  | { fun _ -> () }
 ;
 
 proc:
   PROC ID LPAR formals RPAR EQOP pre program post
   {
     let lno = !lnum in
-    fun fm cm ->
+    fun ctx ->
       let fname = $2 in
-      if SM.mem fname fm then raise_at lno ("The procedure " ^ fname ^ " is redefined.")
+      if SM.mem fname ctx.cfuns then raise_at lno ("The procedure " ^ fname ^ " is redefined.")
       else
-        (* A map of defined variables *)
+        (* reset maps *)
         let (args, outs) = $4 lno in
-        let vm = vm_of_list args in
-        (* A map of carry variables *)
-        let ym = SM.empty in
-        (* A map of ghost variables *)
-        let gm = SM.empty in
+        let _ = ctx.cvars <- vm_of_list args in
+        let _ = ctx.cvecs <- SM.empty in
+        let _ = ctx.ccarries <- SM.empty in
+        let _ = ctx.cghosts <- SM.empty in
         let f =
-          match $7 cm vm ym gm with
+          match $7 ctx with
           | None -> btrue
           | Some e -> e in
-        let (vm, ym, gm, p) = parse_instrs $8 fm cm vm ym gm in
+        let p = parse_instrs ctx $8 in
         let g =
-          match $9 cm vm ym gm with
+          match $9 ctx with
           | None -> ([], [])
           | Some e -> e in
-        (SM.add fname { fname = fname;
-                        fargs = args;
-                        fouts = outs;
-                        fvm = vm;
-                        fym = ym;
-                        fgm = gm;
-                        fbody = p;
-                        fpre = f;
-                        fpost = g } fm, cm)
+        let _ = ctx.cfuns <- SM.add fname { fname = fname;
+                                            fargs = args;
+                                            fouts = outs;
+                                            fvm = ctx.cvars;
+                                            fym = ctx.ccarries;
+                                            fgm = ctx.cghosts;
+                                            fbody = p;
+                                            fpre = f;
+                                            fpost = g } ctx.cfuns in
+        ()
   }
   | CONST ID EQOP const
   {
     let lno = !lnum in
-    fun fm cm ->
+    fun ctx ->
       let v = $2 in
-      let n = $4 cm in
-      if SM.mem v cm
+      let n = $4 ctx in
+      if SM.mem v ctx.cconsts
       then raise_at lno ("Redefined constant: " ^ v)
-      else (fm, SM.add v n cm)
+      else let _ = ctx.cconsts <- SM.add v n ctx.cconsts in
+           ()
   }
 ;
 
 pre:
-    LBRAC bexp RBRAC                              { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
-  |                                               { fun _cm _vm _ym _gm -> None }
+    LBRAC bexp RBRAC                              { fun ctx -> Some ($2 ctx) }
+  |                                               { fun _ctx -> None }
 ;
 
 post:
-    LBRAC bexp_prove_with_list RBRAC              { fun cm vm ym gm -> Some ($2 cm vm ym gm) }
-  |                                               { fun _cm _vm _ym _gm -> None }
+    LBRAC bexp_prove_with_list RBRAC              { fun ctx -> Some ($2 ctx) }
+  |                                               { fun _ctx -> None }
 ;
 
 formals:
@@ -2096,19 +2012,10 @@ fvar:
 ;
 
 prog:
-  program EOF
-  {
-    let fm = SM.empty in
-    let cm = SM.empty in
-    (* A map of defined variables *)
-    let vm = SM.empty in
-    (* A map of carry variables *)
-    let ym = SM.empty in
-    (* A map of ghost variables *)
-    let gm = SM.empty in
-    let (_vm, _ym, _gm, p) = parse_instrs $1 fm cm vm ym gm in
-    p
-  }
+program EOF
+    {
+      parse_instrs (empty_parsing_context ()) $1
+    }
 ;
 
 program:
@@ -2388,47 +2295,47 @@ instr:
 ;
 
 ebexp_prove_with_list:
-  ebexp_prove_with                                { fun cm vm ym gm -> [($1 cm vm ym gm)] }
-| ebexp_prove_with COMMA ebexp_prove_with_list    { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
+  ebexp_prove_with                                { fun ctx -> [($1 ctx)] }
+| ebexp_prove_with COMMA ebexp_prove_with_list    { fun ctx -> ($1 ctx)::($3 ctx) }
 ;
 
 rbexp_prove_with_list:
-  rbexp_prove_with                                { fun cm vm ym gm -> [($1 cm vm ym gm)] }
-| rbexp_prove_with COMMA rbexp_prove_with_list    { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
+  rbexp_prove_with                                { fun ctx -> [($1 ctx)] }
+| rbexp_prove_with COMMA rbexp_prove_with_list    { fun ctx -> ($1 ctx)::($3 ctx) }
 ;
 
 bexp_prove_with_list:
-  TRUE                                            { fun _cm _vm _ym _gm -> ([(etrue, [])], [(rtrue, [])]) }
+  TRUE                                            { fun _ctx -> ([(etrue, [])], [(rtrue, [])]) }
 | ebexp_prove_with_list VBAR rbexp_prove_with_list
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $3 cm vm ym gm) }
+                                                  { fun ctx -> ($1 ctx, $3 ctx) }
 ;
 
 ebexp_prove_with:
-  ebexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
+  ebexp                                           { fun ctx -> ($1 ctx, []) }
 | ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
+                                                  { fun ctx -> ($1 ctx, $5 ctx) }
 | ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | ebexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | ebexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
 ;
 
 rbexp_prove_with:
-  rbexp                                           { fun cm vm ym gm -> ($1 cm vm ym gm, []) }
+  rbexp                                           { fun ctx -> ($1 ctx, []) }
 | rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
-                                                  { fun cm vm ym gm -> ($1 cm vm ym gm, $5 cm) }
+                                                  { fun ctx -> ($1 ctx, $5 ctx) }
 | rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
 | rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
 | rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
 ;
 
 prove_with_specs:
-    prove_with_spec                               { fun cm -> [$1 cm] }
-  | prove_with_spec COMMA prove_with_specs        { fun cm -> ($1 cm)::($3 cm) }
+    prove_with_spec                               { fun ctx -> [$1 ctx] }
+  | prove_with_spec COMMA prove_with_specs        { fun ctx -> ($1 ctx)::($3 ctx) }
 ;
 
 prove_with_spec:
     PRECONDITION                                  { fun _ -> Precondition }
-  | CUTS LSQUARE complex_const_list RSQUARE       { fun cm -> Cuts ($3 cm) }
+  | CUTS LSQUARE complex_const_list RSQUARE       { fun ctx -> Cuts ($3 ctx) }
   | ALL CUTS                                      { fun _ -> AllCuts }
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
@@ -2444,67 +2351,67 @@ path:
 ;
 
 bexp:
-    TRUE                                          { fun _cm _vm _ym _gm -> btrue }
-  | ebexp VBAR rbexp                              { fun cm vm ym gm -> ($1 cm vm ym gm, $3 cm vm ym gm) }
+    TRUE                                          { fun _ -> btrue }
+  | ebexp VBAR rbexp                              { fun ctx -> ($1 ctx, $3 ctx) }
   | ebexp VBAR error                              { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      raise_at lno ("Invalid range predicate after '" ^ string_of_ebexp ($1 cm vm ym gm) ^ "'.")
+                                                    fun ctx ->
+                                                      raise_at lno ("Invalid range predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
                                                   }
   | ebexp error                                   { raise_at !lnum ("Please use '&&' to separate algebraic predicates and range predicates.") }
 ;
 
 ebexp:
-  ebexp_atom LANDOP ebexp                       { fun cm vm ym gm -> Eand($1 cm vm ym gm, $3 cm vm ym gm) }
-  | ebexp_atom                                  { fun cm vm ym gm -> $1 cm vm ym gm }
+  ebexp_atom LANDOP ebexp                       { fun ctx -> Eand ($1 ctx, $3 ctx) }
+  | ebexp_atom                                  { fun ctx -> $1 ctx }
 ;
 
 ebexp_atom:
-    TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
-  | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
+    TRUE                                          { fun _ -> Etrue }
+  | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
-                                                  { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $5 cm vm ym gm) }
-  | AND ebexp_atom_without_eqmod ebexp_atom       { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
-  | eexp EQOP eexp eq_suffix                      { fun cm vm ym gm ->
-                                                      match $4 cm vm ym gm with
-                                                      | None -> Eeq ($1 cm vm ym gm, $3 cm vm ym gm)
-                                                      | Some ms -> Eeqmod ($1 cm vm ym gm, $3 cm vm ym gm, ms)
+                                                  { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
+  | AND ebexp_atom_without_eqmod ebexp_atom       { fun ctx -> Eand ($2 ctx, $3 ctx) }
+  | LPAR ebexp RPAR                               { fun ctx -> $2 ctx }
+  | eexp EQOP eexp eq_suffix                      { fun ctx ->
+                                                      match $4 ctx with
+                                                      | None -> Eeq ($1 ctx, $3 ctx)
+                                                      | Some ms -> Eeqmod ($1 ctx, $3 ctx, ms)
                                                   }
-  | AND LSQUARE ebexps RSQUARE                    { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
-  | LANDOP LSQUARE ebexps RSQUARE                 { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
+  | AND LSQUARE ebexps RSQUARE                    { fun ctx -> eands ($3 ctx) }
+  | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
 /*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
 ;
 
 ebexp_atom_without_eqmod:
-    TRUE                                          { fun _cm _vm _ym _gm -> Etrue }
-  | EQ eexp eexp_no_unary                         { fun cm vm ym gm -> Eeq ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, [ $4 cm vm ym gm ]) }
+    TRUE                                          { fun _ -> Etrue }
+  | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
+  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
-                                                  { fun cm vm ym gm -> Eeqmod ($2 cm vm ym gm, $3 cm vm ym gm, $5 cm vm ym gm) }
+                                                  { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
   | AND ebexp_atom_without_eqmod ebexp_atom_without_eqmod
-                                                  { fun cm vm ym gm -> Eand ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | LPAR ebexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
-  | eexp EQOP eexp                                { fun cm vm ym gm -> Eeq ($1 cm vm ym gm, $3 cm vm ym gm) }
-  | AND LSQUARE ebexps RSQUARE                    { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
-  | LANDOP LSQUARE ebexps RSQUARE                 { fun cm vm ym gm -> eands ($3 cm vm ym gm) }
+                                                  { fun ctx -> Eand ($2 ctx, $3 ctx) }
+  | LPAR ebexp RPAR                               { fun ctx -> $2 ctx }
+  | eexp EQOP eexp                                { fun ctx -> Eeq ($1 ctx, $3 ctx) }
+  | AND LSQUARE ebexps RSQUARE                    { fun ctx -> eands ($3 ctx) }
+  | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
 /*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
 ;
 
 eq_suffix:
-                                                  { fun _cm _vm _ym _gm -> None }
-  | LPAR MOD eexp RPAR                            { fun cm vm ym gm -> Some [ $3 cm vm ym gm ] }
-  | LPAR MOD LSQUARE eexps RSQUARE RPAR           { fun cm vm ym gm -> Some ($4 cm vm ym gm) }
+                                                  { fun _ -> None }
+  | LPAR MOD eexp RPAR                            { fun ctx -> Some [ $3 ctx ] }
+  | LPAR MOD LSQUARE eexps RSQUARE RPAR           { fun ctx -> Some ($4 ctx) }
 ;
 
 ebexps:
-    ebexp COMMA ebexps                            { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
-  | ebexp                                         { fun cm vm ym gm -> [$1 cm vm ym gm] }
+    ebexp COMMA ebexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
+  | ebexp                                         { fun ctx -> [$1 ctx] }
   | ebexp error                                   { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      raise_at lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 cm vm ym gm) ^ "'.")
+                                                    fun ctx ->
+                                                      raise_at lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
                                                   }
 ;
 
@@ -2520,24 +2427,24 @@ cmpop_infix:
 ;
 
 eexp:
-    defined_var                                   { fun cm vm ym gm -> Evar (resolve_var_with !lnum $1 cm vm ym gm) }
-  | simple_const                                  { fun cm _vm _ym _gm -> Econst ($1 cm) }
-  | LPAR eexp RPAR                                { fun cm vm ym gm -> $2 cm vm ym gm }
+    defined_var                                   { fun ctx -> Evar (resolve_var_with ctx !lnum $1) }
+  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
-  | NEG eexp                                      { fun cm vm ym gm -> eneg ($2 cm vm ym gm) }
-  | ADD eexp eexp_no_unary                        { fun cm vm ym gm -> eadd ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | SUB eexp eexp_no_unary                        { fun cm vm ym gm -> esub ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | MUL eexp eexp_no_unary                        { fun cm vm ym gm -> emul ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | SQ eexp                                       { fun cm vm ym gm -> esq ($2 cm vm ym gm) }
-  | ADD LSQUARE eexps RSQUARE                     { fun cm vm ym gm -> eadds ($3 cm vm ym gm) }
-  | MUL LSQUARE eexps RSQUARE                     { fun cm vm ym gm -> emuls ($3 cm vm ym gm) }
-  | SUBOP eexp %prec UMINUS                       { fun cm vm ym gm -> eneg ($2 cm vm ym gm) }
-  | eexp ADDOP eexp                               { fun cm vm ym gm -> eadd ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp SUBOP eexp                               { fun cm vm ym gm -> esub ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp MULOP eexp                               { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp POWOP const                              { fun cm vm ym gm ->
-                                                      let e = $1 cm vm ym gm in
-                                                      let i = $3 cm in
+  | NEG eexp                                      { fun ctx -> eneg ($2 ctx) }
+  | ADD eexp eexp_no_unary                        { fun ctx -> eadd ($2 ctx) ($3 ctx) }
+  | SUB eexp eexp_no_unary                        { fun ctx -> esub ($2 ctx) ($3 ctx) }
+  | MUL eexp eexp_no_unary                        { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | SQ eexp                                       { fun ctx -> esq ($2 ctx) }
+  | ADD LSQUARE eexps RSQUARE                     { fun ctx -> eadds ($3 ctx) }
+  | MUL LSQUARE eexps RSQUARE                     { fun ctx -> emuls ($3 ctx) }
+  | SUBOP eexp %prec UMINUS                       { fun ctx -> eneg ($2 ctx) }
+  | eexp ADDOP eexp                               { fun ctx -> eadd ($1 ctx) ($3 ctx) }
+  | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
+  | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
+  | eexp POWOP const                              { fun ctx ->
+                                                      let e = $1 ctx in
+                                                      let i = $3 ctx in
                                                       (* there are examples that have extremely large exponents *)
                                                       (*
                                                       match e with
@@ -2550,32 +2457,32 @@ eexp:
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
                                                   }
-  | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
+  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
 ;
 
 eexp_no_unarys:
-    eexp_no_unary COMMA eexp_no_unarys            { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
-  | eexp_no_unary                                 { fun cm vm ym gm -> [ $1 cm vm ym gm ] }
+    eexp_no_unary COMMA eexp_no_unarys            { fun ctx -> ($1 ctx)::($3 ctx) }
+  | eexp_no_unary                                 { fun ctx -> [ $1 ctx ] }
 ;
 
 eexp_no_unary:
-    defined_var                                   { fun cm vm ym gm -> Evar (resolve_var_with !lnum $1 cm vm ym gm) }
-  | simple_const                                  { fun cm _vm _ym _gm -> Econst ($1 cm) }
-  | LPAR eexp RPAR                                { fun cm vm ym gm -> $2 cm vm ym gm }
+    defined_var                                   { fun ctx -> Evar (resolve_var_with ctx !lnum $1) }
+  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
-  | NEG eexp                                      { fun cm vm ym gm -> eneg ($2 cm vm ym gm) }
-  | ADD eexp eexp_no_unary                        { fun cm vm ym gm -> eadd ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | SUB eexp eexp_no_unary                        { fun cm vm ym gm -> esub ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | MUL eexp eexp_no_unary                        { fun cm vm ym gm -> emul ($2 cm vm ym gm) ($3 cm vm ym gm) }
-  | SQ eexp                                       { fun cm vm ym gm -> esq ($2 cm vm ym gm) }
-  | ADD LSQUARE eexps RSQUARE                     { fun cm vm ym gm -> eadds ($3 cm vm ym gm) }
-  | MUL LSQUARE eexps RSQUARE                     { fun cm vm ym gm -> emuls ($3 cm vm ym gm) }
-  | eexp_no_unary ADDOP eexp                      { fun cm vm ym gm -> eadd ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp_no_unary SUBOP eexp                      { fun cm vm ym gm -> esub ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp_no_unary MULOP eexp                      { fun cm vm ym gm -> emul ($1 cm vm ym gm) ($3 cm vm ym gm) }
-  | eexp_no_unary POWOP const                     { fun cm vm ym gm ->
-                                                      let e = $1 cm vm ym gm in
-                                                      let i = $3 cm in
+  | NEG eexp                                      { fun ctx -> eneg ($2 ctx) }
+  | ADD eexp eexp_no_unary                        { fun ctx -> eadd ($2 ctx) ($3 ctx) }
+  | SUB eexp eexp_no_unary                        { fun ctx -> esub ($2 ctx) ($3 ctx) }
+  | MUL eexp eexp_no_unary                        { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | SQ eexp                                       { fun ctx -> esq ($2 ctx) }
+  | ADD LSQUARE eexps RSQUARE                     { fun ctx -> eadds ($3 ctx) }
+  | MUL LSQUARE eexps RSQUARE                     { fun ctx -> emuls ($3 ctx) }
+  | eexp_no_unary ADDOP eexp                      { fun ctx -> eadd ($1 ctx) ($3 ctx) }
+  | eexp_no_unary SUBOP eexp                      { fun ctx -> esub ($1 ctx) ($3 ctx) }
+  | eexp_no_unary MULOP eexp                      { fun ctx -> emul ($1 ctx) ($3 ctx) }
+  | eexp_no_unary POWOP const                     { fun ctx ->
+                                                      let e = $1 ctx in
+                                                      let i = $3 ctx in
                                                       (* there are examples that have extremely large exponents *)
                                                       (*
                                                       match e with
@@ -2588,31 +2495,31 @@ eexp_no_unary:
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
                                                   }
-  | ULIMBS const LSQUARE eexps RSQUARE            { fun cm vm ym gm -> limbs (Z.to_int ($2 cm)) ($4 cm vm ym gm) }
+  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
 ;
 
 eexps:
-    eexp COMMA eexps                              { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
-  | eexp                                          { fun cm vm ym gm -> [$1 cm vm ym gm] }
-  | VARS var_expansion                            { fun cm vm ym gm -> List.map (fun v -> Evar v) ($2 cm vm ym gm) }
+    eexp COMMA eexps                              { fun ctx -> ($1 ctx)::($3 ctx) }
+  | eexp                                          { fun ctx -> [$1 ctx] }
+  | VARS var_expansion                            { fun ctx -> List.map (fun v -> Evar v) ($2 ctx) }
 ;
 
 rbexp:
-    rbexp_and LOROP rbexp                         { fun cm vm ym gm -> Ror ($1 cm vm ym gm, $3 cm vm ym gm) }
-  | rbexp_and                                     { fun cm vm ym gm -> $1 cm vm ym gm }
+    rbexp_and LOROP rbexp                         { fun ctx -> Ror ($1 ctx, $3 ctx) }
+  | rbexp_and                                     { fun ctx -> $1 ctx }
 ;
 
 rbexp_and:
-    rbexp_atom LANDOP rbexp_and                   { fun cm vm ym gm -> Rand ($1 cm vm ym gm, $3 cm vm ym gm) }
-  | rbexp_atom                                    { fun cm vm ym gm -> $1 cm vm ym gm }
+    rbexp_atom LANDOP rbexp_and                   { fun ctx -> Rand ($1 ctx, $3 ctx) }
+  | rbexp_atom                                    { fun ctx -> $1 ctx }
 ;
 
 rbexp_atom:
-    TRUE                                          { fun _cm _vm _ym _gm -> Rtrue }
+    TRUE                                          { fun _ -> Rtrue }
   | EQ rexp rexp                                  { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2620,24 +2527,24 @@ rbexp_atom:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
-  | NEG rbexp_atom                                { fun cm vm ym gm -> Rneg ($2 cm vm ym gm) }
-  | NEGOP rbexp_atom                              { fun cm vm ym gm -> Rneg ($2 cm vm ym gm) }
+  | NEG rbexp_atom                                { fun ctx -> Rneg ($2 ctx) }
+  | NEGOP rbexp_atom                              { fun ctx -> Rneg ($2 ctx) }
   | AND rbexp_atom_without_eqmod rbexp_atom
-                                                  { fun cm vm ym gm -> Rand ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | OR rbexp_atom_without_eqmod rbexp_atom        { fun cm vm ym gm -> Ror ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | LPAR rbexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
+                                                  { fun ctx -> Rand ($2 ctx, $3 ctx) }
+  | OR rbexp_atom_without_eqmod rbexp_atom        { fun ctx -> Ror ($2 ctx, $3 ctx) }
+  | LPAR rbexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | rexp EQOP rexp req_suffix                     { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
-                                                        match $4 cm vm ym gm with
+                                                        match $4 ctx with
                                                         | None -> Req (w1, e1, e2)
                                                         | Some (f, m) ->
                                                           let wm = size_of_rexp m in
@@ -2650,9 +2557,9 @@ rbexp_atom:
                                                          end
                                                   }
   | rexp cmpop_infix rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let op = $2 in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
@@ -2662,9 +2569,9 @@ rbexp_atom:
                                                       else Rcmp(w1, op, e1, e2)
                                                   }
   | cmpop_prefix rexp rexp                        { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2672,15 +2579,15 @@ rbexp_atom:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2)
                                                   }
-  | AND LSQUARE rbexps RSQUARE                    { fun cm vm ym gm -> rands ($3 cm vm ym gm) }
-  | LANDOP LSQUARE rbexps RSQUARE                 { fun cm vm ym gm -> rands ($3 cm vm ym gm) }
-  | OR LSQUARE rbexps RSQUARE                     { fun cm vm ym gm -> rors ($3 cm vm ym gm) }
-  | LOROP LSQUARE rbexps RSQUARE                  { fun cm vm ym gm -> rors ($3 cm vm ym gm) }
+  | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
+  | LANDOP LSQUARE rbexps RSQUARE                 { fun ctx -> rands ($3 ctx) }
+  | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
+  | LOROP LSQUARE rbexps RSQUARE                  { fun ctx -> rors ($3 ctx) }
   | EQMOD rexp rexp rexp                          { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2694,10 +2601,10 @@ rbexp_atom:
                                                         reqmod w1 e1 e2 m
                                                   }
   | EQUMOD rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2711,10 +2618,10 @@ rbexp_atom:
                                                         reqmod w1 e1 e2 m
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2728,10 +2635,10 @@ rbexp_atom:
                                                         reqsmod w1 e1 e2 m
                                                   }
   | EQSREM rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2747,11 +2654,11 @@ rbexp_atom:
 ;
 
 rbexp_atom_without_eqmod:
-    TRUE                                          { fun _cm _vm _ym _gm -> Rtrue }
+    TRUE                                          { fun _ -> Rtrue }
   | EQ rexp rexp                                  { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2759,17 +2666,17 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
-  | NEG rbexp_atom_without_eqmod                  { fun cm vm ym gm -> Rneg ($2 cm vm ym gm) }
+  | NEG rbexp_atom_without_eqmod                  { fun ctx -> Rneg ($2 ctx) }
   | AND rbexp_atom_without_eqmod rbexp_atom_without_eqmod
-                                                  { fun cm vm ym gm -> Rand ($2 cm vm ym gm, $3 cm vm ym gm) }
+                                                  { fun ctx -> Rand ($2 ctx, $3 ctx) }
   | OR rbexp_atom_without_eqmod rbexp_atom_without_eqmod
-                                                  { fun cm vm ym gm -> Ror ($2 cm vm ym gm, $3 cm vm ym gm) }
-  | LPAR rbexp RPAR                               { fun cm vm ym gm -> $2 cm vm ym gm }
+                                                  { fun ctx -> Ror ($2 ctx, $3 ctx) }
+  | LPAR rbexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | rexp EQOP rexp                                { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2778,9 +2685,9 @@ rbexp_atom_without_eqmod:
                                                       else Req (w1, e1, e2)
                                                   }
   | rexp cmpop_infix rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let op = $2 in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
@@ -2789,22 +2696,22 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp(w1, op, e1, e2) }
   | cmpop_prefix rexp rexp                        { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2) }
-  | AND LSQUARE rbexps RSQUARE                    { fun cm vm ym gm -> rands ($3 cm vm ym gm) }
-  | OR LSQUARE rbexps RSQUARE                     { fun cm vm ym gm -> rors ($3 cm vm ym gm) }
+  | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
+  | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
   | EQMOD rexp rexp rexp                          { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2818,10 +2725,10 @@ rbexp_atom_without_eqmod:
                                                         reqmod w1 e1 e2 m
                                                   }
   | EQUMOD rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2835,10 +2742,10 @@ rbexp_atom_without_eqmod:
                                                         reqmod w1 e1 e2 m
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2852,10 +2759,10 @@ rbexp_atom_without_eqmod:
                                                         reqsmod w1 e1 e2 m
                                                   }
   | EQSREM rexp rexp rexp                         { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
-                                                      let m = $4 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let m = $4 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
@@ -2871,11 +2778,11 @@ rbexp_atom_without_eqmod:
 ;
 
 req_suffix:
-                                                  { fun _cm _vm _ym _gm -> None }
-  | LPAR MOD rexp RPAR                            { fun cm vm ym gm -> Some (reqmod, $3 cm vm ym gm) }
-  | LPAR UMOD rexp RPAR                           { fun cm vm ym gm -> Some (reqmod, $3 cm vm ym gm) }
-  | LPAR SMOD rexp RPAR                           { fun cm vm ym gm -> Some (reqsmod, $3 cm vm ym gm) }
-  | LPAR SREM rexp RPAR                           { fun cm vm ym gm -> Some (reqsrem, $3 cm vm ym gm) }
+                                                  { fun _ -> None }
+  | LPAR MOD rexp RPAR                            { fun ctx -> Some (reqmod, $3 ctx) }
+  | LPAR UMOD rexp RPAR                           { fun ctx -> Some (reqmod, $3 ctx) }
+  | LPAR SMOD rexp RPAR                           { fun ctx -> Some (reqsmod, $3 ctx) }
+  | LPAR SREM rexp RPAR                           { fun ctx -> Some (reqsrem, $3 ctx) }
 ;
 
 cmpop_prefix:
@@ -2890,54 +2797,54 @@ cmpop_prefix:
 ;
 
 rbexps:
-    rbexp COMMA rbexps                            { fun cm vm ym gm -> ($1 cm vm ym gm)::($3 cm vm ym gm) }
-  | rbexp                                         { fun cm vm ym gm -> [$1 cm vm ym gm] }
+    rbexp COMMA rbexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
+  | rbexp                                         { fun ctx -> [$1 ctx] }
   | rbexp COMMA error                             { raise_at !lnum ("Invalid range predicates.") }
   | rbexp error                                   { raise_at !lnum ("A ',' is used to separate range predicates") }
 ;
 
 rexp:
-    defined_var                                   { fun cm vm ym gm -> Rvar (resolve_var_with !lnum $1 cm vm ym gm) }
-  | CONST const const                             { fun cm _vm _ym _gm ->
-                                                      let w = Z.to_int ($2 cm) in
-                                                      let n = $3 cm in
+    defined_var                                   { fun ctx -> Rvar (resolve_var_with ctx !lnum $1) }
+  | CONST const const                             { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let n = $3 ctx in
                                                       Rconst (w, n) }
-  | const AT const                                { fun cm _vm _ym _gm ->
-                                                      let w = Z.to_int ($3 cm) in
-                                                      let n = $1 cm in
+  | const AT const                                { fun ctx ->
+                                                      let w = Z.to_int ($3 ctx) in
+                                                      let n = $1 ctx in
                                                       Rconst (w, n) }
-  | UEXT rexp const                               { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+  | UEXT rexp const                               { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
                                                       Ruext (w, e, i) }
-  | SEXT rexp const                               { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
-                                                      let i = Z.to_int ($3 cm) in
+  | SEXT rexp const                               { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
                                                       Rsext (w, e, i) }
-  | LPAR rexp RPAR                                { fun cm vm ym gm -> $2 cm vm ym gm }
+  | LPAR rexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
-  | NEG rexp                                      { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
+  | NEG rexp                                      { fun ctx ->
+                                                      let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnegb, e) }
-  | NEGOP rexp                                    { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
+  | NEGOP rexp                                    { fun ctx ->
+                                                      let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnegb, e) }
-  | NOT rexp                                      { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
+  | NOT rexp                                      { fun ctx ->
+                                                      let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnotb, e) }
-  | NOTOP rexp                                    { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
+  | NOTOP rexp                                    { fun ctx ->
+                                                      let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnotb, e) }
   | ADD rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2946,9 +2853,9 @@ rexp:
                                                       else
                                                        radd w1 e1 e2 }
   | SUB rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2957,9 +2864,9 @@ rexp:
                                                       else
                                                        rsub w1 e1 e2 }
   | MUL rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2967,13 +2874,13 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rmul w1 e1 e2 }
-  | SQ rexp                                       { fun cm vm ym gm ->
-                                                      let e = $2 cm vm ym gm in
+  | SQ rexp                                       { fun ctx ->
+                                                      let e = $2 ctx in
                                                       rsq (size_of_rexp e) e }
   | UMOD rexp rexp                                { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2982,9 +2889,9 @@ rexp:
                                                       else
                                                        rumod w1 e1 e2 }
   | SREM rexp rexp                                { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -2993,9 +2900,9 @@ rexp:
                                                       else
                                                        rsrem w1 e1 e2 }
   | SMOD rexp rexp                                { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3004,9 +2911,9 @@ rexp:
                                                       else
                                                        rsmod w1 e1 e2 }
   | AND rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3015,9 +2922,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Randb, e1, e2) }
   | OR rexp rexp                                  { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3026,9 +2933,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rorb, e1, e2) }
   | XOR rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3038,9 +2945,9 @@ rexp:
                                                         Rbinop (w1, Rxorb, e1, e2) }
 
   | SHL rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3049,9 +2956,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rshl, e1, e2) }
   | SHR rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3060,9 +2967,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
   | SAR rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3071,9 +2978,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
   | ROL rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3082,9 +2989,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rrol, e1, e2) }
   | ROR rexp rexp                                 { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3092,27 +2999,27 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rror, e1, e2) }
-  | CONCAT rexp rexp                              { fun cm vm ym gm ->
-                                                      let e1 = $2 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+  | CONCAT rexp rexp                              { fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       Rconcat (w1, w2, e1, e2) }
   | ADD LSQUARE rexps RSQUARE                     { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let es = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let es = $3 ctx in
                                                       match es with
                                                       | [] -> raise_at lno ("No range expression is passed to add.")
                                                       | hd::_tl -> radds (size_of_rexp hd) es }
   | MUL LSQUARE rexps RSQUARE                     { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let es = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let es = $3 ctx in
                                                       match es with
                                                       | [] -> raise_at lno ("No range expression is passed to mul.")
                                                       | hd::_tl -> rmuls (size_of_rexp hd) es }
-  | ULIMBS const LSQUARE rexps RSQUARE            { fun cm vm ym gm ->
-                                                      let w = Z.to_int ($2 cm) in
-                                                      let es = $4 cm vm ym gm in
+  | ULIMBS const LSQUARE rexps RSQUARE            { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let es = $4 ctx in
                                                       let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
                                                                               (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
@@ -3126,9 +3033,9 @@ rexp:
                                                         | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
-  | SLIMBS const LSQUARE rexps RSQUARE            { fun cm vm ym gm ->
-                                                      let w = Z.to_int ($2 cm) in
-                                                      let es = $4 cm vm ym gm in
+  | SLIMBS const LSQUARE rexps RSQUARE            { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let es = $4 ctx in
                                                       let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
                                                                               (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
@@ -3145,9 +3052,9 @@ rexp:
                                                       let res = helper 0 es in
                                                       res }
   | rexp ADDOP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3156,9 +3063,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Radd, e1, e2) }
   | rexp SUBOP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3167,9 +3074,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rsub, e1, e2) }
   | rexp MULOP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3178,9 +3085,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rmul, e1, e2) }
   | rexp ANDOP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3189,9 +3096,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Randb, e1, e2) }
   | rexp OROP rexp                                { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3200,9 +3107,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rorb, e1, e2) }
   | rexp XOROP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3211,9 +3118,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
   | rexp SHLOP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3222,9 +3129,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rshl, e1, e2) }
   | rexp SHROP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3233,9 +3140,9 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
   | rexp SAROP rexp                               { let lno = !lnum in
-                                                    fun cm vm ym gm ->
-                                                      let e1 = $1 cm vm ym gm in
-                                                      let e2 = $3 cm vm ym gm in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
@@ -3252,9 +3159,9 @@ rexps:
     rexp COMMA rexps
   {
     let lno = !lnum in
-    fun cm vm ym gm ->
-      let e = $1 cm vm ym gm in
-      let es = $3 cm vm ym gm in
+    fun ctx ->
+      let e = $1 ctx in
+      let es = $3 ctx in
       if List.length es > 0 && size_of_rexp e != size_of_rexp (List.hd es) then
         raise_at lno ("Widths of range expressions mismatch: "
                       ^ string_of_rexp e ^ " (width " ^ string_of_int (size_of_rexp e) ^ ")"
@@ -3263,8 +3170,8 @@ rexps:
       else
         e::es
   }
-  | rexp                                          { fun cm vm ym gm -> [$1 cm vm ym gm] }
-  | VARS var_expansion                            { fun cm vm ym gm -> List.map (fun v -> Rvar v) ($2 cm vm ym gm) }
+  | rexp                                          { fun ctx -> [$1 ctx] }
+  | VARS var_expansion                            { fun ctx -> List.map (fun v -> Rvar v) ($2 ctx) }
 ;
 
 lval:
@@ -3308,45 +3215,45 @@ lhs:
 ;
 
 actuals:
-    actual_atoms                                  { fun tys cm vm ym gm -> $1 tys cm vm ym gm }
-  |                                               { fun _tys _cm _vm _ym _gm -> [] }
+    actual_atoms                                  { fun ctx tys -> $1 ctx tys }
+  |                                               { fun _ _ -> [] }
 ;
 
 actual_atoms:
-    actual_atom                                   { fun tys cm vm ym gm ->
-                                                      let (_tys, vs) = $1 tys cm vm ym gm in
+    actual_atom                                   { fun ctx tys ->
+                                                      let (_tys, vs) = $1 ctx tys in
                                                       vs
                                                   }
-  | actual_atom COMMA actual_atoms                { fun tys cm vm ym gm ->
-                                                      let (tys, vs) = $1 tys cm vm ym gm in
-                                                      vs@($3 tys cm vm ym gm)
+  | actual_atom COMMA actual_atoms                { fun ctx tys ->
+                                                      let (tys, vs) = $1 ctx tys in
+                                                      vs@($3 ctx tys)
                                                   }
 ;
 
 /* We don't check if the actual variables are defined or not because they may just be variable names of procedure outputs. */
 actual_atom:
     const                                         { let lno = !lnum in
-                                                    fun tys cm vm ym gm ->
+                                                    fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
-                                                         ((argtys, outtys), [parse_typed_const lno ty $1 cm vm ym gm])
+                                                         ((argtys, outtys), [parse_typed_const ctx lno ty $1])
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
                                                       | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
   | const AT typ                                  { let lno = !lnum in
-                                                    fun tys cm vm ym gm ->
+                                                    fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
-                                                         if ty = $3 then ((argtys, outtys), [parse_typed_const lno $3 $1 cm vm ym gm])
+                                                         if ty = $3 then ((argtys, outtys), [parse_typed_const ctx lno $3 $1])
                                                          else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
                                                       | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
   | typ const                                     { let lno = !lnum in
-                                                    fun tys cm vm ym gm ->
+                                                    fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
-                                                         if ty = $1 then ((argtys, outtys), [parse_typed_const lno $1 $2 cm vm ym gm])
+                                                         if ty = $1 then ((argtys, outtys), [parse_typed_const ctx lno $1 $2])
                                                          else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
@@ -3354,11 +3261,11 @@ actual_atom:
   | ID                                            { let lno = !lnum in
                                                     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
                                                     else
-                                                      fun tys _cm vm _ym _gm ->
+                                                      fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          (try
-                                                            let v = SM.find $1 vm in
+                                                            let v = SM.find $1 ctx.cvars in
                                                             if v.vtyp = ty then ((argtys, outtys), [Avar v])
                                                             else raise_at lno ("The variable type of "
                                                                                ^ $1
@@ -3372,7 +3279,7 @@ actual_atom:
   | ID OROP NUM DOTDOT NUM                        { let lno = !lnum in
                                                     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
                                                     else
-                                                      fun tys _cm vm _ym _gm ->
+                                                      fun ctx tys ->
                                                       let prefix = $1 in
                                                       let st = $3 in
                                                       let ed = $5 in
@@ -3382,7 +3289,7 @@ actual_atom:
                                                                          match tys with
                                                                          | (ty::argtys, outtys) ->
                                                                             (try
-                                                                               let v = SM.find vname vm in
+                                                                               let v = SM.find vname ctx.cvars in
                                                                                if v.vtyp = ty then ((argtys, outtys), (Avar v)::vars_rev)
                                                                                else raise_at lno ("The variable type of "
                                                                                                   ^ vname
@@ -3404,7 +3311,7 @@ atom:
   | const AT typ                                  { `ACONST { atmtyphint = Some $3; atmvalue = $1; } }
   | typ const                                     { `ACONST { atmtyphint = Some $1; atmvalue = $2; } }
   | defined_var                                   { ($1 :> atom_t) }
-  /*| LPAR atom RPAR                              { fun cm vm ym gm -> $2 cm vm ym gm } source of reduce/reduce conflict*/
+  /*| LPAR atom RPAR                              { fun ctx -> $2 ctx } source of reduce/reduce conflict*/
 ;
 
 atom_v:
@@ -3422,7 +3329,7 @@ var_expansion:
     let lno = !lnum in
     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
     else
-      fun _cm vm _ym gm ->
+      fun ctx ->
       let prefix = $1 in
       let st = $3 in
       let ed = $5 in
@@ -3430,11 +3337,11 @@ var_expansion:
                   (fun i ->
                     let vname = prefix ^ vars_expansion_infix ^ string_of_int i in
                     try
-                      SM.find vname vm
+                      SM.find vname ctx.cvars
                     with Not_found ->
                       raise_at lno ("Failed to determine the type of " ^ vname)
                   ) ((Z.to_int st)--(Z.to_int ed)) in
-      let _ = List.iter (fun v -> if not (SM.mem v.vname vm) && not (SM.mem v.vname gm) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
+      let _ = List.iter (fun v -> if not (SM.mem v.vname ctx.cvars) && not (SM.mem v.vname ctx.cghosts) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
       res
   }
 ;
@@ -3449,16 +3356,16 @@ defined_var:
 ;
 
 gvars:
-  gvar                                            { fun cm vm ym gm -> VS.singleton ($1 cm vm ym gm) }
-| gvar COMMA gvars                                { fun cm vm ym gm -> VS.add ($1 cm vm ym gm) ($3 cm vm ym gm) }
+  gvar                                            { fun ctx -> VS.singleton ($1 ctx) }
+| gvar COMMA gvars                                { fun ctx -> VS.add ($1 ctx) ($3 ctx) }
 | gvar error                                      {
                                                     let lno = !lnum in
-                                                    fun _cm _vm _ym _gm ->
+                                                    fun _ ->
                                                       raise_at lno ("A comma is used to separate ghost variables.")
                                                   }
 | error                                           {
                                                     let lno = !lnum in
-                                                    fun _cm _vm _ym _gm ->
+                                                    fun _ ->
                                                       raise_at lno ("Invalid ghost variable.")
                                                   }
 ;
@@ -3468,55 +3375,55 @@ gvar:
                                                     let lno = !lnum in
                                                     if $2 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
                                                     else
-                                                      fun _cm vm _ym gm ->
+                                                      fun ctx ->
                                                       let ty = $1 in
                                                       let vname = $2 in
-                                                      if SM.mem vname vm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if SM.mem vname gm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if SM.mem vname ctx.cvars then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if SM.mem vname ctx.cghosts then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 | ID AT typ                                       {
                                                     let lno = !lnum in
                                                     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
                                                     else
-                                                      fun _cm vm _ym gm ->
+                                                      fun ctx ->
                                                       let ty = $3 in
                                                       let vname = $1 in
-                                                      if SM.mem vname vm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if SM.mem vname gm then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if SM.mem vname ctx.cvars then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if SM.mem vname ctx.cghosts then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 ;
 
 complex_const_list:
-    complex_const                                 { fun cm -> [Z.to_int ($1 cm)] }
-  | complex_const COMMA complex_const_list        { fun cm -> (Z.to_int ($1 cm))::($3 cm) }
+    complex_const                                 { fun ctx -> [Z.to_int ($1 ctx)] }
+  | complex_const COMMA complex_const_list        { fun ctx -> (Z.to_int ($1 ctx))::($3 ctx) }
 
 const:
-    simple_const                                  { fun cm -> $1 cm }
-  | LPAR complex_const RPAR                       { fun cm -> ($2 cm) }
+    simple_const                                  { fun ctx -> $1 ctx }
+  | LPAR complex_const RPAR                       { fun ctx -> ($2 ctx) }
 /*  | ID error                                      { raise_at !lnum ("A constant is expected but '" ^ $1 ^ "' is encountered.") }*/
 ;
 
 simple_const:
-    NUM                                           { fun _cm -> $1 }
+    NUM                                           { fun _ -> $1 }
   | DEREFOP ID                                    { let lno = !lnum in
-                                                    fun cm ->
+                                                    fun ctx ->
                                                       try
-                                                        SM.find $2 cm
+                                                        SM.find $2 ctx.cconsts
                                                       with Not_found ->
                                                         raise_at lno ("Undefined constant: " ^ $2) }
 ;
 
 complex_const:
-    const                                         { fun cm -> $1 cm }
-  | SUBOP const %prec UMINUS                      { fun cm -> Z.neg ($2 cm) }
-  | complex_const ADDOP complex_const             { fun cm -> Z.add ($1 cm) ($3 cm) }
-  | complex_const SUBOP complex_const             { fun cm -> Z.sub ($1 cm) ($3 cm) }
-  | complex_const MULOP complex_const             { fun cm -> Z.mul ($1 cm) ($3 cm) }
-  | complex_const POWOP complex_const             { fun cm ->
-                                                    let n = $1 cm in
-                                                    let i = $3 cm in
+    const                                         { fun ctx -> $1 ctx }
+  | SUBOP const %prec UMINUS                      { fun ctx -> Z.neg ($2 ctx) }
+  | complex_const ADDOP complex_const             { fun ctx -> Z.add ($1 ctx) ($3 ctx) }
+  | complex_const SUBOP complex_const             { fun ctx -> Z.sub ($1 ctx) ($3 ctx) }
+  | complex_const MULOP complex_const             { fun ctx -> Z.mul ($1 ctx) ($3 ctx) }
+  | complex_const POWOP complex_const             { fun ctx ->
+                                                    let n = $1 ctx in
+                                                    let i = $3 ctx in
                                                     try
                                                       Z.pow n (Z.to_int i)
                                                     with Z.Overflow ->
