@@ -1967,7 +1967,7 @@ nondet a31@uint64; nondet a32@uint64; nondet a33@uint64; nondet a34@uint64;
 nondet a40@uint64; nondet a41@uint64; nondet a42@uint64; nondet a43@uint64; 
 nondet a44@uint64;
 
-call KeccakF1600_StatePermute2Rounds_pqclean
+inline KeccakF1600_StatePermute2Rounds_pqclean
 (a00, a01, a02, a03, a04, a10, a11, a12, a13, a14,
  a20, a21, a22, a23, a24, a30, a31, a32, a33, a34,
  a40, a41, a42, a43, a44,
@@ -1984,7 +1984,7 @@ nondet b31@uint64; nondet b32@uint64; nondet b33@uint64; nondet b34@uint64;
 nondet b40@uint64; nondet b41@uint64; nondet b42@uint64; nondet b43@uint64; 
 nondet b44@uint64;
 
-call KeccakP1600Round_XKCP
+inline KeccakP1600Round_XKCP
 (A00, A01, A02, A03, A04, A10, A11, A12, A13, A14,
  A20, A21, A22, A23, A24, A30, A31, A32, A33, A34,
  A40, A41, A42, A43, A44,
@@ -1993,7 +1993,7 @@ call KeccakP1600Round_XKCP
  A20, A21, A22, A23, A24, A30, A31, A32, A33, A34,
  A40, A41, A42, A43, A44);
 
-call KeccakP1600Round_XKCP
+inline KeccakP1600Round_XKCP
 (b00, b01, b02, b03, b04, b10, b11, b12, b13, b14,
  b20, b21, b22, b23, b24, b30, b31, b32, b33, b34,
  b40, b41, b42, b43, b44,

@@ -4572,7 +4572,7 @@ uint32 H0, uint32 H1, uint32 H2, uint32 H3,
 uint32 H4, uint32 H5, uint32 H6, uint32 H7) =
 { true && true }
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 A00, A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13, A14,
 A15, A16, A17, A18, A19, A20, A21, A22, A23, A24, A25, A26, A27, A28, A29,
 A30, A31, A32, A33, A34, A35, A36, A37, A38, A39, A40, A41, A42, A43, A44,
@@ -4581,7 +4581,7 @@ A60, A61, A62, A63, A0, A1, A2, A3, A4, A5, A6, A7,
 a0, a1, a2, a3, a4, a5, a6, a7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 B00, B01, B02, B03, B04, B05, B06, B07, B08, B09, B10, B11, B12, B13, B14,
 B15, B16, B17, B18, B19, B20, B21, B22, B23, B24, B25, B26, B27, B28, B29,
 B30, B31, B32, B33, B34, B35, B36, B37, B38, B39, B40, B41, B42, B43, B44,
@@ -4590,7 +4590,7 @@ B60, B61, B62, B63, B0, B1, B2, B3, B4, B5, B6, B7,
 b0, b1, b2, b3, b4, b5, b6, b7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 C00, C01, C02, C03, C04, C05, C06, C07, C08, C09, C10, C11, C12, C13, C14,
 C15, C16, C17, C18, C19, C20, C21, C22, C23, C24, C25, C26, C27, C28, C29,
 C30, C31, C32, C33, C34, C35, C36, C37, C38, C39, C40, C41, C42, C43, C44,
@@ -4599,7 +4599,7 @@ C60, C61, C62, C63, C0, C1, C2, C3, C4, C5, C6, C7,
 c0, c1, c2, c3, c4, c5, c6, c7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 D00, D01, D02, D03, D04, D05, D06, D07, D08, D09, D10, D11, D12, D13, D14,
 D15, D16, D17, D18, D19, D20, D21, D22, D23, D24, D25, D26, D27, D28, D29,
 D30, D31, D32, D33, D34, D35, D36, D37, D38, D39, D40, D41, D42, D43, D44,
@@ -4608,7 +4608,7 @@ D60, D61, D62, D63, D0, D1, D2, D3, D4, D5, D6, D7,
 d0, d1, d2, d3, d4, d5, d6, d7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 E00, E01, E02, E03, E04, E05, E06, E07, E08, E09, E10, E11, E12, E13, E14,
 E15, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29,
 E30, E31, E32, E33, E34, E35, E36, E37, E38, E39, E40, E41, E42, E43, E44,
@@ -4617,7 +4617,7 @@ E60, E61, E62, E63, E0, E1, E2, E3, E4, E5, E6, E7,
 e0, e1, e2, e3, e4, e5, e6, e7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 F00, F01, F02, F03, F04, F05, F06, F07, F08, F09, F10, F11, F12, F13, F14,
 F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25, F26, F27, F28, F29,
 F30, F31, F32, F33, F34, F35, F36, F37, F38, F39, F40, F41, F42, F43, F44,
@@ -4626,7 +4626,7 @@ F60, F61, F62, F63, F0, F1, F2, F3, F4, F5, F6, F7,
 f0, f1, f2, f3, f4, f5, f6, f7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 G00, G01, G02, G03, G04, G05, G06, G07, G08, G09, G10, G11, G12, G13, G14,
 G15, G16, G17, G18, G19, G20, G21, G22, G23, G24, G25, G26, G27, G28, G29,
 G30, G31, G32, G33, G34, G35, G36, G37, G38, G39, G40, G41, G42, G43, G44,
@@ -4635,7 +4635,7 @@ G60, G61, G62, G63, G0, G1, G2, G3, G4, G5, G6, G7,
 g0, g1, g2, g3, g4, g5, g6, g7
 );
 
-call sha256_block_data_order (
+inline sha256_block_data_order (
 H00, H01, H02, H03, H04, H05, H06, H07, H08, H09, H10, H11, H12, H13, H14,
 H15, H16, H17, H18, H19, H20, H21, H22, H23, H24, H25, H26, H27, H28, H29,
 H30, H31, H32, H33, H34, H35, H36, H37, H38, H39, H40, H41, H42, H43, H44,

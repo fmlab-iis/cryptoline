@@ -1102,24 +1102,24 @@ proc main(uint64 X1|0..4, uint64 X2|0..4, uint64 Z2|0..4, uint64 X3|0..4, uint64
     Z3_4 <= const 64 (2**51+2**15)
   ]
 }
-call fe25519_add(X2|0..4, Z2|0..4, T1|0..4);
-call fe25519_sub(X2|0..4, Z2|0..4, T2|0..4);
-call fe25519_sq(T2|0..4, T7|0..4);
-call fe25519_sq(T1|0..4, T6|0..4);
-call fe25519_sub(T6|0..4, T7|0..4, T5|0..4);
-call fe25519_add(X3|0..4, Z3|0..4, T3|0..4);
-call fe25519_sub(X3|0..4, Z3|0..4, T4|0..4);
-call fe25519_mul(T3|0..4, T2|0..4, T9|0..4);
-call fe25519_mul(T4|0..4, T1|0..4, T8|0..4);
-call fe25519_add(T8|0..4, T9|0..4, X3_1|0..4);
-call fe25519_sub(T8|0..4, T9|0..4, Z3_1|0..4);
-call fe25519_sq(X3_1|0..4, X3p|0..4);
-call fe25519_sq(Z3_1|0..4, Z3_2|0..4);
-call fe25519_mul(Z3_2|0..4, X1|0..4, Z3p|0..4);
-call fe25519_mul(T6|0..4, T7|0..4, X2p|0..4);
-call fe25519_mul121666(T5|0..4, Z2_1|0..4);
-call fe25519_add(Z2_1|0..4, T7|0..4, Z2_2|0..4);
-call fe25519_mul(Z2_2|0..4, T5|0..4, Z2p|0..4);
+inline fe25519_add(X2|0..4, Z2|0..4, T1|0..4);
+inline fe25519_sub(X2|0..4, Z2|0..4, T2|0..4);
+inline fe25519_sq(T2|0..4, T7|0..4);
+inline fe25519_sq(T1|0..4, T6|0..4);
+inline fe25519_sub(T6|0..4, T7|0..4, T5|0..4);
+inline fe25519_add(X3|0..4, Z3|0..4, T3|0..4);
+inline fe25519_sub(X3|0..4, Z3|0..4, T4|0..4);
+inline fe25519_mul(T3|0..4, T2|0..4, T9|0..4);
+inline fe25519_mul(T4|0..4, T1|0..4, T8|0..4);
+inline fe25519_add(T8|0..4, T9|0..4, X3_1|0..4);
+inline fe25519_sub(T8|0..4, T9|0..4, Z3_1|0..4);
+inline fe25519_sq(X3_1|0..4, X3p|0..4);
+inline fe25519_sq(Z3_1|0..4, Z3_2|0..4);
+inline fe25519_mul(Z3_2|0..4, X1|0..4, Z3p|0..4);
+inline fe25519_mul(T6|0..4, T7|0..4, X2p|0..4);
+inline fe25519_mul121666(T5|0..4, Z2_1|0..4);
+inline fe25519_add(Z2_1|0..4, T7|0..4, Z2_2|0..4);
+inline fe25519_mul(Z2_2|0..4, T5|0..4, Z2p|0..4);
 {
   and
   [

@@ -34,14 +34,14 @@ join src128 src4 src128; join src128 src5 src128; join src128 src6 src128;
 join src128 src7 src128; join src128 src8 src128; join src128 src9 src128;
 join src128 srca src128; join src128 srcb src128; join src128 srcc src128;
 join src128 srcd src128; join src128 srce src128; join src128 srcf src128;
-call sel128 (src128, idx0, dst0); call sel128 (src128, idx1, dst1);
-call sel128 (src128, idx2, dst2); call sel128 (src128, idx3, dst3);
-call sel128 (src128, idx4, dst4); call sel128 (src128, idx5, dst5);
-call sel128 (src128, idx6, dst6); call sel128 (src128, idx7, dst7);
-call sel128 (src128, idx8, dst8); call sel128 (src128, idx9, dst9);
-call sel128 (src128, idxa, dsta); call sel128 (src128, idxb, dstb);
-call sel128 (src128, idxc, dstc); call sel128 (src128, idxd, dstd);
-call sel128 (src128, idxe, dste); call sel128 (src128, idxf, dstf);
+inline sel128 (src128, idx0, dst0); inline sel128 (src128, idx1, dst1);
+inline sel128 (src128, idx2, dst2); inline sel128 (src128, idx3, dst3);
+inline sel128 (src128, idx4, dst4); inline sel128 (src128, idx5, dst5);
+inline sel128 (src128, idx6, dst6); inline sel128 (src128, idx7, dst7);
+inline sel128 (src128, idx8, dst8); inline sel128 (src128, idx9, dst9);
+inline sel128 (src128, idxa, dsta); inline sel128 (src128, idxb, dstb);
+inline sel128 (src128, idxc, dstc); inline sel128 (src128, idxd, dstd);
+inline sel128 (src128, idxe, dste); inline sel128 (src128, idxf, dstf);
 { true && true }
 
 proc gf256_madd_0x30 (
@@ -307,7 +307,7 @@ mov %xmm5 [L0x555555566020, L0x555555566021, L0x555555566022, L0x555555566023,
 (* pshufb %xmm0,%xmm1                              #! PC = 0x555555556173 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm0;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -761,14 +761,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -857,14 +857,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -953,14 +953,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -1928,7 +1928,7 @@ mov A502b 0@uint8;mov A512b 0@uint8;mov A522b 0@uint8;mov A532b 0@uint8;
 mov A542b 0@uint8;mov A552b 0@uint8;mov A562b 0@uint8;mov A572b 0@uint8;
 mov A582b 0@uint8;mov A592b 0@uint8;mov A5a2b 0@uint8;mov A5b2b 0@uint8;
 mov A5c2b 0@uint8;mov A5d2b 0@uint8;mov A5e2b 0@uint8;mov A5f2b 0@uint8;
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -1941,7 +1941,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -1954,7 +1954,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -1967,7 +1967,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -1980,7 +1980,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -1993,7 +1993,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2006,7 +2006,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2019,7 +2019,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2032,7 +2032,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2045,7 +2045,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2058,7 +2058,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2071,7 +2071,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2084,7 +2084,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2097,7 +2097,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2110,7 +2110,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2123,7 +2123,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2136,7 +2136,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2149,7 +2149,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2162,7 +2162,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2175,7 +2175,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2188,7 +2188,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2201,7 +2201,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2214,7 +2214,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2227,7 +2227,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2240,7 +2240,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2253,7 +2253,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2266,7 +2266,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2279,7 +2279,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2292,7 +2292,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2305,7 +2305,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2318,7 +2318,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2331,7 +2331,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2344,7 +2344,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2357,7 +2357,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2370,7 +2370,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2383,7 +2383,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2396,7 +2396,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2409,7 +2409,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2422,7 +2422,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2435,7 +2435,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2448,7 +2448,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2461,7 +2461,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2474,7 +2474,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2487,7 +2487,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2500,7 +2500,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2513,7 +2513,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2526,7 +2526,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2539,7 +2539,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2552,7 +2552,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2565,7 +2565,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2578,7 +2578,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2591,7 +2591,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2604,7 +2604,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2617,7 +2617,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2630,7 +2630,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2643,7 +2643,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2656,7 +2656,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2669,7 +2669,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2682,7 +2682,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2695,7 +2695,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2708,7 +2708,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2721,7 +2721,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2734,7 +2734,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2747,7 +2747,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2760,7 +2760,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2773,7 +2773,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2786,7 +2786,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2799,7 +2799,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2812,7 +2812,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2825,7 +2825,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2838,7 +2838,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2851,7 +2851,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2864,7 +2864,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2877,7 +2877,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2890,7 +2890,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2903,7 +2903,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2916,7 +2916,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2929,7 +2929,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2942,7 +2942,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2955,7 +2955,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2968,7 +2968,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -2981,7 +2981,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -2994,7 +2994,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -3007,7 +3007,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -3020,7 +3020,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -3033,7 +3033,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,
@@ -3046,7 +3046,7 @@ c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f,
@@ -3059,7 +3059,7 @@ c00,c01,c02,c03,c04,c05,c06,c07,c08,c09,c0a,c0b,c0c,c0d,c0e,c0f,
 c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c1a,c1b,c1c,c1d,c1e,c1f,
 c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c2a,c2b,c2c,c2d,c2e,c2f
 );
-call gf256_madd_0x30 (
+inline gf256_madd_0x30 (
 c30,c31,c32,c33,c34,c35,c36,c37,c38,c39,c3a,c3b,c3c,c3d,c3e,c3f,
 c40,c41,c42,c43,c44,c45,c46,c47,c48,c49,c4a,c4b,c4c,c4d,c4e,c4f,
 c50,c51,c52,c53,c54,c55,c56,c57,c58,c59,c5a,c5b,c5c,c5d,c5e,c5f,

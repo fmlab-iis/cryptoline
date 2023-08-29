@@ -23,8 +23,8 @@
 #! vmovdqa64 $1ea, $2xmm -> mov $2xmm_0 $1ea;\nmov $2xmm_1 $1ea[+8]
 #! vmovdqa64 $1xmm, $2ea -> mov $2ea $1xmm_0;\nmov $2ea[+8] $1xmm_1
 #! vmovdqa64 $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0;\nmov $2xmm_1 $1xmm_1
-#! vpternlogq $1c, $2xmm, $3xmm, $4xmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4xmm_0, $3xmm_0, $2xmm_0, table);\ncall vpternlogq64 ($4xmm_1, $3xmm_1, $2xmm_1, table)
-#! vpternlogq $1c, $2ea, $3xmm, $4xmm -> mov table $1c@uint8;\ncall vpternlogq64 ($4xmm_0, $3xmm_0, $2ea, table);\ncall vpternlogq64 ($4xmm_1, $3xmm_1, $2ea[+8], table)
+#! vpternlogq $1c, $2xmm, $3xmm, $4xmm -> mov table $1c@uint8;\ninline vpternlogq64 ($4xmm_0, $3xmm_0, $2xmm_0, table);\ninline vpternlogq64 ($4xmm_1, $3xmm_1, $2xmm_1, table)
+#! vpternlogq $1c, $2ea, $3xmm, $4xmm -> mov table $1c@uint8;\ninline vpternlogq64 ($4xmm_0, $3xmm_0, $2ea, table);\ninline vpternlogq64 ($4xmm_1, $3xmm_1, $2ea[+8], table)
 #! vprolq $1c, $2xmm, $3xmm -> rol $3xmm_0 $2xmm_0 $1c;\nrol $3xmm_1 $2xmm_1 $1c
 #! vprorq $1c, $2xmm, $3xmm -> ror $3xmm_0 $2xmm_0 $1c;\nror $3xmm_1 $2xmm_1 $1c
 #! vpxorq $1xmm, $2xmm, $3xmm -> xor $3xmm_0@uint64 $2xmm_0 $1xmm_0;\nxor $3xmm_1@uint64 $2xmm_1 $1xmm_1

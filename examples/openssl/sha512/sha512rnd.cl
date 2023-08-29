@@ -63,10 +63,10 @@ proc sha512rnd (uint64 A, uint64 B, uint64 C, uint64 D,
                 uint64 a, uint64 b, uint64 c, uint64 d,
                 uint64 e, uint64 f, uint64 g, uint64 h) =
 { true && true }
-call sha512Sigma1 (E, ESigma1);
-call sha512Ch (E, F, G, EFGCh);
-call sha512Sigma0 (A, ASigma0);
-call sha512Maj (A, B, C, ABCMaj);
+inline sha512Sigma1 (E, ESigma1);
+inline sha512Ch (E, F, G, EFGCh);
+inline sha512Sigma0 (A, ASigma0);
+inline sha512Maj (A, B, C, ABCMaj);
 
 (* T1 = H + Sigma1 (E) + Ch (E, F, G) + K + W *)
 adds dc T00 H ESigma1;
@@ -94,6 +94,6 @@ nondet A@uint64; nondet B@uint64; nondet C@uint64; nondet D@uint64;
 nondet E@uint64; nondet F@uint64; nondet G@uint64; nondet H@uint64;
 nondet K@uint64; nondet W@uint64;
 
-call sha512rnd (A, B, C, D, E, F, G, H, K, W,
+inline sha512rnd (A, B, C, D, E, F, G, H, K, W,
                 a, b, c, d, e, f, g, h);
 { true && true }

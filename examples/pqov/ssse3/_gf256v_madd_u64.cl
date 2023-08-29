@@ -5266,7 +5266,7 @@ spl b03 t t 3; spl b02 t t 2; spl b01 b00 t 1;
 
 nondet Z@bit;
 
-call _gf256v_madd_u64 (a000,a001,a002,a003,a004,a005,a006,a007,
+inline _gf256v_madd_u64 (a000,a001,a002,a003,a004,a005,a006,a007,
                        a008,a009,a00a,a00b,a00c,a00d,a00e,a00f,
                        a010,a011,a012,a013,a014,a015,a016,a017,
                        a018,a019,a01a,a01b,a01c,a01d,a01e,a01f,
@@ -5401,7 +5401,7 @@ call _gf256v_madd_u64 (a000,a001,a002,a003,a004,a005,a006,a007,
                        r518,r519,r51a,r51b,r51c,r51d,r51e,r51f
 );
 
-call _gf256v_madd_u64 (a020,a021,a022,a023,a024,a025,a026,a027,
+inline _gf256v_madd_u64 (a020,a021,a022,a023,a024,a025,a026,a027,
                        a028,a029,a02a,a02b,a02c,a02d,a02e,a02f,
                        a030,a031,a032,a033,a034,a035,a036,a037,
                        a038,a039,a03a,a03b,a03c,a03d,a03e,a03f,

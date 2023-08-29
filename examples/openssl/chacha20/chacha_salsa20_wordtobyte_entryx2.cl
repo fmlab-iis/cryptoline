@@ -4429,12 +4429,12 @@ proc main (uint32 A0, uint32 A1, uint32 A2, uint32 A3,
   true
 }
 
-call core (A0, A1, A2, A3, A4, A5, A6, A7,
+inline core (A0, A1, A2, A3, A4, A5, A6, A7,
            A8, A9, Aa, Ab, Ac, Ad, Ae, Af,
            a0, a1, a2, a3, a4, a5, a6, a7,
            a8, a9, aa, ab, ac, ad, ae, af);
 
-call core (B0, B1, B2, B3, B4, B5, B6, B7,
+inline core (B0, B1, B2, B3, B4, B5, B6, B7,
            B8, B9, Ba, Bb, Bc, Bd, Be, Bf,
            b0, b1, b2, b3, b4, b5, b6, b7,
            b8, b9, ba, bb, bc, bd, be, bf);

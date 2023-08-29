@@ -142,14 +142,14 @@ join src128 src4 src128; join src128 src5 src128; join src128 src6 src128;
 join src128 src7 src128; join src128 src8 src128; join src128 src9 src128;
 join src128 srca src128; join src128 srcb src128; join src128 srcc src128;
 join src128 srcd src128; join src128 srce src128; join src128 srcf src128;
-call sel128 (src128, idx0, dst0); call sel128 (src128, idx1, dst1);
-call sel128 (src128, idx2, dst2); call sel128 (src128, idx3, dst3);
-call sel128 (src128, idx4, dst4); call sel128 (src128, idx5, dst5);
-call sel128 (src128, idx6, dst6); call sel128 (src128, idx7, dst7);
-call sel128 (src128, idx8, dst8); call sel128 (src128, idx9, dst9);
-call sel128 (src128, idxa, dsta); call sel128 (src128, idxb, dstb);
-call sel128 (src128, idxc, dstc); call sel128 (src128, idxd, dstd);
-call sel128 (src128, idxe, dste); call sel128 (src128, idxf, dstf);
+inline sel128 (src128, idx0, dst0); inline sel128 (src128, idx1, dst1);
+inline sel128 (src128, idx2, dst2); inline sel128 (src128, idx3, dst3);
+inline sel128 (src128, idx4, dst4); inline sel128 (src128, idx5, dst5);
+inline sel128 (src128, idx6, dst6); inline sel128 (src128, idx7, dst7);
+inline sel128 (src128, idx8, dst8); inline sel128 (src128, idx9, dst9);
+inline sel128 (src128, idxa, dsta); inline sel128 (src128, idxb, dstb);
+inline sel128 (src128, idxc, dstc); inline sel128 (src128, idxd, dstd);
+inline sel128 (src128, idxe, dste); inline sel128 (src128, idxf, dstf);
 { true && true }
 
 
@@ -178,13 +178,13 @@ proc vpshufb256 (uint8 src_00, uint8 src_01, uint8 src_02, uint8 src_03,
                  uint8 dst_18, uint8 dst_19, uint8 dst_1a, uint8 dst_1b,
                  uint8 dst_1c, uint8 dst_1d, uint8 dst_1e, uint8 dst_1f) =
 { true && true }
-call vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
+inline vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
                  src_08, src_09, src_0a, src_0b, src_0c, src_0d, src_0e, src_0f,
                  idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07,
                  idx_08, idx_09, idx_0a, idx_0b, idx_0c, idx_0d, idx_0e, idx_0f,
                  dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07,
                  dst_08, dst_09, dst_0a, dst_0b, dst_0c, dst_0d, dst_0e, dst_0f);
-call vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
+inline vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
                  src_18, src_19, src_1a, src_1b, src_1c, src_1d, src_1e, src_1f,
                  idx_10, idx_11, idx_12, idx_13, idx_14, idx_15, idx_16, idx_17,
                  idx_18, idx_19, idx_1a, idx_1b, idx_1c, idx_1d, idx_1e, idx_1f,
@@ -204,13 +204,13 @@ mov [idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07,
      idx_08, idx_09, idx_0a, idx_0b, idx_0c, idx_0d, idx_0e, idx_0f,
      idx_10, idx_11, idx_12, idx_13, idx_14, idx_15, idx_16, idx_17,
      idx_18, idx_19, idx_1a, idx_1b, idx_1c, idx_1d, idx_1e, idx_1f] %idx;
-call vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
+inline vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
                  src_08, src_09, src_0a, src_0b, src_0c, src_0d, src_0e, src_0f,
                  idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07,
                  idx_08, idx_09, idx_0a, idx_0b, idx_0c, idx_0d, idx_0e, idx_0f,
                  dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07,
                  dst_08, dst_09, dst_0a, dst_0b, dst_0c, dst_0d, dst_0e, dst_0f);
-call vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
+inline vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
                  src_18, src_19, src_1a, src_1b, src_1c, src_1d, src_1e, src_1f,
                  idx_10, idx_11, idx_12, idx_13, idx_14, idx_15, idx_16, idx_17,
                  idx_18, idx_19, idx_1a, idx_1b, idx_1c, idx_1d, idx_1e, idx_1f,

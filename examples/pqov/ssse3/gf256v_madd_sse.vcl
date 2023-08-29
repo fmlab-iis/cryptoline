@@ -66,14 +66,14 @@ join src128 src4 src128; join src128 src5 src128; join src128 src6 src128;
 join src128 src7 src128; join src128 src8 src128; join src128 src9 src128;
 join src128 srca src128; join src128 srcb src128; join src128 srcc src128;
 join src128 srcd src128; join src128 srce src128; join src128 srcf src128;
-call sel128 (src128, idx0, dst0); call sel128 (src128, idx1, dst1);
-call sel128 (src128, idx2, dst2); call sel128 (src128, idx3, dst3);
-call sel128 (src128, idx4, dst4); call sel128 (src128, idx5, dst5);
-call sel128 (src128, idx6, dst6); call sel128 (src128, idx7, dst7);
-call sel128 (src128, idx8, dst8); call sel128 (src128, idx9, dst9);
-call sel128 (src128, idxa, dsta); call sel128 (src128, idxb, dstb);
-call sel128 (src128, idxc, dstc); call sel128 (src128, idxd, dstd);
-call sel128 (src128, idxe, dste); call sel128 (src128, idxf, dstf);
+inline sel128 (src128, idx0, dst0); inline sel128 (src128, idx1, dst1);
+inline sel128 (src128, idx2, dst2); inline sel128 (src128, idx3, dst3);
+inline sel128 (src128, idx4, dst4); inline sel128 (src128, idx5, dst5);
+inline sel128 (src128, idx6, dst6); inline sel128 (src128, idx7, dst7);
+inline sel128 (src128, idx8, dst8); inline sel128 (src128, idx9, dst9);
+inline sel128 (src128, idxa, dsta); inline sel128 (src128, idxb, dstb);
+inline sel128 (src128, idxc, dstc); inline sel128 (src128, idxd, dstd);
+inline sel128 (src128, idxe, dste); inline sel128 (src128, idxf, dstf);
 { true && true }
 
 proc main (uint8 acc00, uint8 acc01, uint8 acc02, uint8 acc03,
@@ -331,7 +331,7 @@ mov %xmm5 [L0x555555566020, L0x555555566021, L0x555555566022, L0x555555566023,
 (* pshufb %xmm0,%xmm1                              #! PC = 0x555555556173 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm0;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -785,14 +785,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -881,14 +881,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
@@ -977,14 +977,14 @@ and %xmm2@uint8[16] %xmm2 %xmm3;
 (* pshufb %xmm4,%xmm0                              #! PC = 0x555555556339 *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm4;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm0;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm0 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];
 (* pshufb %xmm2,%xmm1                              #! PC = 0x55555555633e *)
 mov [p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, pa, pb, pc, pd, pe, pf] %xmm2;
 mov [s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, sa, sb, sc, sd, se, sf] %xmm1;
-call vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
+inline vpshufb128 (s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sa,sb,sc,sd,se,sf,
                  p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,pa,pb,pc,pd,pe,pf,
                  d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,da,db,dc,dd,de,df);
 mov %xmm1 [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, da, db, dc, dd, de, df];

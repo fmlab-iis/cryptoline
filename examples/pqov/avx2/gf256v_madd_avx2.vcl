@@ -143,14 +143,14 @@ join src128 src4 src128; join src128 src5 src128; join src128 src6 src128;
 join src128 src7 src128; join src128 src8 src128; join src128 src9 src128;
 join src128 srca src128; join src128 srcb src128; join src128 srcc src128;
 join src128 srcd src128; join src128 srce src128; join src128 srcf src128;
-call sel128 (src128, idx0, dst0); call sel128 (src128, idx1, dst1);
-call sel128 (src128, idx2, dst2); call sel128 (src128, idx3, dst3);
-call sel128 (src128, idx4, dst4); call sel128 (src128, idx5, dst5);
-call sel128 (src128, idx6, dst6); call sel128 (src128, idx7, dst7);
-call sel128 (src128, idx8, dst8); call sel128 (src128, idx9, dst9);
-call sel128 (src128, idxa, dsta); call sel128 (src128, idxb, dstb);
-call sel128 (src128, idxc, dstc); call sel128 (src128, idxd, dstd);
-call sel128 (src128, idxe, dste); call sel128 (src128, idxf, dstf);
+inline sel128 (src128, idx0, dst0); inline sel128 (src128, idx1, dst1);
+inline sel128 (src128, idx2, dst2); inline sel128 (src128, idx3, dst3);
+inline sel128 (src128, idx4, dst4); inline sel128 (src128, idx5, dst5);
+inline sel128 (src128, idx6, dst6); inline sel128 (src128, idx7, dst7);
+inline sel128 (src128, idx8, dst8); inline sel128 (src128, idx9, dst9);
+inline sel128 (src128, idxa, dsta); inline sel128 (src128, idxb, dstb);
+inline sel128 (src128, idxc, dstc); inline sel128 (src128, idxd, dstd);
+inline sel128 (src128, idxe, dste); inline sel128 (src128, idxf, dstf);
 { true && true }
 
 
@@ -179,13 +179,13 @@ proc vpshufb256 (uint8 src_00, uint8 src_01, uint8 src_02, uint8 src_03,
                  uint8 dst_18, uint8 dst_19, uint8 dst_1a, uint8 dst_1b,
                  uint8 dst_1c, uint8 dst_1d, uint8 dst_1e, uint8 dst_1f) =
 { true && true }
-call vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
+inline vpshufb128 (src_00, src_01, src_02, src_03, src_04, src_05, src_06, src_07,
                  src_08, src_09, src_0a, src_0b, src_0c, src_0d, src_0e, src_0f,
                  idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07,
                  idx_08, idx_09, idx_0a, idx_0b, idx_0c, idx_0d, idx_0e, idx_0f,
                  dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07,
                  dst_08, dst_09, dst_0a, dst_0b, dst_0c, dst_0d, dst_0e, dst_0f);
-call vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
+inline vpshufb128 (src_10, src_11, src_12, src_13, src_14, src_15, src_16, src_17,
                  src_18, src_19, src_1a, src_1b, src_1c, src_1d, src_1e, src_1f,
                  idx_10, idx_11, idx_12, idx_13, idx_14, idx_15, idx_16, idx_17,
                  idx_18, idx_19, idx_1a, idx_1b, idx_1c, idx_1d, idx_1e, idx_1f,
@@ -501,37 +501,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
      ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f] %ymm0;
-call cmpgt0w(ymm0_0, tmp0);
+inline cmpgt0w(ymm0_0, tmp0);
 cmov ymm0_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_1, tmp1);
+inline cmpgt0w(ymm0_1, tmp1);
 cmov ymm0_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_2, tmp2);
+inline cmpgt0w(ymm0_2, tmp2);
 cmov ymm0_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_3, tmp3);
+inline cmpgt0w(ymm0_3, tmp3);
 cmov ymm0_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_4, tmp4);
+inline cmpgt0w(ymm0_4, tmp4);
 cmov ymm0_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_5, tmp5);
+inline cmpgt0w(ymm0_5, tmp5);
 cmov ymm0_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_6, tmp6);
+inline cmpgt0w(ymm0_6, tmp6);
 cmov ymm0_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_7, tmp7);
+inline cmpgt0w(ymm0_7, tmp7);
 cmov ymm0_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_8, tmp8);
+inline cmpgt0w(ymm0_8, tmp8);
 cmov ymm0_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_9, tmp9);
+inline cmpgt0w(ymm0_9, tmp9);
 cmov ymm0_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_a, tmpa);
+inline cmpgt0w(ymm0_a, tmpa);
 cmov ymm0_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_b, tmpb);
+inline cmpgt0w(ymm0_b, tmpb);
 cmov ymm0_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_c, tmpc);
+inline cmpgt0w(ymm0_c, tmpc);
 cmov ymm0_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_d, tmpd);
+inline cmpgt0w(ymm0_d, tmpd);
 cmov ymm0_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_e, tmpe);
+inline cmpgt0w(ymm0_e, tmpe);
 cmov ymm0_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm0_f, tmpf);
+inline cmpgt0w(ymm0_f, tmpf);
 cmov ymm0_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm0 [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
            ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f];
@@ -556,37 +556,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-call cmpgt0w(ymm2_0, tmp0);
+inline cmpgt0w(ymm2_0, tmp0);
 cmov ymm2_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_1, tmp1);
+inline cmpgt0w(ymm2_1, tmp1);
 cmov ymm2_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_2, tmp2);
+inline cmpgt0w(ymm2_2, tmp2);
 cmov ymm2_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_3, tmp3);
+inline cmpgt0w(ymm2_3, tmp3);
 cmov ymm2_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_4, tmp4);
+inline cmpgt0w(ymm2_4, tmp4);
 cmov ymm2_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_5, tmp5);
+inline cmpgt0w(ymm2_5, tmp5);
 cmov ymm2_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_6, tmp6);
+inline cmpgt0w(ymm2_6, tmp6);
 cmov ymm2_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_7, tmp7);
+inline cmpgt0w(ymm2_7, tmp7);
 cmov ymm2_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_8, tmp8);
+inline cmpgt0w(ymm2_8, tmp8);
 cmov ymm2_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_9, tmp9);
+inline cmpgt0w(ymm2_9, tmp9);
 cmov ymm2_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_a, tmpa);
+inline cmpgt0w(ymm2_a, tmpa);
 cmov ymm2_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_b, tmpb);
+inline cmpgt0w(ymm2_b, tmpb);
 cmov ymm2_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_c, tmpc);
+inline cmpgt0w(ymm2_c, tmpc);
 cmov ymm2_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_d, tmpd);
+inline cmpgt0w(ymm2_d, tmpd);
 cmov ymm2_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_e, tmpe);
+inline cmpgt0w(ymm2_e, tmpe);
 cmov ymm2_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_f, tmpf);
+inline cmpgt0w(ymm2_f, tmpf);
 cmov ymm2_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm2 [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
            ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f];
@@ -627,37 +627,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7,
      ymm5_8, ymm5_9, ymm5_a, ymm5_b, ymm5_c, ymm5_d, ymm5_e, ymm5_f] %ymm5;
-call cmpgt0w(ymm5_0, tmp0);
+inline cmpgt0w(ymm5_0, tmp0);
 cmov ymm5_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_1, tmp1);
+inline cmpgt0w(ymm5_1, tmp1);
 cmov ymm5_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_2, tmp2);
+inline cmpgt0w(ymm5_2, tmp2);
 cmov ymm5_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_3, tmp3);
+inline cmpgt0w(ymm5_3, tmp3);
 cmov ymm5_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_4, tmp4);
+inline cmpgt0w(ymm5_4, tmp4);
 cmov ymm5_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_5, tmp5);
+inline cmpgt0w(ymm5_5, tmp5);
 cmov ymm5_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_6, tmp6);
+inline cmpgt0w(ymm5_6, tmp6);
 cmov ymm5_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_7, tmp7);
+inline cmpgt0w(ymm5_7, tmp7);
 cmov ymm5_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_8, tmp8);
+inline cmpgt0w(ymm5_8, tmp8);
 cmov ymm5_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_9, tmp9);
+inline cmpgt0w(ymm5_9, tmp9);
 cmov ymm5_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_a, tmpa);
+inline cmpgt0w(ymm5_a, tmpa);
 cmov ymm5_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_b, tmpb);
+inline cmpgt0w(ymm5_b, tmpb);
 cmov ymm5_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_c, tmpc);
+inline cmpgt0w(ymm5_c, tmpc);
 cmov ymm5_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_d, tmpd);
+inline cmpgt0w(ymm5_d, tmpd);
 cmov ymm5_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_e, tmpe);
+inline cmpgt0w(ymm5_e, tmpe);
 cmov ymm5_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm5_f, tmpf);
+inline cmpgt0w(ymm5_f, tmpf);
 cmov ymm5_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm5 [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7,
            ymm5_8, ymm5_9, ymm5_a, ymm5_b, ymm5_c, ymm5_d, ymm5_e, ymm5_f];
@@ -682,37 +682,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7,
      ymm7_8, ymm7_9, ymm7_a, ymm7_b, ymm7_c, ymm7_d, ymm7_e, ymm7_f] %ymm7;
-call cmpgt0w(ymm7_0, tmp0);
+inline cmpgt0w(ymm7_0, tmp0);
 cmov ymm7_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_1, tmp1);
+inline cmpgt0w(ymm7_1, tmp1);
 cmov ymm7_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_2, tmp2);
+inline cmpgt0w(ymm7_2, tmp2);
 cmov ymm7_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_3, tmp3);
+inline cmpgt0w(ymm7_3, tmp3);
 cmov ymm7_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_4, tmp4);
+inline cmpgt0w(ymm7_4, tmp4);
 cmov ymm7_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_5, tmp5);
+inline cmpgt0w(ymm7_5, tmp5);
 cmov ymm7_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_6, tmp6);
+inline cmpgt0w(ymm7_6, tmp6);
 cmov ymm7_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_7, tmp7);
+inline cmpgt0w(ymm7_7, tmp7);
 cmov ymm7_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_8, tmp8);
+inline cmpgt0w(ymm7_8, tmp8);
 cmov ymm7_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_9, tmp9);
+inline cmpgt0w(ymm7_9, tmp9);
 cmov ymm7_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_a, tmpa);
+inline cmpgt0w(ymm7_a, tmpa);
 cmov ymm7_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_b, tmpb);
+inline cmpgt0w(ymm7_b, tmpb);
 cmov ymm7_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_c, tmpc);
+inline cmpgt0w(ymm7_c, tmpc);
 cmov ymm7_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_d, tmpd);
+inline cmpgt0w(ymm7_d, tmpd);
 cmov ymm7_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_e, tmpe);
+inline cmpgt0w(ymm7_e, tmpe);
 cmov ymm7_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm7_f, tmpf);
+inline cmpgt0w(ymm7_f, tmpf);
 cmov ymm7_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm7 [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7,
            ymm7_8, ymm7_9, ymm7_a, ymm7_b, ymm7_c, ymm7_d, ymm7_e, ymm7_f];
@@ -762,37 +762,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm8_0, ymm8_1, ymm8_2, ymm8_3, ymm8_4, ymm8_5, ymm8_6, ymm8_7,
      ymm8_8, ymm8_9, ymm8_a, ymm8_b, ymm8_c, ymm8_d, ymm8_e, ymm8_f] %ymm8;
-call cmpgt0w(ymm8_0, tmp0);
+inline cmpgt0w(ymm8_0, tmp0);
 cmov ymm8_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_1, tmp1);
+inline cmpgt0w(ymm8_1, tmp1);
 cmov ymm8_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_2, tmp2);
+inline cmpgt0w(ymm8_2, tmp2);
 cmov ymm8_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_3, tmp3);
+inline cmpgt0w(ymm8_3, tmp3);
 cmov ymm8_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_4, tmp4);
+inline cmpgt0w(ymm8_4, tmp4);
 cmov ymm8_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_5, tmp5);
+inline cmpgt0w(ymm8_5, tmp5);
 cmov ymm8_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_6, tmp6);
+inline cmpgt0w(ymm8_6, tmp6);
 cmov ymm8_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_7, tmp7);
+inline cmpgt0w(ymm8_7, tmp7);
 cmov ymm8_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_8, tmp8);
+inline cmpgt0w(ymm8_8, tmp8);
 cmov ymm8_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_9, tmp9);
+inline cmpgt0w(ymm8_9, tmp9);
 cmov ymm8_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_a, tmpa);
+inline cmpgt0w(ymm8_a, tmpa);
 cmov ymm8_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_b, tmpb);
+inline cmpgt0w(ymm8_b, tmpb);
 cmov ymm8_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_c, tmpc);
+inline cmpgt0w(ymm8_c, tmpc);
 cmov ymm8_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_d, tmpd);
+inline cmpgt0w(ymm8_d, tmpd);
 cmov ymm8_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_e, tmpe);
+inline cmpgt0w(ymm8_e, tmpe);
 cmov ymm8_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm8_f, tmpf);
+inline cmpgt0w(ymm8_f, tmpf);
 cmov ymm8_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm8 [ymm8_0, ymm8_1, ymm8_2, ymm8_3, ymm8_4, ymm8_5, ymm8_6, ymm8_7,
            ymm8_8, ymm8_9, ymm8_a, ymm8_b, ymm8_c, ymm8_d, ymm8_e, ymm8_f];
@@ -817,37 +817,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
      ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f] %ymm1;
-call cmpgt0w(ymm1_0, tmp0);
+inline cmpgt0w(ymm1_0, tmp0);
 cmov ymm1_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_1, tmp1);
+inline cmpgt0w(ymm1_1, tmp1);
 cmov ymm1_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_2, tmp2);
+inline cmpgt0w(ymm1_2, tmp2);
 cmov ymm1_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_3, tmp3);
+inline cmpgt0w(ymm1_3, tmp3);
 cmov ymm1_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_4, tmp4);
+inline cmpgt0w(ymm1_4, tmp4);
 cmov ymm1_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_5, tmp5);
+inline cmpgt0w(ymm1_5, tmp5);
 cmov ymm1_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_6, tmp6);
+inline cmpgt0w(ymm1_6, tmp6);
 cmov ymm1_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_7, tmp7);
+inline cmpgt0w(ymm1_7, tmp7);
 cmov ymm1_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_8, tmp8);
+inline cmpgt0w(ymm1_8, tmp8);
 cmov ymm1_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_9, tmp9);
+inline cmpgt0w(ymm1_9, tmp9);
 cmov ymm1_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_a, tmpa);
+inline cmpgt0w(ymm1_a, tmpa);
 cmov ymm1_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_b, tmpb);
+inline cmpgt0w(ymm1_b, tmpb);
 cmov ymm1_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_c, tmpc);
+inline cmpgt0w(ymm1_c, tmpc);
 cmov ymm1_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_d, tmpd);
+inline cmpgt0w(ymm1_d, tmpd);
 cmov ymm1_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_e, tmpe);
+inline cmpgt0w(ymm1_e, tmpe);
 cmov ymm1_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm1_f, tmpf);
+inline cmpgt0w(ymm1_f, tmpf);
 cmov ymm1_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm1 [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
            ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f];
@@ -874,37 +874,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-call cmpgt0w(ymm2_0, tmp0);
+inline cmpgt0w(ymm2_0, tmp0);
 cmov ymm2_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_1, tmp1);
+inline cmpgt0w(ymm2_1, tmp1);
 cmov ymm2_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_2, tmp2);
+inline cmpgt0w(ymm2_2, tmp2);
 cmov ymm2_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_3, tmp3);
+inline cmpgt0w(ymm2_3, tmp3);
 cmov ymm2_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_4, tmp4);
+inline cmpgt0w(ymm2_4, tmp4);
 cmov ymm2_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_5, tmp5);
+inline cmpgt0w(ymm2_5, tmp5);
 cmov ymm2_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_6, tmp6);
+inline cmpgt0w(ymm2_6, tmp6);
 cmov ymm2_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_7, tmp7);
+inline cmpgt0w(ymm2_7, tmp7);
 cmov ymm2_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_8, tmp8);
+inline cmpgt0w(ymm2_8, tmp8);
 cmov ymm2_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_9, tmp9);
+inline cmpgt0w(ymm2_9, tmp9);
 cmov ymm2_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_a, tmpa);
+inline cmpgt0w(ymm2_a, tmpa);
 cmov ymm2_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_b, tmpb);
+inline cmpgt0w(ymm2_b, tmpb);
 cmov ymm2_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_c, tmpc);
+inline cmpgt0w(ymm2_c, tmpc);
 cmov ymm2_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_d, tmpd);
+inline cmpgt0w(ymm2_d, tmpd);
 cmov ymm2_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_e, tmpe);
+inline cmpgt0w(ymm2_e, tmpe);
 cmov ymm2_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm2_f, tmpf);
+inline cmpgt0w(ymm2_f, tmpf);
 cmov ymm2_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm2 [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
            ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f];
@@ -929,37 +929,37 @@ assert true && ymm3_e = 0@16;
 assert true && ymm3_f = 0@16;
 mov [ymm6_0, ymm6_1, ymm6_2, ymm6_3, ymm6_4, ymm6_5, ymm6_6, ymm6_7,
      ymm6_8, ymm6_9, ymm6_a, ymm6_b, ymm6_c, ymm6_d, ymm6_e, ymm6_f] %ymm6;
-call cmpgt0w(ymm6_0, tmp0);
+inline cmpgt0w(ymm6_0, tmp0);
 cmov ymm6_0 tmp0 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_1, tmp1);
+inline cmpgt0w(ymm6_1, tmp1);
 cmov ymm6_1 tmp1 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_2, tmp2);
+inline cmpgt0w(ymm6_2, tmp2);
 cmov ymm6_2 tmp2 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_3, tmp3);
+inline cmpgt0w(ymm6_3, tmp3);
 cmov ymm6_3 tmp3 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_4, tmp4);
+inline cmpgt0w(ymm6_4, tmp4);
 cmov ymm6_4 tmp4 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_5, tmp5);
+inline cmpgt0w(ymm6_5, tmp5);
 cmov ymm6_5 tmp5 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_6, tmp6);
+inline cmpgt0w(ymm6_6, tmp6);
 cmov ymm6_6 tmp6 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_7, tmp7);
+inline cmpgt0w(ymm6_7, tmp7);
 cmov ymm6_7 tmp7 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_8, tmp8);
+inline cmpgt0w(ymm6_8, tmp8);
 cmov ymm6_8 tmp8 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_9, tmp9);
+inline cmpgt0w(ymm6_9, tmp9);
 cmov ymm6_9 tmp9 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_a, tmpa);
+inline cmpgt0w(ymm6_a, tmpa);
 cmov ymm6_a tmpa 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_b, tmpb);
+inline cmpgt0w(ymm6_b, tmpb);
 cmov ymm6_b tmpb 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_c, tmpc);
+inline cmpgt0w(ymm6_c, tmpc);
 cmov ymm6_c tmpc 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_d, tmpd);
+inline cmpgt0w(ymm6_d, tmpd);
 cmov ymm6_d tmpd 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_e, tmpe);
+inline cmpgt0w(ymm6_e, tmpe);
 cmov ymm6_e tmpe 0xffff@uint16 0@uint16;
-call cmpgt0w(ymm6_f, tmpf);
+inline cmpgt0w(ymm6_f, tmpf);
 cmov ymm6_f tmpf 0xffff@uint16 0@uint16;
 mov %ymm6 [ymm6_0, ymm6_1, ymm6_2, ymm6_3, ymm6_4, ymm6_5, ymm6_6, ymm6_7,
            ymm6_8, ymm6_9, ymm6_a, ymm6_b, ymm6_c, ymm6_d, ymm6_e, ymm6_f];
@@ -1115,7 +1115,7 @@ and %ymm2 %ymm3 %ymm2;
 (* vpshufb %ymm4,%ymm0,%ymm0                       #! PC = 0x55555555f4a5 *)
 mov [ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
      ymm4_8, ymm4_9, ymm4_a, ymm4_b, ymm4_c, ymm4_d, ymm4_e, ymm4_f] %ymm4;
-call ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
+inline ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
              ymm4_8, ymm4_9, ymm4_a, ymm4_b, ymm4_c, ymm4_d, ymm4_e, ymm4_f,
              ymm4_0l, ymm4_0h, ymm4_1l, ymm4_1h, ymm4_2l, ymm4_2h, ymm4_3l, ymm4_3h,
              ymm4_4l, ymm4_4h, ymm4_5l, ymm4_5h, ymm4_6l, ymm4_6h, ymm4_7l, ymm4_7h,
@@ -1123,13 +1123,13 @@ call ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
              ymm4_cl, ymm4_ch, ymm4_dl, ymm4_dh, ymm4_el, ymm4_eh, ymm4_fl, ymm4_fh);
 mov [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
      ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f] %ymm0;
-call ymmw2b (ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
+inline ymmw2b (ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
              ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f,
              ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
              ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
              ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
              ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh);
-call vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
+inline vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
                  ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
                  ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
                  ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh,
@@ -1141,7 +1141,7 @@ call vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, 
                  ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
                  ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
                  ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh);
-call ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
+inline ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
              ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
              ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
              ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh,
@@ -1152,7 +1152,7 @@ mov %ymm0 [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
 (* vpshufb %ymm2,%ymm1,%ymm1                       #! PC = 0x55555555f4aa *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-call ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
+inline ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
              ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f,
              ymm2_0l, ymm2_0h, ymm2_1l, ymm2_1h, ymm2_2l, ymm2_2h, ymm2_3l, ymm2_3h,
              ymm2_4l, ymm2_4h, ymm2_5l, ymm2_5h, ymm2_6l, ymm2_6h, ymm2_7l, ymm2_7h,
@@ -1160,13 +1160,13 @@ call ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
              ymm2_cl, ymm2_ch, ymm2_dl, ymm2_dh, ymm2_el, ymm2_eh, ymm2_fl, ymm2_fh);
 mov [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
      ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f] %ymm1;
-call ymmw2b (ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
+inline ymmw2b (ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
              ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f,
              ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
              ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
              ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
              ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh);
-call vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
+inline vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
                  ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
                  ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
                  ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh,
@@ -1178,7 +1178,7 @@ call vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, 
                  ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
                  ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
                  ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh);
-call ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
+inline ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
              ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
              ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
              ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh,
@@ -1272,7 +1272,7 @@ and %ymm2 %ymm3 %ymm2;
 (* vpshufb %ymm4,%ymm0,%ymm0                       #! PC = 0x55555555f4a5 *)
 mov [ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
      ymm4_8, ymm4_9, ymm4_a, ymm4_b, ymm4_c, ymm4_d, ymm4_e, ymm4_f] %ymm4;
-call ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
+inline ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
              ymm4_8, ymm4_9, ymm4_a, ymm4_b, ymm4_c, ymm4_d, ymm4_e, ymm4_f,
              ymm4_0l, ymm4_0h, ymm4_1l, ymm4_1h, ymm4_2l, ymm4_2h, ymm4_3l, ymm4_3h,
              ymm4_4l, ymm4_4h, ymm4_5l, ymm4_5h, ymm4_6l, ymm4_6h, ymm4_7l, ymm4_7h,
@@ -1280,13 +1280,13 @@ call ymmw2b (ymm4_0, ymm4_1, ymm4_2, ymm4_3, ymm4_4, ymm4_5, ymm4_6, ymm4_7,
              ymm4_cl, ymm4_ch, ymm4_dl, ymm4_dh, ymm4_el, ymm4_eh, ymm4_fl, ymm4_fh);
 mov [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
      ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f] %ymm0;
-call ymmw2b (ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
+inline ymmw2b (ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
              ymm0_8, ymm0_9, ymm0_a, ymm0_b, ymm0_c, ymm0_d, ymm0_e, ymm0_f,
              ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
              ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
              ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
              ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh);
-call vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
+inline vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
                  ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
                  ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
                  ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh,
@@ -1298,7 +1298,7 @@ call vpshufb256 (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, 
                  ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
                  ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
                  ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh);
-call ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
+inline ymmb2w (ymm0_0l, ymm0_0h, ymm0_1l, ymm0_1h, ymm0_2l, ymm0_2h, ymm0_3l, ymm0_3h,
              ymm0_4l, ymm0_4h, ymm0_5l, ymm0_5h, ymm0_6l, ymm0_6h, ymm0_7l, ymm0_7h,
              ymm0_8l, ymm0_8h, ymm0_9l, ymm0_9h, ymm0_al, ymm0_ah, ymm0_bl, ymm0_bh,
              ymm0_cl, ymm0_ch, ymm0_dl, ymm0_dh, ymm0_el, ymm0_eh, ymm0_fl, ymm0_fh,
@@ -1309,7 +1309,7 @@ mov %ymm0 [ymm0_0, ymm0_1, ymm0_2, ymm0_3, ymm0_4, ymm0_5, ymm0_6, ymm0_7,
 (* vpshufb %ymm2,%ymm1,%ymm1                       #! PC = 0x55555555f4aa *)
 mov [ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
      ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f] %ymm2;
-call ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
+inline ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
              ymm2_8, ymm2_9, ymm2_a, ymm2_b, ymm2_c, ymm2_d, ymm2_e, ymm2_f,
              ymm2_0l, ymm2_0h, ymm2_1l, ymm2_1h, ymm2_2l, ymm2_2h, ymm2_3l, ymm2_3h,
              ymm2_4l, ymm2_4h, ymm2_5l, ymm2_5h, ymm2_6l, ymm2_6h, ymm2_7l, ymm2_7h,
@@ -1317,13 +1317,13 @@ call ymmw2b (ymm2_0, ymm2_1, ymm2_2, ymm2_3, ymm2_4, ymm2_5, ymm2_6, ymm2_7,
              ymm2_cl, ymm2_ch, ymm2_dl, ymm2_dh, ymm2_el, ymm2_eh, ymm2_fl, ymm2_fh);
 mov [ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
      ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f] %ymm1;
-call ymmw2b (ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
+inline ymmw2b (ymm1_0, ymm1_1, ymm1_2, ymm1_3, ymm1_4, ymm1_5, ymm1_6, ymm1_7,
              ymm1_8, ymm1_9, ymm1_a, ymm1_b, ymm1_c, ymm1_d, ymm1_e, ymm1_f,
              ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
              ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
              ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
              ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh);
-call vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
+inline vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
                  ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
                  ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
                  ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh,
@@ -1335,7 +1335,7 @@ call vpshufb256 (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, 
                  ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
                  ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
                  ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh);
-call ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
+inline ymmb2w (ymm1_0l, ymm1_0h, ymm1_1l, ymm1_1h, ymm1_2l, ymm1_2h, ymm1_3l, ymm1_3h,
              ymm1_4l, ymm1_4h, ymm1_5l, ymm1_5h, ymm1_6l, ymm1_6h, ymm1_7l, ymm1_7h,
              ymm1_8l, ymm1_8h, ymm1_9l, ymm1_9h, ymm1_al, ymm1_ah, ymm1_bl, ymm1_bh,
              ymm1_cl, ymm1_ch, ymm1_dl, ymm1_dh, ymm1_el, ymm1_eh, ymm1_fl, ymm1_fh,

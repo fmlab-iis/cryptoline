@@ -4994,7 +4994,7 @@ spl b03 t t 3; spl b02 t t 2; spl b01 b00 t 1;
 
 nondet Z@bit;
 
-call _gf256v_mul_scalar_u64 (a000,a001,a002,a003,a004,a005,a006,a007,
+inline _gf256v_mul_scalar_u64 (a000,a001,a002,a003,a004,a005,a006,a007,
                              a008,a009,a00a,a00b,a00c,a00d,a00e,a00f,
                              a010,a011,a012,a013,a014,a015,a016,a017,
                              a018,a019,a01a,a01b,a01c,a01d,a01e,a01f,

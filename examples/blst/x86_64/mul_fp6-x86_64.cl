@@ -16597,7 +16597,7 @@ proc main (uint64 a00, uint64 a01, uint64 a02,
 }
 
 
-call mul_fp6x2 (a00, a01, a02, a03, a04, a05, a10, a11, a12, a13, a14, a15,
+inline mul_fp6x2 (a00, a01, a02, a03, a04, a05, a10, a11, a12, a13, a14, a15,
                 a20, a21, a22, a23, a24, a25, a30, a31, a32, a33, a34, a35,
                 a40, a41, a42, a43, a44, a45, a50, a51, a52, a53, a54, a55,
 

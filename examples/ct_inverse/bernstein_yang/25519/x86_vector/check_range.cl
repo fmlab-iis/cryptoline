@@ -197,420 +197,420 @@ assert true && and[ r9  = 1@64,
                    ];
 
 (* 01 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 02 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 03 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 04 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 05 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 06 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 07 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 08 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 09 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 10 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 11 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 12 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 13 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 14 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 15 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 16 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 17 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 18 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 19 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 20 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 21 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 22 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 23 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 24 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 25 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 26 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 27 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 28 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 29 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 30 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 31 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 32 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 33 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 34 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 35 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 36 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 37 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 38 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 39 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 40 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 41 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 42 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 43 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 44 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 45 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 46 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 47 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 48 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 49 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 50 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 51 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 52 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 53 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 54 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 55 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 56 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 57 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 58 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),
             M   (* M *));
 
 (* 59 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), rcx (* G0 *), r15 (* G *),
             r8  (* R0 *), r12 (* R *), r9  (* U *),
             rax (* V *), r10 (* Q0 *), rbx (* Q *),
             M   (* M *));
 
 (* 60 *)
-call loop ( f0_init, g0_init, rsi (* DELTA *),
+inline loop ( f0_init, g0_init, rsi (* DELTA *),
             rdx (* F *), r15 (* G0 *), rcx (* G *),
             r12 (* R0 *), r8  (* R *), r9  (* U *),
             rax (* V *), rbx (* Q0 *), r10 (* Q *),

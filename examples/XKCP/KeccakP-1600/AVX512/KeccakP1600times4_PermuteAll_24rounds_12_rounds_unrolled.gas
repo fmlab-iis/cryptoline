@@ -22,8 +22,8 @@
 #! vmovdqa64 $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+8];\nmov $2ymm_2 $1ea[+16];\nmov $2ymm_3 $1ea[+24]
 #! vmovdqa64 $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+8] $1ymm_1;\nmov $2ea[+16] $1ymm_2;\nmov $2ea[+24] $1ymm_3
 #! vmovdqa64 $1ymm, $2ymm -> mov $2ymm_0 $1ymm_0;\nmov $2ymm_1 $1ymm_1;\nmov $2ymm_2 $1ymm_2;\nmov $2ymm_3 $1ymm_3
-#! vpternlogq $1c, $2ymm, $3ymm, $4ymm -> mov table $1c@uint8;\ncall vpternlogq64 ($4ymm_0, $3ymm_0, $2ymm_0, table);\ncall vpternlogq64 ($4ymm_1, $3ymm_1, $2ymm_1, table);\ncall vpternlogq64 ($4ymm_2, $3ymm_2, $2ymm_2, table);\ncall vpternlogq64 ($4ymm_3, $3ymm_3, $2ymm_3, table)
-#! vpternlogq $1c, $2ea, $3ymm, $4ymm -> mov table $1c@uint8;\ncall vpternlogq64 ($4ymm_0, $3ymm_0, $2ea, table);\ncall vpternlogq64 ($4ymm_1, $3ymm_1, $2ea[+8], table);\ncall vpternlogq64 ($4ymm_2, $3ymm_2, $2ea[+16], table);\ncall vpternlogq64 ($4ymm_3, $3ymm_3, $2ea[+24], table)
+#! vpternlogq $1c, $2ymm, $3ymm, $4ymm -> mov table $1c@uint8;\ninline vpternlogq64 ($4ymm_0, $3ymm_0, $2ymm_0, table);\ninline vpternlogq64 ($4ymm_1, $3ymm_1, $2ymm_1, table);\ninline vpternlogq64 ($4ymm_2, $3ymm_2, $2ymm_2, table);\ninline vpternlogq64 ($4ymm_3, $3ymm_3, $2ymm_3, table)
+#! vpternlogq $1c, $2ea, $3ymm, $4ymm -> mov table $1c@uint8;\ninline vpternlogq64 ($4ymm_0, $3ymm_0, $2ea, table);\ninline vpternlogq64 ($4ymm_1, $3ymm_1, $2ea[+8], table);\ninline vpternlogq64 ($4ymm_2, $3ymm_2, $2ea[+16], table);\ninline vpternlogq64 ($4ymm_3, $3ymm_3, $2ea[+24], table)
 #! vprolq $1c, $2ymm, $3ymm -> rol $3ymm_0 $2ymm_0 $1c;\nrol $3ymm_1 $2ymm_1 $1c;\nrol $3ymm_2 $2ymm_2 $1c;\nrol $3ymm_3 $2ymm_3 $1c
 #! vprorq $1c, $2ymm, $3ymm -> ror $3ymm_0 $2ymm_0 $1c;\nror $3ymm_1 $2ymm_1 $1c;\nror $3ymm_2 $2ymm_2 $1c;\nror $3ymm_3 $2ymm_3 $1c
 #! vpxorq $1ymm, $2ymm, $3ymm -> xor $3ymm_0@uint64 $2ymm_0 $1ymm_0;\nxor $3ymm_1@uint64 $2ymm_1 $1ymm_1;\nxor $3ymm_2@uint64 $2ymm_2 $1ymm_2;\nxor $3ymm_3@uint64 $2ymm_3 $1ymm_3

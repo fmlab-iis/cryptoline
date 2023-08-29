@@ -44,10 +44,10 @@ mov e0 src2_1; mov f0 src2_0; mov g0 src1_1; mov h0 src1_0;
 mov wk0 xmm0_0; mov wk1 xmm0_1;
 
 (* round 1 *)
-call Ch (e0, f0, g0, Ch);
-call Sigma1 (e0, S1);
-call Maj (a0, b0, c0, Maj);
-call Sigma0 (a0, S0);
+inline Ch (e0, f0, g0, Ch);
+inline Sigma1 (e0, S1);
+inline Maj (a0, b0, c0, Maj);
+inline Sigma0 (a0, S0);
 adds dc s0 Ch S1;
 adds dc t0 wk0 h0;
 adds dc u0 Maj S0;
@@ -58,10 +58,10 @@ adds dc e1 st0 d0;
 mov f1 e0; mov g1 f0; mov h1 g0;
 
 (* round 2 *)
-call Ch (e1, f1, g1, Ch);
-call Sigma1 (e1, S1);
-call Maj (a1, b1, c1, Maj);
-call Sigma0 (a1, S0);
+inline Ch (e1, f1, g1, Ch);
+inline Sigma1 (e1, S1);
+inline Maj (a1, b1, c1, Maj);
+inline Sigma0 (a1, S0);
 adds dc s1 Ch S1;
 adds dc t1 wk1 h1;
 adds dc u1 Maj S0;

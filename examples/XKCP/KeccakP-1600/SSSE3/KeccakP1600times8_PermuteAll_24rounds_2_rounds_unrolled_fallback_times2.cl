@@ -70,27 +70,27 @@ join dst src_7 tmp;
 
 proc vpshufb128(uint64 idx_0, uint64 idx_1, uint64 src_0, uint64 src_1; uint64 dst_0, uint64 dst_1) =
 { true && true }
-call stb64(idx_0, idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07);
-call stb64(idx_1, idx_08, idx_09, idx_10, idx_11, idx_12, idx_13, idx_14, idx_15);
+inline stb64(idx_0, idx_00, idx_01, idx_02, idx_03, idx_04, idx_05, idx_06, idx_07);
+inline stb64(idx_1, idx_08, idx_09, idx_10, idx_11, idx_12, idx_13, idx_14, idx_15);
 join src src_1 src_0;
-call sel128(idx_00, src, dst_00);
-call sel128(idx_01, src, dst_01);
-call sel128(idx_02, src, dst_02);
-call sel128(idx_03, src, dst_03);
-call sel128(idx_04, src, dst_04);
-call sel128(idx_05, src, dst_05);
-call sel128(idx_06, src, dst_06);
-call sel128(idx_07, src, dst_07);
-call sel128(idx_08, src, dst_08);
-call sel128(idx_09, src, dst_09);
-call sel128(idx_10, src, dst_10);
-call sel128(idx_11, src, dst_11);
-call sel128(idx_12, src, dst_12);
-call sel128(idx_13, src, dst_13);
-call sel128(idx_14, src, dst_14);
-call sel128(idx_15, src, dst_15);
-call jb64(dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07, dst_0);
-call jb64(dst_08, dst_09, dst_10, dst_11, dst_12, dst_13, dst_14, dst_15, dst_1);
+inline sel128(idx_00, src, dst_00);
+inline sel128(idx_01, src, dst_01);
+inline sel128(idx_02, src, dst_02);
+inline sel128(idx_03, src, dst_03);
+inline sel128(idx_04, src, dst_04);
+inline sel128(idx_05, src, dst_05);
+inline sel128(idx_06, src, dst_06);
+inline sel128(idx_07, src, dst_07);
+inline sel128(idx_08, src, dst_08);
+inline sel128(idx_09, src, dst_09);
+inline sel128(idx_10, src, dst_10);
+inline sel128(idx_11, src, dst_11);
+inline sel128(idx_12, src, dst_12);
+inline sel128(idx_13, src, dst_13);
+inline sel128(idx_14, src, dst_14);
+inline sel128(idx_15, src, dst_15);
+inline jb64(dst_00, dst_01, dst_02, dst_03, dst_04, dst_05, dst_06, dst_07, dst_0);
+inline jb64(dst_08, dst_09, dst_10, dst_11, dst_12, dst_13, dst_14, dst_15, dst_1);
 { true && true }
 
 
@@ -745,7 +745,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -832,7 +832,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -1210,7 +1210,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -1295,7 +1295,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x79f643aedcaaa516; PC = 0x55555558453c *)
@@ -1670,7 +1670,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -1757,7 +1757,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -2135,7 +2135,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -2220,7 +2220,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x673a3cce424449f1; PC = 0x55555558453c *)
@@ -2595,7 +2595,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -2682,7 +2682,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -3060,7 +3060,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -3145,7 +3145,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xf202ecfb0aa2349f; PC = 0x55555558453c *)
@@ -3520,7 +3520,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -3607,7 +3607,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -3985,7 +3985,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -4070,7 +4070,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xf7cd6c96c589d4b2; PC = 0x55555558453c *)
@@ -4445,7 +4445,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -4532,7 +4532,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -4910,7 +4910,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -4995,7 +4995,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x0498c9d9ae8eefa2; PC = 0x55555558453c *)
@@ -5370,7 +5370,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -5457,7 +5457,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -5835,7 +5835,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -5920,7 +5920,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xc2dfdfe111a50464; PC = 0x55555558453c *)
@@ -6295,7 +6295,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -6382,7 +6382,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -6760,7 +6760,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -6845,7 +6845,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x2ac89d6ea05ea1ba; PC = 0x55555558453c *)
@@ -7220,7 +7220,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -7307,7 +7307,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -7685,7 +7685,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -7770,7 +7770,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xe4cfc3e4342b79a6; PC = 0x55555558453c *)
@@ -8145,7 +8145,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -8232,7 +8232,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -8610,7 +8610,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -8695,7 +8695,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xe99fa04cee23909b; PC = 0x55555558453c *)
@@ -9070,7 +9070,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -9157,7 +9157,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -9535,7 +9535,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -9620,7 +9620,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xd93e351b8216d926; PC = 0x55555558453c *)
@@ -9995,7 +9995,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -10082,7 +10082,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -10460,7 +10460,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -10545,7 +10545,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x6c270018644a4836; PC = 0x55555558453c *)
@@ -10920,7 +10920,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -11007,7 +11007,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -11385,7 +11385,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -11470,7 +11470,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x9267782803ddd68a; PC = 0x55555558453c *)
@@ -12115,7 +12115,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -12202,7 +12202,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -12580,7 +12580,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -12665,7 +12665,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xc8c12cd5751b9cc7; PC = 0x55555558453c *)
@@ -13040,7 +13040,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -13127,7 +13127,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -13505,7 +13505,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -13590,7 +13590,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x86b046f69f816a1a; PC = 0x55555558453c *)
@@ -13965,7 +13965,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -14052,7 +14052,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -14430,7 +14430,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -14515,7 +14515,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xc52953c394dbd992; PC = 0x55555558453c *)
@@ -14890,7 +14890,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -14977,7 +14977,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -15355,7 +15355,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -15440,7 +15440,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x1dcdcd9db757d658; PC = 0x55555558453c *)
@@ -15815,7 +15815,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -15902,7 +15902,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -16280,7 +16280,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -16365,7 +16365,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xae2dae57901cfee1; PC = 0x55555558453c *)
@@ -16740,7 +16740,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -16827,7 +16827,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -17205,7 +17205,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -17290,7 +17290,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xeb909b1534a7da46; PC = 0x55555558453c *)
@@ -17665,7 +17665,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -17752,7 +17752,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -18130,7 +18130,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -18215,7 +18215,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xccd5c4b02744dffd; PC = 0x55555558453c *)
@@ -18590,7 +18590,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -18677,7 +18677,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -19055,7 +19055,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -19140,7 +19140,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xa748f8304860b2a5; PC = 0x55555558453c *)
@@ -19515,7 +19515,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -19602,7 +19602,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -19980,7 +19980,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -20065,7 +20065,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x32061c56cfc18d85; PC = 0x55555558453c *)
@@ -20440,7 +20440,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -20527,7 +20527,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -20905,7 +20905,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -20990,7 +20990,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xa983231c977ce0a3; PC = 0x55555558453c *)
@@ -21365,7 +21365,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -21452,7 +21452,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -21830,7 +21830,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -21915,7 +21915,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x75f7d13e4ae53e52; PC = 0x55555558453c *)
@@ -22290,7 +22290,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -22377,7 +22377,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -22755,7 +22755,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -22840,7 +22840,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x38648534229c54a6; PC = 0x55555558453c *)
@@ -23485,7 +23485,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -23572,7 +23572,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -23950,7 +23950,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -24035,7 +24035,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x0e4529212721fa39; PC = 0x55555558453c *)
@@ -24410,7 +24410,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -24497,7 +24497,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -24875,7 +24875,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -24960,7 +24960,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x64a4e0a722e16f98; PC = 0x55555558453c *)
@@ -25335,7 +25335,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -25422,7 +25422,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -25800,7 +25800,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -25885,7 +25885,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xf258bbde92a30197; PC = 0x55555558453c *)
@@ -26260,7 +26260,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -26347,7 +26347,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -26725,7 +26725,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -26810,7 +26810,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x2c2397be6adcbcc8; PC = 0x55555558453c *)
@@ -27185,7 +27185,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -27272,7 +27272,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -27650,7 +27650,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -27735,7 +27735,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x6e98c442f7fd51cf; PC = 0x55555558453c *)
@@ -28110,7 +28110,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -28197,7 +28197,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -28575,7 +28575,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -28660,7 +28660,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x1ca3cf79ad4aae45; PC = 0x55555558453c *)
@@ -29035,7 +29035,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -29122,7 +29122,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -29500,7 +29500,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -29585,7 +29585,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xdb86bc4622b64d19; PC = 0x55555558453c *)
@@ -29960,7 +29960,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -30047,7 +30047,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -30425,7 +30425,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -30510,7 +30510,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0xd24c7cd3ccdb37e4; PC = 0x55555558453c *)
@@ -30885,7 +30885,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -30972,7 +30972,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -31350,7 +31350,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -31435,7 +31435,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x9cf892f358761a2a; PC = 0x55555558453c *)
@@ -31810,7 +31810,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -31897,7 +31897,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -32275,7 +32275,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -32360,7 +32360,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x9fc4a349c88de95b; PC = 0x55555558453c *)
@@ -32735,7 +32735,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -32822,7 +32822,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -33200,7 +33200,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -33285,7 +33285,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x919105dc6a2eb192; PC = 0x55555558453c *)
@@ -33660,7 +33660,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -33747,7 +33747,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd680;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd688;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -34125,7 +34125,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd670 xmm10_0;
 mov L0x7fffffffd678 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -34210,7 +34210,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6c0; Value = 0x11657a980f9c0a30; PC = 0x55555558453c *)
@@ -34853,7 +34853,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -34940,7 +34940,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -35318,7 +35318,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -35403,7 +35403,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x04da0c7f4e72f80a; PC = 0x55555558453c *)
@@ -35778,7 +35778,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -35865,7 +35865,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -36243,7 +36243,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -36328,7 +36328,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0xc3d022a523850c4d; PC = 0x55555558453c *)
@@ -36703,7 +36703,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -36790,7 +36790,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -37168,7 +37168,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -37253,7 +37253,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x3f4f87fad6d4076c; PC = 0x55555558453c *)
@@ -37628,7 +37628,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -37715,7 +37715,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -38093,7 +38093,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -38178,7 +38178,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0xc4aa5ff54ec73006; PC = 0x55555558453c *)
@@ -38553,7 +38553,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -38640,7 +38640,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -39018,7 +39018,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -39103,7 +39103,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x1e2f7f992f9801ae; PC = 0x55555558453c *)
@@ -39478,7 +39478,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -39565,7 +39565,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -39943,7 +39943,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -40028,7 +40028,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x32ba2d5e7da01ac6; PC = 0x55555558453c *)
@@ -40403,7 +40403,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -40490,7 +40490,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -40868,7 +40868,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -40953,7 +40953,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x89740cc012015f7b; PC = 0x55555558453c *)
@@ -41328,7 +41328,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -41415,7 +41415,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -41793,7 +41793,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -41878,7 +41878,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x8d19460692e4c388; PC = 0x55555558453c *)
@@ -42253,7 +42253,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -42340,7 +42340,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -42718,7 +42718,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -42803,7 +42803,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0xaa8cd52f8a106eb7; PC = 0x55555558453c *)
@@ -43178,7 +43178,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -43265,7 +43265,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -43643,7 +43643,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -43728,7 +43728,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x98270e828a6f0ac3; PC = 0x55555558453c *)
@@ -44103,7 +44103,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -44190,7 +44190,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -44568,7 +44568,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -44653,7 +44653,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x1a0b62c60ce9d385; PC = 0x55555558453c *)
@@ -45028,7 +45028,7 @@ rol xmm7_1 xmm7_1 0x19;
 xor xmm4_0@uint64 xmm4_0 xmm17_0;
 xor xmm4_1@uint64 xmm4_1 xmm17_1;
 (* vpshufb 0x162ca(%rip),%xmm4,%xmm4        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x55555558416d *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxorq %xmm8,%xmm2,%xmm30                       #! PC = 0x555555584176 *)
@@ -45115,7 +45115,7 @@ ror xmm6_1 xmm6_1 0x2;
 xor xmm11_0@uint64 xmm11_0 L0x7fffffffd690;
 xor xmm11_1@uint64 xmm11_1 L0x7fffffffd698;
 (* vpshufb 0x1622e(%rip),%xmm3,%xmm3        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584219 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm3_0, xmm3_1, tmp_0, tmp_1);
 mov xmm3_0 tmp_0;
 mov xmm3_1 tmp_1;
 (* vprorq $0x17,%xmm11,%xmm11                      #! PC = 0x555555584222 *)
@@ -45493,7 +45493,7 @@ xor xmm10_1@uint64 xmm13_1 xmm10_1;
 mov L0x7fffffffd680 xmm10_0;
 mov L0x7fffffffd688 xmm10_1;
 (* vpshufb 0x15f92(%rip),%xmm7,%xmm10        # 0x55555559a440#! EA = L0x55555559a440; Value = 0x0605040302010007; PC = 0x5555555844a5 *)
-call vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a440, L0x55555559a448, xmm7_0, xmm7_1, tmp_0, tmp_1);
 mov xmm10_0 tmp_0;
 mov xmm10_1 tmp_1;
 (* vpandnq %xmm16,%xmm6,%xmm21                     #! PC = 0x5555555844ae *)
@@ -45578,7 +45578,7 @@ and xmm12_1@uint64 xmm30_1n xmm10_1;
 xor xmm12_0@uint64 xmm12_0 xmm6_0;
 xor xmm12_1@uint64 xmm12_1 xmm6_1;
 (* vpshufb 0x15f14(%rip),%xmm4,%xmm4        # 0x55555559a450#! EA = L0x55555559a450; Value = 0x0007060504030201; PC = 0x555555584533 *)
-call vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
+inline vpshufb128(L0x55555559a450, L0x55555559a458, xmm4_0, xmm4_1, tmp_0, tmp_1);
 mov xmm4_0 tmp_0;
 mov xmm4_1 tmp_1;
 (* vpxor  -0x28(%rsp),%xmm0,%xmm0                  #! EA = L0x7fffffffd6d0; Value = 0x0198f98638098df5; PC = 0x55555558453c *)

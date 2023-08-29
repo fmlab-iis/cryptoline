@@ -54,8 +54,8 @@ proc sha256msg1 (uint32 src1_0, uint32 src1_1, uint32 src1_2, uint32 src1_3,
                  uint32 dst_0, uint32 dst_1, uint32 dst_2, uint32 dst_3) =
 { true && true }
 mov w4 src2_0; mov w3 src1_3; mov w2 src1_2; mov w1 src1_1; mov w0 src1_0;
-call sigma0 (w4, o4); call sigma0 (w3, o3);
-call sigma0 (w2, o2); call sigma0 (w1, o1);
+inline sigma0 (w4, o4); inline sigma0 (w3, o3);
+inline sigma0 (w2, o2); inline sigma0 (w1, o1);
 adds dc dst_3 w3 o4; adds dc dst_2 w2 o3;
 adds dc dst_1 w1 o2; adds dc dst_0 w0 o1;
 { true && true }
@@ -66,10 +66,10 @@ proc sha256msg2 (uint32 src1_0, uint32 src1_1, uint32 src1_2, uint32 src1_3,
 { true && true }
 mov w14 src2_2; mov w15 src2_3;
 mov t16 src1_0; mov t17 src1_1; mov t18 src1_2; mov t19 src1_3;
-call sigma1 (w14, o14); adds dc w16 t16 o14;
-call sigma1 (w15, o15); adds dc w17 t17 o15;
-call sigma1 (w16, o16); adds dc w18 t18 o16;
-call sigma1 (w17, o17); adds dc w19 t19 o17;
+inline sigma1 (w14, o14); adds dc w16 t16 o14;
+inline sigma1 (w15, o15); adds dc w17 t17 o15;
+inline sigma1 (w16, o16); adds dc w18 t18 o16;
+inline sigma1 (w17, o17); adds dc w19 t19 o17;
 mov dst_3 w19; mov dst_2 w18; mov dst_1 w17; mov dst_0 w16;
 { true && true }
 
@@ -121,10 +121,10 @@ mov e0 src2_1; mov f0 src2_0; mov g0 src1_1; mov h0 src1_0;
 mov wk0 xmm0_0; mov wk1 xmm0_1;
 
 (* round 1 *)
-call Ch (e0, f0, g0, Ch);
-call Sigma1 (e0, S1);
-call Maj (a0, b0, c0, Maj);
-call Sigma0 (a0, S0);
+inline Ch (e0, f0, g0, Ch);
+inline Sigma1 (e0, S1);
+inline Maj (a0, b0, c0, Maj);
+inline Sigma0 (a0, S0);
 adds dc s0 Ch S1;
 adds dc t0 wk0 h0;
 adds dc u0 Maj S0;
@@ -135,10 +135,10 @@ adds dc e1 st0 d0;
 mov f1 e0; mov g1 f0; mov h1 g0;
 
 (* round 2 *)
-call Ch (e1, f1, g1, Ch);
-call Sigma1 (e1, S1);
-call Maj (a1, b1, c1, Maj);
-call Sigma0 (a1, S0);
+inline Ch (e1, f1, g1, Ch);
+inline Sigma1 (e1, S1);
+inline Maj (a1, b1, c1, Maj);
+inline Sigma0 (a1, S0);
 adds dc s1 Ch S1;
 adds dc t1 wk1 h1;
 adds dc u1 Maj S0;
@@ -371,10 +371,10 @@ join xmm4_3 sfe sdc; join xmm4_2 sba s98; join xmm4_1 s76 s54; join xmm4_0 s32 s
 mov xmm10_0 xmm2_0; mov xmm10_1 xmm2_1;
 mov xmm10_2 xmm2_2; mov xmm10_3 xmm2_3;
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555712b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x55555555712f *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -382,10 +382,10 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
 mov xmm9_0 xmm1_0; mov xmm9_1 xmm1_1;
 mov xmm9_2 xmm1_2; mov xmm9_3 xmm1_3;
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555713a *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa -0x60(%rcx),%xmm0                        #! EA = L0x555555556e20; Value = 0x59f111f13956c25b; PC = 0x55555555713e *)
 mov xmm0_0 L0x555555556e20; mov xmm0_1 L0x555555556e24;
 mov xmm0_2 L0x555555556e28; mov xmm0_3 L0x555555556e2c;
@@ -403,10 +403,10 @@ join sfe xc xd; join sdc xe xf; join sba x8 x9; join s98 xa xb;
 join s76 x4 x5; join s54 x6 x7; join s32 x0 x1; join s10 x2 x3;
 join xmm5_3 sfe sdc; join xmm5_2 sba s98; join xmm5_1 s76 s54; join xmm5_0 s32 s10;
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555714c *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557150 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -414,14 +414,14 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
 (* lea $1c(%rip), %rsi *)
 nop;
 (* sha256msg1 %xmm4,%xmm3                          #! PC = 0x555555557159 *)
-call sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555715d *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa -0x40(%rcx),%xmm0                        #! EA = L0x555555556e40; Value = 0x12835b01d807aa98; PC = 0x555555557161 *)
 mov xmm0_0 L0x555555556e40; mov xmm0_1 L0x555555556e44;
 mov xmm0_2 L0x555555556e48; mov xmm0_3 L0x555555556e4c;
@@ -439,10 +439,10 @@ join sfe xc xd; join sdc xe xf; join sba x8 x9; join s98 xa xb;
 join s76 x4 x5; join s54 x6 x7; join s32 x0 x1; join s10 x2 x3;
 join xmm6_3 sfe sdc; join xmm6_2 sba s98; join xmm6_1 s76 s54; join xmm6_0 s32 s10;
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555716f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557173 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -456,14 +456,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
 (* sha256msg1 %xmm5,%xmm4                          #! PC = 0x555555557187 *)
-call sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555718b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa -0x20(%rcx),%xmm0                        #! EA = L0x555555556e60; Value = 0x80deb1fe72be5d74; PC = 0x55555555718f *)
 mov xmm0_0 L0x555555556e60; mov xmm0_1 L0x555555556e64;
 mov xmm0_2 L0x555555556e68; mov xmm0_3 L0x555555556e6c;
@@ -471,14 +471,14 @@ mov xmm0_2 L0x555555556e68; mov xmm0_3 L0x555555556e6c;
 adds dc xmm0_0 xmm0_0 xmm6_0; adds dc xmm0_1 xmm0_1 xmm6_1;
 adds dc xmm0_2 xmm0_2 xmm6_2; adds dc xmm0_3 xmm0_3 xmm6_3;
 (* sha256msg2 %xmm6,%xmm3                          #! PC = 0x555555557198 *)
-call sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555719c *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571a0 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -492,14 +492,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
 (* sha256msg1 %xmm6,%xmm5                          #! PC = 0x5555555571b4 *)
-call sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555571b8 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa (%rcx),%xmm0                             #! EA = L0x555555556e80; Value = 0xefbe4786e49b69c1; PC = 0x5555555571bc *)
 mov xmm0_0 L0x555555556e80; mov xmm0_1 L0x555555556e84;
 mov xmm0_2 L0x555555556e88; mov xmm0_3 L0x555555556e8c;
@@ -507,14 +507,14 @@ mov xmm0_2 L0x555555556e88; mov xmm0_3 L0x555555556e8c;
 adds dc xmm0_0 xmm0_0 xmm3_0; adds dc xmm0_1 xmm0_1 xmm3_1;
 adds dc xmm0_2 xmm0_2 xmm3_2; adds dc xmm0_3 xmm0_3 xmm3_3;
 (* sha256msg2 %xmm3,%xmm4                          #! PC = 0x5555555571c4 *)
-call sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555571c8 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571cc *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -528,14 +528,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
 (* sha256msg1 %xmm3,%xmm6                          #! PC = 0x5555555571e0 *)
-call sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555571e4 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x20(%rcx),%xmm0                         #! EA = L0x555555556ea0; Value = 0x4a7484aa2de92c6f; PC = 0x5555555571e8 *)
 mov xmm0_0 L0x555555556ea0; mov xmm0_1 L0x555555556ea4;
 mov xmm0_2 L0x555555556ea8; mov xmm0_3 L0x555555556eac;
@@ -543,14 +543,14 @@ mov xmm0_2 L0x555555556ea8; mov xmm0_3 L0x555555556eac;
 adds dc xmm0_0 xmm0_0 xmm4_0; adds dc xmm0_1 xmm0_1 xmm4_1;
 adds dc xmm0_2 xmm0_2 xmm4_2; adds dc xmm0_3 xmm0_3 xmm4_3;
 (* sha256msg2 %xmm4,%xmm5                          #! PC = 0x5555555571f1 *)
-call sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555571f5 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555571f9 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -564,14 +564,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm6_0 xmm6_0 xmm7_0; adds dc xmm6_1 xmm6_1 xmm7_1;
 adds dc xmm6_2 xmm6_2 xmm7_2; adds dc xmm6_3 xmm6_3 xmm7_3;
 (* sha256msg1 %xmm4,%xmm3                          #! PC = 0x55555555720d *)
-call sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x555555557211 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x40(%rcx),%xmm0                         #! EA = L0x555555556ec0; Value = 0xa831c66d983e5152; PC = 0x555555557215 *)
 mov xmm0_0 L0x555555556ec0; mov xmm0_1 L0x555555556ec4;
 mov xmm0_2 L0x555555556ec8; mov xmm0_3 L0x555555556ecc;
@@ -579,14 +579,14 @@ mov xmm0_2 L0x555555556ec8; mov xmm0_3 L0x555555556ecc;
 adds dc xmm0_0 xmm0_0 xmm5_0; adds dc xmm0_1 xmm0_1 xmm5_1;
 adds dc xmm0_2 xmm0_2 xmm5_2; adds dc xmm0_3 xmm0_3 xmm5_3;
 (* sha256msg2 %xmm5,%xmm6                          #! PC = 0x55555555721e *)
-call sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x555555557222 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557226 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -600,14 +600,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
 (* sha256msg1 %xmm5,%xmm4                          #! PC = 0x55555555723a *)
-call sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555723e *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x60(%rcx),%xmm0                         #! EA = L0x555555556ee0; Value = 0xd5a79147c6e00bf3; PC = 0x555555557242 *)
 mov xmm0_0 L0x555555556ee0; mov xmm0_1 L0x555555556ee4;
 mov xmm0_2 L0x555555556ee8; mov xmm0_3 L0x555555556eec;
@@ -615,14 +615,14 @@ mov xmm0_2 L0x555555556ee8; mov xmm0_3 L0x555555556eec;
 adds dc xmm0_0 xmm0_0 xmm6_0; adds dc xmm0_1 xmm0_1 xmm6_1;
 adds dc xmm0_2 xmm0_2 xmm6_2; adds dc xmm0_3 xmm0_3 xmm6_3;
 (* sha256msg2 %xmm6,%xmm3                          #! PC = 0x55555555724b *)
-call sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555724f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557253 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -636,14 +636,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
 (* sha256msg1 %xmm6,%xmm5                          #! PC = 0x555555557267 *)
-call sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555726b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x80(%rcx),%xmm0                         #! EA = L0x555555556f00; Value = 0x2e1b213827b70a85; PC = 0x55555555726f *)
 mov xmm0_0 L0x555555556f00; mov xmm0_1 L0x555555556f04;
 mov xmm0_2 L0x555555556f08; mov xmm0_3 L0x555555556f0c;
@@ -651,14 +651,14 @@ mov xmm0_2 L0x555555556f08; mov xmm0_3 L0x555555556f0c;
 adds dc xmm0_0 xmm0_0 xmm3_0; adds dc xmm0_1 xmm0_1 xmm3_1;
 adds dc xmm0_2 xmm0_2 xmm3_2; adds dc xmm0_3 xmm0_3 xmm3_3;
 (* sha256msg2 %xmm3,%xmm4                          #! PC = 0x55555555727b *)
-call sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555727f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557283 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -672,14 +672,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
 (* sha256msg1 %xmm3,%xmm6                          #! PC = 0x555555557297 *)
-call sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555729b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0xa0(%rcx),%xmm0                         #! EA = L0x555555556f20; Value = 0x766a0abb650a7354; PC = 0x55555555729f *)
 mov xmm0_0 L0x555555556f20; mov xmm0_1 L0x555555556f24;
 mov xmm0_2 L0x555555556f28; mov xmm0_3 L0x555555556f2c;
@@ -687,14 +687,14 @@ mov xmm0_2 L0x555555556f28; mov xmm0_3 L0x555555556f2c;
 adds dc xmm0_0 xmm0_0 xmm4_0; adds dc xmm0_1 xmm0_1 xmm4_1;
 adds dc xmm0_2 xmm0_2 xmm4_2; adds dc xmm0_3 xmm0_3 xmm4_3;
 (* sha256msg2 %xmm4,%xmm5                          #! PC = 0x5555555572ab *)
-call sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555572af *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555572b3 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -708,14 +708,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm6_0 xmm6_0 xmm7_0; adds dc xmm6_1 xmm6_1 xmm7_1;
 adds dc xmm6_2 xmm6_2 xmm7_2; adds dc xmm6_3 xmm6_3 xmm7_3;
 (* sha256msg1 %xmm4,%xmm3                          #! PC = 0x5555555572c7 *)
-call sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg1 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555572cb *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0xc0(%rcx),%xmm0                         #! EA = L0x555555556f40; Value = 0xa81a664ba2bfe8a1; PC = 0x5555555572cf *)
 mov xmm0_0 L0x555555556f40; mov xmm0_1 L0x555555556f44;
 mov xmm0_2 L0x555555556f48; mov xmm0_3 L0x555555556f4c;
@@ -723,14 +723,14 @@ mov xmm0_2 L0x555555556f48; mov xmm0_3 L0x555555556f4c;
 adds dc xmm0_0 xmm0_0 xmm5_0; adds dc xmm0_1 xmm0_1 xmm5_1;
 adds dc xmm0_2 xmm0_2 xmm5_2; adds dc xmm0_3 xmm0_3 xmm5_3;
 (* sha256msg2 %xmm5,%xmm6                          #! PC = 0x5555555572db *)
-call sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555572df *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555572e3 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -744,14 +744,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm3_0 xmm3_0 xmm7_0; adds dc xmm3_1 xmm3_1 xmm7_1;
 adds dc xmm3_2 xmm3_2 xmm7_2; adds dc xmm3_3 xmm3_3 xmm7_3;
 (* sha256msg1 %xmm5,%xmm4                          #! PC = 0x5555555572f7 *)
-call sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg1 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555572fb *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0xe0(%rcx),%xmm0                         #! EA = L0x555555556f60; Value = 0xd6990624d192e819; PC = 0x5555555572ff *)
 mov xmm0_0 L0x555555556f60; mov xmm0_1 L0x555555556f64;
 mov xmm0_2 L0x555555556f68; mov xmm0_3 L0x555555556f6c;
@@ -759,14 +759,14 @@ mov xmm0_2 L0x555555556f68; mov xmm0_3 L0x555555556f6c;
 adds dc xmm0_0 xmm0_0 xmm6_0; adds dc xmm0_1 xmm0_1 xmm6_1;
 adds dc xmm0_2 xmm0_2 xmm6_2; adds dc xmm0_3 xmm0_3 xmm6_3;
 (* sha256msg2 %xmm6,%xmm3                          #! PC = 0x55555555730b *)
-call sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3);
+inline sha256msg2 (xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555730f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557313 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -780,14 +780,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm4_0 xmm4_0 xmm7_0; adds dc xmm4_1 xmm4_1 xmm7_1;
 adds dc xmm4_2 xmm4_2 xmm7_2; adds dc xmm4_3 xmm4_3 xmm7_3;
 (* sha256msg1 %xmm6,%xmm5                          #! PC = 0x555555557327 *)
-call sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg1 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555732b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x100(%rcx),%xmm0                        #! EA = L0x555555556f80; Value = 0x1e376c0819a4c116; PC = 0x55555555732f *)
 mov xmm0_0 L0x555555556f80; mov xmm0_1 L0x555555556f84;
 mov xmm0_2 L0x555555556f88; mov xmm0_3 L0x555555556f8c;
@@ -795,14 +795,14 @@ mov xmm0_2 L0x555555556f88; mov xmm0_3 L0x555555556f8c;
 adds dc xmm0_0 xmm0_0 xmm3_0; adds dc xmm0_1 xmm0_1 xmm3_1;
 adds dc xmm0_2 xmm0_2 xmm3_2; adds dc xmm0_3 xmm0_3 xmm3_3;
 (* sha256msg2 %xmm3,%xmm4                          #! PC = 0x55555555733b *)
-call sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3);
+inline sha256msg2 (xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555733f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557343 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -816,14 +816,14 @@ mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 adds dc xmm5_0 xmm5_0 xmm7_0; adds dc xmm5_1 xmm5_1 xmm7_1;
 adds dc xmm5_2 xmm5_2 xmm7_2; adds dc xmm5_3 xmm5_3 xmm7_3;
 (* sha256msg1 %xmm3,%xmm6                          #! PC = 0x555555557357 *)
-call sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm3_0, xmm3_1, xmm3_2, xmm3_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg1 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm3_0, xmm3_1, xmm3_2, xmm3_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x55555555735b *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x120(%rcx),%xmm0                        #! EA = L0x555555556fa0; Value = 0x4ed8aa4a391c0cb3; PC = 0x55555555735f *)
 mov xmm0_0 L0x555555556fa0; mov xmm0_1 L0x555555556fa4;
 mov xmm0_2 L0x555555556fa8; mov xmm0_3 L0x555555556fac;
@@ -831,14 +831,14 @@ mov xmm0_2 L0x555555556fa8; mov xmm0_3 L0x555555556fac;
 adds dc xmm0_0 xmm0_0 xmm4_0; adds dc xmm0_1 xmm0_1 xmm4_1;
 adds dc xmm0_2 xmm0_2 xmm4_2; adds dc xmm0_3 xmm0_3 xmm4_3;
 (* sha256msg2 %xmm4,%xmm5                          #! PC = 0x55555555736b *)
-call sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm4_0, xmm4_1, xmm4_2, xmm4_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3);
+inline sha256msg2 (xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm4_0, xmm4_1, xmm4_2, xmm4_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3);
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x55555555736f *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x555555557373 *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -849,10 +849,10 @@ mov xmm7_2 xmm5_2; mov xmm7_3 xmm5_3;
 mov a0 xmm4_1; mov a1 xmm4_2; mov a2 xmm4_3; mov a3 xmm7_0;
 mov xmm7_0 a0; mov xmm7_1 a1; mov xmm7_2 a2; mov xmm7_3 a3;
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x555555557382 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* paddd  %xmm7,%xmm6                              #! PC = 0x555555557386 *)
 adds dc xmm6_0 xmm6_0 xmm7_0; adds dc xmm6_1 xmm6_1 xmm7_1;
 adds dc xmm6_2 xmm6_2 xmm7_2; adds dc xmm6_3 xmm6_3 xmm7_3;
@@ -863,25 +863,25 @@ mov xmm0_2 L0x555555556fc8; mov xmm0_3 L0x555555556fcc;
 adds dc xmm0_0 xmm0_0 xmm5_0; adds dc xmm0_1 xmm0_1 xmm5_1;
 adds dc xmm0_2 xmm0_2 xmm5_2; adds dc xmm0_3 xmm0_3 xmm5_3;
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x555555557396 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x55555555739a *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
 (* sha256msg2 %xmm5,%xmm6                          #! PC = 0x55555555739f *)
-call sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
-                 xmm5_0, xmm5_1, xmm5_2, xmm5_3,
-                 xmm6_0, xmm6_1, xmm6_2, xmm6_3);
+inline sha256msg2 (xmm6_0, xmm6_1, xmm6_2, xmm6_3,
+                   xmm5_0, xmm5_1, xmm5_2, xmm5_3,
+                   xmm6_0, xmm6_1, xmm6_2, xmm6_3);
 (* movdqa %xmm8,%xmm7                              #! PC = 0x5555555573a3 *)
 mov xmm7_0 xmm8_0; mov xmm7_1 xmm8_1;
 mov xmm7_2 xmm8_2; mov xmm7_3 xmm8_3;
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555573a8 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* movdqa 0x160(%rcx),%xmm0                        #! EA = L0x555555556fe0; Value = 0xa4506ceb90befffa; PC = 0x5555555573ac *)
 mov xmm0_0 L0x555555556fe0; mov xmm0_1 L0x555555556fe4;
 mov xmm0_2 L0x555555556fe8; mov xmm0_3 L0x555555556fec;
@@ -889,10 +889,10 @@ mov xmm0_2 L0x555555556fe8; mov xmm0_3 L0x555555556fec;
 adds dc xmm0_0 xmm0_0 xmm6_0; adds dc xmm0_1 xmm0_1 xmm6_1;
 adds dc xmm0_2 xmm0_2 xmm6_2; adds dc xmm0_3 xmm0_3 xmm6_3;
 (* sha256rnds2 %xmm0,%xmm1,%xmm2                   #! PC = 0x5555555573b9 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3);
 (* pshufd $0xe,%xmm0,%xmm0                         #! PC = 0x5555555573bd *)
 mov sh0 xmm0_2; mov sh1 xmm0_3; mov sh2 xmm0_0; mov sh3 xmm0_0;
 mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
@@ -900,10 +900,10 @@ mov xmm0_0 sh0; mov xmm0_1 sh1; mov xmm0_2 sh2; mov xmm0_3 sh3;
 (* dec %rdx *)
 nop;
 (* sha256rnds2 %xmm0,%xmm2,%xmm1                   #! PC = 0x5555555573c6 *)
-call sha256rnds2 (xmm0_0, xmm0_1,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3,
-                  xmm2_0, xmm2_1, xmm2_2, xmm2_3,
-                  xmm1_0, xmm1_1, xmm1_2, xmm1_3);
+inline sha256rnds2 (xmm0_0, xmm0_1,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3,
+                    xmm2_0, xmm2_1, xmm2_2, xmm2_3,
+                    xmm1_0, xmm1_1, xmm1_2, xmm1_3);
 (* paddd  %xmm10,%xmm2                             #! PC = 0x5555555573ca *)
 adds dc xmm2_0 xmm2_0 xmm10_0; adds dc xmm2_1 xmm2_1 xmm10_1;
 adds dc xmm2_2 xmm2_2 xmm10_2; adds dc xmm2_3 xmm2_3 xmm10_3;

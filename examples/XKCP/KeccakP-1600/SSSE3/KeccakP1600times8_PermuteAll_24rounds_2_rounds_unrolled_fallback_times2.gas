@@ -28,7 +28,7 @@
 #! vpbroadcastq $1v, $2xmm -> mov $2xmm_0 $1v;\nmov $2xmm_1 $1v
 #! vpandn $1xmm, $2xmm, $3xmm -> not $2xmm_0n@uint64 $2xmm_0;\nand $3xmm_0@uint64 $2xmm_0n $1xmm_0;\nnot $2xmm_1n@uint64 $2xmm_1;\nand $3xmm_1@uint64 $2xmm_1n $1xmm_1
 #! vpandnq $1xmm, $2xmm, $3xmm -> not $2xmm_0n@uint64 $2xmm_0;\nand $3xmm_0@uint64 $2xmm_0n $1xmm_0;\nnot $2xmm_1n@uint64 $2xmm_1;\nand $3xmm_1@uint64 $2xmm_1n $1xmm_1
-#! vpshufb $1ea, $2xmm, $3xmm -> call vpshufb128($1ea, $1ea[+8], $2xmm_0, $2xmm_1, tmp_0, tmp_1);\nmov $3xmm_0 tmp_0;\nmov $3xmm_1 tmp_1
+#! vpshufb $1ea, $2xmm, $3xmm -> inline vpshufb128($1ea, $1ea[+8], $2xmm_0, $2xmm_1, tmp_0, tmp_1);\nmov $3xmm_0 tmp_0;\nmov $3xmm_1 tmp_1
 
 #! KeccakP1600times8_PermuteAll_24rounds: -> nop
 #! endbr64.* -> nop

@@ -7510,7 +7510,7 @@ proc main (uint64 QX0_0, uint64 QX0_1, uint64 QX0_2, uint64 QX0_3, uint64 QX0_4,
 
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4292736 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4292736 = 0x4292736;
-call fp2_sqr(QX0_0, QX0_1, QX0_2, QX0_3, QX0_4, QX0_5, QX1_0, QX1_1, QX1_2, QX1_3, QX1_4, QX1_5,
+inline fp2_sqr(QX0_0, QX0_1, QX0_2, QX0_3, QX0_4, QX0_5, QX1_0, QX1_1, QX1_2, QX1_3, QX1_4, QX1_5,
 T00_0, T00_1, T00_2, T00_3, T00_4, T00_5, T01_0, T01_1, T01_2, T01_3, T01_4, T01_5);
 /* /\* NOTE: end fp2_sqr *\/ */
 
@@ -7583,7 +7583,7 @@ ecut
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4292752 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4292752 = 0x4292752;
 
-call fp2_sqr(QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_3, QY1_4, QY1_5,
+inline fp2_sqr(QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_3, QY1_4, QY1_5,
              T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5);
 
 ghost B0_0@uint64, B0_1@uint64, B0_2@uint64, B0_3@uint64, B0_4@uint64, B0_5@uint64,
@@ -7642,7 +7642,7 @@ ecut
 
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4292752 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4292752 = 0x4292752;
-call fp2_sqr(QZ0_0, QZ0_1, QZ0_2, QZ0_3, QZ0_4, QZ0_5, QZ1_0, QZ1_1, QZ1_2, QZ1_3, QZ1_4, QZ1_5,
+inline fp2_sqr(QZ0_0, QZ0_1, QZ0_2, QZ0_3, QZ0_4, QZ0_5, QZ1_0, QZ1_1, QZ1_2, QZ1_3, QZ1_4, QZ1_5,
              T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5);
 
 ghost C0_0@uint64, C0_1@uint64, C0_2@uint64, C0_3@uint64, C0_4@uint64, C0_5@uint64,
@@ -7703,12 +7703,12 @@ ecut
 /* NOTE: fp2_dbl(t3, t2); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4292801 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4292801 = 0x4292801;
-call fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
+inline fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
              T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5);
 /* NOTE: fp2_add(t3, t3, t2); */
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4292825 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4292825 = 0x4292825;
-call fp2_add(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
+inline fp2_add(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
              T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5);
 
@@ -7894,7 +7894,7 @@ mov T41_3 0@uint64;
 mov T41_4 0@uint64;
 mov T41_5 0@uint64;
 
-call fp2_mul(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
+inline fp2_mul(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
              T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5);
 
@@ -7965,7 +7965,7 @@ ecut
 /* NOTE: fp2_add(t4, q->x, q->y); */
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4292885 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4292885 = 0x4292885;
-call fp2_add(QX0_0, QX0_1, QX0_2, QX0_3, QX0_4, QX0_5, QX1_0, QX1_1, QX1_2, QX1_3, QX1_4, QX1_5,
+inline fp2_add(QX0_0, QX0_1, QX0_2, QX0_3, QX0_4, QX0_5, QX1_0, QX1_1, QX1_2, QX1_3, QX1_4, QX1_5,
              QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_3, QY1_4, QY1_5,
              T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5);
 (* #retq                                           #! PC = 0x4307788 *)
@@ -7973,14 +7973,14 @@ call fp2_add(QX0_0, QX0_1, QX0_2, QX0_3, QX0_4, QX0_5, QX1_0, QX1_1, QX1_2, QX1_
 /* NOTE: fp2_sqr(t4, t4); */
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4292901 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4292901 = 0x4292901;
-call fp2_sqr(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
+inline fp2_sqr(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
              T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5);
 
 
 /* NOTE: fp2_sub(t4, t4, t0); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4292922 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4292922 = 0x4292922;
-call fp2_sub(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
+inline fp2_sub(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
              T00_0, T00_1, T00_2, T00_3, T00_4, T00_5, T01_0, T01_1, T01_2, T01_3, T01_4, T01_5,
              T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -7988,7 +7988,7 @@ call fp2_sub(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_
 /* NOTE: fp2_sub(t4, t4, t1); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4292946 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4292946 = 0x4292946;
-call fp2_sub(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
+inline fp2_sub(T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
              T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -8052,7 +8052,7 @@ ecut
 /* mov T51_4 L0x7fffffffd380; */
 /* mov T51_5 L0x7fffffffd388; */
 
-call fp2_add(QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_3, QY1_4, QY1_5,
+inline fp2_add(QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_3, QY1_4, QY1_5,
             QZ0_0, QZ0_1, QZ0_2, QZ0_3, QZ0_4, QZ0_5, QZ1_0, QZ1_1, QZ1_2, QZ1_3, QZ1_4, QZ1_5,
             T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5);
 
@@ -8061,14 +8061,14 @@ call fp2_add(QY0_0, QY0_1, QY0_2, QY0_3, QY0_4, QY0_5, QY1_0, QY1_1, QY1_2, QY1_
 /* NOTE: fp2_sqr(t5, t5); */
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4292993 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4292993 = 0x4292993;
-call fp2_sqr(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
+inline fp2_sqr(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
              T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5);
 (* #retq                                           #! PC = 0x4313227 *)
 #retq                                           #! 0x4313227 = 0x4313227;
 /* NOTE: fp2_sub(t5, t5, t1); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293017 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293017 = 0x4293017;
-call fp2_sub(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
+inline fp2_sub(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
              T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5);
 
@@ -8077,7 +8077,7 @@ call fp2_sub(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_
 /* NOTE: fp2_sub(t5, t5, t2); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293041 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293041 = 0x4293041;
-call fp2_sub(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
+inline fp2_sub(T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
              T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
              T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -8138,14 +8138,14 @@ ecut
 /* mov T61_5 L0x7fffffffd3e8; */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293062 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293062 = 0x4293062;
-call fp2_dbl(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
+inline fp2_dbl(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_add(t6, t6, t3); */
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4293086 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4293086 = 0x4293086;
-call fp2_add(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
+inline fp2_add(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
              T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5);
 (* #retq                                           #! PC = 0x4307788 *)
@@ -8184,7 +8184,7 @@ ecut
 /* NOTE: fp2_sub(r->x, t1, t6); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293110 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293110 = 0x4293110;
-call fp2_sub(T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
+inline fp2_sub(T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
              RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_3, RX1_4, RX1_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -8212,7 +8212,7 @@ ecut
 /* NOTE: fp2_mul(r->x, r->x, t4); */
 (* #callq  0x42c1c0 <fp2_mul_integ>                #! PC = 0x4293129 *)
 #callq  0x42c1c0 <fp2_mul_integ>                #! 0x4293129 = 0x4293129;
-call fp2_mul(RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_3, RX1_4, RX1_5,
+inline fp2_mul(RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_3, RX1_4, RX1_5,
             T40_0, T40_1, T40_2, T40_3, T40_4, T40_5, T41_0, T41_1, T41_2, T41_3, T41_4, T41_5,
             RX0_0, RX0_1, RX0_2, RX0_3, RX0_4, RX0_5, RX1_0, RX1_1, RX1_2, RX1_3, RX1_4, RX1_5);
 (* #retq                                           #! PC = 0x4313227 *)
@@ -8293,7 +8293,7 @@ mov VD1_5 T31_5;
 
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4293153 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4293153 = 0x4293153;
-call fp2_add(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
+inline fp2_add(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
              T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5);
 (* #retq                                           #! PC = 0x4307788 *)
@@ -8301,42 +8301,42 @@ call fp2_add(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_
 /* NOTE: fp2_sqr(t6, t6); */
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4293169 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4293169 = 0x4293169;
-call fp2_sqr(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
+inline fp2_sqr(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
              T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5);
 (* #retq                                           #! PC = 0x4313227 *)
 #retq                                           #! 0x4313227 = 0x4313227;
 /* NOTE: fp2_sqr(t2, t3); */
 (* #callq  0x42c400 <fp2_sqr_integ>                #! PC = 0x4293190 *)
 #callq  0x42c400 <fp2_sqr_integ>                #! 0x4293190 = 0x4293190;
-call fp2_sqr(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
+inline fp2_sqr(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5);
 (* #retq                                           #! PC = 0x4313227 *)
 #retq                                           #! 0x4313227 = 0x4313227;
 /* NOTE: fp2_dbl(r->y, t2); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293206 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293206 = 0x4293206;
-call fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
+inline fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
             RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_dbl(t2, r->y); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293222 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293222 = 0x4293222;
-call fp2_dbl(RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5,
+inline fp2_dbl(RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5,
             T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_dbl(r->y, t2); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293238 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293238 = 0x4293238;
-call fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
+inline fp2_dbl(T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
             RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_add(r->y, r->y, t2); */
 (* #callq  0x42cdf0 <fp2_add_integ>                #! PC = 0x4293257 *)
 #callq  0x42cdf0 <fp2_add_integ>                #! 0x4293257 = 0x4293257;
-call fp2_add(RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5,
+inline fp2_add(RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5,
              T20_0, T20_1, T20_2, T20_3, T20_4, T20_5, T21_0, T21_1, T21_2, T21_3, T21_4, T21_5,
              RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5);
 (* #retq                                           #! PC = 0x4307788 *)
@@ -8344,7 +8344,7 @@ call fp2_add(RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_
 /* NOTE: fp2_sub(r->y, t6, r->y); */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293276 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293276 = 0x4293276;
-call fp2_sub(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
+inline fp2_sub(T60_0, T60_1, T60_2, T60_3, T60_4, T60_5, T61_0, T61_1, T61_2, T61_3, T61_4, T61_5,
              RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5,
              RY0_0, RY0_1, RY0_2, RY0_3, RY0_4, RY0_5, RY1_0, RY1_1, RY1_2, RY1_3, RY1_4, RY1_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -8429,21 +8429,21 @@ mov VF1_5 T51_5;
 /* NOTE: fp2_dbl(r->z, t1); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293292 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293292 = 0x4293292;
-call fp2_dbl(T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
+inline fp2_dbl(T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_dbl(r->z, r->z); */
 (* #callq  0x42ce10 <fp2_dbl_integ>                #! PC = 0x4293303 *)
 #callq  0x42ce10 <fp2_dbl_integ>                #! 0x4293303 = 0x4293303;
-call fp2_dbl(RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5,
+inline fp2_dbl(RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5,
              RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5);
 (* #retq                                           #! PC = 0x4309234 *)
 #retq                                           #! 0x4309234 = 0x4309234;
 /* NOTE: fp2_mul(r->z, r->z, t5); */
 (* #callq  0x42c1c0 <fp2_mul_integ>                #! PC = 0x4293322 *)
 #callq  0x42c1c0 <fp2_mul_integ>                #! 0x4293322 = 0x4293322;
-call fp2_mul(RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5,
+inline fp2_mul(RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5,
              T50_0, T50_1, T50_2, T50_3, T50_4, T50_5, T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
              RZ0_0, RZ0_1, RZ0_2, RZ0_3, RZ0_4, RZ0_5, RZ1_0, RZ1_1, RZ1_2, RZ1_3, RZ1_4, RZ1_5);
 (* #retq                                           #! PC = 0x4313227 *)
@@ -8531,7 +8531,7 @@ mov VD1_5 T31_5;
 /* l00 = D - B. */
 (* #callq  0x42ce00 <fp2_sub_integ>                #! PC = 0x4293362 *)
 #callq  0x42ce00 <fp2_sub_integ>                #! 0x4293362 = 0x4293362;
-call fp2_sub(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
+inline fp2_sub(T30_0, T30_1, T30_2, T30_3, T30_4, T30_5, T31_0, T31_1, T31_2, T31_3, T31_4, T31_5,
              T10_0, T10_1, T10_2, T10_3, T10_4, T10_5, T11_0, T11_1, T11_2, T11_3, T11_4, T11_5,
              L000_0, L000_1, L000_2, L000_3, L000_4, L000_5, L001_0, L001_1, L001_2, L001_3, L001_4, L001_5);
 (* #retq                                           #! PC = 0x4308496 *)
@@ -8586,13 +8586,13 @@ mov VA1_5 T01_5;
 
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293399 *)
 #callq  0x42ba80 <fp_mul_integ>                 #! 0x4293399 = 0x4293399;
-call fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
+inline fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
              T00_0, T00_1, T00_2, T00_3, T00_4, T00_5,
              L100_0, L100_1, L100_2, L100_3, L100_4, L100_5);
 /* NOTE: fp_mul(l[one][zero][1], p->x, t0[1]); */
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293420 *)
 #callq  0x42ba80 <fp_mul_integ>                 #! 0x4293420 = 0x4293420;
-call fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
+inline fp_mul (PX0_0, PX0_1, PX0_2, PX0_3, PX0_4, PX0_5,
              T01_0, T01_1, T01_2, T01_3, T01_4, T01_5,
              L101_0, L101_1, L101_2, L101_3, L101_4, L101_5);
 (* #retq                                           #! PC = 0x4312212 *)
@@ -8645,7 +8645,7 @@ mov VF1_5 T51_5;
 (* add    0x10(%rsp),%r14                          #! EA = L0x7fffffffd130; Value = 0x0000000000000120; PC = 0x4293425 *)
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293445 *)
 #callq  0x42ba80 <fp_mul_integ>                 #! 0x4293445 = 0x4293445;
-call fp_mul (T50_0, T50_1, T50_2, T50_3, T50_4, T50_5,
+inline fp_mul (T50_0, T50_1, T50_2, T50_3, T50_4, T50_5,
              PY0_0, PY0_1, PY0_2, PY0_3, PY0_4, PY0_5,
              L010_0, L010_1, L010_2, L010_3, L010_4, L010_5);
 (* #retq                                           #! PC = 0x4312212 *)
@@ -8653,7 +8653,7 @@ call fp_mul (T50_0, T50_1, T50_2, T50_3, T50_4, T50_5,
 /* NOTE: fp_mul(l[zero][zero][1], t5[1], p->y); */
 (* #callq  0x42ba80 <fp_mul_integ>                 #! PC = 0x4293465 *)
 #callq  0x42ba80 <fp_mul_integ>                 #! 0x4293465 = 0x4293465;
-call fp_mul (T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
+inline fp_mul (T51_0, T51_1, T51_2, T51_3, T51_4, T51_5,
              PY0_0, PY0_1, PY0_2, PY0_3, PY0_4, PY0_5,
              L011_0, L011_1, L011_2, L011_3, L011_4, L011_5);
 (* #retq                                           #! PC = 0x4293497 *)

@@ -4485,82 +4485,82 @@ proc main (uint32 A0, uint32 A1, uint32 A2, uint32 A3,
   true
 }
 
-call core (A0, A1, A2, A3, A4, A5, A6, A7,
+inline core (A0, A1, A2, A3, A4, A5, A6, A7,
            A8, A9, Aa, Ab, Ac, Ad, Ae, Af,
            a0, a1, a2, a3, a4, a5, a6, a7,
            a8, a9, aa, ab, ac, ad, ae, af);
 
-call core (B0, B1, B2, B3, B4, B5, B6, B7,
+inline core (B0, B1, B2, B3, B4, B5, B6, B7,
            B8, B9, Ba, Bb, Bc, Bd, Be, Bf,
            b0, b1, b2, b3, b4, b5, b6, b7,
            b8, b9, ba, bb, bc, bd, be, bf);
 
-call core (C0, C1, C2, C3, C4, C5, C6, C7,
+inline core (C0, C1, C2, C3, C4, C5, C6, C7,
            C8, C9, Ca, Cb, Cc, Cd, Ce, Cf,
            c0, c1, c2, c3, c4, c5, c6, c7,
            c8, c9, ca, cb, cc, cd, ce, cf);
 
-call core (D0, D1, D2, D3, D4, D5, D6, D7,
+inline core (D0, D1, D2, D3, D4, D5, D6, D7,
            D8, D9, Da, Db, Dc, Dd, De, Df,
            d0, d1, d2, d3, d4, d5, d6, d7,
            d8, d9, da, db, dc, dd, de, df);
 
-call core (E0, E1, E2, E3, E4, E5, E6, E7,
+inline core (E0, E1, E2, E3, E4, E5, E6, E7,
            E8, E9, Ea, Eb, Ec, Ed, Ee, Ef,
            e0, e1, e2, e3, e4, e5, e6, e7,
            e8, e9, ea, eb, ec, ed, ee, ef);
 
-call core (F0, F1, F2, F3, F4, F5, F6, F7,
+inline core (F0, F1, F2, F3, F4, F5, F6, F7,
            F8, F9, Fa, Fb, Fc, Fd, Fe, Ff,
            f0, f1, f2, f3, f4, f5, f6, f7,
            f8, f9, fa, fb, fc, fd, fe, ff);
 
-call core (G0, G1, G2, G3, G4, G5, G6, G7,
+inline core (G0, G1, G2, G3, G4, G5, G6, G7,
            G8, G9, Ga, Gb, Gc, Gd, Ge, Gf,
            g0, g1, g2, g3, g4, g5, g6, g7,
            g8, g9, ga, gb, gc, gd, ge, gf);
 
-call core (H0, H1, H2, H3, H4, H5, H6, H7,
+inline core (H0, H1, H2, H3, H4, H5, H6, H7,
            H8, H9, Ha, Hb, Hc, Hd, He, Hf,
            h0, h1, h2, h3, h4, h5, h6, h7,
            h8, h9, ha, hb, hc, hd, he, hf);
 
-call core (I0, I1, I2, I3, I4, I5, I6, I7,
+inline core (I0, I1, I2, I3, I4, I5, I6, I7,
            I8, I9, Ia, Ib, Ic, Id, Ie, If,
            i0, i1, i2, i3, i4, i5, i6, i7,
            i8, i9, ia, ib, ic, id, ie, if);
 
-call core (J0, J1, J2, J3, J4, J5, J6, J7,
+inline core (J0, J1, J2, J3, J4, J5, J6, J7,
            J8, J9, Ja, Jb, Jc, Jd, Je, Jf,
            j0, j1, j2, j3, j4, j5, j6, j7,
            j8, j9, ja, jb, jc, jd, je, jf);
 
-call core (K0, K1, K2, K3, K4, K5, K6, K7,
+inline core (K0, K1, K2, K3, K4, K5, K6, K7,
            K8, K9, Ka, Kb, Kc, Kd, Ke, Kf,
            k0, k1, k2, k3, k4, k5, k6, k7,
            k8, k9, ka, kb, kc, kd, ke, kf);
 
-call core (L0, L1, L2, L3, L4, L5, L6, L7,
+inline core (L0, L1, L2, L3, L4, L5, L6, L7,
            L8, L9, La, Lb, Lc, Ld, Le, Lf,
            l0, l1, l2, l3, l4, l5, l6, l7,
            l8, l9, la, lb, lc, ld, le, lf);
 
-call core (M0, M1, M2, M3, M4, M5, M6, M7,
+inline core (M0, M1, M2, M3, M4, M5, M6, M7,
            M8, M9, Ma, Mb, Mc, Md, Me, Mf,
            m0, m1, m2, m3, m4, m5, m6, m7,
            m8, m9, ma, mb, mc, md, me, mf);
 
-call core (N0, N1, N2, N3, N4, N5, N6, N7,
+inline core (N0, N1, N2, N3, N4, N5, N6, N7,
            N8, N9, Na, Nb, Nc, Nd, Ne, Nf,
            n0, n1, n2, n3, n4, n5, n6, n7,
            n8, n9, na, nb, nc, nd, ne, nf);
 
-call core (O0, O1, O2, O3, O4, O5, O6, O7,
+inline core (O0, O1, O2, O3, O4, O5, O6, O7,
            O8, O9, Oa, Ob, Oc, Od, Oe, Of,
            o0, o1, o2, o3, o4, o5, o6, o7,
            o8, o9, oa, ob, oc, od, oe, of);
 
-call core (P0, P1, P2, P3, P4, P5, P6, P7,
+inline core (P0, P1, P2, P3, P4, P5, P6, P7,
            P8, P9, Pa, Pb, Pc, Pd, Pe, Pf,
            p0, p1, p2, p3, p4, p5, p6, p7,
            p8, p9, pa, pb, pc, pd, pe, pf);

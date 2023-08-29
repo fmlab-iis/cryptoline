@@ -517,10 +517,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -552,10 +552,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -580,28 +580,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -617,10 +617,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -636,10 +636,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -705,16 +705,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -755,10 +755,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -811,10 +811,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -867,22 +867,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555b40; Value = 0x0000000000000001; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b40, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b48, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b50, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b58, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b40, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b48, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b50, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b58, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -903,10 +903,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -938,10 +938,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -966,28 +966,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -1003,10 +1003,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -1022,10 +1022,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -1091,16 +1091,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -1141,10 +1141,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -1197,10 +1197,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -1253,22 +1253,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555b60; Value = 0x0000000000008082; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b60, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b68, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b70, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b78, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b60, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b68, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b70, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b78, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -1289,10 +1289,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -1324,10 +1324,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -1352,28 +1352,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -1389,10 +1389,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -1408,10 +1408,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -1477,16 +1477,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -1527,10 +1527,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -1583,10 +1583,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -1639,22 +1639,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555b80; Value = 0x800000000000808a; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b80, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b88, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b90, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b98, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555b80, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555b88, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555b90, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555b98, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -1675,10 +1675,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -1710,10 +1710,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -1738,28 +1738,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -1775,10 +1775,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -1794,10 +1794,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -1863,16 +1863,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -1913,10 +1913,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -1969,10 +1969,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -2025,22 +2025,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555ba0; Value = 0x8000000080008000; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ba0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ba8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bb0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bb8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ba0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ba8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bb0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bb8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -2061,10 +2061,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -2096,10 +2096,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -2124,28 +2124,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -2161,10 +2161,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -2180,10 +2180,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -2249,16 +2249,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -2299,10 +2299,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -2355,10 +2355,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -2411,22 +2411,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555bc0; Value = 0x000000000000808b; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555bc0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555bc8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bd0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bd8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555bc0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555bc8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bd0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bd8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -2447,10 +2447,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -2482,10 +2482,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -2510,28 +2510,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -2547,10 +2547,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -2566,10 +2566,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -2635,16 +2635,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -2685,10 +2685,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -2741,10 +2741,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -2797,22 +2797,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555be0; Value = 0x0000000080000001; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555be0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555be8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bf0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bf8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555be0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555be8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555bf0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555bf8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -2833,10 +2833,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -2868,10 +2868,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -2896,28 +2896,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -2933,10 +2933,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -2952,10 +2952,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -3021,16 +3021,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -3071,10 +3071,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -3127,10 +3127,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -3183,22 +3183,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555c00; Value = 0x8000000080008081; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c00, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c08, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c10, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c18, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c00, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c08, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c10, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c18, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -3219,10 +3219,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -3254,10 +3254,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -3282,28 +3282,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -3319,10 +3319,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -3338,10 +3338,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -3407,16 +3407,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -3457,10 +3457,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -3513,10 +3513,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -3569,22 +3569,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555c20; Value = 0x8000000000008009; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c20, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c28, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c30, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c38, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c20, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c28, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c30, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c38, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -3605,10 +3605,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -3640,10 +3640,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -3668,28 +3668,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -3705,10 +3705,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -3724,10 +3724,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -3793,16 +3793,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -3843,10 +3843,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -3899,10 +3899,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -3955,22 +3955,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555c40; Value = 0x000000000000008a; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c40, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c48, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c50, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c58, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c40, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c48, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c50, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c58, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -3991,10 +3991,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -4026,10 +4026,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -4054,28 +4054,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -4091,10 +4091,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -4110,10 +4110,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -4179,16 +4179,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -4229,10 +4229,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -4285,10 +4285,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -4341,22 +4341,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555c60; Value = 0x0000000000000088; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c60, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c68, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c70, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c78, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c60, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c68, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c70, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c78, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -4377,10 +4377,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -4412,10 +4412,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -4440,28 +4440,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -4477,10 +4477,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -4496,10 +4496,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -4565,16 +4565,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -4615,10 +4615,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -4671,10 +4671,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -4727,22 +4727,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555c80; Value = 0x0000000080008009; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c80, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c88, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c90, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c98, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555c80, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555c88, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555c90, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555c98, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -4763,10 +4763,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -4798,10 +4798,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -4826,28 +4826,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -4863,10 +4863,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -4882,10 +4882,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -4951,16 +4951,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -5001,10 +5001,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -5057,10 +5057,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -5113,22 +5113,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555ca0; Value = 0x000000008000000a; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ca0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ca8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cb0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cb8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ca0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ca8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cb0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cb8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -5149,10 +5149,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -5184,10 +5184,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -5212,28 +5212,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -5249,10 +5249,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -5268,10 +5268,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -5337,16 +5337,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -5387,10 +5387,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -5443,10 +5443,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -5499,22 +5499,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555cc0; Value = 0x000000008000808b; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555cc0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555cc8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cd0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cd8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555cc0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555cc8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cd0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cd8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -5535,10 +5535,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -5570,10 +5570,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -5598,28 +5598,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -5635,10 +5635,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -5654,10 +5654,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -5723,16 +5723,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -5773,10 +5773,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -5829,10 +5829,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -5885,22 +5885,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555ce0; Value = 0x800000000000008b; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ce0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ce8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cf0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cf8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555ce0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555ce8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555cf0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555cf8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -5921,10 +5921,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -5956,10 +5956,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -5984,28 +5984,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -6021,10 +6021,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -6040,10 +6040,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -6109,16 +6109,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -6159,10 +6159,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -6215,10 +6215,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -6271,22 +6271,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555d00; Value = 0x8000000000008089; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d00, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d08, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d10, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d18, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d00, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d08, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d10, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d18, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -6307,10 +6307,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -6342,10 +6342,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -6370,28 +6370,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -6407,10 +6407,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -6426,10 +6426,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -6495,16 +6495,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -6545,10 +6545,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -6601,10 +6601,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -6657,22 +6657,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555d20; Value = 0x8000000000008003; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d20, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d28, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d30, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d38, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d20, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d28, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d30, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d38, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -6693,10 +6693,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -6728,10 +6728,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -6756,28 +6756,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -6793,10 +6793,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -6812,10 +6812,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -6881,16 +6881,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -6931,10 +6931,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -6987,10 +6987,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -7043,22 +7043,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555d40; Value = 0x8000000000008002; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d40, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d48, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d50, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d58, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d40, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d48, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d50, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d58, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -7079,10 +7079,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -7114,10 +7114,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -7142,28 +7142,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -7179,10 +7179,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -7198,10 +7198,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -7267,16 +7267,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -7317,10 +7317,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -7373,10 +7373,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -7429,22 +7429,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555d60; Value = 0x8000000000000080; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d60, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d68, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d70, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d78, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d60, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d68, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d70, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d78, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -7465,10 +7465,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -7500,10 +7500,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -7528,28 +7528,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -7565,10 +7565,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -7584,10 +7584,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -7653,16 +7653,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -7703,10 +7703,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -7759,10 +7759,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -7815,22 +7815,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555d80; Value = 0x000000000000800a; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d80, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d88, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d90, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d98, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555d80, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555d88, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555d90, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555d98, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -7851,10 +7851,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -7886,10 +7886,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -7914,28 +7914,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -7951,10 +7951,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -7970,10 +7970,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -8039,16 +8039,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -8089,10 +8089,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -8145,10 +8145,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -8201,22 +8201,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555da0; Value = 0x800000008000000a; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555da0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555da8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555db0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555db8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555da0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555da8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555db0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555db8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -8237,10 +8237,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -8272,10 +8272,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -8300,28 +8300,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -8337,10 +8337,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -8356,10 +8356,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -8425,16 +8425,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -8475,10 +8475,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -8531,10 +8531,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -8587,22 +8587,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555dc0; Value = 0x8000000080008081; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555dc0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555dc8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555dd0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555dd8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555dc0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555dc8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555dd0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555dd8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -8623,10 +8623,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -8658,10 +8658,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -8686,28 +8686,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -8723,10 +8723,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -8742,10 +8742,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -8811,16 +8811,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -8861,10 +8861,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -8917,10 +8917,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -8973,22 +8973,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555de0; Value = 0x8000000000008080; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555de0, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555de8, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555df0, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555df8, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555de0, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555de8, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555df0, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555df8, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -9009,10 +9009,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -9044,10 +9044,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -9072,28 +9072,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -9109,10 +9109,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -9128,10 +9128,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -9197,16 +9197,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -9247,10 +9247,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -9303,10 +9303,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -9359,22 +9359,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555e00; Value = 0x0000000080000001; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555e00, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555e08, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555e10, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555e18, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555e00, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555e08, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555e10, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555e18, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)
@@ -9395,10 +9395,10 @@ xor ymm9_0@uint64 ymm4_0 ymm6_0; xor ymm9_1@uint64 ymm4_1 ymm6_1;
 xor ymm9_2@uint64 ymm4_2 ymm6_2; xor ymm9_3@uint64 ymm4_3 ymm6_3;
 (* vpternlogq $0x96,%ymm1,%ymm9,%ymm12             #! PC = 0x55555555522d *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
-call vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
-call vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
-call vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
+inline vpternlogq64 (ymm12_0, ymm9_0, ymm1_0, table);
+inline vpternlogq64 (ymm12_1, ymm9_1, ymm1_1, table);
+inline vpternlogq64 (ymm12_2, ymm9_2, ymm1_2, table);
+inline vpternlogq64 (ymm12_3, ymm9_3, ymm1_3, table);
 (* vpxor  %ymm2,%ymm13,%ymm13                      #! PC = 0x555555555234 *)
 xor ymm13_0@uint64 ymm13_0 ymm2_0; xor ymm13_1@uint64 ymm13_1 ymm2_1;
 xor ymm13_2@uint64 ymm13_2 ymm2_2; xor ymm13_3@uint64 ymm13_3 ymm2_3;
@@ -9430,10 +9430,10 @@ mov ymm14_0 perm_0; mov ymm14_1 perm_1;
 mov ymm14_2 perm_2; mov ymm14_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm0,%ymm13             #! PC = 0x55555555525c *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
-call vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
-call vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
-call vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
+inline vpternlogq64 (ymm13_0, ymm0_0, ymm7_0, table);
+inline vpternlogq64 (ymm13_1, ymm0_1, ymm7_1, table);
+inline vpternlogq64 (ymm13_2, ymm0_2, ymm7_2, table);
+inline vpternlogq64 (ymm13_3, ymm0_3, ymm7_3, table);
 (* vprolq $0x1,%ymm13,%ymm8                        #! PC = 0x555555555263 *)
 rol ymm8_0 ymm13_0 1; rol ymm8_1 ymm13_1 1;
 rol ymm8_2 ymm13_2 1; rol ymm8_3 ymm13_3 1;
@@ -9458,28 +9458,28 @@ rol ymm2_0 ymm2_0  3; rol ymm2_1 ymm2_1 18;
 rol ymm2_2 ymm2_2 36; rol ymm2_3 ymm2_3 41;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm3             #! PC = 0x555555555286 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm3_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm3_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm3_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm3_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm18,%ymm3,%ymm3                      #! PC = 0x55555555528d *)
 rol ymm3_0 ymm3_0 45; rol ymm3_1 ymm3_1  6;
 rol ymm3_2 ymm3_2 56; rol ymm3_3 ymm3_3 39;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm4             #! PC = 0x555555555293 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm4_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm4_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm4_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm4_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm19,%ymm4,%ymm4                      #! PC = 0x55555555529a *)
 rol ymm4_0 ymm4_0 10; rol ymm4_1 ymm4_1 61;
 rol ymm4_2 ymm4_2 55; rol ymm4_3 ymm4_3  8;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm5             #! PC = 0x5555555552a0 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm5_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm5_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm5_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm5_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm20,%ymm5,%ymm5                      #! PC = 0x5555555552a7 *)
 rol ymm5_0 ymm5_0  2; rol ymm5_1 ymm5_1 15;
 rol ymm5_2 ymm5_2 25; rol ymm5_3 ymm5_3 20;
@@ -9495,10 +9495,10 @@ mov ymm11_0 perm_0; mov ymm11_1 perm_1;
 mov ymm11_2 perm_2; mov ymm11_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm6             #! PC = 0x5555555552b9 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm6_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm6_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm6_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm6_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm21,%ymm6,%ymm8                      #! PC = 0x5555555552c0 *)
 rol ymm8_0 ymm6_0 44; rol ymm8_1 ymm6_1 43;
 rol ymm8_2 ymm6_2 21; rol ymm8_3 ymm6_3 14;
@@ -9514,10 +9514,10 @@ mov ymm13_0 perm_0; mov ymm13_1 perm_1;
 mov ymm13_2 perm_2; mov ymm13_3 perm_3;
 (* vpternlogq $0x96,%ymm7,%ymm15,%ymm1             #! PC = 0x5555555552d2 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
-call vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
-call vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
-call vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
+inline vpternlogq64 (ymm1_0, ymm15_0, ymm7_0, table);
+inline vpternlogq64 (ymm1_1, ymm15_1, ymm7_1, table);
+inline vpternlogq64 (ymm1_2, ymm15_2, ymm7_2, table);
+inline vpternlogq64 (ymm1_3, ymm15_3, ymm7_3, table);
 (* vprolvq %ymm17,%ymm1,%ymm9                      #! PC = 0x5555555552d9 *)
 rol ymm9_0 ymm1_0  1; rol ymm9_1 ymm1_1 62;
 rol ymm9_2 ymm1_2 28; rol ymm9_3 ymm1_3 27;
@@ -9583,16 +9583,16 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm10,%ymm3            #! PC = 0x555555555327 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
-call vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
-call vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
-call vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
+inline vpternlogq64 (ymm3_0, ymm10_0, ymm15_0, table);
+inline vpternlogq64 (ymm3_1, ymm10_1, ymm15_1, table);
+inline vpternlogq64 (ymm3_2, ymm10_2, ymm15_2, table);
+inline vpternlogq64 (ymm3_3, ymm10_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm12,%ymm5            #! PC = 0x55555555532e *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
-call vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
-call vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
-call vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
+inline vpternlogq64 (ymm5_0, ymm12_0, ymm14_0, table);
+inline vpternlogq64 (ymm5_1, ymm12_1, ymm14_1, table);
+inline vpternlogq64 (ymm5_2, ymm12_2, ymm14_2, table);
+inline vpternlogq64 (ymm5_3, ymm12_3, ymm14_3, table);
 (* vpsrldq $0x8,%ymm8,%ymm7                        #! PC = 0x555555555335 *)
 mov ymm7_0 ymm8_1; mov ymm7_1 0@uint64;
 mov ymm7_2 ymm8_3; mov ymm7_3 0@uint64;
@@ -9633,10 +9633,10 @@ mov ymm15_0 blen_0; mov ymm15_1 blen_1;
 mov ymm15_2 blen_2; mov ymm15_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm13,%ymm6            #! PC = 0x555555555363 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
-call vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
-call vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
-call vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
+inline vpternlogq64 (ymm6_0, ymm13_0, ymm15_0, table);
+inline vpternlogq64 (ymm6_1, ymm13_1, ymm15_1, table);
+inline vpternlogq64 (ymm6_2, ymm13_2, ymm15_2, table);
+inline vpternlogq64 (ymm6_3, ymm13_3, ymm15_3, table);
 (* vpermq $0x1e,%ymm8,%ymm4                        #! PC = 0x55555555536a *)
 mov perm_0 ymm8_2; mov perm_1 ymm8_3;
 mov perm_2 ymm8_1; mov perm_3 ymm8_0;
@@ -9689,10 +9689,10 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm14,%ymm9,%ymm2             #! PC = 0x5555555553a6 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
-call vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
-call vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
-call vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
+inline vpternlogq64 (ymm2_0, ymm9_0, ymm14_0, table);
+inline vpternlogq64 (ymm2_1, ymm9_1, ymm14_1, table);
+inline vpternlogq64 (ymm2_2, ymm9_2, ymm14_2, table);
+inline vpternlogq64 (ymm2_3, ymm9_3, ymm14_3, table);
 (* vpermq $0x0,%ymm7,%ymm7                         #! PC = 0x5555555553ad *)
 mov perm_0 ymm7_0; mov perm_1 ymm7_0;
 mov perm_2 ymm7_0; mov perm_3 ymm7_0;
@@ -9745,22 +9745,22 @@ mov ymm14_0 blen_0; mov ymm14_1 blen_1;
 mov ymm14_2 blen_2; mov ymm14_3 blen_3;
 (* vpternlogq $0xc6,%ymm15,%ymm8,%ymm1             #! PC = 0x5555555553e9 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
-call vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
-call vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
-call vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
+inline vpternlogq64 (ymm1_0, ymm8_0, ymm15_0, table);
+inline vpternlogq64 (ymm1_1, ymm8_1, ymm15_1, table);
+inline vpternlogq64 (ymm1_2, ymm8_2, ymm15_2, table);
+inline vpternlogq64 (ymm1_3, ymm8_3, ymm15_3, table);
 (* vpternlogq $0xc6,%ymm14,%ymm11,%ymm4            #! PC = 0x5555555553f0 *)
 mov table 0xc6@uint8;
-call vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
-call vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
-call vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
-call vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
+inline vpternlogq64 (ymm4_0, ymm11_0, ymm14_0, table);
+inline vpternlogq64 (ymm4_1, ymm11_1, ymm14_1, table);
+inline vpternlogq64 (ymm4_2, ymm11_2, ymm14_2, table);
+inline vpternlogq64 (ymm4_3, ymm11_3, ymm14_3, table);
 (* vpternlogq $0x96,(%r10),%ymm7,%ymm0             #! EA = L0x555555555e20; Value = 0x8000000080008008; PC = 0x5555555553f7 *)
 mov table 0x96@uint8;
-call vpternlogq64 (ymm0_0, ymm7_0, L0x555555555e20, table);
-call vpternlogq64 (ymm0_1, ymm7_1, L0x555555555e28, table);
-call vpternlogq64 (ymm0_2, ymm7_2, L0x555555555e30, table);
-call vpternlogq64 (ymm0_3, ymm7_3, L0x555555555e38, table);
+inline vpternlogq64 (ymm0_0, ymm7_0, L0x555555555e20, table);
+inline vpternlogq64 (ymm0_1, ymm7_1, L0x555555555e28, table);
+inline vpternlogq64 (ymm0_2, ymm7_2, L0x555555555e30, table);
+inline vpternlogq64 (ymm0_3, ymm7_3, L0x555555555e38, table);
 (* lea    0x20(%r10),%r10                          #! PC = 0x5555555553fe *)
 adds dc r10 r10 0x20@uint64;
 (* dec    %eax                                     #! PC = 0x555555555402 *)

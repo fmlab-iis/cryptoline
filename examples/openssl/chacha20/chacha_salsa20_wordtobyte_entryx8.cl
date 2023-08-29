@@ -4453,42 +4453,42 @@ proc main (uint32 A0, uint32 A1, uint32 A2, uint32 A3,
   true
 }
 
-call core (A0, A1, A2, A3, A4, A5, A6, A7,
+inline core (A0, A1, A2, A3, A4, A5, A6, A7,
            A8, A9, Aa, Ab, Ac, Ad, Ae, Af,
            a0, a1, a2, a3, a4, a5, a6, a7,
            a8, a9, aa, ab, ac, ad, ae, af);
 
-call core (B0, B1, B2, B3, B4, B5, B6, B7,
+inline core (B0, B1, B2, B3, B4, B5, B6, B7,
            B8, B9, Ba, Bb, Bc, Bd, Be, Bf,
            b0, b1, b2, b3, b4, b5, b6, b7,
            b8, b9, ba, bb, bc, bd, be, bf);
 
-call core (C0, C1, C2, C3, C4, C5, C6, C7,
+inline core (C0, C1, C2, C3, C4, C5, C6, C7,
            C8, C9, Ca, Cb, Cc, Cd, Ce, Cf,
            c0, c1, c2, c3, c4, c5, c6, c7,
            c8, c9, ca, cb, cc, cd, ce, cf);
 
-call core (D0, D1, D2, D3, D4, D5, D6, D7,
+inline core (D0, D1, D2, D3, D4, D5, D6, D7,
            D8, D9, Da, Db, Dc, Dd, De, Df,
            d0, d1, d2, d3, d4, d5, d6, d7,
            d8, d9, da, db, dc, dd, de, df);
 
-call core (E0, E1, E2, E3, E4, E5, E6, E7,
+inline core (E0, E1, E2, E3, E4, E5, E6, E7,
            E8, E9, Ea, Eb, Ec, Ed, Ee, Ef,
            e0, e1, e2, e3, e4, e5, e6, e7,
            e8, e9, ea, eb, ec, ed, ee, ef);
 
-call core (F0, F1, F2, F3, F4, F5, F6, F7,
+inline core (F0, F1, F2, F3, F4, F5, F6, F7,
            F8, F9, Fa, Fb, Fc, Fd, Fe, Ff,
            f0, f1, f2, f3, f4, f5, f6, f7,
            f8, f9, fa, fb, fc, fd, fe, ff);
 
-call core (G0, G1, G2, G3, G4, G5, G6, G7,
+inline core (G0, G1, G2, G3, G4, G5, G6, G7,
            G8, G9, Ga, Gb, Gc, Gd, Ge, Gf,
            g0, g1, g2, g3, g4, g5, g6, g7,
            g8, g9, ga, gb, gc, gd, ge, gf);
 
-call core (H0, H1, H2, H3, H4, H5, H6, H7,
+inline core (H0, H1, H2, H3, H4, H5, H6, H7,
            H8, H9, Ha, Hb, Hc, Hd, He, Hf,
            h0, h1, h2, h3, h4, h5, h6, h7,
            h8, h9, ha, hb, hc, hd, he, hf);

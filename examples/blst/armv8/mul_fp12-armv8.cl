@@ -17069,7 +17069,7 @@ mov x0 x24;
 
 (* mul_fp6x2(t0, a[0], b[0]) *)
 
-call mul_fp6x2 ((* t0 *)
+inline mul_fp6x2 ((* t0 *)
                 t0_00, t0_01, t0_02, t0_03, t0_04, t0_05,
                 t0_06, t0_07, t0_08, t0_09, t0_0a, t0_0b,
                 t0_10, t0_11, t0_12, t0_13, t0_14, t0_15,
@@ -17415,7 +17415,7 @@ cut and[(* ret[0] = ((a1 + a2)*(b1 + b2) - a1*b1 - a2*b2)*(u+1) + a0*b0
 
 (* mul_fp6x2(t1, a[1], b[1]) *)
 
-call mul_fp6x2 ((* t1 *)
+inline mul_fp6x2 ((* t1 *)
                 t1_00, t1_01, t1_02, t1_03, t1_04, t1_05,
                 t1_06, t1_07, t1_08, t1_09, t1_0a, t1_0b,
                 t1_10, t1_11, t1_12, t1_13, t1_14, t1_15,
@@ -19224,7 +19224,7 @@ cut and [eqmod ((limbs 64 [t2_00, t2_01, t2_02, t2_03, t2_04, t2_05] +
 
 (* mul_fp6x2(rx, ret[1], t2) *)
 
-call mul_fp6x2 ((* rx *)
+inline mul_fp6x2 ((* rx *)
                 rx_00, rx_01, rx_02, rx_03, rx_04, rx_05,
                 rx_06, rx_07, rx_08, rx_09, rx_0a, rx_0b,
                 rx_10, rx_11, rx_12, rx_13, rx_14, rx_15,

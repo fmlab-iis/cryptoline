@@ -30,9 +30,9 @@
 #! pshufd \$0xb1, $1xmm, $2xmm -> mov sh0 $1xmm_1; mov sh1 $1xmm_0; mov sh2 $1xmm_3; mov sh3 $1xmm_2;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
 #! punpcklqdq $1xmm, $2xmm -> mov p0 $2xmm_0; mov p1 $2xmm_1; mov p2 $1xmm_0; mov p3 $1xmm_1;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
 #! punpckhqdq $1xmm, $2xmm -> mov p0 $2xmm_2; mov p1 $2xmm_3; mov p2 $1xmm_2; mov p3 $1xmm_3;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
-#! sha256msg1 $1xmm, $2xmm -> call sha256msg1 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
-#! sha256msg2 $1xmm, $2xmm -> call sha256msg2 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
-#! sha256rnds2 \%\%xmm0, $1xmm, $2xmm -> call sha256rnds2 (xmm0_0, xmm0_1,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                  $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
+#! sha256msg1 $1xmm, $2xmm -> inline sha256msg1 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
+#! sha256msg2 $1xmm, $2xmm -> inline sha256msg2 ($2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                 $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                 $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
+#! sha256rnds2 \%\%xmm0, $1xmm, $2xmm -> inline sha256rnds2 (xmm0_0, xmm0_1,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3,\n                  $1xmm_0, $1xmm_1, $1xmm_2, $1xmm_3,\n                  $2xmm_0, $2xmm_1, $2xmm_2, $2xmm_3)
 
 #sha256_block_data_order:
 # %rdi = 0x55555555d040

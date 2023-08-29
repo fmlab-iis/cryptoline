@@ -5832,7 +5832,7 @@ spl b_7 b_6 tmp 1;
 (* ========== call functions ========== *)
 
 (* call madd_u64 from 0 *)
-call _gf256v_madd_u64 (
+inline _gf256v_madd_u64 (
   a00_0, a00_1, a00_2, a00_3, a00_4, a00_5, a00_6, a00_7,
   a01_0, a01_1, a01_2, a01_3, a01_4, a01_5, a01_6, a01_7,
   a02_0, a02_1, a02_2, a02_3, a02_4, a02_5, a02_6, a02_7,
@@ -5968,7 +5968,7 @@ call _gf256v_madd_u64 (
   r2b_0, r2b_1, r2b_2, r2b_3, r2b_4, r2b_5, r2b_6, r2b_7
 );
 (* call madd_u64 from 44 *)
-call _gf256v_madd_u64 (
+inline _gf256v_madd_u64 (
   a2c_0, a2c_1, a2c_2, a2c_3, a2c_4, a2c_5, a2c_6, a2c_7,
   a2d_0, a2d_1, a2d_2, a2d_3, a2d_4, a2d_5, a2d_6, a2d_7,
   a2e_0, a2e_1, a2e_2, a2e_3, a2e_4, a2e_5, a2e_6, a2e_7,

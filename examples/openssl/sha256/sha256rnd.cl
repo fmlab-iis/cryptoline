@@ -63,10 +63,10 @@ proc sha256rnd (uint32 A, uint32 B, uint32 C, uint32 D,
                 uint32 a, uint32 b, uint32 c, uint32 d,
                 uint32 e, uint32 f, uint32 g, uint32 h) =
 { true && true }
-call sha256Sigma1 (E, ESigma1);
-call sha256Ch (E, F, G, EFGCh);
-call sha256Sigma0 (A, ASigma0);
-call sha256Maj (A, B, C, ABCMaj);
+inline sha256Sigma1 (E, ESigma1);
+inline sha256Ch (E, F, G, EFGCh);
+inline sha256Sigma0 (A, ASigma0);
+inline sha256Maj (A, B, C, ABCMaj);
 
 (* T1 = H + Sigma1 (E) + Ch (E, F, G) + K + W *)
 adds dc T00 H ESigma1;
@@ -94,6 +94,6 @@ nondet A@uint32; nondet B@uint32; nondet C@uint32; nondet D@uint32;
 nondet E@uint32; nondet F@uint32; nondet G@uint32; nondet H@uint32;
 nondet K@uint32; nondet W@uint32;
 
-call sha256rnd (A, B, C, D, E, F, G, H, K, W,
+inline sha256rnd (A, B, C, D, E, F, G, H, K, W,
                 a, b, c, d, e, f, g, h);
 { true && true }

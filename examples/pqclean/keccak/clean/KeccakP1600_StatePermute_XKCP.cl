@@ -932,7 +932,7 @@ mov v0_22 state22;
 mov v0_23 state23;
 mov v0_24 state24;
 (*   tail call void @KeccakP1600Round(i64* %0, i32 0) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_00,
+inline KeccakP1600Round (KeccakRoundConstants_00,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -940,7 +940,7 @@ call KeccakP1600Round (KeccakRoundConstants_00,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 1) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_01,
+inline KeccakP1600Round (KeccakRoundConstants_01,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -948,7 +948,7 @@ call KeccakP1600Round (KeccakRoundConstants_01,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 2) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_02,
+inline KeccakP1600Round (KeccakRoundConstants_02,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -956,7 +956,7 @@ call KeccakP1600Round (KeccakRoundConstants_02,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 3) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_03,
+inline KeccakP1600Round (KeccakRoundConstants_03,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -964,7 +964,7 @@ call KeccakP1600Round (KeccakRoundConstants_03,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 4) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_04,
+inline KeccakP1600Round (KeccakRoundConstants_04,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -972,7 +972,7 @@ call KeccakP1600Round (KeccakRoundConstants_04,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 5) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_05,
+inline KeccakP1600Round (KeccakRoundConstants_05,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -980,7 +980,7 @@ call KeccakP1600Round (KeccakRoundConstants_05,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 6) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_06,
+inline KeccakP1600Round (KeccakRoundConstants_06,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -988,7 +988,7 @@ call KeccakP1600Round (KeccakRoundConstants_06,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 7) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_07,
+inline KeccakP1600Round (KeccakRoundConstants_07,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -996,7 +996,7 @@ call KeccakP1600Round (KeccakRoundConstants_07,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 8) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_08,
+inline KeccakP1600Round (KeccakRoundConstants_08,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1004,7 +1004,7 @@ call KeccakP1600Round (KeccakRoundConstants_08,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 9) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_09,
+inline KeccakP1600Round (KeccakRoundConstants_09,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1012,7 +1012,7 @@ call KeccakP1600Round (KeccakRoundConstants_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 10) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_10,
+inline KeccakP1600Round (KeccakRoundConstants_10,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1020,7 +1020,7 @@ call KeccakP1600Round (KeccakRoundConstants_10,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 11) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_11,
+inline KeccakP1600Round (KeccakRoundConstants_11,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1028,7 +1028,7 @@ call KeccakP1600Round (KeccakRoundConstants_11,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 12) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_12,
+inline KeccakP1600Round (KeccakRoundConstants_12,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1036,7 +1036,7 @@ call KeccakP1600Round (KeccakRoundConstants_12,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 13) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_13,
+inline KeccakP1600Round (KeccakRoundConstants_13,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1044,7 +1044,7 @@ call KeccakP1600Round (KeccakRoundConstants_13,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 14) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_14,
+inline KeccakP1600Round (KeccakRoundConstants_14,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1052,7 +1052,7 @@ call KeccakP1600Round (KeccakRoundConstants_14,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 15) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_15,
+inline KeccakP1600Round (KeccakRoundConstants_15,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1060,7 +1060,7 @@ call KeccakP1600Round (KeccakRoundConstants_15,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 16) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_16,
+inline KeccakP1600Round (KeccakRoundConstants_16,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1068,7 +1068,7 @@ call KeccakP1600Round (KeccakRoundConstants_16,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 17) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_17,
+inline KeccakP1600Round (KeccakRoundConstants_17,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1076,7 +1076,7 @@ call KeccakP1600Round (KeccakRoundConstants_17,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 18) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_18,
+inline KeccakP1600Round (KeccakRoundConstants_18,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1084,7 +1084,7 @@ call KeccakP1600Round (KeccakRoundConstants_18,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 19) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_19,
+inline KeccakP1600Round (KeccakRoundConstants_19,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1092,7 +1092,7 @@ call KeccakP1600Round (KeccakRoundConstants_19,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 20) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_20,
+inline KeccakP1600Round (KeccakRoundConstants_20,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1100,7 +1100,7 @@ call KeccakP1600Round (KeccakRoundConstants_20,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 21) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_21,
+inline KeccakP1600Round (KeccakRoundConstants_21,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1108,7 +1108,7 @@ call KeccakP1600Round (KeccakRoundConstants_21,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 22) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_22,
+inline KeccakP1600Round (KeccakRoundConstants_22,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1116,7 +1116,7 @@ call KeccakP1600Round (KeccakRoundConstants_22,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24);
 (*   tail call void @KeccakP1600Round(i64* %0, i32 23) #4 *)
-call KeccakP1600Round (KeccakRoundConstants_23,
+inline KeccakP1600Round (KeccakRoundConstants_23,
                        v0_00, v0_01, v0_02, v0_03, v0_04, v0_05, v0_06, v0_07, v0_08, v0_09,
 		       v0_10, v0_11, v0_12, v0_13, v0_14, v0_15, v0_16, v0_17, v0_18, v0_19,
 		       v0_20, v0_21, v0_22, v0_23, v0_24,
@@ -1167,7 +1167,7 @@ proc main (uint64 A00, uint64 A01, uint64 A02, uint64 A03, uint64 A04,
            uint64 A40, uint64 A41, uint64 A42, uint64 A43, uint64 A44) =
 { true && true }
 
-call KeccakP1600_Permute_24rounds_XKCP
+inline KeccakP1600_Permute_24rounds_XKCP
 (A00, A01, A02, A03, A04, A10, A11, A12, A13, A14, A20, A21, A22, A23, A24,
  A30, A31, A32, A33, A34, A40, A41, A42, A43, A44, a00, a01, a02, a03, a04,
  a10, a11, a12, a13, a14, a20, a21, a22, a23, a24, a30, a31, a32, a33, a34,
