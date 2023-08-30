@@ -1131,12 +1131,12 @@ inline fe25519_mul(Z2_2|0..4, T5|0..4, Z2p|0..4);
        (((2**255 )- 19)),
      eqmod
        (limbs 51 [vars Z2p|0..4])
-       (mul
+       (muls
           [4,
            limbs 51 [vars X2|0..4],
            limbs 51 [vars Z2|0..4],
-           add [sq (limbs 51 [vars X2|0..4]),
-                    mul [486662,
+           adds [sq (limbs 51 [vars X2|0..4]),
+                    muls [486662,
                              limbs 51 [vars X2|0..4],
                              limbs 51 [vars Z2|0..4]],
                     sq (limbs 51 [vars Z2|0..4])]
