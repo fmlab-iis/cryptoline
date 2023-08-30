@@ -1551,20 +1551,78 @@
     let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
     let (tar_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok None in
 
-    let _ = if (List.length dest_names) <> (List.length src) then
+    if (List.length dest_names) = (List.length src) then
+      let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
+      let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
+      let map_func (lvname, rv) = (
+          let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
+          parse_cast_at ctx lno None lvtoken rv
+        ) in
+      let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+      let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+      List.concat (aliasing_instrs::iss)
+    else if (size_of_typ relmtyp)*(List.length src) =
+              (size_of_typ tar_typ)*(List.length dest_names) then
+      let vcast_suffix = Int.to_string (Random.int 10000) in
+      let mk_cast_var i = mkvar ("vcast_"^(string_of_int i)^"_"^vcast_suffix)
+                              (typ_to_unsigned relmtyp) in
+      let rev_unsigned_cast_instrs, rev_cast_vars, _ =
+        List.fold_left (fun (r, cvs, i) av ->
+                         let cv = mk_cast_var i in
+                         let v = resolve_atom_with ctx lno av in
+                         ((lno, Icast (None, cv, v))::r, cv::cvs, succ i))
+                       ([], [], 1) src in
+      let rev_join_instrs =
+        match rev_cast_vars with
+        | cv2::cv1::cv_others ->
+           let jvar = mkvar ("vjoin_" ^ vcast_suffix)
+                            (uint_t ((size_of_typ relmtyp)*2)) in
+           List.fold_left (fun r cv ->
+                            let jvar' = mkvar jvar.vname
+                                              (typ_map ((+) (size_of_typ relmtyp))
+                                                       (typ_of_var jvar)) in
+                            (lno, Ijoin (jvar', mkatom_var jvar, mkatom_var cv))::r)
+                          [(lno, Ijoin (jvar, mkatom_var cv2, mkatom_var cv1))] cv_others
+        | [cv] ->
+           let jvar = mkvar ("vjoin_" ^ vcast_suffix) (uint_t (size_of_typ relmtyp)) in
+           [(lno, Imov (jvar, mkatom_var cv))]
+        | [] -> assert false (* empty vector variable? *) in
+      let rev_spl_instrs =
+        let unsigned_tar_typ = typ_to_unsigned tar_typ in
+        let tar_typ_size = size_of_typ tar_typ in
+        let tar_typ_size_z = Z.of_int tar_typ_size in
+        let rec spl_helper names jvar rev_ret =
+          match names with
+          | [name] -> (lno, Imov (mkvar name unsigned_tar_typ,
+                                  mkatom_var jvar))::rev_ret
+          | [name1; name2] ->
+             let spl_instr = (lno, Ispl (mkvar name2 unsigned_tar_typ,
+                                         mkvar name1 unsigned_tar_typ,
+                                         mkatom_var jvar, tar_typ_size_z)) in
+             spl_instr::rev_ret
+          | name::names ->
+             let jvar' = mkvar jvar.vname (typ_map (fun n -> n - tar_typ_size)
+                                           (typ_of_var jvar)) in
+             let spl_instr = (lno, Ispl (jvar', mkvar name unsigned_tar_typ,
+                                         mkatom_var jvar, tar_typ_size_z)) in
+             spl_helper names jvar' (spl_instr::rev_ret)
+          | [] -> assert false (* empty names *) in
+        let l = (size_of_typ tar_typ)*(List.length dest_names) in
+        let jvar = mkvar ("vjoin_" ^ vcast_suffix) (uint_t l) in
+        spl_helper dest_names jvar [] in
+      let final_cast_instrs =
+        let unsigned_tar_typ = typ_to_unsigned tar_typ in
+        List.rev (List.fold_left (fun r n ->
+                                   let d = mkvar n tar_typ in
+                                   let s = mkvar n unsigned_tar_typ in
+                                   (lno, Icast (None, d, mkatom_var s))::r)
+                                 [] dest_names) in
+      List.rev_append rev_unsigned_cast_instrs
+                      (List.rev_append rev_join_instrs
+                                       (List.rev_append rev_spl_instrs
+                                                        final_cast_instrs))
+    else
       raise_at lno "Destination vector should be as long as the source vector."
-    else () in
-
-    let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
-    let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
-
-    let map_func (lvname, rv) = (
-        let lvtoken = {lvname; lvtyphint=Some tar_typ} in  (* should preserve the type hint to dest. *)
-        parse_cast_at ctx lno None lvtoken rv
-      ) in
-    let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
-    let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
-    List.concat (aliasing_instrs::iss)
 
   let parse_vbroadcast_at ctx lno dest_tok num src_tok =
     let n = num ctx in
