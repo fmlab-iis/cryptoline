@@ -3284,12 +3284,12 @@ mov z3p_4 L0x7fffffffdb50;
          (((2**255 )- 19)),
        eqmod
          (limbs 51 [vars z2p|0..4])
-         (mul
+         (muls
             [4,
              limbs 51 [vars x2|0..4],
              limbs 51 [vars z2|0..4],
-             add [sq (limbs 51 [vars x2|0..4]),
-                      mul [486662,
+             adds [sq (limbs 51 [vars x2|0..4]),
+                      muls [486662,
                                limbs 51 [vars x2|0..4],
                                limbs 51 [vars z2|0..4]],
                       sq (limbs 51 [vars z2|0..4])]])

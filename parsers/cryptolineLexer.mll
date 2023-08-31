@@ -243,6 +243,7 @@ token = parse
   | "\\/"                          { upd_cnum lexbuf; LOROP }
   | '!'                            { upd_cnum lexbuf; NOTOP }
   | '&'                            { upd_cnum lexbuf; ANDOP }
+  | "\xf0\x9f\x90\xac"             { upd_cnum lexbuf; DOLPHIN }
   (* Types *)
   | "uint" ((number+) as w)        { upd_cnum lexbuf; UINT (int_of_string w) }
   | "sint" ((number+) as w)        { upd_cnum lexbuf; SINT (int_of_string w) }
