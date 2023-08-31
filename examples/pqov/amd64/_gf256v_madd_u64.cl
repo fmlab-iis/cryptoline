@@ -1,3 +1,18 @@
+(* popper: cv.exe -v -jobs 64 -isafety -slicing _gf256v_madd_u64.cl
+Parsing CryptoLine file:                [OK]            0.162034 seconds
+Checking well-formedness:               [OK]            0.089592 seconds
+Transforming to SSA form:               [OK]            0.055423 seconds
+Normalizing specification:              [OK]            0.077591 seconds
+Rewriting assignments:                  [OK]            0.175728 seconds
+Verifying program safety:               [OK]            130.392143 seconds
+Verifying range assertions:             [OK]            0.039849 seconds
+Verifying range specification:          [OK]            0.000805 seconds
+Rewriting value-preserved casting:      [OK]            0.001489 seconds
+Verifying algebraic assertions:         [OK]            15.632282 seconds
+Verifying algebraic specification:      [OK]            1.350240 seconds
+Verification result:                    [OK]            150.491314 seconds
+*)
+
 proc main (bit a000,bit a001,bit a002,bit a003,bit a004,bit a005,bit a006,bit a007,
            bit a008,bit a009,bit a00a,bit a00b,bit a00c,bit a00d,bit a00e,bit a00f,
            bit a010,bit a011,bit a012,bit a013,bit a014,bit a015,bit a016,bit a017,
@@ -156,6 +171,9 @@ mov %L0x7fffffffd96b [A518,A519,A51a,A51b,A51c,A51d,A51e,A51f];
 
 nondet r10@uint64; nondet r15@uint64;
 
+nondet %rsi@bit[64]; nondet %rsp@bit[64]; nondet %rdi@bit[64];
+nondet %rcx@bit[64]; nondet %rax@bit[64];
+
 mov %rdx [b00, b01, b02, b03, b04, b05, b06, b07,
           0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
           0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
@@ -164,46 +182,6 @@ mov %rdx [b00, b01, b02, b03, b04, b05, b06, b07,
           0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
           0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
           0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit];
-mov %rsi [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit];
-mov %rsp [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit];
-mov %rdi [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit];
-mov %rcx [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit];
-mov %rax [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,
-          0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit];
 
 (* #! -> SP = 0x7fffffffd898 *)
 #! 0x7fffffffd898 = 0x7fffffffd898;

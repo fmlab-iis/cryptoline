@@ -1,3 +1,18 @@
+(* popper: cv.exe -v -jobs 64 -isafety -slicing gf256v_mul_u64.cl
+Parsing CryptoLine file:                [OK]            0.023487 seconds
+Checking well-formedness:               [OK]            0.013385 seconds
+Transforming to SSA form:               [OK]            0.007223 seconds
+Normalizing specification:              [OK]            0.008992 seconds
+Rewriting assignments:                  [OK]            0.018440 seconds
+Verifying program safety:               [OK]            17.459816 seconds
+Verifying range assertions:             [OK]            0.000437 seconds
+Verifying range specification:          [OK]            0.000274 seconds
+Rewriting value-preserved casting:      [OK]            0.000139 seconds
+Verifying algebraic assertions:         [OK]            0.650081 seconds
+Verifying algebraic specification:      [OK]            0.113934 seconds
+Verification result:                    [OK]            18.300323 seconds
+*)
+
 proc main (bit a00, bit a01, bit a02, bit a03, bit a04, bit a05, bit a06, bit a07,
            bit a08, bit a09, bit a0a, bit a0b, bit a0c, bit a0d, bit a0e, bit a0f,
            bit a10, bit a11, bit a12, bit a13, bit a14, bit a15, bit a16, bit a17,

@@ -1,3 +1,18 @@
+(* popper: cv.exe -v -jobs 64 -isafety -slicing _gf256v_mul_scalar_u64.cl
+Parsing CryptoLine file:                [OK]            0.155142 seconds
+Checking well-formedness:               [OK]            0.085502 seconds
+Transforming to SSA form:               [OK]            0.055598 seconds
+Normalizing specification:              [OK]            0.067896 seconds
+Rewriting assignments:                  [OK]            0.161785 seconds
+Verifying program safety:               [OK]            120.886524 seconds
+Verifying range assertions:             [OK]            0.037880 seconds
+Verifying range specification:          [OK]            0.001007 seconds
+Rewriting value-preserved casting:      [OK]            0.001269 seconds
+Verifying algebraic assertions:         [OK]            15.687385 seconds
+Verifying algebraic specification:      [OK]            1.434519 seconds
+Verification result:                    [OK]            138.600455 seconds
+*)
+
 proc main (bit a000,bit a001,bit a002,bit a003,bit a004,bit a005,bit a006,bit a007,
            bit a008,bit a009,bit a00a,bit a00b,bit a00c,bit a00d,bit a00e,bit a00f,
            bit a010,bit a011,bit a012,bit a013,bit a014,bit a015,bit a016,bit a017,
@@ -96,41 +111,8 @@ mov %rsi [b00, b01, b02, b03, b04, b05, b06, b07,
 
 nondet r10@uint64;
 
-mov %rax [0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit];
-
-mov %rdi [0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit];
-
-mov %rdx [0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit];
-
-mov %rsp [0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit,
-          0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit, 0@bit];
+nondet %rax@bit[64]; nondet %rdi@bit[64]; nondet %rdx@bit[64];
+nondet %rsp@bit[64];
 
 (* #! -> SP = 0x7fffffffac68 *)
 #! 0x7fffffffac68 = 0x7fffffffac68;
