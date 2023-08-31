@@ -2433,21 +2433,23 @@ ebexp:
 ebexp_atom:
     TRUE                                          { fun _ -> Etrue }
   | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
-  | EQ veexp veexp_no_unary                       { fun ctx ->
+  | EQ veexp veexp_no_unary                       { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ =
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
   | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
-  | EQMOD veexp veexp_no_unary veexp_no_unary     { fun ctx ->
+  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let ms = $4 ctx in
@@ -2456,11 +2458,12 @@ ebexp_atom:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length ms in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
   | EQMOD veexp veexp_no_unary LSQUARE veexp_no_unarys RSQUARE
-                                                  { fun ctx ->
+                                                  { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let mss = $5 ctx in
@@ -2469,7 +2472,7 @@ ebexp_atom:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length mss in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
                                                   }
   | AND ebexp_atom_without_eqmod ebexp_atom       { fun ctx -> Eand ($2 ctx, $3 ctx) }
@@ -2479,7 +2482,8 @@ ebexp_atom:
                                                       | None -> Eeq ($1 ctx, $3 ctx)
                                                       | Some ms -> Eeqmod ($1 ctx, $3 ctx, ms)
                                                   }
-  | veexp EQOP veexp_no_unary veq_suffix          { fun ctx ->
+  | veexp EQOP veexp_no_unary veq_suffix          { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let mssopt = $4 ctx in
@@ -2491,7 +2495,7 @@ ebexp_atom:
                                                         | None -> size2
                                                         | Some mss -> List.length mss in
                                                       if size1 <> size2 || size2 <> sizem then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     match mssopt with
                                                     | None -> List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
                                                     | Some mss -> List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
@@ -2506,21 +2510,23 @@ ebexp_atom:
 ebexp_atom_without_eqmod:
     TRUE                                          { fun _ -> Etrue }
   | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
-  | EQ veexp veexp_no_unary                       { fun ctx ->
+  | EQ veexp veexp_no_unary                       { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ =
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
   | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
-  | EQMOD veexp veexp_no_unary veexp_no_unary     { fun ctx ->
+  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let ms = $4 ctx in
@@ -2529,11 +2535,12 @@ ebexp_atom_without_eqmod:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length ms in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
   | EQMOD veexp veexp_no_unary LSQUARE veexp_no_unarys RSQUARE
-                                                  { fun ctx ->
+                                                  { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let mss = $5 ctx in
@@ -2542,21 +2549,22 @@ ebexp_atom_without_eqmod:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length mss in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
                                                   }
   | AND ebexp_atom_without_eqmod ebexp_atom_without_eqmod
                                                   { fun ctx -> Eand ($2 ctx, $3 ctx) }
   | LPAR ebexp RPAR                               { fun ctx -> $2 ctx }
   | eexp EQOP eexp                                { fun ctx -> Eeq ($1 ctx, $3 ctx) }
-  | veexp EQOP veexp                              { fun ctx ->
+  | veexp EQOP veexp                              { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ =
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at !lnum ("Vectors do not have the same number of elements.") in
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
                                                   }
   | AND LSQUARE ebexps RSQUARE                    { fun ctx -> eands ($3 ctx) }
@@ -2598,7 +2606,9 @@ cmpop_infix:
 ;
 
 eexp:
-    defined_var                                   { fun ctx -> Evar (resolve_var_with ctx !lnum $1) }
+    defined_var                                   { let lno = !lnum in
+                                                    fun ctx -> Evar (resolve_var_with ctx lno $1)
+                                                  }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
@@ -2637,7 +2647,9 @@ eexp_no_unarys:
 ;
 
 eexp_no_unary:
-    defined_var                                   { fun ctx -> Evar (resolve_var_with ctx !lnum $1) }
+    defined_var                                   { let lno = !lnum in
+                                                    fun ctx -> Evar (resolve_var_with ctx lno $1)
+                                                  }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
@@ -2679,58 +2691,65 @@ eexps:
 ;
 
 veexp:
-    VEC_ID                                        { fun ctx ->
+    VEC_ID                                        { let lno = !lnum in
+                                                    fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx !lnum vec) in
-                                                    let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx !lnum) atoms) in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
                                                     es
                                                   }
   | LSQUARE eexps RSQUARE                         { fun ctx -> $2 ctx }
   | LPAR veexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG veexp                                     { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | ADD veexp veexp_no_unary                      { fun ctx ->
+  | ADD veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                      let es1 = $2 ctx in
                                                      let es2 = $3 ctx in
                                                      let _ = if List.length es1 <> List.length es2 then
-                                                               raise_at !lnum "Two sources should have the same length." in
+                                                               raise_at lno "Two sources should have the same length." in
                                                      List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | SUB veexp veexp_no_unary                      { fun ctx ->
+  | SUB veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
-  | MUL veexp veexp_no_unary                      { fun ctx ->
+  | MUL veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
   | MULS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map emuls (transpose_lists ($3 ctx))) }
   | SUBOP veexp %prec UMINUS                      { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | veexp ADDOP veexp                             { fun ctx ->
+  | veexp ADDOP veexp                             { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | veexp SUBOP veexp                             { fun ctx ->
+  | veexp SUBOP veexp                             { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
-  | veexp MULOP veexp                             { fun ctx ->
+  | veexp MULOP veexp                             { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
   | veexp POWOP const                             { fun ctx ->
@@ -2753,57 +2772,64 @@ veexp_no_unarys:
 ;
 
 veexp_no_unary:
-    VEC_ID                                        { fun ctx ->
+    VEC_ID                                        { let lno = !lnum in
+                                                    fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx !lnum vec) in
-                                                    let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx !lnum) atoms) in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
                                                     es
                                                   }
   | LSQUARE eexps RSQUARE                         { fun ctx -> $2 ctx }
   | LPAR veexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG veexp                                     { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | ADD veexp veexp_no_unary                      { fun ctx ->
+  | ADD veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | SUB veexp veexp_no_unary                      { fun ctx ->
+  | SUB veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
-  | MUL veexp veexp_no_unary                      { fun ctx ->
+  | MUL veexp veexp_no_unary                      { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
   | MULS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map emuls (transpose_lists ($3 ctx))) }
-  | veexp_no_unary ADDOP veexp                    { fun ctx ->
+  | veexp_no_unary ADDOP veexp                    { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | veexp_no_unary SUBOP veexp                    { fun ctx ->
+  | veexp_no_unary SUBOP veexp                    { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
-  | veexp_no_unary MULOP veexp                    { fun ctx ->
+  | veexp_no_unary MULOP veexp                    { let lno = !lnum in
+                                                    fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at !lnum "Two sources should have the same length." in
+                                                              raise_at lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
   | veexp_no_unary POWOP const                    { fun ctx ->
@@ -2824,10 +2850,6 @@ veexps:
     veexp COMMA veexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
   | veexp                                         { fun ctx -> [$1 ctx] }
 ;
-
-
-
-
 
 rbexp:
     rbexp_and LOROP rbexp                         { fun ctx -> Ror ($1 ctx, $3 ctx) }
