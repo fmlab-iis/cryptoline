@@ -2662,6 +2662,20 @@ eexp:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | VEC_ID index                                  { let lno = !lnum in
+                                                    fun ctx ->
+                                                    (*let vec = $1 in*)
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let len = List.length atoms in
+                                                    let i = $2  in
+                                                    if len < (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
+                                                    es}
+;
+
+index:
+  LSQUARE NUM RSQUARE                             { $2 }
 ;
 
 eexp_no_unarys:
@@ -2702,6 +2716,16 @@ eexp_no_unary:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
+                                                    fun ctx ->
+                                                    (*let vec = $1 in*)
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let len = List.length atoms in
+                                                    let i = $3  in
+                                                    if len < (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
+                                                    es}
 ;
 
 eexps:
