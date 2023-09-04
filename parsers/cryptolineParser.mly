@@ -1217,7 +1217,7 @@
                                                                                 (string_of_typ_vec src_vtyp))
                                                  else hinted_vtyp) in
        let (elmtyp, srclen) = vtyp in
-       let names = List.map (vec_name_fn vecname) (1 -- srclen) in
+       let names = List.map (vec_name_fn vecname) (0 -- (srclen-1)) in
        let _ = ctx.cvecs <- SM.add vecname vtyp ctx.cvecs in
        (elmtyp, names)
     | `LVVLIT lvs ->
@@ -1252,7 +1252,7 @@
             else () in
        let (rtyphint, rlen) = tv in
        let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
-       let rvs = List.map gen_avar (1 -- rlen) in
+       let rvs = List.map gen_avar (0 -- (rlen-1)) in
        (rtyphint, rvs)
     | `AVLIT rvs ->
        match rvs with
@@ -1577,7 +1577,7 @@
                          let cv = mk_cast_var i in
                          let v = resolve_atom_with ctx lno av in
                          ((lno, Icast (None, cv, v))::r, cv::cvs, succ i))
-                       ([], [], 1) src in
+                       ([], [], 0) src in
       let rev_join_instrs =
         match rev_cast_vars with
         | cv2::cv1::cv_others ->
