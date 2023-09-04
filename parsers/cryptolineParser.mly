@@ -1417,12 +1417,7 @@
     let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
     List.concat (aliasing_instrs::iss)
 
-  let unpack_vinstr_21n mapper ctx lno dest1_tok dest2_tok src_tok num =
-    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
-    let src_typ_vec = (relmtyp, List.length src) in
-    let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some src_typ_vec) in
-    let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some src_typ_vec) in
-
+  let unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num =
     let _ = if ((List.length dest1_names) <> (List.length src) ||
                 (List.length dest2_names) <> (List.length src)) then
       raise_at lno "Destination vector should be as long as the source vector."
@@ -1440,6 +1435,25 @@
     let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
     let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
     List.concat (aliasing_instrs::iss)
+
+  let unpack_vinstr_21n mapper ctx lno dest1_tok dest2_tok src_tok num =
+    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
+    let dest1_typ_vec = (relmtyp, List.length src) in
+    let dest2_typ_vec = (typ_to_unsigned relmtyp, List.length src) in
+    let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some dest1_typ_vec) in
+    let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_typ_vec) in
+    unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num
+
+  let unpack_vinstr_spl mapper ctx lno dest1_tok dest2_tok src_tok num =
+    let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
+    let n = Z.to_int (num ctx) in
+    let dest1_typ_vec =
+      (typ_to_size relmtyp (size_of_typ relmtyp - n), List.length src) in
+    let dest2_typ_vec =
+      (typ_to_size relmtyp n, List.length src) in
+    let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some dest1_typ_vec) in
+    let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_typ_vec) in
+    unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num
 
   let unpack_vinstr_c12 mapper ctx lno carry_tok dest_tok src1_tok src2_tok =
     let vatm1 = resolve_vec_with ctx lno src1_tok in
@@ -1738,6 +1752,8 @@
         unpack_vinstr_21n parse_split_at ctx lno destH destL src num
       | `SPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_spl_at ctx lno destH destL src num
+      | `VSPL (destH, destL, src, num) ->
+        unpack_vinstr_spl parse_spl_at ctx lno destH destL src num
       | `SETEQ (`LVPLAIN dest, src1, src2) ->
          parse_seteq_at ctx lno dest src1 src2
       | `VSETEQ (dest, src1, src2) ->
@@ -1792,6 +1808,8 @@
          unpack_vinstr_21n parse_usplit_at ctx lno destH destL src num
       | `USPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_uspl_at ctx lno destH destL src num
+      | `VUSPL (destH, destL, src, num) ->
+         unpack_vinstr_spl parse_uspl_at ctx lno destH destL src num
       | `SADD (`LVPLAIN dest, src1, src2) ->
          parse_sadd_at ctx lno dest src1 src2
       | `VSADD (dest, src1, src2) ->
@@ -1838,6 +1856,8 @@
         unpack_vinstr_21n parse_ssplit_at ctx lno destH destL src num
       | `SSPL (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
          parse_sspl_at ctx lno destH destL src num
+      | `VSSPL (destH, destL, src, num) ->
+        unpack_vinstr_spl parse_sspl_at ctx lno destH destL src num
       | `AND (`LVPLAIN dest, src1, src2) ->
          parse_and_at ctx lno dest src1 src2
       | `VAND (dest, src1, src2) ->
@@ -2173,6 +2193,7 @@ instr:
   | SPLIT lval_v lval_v atom_v const              { (!lnum, `VSPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SPLIT atom const             { (!lnum, `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SPL lval lval atom const                      { (!lnum, `SPL ($2, $3, $4, $5)) }
+  | SPL lval_v lval_v atom_v const                { (!lnum, `VSPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SPL atom const               { (!lnum, `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SETEQ lval atom atom                          { (!lnum, `SETEQ ($2, $3, $4)) }
   | SETEQ lval_v atom_v atom_v                    { (!lnum, `VSETEQ ($2, $3, $4)) }
@@ -2217,6 +2238,7 @@ instr:
   | USPLIT lval_v lval_v atom_v const             { (!lnum, `VUSPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP USPLIT atom const            { (!lnum, `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | USPL lval lval atom const                     { (!lnum, `USPL ($2, $3, $4, $5)) }
+  | USPL lval_v lval_v atom_v const               { (!lnum, `VUSPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP USPL atom const              { (!lnum, `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SADD lval atom atom                           { (!lnum, `SADD ($2, $3, $4)) }
   | SADD lval_v atom_v atom_v                     { (!lnum, `VSADD ($2, $3, $4)) }
@@ -2257,6 +2279,7 @@ instr:
   | SSPLIT lval_v lval_v atom_v const             { (!lnum, `VSSPLIT ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SSPLIT atom const            { (!lnum, `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SSPL lval lval atom const                     { (!lnum, `SSPL ($2, $3, $4, $5)) }
+  | SSPL lval_v lval_v atom_v const               { (!lnum, `VSSPL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SSPL atom const              { (!lnum, `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | AND lval atom atom                            { (!lnum, `AND ($2, $3, $4)) }
   | AND lval_v atom_v atom_v                      { (!lnum, `VAND ($2, $3, $4)) }
