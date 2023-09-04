@@ -2669,7 +2669,7 @@ eexp:
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
                                                     let len = List.length atoms in
                                                     let i = $2  in
-                                                    if len < (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
                                                     let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
                                                     es}
 ;
@@ -2723,7 +2723,7 @@ eexp_no_unary:
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
                                                     let len = List.length atoms in
                                                     let i = $3  in
-                                                    if len < (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
                                                     let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
                                                     es}
 ;
