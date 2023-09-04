@@ -3564,18 +3564,33 @@ lhs:
 ;
 
 actuals:
-    actual_atoms                                  { fun ctx tys -> $1 ctx tys }
+    actual_atoms                                  { fun ctx tys ->
+                                                    let (_, vs) = $1 ctx tys in
+                                                    vs
+                                                  }
+  | actual_atoms SEMICOLON actual_atoms           { let lno = !lnum in
+                                                    fun ctx (itys, otys) ->
+                                                    let ((itys, _), ivs) = $1 ctx (itys, []) in
+                                                    let ((_, otys), ovs) = $3 ctx ([], otys) in
+                                                    let _ =
+                                                      match itys, otys with
+                                                      | _::_, _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.")
+                                                      | _, _::_ -> raise_at lno ("The number of actual output parameters does not match the number of formal output parameters.")
+                                                      | _, _ -> () in
+                                                    List.rev_append (List.rev ivs) ovs
+                                                  }
   |                                               { fun _ _ -> [] }
 ;
 
 actual_atoms:
     actual_atom                                   { fun ctx tys ->
-                                                      let (_tys, vs) = $1 ctx tys in
-                                                      vs
+                                                    let (tys, vs) = $1 ctx tys in
+                                                    (tys, vs)
                                                   }
   | actual_atom COMMA actual_atoms                { fun ctx tys ->
-                                                      let (tys, vs) = $1 ctx tys in
-                                                      vs@($3 ctx tys)
+                                                    let (tys, vs1) = $1 ctx tys in
+                                                    let (tys, vs2) = $3 ctx tys in
+                                                    (tys, List.rev_append (List.rev vs1) vs2)
                                                   }
 ;
 
@@ -3588,7 +3603,7 @@ actual_atom:
                                                          ((argtys, outtys), [parse_typed_const ctx lno ty $1])
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
+                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
   | const AT typ                                  { let lno = !lnum in
                                                     fun ctx tys ->
                                                       match tys with
@@ -3597,7 +3612,7 @@ actual_atom:
                                                          else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
+                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
   | typ const                                     { let lno = !lnum in
                                                     fun ctx tys ->
                                                       match tys with
@@ -3606,7 +3621,7 @@ actual_atom:
                                                          else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
                                                       | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.") }
+                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
   | ID                                            { let lno = !lnum in
                                                     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
                                                     else
@@ -3623,7 +3638,7 @@ actual_atom:
                                                             raise_at lno ("Failed to determine the type of " ^ $1)
                                                          )
                                                       | ([], ty::outtys) -> (([], outtys), [Avar (mkvar $1 ty)])
-                                                      | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.")
+                                                      | _ -> raise_at lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
                                                   }
   | ID OROP NUM DOTDOT NUM                        { let lno = !lnum in
                                                     if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
@@ -3647,7 +3662,7 @@ actual_atom:
                                                                                raise_at lno ("Failed to determine the type of " ^ vname)
                                                                             )
                                                                          | ([], ty::outtys) -> (([], outtys), (Avar (mkvar vname ty))::vars_rev)
-                                                                         | _ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.")
+                                                                         | _ -> raise_at lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
                                                                        )
                                                                        (tys, [])
                                                                        ((Z.to_int st)--(Z.to_int ed)) in
