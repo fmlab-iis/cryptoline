@@ -63,3 +63,5 @@ val (@@) : 'a list -> 'a list -> 'a list
 val partition_at : 'a list -> int -> 'a list * 'a list
 (** partitition l n = (the first n elements of l, the remaining elements *)
 
+val transpose : 'a list list -> 'a list list
+(** transpose xss computes the transpose of xss *)

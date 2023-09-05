@@ -2921,6 +2921,20 @@ rbexp_atom:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
+  | EQ vrexp vrexp                                { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let es1 = $2 ctx in
+                                                    let es2 = $3 ctx in
+                                                    let _ = 
+                                                      let sz1 = List.length es1 in
+                                                      let sz2 = List.length es2 in
+                                                      if sz1 <> sz2 then
+                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                    let _ =
+                                                      if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                        raise_at lno ("Elements of vectors do not have the same width.") in
+                                                    List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
+                                                  }
   | NEG rbexp_atom                                { fun ctx -> Rneg ($2 ctx) }
   | NEGOP rbexp_atom                              { fun ctx -> Rneg ($2 ctx) }
   | AND rbexp_atom_without_eqmod rbexp_atom
@@ -2950,6 +2964,29 @@ rbexp_atom:
                                                               f w1 e1 e2 m
                                                          end
                                                   }
+  | vrexp EQOP vrexp vreq_suffix                  { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let sz1 = List.length es1 in
+                                                      let sz2 = List.length es2 in
+                                                      let _ = 
+                                                        if sz1 <> sz2 then raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      match $4 ctx with
+                                                      | None ->
+                                                         let eqs = List.combine es1 es2 in
+                                                         let _ =
+                                                           if not (List.for_all (fun (e1, e2) -> size_of_rexp e1 = size_of_rexp e2) eqs) then
+                                                             raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                         eqs |> List.rev_map (fun (e1, e2) -> Req (size_of_rexp e1, e1, e2)) |> List.rev |> rands
+                                                      | Some (f, ms) ->
+                                                         let _ =
+                                                           if sz1 <> List.length ms then raise_at lno ("Vectors do not have the same number of elements.") in
+                                                         let eqms = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                         let _ =
+                                                           if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqms) then raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                         eqms |> List.rev_map (fun ((e1, e2), m) -> f (size_of_rexp e1) e1 e2 m) |> List.rev |> rands
+                                                  }
   | rexp cmpop_infix rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
@@ -2962,6 +2999,21 @@ rbexp_atom:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp(w1, op, e1, e2)
                                                   }
+  | vrexp cmpop_infix vrexp                       { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let op = $2 in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                    List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands 
+                                                  }
   | cmpop_prefix rexp rexp                        { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -2972,6 +3024,20 @@ rbexp_atom:
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2)
+                                                  }
+  | cmpop_prefix vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, $1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
   | LANDOP LSQUARE rbexps RSQUARE                 { fun ctx -> rands ($3 ctx) }
@@ -2994,6 +3060,21 @@ rbexp_atom:
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
+  | EQMOD vrexp vrexp vrexp                       { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands                                                          }
   | EQUMOD rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3010,6 +3091,22 @@ rbexp_atom:
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
+                                                  }
+  | EQUMOD vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
@@ -3028,6 +3125,22 @@ rbexp_atom:
                                                       else
                                                         reqsmod w1 e1 e2 m
                                                   }
+  | EQSMOD vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
+                                                  }
   | EQSREM rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3045,6 +3158,22 @@ rbexp_atom:
                                                       else
                                                         reqsrem w1 e1 e2 m
                                                   }
+  | EQSREM vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqrems = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqrems) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqsrem (size_of_rexp e1) e1 e2 m) eqrems |> List.rev |> rands
+                                                  }
 ;
 
 rbexp_atom_without_eqmod:
@@ -3059,6 +3188,20 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
+                                                  }
+  | EQ vrexp vrexp                                { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | NEG rbexp_atom_without_eqmod                  { fun ctx -> Rneg ($2 ctx) }
   | AND rbexp_atom_without_eqmod rbexp_atom_without_eqmod
@@ -3078,6 +3221,20 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
+  | vrexp EQOP vrexp                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
+                                                  }
   | rexp cmpop_infix rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
@@ -3089,6 +3246,21 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp(w1, op, e1, e2) }
+  | vrexp cmpop_infix vrexp                       { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let op = $2 in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
+ }
   | cmpop_prefix rexp rexp                        { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3099,6 +3271,20 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2) }
+  | cmpop_prefix vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, $1, e1, e2)) es1 es2 |> List.rev |> rands
+                                                  }
   | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
   | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
   | EQMOD rexp rexp rexp                          { let lno = !lnum in
@@ -3118,6 +3304,22 @@ rbexp_atom_without_eqmod:
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
+  | EQMOD vrexp vrexp vrexp                       { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
+                                                  }
   | EQUMOD rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3134,6 +3336,22 @@ rbexp_atom_without_eqmod:
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
+                                                  }
+  | EQUMOD vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
@@ -3152,6 +3370,22 @@ rbexp_atom_without_eqmod:
                                                       else
                                                         reqsmod w1 e1 e2 m
                                                   }
+  | EQSMOD vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
+                                                  }
   | EQSREM rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3169,6 +3403,22 @@ rbexp_atom_without_eqmod:
                                                       else
                                                         reqsrem w1 e1 e2 m
                                                   }
+  | EQSREM vrexp vrexp vrexp                      { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let ms = $4 ctx in
+                                                      let eqrems = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqrems) then
+                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                      List.rev_map (fun ((e1, e2), m) -> reqsrem (size_of_rexp e1) e1 e2 m) eqrems |> List.rev |> rands
+                                                  }
 ;
 
 req_suffix:
@@ -3177,6 +3427,14 @@ req_suffix:
   | LPAR UMOD rexp RPAR                           { fun ctx -> Some (reqmod, $3 ctx) }
   | LPAR SMOD rexp RPAR                           { fun ctx -> Some (reqsmod, $3 ctx) }
   | LPAR SREM rexp RPAR                           { fun ctx -> Some (reqsrem, $3 ctx) }
+;
+
+vreq_suffix:
+                                                   { fun _ -> None }
+  | LPAR MOD vrexp RPAR                            { fun ctx -> Some (reqmod, $3 ctx) }
+  | LPAR UMOD vrexp RPAR                           { fun ctx -> Some (reqmod, $3 ctx) }
+  | LPAR SMOD vrexp RPAR                           { fun ctx -> Some (reqsmod, $3 ctx) }
+  | LPAR SREM vrexp RPAR                           { fun ctx -> Some (reqsrem, $3 ctx) }
 ;
 
 cmpop_prefix:
@@ -3549,6 +3807,412 @@ rexp:
   | const error                                   { raise_at !lnum "Please specify the bit-width of a constant in range predicates" }
 ;
 
+vrexp:
+    VEC_ID                                        { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let es = List.rev_map rexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
+                                                    es
+                                                  }
+  | LSQUARE rexps RSQUARE                         { fun ctx -> $2 ctx }
+  | UEXT vrexp const                              { fun ctx ->
+                                                      let i = Z.to_int ($3 ctx) in
+                                                      ($2 ctx) |> List.rev_map (fun e -> Ruext (size_of_rexp e, e, i)) |> List.rev }
+  | SEXT vrexp const                              { fun ctx ->
+                                                      let i = Z.to_int ($3 ctx) in
+                                                      ($2 ctx) |> List.rev_map (fun e -> Rsext (size_of_rexp e, e, i)) |> List.rev }
+  | LPAR vrexp RPAR                               { fun ctx -> $2 ctx }
+/* Extensions */
+  | NEG vrexp                                     { fun ctx ->
+                                                      ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnegb, e)) |> List.rev }
+  | NEGOP vrexp                                   { fun ctx ->
+                                                      ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnegb, e)) |> List.rev }
+  | NOT vrexp                                     { fun ctx ->
+                                                      ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnotb, e)) |> List.rev }
+  | NOTOP vrexp                                   { fun ctx ->
+                                                      ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnotb, e)) |> List.rev }
+  | ADD vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> radd (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SUB vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rsub (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | MUL vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rmul (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SQ vrexp                                      { fun ctx ->
+                                                      ($2 ctx) |> List.rev_map (fun e -> rsq (size_of_rexp e) e) |> List.rev }
+  | UMOD vrexp vrexp                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rumod (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SREM vrexp vrexp                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rsrem (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SMOD vrexp vrexp                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rsmod (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | AND vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> randb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | OR vrexp vrexp                                { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | XOR vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rxorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SHL vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rshl (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SHR vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rlshr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | SAR vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rashr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | ROL vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rrol (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | ROR vrexp vrexp                               { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rror (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | CONCAT vrexp vrexp                            { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $2 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rconcat (size_of_rexp e1) (size_of_rexp e2) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | ADDS LSQUARE vrexps RSQUARE                   { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let argss = Utils.Std.transpose ($3 ctx) in
+                                                      if argss = [] then
+                                                        raise_at lno ("No vector range expression is passed to add.")
+                                                      else
+                                                        argss |> List.rev_map (fun args -> radds (size_of_rexp (List.hd args)) args) |> List.rev
+                                                  }
+  | MULS LSQUARE vrexps RSQUARE                   { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let ess = Utils.Std.transpose ($3 ctx) in
+                                                      if ess = [] then
+                                                        raise_at lno ("No vector range expression is passed to mul.")
+                                                      else
+                                                        ess |> List.rev_map (fun es -> rmuls (size_of_rexp (List.hd es)) es) |> List.rev
+                                                  }
+  | ULIMBS const LSQUARE vrexps RSQUARE           { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let tw es = List.fold_left (fun w1 w2 -> max w1 w2) 0 (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let uexts tw es = List.map (fun e -> let ew = size_of_rexp e in Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i tw es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tw tl) in
+                                                      let ess = Utils.Std.transpose ($4 ctx) in
+                                                      ess |> List.rev_map (fun es -> let tw = tw es in helper 0 tw (uexts tw es)) |> List.rev
+                                                  }
+  | SLIMBS const LSQUARE vrexps RSQUARE           { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let tw es = List.fold_left max 0 (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let sexts tw es =
+                                                        let last = List.length es - 1 in
+                                                        List.mapi (fun i e -> let ew = size_of_rexp e in if i = last then Rsext (ew, e, tw - ew) else Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i tw es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tw tl) in
+                                                      let ess = Utils.Std.transpose ($4 ctx) in
+                                                      ess |> List.rev_map (fun es -> let tw = tw es in helper 0 tw (sexts tw es)) |> List.rev
+                                                  }
+  | vrexp ADDOP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> radd (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp SUBOP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rsub (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp MULOP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rmul (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp ANDOP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> randb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp OROP vrexp                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp XOROP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rxorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp SHLOP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rshl (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp SHROP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rlshr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
+                                                  }
+  | vrexp SAROP vrexp                             { let lno = !lnum in
+                                                    fun ctx ->
+                                                      let es1 = $1 ctx in
+                                                      let es2 = $3 ctx in
+                                                      let _ = 
+                                                        let sz1 = List.length es1 in
+                                                        let sz2 = List.length es2 in
+                                                        if sz1 <> sz2 then
+                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                      let _ =
+                                                        if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
+                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                      List.rev_map2 (fun e1 e2 -> rashr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev }
+;
+
 rexps:
     rexp COMMA rexps
   {
@@ -3566,6 +4230,22 @@ rexps:
   }
   | rexp                                          { fun ctx -> [$1 ctx] }
   | VARS var_expansion                            { fun ctx -> List.map (fun v -> Rvar v) ($2 ctx) }
+;
+
+vrexps:
+    vrexp COMMA vrexps
+  {
+    let lno = !lnum in
+    fun ctx ->
+      let es = $1 ctx in
+      let ess = $3 ctx in
+      if List.length ess > 0 &&
+           size_of_rexp (List.hd es) != size_of_rexp (List.hd (List.hd ess)) then
+        raise_at lno ("Widths of vector range expressions mismatch.")
+      else
+        es::ess
+  }
+  | vrexp                                          { fun ctx -> [$1 ctx] }
 ;
 
 lval:

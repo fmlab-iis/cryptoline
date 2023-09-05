@@ -73,3 +73,14 @@ let partition_at xs n =
         if m > 0 then (x::h, t, pred m) else (h, x::t, m)) ([], [], n) xs in
   (List.rev rev_ret_h, List.rev rev_ret_t)
 
+let transpose xss =
+  match xss with
+  | [] -> []
+  | hd::tl ->
+     let start = List.rev_map (fun x -> [x]) hd |> List.rev in
+     let rev_rss =
+       List.fold_left (fun rss xs ->
+           List.rev_map2 (fun rs x -> x::rs) rss xs |> List.rev)
+         start tl in
+     rev_rss |> List.rev_map List.rev |> List.rev
+
