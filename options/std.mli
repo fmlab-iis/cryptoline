@@ -11,6 +11,9 @@ exception UnknownAlgebraSolver of string
 val debug : bool ref
 (** [true] to log debug messages *)
 
+val main_proc_name : string
+(** the name of the main procedure *)
+
 val apply_slicing : bool ref
 (** [true] to apply slicing in verifying specifications *)
 

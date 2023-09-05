@@ -5,18 +5,17 @@
  * Raise ParseError otherwise.
  *)
 
-
   open Ast.Cryptoline
   open Typecheck.Std
   open Common
 
   exception ParseError of string
 
-  let main = "main"
   let vars_expansion_infix = "_"
 
   type func =
-    { fname : string;
+    {
+      fname : string;
       fargs : var list;
       fouts : var list;
       fvm : Ast.Cryptoline.var SM.t; (* a map from a name to a variable (including carry variables) *)
@@ -24,7 +23,8 @@
       fgm : Ast.Cryptoline.var SM.t; (* a map from a name to a ghost variable *)
       fbody : lined_program;
       fpre : bexp;
-      fpost : bexp_prove_with }
+      fpost : bexp_prove_with
+    }
 
   let (--) i j =
     let rec aux n acc =
@@ -78,6 +78,8 @@
     let (ty, n) = t in
     string_of_typ ty ^ "[" ^ string_of_int n ^ "]"
 
+  (* ---------- Parsing Context ---------- *)
+
   type parsing_context =
     {
       mutable cfuns: func SM.t;       (* a map from function name to function definition *)
@@ -98,6 +100,51 @@
       cghosts = SM.empty
     }
 
+  (* Add a scalar program variable to a parsing context *)
+  let ctx_define_var ctx v =
+    let _ = ctx.cvars <- SM.add v.vname v ctx.cvars in
+    let _ =
+      if var_is_bit v then ctx.ccarries <- SM.add v.vname v ctx.ccarries
+      else ctx.ccarries <- SM.remove v.vname ctx.ccarries in
+    ()
+  (* Add a carry to a parsing context (type is not checked in this function) *)
+  let ctx_define_carry ctx v =
+    let _ = ctx.cvars <- SM.add v.vname v ctx.cvars in
+    let _ = ctx.ccarries <- SM.add v.vname v ctx.ccarries in
+    ()
+  (* Add a vector program variable to a parsing context *)
+  let ctx_define_vec ctx vecname vectyp =
+    ctx.cvecs <- SM.add vecname vectyp ctx.cvecs
+  (* Add a ghost variable to a parsing context *)
+  let ctx_define_ghost ctx v =
+    ctx.cghosts <- SM.add v.vname v ctx.cghosts
+
+  (* Find a variable by name *)
+  let ctx_find_var ctx n = SM.find n ctx.cvars
+  (* Find a vector by name *)
+  let ctx_find_vec ctx n = SM.find n ctx.cvecs
+  (* Find a ghost variable by name *)
+  let ctx_find_ghost ctx n = SM.find n ctx.cghosts
+
+  (* Check if a name is a variable *)
+  let ctx_name_is_var ctx n = SM.mem n ctx.cvars
+  (* Check if a name is a ghost variable *)
+  let ctx_name_is_ghost ctx n = SM.mem n ctx.cghosts
+
+  (* Check if a variable is defined *)
+  let ctx_var_is_defined ctx v = SM.mem v.vname ctx.cvars
+  (* Check if a vector is defined *)
+  let ctx_vec_is_defined ctx v = SM.mem v.vname ctx.cvecs
+  (* Check if a carry is defined *)
+  let _ctx_carry_is_defined ctx v = SM.mem v.vname ctx.ccarries
+  (* Check if a ghost variable is defined *)
+  let ctx_ghost_is_defined ctx v = SM.mem v.vname ctx.cghosts
+  (* Check if an atom is defined *)
+  let ctx_atom_is_defined ctx a =
+    match a with
+    | Avar v -> ctx_var_is_defined ctx v || ctx_vec_is_defined ctx v
+    | Aconst _ -> true
+
   let _string_of_parsing_context ctx =
     String.concat "\n" [
                     "Procedures:";
@@ -113,6 +160,8 @@
                     "Ghosts:";
                     String.concat "\n" (List.rev (SM.fold (fun _ v res -> ("  " ^ string_of_var ~typ:true v)::res) ctx.cghosts []))
                   ]
+
+  (* ---------- *)
 
   type lv_prim_t = {
     lvtyphint: typ option;
@@ -204,11 +253,11 @@
   let resolve_var_with ctx lno (`AVAR {atmtyphint; atmname}) =
     let v =
       try
-        SM.find atmname ctx.cvars
+        ctx_find_var ctx atmname
       with Not_found ->
         begin
           try
-            SM.find atmname ctx.cghosts
+            ctx_find_ghost ctx atmname
           with Not_found ->
             raise_at lno ("Variable " ^ atmname ^ " is undefined.")
         end in
@@ -230,7 +279,7 @@
     | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
 
   let resolve_lv_with ctx lno {lvname; lvtyphint} ty_opt =
-    if SM.mem lvname ctx.cghosts then
+    if ctx_name_is_ghost ctx lvname then
       raise_at lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
@@ -245,18 +294,11 @@
                           (string_of_typ determined_ty))
         else determined_ty) in
       let v = mkvar lvname ty in
-      (* It is possible that the lval is actually a bit variable *)
-      if var_is_bit v then
-        let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
-        let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
-        v
-      else
-        let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
-        let _ = ctx.ccarries <- SM.remove lvname ctx.ccarries in
-        v
+      let _ = ctx_define_var ctx v in
+      v
 
   let resolve_lcarry_with ctx lno {lvname; lvtyphint} =
-    if SM.mem lvname ctx.cghosts then
+    if ctx_name_is_ghost ctx lvname then
       raise_at lno ("The carry variable " ^ lvname ^ " has been defined as a ghost variable.")
     else
       let _ = (match lvtyphint with
@@ -269,12 +311,11 @@
                         ^ string_of_typ hinted_ty)
         else ()) in
       let v = mkvar lvname bit_t in
-      let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
-      let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
+      let _ = ctx_define_carry ctx v in
       v
 
   let resolve_lv_or_lcarry_with ctx lno {lvname; lvtyphint} =
-    if SM.mem lvname ctx.cghosts then
+    if ctx_name_is_ghost ctx lvname then
       raise_at lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
@@ -282,14 +323,8 @@
       | None -> raise_at lno ("Failed to determine the type of " ^ lvname)
       | Some ty ->
          let v = mkvar lvname ty in
-         if var_is_bit v then
-           let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
-           let _ = ctx.ccarries <- SM.add lvname v ctx.ccarries in
-           v
-         else
-           let _ = ctx.cvars <- SM.add lvname v ctx.cvars in
-           let _ = ctx.ccarries <- SM.remove lvname ctx.ccarries in
-           v
+         let _ = ctx_define_var ctx v in
+         v
 
   let parse_imov_at ctx lno dest src =
     let a = resolve_atom_with ctx lno src in
@@ -960,7 +995,7 @@
 		 let d = resolve_lv_with ctx lno od od_typ in
 		 Some d in
 	(* the discarded part must be a ghost variable *)
-	let _ = apply_to_some (fun d -> ctx.cghosts <- SM.add d.vname d ctx.cghosts) od in
+	let _ = apply_to_some (ctx_define_ghost ctx) od in
     [lno, Icast (od, v, a)]
 
   let parse_vpc_at ctx lno dest src =
@@ -1001,7 +1036,7 @@
 
   let parse_ghost_at ctx lno gvars_token bexp_token =
     let gvars = gvars_token ctx in
-    let _ = VS.iter (fun g -> ctx.cghosts <- SM.add g.vname g ctx.cghosts) gvars in
+    let _ = VS.iter (ctx_define_ghost ctx) gvars in
     let e = bexp_token ctx in
     let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
     let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
@@ -1017,6 +1052,8 @@
   let parse_call_at ctx lno fname_token actuals_token =
     (* The function name *)
     let fname = fname_token in
+    (* Calling the main function is not allowed *)
+    let _ = if fname = Options.Std.main_proc_name then raise_at lno ("Calling the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
     (* The function definition *)
     let f =
       try
@@ -1024,27 +1061,35 @@
       with Not_found ->
         raise_at lno ("Call an undefined function '" ^ fname ^ "'.") in
     (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+    (* What are checked in parsing actual parameters: length, type, non-ghost *)
     let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
     let formals = f.fargs@f.fouts in
-    (* Check the number of actual parameters *)
     let _ =
-      if List.length actuals != List.length formals then
-        raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
-    (* Check types of actual parameters, this should be done in parsing actual parameters *)
-    let _ =
-      List.iter2 (fun formal actual ->
-                   if not (is_type_compatible formal actual) then
-                     raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
-                                   ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
-                 formals actuals in
-    (* create ghost variables for actual variables *)
+      (* The length and type are checked in parsing actual parameters. *)
+      assert (List.length actuals = List.length formals) in
+    let (actual_ins, actual_outs) =
+      Utils.Std.partition_at actuals (List.length f.fargs) in
+    (* Actual output parameters must be distinct. *)
+    let _ = List.fold_left (fun vs a ->
+                             match a with
+                             | Avar v -> if SS.mem v.vname vs then raise_at lno ("The actual parameter " ^ v.vname ^ " cannot be used as two outputs in a function call.")
+                                         else SS.add v.vname vs
+                             | Aconst _ -> vs
+                           ) SS.empty actual_outs in
+    (*
+     * Create ghost variables for defined actual variables.
+     * It is allowed to have output parameters that are undefined before
+     * this function call.
+     *)
+    let defined_actuals =
+      List.rev_append (List.rev actual_ins) (List.filter (ctx_atom_is_defined ctx) actual_outs) in
     let ghost_actuals =
       let ghost_suffix = Int.to_string (Random.int 10000) in
       let mk_ghostvar a =
         match a with
         | Avar v -> mkvar (v.vname ^ ghost_suffix) (typ_of_var v)
         | Aconst (typ, _) -> mkvar ("g_" ^ ghost_suffix) typ in
-      List.rev (List.rev_map mk_ghostvar actuals) in
+      List.rev (List.rev_map mk_ghostvar defined_actuals) in
     let ghost_instr =
       let ghost_bexp =
         let mk_eeq a gvar =
@@ -1057,31 +1102,31 @@
           | Aconst (typ, z) ->
              let sz = size_of_typ typ in
              req sz (rconst sz z) (rvar gvar) in
-        (List.fold_left2 (fun r avar gvar -> eand r (mk_eeq avar gvar))
-                         etrue actuals ghost_actuals,
-         List.fold_left2 (fun r avar gvar -> rand r (mk_req avar gvar))
-                         rtrue actuals ghost_actuals) in
-      let ghostVS = List.fold_left (fun r gvar -> VS.add gvar r)
-                                   VS.empty ghost_actuals in
+        (List.rev_map2 (fun avar gvar -> mk_eeq avar gvar)
+                       defined_actuals ghost_actuals |> List.rev |> eands,
+         List.rev_map2 (fun avar gvar -> mk_req avar gvar)
+                       defined_actuals ghost_actuals |> List.rev |> rands) in
+      let ghostVS = VS.of_list ghost_actuals in
       Ighost (ghostVS, ghost_bexp) in
+    let (ghost_ins, _) =
+      Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
+    (* Assert precondition (involving only input parameters) *)
     let assert_instr =
       let assert_pats =
-        List.combine formals
-                     (List.rev (List.rev_map mkatom_var ghost_actuals)) in
+        List.combine f.fargs
+                     (List.rev (List.rev_map mkatom_var ghost_ins)) in
       let (_, em, rm) = subst_maps_of_list assert_pats in
       let to_prove_with (ebexp, rbexp) = ([(ebexp, [])], [(rbexp, [])]) in
       Iassert (subst_bexp_prove_with em rm (to_prove_with f.fpre)) in
-    let (_, actual_outs) =
-      Utils.Std.partition_at actuals (List.length f.fargs) in
-    let (ghost_args, _) =
-      Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
+    (* Make nondeterministic assignments to actual output parameters *)
     let nondet_instrs =
       List.fold_left (fun r ovar -> (lno, Inondet ovar)::r)
                      [] (List.rev_map var_of_atom actual_outs) in
+    (* Assume precondition (involving input and output parameters *)
     let assume_instr =
       let assume_pats =
         List.combine formals
-                     (List.rev_append (List.rev_map mkatom_var ghost_args)
+                     (List.rev_append (List.rev_map mkatom_var ghost_ins)
                                       actual_outs) in
       let (_, em, rm) = subst_maps_of_list assume_pats in
       let from_prove_with (ebexp_prove_withs, rbexp_prove_withs) =
@@ -1091,12 +1136,22 @@
         let rbexp = List.fold_left (fun r ret -> Rand (r, ret)) Rtrue rbexps in
         (ebexp, rbexp) in
       Iassume (subst_bexp em rm (from_prove_with f.fpost)) in
+    (* Add actual output parameters to the parsing context *)
+    let _ =
+      let actual_vars = List.rev (List.rev_map (fun a ->
+                                                 match a with
+                                                 | Avar v -> v
+                                                 | Aconst _ -> raise_at lno ("Actual output parameters must be variables.")
+                                               ) actual_outs) in
+      List.iter (ctx_define_var ctx) actual_vars in
     [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
       [(lno, assume_instr)]
 
   let parse_inline_at ctx lno fname_token actuals_token =
     (* The function name *)
     let fname = fname_token in
+    (* Inlining the main function is not allowed *)
+    let _ = if fname = Options.Std.main_proc_name then raise_at lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
     (* The function definition *)
     let f =
       try
@@ -1165,7 +1220,7 @@
       let undefined =
         List.flatten (List.map (fun (formal, actual) ->
                                  match actual with
-                                 | Avar v -> if mem_var formal inputs && not (SM.mem v.vname ctx.cvars) then [v] else []
+                                 | Avar v -> if mem_var formal inputs && not (ctx_var_is_defined ctx v) then [v] else []
                                  | _ -> []
                                ) pats) in
       if List.length undefined > 0 then
@@ -1187,9 +1242,9 @@
     let ysp = subst_varmap fys in
     let gsp = subst_varmap fgs in
     (* FIXME: update vxm *)
-    let _ = VS.iter (fun v -> ctx.cvars <- SM.add v.vname v ctx.cvars) vsp in
-    let _ = VS.iter (fun v -> ctx.ccarries <- SM.add v.vname v ctx.ccarries) ysp in
-    let _ = VS.iter (fun v -> ctx.cghosts <- SM.add v.vname v ctx.cghosts) gsp in
+    let _ = VS.iter (ctx_define_var ctx) vsp in
+    let _ = VS.iter (ctx_define_carry ctx) ysp in
+    let _ = VS.iter (ctx_define_ghost ctx) gsp in
     (* (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p) *)
     p
 
@@ -1218,7 +1273,7 @@
                                                  else hinted_vtyp) in
        let (elmtyp, srclen) = vtyp in
        let names = List.map (vec_name_fn vecname) (0 -- (srclen-1)) in
-       let _ = ctx.cvecs <- SM.add vecname vtyp ctx.cvecs in
+       let _ = ctx_define_vec ctx vecname vtyp in
        (elmtyp, names)
     | `LVVLIT lvs ->
        let relmtyp = match src_vtyp_opt with
@@ -1240,7 +1295,7 @@
     match src_tok with
     | `AVECT {vecname; vectyphint} ->
        let tv = try
-           SM.find vecname ctx.cvecs
+           ctx_find_vec ctx vecname
          with Not_found ->
            raise_at lno ("Vector variable " ^ vecname ^ " is undefined.")
        in
@@ -1277,7 +1332,7 @@
       let (submap', a') = match a with
         | `AVAR ({atmname; _} as var) when SS.mem atmname tainted ->
            let tmp_name = atmname ^ "_" in
-           let _ = if SM.mem tmp_name ctx.cvars then
+           let _ = if ctx_name_is_var ctx tmp_name then
                      raise_at lno (
                                 Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
                                                tmp_name)
@@ -1292,11 +1347,11 @@
     let tmp_names = SM.fold (fun k _ names -> k::names) tmp_to_orig [] in
 
     (* Add introduced temp. variables into variable map *)
-    let _ = SM.iter (fun k _ -> ctx.cvars <- SM.add k (mkvar k relmtyp) ctx.cvars) tmp_to_orig in
+    let _ = SM.iter (fun k _ -> ctx_define_var ctx (mkvar k relmtyp)) tmp_to_orig in
     (* Save into temp. variables with mov instructions *)
     let aliasing_instrs = List.rev (
       SM.fold (fun tmp_name orig instrs ->
-        let instr = (lno, Imov (SM.find tmp_name ctx.cvars, Avar (mkvar orig.atmname relmtyp))) in
+        let instr = (lno, Imov (ctx_find_var ctx tmp_name, Avar (mkvar orig.atmname relmtyp))) in
         instr::instrs) tmp_to_orig []) in
 
     (aliasing_instrs, tmp_names, src_safe)
@@ -1979,10 +2034,10 @@ spec:
     let ctx = empty_parsing_context() in
     let _ = $1 ctx in
     try
-      let m = SM.find main ctx.cfuns in
+      let m = SM.find Options.Std.main_proc_name ctx.cfuns in
       (m.fargs, { spre = m.fpre; sprog = m.fbody; spost = m.fpost })
     with Not_found ->
-      raise (ParseError "A main function is required.")
+      raise (ParseError ("A " ^ Options.Std.main_proc_name ^ " function is required."))
   }
 ;
 
@@ -2005,8 +2060,9 @@ proc:
       let fname = $2 in
       if SM.mem fname ctx.cfuns then raise_at lno ("The procedure " ^ fname ^ " is redefined.")
       else
-        (* reset maps *)
+        (* Duplicate formal parameters are detected in parsing formal parameters *)
         let (args, outs) = $4 lno in
+        (* reset maps *)
         let _ = ctx.cvars <- vm_of_list args in
         let _ = ctx.cvecs <- SM.empty in
         let _ = ctx.ccarries <- SM.empty in
@@ -2020,6 +2076,18 @@ proc:
           match $9 ctx with
           | None -> ([], [])
           | Some e -> e in
+        (* Validate pre-/post-conditions *)
+        let _ =
+          if fname <> Options.Std.main_proc_name then
+            let fins = VS.of_list args in
+            let fouts = VS.of_list outs in
+            (* 1. pre-condition can access only input variables *)
+            (* => this is checked in parsing the pre-condition *)
+            (* 2. post-condition can access only input and output variables *)
+            let undefined_post = VS.diff (vars_bexp_prove_with g) (VS.union fins fouts) in
+            let _ = if not (VS.is_empty undefined_post) then raise_at lno ("Variable " ^ string_of_var (VS.min_elt undefined_post) ^ " is not a formal parameter of procedure " ^ fname ^ ". "^
+                                                                             "Variables in post-conditions for procedures other than " ^ Options.Std.main_proc_name ^ " must be formal input or output variables.") in
+            () in
         let _ = ctx.cfuns <- SM.add fname { fname = fname;
                                             fargs = args;
                                             fouts = outs;
@@ -4291,8 +4359,14 @@ lhs:
 ;
 
 actuals:
-    actual_atoms                                  { fun ctx tys ->
-                                                    let (_, vs) = $1 ctx tys in
+    actual_atoms                                  { let lno = !lnum in
+                                                    fun ctx tys ->
+                                                    let ((itys, otys), vs) = $1 ctx tys in
+                                                    let _ =
+                                                      match itys, otys with
+                                                      | _::_, _
+                                                        | [], _::_ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.")
+                                                      | _, _ -> () in
                                                     vs
                                                   }
   | actual_atoms SEMICOLON actual_atoms           { let lno = !lnum in
@@ -4356,7 +4430,7 @@ actual_atom:
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          (try
-                                                            let v = SM.find $1 ctx.cvars in
+                                                            let v = ctx_find_var ctx $1 in
                                                             if v.vtyp = ty then ((argtys, outtys), [Avar v])
                                                             else raise_at lno ("The variable type of "
                                                                                ^ $1
@@ -4364,7 +4438,12 @@ actual_atom:
                                                           with Not_found ->
                                                             raise_at lno ("Failed to determine the type of " ^ $1)
                                                          )
-                                                      | ([], ty::outtys) -> (([], outtys), [Avar (mkvar $1 ty)])
+                                                      | ([], ty::outtys) ->
+                                                         let v = mkvar $1 ty in
+                                                         let _ =
+                                                           if ctx_ghost_is_defined ctx v then
+                                                             raise_at lno ("The name " ^ v.vname ^ " used as a ghost variable cannot be used as an actual output parameter.") in
+                                                         (([], outtys), [Avar v])
                                                       | _ -> raise_at lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
                                                   }
   | ID OROP NUM DOTDOT NUM                        { let lno = !lnum in
@@ -4380,7 +4459,7 @@ actual_atom:
                                                                          match tys with
                                                                          | (ty::argtys, outtys) ->
                                                                             (try
-                                                                               let v = SM.find vname ctx.cvars in
+                                                                               let v = ctx_find_var ctx vname in
                                                                                if v.vtyp = ty then ((argtys, outtys), (Avar v)::vars_rev)
                                                                                else raise_at lno ("The variable type of "
                                                                                                   ^ vname
@@ -4430,11 +4509,11 @@ var_expansion:
                   (fun i ->
                     let vname = prefix ^ vars_expansion_infix ^ string_of_int i in
                     try
-                      SM.find vname ctx.cvars
+                      ctx_find_var ctx vname
                     with Not_found ->
                       raise_at lno ("Failed to determine the type of " ^ vname)
                   ) ((Z.to_int st)--(Z.to_int ed)) in
-      let _ = List.iter (fun v -> if not (SM.mem v.vname ctx.cvars) && not (SM.mem v.vname ctx.cghosts) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
+      let _ = List.iter (fun v -> if not (ctx_var_is_defined ctx v) && not (ctx_ghost_is_defined ctx v) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
       res
   }
 ;
@@ -4471,8 +4550,8 @@ gvar:
                                                       fun ctx ->
                                                       let ty = $1 in
                                                       let vname = $2 in
-                                                      if SM.mem vname ctx.cvars then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if SM.mem vname ctx.cghosts then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if ctx_name_is_ghost ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 | ID AT typ                                       {
@@ -4482,8 +4561,8 @@ gvar:
                                                       fun ctx ->
                                                       let ty = $3 in
                                                       let vname = $1 in
-                                                      if SM.mem vname ctx.cvars then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if SM.mem vname ctx.cghosts then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 ;

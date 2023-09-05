@@ -5,6 +5,8 @@ exception UnknownAlgebraSolver of string
 
 let debug = ref false
 
+let main_proc_name = "main"
+
 type algebra_solver =
   | Singular
   | Sage

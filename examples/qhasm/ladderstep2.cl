@@ -716,7 +716,7 @@ mov z4 r4;
 
 (* ========== fe25519_sq ========== *)
 
-proc fe25519_sq(uint64 x0, uint64  x1, uint64 x2, uint64 x3, uint64 x4; uint64 r0, uint64 r1, uint64 r2, uint64 r3, uint64 r4) =
+proc fe25519_sq(uint64 x0, uint64  x1, uint64 x2, uint64 x3, uint64 x4; uint64 z0, uint64 z1, uint64 z2, uint64 z3, uint64 z4) =
 {
   true
   &&
