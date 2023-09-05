@@ -96,12 +96,53 @@ let args_verifier =
      mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]))
   ]
 
-let parse_and_check file =
+let parse_and_check_all file =
+  let parse_specs file =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint ("Parsing CryptoLine file:\t\t") in
+    try
+      let specs = specs_from_file file in
+      let t2 = Unix.gettimeofday() in
+      let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+      specs
+    with ex ->
+      let t2 = Unix.gettimeofday() in
+      let _ = vprintln ("[FAILED]\t" ^ string_of_running_time t1 t2) in
+      raise ex in
+  let check_well_formedness specs =
+    let t1 = Unix.gettimeofday() in
+    let _ = vprint ("Checking well-formedness:\t\t") in
+    let ropt = SM.fold (
+                   fun _ ((ivs, _), s) ropt ->
+                   match ropt with
+                   | None -> illformed_spec_reason (VS.of_list ivs) s
+                   | _ -> ropt) specs None in
+    let wf = ropt = None in
+    let t2 = Unix.gettimeofday() in
+    let _ = vprintln ((if wf then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ =
+      match ropt with
+      | Some (IllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_bexp e ^ ".\nReason: " ^ r)
+      | Some (IllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_instr i ^ ".\nReason: " ^ r)
+      | Some (IllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_bexp_prove_with e ^ ".\nReason: " ^ r)
+      | _ -> () in
+    wf in
+  let specs = parse_specs file in
+  if check_well_formedness specs then SM.map (fun (vs, s) -> (vs, from_typecheck_spec s)) specs
+  else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+  else exit 1
+
+let parse_and_check ?(proc = main_proc_name) file =
   let parse_spec file =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Parsing CryptoLine file:\t\t") in
     try
-      let spec = spec_from_file file in
+      let specs = specs_from_file file in
+      let spec =
+        try
+          SM.find proc specs
+        with Not_found ->
+          failwith ("Procedure " ^ proc ^ " is not defined.") in
       let t2 = Unix.gettimeofday() in
       let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
       spec
@@ -123,8 +164,8 @@ let parse_and_check file =
       | Some (IllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_bexp_prove_with e ^ ".\nReason: " ^ r)
       | _ -> () in
     wf in
-  let (vs, s) = parse_spec file in
-  if check_well_formedness (VS.of_list vs) s then (vs, from_typecheck_spec s)
+  let ((ivs, ovs), s) = parse_spec file in
+  if check_well_formedness (VS.of_list ivs) s then ((ivs, ovs), from_typecheck_spec s)
   else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
   else exit 1
 

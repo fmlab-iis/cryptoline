@@ -7,6 +7,8 @@ let debug = ref false
 
 let main_proc_name = "main"
 
+let veri_proc_name = ref None
+
 type algebra_solver =
   | Singular
   | Sage
@@ -121,6 +123,13 @@ let unix cmd =
   else ()
 
 let logfile = ref "cryptoline.log"
+
+let propose_logfile fnopt =
+  let fnstr =
+    match fnopt with
+    | None -> ""
+    | Some fn -> "." ^ fn in
+  "cryptoline" ^ fnstr ^ ".log"
 
 let trace ?log:(lf=(!logfile)) msg =
   if !debug then

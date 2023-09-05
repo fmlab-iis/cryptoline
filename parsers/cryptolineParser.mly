@@ -2012,8 +2012,10 @@
 %nonassoc SETEQ SETNE EQ EQMOD
 %nonassoc UMINUS DOLPHIN
 
+%start specs
 %start spec
 %start prog
+%type <((Ast.Cryptoline.var list * Ast.Cryptoline.var list) * Typecheck.Std.spec) Ast.Cryptoline.SM.t> specs
 %type <(Ast.Cryptoline.var list * Typecheck.Std.spec)> spec
 %type <Ast.Cryptoline.lined_program> prog
 
@@ -2024,13 +2026,19 @@
 
 %%
 
+specs:
+  procs EOF
+    {
+      let inputs_spec_pair m = ((m.fargs, m.fouts), { spre = m.fpre; sprog = m.fbody; spost = m.fpost }) in
+      let ctx = empty_parsing_context() in
+      let _ = $1 ctx in
+      SM.fold (fun fn f fm -> SM.add fn (inputs_spec_pair f) fm) ctx.cfuns SM.empty
+    }
+;
+
 spec:
   procs EOF
   {
-    (*
-     * fm: a map from a name to a function
-     * cm: a map from a name to a constant
-     *)
     let ctx = empty_parsing_context() in
     let _ = $1 ctx in
     try

@@ -89,6 +89,8 @@ let args = [
      Common.mk_arg_desc([""; "Disable verification of range postconditions (including cuts)."]));
     ("-disable_safety", Clear verify_program_safety,
      Common.mk_arg_desc([""; "Disable verification of program safety."]));
+    ("-f", String (fun s -> veri_proc_name := Some s),
+     Common.mk_arg_desc(["PROC"; "Limit the verification to a specified procedure."]));
     ("-jobs", Int (fun j -> jobs := j),
      Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
     ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use";
@@ -203,39 +205,73 @@ let print_data_flow p fout =
   output_string fout "}\n"
 
 let anon file =
-  let string_of_inputs vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
+  let vprintln_title title =
+    let _ = vprintln ("\n" ^ title) in
+    let _ = vprintln (String.concat "" (List.init (String.length title) (fun _ -> "-"))) in
+    () in
+  let string_of_formals vs = String.concat ", " (List.map (fun v -> string_of_typ v.vtyp ^ " " ^ string_of_var v) vs) in
+  let print_procedure_sig fn ivs ovs =
+    let ivs_str = string_of_formals ivs in
+    let ovs_str =
+      match ovs with
+      | [] -> ""
+      | _ -> "; " ^ string_of_formals ovs in
+    print_endline ("proc " ^ fn ^ "(" ^ ivs_str ^ ovs_str ^ ") =") in
+  let print_procedure fn ivs ovs s =
+    print_procedure_sig fn ivs ovs;
+    print_endline (string_of_spec ~typ:!print_with_types s) in
   let t1 = Unix.gettimeofday() in
   let _ = Random.self_init() in
   match !action with
   | Verify ->
-     let (_, s) = Common.parse_and_check file in
-     let res = Verify.Std.verify_spec s in
+     let specs =
+       let specs = Common.parse_and_check_all file in
+       match !veri_proc_name with
+       | None -> specs
+       | Some fn -> if SM.mem fn specs then SM.filter (fun n _ -> n = fn) specs
+                    else failwith ("Procedure " ^ fn ^ " is not found.") in
+     let res = SM.fold (
+                   fun fn (_, s) res ->
+                   let _ = logfile := propose_logfile (Some fn) in
+                   let lt1 = Unix.gettimeofday() in
+                   let _ = vprintln_title ("Procedure " ^ fn) in
+                   let r = Verify.Std.verify_spec s in
+                   let lt2 = Unix.gettimeofday() in
+                   let _ = vprintln ("Procedure verification:\t\t\t"
+                                     ^ (if r then "[OK]\t" else "[FAILED]") ^ "\t"
+                                     ^ string_of_running_time lt1 lt2) in
+                   r && res) specs true in
      let t2 = Unix.gettimeofday() in
+     let _ = vprintln_title "Summary" in
      let _ = print_endline ("Verification result:\t\t\t"
                             ^ (if res then "[OK]\t" else "[FAILED]") ^ "\t"
                             ^ string_of_running_time t1 t2) in
      if res then exit 0 else exit 1
   | Parse ->
-     let (vs, s) = Common.parse_and_check file in
-     let s = List.fold_left (|>) s
-               ((if !apply_remove_algebra then [remove_algebra_spec] else [])
-                @(if !apply_remove_range then [remove_range_spec] else [])) in
-     print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec ~typ:!print_with_types s)
-  | PrintSSA ->
-     let (vs, s) = Common.parse_and_check file in
-     let vs = List.map (ssa_var VM.empty) vs in
-     let init_spec = ssa_spec s in
-     let post_processes = (if !apply_move_assert then [move_asserts] else [])
-                          @(if !apply_remove_cuts then [remove_cut_spec] else [])
-                          @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
-                          @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
-                          @(if !apply_remove_algebra then [remove_algebra_spec] else [])
-                          @(if !apply_remove_range then [remove_range_spec] else [])
+     let specs = Common.parse_and_check_all file in
+     let _ = SM.iter (fun fn ((ivs, ovs), s) ->
+                 let s = List.fold_left (|>) s
+                           ((if !apply_remove_algebra then [remove_algebra_spec] else [])
+                            @(if !apply_remove_range then [remove_range_spec] else [])) in
+                 print_procedure fn ivs ovs s; print_endline "") specs
      in
-     let s = List.fold_left (|>) init_spec post_processes in
-     print_endline ("proc main(" ^ string_of_inputs vs ^ ") =");
-     print_endline (string_of_spec ~typ:!print_with_types s)
+     ()
+  | PrintSSA ->
+     let specs = Common.parse_and_check_all file in
+     let _ = SM.iter (fun fn ((ivs, ovs), s) ->
+                 let ivs = List.map (ssa_var VM.empty) ivs in
+                 let (ssa_vm, init_spec) = ssa_spec_full s in
+                 let ovs = List.map (ssa_var ssa_vm) ovs in
+                 let post_processes = (if !apply_move_assert then [move_asserts] else [])
+                                      @(if !apply_remove_cuts then [remove_cut_spec] else [])
+                                      @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
+                                      @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
+                                      @(if !apply_remove_algebra then [remove_algebra_spec] else [])
+                                      @(if !apply_remove_range then [remove_range_spec] else [])
+                 in
+                 let s = List.fold_left (|>) init_spec post_processes in
+                 print_procedure fn ivs ovs s; print_endline "") specs in
+     ()
   | PrintESpec ->
      let s = from_typecheck_espec (espec_from_file file) in
      print_endline (string_of_espec ~typ:!print_with_types s)
@@ -247,10 +283,10 @@ let anon file =
      let s = ssa_spec s in
      print_data_flow s.sprog stdout
   | PrintBtor ->
-     let (vs, s) = Common.parse_and_check file in
+     let ((ivs, _), s) = Common.parse_and_check file in
      let m = new Qfbv.Common.btor_manager in
      let outs = Common.find_output_vars s.sprog !output_vars in
-     let str = Qfbv.Common.btor_program ~rename:true m s.sprog vs outs in
+     let str = Qfbv.Common.btor_program ~rename:true m s.sprog ivs outs in
      print_endline str
   | PrintProfile ->
      let (_, s) = Common.parse_and_check file in
@@ -274,7 +310,7 @@ let anon file =
        ])
   | SaveCuts ->
      let str_of_spec s =
-       "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
+       "proc main(" ^ string_of_formals (VS.elements (infer_input_variables s)) ^ ") =\n"
        ^ string_of_spec ~typ:!print_with_types s in
      let nth_name id = !save_cuts_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
@@ -328,7 +364,7 @@ let anon file =
                        vars_spec os |> (if !save_rep_uniform_types then VS.map uniform_vtyp else Fun.id) |> VS.elements in
      let str_of_spec os =
        let vs = vs_of_os os in
-       ("proc main(" ^ string_of_inputs vs ^ ") =\n")
+       ("proc main(" ^ string_of_formals vs ^ ") =\n")
        ^ (string_of_spec ~typ:!print_with_types os)
        ^ "\n" in
      let is_rep_spec_nontrivial s = not (is_espec_trivial (espec_of_spec s)) in
@@ -343,7 +379,7 @@ let anon file =
      |> List.iteri (fun i os -> output i os)
   | SaveCoqCryptoline ->
      let str_of_spec s =
-       "proc main(" ^ string_of_inputs (VS.elements (infer_input_variables s)) ^ ") =\n"
+       "proc main(" ^ string_of_formals (VS.elements (infer_input_variables s)) ^ ") =\n"
        ^ string_of_spec s in
      let nth_name id = !save_coqcryptoline_filename ^ "_" ^ string_of_int id in
      let suggest_name sid =
@@ -382,9 +418,9 @@ let anon file =
      List.iteri output bvspecs
   | Simulation ->
      let _ = Random.self_init () in
-     let (vs, s) = Common.parse_and_check file in
-     let vals = parse_initial_values vs in
-     let m = Simulator.make_map vs vals in
+     let ((ivs, _), s) = Common.parse_and_check file in
+     let vals = parse_initial_values ivs in
+     let m = Simulator.make_map ivs vals in
      if !interactive_simulation then Simulator.shell m s.sprog
      else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
 

@@ -14,6 +14,9 @@ val debug : bool ref
 val main_proc_name : string
 (** the name of the main procedure *)
 
+val veri_proc_name : (string option) ref
+(** the name of the procedure for verification, None for verifying all procedures *)
+
 val apply_slicing : bool ref
 (** [true] to apply slicing in verifying specifications *)
 
@@ -212,6 +215,10 @@ val verbose : bool ref
 
 val logfile : string ref
 (** the file to write log messages to *)
+
+val propose_logfile : string option -> string
+(** [propose_logfile fnopt] proposes a file name for a log.
+    [fnopt] is an optional procedure name. *)
 
 val unix : string -> unit
 (** run an Unix command *)

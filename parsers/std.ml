@@ -29,7 +29,7 @@ let read_typing_file file =
   let _ = close_in ch in
   vt
  *)
-   
+
 (*
 
 let read_typing () =
@@ -46,7 +46,23 @@ let apply_auto_cast_spec s =
   else s
 
  *)
-  
+
+let specs_from_lexbuf lexbuf =
+  try
+    CryptolineParser.specs CryptolineLexer.token lexbuf
+  with
+  | Failure msg -> raise (Failure ("Error at line " ^ string_of_int !lnum ^ ". " ^ msg))
+  | Parsing.Parse_error ->
+    let l = !lnum in
+    let c = !cnum in
+    let msg = Printf.sprintf "Parser error at line %d char %d." l c in
+    raise (Failure msg)
+
+let specs_from_file file =
+  specs_from_lexbuf (Lexing.from_channel (open_in file))
+
+
+
 let spec_from_lexbuf lexbuf =
   try
     CryptolineParser.spec CryptolineLexer.token lexbuf

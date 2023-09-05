@@ -199,14 +199,14 @@ let check_equivalence_file file1 file2 =
     else if List.length !outputs2 = 0 then failwith("No output specified for the second program")
     else if List.length !outputs1 <> List.length !outputs2 then failwith("Number of output groups mismatch")
     else List.iter2 (fun outs1 outs2 -> if List.length outs1 <> List.length outs2 then failwith("Number of outputs mismatch")) !outputs1 !outputs2 in
-  let (vs1, s1) = Common.parse_and_check file1 in
-  let (vs2, s2) = Common.parse_and_check file2 in
+  let ((ivs1, _), s1) = Common.parse_and_check file1 in
+  let ((ivs2, _), s2) = Common.parse_and_check file2 in
   let groups1 = tmap (Common.find_output_vars s1.sprog) !outputs1 in
   let groups2 = tmap (Common.find_output_vars s2.sprog) !outputs2 in
   (* Convert programs to AIG *)
   let t1 = Unix.gettimeofday() in
-  let res = if !jobs > 1 then check_equivalence_lwt s1 s2 vs1 vs2 groups1 groups2
-            else check_equivalence_seq s1 s2 vs1 vs2 groups1 groups2 in
+  let res = if !jobs > 1 then check_equivalence_lwt s1 s2 ivs1 ivs2 groups1 groups2
+            else check_equivalence_seq s1 s2 ivs1 ivs2 groups1 groups2 in
   let t2 = Unix.gettimeofday() in
   print_endline (Printf.sprintf "Final result:\t\t\t\t%s%s" (if res then "[OK]\t\t" else "[FAILED]\t") (string_of_running_time t1 t2))
 

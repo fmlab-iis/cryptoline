@@ -1379,6 +1379,9 @@ val ssa_instr : int VM.t -> instr -> int VM.t * instr
 val ssa_program : int VM.t -> program -> int VM.t * program
 (** [ssa_program m p] updates the SSA indices of variables in [p] according to [m]. *)
 
+val ssa_spec_full : spec -> int VM.t * spec
+(** [ssa_spec m s] updates the SSA indices of variables in [s] according to [m]. *)
+
 val ssa_spec : spec -> spec
 (** [ssa_spec m s] updates the SSA indices of variables in [s] according to [m]. *)
 

@@ -2222,12 +2222,14 @@ let ssa_program m p =
   in
   helper (m, []) p
 
-let ssa_spec s =
+let ssa_spec_full s =
   let m = VM.empty in
   let f = ssa_bexp m s.spre in
   let (m, p) = ssa_program m s.sprog in
   let g = ssa_bexp_prove_with m s.spost in
-  { spre = f; sprog = p; spost = g }
+  (m, { spre = f; sprog = p; spost = g })
+
+let ssa_spec s = snd (ssa_spec_full s)
 
 
 (** Cut *)
