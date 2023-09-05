@@ -322,8 +322,14 @@ There are numerous \emph{instructions} supported by \cryptoline.
   in specifications such as $\iassert$, $\iassume$, $\icut$, $\iecut$,
   $\ircut$, and postconditions.
   The predicate in a $\ighost$ instruction is always assumed.
+\item $\iinline\ p\ (a_1, a_2, \ldots, a_n)$ inlines a defined
+  procedure $p$ with arguments $a_1, a_2, \ldots, a_n$.
 \item $\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined
   procedure $p$ with arguments $a_1, a_2, \ldots, a_n$.
+  The call will be replaced by the pre-/post-conditions of $p$ for
+  verification.
+  Thus $\icall$ is currently incompatible with equivalence checking
+  and simulation.
 \end{itemize}
 
 \[
