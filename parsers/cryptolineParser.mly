@@ -2531,7 +2531,7 @@ ebexp:
 
 ebexp_atom:
     TRUE                                          { fun _ -> Etrue }
-  | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
+  | EQ eexp_no_vec eexp_no_unary                  { fun ctx -> Eeq ($2 ctx, $3 ctx) }
   | EQ veexp veexp_no_unary                       { let lno = !lnum in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
@@ -2544,8 +2544,8 @@ ebexp_atom:
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
-  | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
+  | EQMOD eexp_no_vec eexp_no_unary eexp_no_unary { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
+  | EQMOD eexp_no_vec eexp_no_unary LSQUARE eexps RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
   | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
                                                     fun ctx ->
@@ -2560,7 +2560,7 @@ ebexp_atom:
                                                         raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
-  | EQMOD veexp veexp_no_unary LSQUARE veexp_no_unarys RSQUARE
+  | EQMOD veexp veexp_no_unary LSQUARE veexps RSQUARE
                                                   { let lno = !lnum in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
@@ -2604,11 +2604,38 @@ ebexp_atom:
   | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
 /*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
+  | EQ veexp error                                { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    raise_at !lnum ("There is a parsing error in equality. "
+                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                  }
+  | EQMOD veexp veexp_no_unary error              { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    let _ = $3 ctx in
+                                                    raise_at !lnum ("There is a parsing error in modular equality. "
+                                                                   ^ "The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
+                                                  }
+  | EQMOD veexp error                             { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    raise_at !lnum ("There is a parsing error in modular equality. "
+                                                                   ^ "The first argument of the modular equality is a vector expression but the second argument is not.")
+                                                  }
+  | veexp EQ error                                { fun ctx ->
+                                                    let _ = $1 ctx in
+                                                    raise_at !lnum ("There is a parsing error in equality. "
+                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                  }
+  | veexp eexp error                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let _ = $1 ctx in
+                                                    let _ = $2 ctx in
+                                                    raise_at lno ("A scalar expression followed by a vector expression is not recognized.")
+                                                  }
 ;
 
 ebexp_atom_without_eqmod:
     TRUE                                          { fun _ -> Etrue }
-  | EQ eexp eexp_no_unary                         { fun ctx -> Eeq ($2 ctx, $3 ctx) }
+  | EQ eexp_no_vec eexp_no_unary                  { fun ctx -> Eeq ($2 ctx, $3 ctx) }
   | EQ veexp veexp_no_unary                       { let lno = !lnum in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
@@ -2621,8 +2648,8 @@ ebexp_atom_without_eqmod:
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
-  | EQMOD eexp eexp_no_unary eexp_no_unary        { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
-  | EQMOD eexp eexp_no_unary LSQUARE eexp_no_unarys RSQUARE
+  | EQMOD eexp_no_vec eexp_no_unary eexp_no_unary { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
+  | EQMOD eexp_no_vec eexp_no_unary LSQUARE eexps RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
   | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
                                                     fun ctx ->
@@ -2637,7 +2664,7 @@ ebexp_atom_without_eqmod:
                                                         raise_at lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
-  | EQMOD veexp veexp_no_unary LSQUARE veexp_no_unarys RSQUARE
+  | EQMOD veexp veexp_no_unary LSQUARE veexps RSQUARE
                                                   { let lno = !lnum in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
@@ -2670,6 +2697,33 @@ ebexp_atom_without_eqmod:
   | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
 /*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
+  | EQ veexp error                                { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    raise_at !lnum ("There is a parsing error in equality. "
+                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                  }
+  | EQMOD veexp veexp_no_unary error              { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    let _ = $3 ctx in
+                                                    raise_at !lnum ("There is a parsing error in modular equality. "
+                                                                   ^ "The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
+                                                  }
+  | EQMOD veexp error                             { fun ctx ->
+                                                    let _ = $2 ctx in
+                                                    raise_at !lnum ("There is a parsing error in modular equality. "
+                                                                   ^ "The first argument of the modular equality is a vector expression but the second argument is not.")
+                                                  }
+  | veexp EQ error                                { fun ctx ->
+                                                    let _ = $1 ctx in
+                                                    raise_at !lnum ("There is a parsing error in equality. "
+                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                  }
+  | veexp eexp error                              { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let _ = $1 ctx in
+                                                    let _ = $2 ctx in
+                                                    raise_at lno ("A scalar expression followed by a vector expression is not recognized.")
+                                                  }
 ;
 
 eq_suffix:
@@ -2709,12 +2763,22 @@ eexp:
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let len = List.length atoms in
+                                                    let i = $3 in
+                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
+                                                    es
+                                                  }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG eexp                                      { fun ctx -> eneg ($2 ctx) }
-  | ADD eexp eexp_no_unary                        { fun ctx -> eadd ($2 ctx) ($3 ctx) }
-  | SUB eexp eexp_no_unary                        { fun ctx -> esub ($2 ctx) ($3 ctx) }
-  | MUL eexp eexp_no_unary                        { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | ADD eexp_no_vec eexp_no_unary                 { fun ctx -> eadd ($2 ctx) ($3 ctx) }
+  | SUB eexp_no_vec eexp_no_unary                 { fun ctx -> esub ($2 ctx) ($3 ctx) }
+  | MUL eexp_no_vec eexp_no_unary                 { fun ctx -> emul ($2 ctx) ($3 ctx) }
   | SQ eexp                                       { fun ctx -> esq ($2 ctx) }
   | ADDS LSQUARE eexps RSQUARE                    { fun ctx -> eadds ($3 ctx) }
   | MULS LSQUARE eexps RSQUARE                    { fun ctx -> emuls ($3 ctx) }
@@ -2738,25 +2802,42 @@ eexp:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
-  | VEC_ID index                                  { let lno = !lnum in
-                                                    fun ctx ->
-                                                    (*let vec = $1 in*)
-                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
-                                                    let len = List.length atoms in
-                                                    let i = $2  in
-                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
-                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
-                                                    es}
 ;
 
-index:
-  LSQUARE NUM RSQUARE                             { $2 }
-;
-
-eexp_no_unarys:
-    eexp_no_unary COMMA eexp_no_unarys            { fun ctx -> ($1 ctx)::($3 ctx) }
-  | eexp_no_unary                                 { fun ctx -> [ $1 ctx ] }
+eexp_no_vec:
+    defined_var                                   { let lno = !lnum in
+                                                    fun ctx -> Evar (resolve_var_with ctx lno $1)
+                                                  }
+  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
+  /* Extensions */
+  | NEG eexp_no_vec                               { fun ctx -> eneg ($2 ctx) }
+  | ADD eexp_no_vec eexp_no_unary                 { fun ctx -> eadd ($2 ctx) ($3 ctx) }
+  | SUB eexp_no_vec eexp_no_unary                 { fun ctx -> esub ($2 ctx) ($3 ctx) }
+  | MUL eexp_no_vec eexp_no_unary                 { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | SQ eexp_no_vec                                { fun ctx -> esq ($2 ctx) }
+  | ADDS LSQUARE eexps RSQUARE                    { fun ctx -> eadds ($3 ctx) }
+  | MULS LSQUARE eexps RSQUARE                    { fun ctx -> emuls ($3 ctx) }
+  | SUBOP eexp_no_vec %prec UMINUS                { fun ctx -> eneg ($2 ctx) }
+  | eexp_no_vec ADDOP eexp                        { fun ctx -> eadd ($1 ctx) ($3 ctx) }
+  | eexp_no_vec SUBOP eexp                        { fun ctx -> esub ($1 ctx) ($3 ctx) }
+  | eexp_no_vec MULOP eexp                        { fun ctx -> emul ($1 ctx) ($3 ctx) }
+  | eexp_no_vec POWOP const                       { fun ctx ->
+                                                      let e = $1 ctx in
+                                                      let i = $3 ctx in
+                                                      (* there are examples that have extremely large exponents *)
+                                                      (*
+                                                      match e with
+                                                      | Econst n ->
+                                                         let c = try Z.pow n (Z.to_int i) with Z.Overflow -> big_pow n i in
+                                                         Econst c
+                                                      | _ ->
+                                                      *)
+                                                         if Z.equal i Z.zero then Econst Z.one
+                                                         else if Z.equal i Z.one then e
+                                                         else epow e (Econst i)
+                                                  }
+  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
 ;
 
 eexp_no_unary:
@@ -2764,12 +2845,22 @@ eexp_no_unary:
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
+                                                    fun ctx ->
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let len = List.length atoms in
+                                                    let i = $3  in
+                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
+                                                    es
+                                                  }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG eexp                                      { fun ctx -> eneg ($2 ctx) }
-  | ADD eexp eexp_no_unary                        { fun ctx -> eadd ($2 ctx) ($3 ctx) }
-  | SUB eexp eexp_no_unary                        { fun ctx -> esub ($2 ctx) ($3 ctx) }
-  | MUL eexp eexp_no_unary                        { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | ADD eexp_no_vec eexp_no_unary                        { fun ctx -> eadd ($2 ctx) ($3 ctx) }
+  | SUB eexp_no_vec eexp_no_unary                        { fun ctx -> esub ($2 ctx) ($3 ctx) }
+  | MUL eexp_no_vec eexp_no_unary                        { fun ctx -> emul ($2 ctx) ($3 ctx) }
   | SQ eexp                                       { fun ctx -> esq ($2 ctx) }
   | ADDS LSQUARE eexps RSQUARE                    { fun ctx -> eadds ($3 ctx) }
   | MULS LSQUARE eexps RSQUARE                    { fun ctx -> emuls ($3 ctx) }
@@ -2792,16 +2883,6 @@ eexp_no_unary:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
-  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
-                                                    fun ctx ->
-                                                    (*let vec = $1 in*)
-                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
-                                                    let len = List.length atoms in
-                                                    let i = $3  in
-                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
-                                                    let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
-                                                    es}
 ;
 
 eexps:
@@ -2827,11 +2908,11 @@ veexp:
   | NEG veexp                                     { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
   | ADD veexp veexp_no_unary                      { let lno = !lnum in
                                                     fun ctx ->
-                                                     let es1 = $2 ctx in
-                                                     let es2 = $3 ctx in
-                                                     let _ = if List.length es1 <> List.length es2 then
-                                                               raise_at lno "Two sources should have the same length." in
-                                                     List.rev (List.rev_map2 eadd es1 es2)
+                                                    let es1 = $2 ctx in
+                                                    let es2 = $3 ctx in
+                                                    let _ = if List.length es1 <> List.length es2 then
+                                                              raise_at lno "Two sources should have the same length." in
+                                                    List.rev (List.rev_map2 eadd es1 es2)
                                                   }
   | SUB veexp veexp_no_unary                      { let lno = !lnum in
                                                     fun ctx ->
@@ -2887,11 +2968,6 @@ veexp:
                                                     let ess = $4 ctx in
                                                     List.rev (List.rev_map (fun es -> limbs n es) (transpose_lists ess))
                                                   }
-;
-
-veexp_no_unarys:
-    veexp_no_unary COMMA veexp_no_unarys          { fun ctx -> ($1 ctx)::($3 ctx) }
-  | veexp_no_unary                                { fun ctx -> [ $1 ctx ] }
 ;
 
 veexp_no_unary:
@@ -3001,7 +3077,7 @@ rbexp_atom:
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
-                                                    let _ = 
+                                                    let _ =
                                                       let sz1 = List.length es1 in
                                                       let sz2 = List.length es2 in
                                                       if sz1 <> sz2 then
@@ -3105,7 +3181,7 @@ rbexp_atom:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3301,7 +3377,7 @@ rbexp_atom_without_eqmod:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3327,7 +3403,7 @@ rbexp_atom_without_eqmod:
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
                                                       let op = $2 in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3351,7 +3427,7 @@ rbexp_atom_without_eqmod:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3386,7 +3462,7 @@ rbexp_atom_without_eqmod:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3394,7 +3470,7 @@ rbexp_atom_without_eqmod:
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
                                                           raise_at lno ("Widths of vector range expressions mismatch.") in
-                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
   | EQUMOD rexp rexp rexp                         { let lno = !lnum in
                                                     fun ctx ->
@@ -3912,7 +3988,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3926,7 +4002,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3940,7 +4016,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3956,7 +4032,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3970,7 +4046,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3984,7 +4060,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3998,7 +4074,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4012,7 +4088,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4026,7 +4102,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4040,7 +4116,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4054,7 +4130,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4068,7 +4144,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4082,7 +4158,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4096,7 +4172,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4110,7 +4186,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4166,7 +4242,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4180,7 +4256,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4194,7 +4270,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4208,7 +4284,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4222,7 +4298,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4236,7 +4312,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4250,7 +4326,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4264,7 +4340,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -4278,7 +4354,7 @@ vrexp:
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
