@@ -1,8 +1,8 @@
 %{
 
 (*
- * Use raise_at to raise an exception if the line number can be determined.
- * Raise ParseError otherwise.
+ * Use raise_at_line or raise_at to raise an exception if the error location
+ * can be determined. Raise ParseError otherwise.
  *)
 
   open Ast.Cryptoline
@@ -37,7 +37,8 @@
     | []::_ -> []
     | (x::xs)::xss -> (x::(List.rev (List.rev_map List.hd xss)))::(transpose_lists (xs::(List.rev (List.rev_map List.tl xss))))
 
-  let raise_at lno msg = raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
+  let raise_at_line lno msg = raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
+  let raise_at pos msg = raise (ParseError ("Parse failure at " ^ string_of_pos pos ^ ". " ^ msg))
 
   let vm_of_list (vs : var list) = List.fold_left (fun m v -> SM.add v.vname v m) SM.empty vs
   let _vm_of_vs (vs : VS.t) = vm_of_list (VS.elements vs)
@@ -226,13 +227,13 @@
     let size = size_of_typ ty in
     (* Check range *)
     let _ = if not (!Options.Std.implicit_const_conversion) && (Z.lt n (Ast.Cryptoline.min_of_typ ty) || Z.gt n (Ast.Cryptoline.max_of_typ ty))
-            then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
+            then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
                                ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
     (* Normalize the number: convert to non-negative integer *)
     let n = Utils.Std.to_positive_same_size n size in
     (* Normalize the number: convert to bit vector *)
     let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
-    let _ = if List.length bits > size then raise_at lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
+    let _ = if List.length bits > size then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
     (* Normalize the number: convert back to integer *)
     let n =
       match ty with
@@ -259,13 +260,13 @@
           try
             ctx_find_ghost ctx atmname
           with Not_found ->
-            raise_at lno ("Variable " ^ atmname ^ " is undefined.")
+            raise_at_line lno ("Variable " ^ atmname ^ " is undefined.")
         end in
     let _ = match atmtyphint with
     | None -> ()
     | Some hinted_ty ->
         if v.vtyp <> hinted_ty then
-          raise_at lno ("The type of variable " ^ atmname ^ " is inconsistent")
+          raise_at_line lno ("The type of variable " ^ atmname ^ " is inconsistent")
         else () in
     v
 
@@ -275,21 +276,21 @@
     | `ACONST c -> (match c.atmtyphint, typ with
                     | Some ty, _
                       | None, Some ty -> parse_typed_const ctx lno ty c.atmvalue
-                    | _, _ -> raise_at lno ("Failed to determine the type of constant"))
+                    | _, _ -> raise_at_line lno ("Failed to determine the type of constant"))
     | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
 
   let resolve_lv_with ctx lno {lvname; lvtyphint} ty_opt =
     if ctx_name_is_ghost ctx lvname then
-      raise_at lno ("The program variable " ^ lvname ^
+      raise_at_line lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
       let ty = (match (ty_opt, lvtyphint) with
-      | (None, None) -> raise_at lno ("Failed to determine the type of " ^ lvname)
+      | (None, None) -> raise_at_line lno ("Failed to determine the type of " ^ lvname)
       | (None, Some hinted_ty) -> hinted_ty
       | (Some determined_ty, None) -> determined_ty
       | (Some determined_ty, Some hinted_ty) ->
         if determined_ty <> hinted_ty then
-          raise_at lno (Printf.sprintf "The specified type %s is not equal to the determined type %s."
+          raise_at_line lno (Printf.sprintf "The specified type %s is not equal to the determined type %s."
                           (string_of_typ hinted_ty)
                           (string_of_typ determined_ty))
         else determined_ty) in
@@ -299,13 +300,13 @@
 
   let resolve_lcarry_with ctx lno {lvname; lvtyphint} =
     if ctx_name_is_ghost ctx lvname then
-      raise_at lno ("The carry variable " ^ lvname ^ " has been defined as a ghost variable.")
+      raise_at_line lno ("The carry variable " ^ lvname ^ " has been defined as a ghost variable.")
     else
       let _ = (match lvtyphint with
       | None -> ()
       | Some hinted_ty ->
         if hinted_ty <> bit_t then
-          raise_at lno ("The type of a carry variable should be \""
+          raise_at_line lno ("The type of a carry variable should be \""
                         ^ string_of_typ bit_t
                         ^ "\", specified "
                         ^ string_of_typ hinted_ty)
@@ -316,11 +317,11 @@
 
   let resolve_lv_or_lcarry_with ctx lno {lvname; lvtyphint} =
     if ctx_name_is_ghost ctx lvname then
-      raise_at lno ("The program variable " ^ lvname ^
+      raise_at_line lno ("The program variable " ^ lvname ^
                     " has been defined as a ghost variable.")
     else
       match lvtyphint with
-      | None -> raise_at lno ("Failed to determine the type of " ^ lvname)
+      | None -> raise_at_line lno ("Failed to determine the type of " ^ lvname)
       | Some ty ->
          let v = mkvar lvname ty in
          let _ = ctx_define_var ctx v in
@@ -342,7 +343,7 @@
       | Aconst (_, z) ->
          let w = size_of_var v in
          if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-           raise_at lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+           raise_at_line lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
       | _ -> ()
     in
@@ -357,7 +358,7 @@
     let _ =
       let w = size_of_var v in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+        raise_at_line lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                       ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
     in
     [lno, Ishls (l, v, a, n)]
@@ -372,7 +373,7 @@
       | Aconst (_, z) ->
          let w = size_of_var v in
          if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-           raise_at lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+           raise_at_line lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
       | _ -> ()
     in
@@ -387,7 +388,7 @@
     let _ =
       let w = size_of_var v in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+        raise_at_line lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                       ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
     in
     [lno, Ishrs (v, l, a, n)]
@@ -402,7 +403,7 @@
       | Aconst (_, z) ->
          let w = size_of_var v in
          if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-           raise_at lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+           raise_at_line lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
       | _ -> ()
     in
@@ -417,7 +418,7 @@
     let _ =
       let w = size_of_var v in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+        raise_at_line lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                       ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
     in
     [lno, Isars (v, l, a, n)]
@@ -622,7 +623,7 @@
     let _ =
       let w = size_of_var vl in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+        raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Isplit (vh, vl, a, n)]
 
@@ -635,7 +636,7 @@
     let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
     let _ =
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+        raise_at_line lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Ispl (vh, vl, a, n)]
 
@@ -789,7 +790,7 @@
     let _ =
       let w = size_of_var vl in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+        raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Isplit (vh, vl, a, n)]
 
@@ -802,7 +803,7 @@
     let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
     let _ =
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+        raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Ispl (vh, vl, a, n)]
 
@@ -934,7 +935,7 @@
     let _ =
       let w = size_of_var vl in
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-        raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+        raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Isplit (vh, vl, a, n)]
 
@@ -947,7 +948,7 @@
     let vl = resolve_lv_with ctx lno destL (Some (Tuint (Z.to_int n))) in
     let _ =
       if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
-          raise_at lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
+          raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
     in
     [lno, Ispl (vh, vl, a, n)]
 
@@ -1040,8 +1041,8 @@
     let e = bexp_token ctx in
     let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
     let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
-    if List.length bad_ebexps > 0 then raise_at lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
-    else if List.length bad_rbexps > 0 then raise_at lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
+    if List.length bad_ebexps > 0 then raise_at_line lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
+    else if List.length bad_rbexps > 0 then raise_at_line lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
     else [lno, Ighost (gvars, e)]
 
   let is_type_compatible formal actual =
@@ -1053,13 +1054,13 @@
     (* The function name *)
     let fname = fname_token in
     (* Calling the main function is not allowed *)
-    let _ = if fname = Options.Std.main_proc_name then raise_at lno ("Calling the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
+    let _ = if fname = Options.Std.main_proc_name then raise_at_line lno ("Calling the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
     (* The function definition *)
     let f =
       try
         SM.find fname ctx.cfuns
       with Not_found ->
-        raise_at lno ("Call an undefined function '" ^ fname ^ "'.") in
+        raise_at_line lno ("Call an undefined function '" ^ fname ^ "'.") in
     (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
     (* What are checked in parsing actual parameters: length, type, non-ghost *)
     let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
@@ -1072,7 +1073,7 @@
     (* Actual output parameters must be distinct. *)
     let _ = List.fold_left (fun vs a ->
                              match a with
-                             | Avar v -> if SS.mem v.vname vs then raise_at lno ("The actual parameter " ^ v.vname ^ " cannot be used as two outputs in a function call.")
+                             | Avar v -> if SS.mem v.vname vs then raise_at_line lno ("The actual parameter " ^ v.vname ^ " cannot be used as two outputs in a function call.")
                                          else SS.add v.vname vs
                              | Aconst _ -> vs
                            ) SS.empty actual_outs in
@@ -1141,7 +1142,7 @@
       let actual_vars = List.rev (List.rev_map (fun a ->
                                                  match a with
                                                  | Avar v -> v
-                                                 | Aconst _ -> raise_at lno ("Actual output parameters must be variables.")
+                                                 | Aconst _ -> raise_at_line lno ("Actual output parameters must be variables.")
                                                ) actual_outs) in
       List.iter (ctx_define_var ctx) actual_vars in
     [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
@@ -1151,13 +1152,13 @@
     (* The function name *)
     let fname = fname_token in
     (* Inlining the main function is not allowed *)
-    let _ = if fname = Options.Std.main_proc_name then raise_at lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
+    let _ = if fname = Options.Std.main_proc_name then raise_at_line lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
     (* The function definition *)
     let f =
       try
         SM.find fname ctx.cfuns
       with Not_found ->
-        raise_at lno ("Inline an undefined function '" ^ fname ^ "'.") in
+        raise_at_line lno ("Inline an undefined function '" ^ fname ^ "'.") in
     (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
     let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
     (* Rename local variables *)
@@ -1184,12 +1185,12 @@
     (* Check the number of actual parameters *)
     let _ =
       if List.length actuals != List.length formals then
-        raise_at lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
+        raise_at_line lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
     (* Check types of actual parameters, this should be done in parsing actual parameters *)
     let _ =
       List.iter2 (fun formal actual ->
                    if not (is_type_compatible formal actual) then
-                     raise_at lno ("The type of the actual parameter " ^ string_of_atom actual
+                     raise_at_line lno ("The type of the actual parameter " ^ string_of_atom actual
                                    ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
                  formals actuals in
     (* Check naming conflicts *)
@@ -1206,13 +1207,13 @@
         (vsclash, ysclash, gsclash) in
       if not (VS.is_empty gsclash) then
         let v = VS.choose gsclash in
-        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a ghost variable in function " ^ fname ^ ".")
+        raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a ghost variable in function " ^ fname ^ ".")
       else if not (VS.is_empty ysclash) then
         let v = VS.choose ysclash in
-        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a carry in function " ^ fname ^ ".")
+        raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a carry in function " ^ fname ^ ".")
       else if not (VS.is_empty vsclash) then
         let v = VS.choose vsclash in
-        raise_at lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined in function " ^ fname ^ ".")
+        raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined in function " ^ fname ^ ".")
     in
     let pats = List.combine formals actuals in
     (* Check undefined variables *)
@@ -1224,7 +1225,7 @@
                                  | _ -> []
                                ) pats) in
       if List.length undefined > 0 then
-        raise_at lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
+        raise_at_line lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
     in
     let (am, em, rm) = subst_maps_of_list pats in
     let p = subst_lined_program am em rm fbody in
@@ -1262,11 +1263,11 @@
     match dest_tok with
     | `LVVECT {vecname; vectyphint} ->
        let vtyp = match (src_vtyp_opt, vectyphint) with
-         | (None, None) -> raise_at lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
+         | (None, None) -> raise_at_line lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
          | (None, Some hinted_vtyp) -> hinted_vtyp
          | (Some src_vtyp, None) -> src_vtyp
          | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
-                                                   raise_at lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
+                                                   raise_at_line lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
                                                                                 (string_of_typ_vec hinted_vtyp)
                                                                                 vecname
                                                                                 (string_of_typ_vec src_vtyp))
@@ -1277,13 +1278,13 @@
        (elmtyp, names)
     | `LVVLIT lvs ->
        let relmtyp = match src_vtyp_opt with
-         | None -> raise_at lno "Internal error: Missing type information to resolve a vector lval."
+         | None -> raise_at_line lno "Internal error: Missing type information to resolve a vector lval."
          | Some (tp, _) -> tp in
        let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
                               let _ = match lvtyphint with
                                 | None -> ()
                                 | Some hinted_ty -> if relmtyp <> hinted_ty then
-                                                      raise_at lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
+                                                      raise_at_line lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
                                                                                    (string_of_typ hinted_ty)
                                                                                    lvname
                                                                                    (string_of_typ relmtyp))
@@ -1297,13 +1298,13 @@
        let tv = try
            ctx_find_vec ctx vecname
          with Not_found ->
-           raise_at lno ("Vector variable " ^ vecname ^ " is undefined.")
+           raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
        in
        let _ = match vectyphint with
          | None -> ()
          | Some hinted_ty ->
             if tv <> hinted_ty then
-              raise_at lno ("The type of variable " ^ vecname ^ " is inconsistent.")
+              raise_at_line lno ("The type of variable " ^ vecname ^ " is inconsistent.")
             else () in
        let (rtyphint, rlen) = tv in
        let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
@@ -1311,13 +1312,13 @@
        (rtyphint, rvs)
     | `AVLIT rvs ->
        match rvs with
-       | [] -> raise_at lno "A vector literal cannot be empty."
+       | [] -> raise_at_line lno "A vector literal cannot be empty."
        | _ ->
           let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
           let rtyphint = List.hd relmtyps in
           let _ = List.iteri (fun i t ->
                                if t <> rtyphint then
-                                 raise_at lno (
+                                 raise_at_line lno (
                                             Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
                                                            (string_of_typ rtyphint)
                                                            (string_of_typ t)
@@ -1333,7 +1334,7 @@
         | `AVAR ({atmname; _} as var) when SS.mem atmname tainted ->
            let tmp_name = atmname ^ "_" in
            let _ = if ctx_name_is_var ctx tmp_name then
-                     raise_at lno (
+                     raise_at_line lno (
                                 Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
                                                tmp_name)
                    else () in
@@ -1361,7 +1362,7 @@
     let (aliasing_instrs, tmp_names, src_safe_single) = gen_tmp_movs ctx lno rwpairs relmtyp in
     let rec to_pairs_rev acc xs = match xs with
       | [] -> acc
-      | _::[] -> raise_at lno "Internal error: Incorrect number of source operands."
+      | _::[] -> raise_at_line lno "Internal error: Incorrect number of source operands."
       | x::y::tail -> to_pairs_rev ((x, y)::acc) tail in
     let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
     (aliasing_instrs, tmp_names, src_safe)
@@ -1372,7 +1373,7 @@
     let rec to_pairs_rev acc xs = match xs with
       | [] -> acc
       | _::[] | _::_::[] ->
-         raise_at lno "Internal error: Incorrect number of source operands."
+         raise_at_line lno "Internal error: Incorrect number of source operands."
       | c::x::y::tail -> to_pairs_rev ((c, x, y)::acc) tail in
     let src_safe = List.rev (to_pairs_rev [] src_safe_single) in
     (aliasing_instrs, tmp_names, src_safe)
@@ -1380,9 +1381,9 @@
   let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
     let srclen = List.length src1 in
     let _ = if (List.length src2) <> srclen then
-      raise_at lno "Two sources should have the same length."
+      raise_at_line lno "Two sources should have the same length."
     else if relmtyp <> relmtyp' then
-      raise_at lno "Two sources should have the same element type."
+      raise_at_line lno "Two sources should have the same element type."
     else () in
     ((relmtyp, srclen), src1, src2)
 
@@ -1399,7 +1400,7 @@
     let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> (List.length src) then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
@@ -1420,7 +1421,7 @@
 
     let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
@@ -1455,7 +1456,7 @@
                                          (match r, lv.lvtyphint with
                                           | Some _, None -> r
                                           | Some ty, Some vt -> if ty = vt then Some ty
-                                                                else raise_at lno "Types of vector elements are inconsistent."
+                                                                else raise_at_line lno "Types of vector elements are inconsistent."
                                           | None, _ -> lv.lvtyphint)) None lvs in
          (match tyopt with
           | None -> Some (bit_t, List.length lvs)
@@ -1463,7 +1464,7 @@
     in
     let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok hint_typ in
     let _ = if (List.length dest_names) <> srclen then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
     let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
@@ -1475,7 +1476,7 @@
   let unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num =
     let _ = if ((List.length dest1_names) <> (List.length src) ||
                 (List.length dest2_names) <> (List.length src)) then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun (d1, d2) s -> ([d1; d2], s)) (List.combine dest1_names dest2_names) src in
@@ -1521,9 +1522,9 @@
     let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> srclen then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else if (List.length carry_names) <> srclen then
-      raise_at lno "Carry vector should be as long as the source vector."
+      raise_at_line lno "Carry vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun (c, d) (s1, s2) -> ([c; d], (s1, s2)))
@@ -1549,13 +1550,13 @@
     let vcarry = resolve_vec_with ctx lno carry_tok in
     let _ =
       if List.length (snd vcarry) <> srclen then
-        raise_at lno "Carry vector should be as long as the source vector."
+        raise_at_line lno "Carry vector should be as long as the source vector."
       else () in
 
     let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_typ_vec) in
 
     let _ = if (List.length dest_names) <> srclen then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d (c, (s1, s2)) -> ([d], (c, s1, s2)))
@@ -1584,7 +1585,7 @@
 
     let _ = if ((List.length destH_names) <> srclen ||
                 (List.length destL_names) <> srclen) then
-      raise_at lno "Destination vectors should be as long as the source vectors."
+      raise_at_line lno "Destination vectors should be as long as the source vectors."
     else () in
 
     let rwpairs = List.map2 (fun (dh, dl) (s1, s2) -> ([dh; dl], (s1, s2)))
@@ -1611,7 +1612,7 @@
 
     let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some dst_typ_vec) in
     let _ = if (List.length dest_names) <> srclen then
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
     else () in
 
     let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
@@ -1697,7 +1698,7 @@
                                        (List.rev_append rev_spl_instrs
                                                         final_cast_instrs))
     else
-      raise_at lno "Destination vector should be as long as the source vector."
+      raise_at_line lno "Destination vector should be as long as the source vector."
 
   let parse_vbroadcast_at ctx lno dest_tok num src_tok =
     let n = num ctx in
@@ -1933,7 +1934,7 @@
          parse_cast_at ctx lno optlv dest src
       | `VCAST (optlv, dest, src) -> (
         match optlv with
-        | Some _ -> raise_at lno "Internal error: optlv should be None in vcast."
+        | Some _ -> raise_at_line lno "Internal error: optlv should be None in vcast."
         | None -> parse_vcast_at ctx lno dest src)
       | `VPC (`LV dest, src) ->
          parse_vpc_at ctx lno dest src
@@ -1960,7 +1961,7 @@
       | `INLINE (id, actuals) ->
          parse_inline_at ctx lno id actuals
       | `NOP -> []
-      (*| _ -> (raise_at lno "(Internal error) Uncognized instruction pattern")*)
+      (*| _ -> (raise_at_line lno "(Internal error) Uncognized instruction pattern")*)
 
   let parse_instrs ctx instrs =
     let reducer prog_rev (lno, instr0) =
@@ -2063,10 +2064,10 @@ procs:
 proc:
   PROC ID LPAR formals RPAR EQOP pre program post
   {
-    let lno = !lnum in
+    let lno = get_line_start() in
     fun ctx ->
       let fname = $2 in
-      if SM.mem fname ctx.cfuns then raise_at lno ("The procedure " ^ fname ^ " is redefined.")
+      if SM.mem fname ctx.cfuns then raise_at_line lno ("The procedure " ^ fname ^ " is redefined.")
       else
         (* Duplicate formal parameters are detected in parsing formal parameters *)
         let (args, outs) = $4 lno in
@@ -2093,7 +2094,7 @@ proc:
             (* => this is checked in parsing the pre-condition *)
             (* 2. post-condition can access only input and output variables *)
             let undefined_post = VS.diff (vars_bexp_prove_with g) (VS.union fins fouts) in
-            let _ = if not (VS.is_empty undefined_post) then raise_at lno ("Variable " ^ string_of_var (VS.min_elt undefined_post) ^ " is not a formal parameter of procedure " ^ fname ^ ". "^
+            let _ = if not (VS.is_empty undefined_post) then raise_at_line lno ("Variable " ^ string_of_var (VS.min_elt undefined_post) ^ " is not a formal parameter of procedure " ^ fname ^ ". "^
                                                                              "Variables in post-conditions for procedures other than " ^ Options.Std.main_proc_name ^ " must be formal input or output variables.") in
             () in
         let _ = ctx.cfuns <- SM.add fname { fname = fname;
@@ -2109,12 +2110,12 @@ proc:
   }
   | CONST ID EQOP const
   {
-    let lno = !lnum in
+    let lno = get_line_start() in
     fun ctx ->
       let v = $2 in
       let n = $4 ctx in
       if SM.mem v ctx.cconsts
-      then raise_at lno ("Redefined constant: " ^ v)
+      then raise_at_line lno ("Redefined constant: " ^ v)
       else let _ = ctx.cconsts <- SM.add v n ctx.cconsts in
            ()
   }
@@ -2122,23 +2123,23 @@ proc:
 
 pre:
     LBRAC bexp RBRAC                              { fun ctx -> Some ($2 ctx) }
-  |                                               { fun _ctx -> None }
+  |                                               { fun _ -> None }
 ;
 
 post:
     LBRAC bexp_prove_with_list RBRAC              { fun ctx -> Some ($2 ctx) }
-  |                                               { fun _ctx -> None }
+  |                                               { fun _ -> None }
 ;
 
 formals:
     fvars                                         { fun lno -> ($1 lno, []) }
   | fvars SEMICOLON fvars                         { fun lno -> ($1 lno, $3 lno) }
   | SEMICOLON fvars                               { fun lno -> ([], $2 lno) }
-  |                                               { fun _lno -> ([], []) }
+  |                                               { fun _ -> ([], []) }
 ;
 
 fvars:
-    fvar                                          { fun _lno -> $1 }
+    fvar                                          { fun _ -> $1 }
   | fvar COMMA fvars
   {
     fun lno ->
@@ -2146,7 +2147,7 @@ fvars:
       let fvs2 = $3 lno in
       let duplicates = List.filter (fun v -> mem_var v fvs2) fvs1 in
       if List.length duplicates > 0
-      then raise_at lno ("Duplicate argument: " ^ string_of_var (List.hd duplicates))
+      then raise_at_line lno ("Duplicate argument: " ^ string_of_var (List.hd duplicates))
       else fvs1@fvs2
   }
 ;
@@ -2173,7 +2174,7 @@ fvar:
 ;
 
 prog:
-program EOF
+  program EOF
     {
       parse_instrs (empty_parsing_context ()) $1
     }
@@ -2184,278 +2185,278 @@ program:
 ;
 
 instrs:
-    instr SEMICOLON instrs                        { $1 :: $3 }
-  | instr SEMICOLON                               { [$1] }
-  | instr SEMICOLON error                         { raise_at !lnum ("Unrecognized instruction.") }
+    instr SEMICOLON                               { [$1] }
+  | instr SEMICOLON instrs                        { $1 :: $3 }
+  | instr instr                                   { raise_at (get_rhs_end 1) ("A semicolon is expected at the end of an instruction.") }
 ;
 
 instr:
-    MOV lval atom                                 { (!lnum, `MOV ($2, $3)) }
-  | MOV lval_v atom_v                             { (!lnum, `VMOV ($2, $3)) }
-  | lhs EQOP atom                                 { (!lnum, `MOV (`LVPLAIN $1, $3)) }
-  | BROADCAST lval_v const atom_v                 { (!lnum, `VBROADCAST ($2, $3, $4)) }
-  | SHL lval atom atom                            { (!lnum, `SHL ($2, $3, $4)) }
-  | lhs EQOP SHL atom atom                        { (!lnum, `SHL (`LVPLAIN $1, $4, $5)) }
-  | SHLS lval lval atom const                     { (!lnum, `SHLS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SHLS atom const                  { (!lnum, `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | SHR lval atom atom                            { (!lnum, `SHR ($2, $3, $4)) }
-  | lhs EQOP SHR atom atom                        { (!lnum, `SHR (`LVPLAIN $1, $4, $5)) }
-  | SHRS lval lval atom const                     { (!lnum, `SHRS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SHRS atom const                  { (!lnum, `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | SAR lval atom atom                            { (!lnum, `SAR ($2, $3, $4)) }
-  | lhs EQOP SAR atom atom                        { (!lnum, `SAR (`LVPLAIN $1, $4, $5)) }
-  | SARS lval lval atom const                     { (!lnum, `SARS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SARS atom const                  { (!lnum, `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | CSHL lval lval atom atom const                { (!lnum, `CSHL ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP CSHL atom atom const         { (!lnum, `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
-  | CSHLS lval lval lval atom atom const          { (!lnum, `CSHLS ($2, $3, $4, $5, $6, $7)) }
+    MOV lval atom                                 { (get_line_start(), `MOV ($2, $3)) }
+  | MOV lval_v atom_v                             { (get_line_start(), `VMOV ($2, $3)) }
+  | lhs EQOP atom                                 { (get_line_start(), `MOV (`LVPLAIN $1, $3)) }
+  | BROADCAST lval_v const atom_v                 { (get_line_start(), `VBROADCAST ($2, $3, $4)) }
+  | SHL lval atom atom                            { (get_line_start(), `SHL ($2, $3, $4)) }
+  | lhs EQOP SHL atom atom                        { (get_line_start(), `SHL (`LVPLAIN $1, $4, $5)) }
+  | SHLS lval lval atom const                     { (get_line_start(), `SHLS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SHLS atom const                  { (get_line_start(), `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | SHR lval atom atom                            { (get_line_start(), `SHR ($2, $3, $4)) }
+  | lhs EQOP SHR atom atom                        { (get_line_start(), `SHR (`LVPLAIN $1, $4, $5)) }
+  | SHRS lval lval atom const                     { (get_line_start(), `SHRS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SHRS atom const                  { (get_line_start(), `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | SAR lval atom atom                            { (get_line_start(), `SAR ($2, $3, $4)) }
+  | lhs EQOP SAR atom atom                        { (get_line_start(), `SAR (`LVPLAIN $1, $4, $5)) }
+  | SARS lval lval atom const                     { (get_line_start(), `SARS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SARS atom const                  { (get_line_start(), `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | CSHL lval lval atom atom const                { (get_line_start(), `CSHL ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHL atom atom const         { (get_line_start(), `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHLS lval lval lval atom atom const          { (get_line_start(), `CSHLS ($2, $3, $4, $5, $6, $7)) }
   | lhs DOT lhs DOT lhs EQOP CSHLS atom atom const
-                                                  { (!lnum, `CSHLS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
-  | CSHR lval lval atom atom const                { (!lnum, `CSHR ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP CSHR atom atom const         { (!lnum, `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
-  | CSHRS lval lval lval atom atom const          { (!lnum, `CSHRS ($2, $3, $4, $5, $6, $7)) }
+                                                  { (get_line_start(), `CSHLS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
+  | CSHR lval lval atom atom const                { (get_line_start(), `CSHR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHR atom atom const         { (get_line_start(), `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHRS lval lval lval atom atom const          { (get_line_start(), `CSHRS ($2, $3, $4, $5, $6, $7)) }
   | lhs DOT lhs DOT lhs EQOP CSHRS atom atom const
-                                                  { (!lnum, `CSHRS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
-  | ROL lval atom atom                            { (!lnum, `ROL ($2, $3, $4)) }
-  | ROR lval atom atom                            { (!lnum, `ROR ($2, $3, $4)) }
-  | SET lcarry                                    { (!lnum, `SET $2) }
-  | SET lcarry_v                                  { (!lnum, `VSET $2) }
-  | CLEAR lcarry                                  { (!lnum, `CLEAR $2) }
-  | CLEAR lcarry_v                                { (!lnum, `VCLEAR $2) }
-  | NONDET lval                                   { (!lnum, `NONDET $2) }
-  | NONDET lval_v                                 { (!lnum, `VNONDET $2) }
-  | CMOV lval carry atom atom                     { (!lnum, `CMOV ($2, $3, $4, $5)) }
-  | CMOV lval_v carry_v atom_v atom_v             { (!lnum, `VCMOV ($2, $3, $4, $5)) }
-  | lhs EQOP CMOV carry atom atom                 { (!lnum, `CMOV (`LVPLAIN $1, $4, $5, $6)) }
-  | ADD lval atom atom                            { (!lnum, `ADD ($2, $3, $4)) }
-  | ADD lval_v atom_v atom_v                      { (!lnum, `VADD ($2, $3, $4)) }
-  | lhs EQOP ADD atom atom                        { (!lnum, `ADD (`LVPLAIN $1, $4, $5)) }
-  | ADDS lcarry lval atom atom                    { (!lnum, `ADDS ($2, $3, $4, $5)) }
-  | ADDS lcarry_v lval_v atom_v atom_v            { (!lnum, `VADDS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP ADDS atom atom               { (!lnum, `ADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | ADC lval atom atom carry                      { (!lnum, `ADC ($2, $3, $4, $5)) }
-  | lhs EQOP ADC atom atom carry                  { (!lnum, `ADC (`LVPLAIN $1, $4, $5, $6)) }
-  | ADCS lcarry lval atom atom carry              { (!lnum, `ADCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP ADCS atom atom carry         { (!lnum, `ADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | SUB lval atom atom                            { (!lnum, `SUB ($2, $3, $4)) }
-  | SUB lval_v atom_v atom_v                      { (!lnum, `VSUB ($2, $3, $4)) }
-  | lhs EQOP SUB atom atom                        { (!lnum, `SUB (`LVPLAIN $1, $4, $5)) }
-  | SUBC lcarry lval atom atom                    { (!lnum, `SUBC ($2, $3, $4, $5)) }
-  | SUBC lcarry_v lval_v atom_v atom_v            { (!lnum, `VSUBC ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SUBC atom atom               { (!lnum, `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SUBB lcarry lval atom atom                    { (!lnum, `SUBB ($2, $3, $4, $5)) }
-  | SUBB lcarry_v lval_v atom_v atom_v            { (!lnum, `VSUBB ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SUBB atom atom               { (!lnum, `SUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SBC lval atom atom carry                      { (!lnum, `SBC ($2, $3, $4, $5)) }
-  | lhs EQOP SBC atom atom carry                  { (!lnum, `SBC (`LVPLAIN $1, $4, $5, $6)) }
-  | SBCS lcarry lval atom atom carry              { (!lnum, `SBCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP SBCS atom atom carry         { (!lnum, `SBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | SBB lval atom atom carry                      { (!lnum, `SBB ($2, $3, $4, $5)) }
-  | lhs EQOP SBB atom atom carry                  { (!lnum, `SBB (`LVPLAIN $1, $4, $5, $6)) }
-  | SBBS lcarry lval atom atom carry              { (!lnum, `SBBS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP SBBS atom atom carry         { (!lnum, `SBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | MUL lval atom atom                            { (!lnum, `MUL ($2, $3, $4)) }
-  | MUL lval_v atom_v atom_v                      { (!lnum, `VMUL ($2, $3, $4)) }
-  | lhs EQOP MUL atom atom                        { (!lnum, `MUL (`LVPLAIN $1, $4, $5)) }
-  | MULS lcarry lval atom atom                    { (!lnum, `MULS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP MULS atom atom               { (!lnum, `MULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | MULL lval lval atom atom                      { (!lnum, `MULL ($2, $3, $4, $5)) }
-  | MULL lval_v lval_v atom_v atom_v              { (!lnum, `VMULL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP MULL atom atom               { (!lnum, `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | MULJ lval atom atom                           { (!lnum, `MULJ ($2, $3, $4)) }
-  | MULJ lval_v atom_v atom_v                     { (!lnum, `VMULJ ($2, $3, $4)) }
-  | lhs EQOP MULJ atom atom                       { (!lnum, `MULJ (`LVPLAIN $1, $4, $5)) }
-  | SPLIT lval lval atom const                    { (!lnum, `SPLIT ($2, $3, $4, $5)) }
-  | SPLIT lval_v lval_v atom_v const              { (!lnum, `VSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SPLIT atom const             { (!lnum, `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SPL lval lval atom const                      { (!lnum, `SPL ($2, $3, $4, $5)) }
-  | SPL lval_v lval_v atom_v const                { (!lnum, `VSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SPL atom const               { (!lnum, `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SETEQ lval atom atom                          { (!lnum, `SETEQ ($2, $3, $4)) }
-  | SETEQ lval_v atom_v atom_v                    { (!lnum, `VSETEQ ($2, $3, $4)) }
-  | SETNE lval atom atom                          { (!lnum, `SETNE ($2, $3, $4)) }
-  | SETNE lval_v atom_v atom_v                    { (!lnum, `VSETNE ($2, $3, $4)) }
-  | UADD lval atom atom                           { (!lnum, `UADD ($2, $3, $4)) }
-  | UADD lval_v atom_v atom_v                     { (!lnum, `VUADD ($2, $3, $4)) }
-  | lhs EQOP UADD atom atom                       { (!lnum, `UADD (`LVPLAIN $1, $4, $5)) }
-  | UADDS lcarry lval atom atom                   { (!lnum, `UADDS ($2, $3, $4, $5)) }
-  | UADDS lcarry_v lval_v atom_v atom_v           { (!lnum, `VUADDS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP UADDS atom atom              { (!lnum, `UADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | UADC lval atom atom carry                     { (!lnum, `UADC ($2, $3, $4, $5)) }
-  | lhs EQOP UADC atom atom carry                 { (!lnum, `UADC (`LVPLAIN $1, $4, $5, $6)) }
-  | UADCS lcarry lval atom atom carry             { (!lnum, `UADCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP UADCS atom atom carry        { (!lnum, `UADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | USUB lval atom atom                           { (!lnum, `USUB ($2, $3, $4)) }
-  | lhs EQOP USUB atom atom                       { (!lnum, `USUB (`LVPLAIN $1, $4, $5)) }
-  | USUBC lcarry lval atom atom                   { (!lnum, `USUBC ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USUBC atom atom              { (!lnum, `USUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | USUBB lcarry lval atom atom                   { (!lnum, `USUBB ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USUBB atom atom              { (!lnum, `USUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | USBC lval atom atom carry                     { (!lnum, `USBC ($2, $3, $4, $5)) }
-  | lhs EQOP USBC atom atom carry                 { (!lnum, `USBC (`LVPLAIN $1, $4, $5, $6)) }
-  | USBCS lcarry lval atom atom carry             { (!lnum, `USBCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP USBCS atom atom carry        { (!lnum, `USBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | USBB lval atom atom carry                     { (!lnum, `USBB ($2, $3, $4, $5)) }
-  | lhs EQOP USBB atom atom carry                 { (!lnum, `USBB (`LVPLAIN $1, $4, $5, $6)) }
-  | USBBS lcarry lval atom atom carry             { (!lnum, `USBBS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP USBBS atom atom carry        { (!lnum, `USBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | UMUL lval atom atom                           { (!lnum, `UMUL ($2, $3, $4)) }
-  | UMUL lval_v atom_v atom_v                     { (!lnum, `VUMUL ($2, $3, $4)) }
-  | lhs EQOP UMUL atom atom                       { (!lnum, `UMUL (`LVPLAIN $1, $4, $5)) }
-  | UMULS lcarry lval atom atom                   { (!lnum, `UMULS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP UMULS atom atom              { (!lnum, `UMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | UMULL lval lval atom atom                     { (!lnum, `UMULL ($2, $3, $4, $5)) }
-  | UMULL lval_v lval_v atom_v atom_v             { (!lnum, `VUMULL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP UMULL atom atom              { (!lnum, `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | UMULJ lval atom atom                          { (!lnum, `UMULJ ($2, $3, $4)) }
-  | UMULJ lval_v atom_v atom_v                    { (!lnum, `VUMULJ ($2, $3, $4)) }
-  | lhs EQOP UMULJ atom atom                      { (!lnum, `UMULJ (`LVPLAIN $1, $4, $5)) }
-  | USPLIT lval lval atom const                   { (!lnum, `USPLIT ($2, $3, $4, $5)) }
-  | USPLIT lval_v lval_v atom_v const             { (!lnum, `VUSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USPLIT atom const            { (!lnum, `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | USPL lval lval atom const                     { (!lnum, `USPL ($2, $3, $4, $5)) }
-  | USPL lval_v lval_v atom_v const               { (!lnum, `VUSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USPL atom const              { (!lnum, `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SADD lval atom atom                           { (!lnum, `SADD ($2, $3, $4)) }
-  | SADD lval_v atom_v atom_v                     { (!lnum, `VSADD ($2, $3, $4)) }
-  | lhs EQOP SADD atom atom                       { (!lnum, `SADD (`LVPLAIN $1, $4, $5)) }
-  | SADDS lcarry lval atom atom                   { (!lnum, `SADDS ($2, $3, $4, $5)) }
-  | SADDS lcarry_v lval_v atom_v atom_v           { (!lnum, `VSADDS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SADDS atom atom              { (!lnum, `SADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SADC lval atom atom carry                     { (!lnum, `SADC ($2, $3, $4, $5)) }
-  | lhs EQOP SADC atom atom carry                 { (!lnum, `SADC (`LVPLAIN $1, $4, $5, $6)) }
-  | SADCS lcarry lval atom atom carry             { (!lnum, `SADCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP SADCS atom atom carry        { (!lnum, `SADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | SSUB lval atom atom                           { (!lnum, `SSUB ($2, $3, $4)) }
-  | lhs EQOP SSUB atom atom                       { (!lnum, `SSUB (`LVPLAIN $1, $4, $5)) }
-  | SSUBC lcarry lval atom atom                   { (!lnum, `SSUBC ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSUBC atom atom              { (!lnum, `SSUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SSUBB lcarry lval atom atom                   { (!lnum, `SSUBB ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSUBB atom atom              { (!lnum, `SSUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SSBC lval atom atom carry                     { (!lnum, `SSBC ($2, $3, $4, $5)) }
-  | lhs EQOP SSBC atom atom carry                 { (!lnum, `SSBC (`LVPLAIN $1, $4, $5, $6)) }
-  | SSBCS lcarry lval atom atom carry             { (!lnum, `SSBCS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP SSBCS atom atom carry        { (!lnum, `SSBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | SSBB lval atom atom carry                     { (!lnum, `SSBB ($2, $3, $4, $5)) }
-  | lhs EQOP SSBB atom atom carry                 { (!lnum, `SSBB (`LVPLAIN $1, $4, $5, $6)) }
-  | SSBBS lcarry lval atom atom carry             { (!lnum, `SSBBS ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP SSBBS atom atom carry        { (!lnum, `SSBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
-  | SMUL lval atom atom                           { (!lnum, `SMUL ($2, $3, $4) )}
-  | SMUL lval_v atom_v atom_v                     { (!lnum, `VSMUL ($2, $3, $4) )}
-  | lhs EQOP SMUL atom atom                       { (!lnum, `SMUL (`LVPLAIN $1, $4, $5) )}
-  | SMULS lcarry lval atom atom                   { (!lnum, `SMULS ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SMULS atom atom              { (!lnum, `SMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
-  | SMULL lval lval atom atom                     { (!lnum, `SMULL ($2, $3, $4, $5)) }
-  | SMULL lval_v lval_v atom_v atom_v             { (!lnum, `VSMULL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SMULL atom atom              { (!lnum, `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SMULJ lval atom atom                          { (!lnum, `SMULJ ($2, $3, $4)) }
-  | SMULJ lval_v atom_v atom_v                    { (!lnum, `VSMULJ ($2, $3, $4)) }
-  | lhs EQOP SMULJ atom atom                      { (!lnum, `SMULJ (`LVPLAIN $1, $4, $5)) }
-  | SSPLIT lval lval atom const                   { (!lnum, `SSPLIT ($2, $3, $4, $5)) }
-  | SSPLIT lval_v lval_v atom_v const             { (!lnum, `VSSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSPLIT atom const            { (!lnum, `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SSPL lval lval atom const                     { (!lnum, `SSPL ($2, $3, $4, $5)) }
-  | SSPL lval_v lval_v atom_v const               { (!lnum, `VSSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSPL atom const              { (!lnum, `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | AND lval atom atom                            { (!lnum, `AND ($2, $3, $4)) }
-  | AND lval_v atom_v atom_v                      { (!lnum, `VAND ($2, $3, $4)) }
-  | lhs EQOP AND atom atom                        { (!lnum, `AND (`LVPLAIN $1, $4, $5)) }
-  | OR lval atom atom                             { (!lnum, `OR ($2, $3, $4)) }
-  | OR lval_v atom_v atom_v                      { (!lnum, `VOR ($2, $3, $4)) }
-  | lhs EQOP OR atom atom                         { (!lnum, `OR (`LVPLAIN $1, $4, $5)) }
-  | XOR lval atom atom                            { (!lnum, `XOR ($2, $3, $4)) }
-  | XOR lval_v atom_v atom_v                      { (!lnum, `VXOR ($2, $3, $4)) }
-  | lhs EQOP XOR atom atom                        { (!lnum, `XOR (`LVPLAIN $1, $4, $5)) }
-  | NOT lval atom                                 { (!lnum, `NOT ($2, $3)) }
-  | NOT lval_v atom_v                             { (!lnum, `VNOT ($2, $3)) }
-  | lhs EQOP NOT atom                             { (!lnum, `NOT (`LVPLAIN $1, $4)) }
-  | CAST lval_or_lcarry atom                      { (!lnum, `CAST (None, $2, $3)) }
+                                                  { (get_line_start(), `CSHRS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
+  | ROL lval atom atom                            { (get_line_start(), `ROL ($2, $3, $4)) }
+  | ROR lval atom atom                            { (get_line_start(), `ROR ($2, $3, $4)) }
+  | SET lcarry                                    { (get_line_start(), `SET $2) }
+  | SET lcarry_v                                  { (get_line_start(), `VSET $2) }
+  | CLEAR lcarry                                  { (get_line_start(), `CLEAR $2) }
+  | CLEAR lcarry_v                                { (get_line_start(), `VCLEAR $2) }
+  | NONDET lval                                   { (get_line_start(), `NONDET $2) }
+  | NONDET lval_v                                 { (get_line_start(), `VNONDET $2) }
+  | CMOV lval carry atom atom                     { (get_line_start(), `CMOV ($2, $3, $4, $5)) }
+  | CMOV lval_v carry_v atom_v atom_v             { (get_line_start(), `VCMOV ($2, $3, $4, $5)) }
+  | lhs EQOP CMOV carry atom atom                 { (get_line_start(), `CMOV (`LVPLAIN $1, $4, $5, $6)) }
+  | ADD lval atom atom                            { (get_line_start(), `ADD ($2, $3, $4)) }
+  | ADD lval_v atom_v atom_v                      { (get_line_start(), `VADD ($2, $3, $4)) }
+  | lhs EQOP ADD atom atom                        { (get_line_start(), `ADD (`LVPLAIN $1, $4, $5)) }
+  | ADDS lcarry lval atom atom                    { (get_line_start(), `ADDS ($2, $3, $4, $5)) }
+  | ADDS lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP ADDS atom atom               { (get_line_start(), `ADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | ADC lval atom atom carry                      { (get_line_start(), `ADC ($2, $3, $4, $5)) }
+  | lhs EQOP ADC atom atom carry                  { (get_line_start(), `ADC (`LVPLAIN $1, $4, $5, $6)) }
+  | ADCS lcarry lval atom atom carry              { (get_line_start(), `ADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP ADCS atom atom carry         { (get_line_start(), `ADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SUB lval atom atom                            { (get_line_start(), `SUB ($2, $3, $4)) }
+  | SUB lval_v atom_v atom_v                      { (get_line_start(), `VSUB ($2, $3, $4)) }
+  | lhs EQOP SUB atom atom                        { (get_line_start(), `SUB (`LVPLAIN $1, $4, $5)) }
+  | SUBC lcarry lval atom atom                    { (get_line_start(), `SUBC ($2, $3, $4, $5)) }
+  | SUBC lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VSUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SUBC atom atom               { (get_line_start(), `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SUBB lcarry lval atom atom                    { (get_line_start(), `SUBB ($2, $3, $4, $5)) }
+  | SUBB lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VSUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SUBB atom atom               { (get_line_start(), `SUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SBC lval atom atom carry                      { (get_line_start(), `SBC ($2, $3, $4, $5)) }
+  | lhs EQOP SBC atom atom carry                  { (get_line_start(), `SBC (`LVPLAIN $1, $4, $5, $6)) }
+  | SBCS lcarry lval atom atom carry              { (get_line_start(), `SBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBCS atom atom carry         { (get_line_start(), `SBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SBB lval atom atom carry                      { (get_line_start(), `SBB ($2, $3, $4, $5)) }
+  | lhs EQOP SBB atom atom carry                  { (get_line_start(), `SBB (`LVPLAIN $1, $4, $5, $6)) }
+  | SBBS lcarry lval atom atom carry              { (get_line_start(), `SBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SBBS atom atom carry         { (get_line_start(), `SBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | MUL lval atom atom                            { (get_line_start(), `MUL ($2, $3, $4)) }
+  | MUL lval_v atom_v atom_v                      { (get_line_start(), `VMUL ($2, $3, $4)) }
+  | lhs EQOP MUL atom atom                        { (get_line_start(), `MUL (`LVPLAIN $1, $4, $5)) }
+  | MULS lcarry lval atom atom                    { (get_line_start(), `MULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP MULS atom atom               { (get_line_start(), `MULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | MULL lval lval atom atom                      { (get_line_start(), `MULL ($2, $3, $4, $5)) }
+  | MULL lval_v lval_v atom_v atom_v              { (get_line_start(), `VMULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP MULL atom atom               { (get_line_start(), `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | MULJ lval atom atom                           { (get_line_start(), `MULJ ($2, $3, $4)) }
+  | MULJ lval_v atom_v atom_v                     { (get_line_start(), `VMULJ ($2, $3, $4)) }
+  | lhs EQOP MULJ atom atom                       { (get_line_start(), `MULJ (`LVPLAIN $1, $4, $5)) }
+  | SPLIT lval lval atom const                    { (get_line_start(), `SPLIT ($2, $3, $4, $5)) }
+  | SPLIT lval_v lval_v atom_v const              { (get_line_start(), `VSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPLIT atom const             { (get_line_start(), `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SPL lval lval atom const                      { (get_line_start(), `SPL ($2, $3, $4, $5)) }
+  | SPL lval_v lval_v atom_v const                { (get_line_start(), `VSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPL atom const               { (get_line_start(), `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SETEQ lval atom atom                          { (get_line_start(), `SETEQ ($2, $3, $4)) }
+  | SETEQ lval_v atom_v atom_v                    { (get_line_start(), `VSETEQ ($2, $3, $4)) }
+  | SETNE lval atom atom                          { (get_line_start(), `SETNE ($2, $3, $4)) }
+  | SETNE lval_v atom_v atom_v                    { (get_line_start(), `VSETNE ($2, $3, $4)) }
+  | UADD lval atom atom                           { (get_line_start(), `UADD ($2, $3, $4)) }
+  | UADD lval_v atom_v atom_v                     { (get_line_start(), `VUADD ($2, $3, $4)) }
+  | lhs EQOP UADD atom atom                       { (get_line_start(), `UADD (`LVPLAIN $1, $4, $5)) }
+  | UADDS lcarry lval atom atom                   { (get_line_start(), `UADDS ($2, $3, $4, $5)) }
+  | UADDS lcarry_v lval_v atom_v atom_v           { (get_line_start(), `VUADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UADDS atom atom              { (get_line_start(), `UADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UADC lval atom atom carry                     { (get_line_start(), `UADC ($2, $3, $4, $5)) }
+  | lhs EQOP UADC atom atom carry                 { (get_line_start(), `UADC (`LVPLAIN $1, $4, $5, $6)) }
+  | UADCS lcarry lval atom atom carry             { (get_line_start(), `UADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP UADCS atom atom carry        { (get_line_start(), `UADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USUB lval atom atom                           { (get_line_start(), `USUB ($2, $3, $4)) }
+  | lhs EQOP USUB atom atom                       { (get_line_start(), `USUB (`LVPLAIN $1, $4, $5)) }
+  | USUBC lcarry lval atom atom                   { (get_line_start(), `USUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USUBC atom atom              { (get_line_start(), `USUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | USUBB lcarry lval atom atom                   { (get_line_start(), `USUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USUBB atom atom              { (get_line_start(), `USUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | USBC lval atom atom carry                     { (get_line_start(), `USBC ($2, $3, $4, $5)) }
+  | lhs EQOP USBC atom atom carry                 { (get_line_start(), `USBC (`LVPLAIN $1, $4, $5, $6)) }
+  | USBCS lcarry lval atom atom carry             { (get_line_start(), `USBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBCS atom atom carry        { (get_line_start(), `USBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | USBB lval atom atom carry                     { (get_line_start(), `USBB ($2, $3, $4, $5)) }
+  | lhs EQOP USBB atom atom carry                 { (get_line_start(), `USBB (`LVPLAIN $1, $4, $5, $6)) }
+  | USBBS lcarry lval atom atom carry             { (get_line_start(), `USBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP USBBS atom atom carry        { (get_line_start(), `USBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | UMUL lval atom atom                           { (get_line_start(), `UMUL ($2, $3, $4)) }
+  | UMUL lval_v atom_v atom_v                     { (get_line_start(), `VUMUL ($2, $3, $4)) }
+  | lhs EQOP UMUL atom atom                       { (get_line_start(), `UMUL (`LVPLAIN $1, $4, $5)) }
+  | UMULS lcarry lval atom atom                   { (get_line_start(), `UMULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UMULS atom atom              { (get_line_start(), `UMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | UMULL lval lval atom atom                     { (get_line_start(), `UMULL ($2, $3, $4, $5)) }
+  | UMULL lval_v lval_v atom_v atom_v             { (get_line_start(), `VUMULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP UMULL atom atom              { (get_line_start(), `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | UMULJ lval atom atom                          { (get_line_start(), `UMULJ ($2, $3, $4)) }
+  | UMULJ lval_v atom_v atom_v                    { (get_line_start(), `VUMULJ ($2, $3, $4)) }
+  | lhs EQOP UMULJ atom atom                      { (get_line_start(), `UMULJ (`LVPLAIN $1, $4, $5)) }
+  | USPLIT lval lval atom const                   { (get_line_start(), `USPLIT ($2, $3, $4, $5)) }
+  | USPLIT lval_v lval_v atom_v const             { (get_line_start(), `VUSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPLIT atom const            { (get_line_start(), `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | USPL lval lval atom const                     { (get_line_start(), `USPL ($2, $3, $4, $5)) }
+  | USPL lval_v lval_v atom_v const               { (get_line_start(), `VUSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPL atom const              { (get_line_start(), `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SADD lval atom atom                           { (get_line_start(), `SADD ($2, $3, $4)) }
+  | SADD lval_v atom_v atom_v                     { (get_line_start(), `VSADD ($2, $3, $4)) }
+  | lhs EQOP SADD atom atom                       { (get_line_start(), `SADD (`LVPLAIN $1, $4, $5)) }
+  | SADDS lcarry lval atom atom                   { (get_line_start(), `SADDS ($2, $3, $4, $5)) }
+  | SADDS lcarry_v lval_v atom_v atom_v           { (get_line_start(), `VSADDS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SADDS atom atom              { (get_line_start(), `SADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SADC lval atom atom carry                     { (get_line_start(), `SADC ($2, $3, $4, $5)) }
+  | lhs EQOP SADC atom atom carry                 { (get_line_start(), `SADC (`LVPLAIN $1, $4, $5, $6)) }
+  | SADCS lcarry lval atom atom carry             { (get_line_start(), `SADCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SADCS atom atom carry        { (get_line_start(), `SADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSUB lval atom atom                           { (get_line_start(), `SSUB ($2, $3, $4)) }
+  | lhs EQOP SSUB atom atom                       { (get_line_start(), `SSUB (`LVPLAIN $1, $4, $5)) }
+  | SSUBC lcarry lval atom atom                   { (get_line_start(), `SSUBC ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSUBC atom atom              { (get_line_start(), `SSUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SSUBB lcarry lval atom atom                   { (get_line_start(), `SSUBB ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSUBB atom atom              { (get_line_start(), `SSUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SSBC lval atom atom carry                     { (get_line_start(), `SSBC ($2, $3, $4, $5)) }
+  | lhs EQOP SSBC atom atom carry                 { (get_line_start(), `SSBC (`LVPLAIN $1, $4, $5, $6)) }
+  | SSBCS lcarry lval atom atom carry             { (get_line_start(), `SSBCS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBCS atom atom carry        { (get_line_start(), `SSBCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SSBB lval atom atom carry                     { (get_line_start(), `SSBB ($2, $3, $4, $5)) }
+  | lhs EQOP SSBB atom atom carry                 { (get_line_start(), `SSBB (`LVPLAIN $1, $4, $5, $6)) }
+  | SSBBS lcarry lval atom atom carry             { (get_line_start(), `SSBBS ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP SSBBS atom atom carry        { (get_line_start(), `SSBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
+  | SMUL lval atom atom                           { (get_line_start(), `SMUL ($2, $3, $4) )}
+  | SMUL lval_v atom_v atom_v                     { (get_line_start(), `VSMUL ($2, $3, $4) )}
+  | lhs EQOP SMUL atom atom                       { (get_line_start(), `SMUL (`LVPLAIN $1, $4, $5) )}
+  | SMULS lcarry lval atom atom                   { (get_line_start(), `SMULS ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SMULS atom atom              { (get_line_start(), `SMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
+  | SMULL lval lval atom atom                     { (get_line_start(), `SMULL ($2, $3, $4, $5)) }
+  | SMULL lval_v lval_v atom_v atom_v             { (get_line_start(), `VSMULL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SMULL atom atom              { (get_line_start(), `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SMULJ lval atom atom                          { (get_line_start(), `SMULJ ($2, $3, $4)) }
+  | SMULJ lval_v atom_v atom_v                    { (get_line_start(), `VSMULJ ($2, $3, $4)) }
+  | lhs EQOP SMULJ atom atom                      { (get_line_start(), `SMULJ (`LVPLAIN $1, $4, $5)) }
+  | SSPLIT lval lval atom const                   { (get_line_start(), `SSPLIT ($2, $3, $4, $5)) }
+  | SSPLIT lval_v lval_v atom_v const             { (get_line_start(), `VSSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPLIT atom const            { (get_line_start(), `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SSPL lval lval atom const                     { (get_line_start(), `SSPL ($2, $3, $4, $5)) }
+  | SSPL lval_v lval_v atom_v const               { (get_line_start(), `VSSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPL atom const              { (get_line_start(), `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | AND lval atom atom                            { (get_line_start(), `AND ($2, $3, $4)) }
+  | AND lval_v atom_v atom_v                      { (get_line_start(), `VAND ($2, $3, $4)) }
+  | lhs EQOP AND atom atom                        { (get_line_start(), `AND (`LVPLAIN $1, $4, $5)) }
+  | OR lval atom atom                             { (get_line_start(), `OR ($2, $3, $4)) }
+  | OR lval_v atom_v atom_v                      { (get_line_start(), `VOR ($2, $3, $4)) }
+  | lhs EQOP OR atom atom                         { (get_line_start(), `OR (`LVPLAIN $1, $4, $5)) }
+  | XOR lval atom atom                            { (get_line_start(), `XOR ($2, $3, $4)) }
+  | XOR lval_v atom_v atom_v                      { (get_line_start(), `VXOR ($2, $3, $4)) }
+  | lhs EQOP XOR atom atom                        { (get_line_start(), `XOR (`LVPLAIN $1, $4, $5)) }
+  | NOT lval atom                                 { (get_line_start(), `NOT ($2, $3)) }
+  | NOT lval_v atom_v                             { (get_line_start(), `VNOT ($2, $3)) }
+  | lhs EQOP NOT atom                             { (get_line_start(), `NOT (`LVPLAIN $1, $4)) }
+  | CAST lval_or_lcarry atom                      { (get_line_start(), `CAST (None, $2, $3)) }
   // XXX: the "[]" is to workaround a r/r conflict
-  | CAST LSQUARE RSQUARE lval_v atom_v            { (!lnum, `VCAST (None, $4, $5)) }
+  | CAST LSQUARE RSQUARE lval_v atom_v            { (get_line_start(), `VCAST (None, $4, $5)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atom
-                                                  { (!lnum, `CAST (Some $3, $5, $6)) }
-  | lhs EQOP CAST atom                            { (!lnum, `CAST (None, `LV $1, $4)) }
-  | VPC lval_or_lcarry atom                       { (!lnum, `VPC ($2, $3)) }
-  | lhs EQOP VPC atom                             { (!lnum, `VPC (`LV $1, $4)) }
-  | JOIN lval atom atom                           { (!lnum, `JOIN ($2, $3, $4)) }
-  | lhs EQOP JOIN atom atom                       { (!lnum, `JOIN (`LVPLAIN $1, $4, $5)) }
-  | ASSERT bexp_prove_with_list                   { (!lnum, `ASSERT $2) }
-  | EASSERT ebexp_prove_with_list                 { (!lnum, `EASSERT $2) }
-  | RASSERT rbexp_prove_with_list                 { (!lnum, `RASSERT $2) }
-  | ASSUME bexp                                   { (!lnum, `ASSUME $2) }
-  | CUT bexp_prove_with_list                      { (!lnum, `CUT $2) }
-  | ECUT ebexp_prove_with_list                    { (!lnum, `ECUT $2) }
-  | RCUT rbexp_prove_with_list                    { (!lnum, `RCUT $2) }
-  | GHOST gvars COLON bexp                        { (!lnum, `GHOST ($2, $4)) }
+                                                  { (get_line_start(), `CAST (Some $3, $5, $6)) }
+  | lhs EQOP CAST atom                            { (get_line_start(), `CAST (None, `LV $1, $4)) }
+  | VPC lval_or_lcarry atom                       { (get_line_start(), `VPC ($2, $3)) }
+  | lhs EQOP VPC atom                             { (get_line_start(), `VPC (`LV $1, $4)) }
+  | JOIN lval atom atom                           { (get_line_start(), `JOIN ($2, $3, $4)) }
+  | lhs EQOP JOIN atom atom                       { (get_line_start(), `JOIN (`LVPLAIN $1, $4, $5)) }
+  | ASSERT bexp_prove_with_list                   { (get_line_start(), `ASSERT $2) }
+  | EASSERT ebexp_prove_with_list                 { (get_line_start(), `EASSERT $2) }
+  | RASSERT rbexp_prove_with_list                 { (get_line_start(), `RASSERT $2) }
+  | ASSUME bexp                                   { (get_line_start(), `ASSUME $2) }
+  | CUT bexp_prove_with_list                      { (get_line_start(), `CUT $2) }
+  | ECUT ebexp_prove_with_list                    { (get_line_start(), `ECUT $2) }
+  | RCUT rbexp_prove_with_list                    { (get_line_start(), `RCUT $2) }
+  | GHOST gvars COLON bexp                        { (get_line_start(), `GHOST ($2, $4)) }
   /* Extensions */
-  | CALL ID LPAR actuals RPAR                     { (!lnum, `CALL ($2, $4)) }
-  | INLINE ID LPAR actuals RPAR                   { (!lnum, `INLINE ($2, $4)) }
-  | NOP                                           { (!lnum, `NOP) }
+  | CALL ID LPAR actuals RPAR                     { (get_line_start(), `CALL ($2, $4)) }
+  | INLINE ID LPAR actuals RPAR                   { (get_line_start(), `INLINE ($2, $4)) }
+  | NOP                                           { (get_line_start(), `NOP) }
   /* Errors */
-  | MOV error                                     { raise_at !lnum ("Bad mov instruction") }
-  | BROADCAST error                               { raise_at !lnum ("Bad broadcast instruction") }
-  | ADD error                                     { raise_at !lnum ("Bad add instruction") }
-  | ADDS error                                    { raise_at !lnum ("Bad adds instruction") }
-  | ADC error                                     { raise_at !lnum ("Bad adc instruction") }
-  | ADCS error                                    { raise_at !lnum ("Bad adcs instruction") }
-  | SUB error                                     { raise_at !lnum ("Bad sub instruction") }
-  | SUBC error                                    { raise_at !lnum ("Bad subc instruction") }
-  | SUBB error                                    { raise_at !lnum ("Bad subb instruction") }
-  | SBC error                                     { raise_at !lnum ("Bad sbc instruction") }
-  | SBCS error                                    { raise_at !lnum ("Bad sbcs instruction") }
-  | SBB error                                     { raise_at !lnum ("Bad sbb instruction") }
-  | SBBS error                                    { raise_at !lnum ("Bad sbbs instruction") }
-  | MUL error                                     { raise_at !lnum ("Bad mul instruction") }
-  | MULL error                                    { raise_at !lnum ("Bad mull instruction") }
-  | SPLIT error                                   { raise_at !lnum ("Bad split instruction") }
-  | SPL error                                     { raise_at !lnum ("Bad spl instruction") }
-  | UADD error                                    { raise_at !lnum ("Bad uadd instruction") }
-  | UADDS error                                   { raise_at !lnum ("Bad uadds instruction") }
-  | UADC error                                    { raise_at !lnum ("Bad uadc instruction") }
-  | UADCS error                                   { raise_at !lnum ("Bad uadcs instruction") }
-  | USUB error                                    { raise_at !lnum ("Bad usub instruction") }
-  | USUBC error                                   { raise_at !lnum ("Bad usubc instruction") }
-  | USUBB error                                   { raise_at !lnum ("Bad usubb instruction") }
-  | USBC error                                    { raise_at !lnum ("Bad usbc instruction") }
-  | USBCS error                                   { raise_at !lnum ("Bad usbcs instruction") }
-  | USBB error                                    { raise_at !lnum ("Bad usbb instruction") }
-  | USBBS error                                   { raise_at !lnum ("Bad usbbs instruction") }
-  | UMUL error                                    { raise_at !lnum ("Bad umul instruction") }
-  | UMULL error                                   { raise_at !lnum ("Bad umull instruction") }
-  | USPLIT error                                  { raise_at !lnum ("Bad usplit instruction") }
-  | USPL error                                    { raise_at !lnum ("Bad uspl instruction") }
-  | SADD error                                    { raise_at !lnum ("Bad sadd instruction") }
-  | SADDS error                                   { raise_at !lnum ("Bad sadds instruction") }
-  | SADC error                                    { raise_at !lnum ("Bad sadc instruction") }
-  | SADCS error                                   { raise_at !lnum ("Bad sadcs instruction") }
-  | SSUB error                                    { raise_at !lnum ("Bad ssub instruction") }
-  | SSUBC error                                   { raise_at !lnum ("Bad ssubc instruction") }
-  | SSUBB error                                   { raise_at !lnum ("Bad ssubb instruction") }
-  | SSBC error                                    { raise_at !lnum ("Bad ssbc instruction") }
-  | SSBCS error                                   { raise_at !lnum ("Bad ssbcs instruction") }
-  | SSBB error                                    { raise_at !lnum ("Bad ssbb instruction") }
-  | SSBBS error                                   { raise_at !lnum ("Bad ssbbs instruction") }
-  | SMUL error                                    { raise_at !lnum ("Bad smul instruction") }
-  | SMULL error                                   { raise_at !lnum ("Bad smull instruction") }
-  | SSPLIT error                                  { raise_at !lnum ("Bad ssplit instruction") }
-  | SSPL error                                    { raise_at !lnum ("Bad sspl instruction") }
-  | SHL error                                     { raise_at !lnum ("Bad shl instruction") }
-  | SHLS error                                    { raise_at !lnum ("Bad shls instruction") }
-  | SHR error                                     { raise_at !lnum ("Bad shr instruction") }
-  | SHRS error                                    { raise_at !lnum ("Bad shrs instruction") }
-  | SAR error                                     { raise_at !lnum ("Bad sar instruction") }
-  | SARS error                                    { raise_at !lnum ("Bad sars instruction") }
-  | CSHL error                                    { raise_at !lnum ("Bad cshl instruction") }
-  | CSHLS error                                   { raise_at !lnum ("Bad cshls instruction") }
-  | CSHR error                                    { raise_at !lnum ("Bad cshr instruction") }
-  | CSHRS error                                   { raise_at !lnum ("Bad cshrs instruction") }
-  | ROL error                                     { raise_at !lnum ("Bad rol instruction") }
-  | ROR error                                     { raise_at !lnum ("Bad ror instruction") }
-  | NONDET error                                  { raise_at !lnum ("Bad nondet instruction") }
-  | CALL ID LPAR error                            { raise_at !lnum (("Invalid actuals in the call instruction: " ^ $2)) }
-  | CALL error                                    { raise_at !lnum ("Bad call instruction") }
-  | INLINE ID LPAR error                          { raise_at !lnum (("Invalid actuals in the inline instruction: " ^ $2)) }
-  | INLINE error                                  { raise_at !lnum ("Bad inline instruction") }
+  | MOV error                                     { raise_at_line (get_line_start()) ("Bad mov instruction") }
+  | BROADCAST error                               { raise_at_line (get_line_start()) ("Bad broadcast instruction") }
+  | ADD error                                     { raise_at_line (get_line_start()) ("Bad add instruction") }
+  | ADDS error                                    { raise_at_line (get_line_start()) ("Bad adds instruction") }
+  | ADC error                                     { raise_at_line (get_line_start()) ("Bad adc instruction") }
+  | ADCS error                                    { raise_at_line (get_line_start()) ("Bad adcs instruction") }
+  | SUB error                                     { raise_at_line (get_line_start()) ("Bad sub instruction") }
+  | SUBC error                                    { raise_at_line (get_line_start()) ("Bad subc instruction") }
+  | SUBB error                                    { raise_at_line (get_line_start()) ("Bad subb instruction") }
+  | SBC error                                     { raise_at_line (get_line_start()) ("Bad sbc instruction") }
+  | SBCS error                                    { raise_at_line (get_line_start()) ("Bad sbcs instruction") }
+  | SBB error                                     { raise_at_line (get_line_start()) ("Bad sbb instruction") }
+  | SBBS error                                    { raise_at_line (get_line_start()) ("Bad sbbs instruction") }
+  | MUL error                                     { raise_at_line (get_line_start()) ("Bad mul instruction") }
+  | MULL error                                    { raise_at_line (get_line_start()) ("Bad mull instruction") }
+  | SPLIT error                                   { raise_at_line (get_line_start()) ("Bad split instruction") }
+  | SPL error                                     { raise_at_line (get_line_start()) ("Bad spl instruction") }
+  | UADD error                                    { raise_at_line (get_line_start()) ("Bad uadd instruction") }
+  | UADDS error                                   { raise_at_line (get_line_start()) ("Bad uadds instruction") }
+  | UADC error                                    { raise_at_line (get_line_start()) ("Bad uadc instruction") }
+  | UADCS error                                   { raise_at_line (get_line_start()) ("Bad uadcs instruction") }
+  | USUB error                                    { raise_at_line (get_line_start()) ("Bad usub instruction") }
+  | USUBC error                                   { raise_at_line (get_line_start()) ("Bad usubc instruction") }
+  | USUBB error                                   { raise_at_line (get_line_start()) ("Bad usubb instruction") }
+  | USBC error                                    { raise_at_line (get_line_start()) ("Bad usbc instruction") }
+  | USBCS error                                   { raise_at_line (get_line_start()) ("Bad usbcs instruction") }
+  | USBB error                                    { raise_at_line (get_line_start()) ("Bad usbb instruction") }
+  | USBBS error                                   { raise_at_line (get_line_start()) ("Bad usbbs instruction") }
+  | UMUL error                                    { raise_at_line (get_line_start()) ("Bad umul instruction") }
+  | UMULL error                                   { raise_at_line (get_line_start()) ("Bad umull instruction") }
+  | USPLIT error                                  { raise_at_line (get_line_start()) ("Bad usplit instruction") }
+  | USPL error                                    { raise_at_line (get_line_start()) ("Bad uspl instruction") }
+  | SADD error                                    { raise_at_line (get_line_start()) ("Bad sadd instruction") }
+  | SADDS error                                   { raise_at_line (get_line_start()) ("Bad sadds instruction") }
+  | SADC error                                    { raise_at_line (get_line_start()) ("Bad sadc instruction") }
+  | SADCS error                                   { raise_at_line (get_line_start()) ("Bad sadcs instruction") }
+  | SSUB error                                    { raise_at_line (get_line_start()) ("Bad ssub instruction") }
+  | SSUBC error                                   { raise_at_line (get_line_start()) ("Bad ssubc instruction") }
+  | SSUBB error                                   { raise_at_line (get_line_start()) ("Bad ssubb instruction") }
+  | SSBC error                                    { raise_at_line (get_line_start()) ("Bad ssbc instruction") }
+  | SSBCS error                                   { raise_at_line (get_line_start()) ("Bad ssbcs instruction") }
+  | SSBB error                                    { raise_at_line (get_line_start()) ("Bad ssbb instruction") }
+  | SSBBS error                                   { raise_at_line (get_line_start()) ("Bad ssbbs instruction") }
+  | SMUL error                                    { raise_at_line (get_line_start()) ("Bad smul instruction") }
+  | SMULL error                                   { raise_at_line (get_line_start()) ("Bad smull instruction") }
+  | SSPLIT error                                  { raise_at_line (get_line_start()) ("Bad ssplit instruction") }
+  | SSPL error                                    { raise_at_line (get_line_start()) ("Bad sspl instruction") }
+  | SHL error                                     { raise_at_line (get_line_start()) ("Bad shl instruction") }
+  | SHLS error                                    { raise_at_line (get_line_start()) ("Bad shls instruction") }
+  | SHR error                                     { raise_at_line (get_line_start()) ("Bad shr instruction") }
+  | SHRS error                                    { raise_at_line (get_line_start()) ("Bad shrs instruction") }
+  | SAR error                                     { raise_at_line (get_line_start()) ("Bad sar instruction") }
+  | SARS error                                    { raise_at_line (get_line_start()) ("Bad sars instruction") }
+  | CSHL error                                    { raise_at_line (get_line_start()) ("Bad cshl instruction") }
+  | CSHLS error                                   { raise_at_line (get_line_start()) ("Bad cshls instruction") }
+  | CSHR error                                    { raise_at_line (get_line_start()) ("Bad cshr instruction") }
+  | CSHRS error                                   { raise_at_line (get_line_start()) ("Bad cshrs instruction") }
+  | ROL error                                     { raise_at_line (get_line_start()) ("Bad rol instruction") }
+  | ROR error                                     { raise_at_line (get_line_start()) ("Bad ror instruction") }
+  | NONDET error                                  { raise_at_line (get_line_start()) ("Bad nondet instruction") }
+  | CALL ID LPAR error                            { raise_at_line (get_line_start()) (("Invalid actuals in the call instruction: " ^ $2)) }
+  | CALL error                                    { raise_at_line (get_line_start()) ("Bad call instruction") }
+  | INLINE ID LPAR error                          { raise_at_line (get_line_start()) (("Invalid actuals in the inline instruction: " ^ $2)) }
+  | INLINE error                                  { raise_at_line (get_line_start()) ("Bad inline instruction") }
 ;
 
 ebexp_prove_with_list:
@@ -2478,18 +2479,18 @@ ebexp_prove_with:
   ebexp                                           { fun ctx -> ($1 ctx, []) }
 | ebexp PROVE WITH LSQUARE prove_with_specs RSQUARE
                                                   { fun ctx -> ($1 ctx, $5 ctx) }
-| ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
-| ebexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
-| ebexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
+| ebexp PROVE WITH LSQUARE prove_with_specs error { raise_at_line (get_line_start()) ("A ] is missing.") }
+| ebexp PROVE WITH LSQUARE error                  { raise_at_line (get_line_start()) ("Incorrect prove-with clauses.") }
+| ebexp PROVE WITH error                          { raise_at_line (get_line_start()) ("Enclose the prove-with clauses in [].") }
 ;
 
 rbexp_prove_with:
   rbexp                                           { fun ctx -> ($1 ctx, []) }
 | rbexp PROVE WITH LSQUARE prove_with_specs RSQUARE
                                                   { fun ctx -> ($1 ctx, $5 ctx) }
-| rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at !lnum ("A ] is missing.") }
-| rbexp PROVE WITH LSQUARE error                  { raise_at !lnum ("Incorrect prove-with clauses.") }
-| rbexp PROVE WITH error                          { raise_at !lnum ("Enclose the prove-with clauses in [].") }
+| rbexp PROVE WITH LSQUARE prove_with_specs error { raise_at_line (get_line_start()) ("A ] is missing.") }
+| rbexp PROVE WITH LSQUARE error                  { raise_at_line (get_line_start()) ("Incorrect prove-with clauses.") }
+| rbexp PROVE WITH error                          { raise_at_line (get_line_start()) ("Enclose the prove-with clauses in [].") }
 ;
 
 prove_with_specs:
@@ -2517,11 +2518,11 @@ path:
 bexp:
     TRUE                                          { fun _ -> btrue }
   | ebexp VBAR rbexp                              { fun ctx -> ($1 ctx, $3 ctx) }
-  | ebexp VBAR error                              { let lno = !lnum in
+  | ebexp VBAR error                              { let lno = get_line_start() in
                                                     fun ctx ->
-                                                      raise_at lno ("Invalid range predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
+                                                      raise_at_line lno ("Invalid range predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
                                                   }
-  | ebexp error                                   { raise_at !lnum ("Please use '&&' to separate algebraic predicates and range predicates.") }
+  | ebexp error                                   { raise_at_line (get_line_start()) ("Please use '&&' to separate algebraic predicates and range predicates.") }
 ;
 
 ebexp:
@@ -2532,7 +2533,7 @@ ebexp:
 ebexp_atom:
     TRUE                                          { fun _ -> Etrue }
   | EQ eexp_no_vec eexp_no_unary                  { fun ctx -> Eeq ($2 ctx, $3 ctx) }
-  | EQ veexp veexp_no_unary                       { let lno = !lnum in
+  | EQ veexp veexp_no_unary                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2540,14 +2541,14 @@ ebexp_atom:
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
   | EQMOD eexp_no_vec eexp_no_unary eexp_no_unary { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp_no_vec eexp_no_unary LSQUARE eexps RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
-  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
+  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2557,11 +2558,11 @@ ebexp_atom:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length ms in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
   | EQMOD veexp veexp_no_unary LSQUARE veexps RSQUARE
-                                                  { let lno = !lnum in
+                                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2571,7 +2572,7 @@ ebexp_atom:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length mss in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
                                                   }
   | AND ebexp_atom_without_eqmod ebexp_atom       { fun ctx -> Eand ($2 ctx, $3 ctx) }
@@ -2581,7 +2582,7 @@ ebexp_atom:
                                                       | None -> Eeq ($1 ctx, $3 ctx)
                                                       | Some ms -> Eeqmod ($1 ctx, $3 ctx, ms)
                                                   }
-  | veexp EQOP veexp_no_unary veq_suffix          { let lno = !lnum in
+  | veexp EQOP veexp_no_unary veq_suffix          { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
@@ -2594,7 +2595,7 @@ ebexp_atom:
                                                         | None -> size2
                                                         | Some mss -> List.length mss in
                                                       if size1 <> size2 || size2 <> sizem then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     match mssopt with
                                                     | None -> List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
                                                     | Some mss -> List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
@@ -2603,40 +2604,40 @@ ebexp_atom:
   | AND LSQUARE ebexps RSQUARE                    { fun ctx -> eands ($3 ctx) }
   | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
-/*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
-  | EQ veexp error                                { fun ctx ->
+/*  | ID error                                      { raise_at_line (get_line_start()) ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
+  | EQ veexp error                                { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
-                                                    raise_at !lnum ("There is a parsing error in equality. "
-                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the equality is a vector expression but the second argument is not.")
                                                   }
-  | EQMOD veexp veexp_no_unary error              { fun ctx ->
+  | EQMOD veexp veexp_no_unary error              { let pos = get_rhs_start 4 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
                                                     let _ = $3 ctx in
-                                                    raise_at !lnum ("There is a parsing error in modular equality. "
-                                                                   ^ "The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
+                                                    raise_at pos ("The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
                                                   }
-  | EQMOD veexp error                             { fun ctx ->
+  | EQMOD veexp error                             { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
-                                                    raise_at !lnum ("There is a parsing error in modular equality. "
-                                                                   ^ "The first argument of the modular equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the modular equality is a vector expression but the second argument is not.")
                                                   }
-  | veexp EQ error                                { fun ctx ->
+  | veexp EQ error                                { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $1 ctx in
-                                                    raise_at !lnum ("There is a parsing error in equality. "
-                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the equality is a vector expression but the second argument is not.")
                                                   }
-  | veexp eexp error                              { let lno = !lnum in
+  | veexp eexp error                              { let pos = get_rhs_start 3 in
                                                     fun ctx ->
                                                     let _ = $1 ctx in
                                                     let _ = $2 ctx in
-                                                    raise_at lno ("A scalar expression followed by a vector expression is not recognized.")
+                                                    raise_at pos ("A scalar expression followed by a vector expression is not recognized.")
                                                   }
 ;
 
 ebexp_atom_without_eqmod:
     TRUE                                          { fun _ -> Etrue }
   | EQ eexp_no_vec eexp_no_unary                  { fun ctx -> Eeq ($2 ctx, $3 ctx) }
-  | EQ veexp veexp_no_unary                       { let lno = !lnum in
+  | EQ veexp veexp_no_unary                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2644,14 +2645,14 @@ ebexp_atom_without_eqmod:
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
 
                                                   }
   | EQMOD eexp_no_vec eexp_no_unary eexp_no_unary { fun ctx -> Eeqmod ($2 ctx, $3 ctx, [ $4 ctx ]) }
   | EQMOD eexp_no_vec eexp_no_unary LSQUARE eexps RSQUARE
                                                   { fun ctx -> Eeqmod ($2 ctx, $3 ctx, $5 ctx) }
-  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = !lnum in
+  | EQMOD veexp veexp_no_unary veexp_no_unary     { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2661,11 +2662,11 @@ ebexp_atom_without_eqmod:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length ms in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) m -> Eeqmod (e1, e2, [m])) (List.combine es1 es2) ms |> List.rev |> eands
                                                   }
   | EQMOD veexp veexp_no_unary LSQUARE veexps RSQUARE
-                                                  { let lno = !lnum in
+                                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -2675,14 +2676,14 @@ ebexp_atom_without_eqmod:
                                                       let size2 = List.length es2 in
                                                       let sizem = List.length mss in
                                                       if not (size1 = size2 && size2 = sizem) then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun (e1, e2) ms -> Eeqmod (e1, e2, ms)) (List.combine es1 es2) mss |> List.rev |> eands
                                                   }
   | AND ebexp_atom_without_eqmod ebexp_atom_without_eqmod
                                                   { fun ctx -> Eand ($2 ctx, $3 ctx) }
   | LPAR ebexp RPAR                               { fun ctx -> $2 ctx }
   | eexp EQOP eexp                                { fun ctx -> Eeq ($1 ctx, $3 ctx) }
-  | veexp EQOP veexp                              { let lno = !lnum in
+  | veexp EQOP veexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
@@ -2690,39 +2691,39 @@ ebexp_atom_without_eqmod:
                                                       let size1 = List.length es1 in
                                                       let size2 = List.length es2 in
                                                       if size1 <> size2 then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     List.rev_map2 (fun e1 e2 -> Eeq (e1, e2)) es1 es2 |> List.rev |> eands
                                                   }
   | AND LSQUARE ebexps RSQUARE                    { fun ctx -> eands ($3 ctx) }
   | LANDOP LSQUARE ebexps RSQUARE                 { fun ctx -> eands ($3 ctx) }
   /* Errors */
-/*  | ID error                                      { raise_at !lnum ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
-  | EQ veexp error                                { fun ctx ->
+/*  | ID error                                      { raise_at_line (get_line_start()) ("Invalid algebraic predicate after " ^ $1 ^ ".") }*/
+  | EQ veexp error                                { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
-                                                    raise_at !lnum ("There is a parsing error in equality. "
-                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the equality is a vector expression but the second argument is not.")
                                                   }
-  | EQMOD veexp veexp_no_unary error              { fun ctx ->
+  | EQMOD veexp veexp_no_unary error              { let pos = get_rhs_start 4 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
                                                     let _ = $3 ctx in
-                                                    raise_at !lnum ("There is a parsing error in modular equality. "
-                                                                   ^ "The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
+                                                    raise_at pos ("The first and the second arguments of the modular equality are vector expressions but the third argument is not.")
                                                   }
-  | EQMOD veexp error                             { fun ctx ->
+  | EQMOD veexp error                             { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $2 ctx in
-                                                    raise_at !lnum ("There is a parsing error in modular equality. "
-                                                                   ^ "The first argument of the modular equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the modular equality is a vector expression but the second argument is not.")
                                                   }
-  | veexp EQ error                                { fun ctx ->
+  | veexp EQ error                                { let pos = get_rhs_start 3 in
+                                                    fun ctx ->
                                                     let _ = $1 ctx in
-                                                    raise_at !lnum ("There is a parsing error in equality. "
-                                                                   ^ "The first argument of the equality is a vector expression but the second argument is not.")
+                                                    raise_at pos ("The first argument of the equality is a vector expression but the second argument is not.")
                                                   }
-  | veexp eexp error                              { let lno = !lnum in
+  | veexp eexp error                              { let pos = get_rhs_start 3 in
                                                     fun ctx ->
                                                     let _ = $1 ctx in
                                                     let _ = $2 ctx in
-                                                    raise_at lno ("A scalar expression followed by a vector expression is not recognized.")
+                                                    raise_at pos ("A scalar expression followed by a vector expression is not recognized.")
                                                   }
 ;
 
@@ -2741,9 +2742,9 @@ veq_suffix:
 ebexps:
     ebexp COMMA ebexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
   | ebexp                                         { fun ctx -> [$1 ctx] }
-  | ebexp error                                   { let lno = !lnum in
+  | ebexp error                                   { let lno = get_line_start() in
                                                     fun ctx ->
-                                                      raise_at lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
+                                                      raise_at_line lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
                                                   }
 ;
 
@@ -2759,17 +2760,17 @@ cmpop_infix:
 ;
 
 eexp:
-    defined_var                                   { let lno = !lnum in
+    defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
-  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
                                                     let len = List.length atoms in
                                                     let i = $3 in
-                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    if len <= (Z.to_int i) then raise_at_line lno ("Index is larger than " ^ (string_of_int (len-1))) else
                                                     let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
                                                     es
                                                   }
@@ -2805,7 +2806,7 @@ eexp:
 ;
 
 eexp_no_vec:
-    defined_var                                   { let lno = !lnum in
+    defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
@@ -2841,17 +2842,17 @@ eexp_no_vec:
 ;
 
 eexp_no_unary:
-    defined_var                                   { let lno = !lnum in
+    defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
   | simple_const                                  { fun ctx -> Econst ($1 ctx) }
-  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = !lnum in
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
                                                     let len = List.length atoms in
                                                     let i = $3  in
-                                                    if len <= (Z.to_int i) then raise_at lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    if len <= (Z.to_int i) then raise_at_line lno ("Index is larger than " ^ (string_of_int (len-1))) else
                                                     let es = eexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
                                                     es
                                                   }
@@ -2895,7 +2896,7 @@ eexps:
 ;
 
 veexp:
-    VEC_ID                                        { let lno = !lnum in
+    VEC_ID                                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
@@ -2906,54 +2907,54 @@ veexp:
   | LPAR veexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG veexp                                     { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | ADD veexp veexp_no_unary                      { let lno = !lnum in
+  | ADD veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | SUB veexp veexp_no_unary                      { let lno = !lnum in
+  | SUB veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
-  | MUL veexp veexp_no_unary                      { let lno = !lnum in
+  | MUL veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
   | MULS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map emuls (transpose_lists ($3 ctx))) }
   | SUBOP veexp %prec UMINUS                      { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | veexp ADDOP veexp                             { let lno = !lnum in
+  | veexp ADDOP veexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | veexp SUBOP veexp                             { let lno = !lnum in
+  | veexp SUBOP veexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
-  | veexp MULOP veexp                             { let lno = !lnum in
+  | veexp MULOP veexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
   | veexp POWOP const                             { fun ctx ->
@@ -2971,7 +2972,7 @@ veexp:
 ;
 
 veexp_no_unary:
-    VEC_ID                                        { let lno = !lnum in
+    VEC_ID                                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
@@ -2982,53 +2983,53 @@ veexp_no_unary:
   | LPAR veexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG veexp                                     { fun ctx -> List.rev (List.rev_map eneg ($2 ctx)) }
-  | ADD veexp veexp_no_unary                      { let lno = !lnum in
+  | ADD veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | SUB veexp veexp_no_unary                      { let lno = !lnum in
+  | SUB veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
-  | MUL veexp veexp_no_unary                      { let lno = !lnum in
+  | MUL veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
   | MULS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map emuls (transpose_lists ($3 ctx))) }
-  | veexp_no_unary ADDOP veexp                    { let lno = !lnum in
+  | veexp_no_unary ADDOP veexp                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
-  | veexp_no_unary SUBOP veexp                    { let lno = !lnum in
+  | veexp_no_unary SUBOP veexp                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
-  | veexp_no_unary MULOP veexp                    { let lno = !lnum in
+  | veexp_no_unary MULOP veexp                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at lno "Two sources should have the same length." in
+                                                              raise_at_line lno "Two sources should have the same length." in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
   | veexp_no_unary POWOP const                    { fun ctx ->
@@ -3062,18 +3063,18 @@ rbexp_and:
 
 rbexp_atom:
     TRUE                                          { fun _ -> Rtrue }
-  | EQ rexp rexp                                  { let lno = !lnum in
+  | EQ rexp rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
-  | EQ vrexp vrexp                                { let lno = !lnum in
+  | EQ vrexp vrexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
@@ -3081,10 +3082,10 @@ rbexp_atom:
                                                       let sz1 = List.length es1 in
                                                       let sz2 = List.length es2 in
                                                       if sz1 <> sz2 then
-                                                        raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                     let _ =
                                                       if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                        raise_at lno ("Elements of vectors do not have the same width.") in
+                                                        raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                     List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | NEG rbexp_atom                                { fun ctx -> Rneg ($2 ctx) }
@@ -3094,13 +3095,13 @@ rbexp_atom:
   | OR rbexp_atom_without_eqmod rbexp_atom        { fun ctx -> Ror ($2 ctx, $3 ctx) }
   | LPAR rbexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
-  | rexp EQOP rexp req_suffix                     { let lno = !lnum in
+  | rexp EQOP rexp req_suffix                     { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
@@ -3109,49 +3110,49 @@ rbexp_atom:
                                                         | Some (f, m) ->
                                                           let wm = size_of_rexp m in
                                                           begin
-                                                            if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                            if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                            ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                            ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                             else
                                                               f w1 e1 e2 m
                                                          end
                                                   }
-  | vrexp EQOP vrexp vreq_suffix                  { let lno = !lnum in
+  | vrexp EQOP vrexp vreq_suffix                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
                                                       let sz1 = List.length es1 in
                                                       let sz2 = List.length es2 in
                                                       let _ = 
-                                                        if sz1 <> sz2 then raise_at lno ("Vectors do not have the same number of elements.") in
+                                                        if sz1 <> sz2 then raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       match $4 ctx with
                                                       | None ->
                                                          let eqs = List.combine es1 es2 in
                                                          let _ =
                                                            if not (List.for_all (fun (e1, e2) -> size_of_rexp e1 = size_of_rexp e2) eqs) then
-                                                             raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                             raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                          eqs |> List.rev_map (fun (e1, e2) -> Req (size_of_rexp e1, e1, e2)) |> List.rev |> rands
                                                       | Some (f, ms) ->
                                                          let _ =
-                                                           if sz1 <> List.length ms then raise_at lno ("Vectors do not have the same number of elements.") in
+                                                           if sz1 <> List.length ms then raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                          let eqms = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
                                                          let _ =
-                                                           if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqms) then raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                           if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqms) then raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                          eqms |> List.rev_map (fun ((e1, e2), m) -> f (size_of_rexp e1) e1 e2 m) |> List.rev |> rands
                                                   }
-  | rexp cmpop_infix rexp                         { let lno = !lnum in
+  | rexp cmpop_infix rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let op = $2 in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp(w1, op, e1, e2)
                                                   }
-  | vrexp cmpop_infix vrexp                       { let lno = !lnum in
+  | vrexp cmpop_infix vrexp                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -3160,24 +3161,24 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                     List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands 
                                                   }
-  | cmpop_prefix rexp rexp                        { let lno = !lnum in
+  | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2)
                                                   }
-  | cmpop_prefix vrexp vrexp                      { let lno = !lnum in
+  | cmpop_prefix vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3185,17 +3186,17 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, $1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
   | LANDOP LSQUARE rbexps RSQUARE                 { fun ctx -> rands ($3 ctx) }
   | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
   | LOROP LSQUARE rbexps RSQUARE                  { fun ctx -> rors ($3 ctx) }
-  | EQMOD rexp rexp rexp                          { let lno = !lnum in
+  | EQMOD rexp rexp rexp                          { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3203,16 +3204,16 @@ rbexp_atom:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
-  | EQMOD vrexp vrexp vrexp                       { let lno = !lnum in
+  | EQMOD vrexp vrexp vrexp                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3222,12 +3223,12 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands                                                          }
-  | EQUMOD rexp rexp rexp                         { let lno = !lnum in
+  | EQUMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3235,16 +3236,16 @@ rbexp_atom:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
-  | EQUMOD vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQUMOD vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3254,13 +3255,13 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
                                                   }
-  | EQSMOD rexp rexp rexp                         { let lno = !lnum in
+  | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3268,16 +3269,16 @@ rbexp_atom:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqsmod w1 e1 e2 m
                                                   }
-  | EQSMOD vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQSMOD vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3287,13 +3288,13 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSREM rexp rexp rexp                         { let lno = !lnum in
+  | EQSREM rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3301,16 +3302,16 @@ rbexp_atom:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqsrem w1 e1 e2 m
                                                   }
-  | EQSREM vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQSREM vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3320,28 +3321,28 @@ rbexp_atom:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqrems) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsrem (size_of_rexp e1) e1 e2 m) eqrems |> List.rev |> rands
                                                   }
 ;
 
 rbexp_atom_without_eqmod:
     TRUE                                          { fun _ -> Rtrue }
-  | EQ rexp rexp                                  { let lno = !lnum in
+  | EQ rexp rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
-  | EQ vrexp vrexp                                { let lno = !lnum in
+  | EQ vrexp vrexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3349,10 +3350,10 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | NEG rbexp_atom_without_eqmod                  { fun ctx -> Rneg ($2 ctx) }
@@ -3362,18 +3363,18 @@ rbexp_atom_without_eqmod:
                                                   { fun ctx -> Ror ($2 ctx, $3 ctx) }
   | LPAR rbexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
-  | rexp EQOP rexp                                { let lno = !lnum in
+  | rexp EQOP rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Req (w1, e1, e2)
                                                   }
-  | vrexp EQOP vrexp                              { let lno = !lnum in
+  | vrexp EQOP vrexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -3381,24 +3382,24 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
-  | rexp cmpop_infix rexp                         { let lno = !lnum in
+  | rexp cmpop_infix rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let op = $2 in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp(w1, op, e1, e2) }
-  | vrexp cmpop_infix vrexp                       { let lno = !lnum in
+  | vrexp cmpop_infix vrexp                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -3407,23 +3408,23 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
  }
-  | cmpop_prefix rexp rexp                        { let lno = !lnum in
+  | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else Rcmp (w1, $1, e1, e2) }
-  | cmpop_prefix vrexp vrexp                      { let lno = !lnum in
+  | cmpop_prefix vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3431,15 +3432,15 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, $1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
   | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
-  | EQMOD rexp rexp rexp                          { let lno = !lnum in
+  | EQMOD rexp rexp rexp                          { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3447,16 +3448,16 @@ rbexp_atom_without_eqmod:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
-  | EQMOD vrexp vrexp vrexp                       { let lno = !lnum in
+  | EQMOD vrexp vrexp vrexp                       { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3466,13 +3467,13 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQUMOD rexp rexp rexp                         { let lno = !lnum in
+  | EQUMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3480,16 +3481,16 @@ rbexp_atom_without_eqmod:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqmod w1 e1 e2 m
                                                   }
-  | EQUMOD vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQUMOD vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3499,13 +3500,13 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
                                                   }
-  | EQSMOD rexp rexp rexp                         { let lno = !lnum in
+  | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3513,16 +3514,16 @@ rbexp_atom_without_eqmod:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqsmod w1 e1 e2 m
                                                   }
-  | EQSMOD vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQSMOD vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3532,13 +3533,13 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSREM rexp rexp rexp                         { let lno = !lnum in
+  | EQSREM rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3546,16 +3547,16 @@ rbexp_atom_without_eqmod:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       let wm = size_of_rexp m in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
-                                                      else if w1 != wm then raise_at lno ("Widths of range expressions mismatch: "
+                                                      else if w1 != wm then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp m ^ " (width " ^ string_of_int wm ^ ")")
                                                       else
                                                         reqsrem w1 e1 e2 m
                                                   }
-  | EQSREM vrexp vrexp vrexp                      { let lno = !lnum in
+  | EQSREM vrexp vrexp vrexp                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3565,10 +3566,10 @@ rbexp_atom_without_eqmod:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqrems) then
-                                                          raise_at lno ("Widths of vector range expressions mismatch.") in
+                                                          raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsrem (size_of_rexp e1) e1 e2 m) eqrems |> List.rev |> rands
                                                   }
 ;
@@ -3603,12 +3604,15 @@ cmpop_prefix:
 rbexps:
     rbexp COMMA rbexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
   | rbexp                                         { fun ctx -> [$1 ctx] }
-  | rbexp COMMA error                             { raise_at !lnum ("Invalid range predicates.") }
-  | rbexp error                                   { raise_at !lnum ("A ',' is used to separate range predicates") }
+  | rbexp COMMA error                             { raise_at_line (get_line_start()) ("Invalid range predicates.") }
+  | rbexp error                                   { raise_at_line (get_line_start()) ("A ',' is used to separate range predicates") }
 ;
 
 rexp:
-    defined_var                                   { fun ctx -> Rvar (resolve_var_with ctx !lnum $1) }
+    defined_var                                   { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                    Rvar (resolve_var_with ctx lno $1)
+                                                  }
   | CONST const const                             { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let n = $3 ctx in
@@ -3645,35 +3649,35 @@ rexp:
                                                       let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnotb, e) }
-  | ADD rexp rexp                                 { let lno = !lnum in
+  | ADD rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        radd w1 e1 e2 }
-  | SUB rexp rexp                                 { let lno = !lnum in
+  | SUB rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsub w1 e1 e2 }
-  | MUL rexp rexp                                 { let lno = !lnum in
+  | MUL rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
@@ -3681,124 +3685,124 @@ rexp:
   | SQ rexp                                       { fun ctx ->
                                                       let e = $2 ctx in
                                                       rsq (size_of_rexp e) e }
-  | UMOD rexp rexp                                { let lno = !lnum in
+  | UMOD rexp rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rumod w1 e1 e2 }
-  | SREM rexp rexp                                { let lno = !lnum in
+  | SREM rexp rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsrem w1 e1 e2 }
-  | SMOD rexp rexp                                { let lno = !lnum in
+  | SMOD rexp rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsmod w1 e1 e2 }
-  | AND rexp rexp                                 { let lno = !lnum in
+  | AND rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Randb, e1, e2) }
-  | OR rexp rexp                                  { let lno = !lnum in
+  | OR rexp rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rorb, e1, e2) }
-  | XOR rexp rexp                                 { let lno = !lnum in
+  | XOR rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
 
-  | SHL rexp rexp                                 { let lno = !lnum in
+  | SHL rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rshl, e1, e2) }
-  | SHR rexp rexp                                 { let lno = !lnum in
+  | SHR rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
-  | SAR rexp rexp                                 { let lno = !lnum in
+  | SAR rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
-  | ROL rexp rexp                                 { let lno = !lnum in
+  | ROL rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rrol, e1, e2) }
-  | ROR rexp rexp                                 { let lno = !lnum in
+  | ROR rexp rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
@@ -3809,17 +3813,17 @@ rexp:
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
                                                       Rconcat (w1, w2, e1, e2) }
-  | ADDS LSQUARE rexps RSQUARE                    { let lno = !lnum in
+  | ADDS LSQUARE rexps RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es = $3 ctx in
                                                       match es with
-                                                      | [] -> raise_at lno ("No range expression is passed to add.")
+                                                      | [] -> raise_at_line lno ("No range expression is passed to add.")
                                                       | hd::_tl -> radds (size_of_rexp hd) es }
-  | MULS LSQUARE rexps RSQUARE                    { let lno = !lnum in
+  | MULS LSQUARE rexps RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es = $3 ctx in
                                                       match es with
-                                                      | [] -> raise_at lno ("No range expression is passed to mul.")
+                                                      | [] -> raise_at_line lno ("No range expression is passed to mul.")
                                                       | hd::_tl -> rmuls (size_of_rexp hd) es }
   | ULIMBS const LSQUARE rexps RSQUARE            { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
@@ -3855,112 +3859,112 @@ rexp:
                                                         | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
-  | rexp ADDOP rexp                               { let lno = !lnum in
+  | rexp ADDOP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Radd, e1, e2) }
-  | rexp SUBOP rexp                               { let lno = !lnum in
+  | rexp SUBOP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rsub, e1, e2) }
-  | rexp MULOP rexp                               { let lno = !lnum in
+  | rexp MULOP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rmul, e1, e2) }
-  | rexp ANDOP rexp                               { let lno = !lnum in
+  | rexp ANDOP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Randb, e1, e2) }
-  | rexp OROP rexp                                { let lno = !lnum in
+  | rexp OROP rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rorb, e1, e2) }
-  | rexp XOROP rexp                               { let lno = !lnum in
+  | rexp XOROP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
-  | rexp SHLOP rexp                               { let lno = !lnum in
+  | rexp SHLOP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rshl, e1, e2) }
-  | rexp SHROP rexp                               { let lno = !lnum in
+  | rexp SHROP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
-  | rexp SAROP rexp                               { let lno = !lnum in
+  | rexp SAROP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
                                                       let w2 = size_of_rexp e2 in
-                                                      if w1 != w2 then raise_at lno ("Widths of range expressions mismatch: "
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
                                                                                      ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
   /* Errors */
-  | CONST const error                             { raise_at !lnum "Please specify the bit-width of a constant in range predicates" }
-  | const error                                   { raise_at !lnum "Please specify the bit-width of a constant in range predicates" }
+  | CONST const error                             { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
+  | const error                                   { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
 ;
 
 vrexp:
-    VEC_ID                                        { let lno = !lnum in
+    VEC_ID                                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
                                                     let (_, atoms) = (resolve_vec_with ctx lno vec) in
@@ -3984,7 +3988,7 @@ vrexp:
                                                       ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnotb, e)) |> List.rev }
   | NOTOP vrexp                                   { fun ctx ->
                                                       ($2 ctx) |> List.rev_map (fun e -> Runop (size_of_rexp e, Rnotb, e)) |> List.rev }
-  | ADD vrexp vrexp                               { let lno = !lnum in
+  | ADD vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -3992,13 +3996,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> radd (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SUB vrexp vrexp                               { let lno = !lnum in
+  | SUB vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4006,13 +4010,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rsub (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | MUL vrexp vrexp                               { let lno = !lnum in
+  | MUL vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4020,15 +4024,15 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rmul (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
   | SQ vrexp                                      { fun ctx ->
                                                       ($2 ctx) |> List.rev_map (fun e -> rsq (size_of_rexp e) e) |> List.rev }
-  | UMOD vrexp vrexp                              { let lno = !lnum in
+  | UMOD vrexp vrexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4036,13 +4040,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rumod (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SREM vrexp vrexp                              { let lno = !lnum in
+  | SREM vrexp vrexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4050,13 +4054,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rsrem (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SMOD vrexp vrexp                              { let lno = !lnum in
+  | SMOD vrexp vrexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4064,13 +4068,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rsmod (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | AND vrexp vrexp                               { let lno = !lnum in
+  | AND vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4078,13 +4082,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> randb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | OR vrexp vrexp                                { let lno = !lnum in
+  | OR vrexp vrexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4092,13 +4096,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | XOR vrexp vrexp                               { let lno = !lnum in
+  | XOR vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4106,13 +4110,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rxorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SHL vrexp vrexp                               { let lno = !lnum in
+  | SHL vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4120,13 +4124,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rshl (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SHR vrexp vrexp                               { let lno = !lnum in
+  | SHR vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4134,13 +4138,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rlshr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | SAR vrexp vrexp                               { let lno = !lnum in
+  | SAR vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4148,13 +4152,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rashr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | ROL vrexp vrexp                               { let lno = !lnum in
+  | ROL vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4162,13 +4166,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rrol (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | ROR vrexp vrexp                               { let lno = !lnum in
+  | ROR vrexp vrexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4176,13 +4180,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rror (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | CONCAT vrexp vrexp                            { let lno = !lnum in
+  | CONCAT vrexp vrexp                            { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
@@ -4190,25 +4194,25 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rconcat (size_of_rexp e1) (size_of_rexp e2) e1 e2) es1 es2 |> List.rev
                                                   }
-  | ADDS LSQUARE vrexps RSQUARE                   { let lno = !lnum in
+  | ADDS LSQUARE vrexps RSQUARE                   { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let argss = Utils.Std.transpose ($3 ctx) in
                                                       if argss = [] then
-                                                        raise_at lno ("No vector range expression is passed to add.")
+                                                        raise_at_line lno ("No vector range expression is passed to add.")
                                                       else
                                                         argss |> List.rev_map (fun args -> radds (size_of_rexp (List.hd args)) args) |> List.rev
                                                   }
-  | MULS LSQUARE vrexps RSQUARE                   { let lno = !lnum in
+  | MULS LSQUARE vrexps RSQUARE                   { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let ess = Utils.Std.transpose ($3 ctx) in
                                                       if ess = [] then
-                                                        raise_at lno ("No vector range expression is passed to mul.")
+                                                        raise_at_line lno ("No vector range expression is passed to mul.")
                                                       else
                                                         ess |> List.rev_map (fun es -> rmuls (size_of_rexp (List.hd es)) es) |> List.rev
                                                   }
@@ -4238,7 +4242,7 @@ vrexp:
                                                       let ess = Utils.Std.transpose ($4 ctx) in
                                                       ess |> List.rev_map (fun es -> let tw = tw es in helper 0 tw (sexts tw es)) |> List.rev
                                                   }
-  | vrexp ADDOP vrexp                             { let lno = !lnum in
+  | vrexp ADDOP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4246,13 +4250,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> radd (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp SUBOP vrexp                             { let lno = !lnum in
+  | vrexp SUBOP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4260,13 +4264,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rsub (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp MULOP vrexp                             { let lno = !lnum in
+  | vrexp MULOP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4274,13 +4278,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rmul (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp ANDOP vrexp                             { let lno = !lnum in
+  | vrexp ANDOP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4288,13 +4292,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> randb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp OROP vrexp                              { let lno = !lnum in
+  | vrexp OROP vrexp                              { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4302,13 +4306,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp XOROP vrexp                             { let lno = !lnum in
+  | vrexp XOROP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4316,13 +4320,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rxorb (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp SHLOP vrexp                             { let lno = !lnum in
+  | vrexp SHLOP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4330,13 +4334,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rshl (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp SHROP vrexp                             { let lno = !lnum in
+  | vrexp SHROP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4344,13 +4348,13 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rlshr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev
                                                   }
-  | vrexp SAROP vrexp                             { let lno = !lnum in
+  | vrexp SAROP vrexp                             { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
@@ -4358,22 +4362,22 @@ vrexp:
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
-                                                          raise_at lno ("Vectors do not have the same number of elements.") in
+                                                          raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
-                                                          raise_at lno ("Elements of vectors do not have the same width.") in
+                                                          raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> rashr (size_of_rexp e1) e1 e2) es1 es2 |> List.rev }
 ;
 
 rexps:
     rexp COMMA rexps
   {
-    let lno = !lnum in
+    let lno = get_line_start() in
     fun ctx ->
       let e = $1 ctx in
       let es = $3 ctx in
       if List.length es > 0 && size_of_rexp e != size_of_rexp (List.hd es) then
-        raise_at lno ("Widths of range expressions mismatch: "
+        raise_at_line lno ("Widths of range expressions mismatch: "
                       ^ string_of_rexp e ^ " (width " ^ string_of_int (size_of_rexp e) ^ ")"
                       ^ ", "
                       ^ string_of_rexp (List.hd es) ^ " (width " ^ string_of_int (size_of_rexp (List.hd es)) ^ ")")
@@ -4387,13 +4391,13 @@ rexps:
 vrexps:
     vrexp COMMA vrexps
   {
-    let lno = !lnum in
+    let lno = get_line_start() in
     fun ctx ->
       let es = $1 ctx in
       let ess = $3 ctx in
       if List.length ess > 0 &&
            size_of_rexp (List.hd es) != size_of_rexp (List.hd (List.hd ess)) then
-        raise_at lno ("Widths of vector range expressions mismatch.")
+        raise_at_line lno ("Widths of vector range expressions mismatch.")
       else
         es::ess
   }
@@ -4404,7 +4408,7 @@ lval:
     ID                                            { `LVPLAIN { lvname = $1; lvtyphint = None; } }
   | ID AT typ                                     { `LVPLAIN { lvname = $1; lvtyphint = Some $3; } }
   | typ ID                                        { `LVPLAIN { lvname = $2; lvtyphint = Some $1; } }
-  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+  | ID AT error                                   { raise_at_line (get_line_start()) ("Invalid type of variable " ^ $1) }
 ;
 
 lval_v:
@@ -4439,28 +4443,28 @@ lhs:
     ID                                            { { lvname = $1; lvtyphint = None; } }
   | ID AT typ                                     { { lvname = $1; lvtyphint = Some $3; } }
   | typ ID                                        { { lvname = $2; lvtyphint = Some $1; } }
-  | ID AT error                                   { raise_at !lnum ("Invalid type of variable " ^ $1) }
+  | ID AT error                                   { raise_at_line (get_line_start()) ("Invalid type of variable " ^ $1) }
 ;
 
 actuals:
-    actual_atoms                                  { let lno = !lnum in
+    actual_atoms                                  { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                     let ((itys, otys), vs) = $1 ctx tys in
                                                     let _ =
                                                       match itys, otys with
                                                       | _::_, _
-                                                        | [], _::_ -> raise_at lno ("The number of actual parameters does not match the number of formal parameters.")
+                                                        | [], _::_ -> raise_at_line lno ("The number of actual parameters does not match the number of formal parameters.")
                                                       | _, _ -> () in
                                                     vs
                                                   }
-  | actual_atoms SEMICOLON actual_atoms           { let lno = !lnum in
+  | actual_atoms SEMICOLON actual_atoms           { let lno = get_line_start() in
                                                     fun ctx (itys, otys) ->
                                                     let ((itys, _), ivs) = $1 ctx (itys, []) in
                                                     let ((_, otys), ovs) = $3 ctx ([], otys) in
                                                     let _ =
                                                       match itys, otys with
-                                                      | _::_, _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.")
-                                                      | _, _::_ -> raise_at lno ("The number of actual output parameters does not match the number of formal output parameters.")
+                                                      | _::_, _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.")
+                                                      | _, _::_ -> raise_at_line lno ("The number of actual output parameters does not match the number of formal output parameters.")
                                                       | _, _ -> () in
                                                     List.rev_append (List.rev ivs) ovs
                                                   }
@@ -4481,34 +4485,34 @@ actual_atoms:
 
 /* We don't check if the actual variables are defined or not because they may just be variable names of procedure outputs. */
 actual_atom:
-    const                                         { let lno = !lnum in
+    const                                         { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          ((argtys, outtys), [parse_typed_const ctx lno ty $1])
-                                                      | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
+                                                      | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
-  | const AT typ                                  { let lno = !lnum in
+                                                      | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.") }
+  | const AT typ                                  { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          if ty = $3 then ((argtys, outtys), [parse_typed_const ctx lno $3 $1])
-                                                         else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
-                                                      | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
+                                                         else raise_at_line lno ("The specified type is not compatible to the type of the corresponding formal parameter")
+                                                      | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
-  | typ const                                     { let lno = !lnum in
+                                                      | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.") }
+  | typ const                                     { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
                                                          if ty = $1 then ((argtys, outtys), [parse_typed_const ctx lno $1 $2])
-                                                         else raise_at lno ("The specified type is not compatible to the type of the corresponding formal parameter")
-                                                      | ([], _ty::_) -> raise_at lno ("The corresponding formal parameter is an output variable. "
+                                                         else raise_at_line lno ("The specified type is not compatible to the type of the corresponding formal parameter")
+                                                      | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
-                                                      | _ -> raise_at lno ("The number of actual input parameters does not match the number of formal input parameters.") }
-  | ID                                            { let lno = !lnum in
-                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                      | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.") }
+  | ID                                            { let lno = get_line_start() in
+                                                    if $1 = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
                                                     else
                                                       fun ctx tys ->
                                                       match tys with
@@ -4516,22 +4520,22 @@ actual_atom:
                                                          (try
                                                             let v = ctx_find_var ctx $1 in
                                                             if v.vtyp = ty then ((argtys, outtys), [Avar v])
-                                                            else raise_at lno ("The variable type of "
+                                                            else raise_at_line lno ("The variable type of "
                                                                                ^ $1
                                                                                   ^ " is not compatible to the type of the corresponding formal parameter")
                                                           with Not_found ->
-                                                            raise_at lno ("Failed to determine the type of " ^ $1)
+                                                            raise_at_line lno ("Failed to determine the type of " ^ $1)
                                                          )
                                                       | ([], ty::outtys) ->
                                                          let v = mkvar $1 ty in
                                                          let _ =
                                                            if ctx_ghost_is_defined ctx v then
-                                                             raise_at lno ("The name " ^ v.vname ^ " used as a ghost variable cannot be used as an actual output parameter.") in
+                                                             raise_at_line lno ("The name " ^ v.vname ^ " used as a ghost variable cannot be used as an actual output parameter.") in
                                                          (([], outtys), [Avar v])
-                                                      | _ -> raise_at lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
+                                                      | _ -> raise_at_line lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
                                                   }
-  | ID OROP NUM DOTDOT NUM                        { let lno = !lnum in
-                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+  | ID OROP NUM DOTDOT NUM                        { let lno = get_line_start() in
+                                                    if $1 = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
                                                     else
                                                       fun ctx tys ->
                                                       let prefix = $1 in
@@ -4545,14 +4549,14 @@ actual_atom:
                                                                             (try
                                                                                let v = ctx_find_var ctx vname in
                                                                                if v.vtyp = ty then ((argtys, outtys), (Avar v)::vars_rev)
-                                                                               else raise_at lno ("The variable type of "
+                                                                               else raise_at_line lno ("The variable type of "
                                                                                                   ^ vname
                                                                                                   ^ " is not compatible to the type of the corresponding formal parameter")
                                                                              with Not_found ->
-                                                                               raise_at lno ("Failed to determine the type of " ^ vname)
+                                                                               raise_at_line lno ("Failed to determine the type of " ^ vname)
                                                                             )
                                                                          | ([], ty::outtys) -> (([], outtys), (Avar (mkvar vname ty))::vars_rev)
-                                                                         | _ -> raise_at lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
+                                                                         | _ -> raise_at_line lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
                                                                        )
                                                                        (tys, [])
                                                                        ((Z.to_int st)--(Z.to_int ed)) in
@@ -4582,8 +4586,8 @@ atom_scalars:
 var_expansion:
   ID OROP NUM DOTDOT NUM
   {
-    let lno = !lnum in
-    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+    let lno = get_line_start() in
+    if $1 = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
     else
       fun ctx ->
       let prefix = $1 in
@@ -4595,19 +4599,19 @@ var_expansion:
                     try
                       ctx_find_var ctx vname
                     with Not_found ->
-                      raise_at lno ("Failed to determine the type of " ^ vname)
+                      raise_at_line lno ("Failed to determine the type of " ^ vname)
                   ) ((Z.to_int st)--(Z.to_int ed)) in
-      let _ = List.iter (fun v -> if not (ctx_var_is_defined ctx v) && not (ctx_ghost_is_defined ctx v) then raise_at lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
+      let _ = List.iter (fun v -> if not (ctx_var_is_defined ctx v) && not (ctx_ghost_is_defined ctx v) then raise_at_line lno ("Variable " ^ string_of_var v ^ " is not defined.")) res in
       res
   }
 ;
 
 defined_var:
-    ID                                            { if $1 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+    ID                                            { if $1 = "_" then raise_at_line (get_line_start()) "Reading the value of variable _ is forbidden."
                                                     else `AVAR { atmtyphint = None;    atmname = $1; } }
-  | ID AT typ                                     { if $1 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+  | ID AT typ                                     { if $1 = "_" then raise_at_line (get_line_start()) "Reading the value of variable _ is forbidden."
                                                     else `AVAR { atmtyphint = Some $3; atmname = $1; } }
-  | typ ID                                        { if $2 = "_" then raise_at !lnum "Reading the value of variable _ is forbidden."
+  | typ ID                                        { if $2 = "_" then raise_at_line (get_line_start()) "Reading the value of variable _ is forbidden."
                                                     else `AVAR { atmtyphint = Some $1; atmname = $2; } }
 ;
 
@@ -4615,38 +4619,38 @@ gvars:
   gvar                                            { fun ctx -> VS.singleton ($1 ctx) }
 | gvar COMMA gvars                                { fun ctx -> VS.add ($1 ctx) ($3 ctx) }
 | gvar error                                      {
-                                                    let lno = !lnum in
+                                                    let lno = get_line_start() in
                                                     fun _ ->
-                                                      raise_at lno ("A comma is used to separate ghost variables.")
+                                                      raise_at_line lno ("A comma is used to separate ghost variables.")
                                                   }
 | error                                           {
-                                                    let lno = !lnum in
+                                                    let lno = get_line_start() in
                                                     fun _ ->
-                                                      raise_at lno ("Invalid ghost variable.")
+                                                      raise_at_line lno ("Invalid ghost variable.")
                                                   }
 ;
 
 gvar:
   typ ID                                          {
-                                                    let lno = !lnum in
-                                                    if $2 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    let lno = get_line_start() in
+                                                    if $2 = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
                                                     else
                                                       fun ctx ->
                                                       let ty = $1 in
                                                       let vname = $2 in
-                                                      if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if ctx_name_is_ghost ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if ctx_name_is_var ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if ctx_name_is_ghost ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 | ID AT typ                                       {
-                                                    let lno = !lnum in
-                                                    if $1 = "_" then raise_at lno "Reading the value of variable _ is forbidden."
+                                                    let lno = get_line_start() in
+                                                    if $1 = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
                                                     else
                                                       fun ctx ->
                                                       let ty = $3 in
                                                       let vname = $1 in
-                                                      if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-                                                      else if ctx_name_is_var ctx vname then raise_at lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+                                                      if ctx_name_is_var ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
+                                                      else if ctx_name_is_var ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined previously.")
                                                       else mkvar vname ty
                                                   }
 ;
@@ -4658,17 +4662,17 @@ complex_const_list:
 const:
     simple_const                                  { fun ctx -> $1 ctx }
   | LPAR complex_const RPAR                       { fun ctx -> ($2 ctx) }
-/*  | ID error                                      { raise_at !lnum ("A constant is expected but '" ^ $1 ^ "' is encountered.") }*/
+/*  | ID error                                      { raise_at_line (get_line_start()) ("A constant is expected but '" ^ $1 ^ "' is encountered.") }*/
 ;
 
 simple_const:
     NUM                                           { fun _ -> $1 }
-  | DEREFOP ID                                    { let lno = !lnum in
+  | DEREFOP ID                                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                       try
                                                         SM.find $2 ctx.cconsts
                                                       with Not_found ->
-                                                        raise_at lno ("Undefined constant: " ^ $2) }
+                                                        raise_at_line lno ("Undefined constant: " ^ $2) }
 ;
 
 complex_const:
@@ -4697,14 +4701,14 @@ carry_v:
 
 typ:
     UINT                                          { if $1 > 0 then uint_t $1
-                                                    else raise_at !lnum ("The big-with must be positive") }
+                                                    else raise_at_line (get_line_start()) ("The big-with must be positive") }
   | SINT                                          { if $1 > 0 then int_t $1
-                                                    else raise_at !lnum ("The big-with must be positive") }
+                                                    else raise_at_line (get_line_start()) ("The big-with must be positive") }
   | BIT                                           { bit_t }
 ;
 
 typ_vec:
   typ LSQUARE NUM RSQUARE                         { let dim = Z.to_int $3 in
                                                     if dim > 0 then ($1, dim)
-                                                    else raise_at !lnum ("Vector length must be positive") }
+                                                    else raise_at_line (get_line_start()) ("Vector length must be positive") }
 ;

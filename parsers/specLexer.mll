@@ -1,10 +1,6 @@
 {
   open SpecParser
-  open Common
   exception Eof
-  let reset_cnum () = cnum := 0
-  let get_len lexbuf = String.length (Lexing.lexeme lexbuf)
-  let upd_cnum lexbuf = cnum := !cnum + get_len lexbuf
 
   let keywords = Hashtbl.create 100
   let _ = List.iter (fun (keyword, token) -> Hashtbl.replace keywords keyword token)
@@ -170,100 +166,93 @@ let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | 
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
-    "*/"                           { upd_cnum lexbuf; token lexbuf }
+    "*/"                           { token lexbuf }
   | "/*"                           { raise (Failure "'/*' is not allowed in a block comment.") }
-  | ("\r\n"|'\n'|'\r')             { reset_cnum(); incr lnum; c_block_comment lexbuf }
-  | _                              { upd_cnum lexbuf; c_block_comment lexbuf }
+  | ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; c_block_comment lexbuf }
+  | _                              { c_block_comment lexbuf }
 
 and
 
 ml_block_comment = parse
-    "*)"                           { upd_cnum lexbuf; token lexbuf }
+    "*)"                           { token lexbuf }
   | "(*"                           { raise (Failure "'(*' is not allowed in a block comment.") }
-  | ("\r\n"|'\n'|'\r')             { reset_cnum(); incr lnum; ml_block_comment lexbuf }
-  | _                              { upd_cnum lexbuf; ml_block_comment lexbuf }
+  | ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; ml_block_comment lexbuf }
+  | _                              { ml_block_comment lexbuf }
 
 and
 
 line_comment = parse
-    ("\r\n"|'\n'|'\r')             { reset_cnum(); incr lnum; token lexbuf }
-  | _                              { upd_cnum lexbuf; line_comment lexbuf }
+    ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; token lexbuf }
+  | _                              { line_comment lexbuf }
 
 and
 
 token = parse
-    [' ' '\t']                     { upd_cnum lexbuf; token lexbuf }
-  | ("\r\n"|'\n'|'\r')             { reset_cnum(); incr lnum; token lexbuf }
+    [' ' '\t']                     { token lexbuf }
+  | ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; token lexbuf }
   (* Others *)
-  | "//"                           { upd_cnum lexbuf; line_comment lexbuf }
-  | "#"                            { upd_cnum lexbuf; line_comment lexbuf }
-  | "/*"                           { upd_cnum lexbuf; c_block_comment lexbuf }
-  | "(*"                           { upd_cnum lexbuf; ml_block_comment lexbuf }
+  | "//"                           { line_comment lexbuf }
+  | "#"                            { line_comment lexbuf }
+  | "/*"                           { c_block_comment lexbuf }
+  | "(*"                           { ml_block_comment lexbuf }
   (* Symbols *)
-  | '@'                            { upd_cnum lexbuf; AT }
-  | '{'                            { upd_cnum lexbuf; LBRAC }
-  | '}'                            { upd_cnum lexbuf; RBRAC }
-  | '('                            { upd_cnum lexbuf; LPAR }
-  | ')'                            { upd_cnum lexbuf; RPAR }
-  | '['                            { upd_cnum lexbuf; LSQUARE }
-  | ']'                            { upd_cnum lexbuf; RSQUARE }
-  | ','                            { upd_cnum lexbuf; COMMA }
-  | ';'                            { upd_cnum lexbuf; SEMICOLON }
-  | ':'                            { upd_cnum lexbuf; COLON }
-  | "&&"['&']*                     { upd_cnum lexbuf; VBAR }
-  | '|'                            { upd_cnum lexbuf; OROP }
-  | '.'                            { upd_cnum lexbuf; DOT }
-  | ".."                           { upd_cnum lexbuf; DOTDOT }
+  | '@'                            { AT }
+  | '{'                            { LBRAC }
+  | '}'                            { RBRAC }
+  | '('                            { LPAR }
+  | ')'                            { RPAR }
+  | '['                            { LSQUARE }
+  | ']'                            { RSQUARE }
+  | ','                            { COMMA }
+  | ';'                            { SEMICOLON }
+  | ':'                            { COLON }
+  | "&&"['&']*                     { VBAR }
+  | '|'                            { OROP }
+  | '.'                            { DOT }
+  | ".."                           { DOTDOT }
   (* Operators *)
-  | '+'                            { upd_cnum lexbuf; ADDOP }
-  | '-'                            { upd_cnum lexbuf; SUBOP }
-  | "**"                           { upd_cnum lexbuf; POWOP }
-  | '*'                            { upd_cnum lexbuf; MULOP }
-  | '^'                            { upd_cnum lexbuf; XOROP }
-  | "<=u"                          { upd_cnum lexbuf; ULEOP }
-  | ">=u"                          { upd_cnum lexbuf; UGEOP }
-  | "<u"                           { upd_cnum lexbuf; ULTOP }
-  | ">u"                           { upd_cnum lexbuf; UGTOP }
-  | "<=s"                          { upd_cnum lexbuf; SLEOP }
-  | ">=s"                          { upd_cnum lexbuf; SGEOP }
-  | "<s"                           { upd_cnum lexbuf; SLTOP }
-  | ">s"                           { upd_cnum lexbuf; SGTOP }
-  | "<="                           { upd_cnum lexbuf; ULEOP }
-  | ">="                           { upd_cnum lexbuf; UGEOP }
-  | "<<"                           { upd_cnum lexbuf; SHLOP }
-  | ">>a"                          { upd_cnum lexbuf; SAROP }
-  | ">>"                           { upd_cnum lexbuf; SHROP }
-  | "<"                            { upd_cnum lexbuf; ULTOP }
-  | ">"                            { upd_cnum lexbuf; UGTOP }
-  | '='                            { upd_cnum lexbuf; EQOP }
-  | '~'                            { upd_cnum lexbuf; NEGOP }
-  | '$'                            { upd_cnum lexbuf; DEREFOP }
-  | "/\\"                          { upd_cnum lexbuf; LANDOP }
-  | "\\/"                          { upd_cnum lexbuf; LOROP }
-  | '!'                            { upd_cnum lexbuf; NOTOP }
-  | '&'                            { upd_cnum lexbuf; ANDOP }
+  | '+'                            { ADDOP }
+  | '-'                            { SUBOP }
+  | "**"                           { POWOP }
+  | '*'                            { MULOP }
+  | '^'                            { XOROP }
+  | "<=u"                          { ULEOP }
+  | ">=u"                          { UGEOP }
+  | "<u"                           { ULTOP }
+  | ">u"                           { UGTOP }
+  | "<=s"                          { SLEOP }
+  | ">=s"                          { SGEOP }
+  | "<s"                           { SLTOP }
+  | ">s"                           { SGTOP }
+  | "<="                           { ULEOP }
+  | ">="                           { UGEOP }
+  | "<<"                           { SHLOP }
+  | ">>a"                          { SAROP }
+  | ">>"                           { SHROP }
+  | "<"                            { ULTOP }
+  | ">"                            { UGTOP }
+  | '='                            { EQOP }
+  | '~'                            { NEGOP }
+  | '$'                            { DEREFOP }
+  | "/\\"                          { LANDOP }
+  | "\\/"                          { LOROP }
+  | '!'                            { NOTOP }
+  | '&'                            { ANDOP }
   (* Types *)
-  | "uint" ((number+) as w)        { upd_cnum lexbuf; UINT (int_of_string w) }
-  | "sint" ((number+) as w)        { upd_cnum lexbuf; SINT (int_of_string w) }
-  | "int" ((number+) as w)         { upd_cnum lexbuf; SINT (int_of_string w) }
-  | "bit"                          { upd_cnum lexbuf; BIT }
+  | "uint" ((number+) as w)        { UINT (int_of_string w) }
+  | "sint" ((number+) as w)        { SINT (int_of_string w) }
+  | "int" ((number+) as w)         { SINT (int_of_string w) }
+  | "bit"                          { BIT }
   (* Numbers *)
-  | "0b" ((bin+) as bin)           {
-                                     let _ = upd_cnum lexbuf in
-                                     NUM (Z.of_string_base 2 bin)
-                                   }
-  | "0x" ((hex+) as hex)           {
-                                     let _ = upd_cnum lexbuf in
-                                     NUM (Z.of_string_base 16 hex)
-                                   }
-  | (number+) as num               { upd_cnum lexbuf; NUM (Z.of_string num) }
-  | identity as id                 { upd_cnum lexbuf;
-                                     try
+  | "0b" ((bin+) as bin)           { NUM (Z.of_string_base 2 bin) }
+  | "0x" ((hex+) as hex)           { NUM (Z.of_string_base 16 hex) }
+  | (number+) as num               { NUM (Z.of_string num) }
+  | identity as id                 { try
                                        Hashtbl.find keywords id
                                      with Not_found ->
                                        ID id
                                    }
-  | identity_vec as id             { upd_cnum lexbuf; VEC_ID id }
+  | identity_vec as id             { VEC_ID id }
   | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
-                                     upd_cnum lexbuf; PATH p }
+                                     PATH p }
   | eof                            { EOF }

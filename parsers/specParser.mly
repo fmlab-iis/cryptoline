@@ -9,8 +9,8 @@
 
   exception ParseError of string
 
-  let raise_at lno msg =
-    raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
+  let raise_at_line lno msg = raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
+  let _raise_at pos msg = raise (ParseError ("Parse failure at " ^ string_of_pos pos ^ ". " ^ msg))
 
 %}
 
@@ -637,9 +637,9 @@ lval:
 lcarry:
     ID                                            { mkvar $1 bit_t }
   | ID AT typ                                     { if $3 = bit_t then mkvar $1 bit_t
-                                                    else raise_at !lnum ("The type of a carry variable " ^ $1 ^ " should be \"bit\"") }
+                                                    else raise_at_line (get_line_start()) ("The type of a carry variable " ^ $1 ^ " should be \"bit\"") }
   | typ ID                                        { if $1 = bit_t then mkvar $2 bit_t
-                                                    else raise_at !lnum ("The type of a carry variable " ^ $2 ^ " should be \"bit\"") }
+                                                    else raise_at_line (get_line_start()) ("The type of a carry variable " ^ $2 ^ " should be \"bit\"") }
 ;
 
 lval_or_lcarry:
