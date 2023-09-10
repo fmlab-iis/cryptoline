@@ -141,6 +141,7 @@
               "ulimbs"                     , ULIMBS;
               "slimbs"                     , SLIMBS;
               "limbs"                      , ULIMBS;
+              "poly"                       , POLY;
               "prove"                      , PROVE;
               "with"                       , WITH;
               "all"                        , ALL;

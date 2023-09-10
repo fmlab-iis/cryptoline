@@ -470,6 +470,14 @@ let limbs r es =
   | LeftAssoc -> eadds mons
   | RightAssoc -> eadds (List.rev mons)
 
+let poly p es =
+  let mons = List.mapi (fun i e ->
+                 if i = 0 then e  (* assuming any n (incl. 0) to the power of 0 is 1 *)
+                 else emul e (epow p (econst (Z.of_int i)))) es in
+  match add_assoc with
+  | LeftAssoc -> eadds mons
+  | RightAssoc -> eadds (List.rev mons)
+
 let eunop_precedence op =
   match op with
   | Eneg -> 2

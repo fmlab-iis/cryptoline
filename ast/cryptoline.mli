@@ -228,6 +228,9 @@ val expand_eexp : eexp -> eexp
 val limbs : int -> eexp list -> eexp
 (** [limbs i [e1; e2; ...; en]] is e{_ 1} + e{_ 2}2{^ i} + e{_ 3}2{^ 2i} + ... + e{_ n}2{^ (n-1)i}. *)
 
+val poly : eexp -> eexp list -> eexp
+(** [poly p [e1; e2; ...; en]] is e{_ 1} + e{_ 2}p{^ 1} + e{_ 3}p{^ 2} + ... + e{_ n}p{^ (n-1)}. *)
+
 val eunop_precedence : eunop -> int
 (** Precedence of algebraic unary operators *)
 

@@ -1993,7 +1993,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
 /* Others */
-%token AT PROC INLINE CALL ULIMBS SLIMBS PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
+%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -2803,6 +2803,7 @@ eexp:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
 eexp_no_vec:
@@ -2839,6 +2840,7 @@ eexp_no_vec:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
 eexp_no_unary:
@@ -2884,6 +2886,7 @@ eexp_no_unary:
                                                          else epow e (Econst i)
                                                   }
   | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
 eexps:
@@ -2969,6 +2972,11 @@ veexp:
                                                     let ess = $4 ctx in
                                                     List.rev (List.rev_map (fun es -> limbs n es) (transpose_lists ess))
                                                   }
+  | POLY eexp LSQUARE veexps RSQUARE              { fun ctx ->
+                                                    let p = $2 ctx in
+                                                    let ess = $4 ctx in
+                                                    List.rev (List.rev_map (fun es -> poly p es) (transpose_lists ess))
+                                                  }
 ;
 
 veexp_no_unary:
@@ -3043,6 +3051,11 @@ veexp_no_unary:
                                                     let n = Z.to_int ($2 ctx) in
                                                     let ess = $4 ctx in
                                                     List.rev (List.rev_map (fun es -> limbs n es) (transpose_lists ess))
+                                                  }
+  | POLY eexp LSQUARE veexps RSQUARE              { fun ctx ->
+                                                    let p = $2 ctx in
+                                                    let ess = $4 ctx in
+                                                    List.rev (List.rev_map (fun es -> poly p es) (transpose_lists ess))
                                                   }
 ;
 
