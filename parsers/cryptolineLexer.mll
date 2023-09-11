@@ -101,6 +101,7 @@
               "nop"                        , NOP;
               "seteq"                      , SETEQ;
               "setne"                      , SETNE;
+              "extract"                    , EXTRACT;
               (********** Logical Expressions **********)
               "vars"                       , VARS;
               "neg"                        , NEG;

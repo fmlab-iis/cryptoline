@@ -1413,6 +1413,33 @@
     let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
     List.concat (aliasing_instrs::iss)
 
+  let parse_extract_at mapper ctx lno dest_tok nums src_toks =
+    if (List.length nums) <> (List.length src_toks) then
+      raise_at_line lno "Number of extract positions should have the same number of vectors."
+    else
+      let list_typ_src = List.map (resolve_vec_with ctx lno) src_toks in (*list of (relmtyp, src)*)
+      let (relmtyp,_) = List.hd list_typ_src in
+      let scan_neq_typ t =
+        if t <> relmtyp then
+          raise_at_line lno "Sources should have the same element type."
+        else ()
+      in
+      let (ts, _) = List.split list_typ_src in
+      let _ = List.iter scan_neq_typ ts in
+      
+      (*let list_src_typ_vec = List.map (fun (t, v) -> (t, List.length v)) list_typ_src in (*list of src_typ_vec*)*)
+      let list_pair_n_vec = List.combine nums list_typ_src in (*list of (n, (relmtyp,src))*)
+      let list_src = List.map (fun (n, (_, src)) -> List.nth src n) list_pair_n_vec in (*list of src*)
+      let srclen = List.length list_src in
+      let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some (relmtyp, srclen)) in
+      let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names list_src in
+      let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
+      let map_func (lvname, rv) = mapper ctx lno {lvname; lvtyphint=None} rv in
+      let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+      let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+      List.concat (aliasing_instrs::iss)
+
+    
   let unpack_vinstr_12 mapper ctx lno dest_tok src1_tok src2_tok =
     let vatm1 = resolve_vec_with ctx lno src1_tok in
     let vatm2 = resolve_vec_with ctx lno src2_tok in
@@ -1714,6 +1741,8 @@
         parse_imov_at ctx lno dest src
       | `VMOV (dest, src) ->
         unpack_vinstr_11 parse_imov_at ctx lno dest src
+      | `EXTRACT (dest, nums, srcs) ->
+        parse_extract_at parse_imov_at ctx lno dest nums srcs
       | `VBROADCAST (dest, num, src) ->
         parse_vbroadcast_at ctx lno dest num src
       | `SHL (`LVPLAIN dest, src, num) ->
@@ -1979,7 +2008,7 @@
 %token BIT
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
 /* Instructions */
-%token CONST MOV
+%token CONST MOV EXTRACT
 %token BROADCAST
 %token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
@@ -2193,6 +2222,8 @@ instrs:
 instr:
     MOV lval atom                                 { (get_line_start(), `MOV ($2, $3)) }
   | MOV lval_v atom_v                             { (get_line_start(), `VMOV ($2, $3)) }
+  | EXTRACT lval_v LSQUARE nums RSQUARE atom_vs
+                                                  { (get_line_start(), `EXTRACT ($2, $4, $6)) }
   | lhs EQOP atom                                 { (get_line_start(), `MOV (`LVPLAIN $1, $3)) }
   | BROADCAST lval_v const atom_v                 { (get_line_start(), `VBROADCAST ($2, $3, $4)) }
   | SHL lval atom atom                            { (get_line_start(), `SHL ($2, $3, $4)) }
@@ -4724,4 +4755,12 @@ typ_vec:
   typ LSQUARE NUM RSQUARE                         { let dim = Z.to_int $3 in
                                                     if dim > 0 then ($1, dim)
                                                     else raise_at_line (get_line_start()) ("Vector length must be positive") }
+
+nums:
+    NUM                                           { [Z.to_int $1] }
+  | NUM COMMA nums                                { Z.to_int $1::$3 }
 ;
+
+atom_vs:
+    atom_v                                        { [$1] }
+  | atom_v atom_vs                                { $1::$2 }
