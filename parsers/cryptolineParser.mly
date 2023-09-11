@@ -1415,7 +1415,7 @@
 
   let parse_extract_at mapper ctx lno dest_tok nums src_toks =
     if (List.length nums) <> (List.length src_toks) then
-      raise_at_line lno "Number of extract positions should have the same number of vectors."
+      raise_at_line lno "Number of extract positions should be as same as the number of vectors."
     else
       let list_typ_src = List.map (resolve_vec_with ctx lno) src_toks in (*list of (relmtyp, src)*)
       let (relmtyp,_) = List.hd list_typ_src in
