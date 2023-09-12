@@ -1426,10 +1426,14 @@
       in
       let (ts, _) = List.split list_typ_src in
       let _ = List.iter scan_neq_typ ts in
-      
+
       (*let list_src_typ_vec = List.map (fun (t, v) -> (t, List.length v)) list_typ_src in (*list of src_typ_vec*)*)
       let list_pair_n_vec = List.combine nums list_typ_src in (*list of (n, (relmtyp,src))*)
-      let list_src = List.map (fun (n, (_, src)) -> List.nth src n) list_pair_n_vec in (*list of src*)
+      let list_src = List.map (fun (n, (_, src)) ->
+                                try
+                                  List.nth src n
+                                with Failure _ -> raise_at_line lno ("The index " ^ string_of_int n ^ " is out of bound.")
+                                   | Invalid_argument _ -> raise_at_line lno ("The index " ^ string_of_int n ^ " must be positive.")) list_pair_n_vec in (*list of src*)
       let srclen = List.length list_src in
       let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some (relmtyp, srclen)) in
       let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names list_src in
@@ -1439,7 +1443,6 @@
       let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
       List.concat (aliasing_instrs::iss)
 
-    
   let unpack_vinstr_12 mapper ctx lno dest_tok src1_tok src2_tok =
     let vatm1 = resolve_vec_with ctx lno src1_tok in
     let vatm2 = resolve_vec_with ctx lno src2_tok in
