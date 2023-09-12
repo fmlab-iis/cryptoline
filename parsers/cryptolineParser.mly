@@ -183,7 +183,12 @@
     atmtyphint: typ option;
     (* FIXME *)
     atmvalue: parsing_context -> Z.t;
-  }
+    }
+
+  type avecelm_prim_t = {
+      avecname: string;
+      avecindex: int
+    }
 
   type lval_t = [
     | `LVPLAIN of lv_prim_t
@@ -197,6 +202,7 @@
   type atom_t = [
     | `AVAR of avar_prim_t
     | `ACONST of aconst_prim_t
+    | `AVECELM of avecelm_prim_t
   ]
 
   type atom_vec_t = [
@@ -270,15 +276,6 @@
         else () in
     v
 
-  let resolve_atom_with ctx lno ?typ (a: atom_t) =
-    match a with
-    (* FIXME *)
-    | `ACONST c -> (match c.atmtyphint, typ with
-                    | Some ty, _
-                      | None, Some ty -> parse_typed_const ctx lno ty c.atmvalue
-                    | _, _ -> raise_at_line lno ("Failed to determine the type of constant"))
-    | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
-
   let resolve_lv_with ctx lno {lvname; lvtyphint} ty_opt =
     if ctx_name_is_ghost ctx lvname then
       raise_at_line lno ("The program variable " ^ lvname ^
@@ -326,6 +323,99 @@
          let v = mkvar lvname ty in
          let _ = ctx_define_var ctx v in
          v
+
+  let vec_name_fn vname =
+    let n = String.length vname in
+    let name = String.sub vname 1 (n - 1) in
+    (* XXX: Find a suitable delimiter for name and index that don't choke Boolector and Singular *)
+    Printf.sprintf "VEC_%s_%d" name
+
+  let string_of_typ_vec (tv:typ_vec) =
+    let (t, n) = tv in
+      Printf.sprintf "%s[%d]" (string_of_typ t) n
+
+  let resolve_lv_vec_with ctx lno dest_tok src_vtyp_opt : typ * string list =
+    match dest_tok with
+    | `LVVECT {vecname; vectyphint} ->
+       let vtyp = match (src_vtyp_opt, vectyphint) with
+         | (None, None) -> raise_at_line lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
+         | (None, Some hinted_vtyp) -> hinted_vtyp
+         | (Some src_vtyp, None) -> src_vtyp
+         | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
+                                                   raise_at_line lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
+                                                                                (string_of_typ_vec hinted_vtyp)
+                                                                                vecname
+                                                                                (string_of_typ_vec src_vtyp))
+                                                 else hinted_vtyp) in
+       let (elmtyp, srclen) = vtyp in
+       let names = List.map (vec_name_fn vecname) (0 -- (srclen-1)) in
+       let _ = ctx_define_vec ctx vecname vtyp in
+       (elmtyp, names)
+    | `LVVLIT lvs ->
+       let relmtyp = match src_vtyp_opt with
+         | None -> raise_at_line lno "Internal error: Missing type information to resolve a vector lval."
+         | Some (tp, _) -> tp in
+       let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
+                              let _ = match lvtyphint with
+                                | None -> ()
+                                | Some hinted_ty -> if relmtyp <> hinted_ty then
+                                                      raise_at_line lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
+                                                                                   (string_of_typ hinted_ty)
+                                                                                   lvname
+                                                                                   (string_of_typ relmtyp))
+                                                    else () in
+                              lvname) lvs in
+       (relmtyp, names)
+
+  let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
+    match a with
+    (* FIXME *)
+    | `ACONST c -> (match c.atmtyphint, typ with
+                    | Some ty, _
+                      | None, Some ty -> parse_typed_const ctx lno ty c.atmvalue
+                    | _, _ -> raise_at_line lno ("Failed to determine the type of constant"))
+    | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
+    | `AVECELM v -> let (elmty, elms) = resolve_vec_with ctx lno (`AVECT { vecname = v.avecname; vectyphint = None }) in
+                    let a =
+                      try
+                        List.nth elms v.avecindex
+                      with Failure _ -> raise_at_line lno ("The index " ^ string_of_int v.avecindex ^ " is out of bound")
+                         | Invalid_argument _ -> raise_at_line lno ("The index " ^ string_of_int v.avecindex ^ " must be positive.") in
+                    resolve_atom_with ctx lno ~typ:elmty a
+    and
+      resolve_vec_with ctx lno src_tok : typ * atom_t list =
+    match src_tok with
+    | `AVECT {vecname; vectyphint} ->
+       let tv = try
+           ctx_find_vec ctx vecname
+         with Not_found ->
+           raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
+       in
+       let _ = match vectyphint with
+         | None -> ()
+         | Some hinted_ty ->
+            if tv <> hinted_ty then
+              raise_at_line lno ("The type of variable " ^ vecname ^ " is inconsistent.")
+            else () in
+       let (rtyphint, rlen) = tv in
+       let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
+       let rvs = List.map gen_avar (0 -- (rlen-1)) in
+       (rtyphint, rvs)
+    | `AVLIT rvs ->
+       match rvs with
+       | [] -> raise_at_line lno "A vector literal cannot be empty."
+       | _ ->
+          let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
+          let rtyphint = List.hd relmtyps in
+          let _ = List.iteri (fun i t ->
+                               if t <> rtyphint then
+                                 raise_at_line lno (
+                                            Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
+                                                           (string_of_typ rtyphint)
+                                                           (string_of_typ t)
+                                                           i)
+                               else ()) relmtyps
+          in (rtyphint, rvs)
 
   let parse_imov_at ctx lno dest src =
     let a = resolve_atom_with ctx lno src in
@@ -1249,83 +1339,6 @@
     (* (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p) *)
     p
 
-  let vec_name_fn vname =
-    let n = String.length vname in
-    let name = String.sub vname 1 (n - 1) in
-    (* XXX: Find a suitable delimiter for name and index that don't choke Boolector and Singular *)
-    Printf.sprintf "VEC_%s_%d" name
-
-  let string_of_typ_vec (tv:typ_vec) =
-    let (t, n) = tv in
-      Printf.sprintf "%s[%d]" (string_of_typ t) n
-
-  let resolve_lv_vec_with ctx lno dest_tok src_vtyp_opt : typ * string list =
-    match dest_tok with
-    | `LVVECT {vecname; vectyphint} ->
-       let vtyp = match (src_vtyp_opt, vectyphint) with
-         | (None, None) -> raise_at_line lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
-         | (None, Some hinted_vtyp) -> hinted_vtyp
-         | (Some src_vtyp, None) -> src_vtyp
-         | (Some src_vtyp, Some hinted_vtyp) -> (if src_vtyp <> hinted_vtyp then
-                                                   raise_at_line lno (Printf.sprintf "The specified vector type %s of %s is inconsistent with the determined vector type %s."
-                                                                                (string_of_typ_vec hinted_vtyp)
-                                                                                vecname
-                                                                                (string_of_typ_vec src_vtyp))
-                                                 else hinted_vtyp) in
-       let (elmtyp, srclen) = vtyp in
-       let names = List.map (vec_name_fn vecname) (0 -- (srclen-1)) in
-       let _ = ctx_define_vec ctx vecname vtyp in
-       (elmtyp, names)
-    | `LVVLIT lvs ->
-       let relmtyp = match src_vtyp_opt with
-         | None -> raise_at_line lno "Internal error: Missing type information to resolve a vector lval."
-         | Some (tp, _) -> tp in
-       let names = List.map (fun (`LVPLAIN {lvname; lvtyphint}) ->
-                              let _ = match lvtyphint with
-                                | None -> ()
-                                | Some hinted_ty -> if relmtyp <> hinted_ty then
-                                                      raise_at_line lno (Printf.sprintf "The specified type %s of an element %s is inconsistent with the determined type %s."
-                                                                                   (string_of_typ hinted_ty)
-                                                                                   lvname
-                                                                                   (string_of_typ relmtyp))
-                                                    else () in
-                              lvname) lvs in
-       (relmtyp, names)
-
-  let resolve_vec_with ctx lno src_tok : typ * atom_t list =
-    match src_tok with
-    | `AVECT {vecname; vectyphint} ->
-       let tv = try
-           ctx_find_vec ctx vecname
-         with Not_found ->
-           raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
-       in
-       let _ = match vectyphint with
-         | None -> ()
-         | Some hinted_ty ->
-            if tv <> hinted_ty then
-              raise_at_line lno ("The type of variable " ^ vecname ^ " is inconsistent.")
-            else () in
-       let (rtyphint, rlen) = tv in
-       let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
-       let rvs = List.map gen_avar (0 -- (rlen-1)) in
-       (rtyphint, rvs)
-    | `AVLIT rvs ->
-       match rvs with
-       | [] -> raise_at_line lno "A vector literal cannot be empty."
-       | _ ->
-          let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
-          let rtyphint = List.hd relmtyps in
-          let _ = List.iteri (fun i t ->
-                               if t <> rtyphint then
-                                 raise_at_line lno (
-                                            Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
-                                                           (string_of_typ rtyphint)
-                                                           (string_of_typ t)
-                                                           i)
-                               else ()) relmtyps
-          in (rtyphint, rvs)
-
   (* Given a list of (writes, read), make a series of aliasing movs on colliding names.
      Bsesides instructions, it also returns some context after rewriting *)
   let gen_tmp_movs ctx lno (rwpairs: (string list * atom_t) list) relmtyp =
@@ -1339,8 +1352,18 @@
                                                tmp_name)
                    else () in
            (SM.add tmp_name var submap, `AVAR {var with atmname=tmp_name})
+        | `AVECELM v when SS.mem (vec_name_fn v.avecname v.avecindex) tainted ->
+           let tmp_name = vec_name_fn v.avecname v.avecindex ^ "_" in
+           let _ = if ctx_name_is_var ctx tmp_name then
+                     raise_at_line lno (
+                                Printf.sprintf "Internal error: Attempting to pick a temporary variable name %s but it has been used."
+                                               tmp_name)
+                   else () in
+           (SM.add tmp_name { atmname = vec_name_fn v.avecname v.avecindex; atmtyphint = None } submap, `AVAR { atmname = tmp_name; atmtyphint = None })
         | `AVAR _
-          | `ACONST _ -> (submap, a) in
+          | `ACONST _
+          | `AVECELM _ -> (submap, a)
+      in
       let tainted' = List.fold_left (fun set name -> SS.add name set) tainted wws in
       ((tainted', submap'), a') in
 
@@ -4616,6 +4639,7 @@ atom:
   | const AT typ                                  { `ACONST { atmtyphint = Some $3; atmvalue = $1; } }
   | typ const                                     { `ACONST { atmtyphint = Some $1; atmvalue = $2; } }
   | defined_var                                   { ($1 :> atom_t) }
+  | VEC_ID LSQUARE NUM RSQUARE                    { `AVECELM { avecname = $1; avecindex = Z.to_int $3 } }
   /*| LPAR atom RPAR                              { fun ctx -> $2 ctx } source of reduce/reduce conflict*/
 ;
 
