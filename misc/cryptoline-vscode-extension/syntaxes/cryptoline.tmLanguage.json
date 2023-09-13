@@ -244,7 +244,7 @@
                     "comment": "TODO: specialize ghost-declared variables"
                 },
                 {
-                    "begin": "(c?mov|c?shl|c?lsl|shls|c?shrs?|sars?|set|clear|nondet|c?move|nop)\\b",
+                    "begin": "(c?mov|c?shl|c?lsl|shls|c?shrs?|sars?|set|clear|nondet|c?move|broadcast|nop)\\b",
                     "end": "(?=;)",
                     "beginCaptures": {
                         "1": {

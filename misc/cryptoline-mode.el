@@ -47,6 +47,7 @@
                             ))
              (x-functions '(
                             "mov" "assign"
+                            "broadcast"
                             "add" "uadd" "sadd"
                             "adds" "uadds" "sadds"
                             "adc" "uadc" "sadc"
