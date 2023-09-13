@@ -9,6 +9,8 @@ cryptoline_path = "cv"
 
 default_ea_pattern = r"L(0x\w+)"
 
+dontcare_variable = "_"
+
 # num_atoms, indices-lvs, indices-rvs, indices-cvs
 instr_specs_raw = {
     "const":  (0, [], [], []),
@@ -359,7 +361,7 @@ def assert_unused_carries(instrs, annot=False, newline=False, check=False, cpath
             vars = get_vars(m['instr'], m['rest'])
             is_annot = instr_specs[m['instr']]['is-annot']
             if not is_annot:
-                unused = [c for c in vars['cvs'] if not (c in used)]
+                unused = [c for c in vars['cvs'] if not (c in used) and c != dontcare_variable]
                 if len(unused) > 0:
                     res.append("# ### END" + ("\n" if newline else ""))
                     res.append("assume and [ {} ] && true;".format(", ".join([f"{c} = 0" for c in unused])) + ("\n" if newline else ""))
@@ -402,7 +404,7 @@ def find_unused_variables(instrs, annot=False, newline=False):
             vars = get_vars(m['instr'], m['rest'])
             is_annot = instr_specs[m['instr']]['is-annot']
             if not is_annot:
-                unused = [v for v in vars['lvs'] if not (v in used)]
+                unused = [v for v in vars['lvs'] if not (v in used) and v != dontcare_variable]
                 if len(unused) > 0:
                     res.append("# ### UNUSED VARIABLES: {}".format(", ".join(unused)) + ("\n" if newline else ""))
             if (not is_annot) or annot:
