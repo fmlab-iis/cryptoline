@@ -79,6 +79,42 @@
     let (ty, n) = t in
     string_of_typ ty ^ "[" ^ string_of_int n ^ "]"
 
+  let select_nth lno xs n =
+    let _ = if n < 0 then raise_at_line lno ("The index " ^ string_of_int n ^ " must be non-negative.")
+            else if n >= List.length xs then raise_at_line lno ("The index " ^ string_of_int n ^ " is out of bounds (" ^ string_of_int (List.length xs - 1) ^ ")") in
+    List.nth xs n
+
+  let select_from_range lno xs io jo ko =
+    let len = List.length xs in
+    let normalize i = if i < 0 then len + i + 1 else i in
+    let i =
+      match io with
+      | None -> 0
+      | Some i -> normalize i in
+    let j =
+      match jo with
+      | None -> len
+      | Some j -> normalize j in
+    let k =
+      match ko with
+      | None -> 1
+      | Some k -> k in
+    let mkindices i j k =
+      if k = 0 then raise_at_line lno ("The slice step " ^ string_of_int k ^ " cannot be zero.")
+      else if i = j then []
+      else if i < j && k <= 0 then []
+      else if j < i && k >= 0 then []
+      else let rec helper_inc i j k =
+             if i >= j then []
+             else i::(helper_inc (i+k) j k) in
+           let rec helper_dec i j k =
+             if i <= j then []
+             else i::(helper_dec (i+k) j k) in
+           if i < j then helper_inc i j k
+           else helper_dec i j k in
+    let select () = List.rev_map (select_nth lno xs) (List.rev (mkindices i j k)) in
+    select ()
+
   (* ---------- Parsing Context ---------- *)
 
   type parsing_context =
@@ -172,7 +208,12 @@
   type vec_prim_t = {
     vectyphint: typ_vec option;
     vecname: string;
-  }
+    }
+
+  type selection =
+    SelSingle of (parsing_context -> int)
+  | SelMultiple of (parsing_context -> int list)
+  | SelRange of (parsing_context -> (int option * int option * int option))
 
   type avar_prim_t = {
     atmtyphint: typ option;
@@ -205,9 +246,15 @@
     | `AVECELM of avecelm_prim_t
   ]
 
-  type atom_vec_t = [
+  type vec_sel_prim_t = {
+      vecselatm: atom_vec_t;
+      vecselrng: selection list
+    }
+  and atom_vec_t = [
     | `AVLIT of (atom_t list)
     | `AVECT of vec_prim_t
+    | `AVECSEL of vec_sel_prim_t
+    | `AVECCAT of atom_vec_t list
   ]
 
   let num_two = Z.of_int 2
@@ -402,20 +449,48 @@
        let rvs = List.map gen_avar (0 -- (rlen-1)) in
        (rtyphint, rvs)
     | `AVLIT rvs ->
-       match rvs with
-       | [] -> raise_at_line lno "A vector literal cannot be empty."
-       | _ ->
-          let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
-          let rtyphint = List.hd relmtyps in
-          let _ = List.iteri (fun i t ->
-                               if t <> rtyphint then
-                                 raise_at_line lno (
-                                            Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
-                                                           (string_of_typ rtyphint)
-                                                           (string_of_typ t)
-                                                           i)
-                               else ()) relmtyps
-          in (rtyphint, rvs)
+       (match rvs with
+        | [] -> raise_at_line lno "A vector literal cannot be empty."
+        | _ ->
+           let relmtyps = List.map (fun a -> typ_of_atom (resolve_atom_with ctx lno a)) rvs in
+           let rtyphint = List.hd relmtyps in
+           let _ = List.iteri (fun i t ->
+                                if t <> rtyphint then
+                                  raise_at_line lno (
+                                                  Printf.sprintf "Every element of the vector literal should be %s, found %s at index %d."
+                                                                 (string_of_typ rtyphint)
+                                                                 (string_of_typ t)
+                                                                 i)
+                                else ()) relmtyps
+           in
+           (rtyphint, rvs))
+    | `AVECSEL {vecselatm; vecselrng} ->
+       let (typ, atoms) = resolve_vec_with ctx lno vecselatm in
+       let sel_atoms = List.rev_map (
+                           fun sel -> match sel with
+                                      | SelSingle nf ->
+                                         let n = nf ctx in
+                                         [select_nth lno atoms n]
+                                      | SelMultiple nsf ->
+                                         let ns = nsf ctx in
+                                         List.rev_map (select_nth lno atoms) (List.rev ns)
+                                      | SelRange iokf ->
+                                         let (io, jo, ko) = iokf ctx in
+                                         select_from_range lno atoms io jo ko
+                         ) vecselrng |> List.rev |> List.flatten in
+       (typ, sel_atoms)
+    | `AVECCAT avecs ->
+       let (typs, atomss) = List.rev_map (resolve_vec_with ctx lno) (List.rev avecs) |> List.split in
+       let rec select_typ typs =
+         match typs with
+         | [] -> None
+         | t::tys -> (match select_typ tys with
+                      | None -> Some t
+                      | Some t' -> if t = t' then Some t
+                                   else raise_at_line lno (Printf.sprintf "Types of vector elements are incompatible. One is %s while the other is %s." (string_of_typ t) (string_of_typ t'))) in
+       match select_typ typs with
+       | None -> raise_at_line lno (Printf.sprintf "Cannot determine the type of vector elements in vector concatenation.")
+       | Some t -> (t, List.flatten atomss)
 
   let parse_imov_at ctx lno dest src =
     let a = resolve_atom_with ctx lno src in
@@ -1404,9 +1479,9 @@
   let unify_vec_srcs_at lno (relmtyp, src1) (relmtyp', src2) =
     let srclen = List.length src1 in
     let _ = if (List.length src2) <> srclen then
-      raise_at_line lno "Two sources should have the same length."
+      raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." srclen (List.length src2))
     else if relmtyp <> relmtyp' then
-      raise_at_line lno "Two sources should have the same element type."
+      raise_at_line lno (Printf.sprintf "Two sources should have the same element type. One is %s while the other is %s." (string_of_typ relmtyp) (string_of_typ relmtyp'))
     else () in
     ((relmtyp, srclen), src1, src2)
 
@@ -2046,7 +2121,7 @@
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP
+%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
 %token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF DOLPHIN
@@ -2059,7 +2134,7 @@
 %left XOROP
 %left ANDOP
 %left SHLOP SHROP SAROP
-%left ADDOP SUBOP
+%left ADDOP SUBOP ADDADDOP
 %left MULOP
 %left POWOP
 %right NEGOP NOTOP
@@ -2163,7 +2238,7 @@ proc:
                                             fpost = g } ctx.cfuns in
         ()
   }
-  | CONST ID EQOP const
+  | CONST ID EQOP const_exp
   {
     let lno = get_line_start() in
     fun ctx ->
@@ -2251,28 +2326,32 @@ instr:
   | EXTRACT lval_v LSQUARE nums RSQUARE atom_vs
                                                   { (get_line_start(), `EXTRACT ($2, $4, $6)) }
   | lhs EQOP atom                                 { (get_line_start(), `MOV (`LVPLAIN $1, $3)) }
-  | BROADCAST lval_v const atom_v                 { (get_line_start(), `VBROADCAST ($2, $3, $4)) }
+  | BROADCAST lval_v const_exp_primary atom_v     { (get_line_start(), `VBROADCAST ($2, $3, $4)) }
   | SHL lval atom atom                            { (get_line_start(), `SHL ($2, $3, $4)) }
   | lhs EQOP SHL atom atom                        { (get_line_start(), `SHL (`LVPLAIN $1, $4, $5)) }
-  | SHLS lval lval atom const                     { (get_line_start(), `SHLS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SHLS atom const                  { (get_line_start(), `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | SHLS lval lval atom const_exp_primary         { (get_line_start(), `SHLS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SHLS atom const_exp_primary      { (get_line_start(), `SHLS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | SHR lval atom atom                            { (get_line_start(), `SHR ($2, $3, $4)) }
   | lhs EQOP SHR atom atom                        { (get_line_start(), `SHR (`LVPLAIN $1, $4, $5)) }
-  | SHRS lval lval atom const                     { (get_line_start(), `SHRS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SHRS atom const                  { (get_line_start(), `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | SHRS lval lval atom const_exp_primary         { (get_line_start(), `SHRS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SHRS atom const_exp_primary      { (get_line_start(), `SHRS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
   | SAR lval atom atom                            { (get_line_start(), `SAR ($2, $3, $4)) }
   | lhs EQOP SAR atom atom                        { (get_line_start(), `SAR (`LVPLAIN $1, $4, $5)) }
-  | SARS lval lval atom const                     { (get_line_start(), `SARS ($2, $3, $4, $5)) }
-  | lhs lhs EQOP SARS atom const                  { (get_line_start(), `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
-  | CSHL lval lval atom atom const                { (get_line_start(), `CSHL ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP CSHL atom atom const         { (get_line_start(), `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
-  | CSHLS lval lval lval atom atom const          { (get_line_start(), `CSHLS ($2, $3, $4, $5, $6, $7)) }
-  | lhs DOT lhs DOT lhs EQOP CSHLS atom atom const
+  | SARS lval lval atom const_exp_primary         { (get_line_start(), `SARS ($2, $3, $4, $5)) }
+  | lhs lhs EQOP SARS atom const_exp_primary      { (get_line_start(), `SARS (`LVPLAIN $1, `LVPLAIN $2, $5, $6)) }
+  | CSHL lval lval atom atom const_exp_primary    { (get_line_start(), `CSHL ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHL atom atom const_exp_primary
+                                                  { (get_line_start(), `CSHL (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHLS lval lval lval atom atom const_exp_primary
+                                                  { (get_line_start(), `CSHLS ($2, $3, $4, $5, $6, $7)) }
+  | lhs DOT lhs DOT lhs EQOP CSHLS atom atom const_exp_primary
                                                   { (get_line_start(), `CSHLS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
-  | CSHR lval lval atom atom const                { (get_line_start(), `CSHR ($2, $3, $4, $5, $6)) }
-  | lhs DOT lhs EQOP CSHR atom atom const         { (get_line_start(), `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
-  | CSHRS lval lval lval atom atom const          { (get_line_start(), `CSHRS ($2, $3, $4, $5, $6, $7)) }
-  | lhs DOT lhs DOT lhs EQOP CSHRS atom atom const
+  | CSHR lval lval atom atom const_exp_primary    { (get_line_start(), `CSHR ($2, $3, $4, $5, $6)) }
+  | lhs DOT lhs EQOP CSHR atom atom const_exp_primary
+                                                  { (get_line_start(), `CSHR (`LVPLAIN $1, `LVPLAIN $3, $6, $7, $8)) }
+  | CSHRS lval lval lval atom atom const_exp_primary
+                                                  { (get_line_start(), `CSHRS ($2, $3, $4, $5, $6, $7)) }
+  | lhs DOT lhs DOT lhs EQOP CSHRS atom atom const_exp_primary
                                                   { (get_line_start(), `CSHRS (`LVPLAIN $1, `LVPLAIN $3, `LVPLAIN $5, $8, $9, $10)) }
   | ROL lval atom atom                            { (get_line_start(), `ROL ($2, $3, $4)) }
   | ROR lval atom atom                            { (get_line_start(), `ROR ($2, $3, $4)) }
@@ -2283,26 +2362,31 @@ instr:
   | NONDET lval                                   { (get_line_start(), `NONDET $2) }
   | NONDET lval_v                                 { (get_line_start(), `VNONDET $2) }
   | CMOV lval carry atom atom                     { (get_line_start(), `CMOV ($2, $3, $4, $5)) }
-  | CMOV lval_v carry_v atom_v atom_v             { (get_line_start(), `VCMOV ($2, $3, $4, $5)) }
+  | CMOV lval_v atom_v_primary atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VCMOV ($2, $3, $4, $5)) }
   | lhs EQOP CMOV carry atom atom                 { (get_line_start(), `CMOV (`LVPLAIN $1, $4, $5, $6)) }
   | ADD lval atom atom                            { (get_line_start(), `ADD ($2, $3, $4)) }
-  | ADD lval_v atom_v atom_v                      { (get_line_start(), `VADD ($2, $3, $4)) }
+  | ADD lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VADD ($2, $3, $4)) }
   | lhs EQOP ADD atom atom                        { (get_line_start(), `ADD (`LVPLAIN $1, $4, $5)) }
   | ADDS lcarry lval atom atom                    { (get_line_start(), `ADDS ($2, $3, $4, $5)) }
-  | ADDS lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VADDS ($2, $3, $4, $5)) }
+  | ADDS lcarry_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VADDS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP ADDS atom atom               { (get_line_start(), `ADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | ADC lval atom atom carry                      { (get_line_start(), `ADC ($2, $3, $4, $5)) }
   | lhs EQOP ADC atom atom carry                  { (get_line_start(), `ADC (`LVPLAIN $1, $4, $5, $6)) }
   | ADCS lcarry lval atom atom carry              { (get_line_start(), `ADCS ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP ADCS atom atom carry         { (get_line_start(), `ADCS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | SUB lval atom atom                            { (get_line_start(), `SUB ($2, $3, $4)) }
-  | SUB lval_v atom_v atom_v                      { (get_line_start(), `VSUB ($2, $3, $4)) }
+  | SUB lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VSUB ($2, $3, $4)) }
   | lhs EQOP SUB atom atom                        { (get_line_start(), `SUB (`LVPLAIN $1, $4, $5)) }
   | SUBC lcarry lval atom atom                    { (get_line_start(), `SUBC ($2, $3, $4, $5)) }
-  | SUBC lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VSUBC ($2, $3, $4, $5)) }
+  | SUBC lcarry_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VSUBC ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBC atom atom               { (get_line_start(), `SUBC (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SUBB lcarry lval atom atom                    { (get_line_start(), `SUBB ($2, $3, $4, $5)) }
-  | SUBB lcarry_v lval_v atom_v atom_v            { (get_line_start(), `VSUBB ($2, $3, $4, $5)) }
+  | SUBB lcarry_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VSUBB ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SUBB atom atom               { (get_line_start(), `SUBB (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SBC lval atom atom carry                      { (get_line_start(), `SBC ($2, $3, $4, $5)) }
   | lhs EQOP SBC atom atom carry                  { (get_line_start(), `SBC (`LVPLAIN $1, $4, $5, $6)) }
@@ -2313,31 +2397,35 @@ instr:
   | SBBS lcarry lval atom atom carry              { (get_line_start(), `SBBS ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP SBBS atom atom carry         { (get_line_start(), `SBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | MUL lval atom atom                            { (get_line_start(), `MUL ($2, $3, $4)) }
-  | MUL lval_v atom_v atom_v                      { (get_line_start(), `VMUL ($2, $3, $4)) }
+  | MUL lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VMUL ($2, $3, $4)) }
   | lhs EQOP MUL atom atom                        { (get_line_start(), `MUL (`LVPLAIN $1, $4, $5)) }
   | MULS lcarry lval atom atom                    { (get_line_start(), `MULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULS atom atom               { (get_line_start(), `MULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | MULL lval lval atom atom                      { (get_line_start(), `MULL ($2, $3, $4, $5)) }
-  | MULL lval_v lval_v atom_v atom_v              { (get_line_start(), `VMULL ($2, $3, $4, $5)) }
+  | MULL lval_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP MULL atom atom               { (get_line_start(), `MULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | MULJ lval atom atom                           { (get_line_start(), `MULJ ($2, $3, $4)) }
-  | MULJ lval_v atom_v atom_v                     { (get_line_start(), `VMULJ ($2, $3, $4)) }
+  | MULJ lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VMULJ ($2, $3, $4)) }
   | lhs EQOP MULJ atom atom                       { (get_line_start(), `MULJ (`LVPLAIN $1, $4, $5)) }
-  | SPLIT lval lval atom const                    { (get_line_start(), `SPLIT ($2, $3, $4, $5)) }
-  | SPLIT lval_v lval_v atom_v const              { (get_line_start(), `VSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SPLIT atom const             { (get_line_start(), `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SPL lval lval atom const                      { (get_line_start(), `SPL ($2, $3, $4, $5)) }
-  | SPL lval_v lval_v atom_v const                { (get_line_start(), `VSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SPL atom const               { (get_line_start(), `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SPLIT lval lval atom const_exp_primary        { (get_line_start(), `SPLIT ($2, $3, $4, $5)) }
+  | SPLIT lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPLIT atom const_exp_primary { (get_line_start(), `SPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SPL lval lval atom const_exp_primary          { (get_line_start(), `SPL ($2, $3, $4, $5)) }
+  | SPL lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SPL atom const_exp_primary   { (get_line_start(), `SPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SETEQ lval atom atom                          { (get_line_start(), `SETEQ ($2, $3, $4)) }
-  | SETEQ lval_v atom_v atom_v                    { (get_line_start(), `VSETEQ ($2, $3, $4)) }
+  | SETEQ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VSETEQ ($2, $3, $4)) }
   | SETNE lval atom atom                          { (get_line_start(), `SETNE ($2, $3, $4)) }
-  | SETNE lval_v atom_v atom_v                    { (get_line_start(), `VSETNE ($2, $3, $4)) }
+  | SETNE lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VSETNE ($2, $3, $4)) }
   | UADD lval atom atom                           { (get_line_start(), `UADD ($2, $3, $4)) }
-  | UADD lval_v atom_v atom_v                     { (get_line_start(), `VUADD ($2, $3, $4)) }
+  | UADD lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VUADD ($2, $3, $4)) }
   | lhs EQOP UADD atom atom                       { (get_line_start(), `UADD (`LVPLAIN $1, $4, $5)) }
   | UADDS lcarry lval atom atom                   { (get_line_start(), `UADDS ($2, $3, $4, $5)) }
-  | UADDS lcarry_v lval_v atom_v atom_v           { (get_line_start(), `VUADDS ($2, $3, $4, $5)) }
+  | UADDS lcarry_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VUADDS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UADDS atom atom              { (get_line_start(), `UADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | UADC lval atom atom carry                     { (get_line_start(), `UADC ($2, $3, $4, $5)) }
   | lhs EQOP UADC atom atom carry                 { (get_line_start(), `UADC (`LVPLAIN $1, $4, $5, $6)) }
@@ -2358,27 +2446,32 @@ instr:
   | USBBS lcarry lval atom atom carry             { (get_line_start(), `USBBS ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP USBBS atom atom carry        { (get_line_start(), `USBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | UMUL lval atom atom                           { (get_line_start(), `UMUL ($2, $3, $4)) }
-  | UMUL lval_v atom_v atom_v                     { (get_line_start(), `VUMUL ($2, $3, $4)) }
+  | UMUL lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VUMUL ($2, $3, $4)) }
   | lhs EQOP UMUL atom atom                       { (get_line_start(), `UMUL (`LVPLAIN $1, $4, $5)) }
   | UMULS lcarry lval atom atom                   { (get_line_start(), `UMULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULS atom atom              { (get_line_start(), `UMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | UMULL lval lval atom atom                     { (get_line_start(), `UMULL ($2, $3, $4, $5)) }
-  | UMULL lval_v lval_v atom_v atom_v             { (get_line_start(), `VUMULL ($2, $3, $4, $5)) }
+  | UMULL lval_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VUMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP UMULL atom atom              { (get_line_start(), `UMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | UMULJ lval atom atom                          { (get_line_start(), `UMULJ ($2, $3, $4)) }
-  | UMULJ lval_v atom_v atom_v                    { (get_line_start(), `VUMULJ ($2, $3, $4)) }
+  | UMULJ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VUMULJ ($2, $3, $4)) }
   | lhs EQOP UMULJ atom atom                      { (get_line_start(), `UMULJ (`LVPLAIN $1, $4, $5)) }
-  | USPLIT lval lval atom const                   { (get_line_start(), `USPLIT ($2, $3, $4, $5)) }
-  | USPLIT lval_v lval_v atom_v const             { (get_line_start(), `VUSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USPLIT atom const            { (get_line_start(), `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | USPL lval lval atom const                     { (get_line_start(), `USPL ($2, $3, $4, $5)) }
-  | USPL lval_v lval_v atom_v const               { (get_line_start(), `VUSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP USPL atom const              { (get_line_start(), `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | USPLIT lval lval atom const_exp_primary       { (get_line_start(), `USPLIT ($2, $3, $4, $5)) }
+  | USPLIT lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VUSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPLIT atom const_exp_primary
+                                                  { (get_line_start(), `USPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | USPL lval lval atom const_exp_primary         { (get_line_start(), `USPL ($2, $3, $4, $5)) }
+  | USPL lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VUSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP USPL atom const_exp_primary  { (get_line_start(), `USPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SADD lval atom atom                           { (get_line_start(), `SADD ($2, $3, $4)) }
-  | SADD lval_v atom_v atom_v                     { (get_line_start(), `VSADD ($2, $3, $4)) }
+  | SADD lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VSADD ($2, $3, $4)) }
   | lhs EQOP SADD atom atom                       { (get_line_start(), `SADD (`LVPLAIN $1, $4, $5)) }
   | SADDS lcarry lval atom atom                   { (get_line_start(), `SADDS ($2, $3, $4, $5)) }
-  | SADDS lcarry_v lval_v atom_v atom_v           { (get_line_start(), `VSADDS ($2, $3, $4, $5)) }
+  | SADDS lcarry_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VSADDS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SADDS atom atom              { (get_line_start(), `SADDS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SADC lval atom atom carry                     { (get_line_start(), `SADC ($2, $3, $4, $5)) }
   | lhs EQOP SADC atom atom carry                 { (get_line_start(), `SADC (`LVPLAIN $1, $4, $5, $6)) }
@@ -2399,37 +2492,41 @@ instr:
   | SSBBS lcarry lval atom atom carry             { (get_line_start(), `SSBBS ($2, $3, $4, $5, $6)) }
   | lhs DOT lhs EQOP SSBBS atom atom carry        { (get_line_start(), `SSBBS (`LVCARRY $1, `LVPLAIN $3, $6, $7, $8)) }
   | SMUL lval atom atom                           { (get_line_start(), `SMUL ($2, $3, $4) )}
-  | SMUL lval_v atom_v atom_v                     { (get_line_start(), `VSMUL ($2, $3, $4) )}
+  | SMUL lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VSMUL ($2, $3, $4) )}
   | lhs EQOP SMUL atom atom                       { (get_line_start(), `SMUL (`LVPLAIN $1, $4, $5) )}
   | SMULS lcarry lval atom atom                   { (get_line_start(), `SMULS ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULS atom atom              { (get_line_start(), `SMULS (`LVCARRY $1, `LVPLAIN $3, $6, $7)) }
   | SMULL lval lval atom atom                     { (get_line_start(), `SMULL ($2, $3, $4, $5)) }
-  | SMULL lval_v lval_v atom_v atom_v             { (get_line_start(), `VSMULL ($2, $3, $4, $5)) }
+  | SMULL lval_v lval_v atom_v_primary atom_v_primary
+                                                  { (get_line_start(), `VSMULL ($2, $3, $4, $5)) }
   | lhs DOT lhs EQOP SMULL atom atom              { (get_line_start(), `SMULL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | SMULJ lval atom atom                          { (get_line_start(), `SMULJ ($2, $3, $4)) }
-  | SMULJ lval_v atom_v atom_v                    { (get_line_start(), `VSMULJ ($2, $3, $4)) }
+  | SMULJ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VSMULJ ($2, $3, $4)) }
   | lhs EQOP SMULJ atom atom                      { (get_line_start(), `SMULJ (`LVPLAIN $1, $4, $5)) }
-  | SSPLIT lval lval atom const                   { (get_line_start(), `SSPLIT ($2, $3, $4, $5)) }
-  | SSPLIT lval_v lval_v atom_v const             { (get_line_start(), `VSSPLIT ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSPLIT atom const            { (get_line_start(), `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
-  | SSPL lval lval atom const                     { (get_line_start(), `SSPL ($2, $3, $4, $5)) }
-  | SSPL lval_v lval_v atom_v const               { (get_line_start(), `VSSPL ($2, $3, $4, $5)) }
-  | lhs DOT lhs EQOP SSPL atom const              { (get_line_start(), `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SSPLIT lval lval atom const_exp_primary       { (get_line_start(), `SSPLIT ($2, $3, $4, $5)) }
+  | SSPLIT lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VSSPLIT ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPLIT atom const_exp_primary
+                                                  { (get_line_start(), `SSPLIT (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
+  | SSPL lval lval atom const_exp_primary         { (get_line_start(), `SSPL ($2, $3, $4, $5)) }
+  | SSPL lval_v lval_v atom_v_primary const_exp_primary
+                                                  { (get_line_start(), `VSSPL ($2, $3, $4, $5)) }
+  | lhs DOT lhs EQOP SSPL atom const_exp_primary  { (get_line_start(), `SSPL (`LVPLAIN $1, `LVPLAIN $3, $6, $7)) }
   | AND lval atom atom                            { (get_line_start(), `AND ($2, $3, $4)) }
-  | AND lval_v atom_v atom_v                      { (get_line_start(), `VAND ($2, $3, $4)) }
+  | AND lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VAND ($2, $3, $4)) }
   | lhs EQOP AND atom atom                        { (get_line_start(), `AND (`LVPLAIN $1, $4, $5)) }
   | OR lval atom atom                             { (get_line_start(), `OR ($2, $3, $4)) }
-  | OR lval_v atom_v atom_v                      { (get_line_start(), `VOR ($2, $3, $4)) }
+  | OR lval_v atom_v_primary atom_v_primary       { (get_line_start(), `VOR ($2, $3, $4)) }
   | lhs EQOP OR atom atom                         { (get_line_start(), `OR (`LVPLAIN $1, $4, $5)) }
   | XOR lval atom atom                            { (get_line_start(), `XOR ($2, $3, $4)) }
-  | XOR lval_v atom_v atom_v                      { (get_line_start(), `VXOR ($2, $3, $4)) }
+  | XOR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VXOR ($2, $3, $4)) }
   | lhs EQOP XOR atom atom                        { (get_line_start(), `XOR (`LVPLAIN $1, $4, $5)) }
   | NOT lval atom                                 { (get_line_start(), `NOT ($2, $3)) }
-  | NOT lval_v atom_v                             { (get_line_start(), `VNOT ($2, $3)) }
+  | NOT lval_v atom_v_primary                     { (get_line_start(), `VNOT ($2, $3)) }
   | lhs EQOP NOT atom                             { (get_line_start(), `NOT (`LVPLAIN $1, $4)) }
   | CAST lval_or_lcarry atom                      { (get_line_start(), `CAST (None, $2, $3)) }
   // XXX: the "[]" is to workaround a r/r conflict
-  | CAST LSQUARE RSQUARE lval_v atom_v            { (get_line_start(), `VCAST (None, $4, $5)) }
+  | CAST LSQUARE RSQUARE lval_v atom_v_primary    { (get_line_start(), `VCAST (None, $4, $5)) }
   | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atom
                                                   { (get_line_start(), `CAST (Some $3, $5, $6)) }
   | lhs EQOP CAST atom                            { (get_line_start(), `CAST (None, `LV $1, $4)) }
@@ -2557,7 +2654,7 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { fun _ -> Precondition }
-  | CUTS LSQUARE complex_const_list RSQUARE       { fun ctx -> Cuts ($3 ctx) }
+  | CUTS LSQUARE const_exp_list RSQUARE           { fun ctx -> Cuts ($3 ctx) }
   | ALL CUTS                                      { fun _ -> AllCuts }
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
@@ -2583,8 +2680,8 @@ bexp:
 ;
 
 ebexp:
-  ebexp_atom LANDOP ebexp                       { fun ctx -> Eand ($1 ctx, $3 ctx) }
-  | ebexp_atom                                  { fun ctx -> $1 ctx }
+  ebexp_atom LANDOP ebexp                         { fun ctx -> Eand ($1 ctx, $3 ctx) }
+  | ebexp_atom                                    { fun ctx -> $1 ctx }
 ;
 
 ebexp_atom:
@@ -2820,7 +2917,7 @@ eexp:
     defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
-  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | const                                         { fun ctx -> Econst ($1 ctx) }
   | VEC_ID LSQUARE NUM RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
@@ -2844,7 +2941,7 @@ eexp:
   | eexp ADDOP eexp                               { fun ctx -> eadd ($1 ctx) ($3 ctx) }
   | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
-  | eexp POWOP const                              { fun ctx ->
+  | eexp POWOP const_exp_primary                  { fun ctx ->
                                                       let e = $1 ctx in
                                                       let i = $3 ctx in
                                                       (* there are examples that have extremely large exponents *)
@@ -2859,7 +2956,8 @@ eexp:
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
                                                   }
-  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
+                                                  { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
@@ -2867,7 +2965,7 @@ eexp_no_vec:
     defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
-  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | const                                         { fun ctx -> Econst ($1 ctx) }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
   /* Extensions */
   | NEG eexp_no_vec                               { fun ctx -> eneg ($2 ctx) }
@@ -2881,7 +2979,7 @@ eexp_no_vec:
   | eexp_no_vec ADDOP eexp                        { fun ctx -> eadd ($1 ctx) ($3 ctx) }
   | eexp_no_vec SUBOP eexp                        { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp_no_vec MULOP eexp                        { fun ctx -> emul ($1 ctx) ($3 ctx) }
-  | eexp_no_vec POWOP const                       { fun ctx ->
+  | eexp_no_vec POWOP const_exp_primary           { fun ctx ->
                                                       let e = $1 ctx in
                                                       let i = $3 ctx in
                                                       (* there are examples that have extremely large exponents *)
@@ -2896,7 +2994,8 @@ eexp_no_vec:
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
                                                   }
-  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
+                                                  { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
@@ -2904,7 +3003,7 @@ eexp_no_unary:
     defined_var                                   { let lno = get_line_start() in
                                                     fun ctx -> Evar (resolve_var_with ctx lno $1)
                                                   }
-  | simple_const                                  { fun ctx -> Econst ($1 ctx) }
+  | const                                         { fun ctx -> Econst ($1 ctx) }
   | VEC_ID LSQUARE NUM RSQUARE                    { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
@@ -2927,7 +3026,7 @@ eexp_no_unary:
   | eexp_no_unary ADDOP eexp                      { fun ctx -> eadd ($1 ctx) ($3 ctx) }
   | eexp_no_unary SUBOP eexp                      { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp_no_unary MULOP eexp                      { fun ctx -> emul ($1 ctx) ($3 ctx) }
-  | eexp_no_unary POWOP const                     { fun ctx ->
+  | eexp_no_unary POWOP const_exp_primary         { fun ctx ->
                                                       let e = $1 ctx in
                                                       let i = $3 ctx in
                                                       (* there are examples that have extremely large exponents *)
@@ -2942,7 +3041,8 @@ eexp_no_unary:
                                                          else if Z.equal i Z.one then e
                                                          else epow e (Econst i)
                                                   }
-  | ULIMBS const LSQUARE eexps RSQUARE            { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
+                                                  { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
@@ -2972,7 +3072,7 @@ veexp:
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
   | SUB veexp veexp_no_unary                      { let lno = get_line_start() in
@@ -2980,14 +3080,14 @@ veexp:
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
   | MUL veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
@@ -2998,7 +3098,7 @@ veexp:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
   | veexp SUBOP veexp                             { let lno = get_line_start() in
@@ -3006,7 +3106,7 @@ veexp:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
   | veexp MULOP veexp                             { let lno = get_line_start() in
@@ -3014,17 +3114,18 @@ veexp:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
-  | veexp POWOP const                             { fun ctx ->
+  | veexp POWOP const_exp_primary                 { fun ctx ->
                                                       let es = $1 ctx in
                                                       let i = $3 ctx in
                                                       if Z.equal i Z.zero then List.rev_map (fun _ -> Econst Z.one) es
                                                       else if Z.equal i Z.one then es
                                                       else List.rev (List.rev_map (fun e -> epow e (Econst i)) es)
                                                   }
-  | ULIMBS const LSQUARE veexps RSQUARE           { fun ctx ->
+  | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
+                                                  { fun ctx ->
                                                     let n = Z.to_int ($2 ctx) in
                                                     let ess = $4 ctx in
                                                     List.rev (List.rev_map (fun es -> limbs n es) (transpose_lists ess))
@@ -3053,7 +3154,7 @@ veexp_no_unary:
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
   | SUB veexp veexp_no_unary                      { let lno = get_line_start() in
@@ -3061,14 +3162,14 @@ veexp_no_unary:
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 esub es1 es2)  }
   | MUL veexp veexp_no_unary                      { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let es1 = $2 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 emul es1 es2)  }
   | SQ veexp                                      { fun ctx -> List.rev (List.rev_map esq ($2 ctx)) }
   | ADDS LSQUARE veexps RSQUARE                   { fun ctx -> List.rev (List.rev_map eadds (transpose_lists ($3 ctx))) }
@@ -3078,7 +3179,7 @@ veexp_no_unary:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 eadd es1 es2)
                                                   }
   | veexp_no_unary SUBOP veexp                    { let lno = get_line_start() in
@@ -3086,7 +3187,7 @@ veexp_no_unary:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 esub es1 es2)
                                                   }
   | veexp_no_unary MULOP veexp                    { let lno = get_line_start() in
@@ -3094,17 +3195,18 @@ veexp_no_unary:
                                                     let es1 = $1 ctx in
                                                     let es2 = $3 ctx in
                                                     let _ = if List.length es1 <> List.length es2 then
-                                                              raise_at_line lno "Two sources should have the same length." in
+                                                              raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." (List.length es1) (List.length es2)) in
                                                     List.rev (List.rev_map2 emul es1 es2)
                                                   }
-  | veexp_no_unary POWOP const                    { fun ctx ->
+  | veexp_no_unary POWOP const_exp_primary        { fun ctx ->
                                                       let es = $1 ctx in
                                                       let i = $3 ctx in
                                                       if Z.equal i Z.zero then List.rev_map (fun _ -> Econst Z.one) es
                                                       else if Z.equal i Z.one then es
                                                       else List.rev (List.rev_map (fun e -> epow e (Econst i)) es)
                                                   }
-  | ULIMBS const LSQUARE veexps RSQUARE           { fun ctx ->
+  | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
+                                                  { fun ctx ->
                                                     let n = Z.to_int ($2 ctx) in
                                                     let ess = $4 ctx in
                                                     List.rev (List.rev_map (fun es -> limbs n es) (transpose_lists ess))
@@ -3193,7 +3295,7 @@ rbexp_atom:
                                                       let es2 = $3 ctx in
                                                       let sz1 = List.length es1 in
                                                       let sz2 = List.length es2 in
-                                                      let _ = 
+                                                      let _ =
                                                         if sz1 <> sz2 then raise_at_line lno ("Vectors do not have the same number of elements.") in
                                                       match $4 ctx with
                                                       | None ->
@@ -3227,7 +3329,7 @@ rbexp_atom:
                                                       let es1 = $1 ctx in
                                                       let es2 = $3 ctx in
                                                       let op = $2 in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3235,7 +3337,7 @@ rbexp_atom:
                                                       let _ =
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
                                                           raise_at_line lno ("Elements of vectors do not have the same width.") in
-                                                    List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands 
+                                                    List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
   | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
@@ -3289,7 +3391,7 @@ rbexp_atom:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3321,7 +3423,7 @@ rbexp_atom:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3329,7 +3431,7 @@ rbexp_atom:
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
-                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
@@ -3354,7 +3456,7 @@ rbexp_atom:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3387,7 +3489,7 @@ rbexp_atom:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqrems = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3416,7 +3518,7 @@ rbexp_atom_without_eqmod:
                                                     fun ctx ->
                                                       let es1 = $2 ctx in
                                                       let es2 = $3 ctx in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3483,7 +3585,7 @@ rbexp_atom_without_eqmod:
                                                         if not (List.for_all2 (fun e1 e2 -> size_of_rexp e1 = size_of_rexp e2) es1 es2) then
                                                           raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
- }
+                                                  }
   | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
@@ -3566,7 +3668,7 @@ rbexp_atom_without_eqmod:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3574,7 +3676,7 @@ rbexp_atom_without_eqmod:
                                                       let _ =
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
-                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands        
+                                                      List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
   | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
@@ -3599,7 +3701,7 @@ rbexp_atom_without_eqmod:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqmods = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3632,7 +3734,7 @@ rbexp_atom_without_eqmod:
                                                       let es2 = $3 ctx in
                                                       let ms = $4 ctx in
                                                       let eqrems = List.combine es1 es2 |> fun pairs -> List.combine pairs ms in
-                                                      let _ = 
+                                                      let _ =
                                                         let sz1 = List.length es1 in
                                                         let sz2 = List.length es2 in
                                                         if sz1 <> sz2 then
@@ -3683,20 +3785,20 @@ rexp:
                                                     fun ctx ->
                                                     Rvar (resolve_var_with ctx lno $1)
                                                   }
-  | CONST const const                             { fun ctx ->
+  | CONST const_exp_primary const_exp_primary     { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let n = $3 ctx in
                                                       Rconst (w, n) }
-  | const AT const                                { fun ctx ->
+  | const_exp_primary AT const_exp_primary        { fun ctx ->
                                                       let w = Z.to_int ($3 ctx) in
                                                       let n = $1 ctx in
                                                       Rconst (w, n) }
-  | UEXT rexp const                               { fun ctx ->
+  | UEXT rexp const_exp_primary                   { fun ctx ->
                                                       let e = $2 ctx in
                                                       let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
                                                       Ruext (w, e, i) }
-  | SEXT rexp const                               { fun ctx ->
+  | SEXT rexp const_exp_primary                   { fun ctx ->
                                                       let e = $2 ctx in
                                                       let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
@@ -3895,7 +3997,8 @@ rexp:
                                                       match es with
                                                       | [] -> raise_at_line lno ("No range expression is passed to mul.")
                                                       | hd::_tl -> rmuls (size_of_rexp hd) es }
-  | ULIMBS const LSQUARE rexps RSQUARE            { fun ctx ->
+  | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let es = $4 ctx in
                                                       let tw = List.fold_left (fun w1 w2 -> max w1 w2)
@@ -3911,7 +4014,8 @@ rexp:
                                                         | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
-  | SLIMBS const LSQUARE rexps RSQUARE            { fun ctx ->
+  | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let es = $4 ctx in
                                                       let tw = List.fold_left (fun w1 w2 -> max w1 w2)
@@ -4029,8 +4133,8 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
   /* Errors */
-  | CONST const error                             { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
-  | const error                                   { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
+  | CONST const_exp_primary error                 { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
+  | const_exp_primary error                       { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
 ;
 
 vrexp:
@@ -4042,10 +4146,10 @@ vrexp:
                                                     es
                                                   }
   | LSQUARE rexps RSQUARE                         { fun ctx -> $2 ctx }
-  | UEXT vrexp const                              { fun ctx ->
+  | UEXT vrexp const_exp_primary                  { fun ctx ->
                                                       let i = Z.to_int ($3 ctx) in
                                                       ($2 ctx) |> List.rev_map (fun e -> Ruext (size_of_rexp e, e, i)) |> List.rev }
-  | SEXT vrexp const                              { fun ctx ->
+  | SEXT vrexp const_exp_primary                  { fun ctx ->
                                                       let i = Z.to_int ($3 ctx) in
                                                       ($2 ctx) |> List.rev_map (fun e -> Rsext (size_of_rexp e, e, i)) |> List.rev }
   | LPAR vrexp RPAR                               { fun ctx -> $2 ctx }
@@ -4286,7 +4390,8 @@ vrexp:
                                                       else
                                                         ess |> List.rev_map (fun es -> rmuls (size_of_rexp (List.hd es)) es) |> List.rev
                                                   }
-  | ULIMBS const LSQUARE vrexps RSQUARE           { fun ctx ->
+  | ULIMBS const_exp_primary LSQUARE vrexps RSQUARE
+                                                  { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let tw es = List.fold_left (fun w1 w2 -> max w1 w2) 0 (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
                                                       let uexts tw es = List.map (fun e -> let ew = size_of_rexp e in Ruext (ew, e, tw - ew)) es in
@@ -4298,7 +4403,8 @@ vrexp:
                                                       let ess = Utils.Std.transpose ($4 ctx) in
                                                       ess |> List.rev_map (fun es -> let tw = tw es in helper 0 tw (uexts tw es)) |> List.rev
                                                   }
-  | SLIMBS const LSQUARE vrexps RSQUARE           { fun ctx ->
+  | SLIMBS const_exp_primary LSQUARE vrexps RSQUARE
+                                                  { fun ctx ->
                                                       let w = Z.to_int ($2 ctx) in
                                                       let tw es = List.fold_left max 0 (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
                                                       let sexts tw es =
@@ -4555,7 +4661,7 @@ actual_atoms:
 
 /* We don't check if the actual variables are defined or not because they may just be variable names of procedure outputs. */
 actual_atom:
-    const                                         { let lno = get_line_start() in
+    const_exp                                     { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
@@ -4563,7 +4669,7 @@ actual_atom:
                                                       | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
                                                       | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.") }
-  | const AT typ                                  { let lno = get_line_start() in
+  | const_exp_primary AT typ                      { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
@@ -4572,7 +4678,7 @@ actual_atom:
                                                       | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
                                                                                      ^ "The actual parameter must be a variable.")
                                                       | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.") }
-  | typ const                                     { let lno = get_line_start() in
+  | typ const_exp                                 { let lno = get_line_start() in
                                                     fun ctx tys ->
                                                       match tys with
                                                       | (ty::argtys, outtys) ->
@@ -4635,23 +4741,56 @@ actual_atom:
 ;
 
 atom:
-    const                                         { `ACONST { atmtyphint = None; atmvalue = $1; } }
-  | const AT typ                                  { `ACONST { atmtyphint = Some $3; atmvalue = $1; } }
-  | typ const                                     { `ACONST { atmtyphint = Some $1; atmvalue = $2; } }
+    const_exp_primary                             { `ACONST { atmtyphint = None; atmvalue = $1; } }
+  | const_exp_primary AT typ                      { `ACONST { atmtyphint = Some $3; atmvalue = $1; } }
+  | typ const_exp_primary                         { `ACONST { atmtyphint = Some $1; atmvalue = $2; } }
   | defined_var                                   { ($1 :> atom_t) }
   | VEC_ID LSQUARE NUM RSQUARE                    { `AVECELM { avecname = $1; avecindex = Z.to_int $3 } }
   /*| LPAR atom RPAR                              { fun ctx -> $2 ctx } source of reduce/reduce conflict*/
 ;
 
 atom_v:
+    atom_v_primary                                { $1 }
+  | atom_v_primary LSQUARE ranges RSQUARE         { `AVECSEL { vecselatm = $1; vecselrng = $3 } }
+  | atom_v ADDADDOP atom_v                        { `AVECCAT [$1; $3] }
+;
+
+atom_v_primary:
     VEC_ID                                        { `AVECT { vecname = $1; vectyphint = None; } }
   | VEC_ID AT typ_vec                             { `AVECT { vecname = $1; vectyphint = Some $3; } }
   | LSQUARE atom_scalars RSQUARE                  { `AVLIT $2 }
+  | LPAR atom_v RPAR                              { $2 }
 ;
 
 atom_scalars:
     atom                                          { [$1] }
   | atom COMMA atom_scalars                       { $1::$3 }
+;
+
+ranges:
+    ranges_slicing                                { $1 }
+  | ranges_indices                                { $1 }
+;
+
+ranges_slicing:
+    range_slicing                                 { [$1] }
+  | range_slicing COMMA ranges_slicing            { $1::$3 }
+;
+
+ranges_indices:
+  const_exp COMMA const_exp_list                  { [ SelSingle (fun ctx -> Z.to_int ($1 ctx)); SelMultiple (fun ctx -> ($3 ctx)) ] }
+;
+
+range_slicing:
+    const_exp COLON const_exp                     { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), Some (Z.to_int ($3 ctx)), None)) }
+  |               COLON const_exp                 { SelRange (fun ctx -> (None, Some (Z.to_int ($2 ctx)), None)) }
+  | const_exp COLON                               { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), None, None)) }
+  | const_exp COLON const_exp COLON const_exp
+                                                  { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), Some (Z.to_int ($3 ctx)), Some (Z.to_int ($5 ctx)))) }
+  |               COLON const_exp COLON const_exp
+                                                  { SelRange (fun ctx -> (None, Some (Z.to_int ($2 ctx)), Some (Z.to_int ($4 ctx)))) }
+  | const_exp COLON               COLON const_exp
+                                                  { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), None, Some (Z.to_int ($4 ctx)))) }
 ;
 
 var_expansion:
@@ -4726,33 +4865,18 @@ gvar:
                                                   }
 ;
 
-complex_const_list:
-    complex_const                                 { fun ctx -> [Z.to_int ($1 ctx)] }
-  | complex_const COMMA complex_const_list        { fun ctx -> (Z.to_int ($1 ctx))::($3 ctx) }
-
-const:
-    simple_const                                  { fun ctx -> $1 ctx }
-  | LPAR complex_const RPAR                       { fun ctx -> ($2 ctx) }
-/*  | ID error                                      { raise_at_line (get_line_start()) ("A constant is expected but '" ^ $1 ^ "' is encountered.") }*/
+const_exp_list:
+    const_exp                                     { fun ctx -> [Z.to_int ($1 ctx)] }
+  | const_exp COMMA const_exp_list                { fun ctx -> (Z.to_int ($1 ctx))::($3 ctx) }
 ;
 
-simple_const:
-    NUM                                           { fun _ -> $1 }
-  | DEREFOP ID                                    { let lno = get_line_start() in
-                                                    fun ctx ->
-                                                      try
-                                                        SM.find $2 ctx.cconsts
-                                                      with Not_found ->
-                                                        raise_at_line lno ("Undefined constant: " ^ $2) }
-;
-
-complex_const:
-    const                                         { fun ctx -> $1 ctx }
-  | SUBOP const %prec UMINUS                      { fun ctx -> Z.neg ($2 ctx) }
-  | complex_const ADDOP complex_const             { fun ctx -> Z.add ($1 ctx) ($3 ctx) }
-  | complex_const SUBOP complex_const             { fun ctx -> Z.sub ($1 ctx) ($3 ctx) }
-  | complex_const MULOP complex_const             { fun ctx -> Z.mul ($1 ctx) ($3 ctx) }
-  | complex_const POWOP complex_const             { fun ctx ->
+const_exp:
+    const_exp_primary                             { fun ctx -> $1 ctx }
+  | SUBOP const_exp %prec UMINUS                  { fun ctx -> Z.neg ($2 ctx) }
+  | const_exp ADDOP const_exp                     { fun ctx -> Z.add ($1 ctx) ($3 ctx) }
+  | const_exp SUBOP const_exp                     { fun ctx -> Z.sub ($1 ctx) ($3 ctx) }
+  | const_exp MULOP const_exp                     { fun ctx -> Z.mul ($1 ctx) ($3 ctx) }
+  | const_exp POWOP const_exp                     { fun ctx ->
                                                     let n = $1 ctx in
                                                     let i = $3 ctx in
                                                     try
@@ -4762,12 +4886,23 @@ complex_const:
                                                   }
 ;
 
-carry:
-    atom                                          { $1 }
+const_exp_primary:
+    const                                         { fun ctx -> $1 ctx }
+  | LPAR const_exp RPAR                           { fun ctx -> $2 ctx }
 ;
 
-carry_v:
-    atom_v                                        { $1 }
+const:
+    NUM                                           { fun _ -> $1 }
+  | DEREFOP ID                                    { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      try
+                                                        SM.find $2 ctx.cconsts
+                                                      with Not_found ->
+                                                        raise_at_line lno ("Undefined constant: " ^ $2) }
+;
+
+carry:
+    atom                                          { $1 }
 ;
 
 typ:
@@ -4789,5 +4924,6 @@ nums:
 ;
 
 atom_vs:
-    atom_v                                        { [$1] }
-  | atom_v atom_vs                                { $1::$2 }
+    atom_v_primary                                { [$1] }
+  | atom_v_primary atom_vs                        { $1::$2 }
+;

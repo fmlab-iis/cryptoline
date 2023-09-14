@@ -214,6 +214,7 @@ token = parse
   | '.'                            { DOT }
   | ".."                           { DOTDOT }
   (* Operators *)
+  | "++"                           { ADDADDOP }
   | '+'                            { ADDOP }
   | '-'                            { SUBOP }
   | "**"                           { POWOP }
