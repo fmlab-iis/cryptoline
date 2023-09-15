@@ -114,7 +114,7 @@ smull $3ymm_1111h $3ymm_1111l $1ymm_1111 $2ymm_1111;
 cast $3ymm_1111@sint16 $3ymm_1111l
 
 smull %$3ymm_h %$3ymm_l %$1ymm %$2ymm;
-cast [] %$3ymm@sint16[16] %$3ymm_l
+cast %$3ymm@sint16[16] %$3ymm_l
 
 
 

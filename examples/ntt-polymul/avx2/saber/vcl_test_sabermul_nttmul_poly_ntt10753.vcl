@@ -539,16 +539,16 @@ mov %ymm10 [L0x7fffffffb020, L0x7fffffffb022, L0x7fffffffb024, L0x7fffffffb026, 
 mov %ymm11 [L0x7fffffffb040, L0x7fffffffb042, L0x7fffffffb044, L0x7fffffffb046, L0x7fffffffb048, L0x7fffffffb04a, L0x7fffffffb04c, L0x7fffffffb04e, L0x7fffffffb050, L0x7fffffffb052, L0x7fffffffb054, L0x7fffffffb056, L0x7fffffffb058, L0x7fffffffb05a, L0x7fffffffb05c, L0x7fffffffb05e];
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557c0f *)
 smull %mulHymm8 %mulL %ymm1 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm9,%ymm13                      #! PC = 0x555555557c13 *)
 smull %mulHymm9 %mulL %ymm1 %ymm9;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm10,%ymm14                     #! PC = 0x555555557c17 *)
 smull %mulHymm10 %mulL %ymm1 %ymm10;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm15                     #! PC = 0x555555557c1b *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557c1f *)
 smull %mulH %mulLymm8 %ymm2 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -715,16 +715,16 @@ mov %ymm10 [L0x7fffffffb0a0, L0x7fffffffb0a2, L0x7fffffffb0a4, L0x7fffffffb0a6, 
 mov %ymm11 [L0x7fffffffb0c0, L0x7fffffffb0c2, L0x7fffffffb0c4, L0x7fffffffb0c6, L0x7fffffffb0c8, L0x7fffffffb0ca, L0x7fffffffb0cc, L0x7fffffffb0ce, L0x7fffffffb0d0, L0x7fffffffb0d2, L0x7fffffffb0d4, L0x7fffffffb0d6, L0x7fffffffb0d8, L0x7fffffffb0da, L0x7fffffffb0dc, L0x7fffffffb0de];
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x555555557cf5 *)
 smull %mulHymm8 %mulL %ymm1 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm9,%ymm13                      #! PC = 0x555555557cf9 *)
 smull %mulHymm9 %mulL %ymm1 %ymm9;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm10,%ymm14                     #! PC = 0x555555557cfd *)
 smull %mulHymm10 %mulL %ymm1 %ymm10;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm15                     #! PC = 0x555555557d01 *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x555555557d05 *)
 smull %mulH %mulLymm8 %ymm2 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -1107,16 +1107,16 @@ mov %ymm11 [L0x7fffffffb5c0, L0x7fffffffb5c2, L0x7fffffffb5c4, L0x7fffffffb5c6, 
 mov %ymm3 [L0x555555560860, L0x555555560862, L0x555555560864, L0x555555560866, L0x555555560868, L0x55555556086a, L0x55555556086c, L0x55555556086e, L0x555555560870, L0x555555560872, L0x555555560874, L0x555555560876, L0x555555560878, L0x55555556087a, L0x55555556087c, L0x55555556087e];
 (* vpmullw %ymm15,%ymm8,%ymm12                     #! PC = 0x555555557e05 *)
 smull %mulHymm8 %mulL %ymm15 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm9,%ymm13                     #! PC = 0x555555557e0a *)
 smull %mulHymm9 %mulL %ymm15 %ymm9;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm10,%ymm14                    #! PC = 0x555555557e0f *)
 smull %mulHymm10 %mulL %ymm15 %ymm10;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555557e14 *)
 smull %mulHymm11 %mulL %ymm15 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm3,%ymm8,%ymm8                       #! PC = 0x555555557e19 *)
 smull %mulH %mulLymm8 %ymm3 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -1427,16 +1427,16 @@ mov %ymm15 [L0x555555560880, L0x555555560882, L0x555555560884, L0x555555560886, 
 mov %ymm6 [L0x5555555608a0, L0x5555555608a2, L0x5555555608a4, L0x5555555608a6, L0x5555555608a8, L0x5555555608aa, L0x5555555608ac, L0x5555555608ae, L0x5555555608b0, L0x5555555608b2, L0x5555555608b4, L0x5555555608b6, L0x5555555608b8, L0x5555555608ba, L0x5555555608bc, L0x5555555608be];
 (* vpmullw %ymm15,%ymm7,%ymm12                     #! PC = 0x555555557ec4 *)
 smull %mulHymm7 %mulL %ymm15 %ymm7;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm10,%ymm13                    #! PC = 0x555555557ec9 *)
 smull %mulHymm10 %mulL %ymm15 %ymm10;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm5,%ymm14                     #! PC = 0x555555557ece *)
 smull %mulHymm5 %mulL %ymm15 %ymm5;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555557ed3 *)
 smull %mulHymm11 %mulL %ymm15 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm6,%ymm7,%ymm7                       #! PC = 0x555555557ed8 *)
 smull %mulH %mulLymm7 %ymm6 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -1825,16 +1825,16 @@ _H8, _H9, _Ha, _Hb] %ymm3;
 mov %ymm11 [_H0, _H1, _H2, _H3, _H4, _H5, _H6, _H7, _H8, _H9, _Ha, _Hb, _Hc, _Hd, _He, _Hf];
 (* vpmullw 0x240(%rdx),%ymm9,%ymm12                #! EA = L0x555555560940; Value = 0xf8c57fe2fdeffff7; PC = 0x555555557f80 *)
 smull %mulHymm9 %mulL [L0x555555560940, L0x555555560942, L0x555555560944, L0x555555560946, L0x555555560948, L0x55555556094a, L0x55555556094c, L0x55555556094e, L0x555555560950, L0x555555560952, L0x555555560954, L0x555555560956, L0x555555560958, L0x55555556095a, L0x55555556095c, L0x55555556095e] %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x280(%rdx),%ymm7,%ymm13                #! EA = L0x555555560980; Value = 0xe767de9266b03f97; PC = 0x555555557f88 *)
 smull %mulHymm7 %mulL [L0x555555560980, L0x555555560982, L0x555555560984, L0x555555560986, L0x555555560988, L0x55555556098a, L0x55555556098c, L0x55555556098e, L0x555555560990, L0x555555560992, L0x555555560994, L0x555555560996, L0x555555560998, L0x55555556099a, L0x55555556099c, L0x55555556099e] %ymm7;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x2c0(%rdx),%ymm4,%ymm14                #! EA = L0x5555555609c0; Value = 0x52b0267fa9e90b00; PC = 0x555555557f90 *)
 smull %mulHymm4 %mulL [L0x5555555609c0, L0x5555555609c2, L0x5555555609c4, L0x5555555609c6, L0x5555555609c8, L0x5555555609ca, L0x5555555609cc, L0x5555555609ce, L0x5555555609d0, L0x5555555609d2, L0x5555555609d4, L0x5555555609d6, L0x5555555609d8, L0x5555555609da, L0x5555555609dc, L0x5555555609de] %ymm4;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw 0x300(%rdx),%ymm10,%ymm15               #! EA = L0x555555560a00; Value = 0xb4f11790a16a06bc; PC = 0x555555557f98 *)
 smull %mulHymm10 %mulL [L0x555555560a00, L0x555555560a02, L0x555555560a04, L0x555555560a06, L0x555555560a08, L0x555555560a0a, L0x555555560a0c, L0x555555560a0e, L0x555555560a10, L0x555555560a12, L0x555555560a14, L0x555555560a16, L0x555555560a18, L0x555555560a1a, L0x555555560a1c, L0x555555560a1e] %ymm10;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw 0x260(%rdx),%ymm9,%ymm9                 #! EA = L0x555555560960; Value = 0x0ec5fbe2ffeff1f7; PC = 0x555555557fa0 *)
 smull %mulH %mulLymm9 [L0x555555560960, L0x555555560962, L0x555555560964, L0x555555560966, L0x555555560968, L0x55555556096a, L0x55555556096c, L0x55555556096e, L0x555555560970, L0x555555560972, L0x555555560974, L0x555555560976, L0x555555560978, L0x55555556097a, L0x55555556097c, L0x55555556097e] %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;
@@ -1945,16 +1945,16 @@ mulLymm10_e = mulLymm15_e, mulLymm10_f = mulLymm15_f
 ] && true;
 (* vpmullw 0x340(%rdx),%ymm6,%ymm12                #! EA = L0x555555560a40; Value = 0x688e60a7f94dd279; PC = 0x555555557fe4 *)
 smull %mulHymm6 %mulL [L0x555555560a40, L0x555555560a42, L0x555555560a44, L0x555555560a46, L0x555555560a48, L0x555555560a4a, L0x555555560a4c, L0x555555560a4e, L0x555555560a50, L0x555555560a52, L0x555555560a54, L0x555555560a56, L0x555555560a58, L0x555555560a5a, L0x555555560a5c, L0x555555560a5e] %ymm6;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x380(%rdx),%ymm5,%ymm13                #! EA = L0x555555560a80; Value = 0xc0c6a003edf0524a; PC = 0x555555557fec *)
 smull %mulHymm5 %mulL [L0x555555560a80, L0x555555560a82, L0x555555560a84, L0x555555560a86, L0x555555560a88, L0x555555560a8a, L0x555555560a8c, L0x555555560a8e, L0x555555560a90, L0x555555560a92, L0x555555560a94, L0x555555560a96, L0x555555560a98, L0x555555560a9a, L0x555555560a9c, L0x555555560a9e] %ymm5;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x3c0(%rdx),%ymm8,%ymm14                #! EA = L0x555555560ac0; Value = 0x397e6827a2b6b00b; PC = 0x555555557ff4 *)
 smull %mulHymm8 %mulL [L0x555555560ac0, L0x555555560ac2, L0x555555560ac4, L0x555555560ac6, L0x555555560ac8, L0x555555560aca, L0x555555560acc, L0x555555560ace, L0x555555560ad0, L0x555555560ad2, L0x555555560ad4, L0x555555560ad6, L0x555555560ad8, L0x555555560ada, L0x555555560adc, L0x555555560ade] %ymm8;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw 0x400(%rdx),%ymm11,%ymm15               #! EA = L0x555555560b00; Value = 0x8049bbe04939ec89; PC = 0x555555557ffc *)
 smull %mulHymm11 %mulL [L0x555555560b00, L0x555555560b02, L0x555555560b04, L0x555555560b06, L0x555555560b08, L0x555555560b0a, L0x555555560b0c, L0x555555560b0e, L0x555555560b10, L0x555555560b12, L0x555555560b14, L0x555555560b16, L0x555555560b18, L0x555555560b1a, L0x555555560b1c, L0x555555560b1e] %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw 0x360(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560a60; Value = 0x0c8ef2a7ff4d0079; PC = 0x555555558004 *)
 smull %mulH %mulLymm6 [L0x555555560a60, L0x555555560a62, L0x555555560a64, L0x555555560a66, L0x555555560a68, L0x555555560a6a, L0x555555560a6c, L0x555555560a6e, L0x555555560a70, L0x555555560a72, L0x555555560a74, L0x555555560a76, L0x555555560a78, L0x555555560a7a, L0x555555560a7c, L0x555555560a7e] %ymm6;
 mov [mulLymm6_0, mulLymm6_1, mulLymm6_2, mulLymm6_3, mulLymm6_4, mulLymm6_5, mulLymm6_6, mulLymm6_7, mulLymm6_8, mulLymm6_9, mulLymm6_a, mulLymm6_b, mulLymm6_c, mulLymm6_d, mulLymm6_e, mulLymm6_f] %mulLymm6;
@@ -2239,7 +2239,7 @@ mov %ymm14 [L0x555555560780, L0x555555560782, L0x555555560784, L0x555555560786, 
 mov %ymm15 [L0x5555555607a0, L0x5555555607a2, L0x5555555607a4, L0x5555555607a6, L0x5555555607a8, L0x5555555607aa, L0x5555555607ac, L0x5555555607ae, L0x5555555607b0, L0x5555555607b2, L0x5555555607b4, L0x5555555607b6, L0x5555555607b8, L0x5555555607ba, L0x5555555607bc, L0x5555555607be];
 (* vpmullw %ymm14,%ymm7,%ymm13                     #! PC = 0x55555555807c *)
 smull %mulHymm7 %mulL %ymm14 %ymm7;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm7,%ymm7                      #! PC = 0x555555558081 *)
 smull %mulH %mulLymm7 %ymm15 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -2272,7 +2272,7 @@ mulLymm7_e = mulLymm13_e, mulLymm7_f = mulLymm13_f
 sub %ymm7 %ymm7 %ymm13;
 (* vpmullw %ymm14,%ymm4,%ymm13                     #! PC = 0x55555555808f *)
 smull %mulHymm4 %mulL %ymm14 %ymm4;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm4,%ymm4                      #! PC = 0x555555558094 *)
 smull %mulH %mulLymm4 %ymm15 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -2305,10 +2305,10 @@ mulLymm4_e = mulLymm13_e, mulLymm4_f = mulLymm13_f
 sub %ymm4 %ymm4 %ymm13;
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x5555555580a2 *)
 smull %mulHymm8 %mulL %ymm1 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x5555555580a6 *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x5555555580aa *)
 smull %mulH %mulLymm8 %ymm2 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -2581,7 +2581,7 @@ eqmod
 (* ===== Start of level 5, off 0 ===== *)
 (* vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x5555555580f2 *)
 smull %mulHymm3 %mulL %ymm14 %ymm3;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm3,%ymm3                      #! PC = 0x5555555580f7 *)
 smull %mulH %mulLymm3 %ymm15 %ymm3;
 mov [mulLymm3_0, mulLymm3_1, mulLymm3_2, mulLymm3_3, mulLymm3_4, mulLymm3_5, mulLymm3_6, mulLymm3_7, mulLymm3_8, mulLymm3_9, mulLymm3_a, mulLymm3_b, mulLymm3_c, mulLymm3_d, mulLymm3_e, mulLymm3_f] %mulLymm3;
@@ -2614,13 +2614,13 @@ mulLymm3_e = mulLymm13_e, mulLymm3_f = mulLymm13_f
 sub %ymm3 %ymm3 %ymm13;
 (* vpmullw %ymm1,%ymm4,%ymm12                      #! PC = 0x555555558105 *)
 smull %mulHymm4 %mulL %ymm1 %ymm4;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x140(%rdx),%ymm6,%ymm13                #! EA = L0x555555560840; Value = 0xd792d792d792d792; PC = 0x555555558109 *)
 smull %mulHymm6 %mulL [L0x555555560840, L0x555555560842, L0x555555560844, L0x555555560846, L0x555555560848, L0x55555556084a, L0x55555556084c, L0x55555556084e, L0x555555560850, L0x555555560852, L0x555555560854, L0x555555560856, L0x555555560858, L0x55555556085a, L0x55555556085c, L0x55555556085e] %ymm6;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x1c0(%rdx),%ymm11,%ymm14               #! EA = L0x5555555608c0; Value = 0x4029402940294029; PC = 0x555555558111 *)
 smull %mulHymm11 %mulL [L0x5555555608c0, L0x5555555608c2, L0x5555555608c4, L0x5555555608c6, L0x5555555608c8, L0x5555555608ca, L0x5555555608cc, L0x5555555608ce, L0x5555555608d0, L0x5555555608d2, L0x5555555608d4, L0x5555555608d6, L0x5555555608d8, L0x5555555608da, L0x5555555608dc, L0x5555555608de] %ymm11;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm4,%ymm4                       #! PC = 0x555555558119 *)
 smull %mulH %mulLymm4 %ymm2 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -3001,7 +3001,7 @@ eqmod
 (* ===== Start of level 6, off 0 ===== *)
 (* vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560780; Value = 0xfff7fff7fff7fff7; PC = 0x555555558179 *)
 smull %mulHymm5 %mulL [L0x555555560780, L0x555555560782, L0x555555560784, L0x555555560786, L0x555555560788, L0x55555556078a, L0x55555556078c, L0x55555556078e, L0x555555560790, L0x555555560792, L0x555555560794, L0x555555560796, L0x555555560798, L0x55555556079a, L0x55555556079c, L0x55555556079e] %ymm5;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw 0xa0(%rdx),%ymm5,%ymm5                  #! EA = L0x5555555607a0; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x555555558181 *)
 smull %mulH %mulLymm5 [L0x5555555607a0, L0x5555555607a2, L0x5555555607a4, L0x5555555607a6, L0x5555555607a8, L0x5555555607aa, L0x5555555607ac, L0x5555555607ae, L0x5555555607b0, L0x5555555607b2, L0x5555555607b4, L0x5555555607b6, L0x5555555607b8, L0x5555555607ba, L0x5555555607bc, L0x5555555607be] %ymm5;
 mov [mulLymm5_0, mulLymm5_1, mulLymm5_2, mulLymm5_3, mulLymm5_4, mulLymm5_5, mulLymm5_6, mulLymm5_7, mulLymm5_8, mulLymm5_9, mulLymm5_a, mulLymm5_b, mulLymm5_c, mulLymm5_d, mulLymm5_e, mulLymm5_f] %mulLymm5;
@@ -3038,7 +3038,7 @@ broadcast %ymm12 16 [L0x555555560d50, L0x555555560d52, L0x555555560d54, L0x55555
 broadcast %ymm13 16 [L0x555555560d58, L0x555555560d5a, L0x555555560d5c, L0x555555560d5e];
 (* vpmullw %ymm12,%ymm3,%ymm12                     #! PC = 0x5555555581a4 *)
 smull %mulHymm3 %mulL %ymm12 %ymm3;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm3,%ymm3                      #! PC = 0x5555555581a9 *)
 smull %mulH %mulLymm3 %ymm13 %ymm3;
 mov [mulLymm3_0, mulLymm3_1, mulLymm3_2, mulLymm3_3, mulLymm3_4, mulLymm3_5, mulLymm3_6, mulLymm3_7, mulLymm3_8, mulLymm3_9, mulLymm3_a, mulLymm3_b, mulLymm3_c, mulLymm3_d, mulLymm3_e, mulLymm3_f] %mulLymm3;
@@ -3075,7 +3075,7 @@ broadcast %ymm12 16 [L0x555555560d60, L0x555555560d62, L0x555555560d64, L0x55555
 broadcast %ymm13 16 [L0x555555560d68, L0x555555560d6a, L0x555555560d6c, L0x555555560d6e];
 (* vpmullw %ymm12,%ymm10,%ymm12                    #! PC = 0x5555555581c9 *)
 smull %mulHymm10 %mulL %ymm12 %ymm10;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm10,%ymm10                    #! PC = 0x5555555581ce *)
 smull %mulH %mulLymm10 %ymm13 %ymm10;
 mov [mulLymm10_0, mulLymm10_1, mulLymm10_2, mulLymm10_3, mulLymm10_4, mulLymm10_5, mulLymm10_6, mulLymm10_7, mulLymm10_8, mulLymm10_9, mulLymm10_a, mulLymm10_b, mulLymm10_c, mulLymm10_d, mulLymm10_e, mulLymm10_f] %mulLymm10;
@@ -3112,7 +3112,7 @@ broadcast %ymm12 16 [L0x555555560d70, L0x555555560d72, L0x555555560d74, L0x55555
 broadcast %ymm13 16 [L0x555555560d78, L0x555555560d7a, L0x555555560d7c, L0x555555560d7e];
 (* vpmullw %ymm12,%ymm4,%ymm12                     #! PC = 0x5555555581ee *)
 smull %mulHymm4 %mulL %ymm12 %ymm4;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm4,%ymm4                      #! PC = 0x5555555581f3 *)
 smull %mulH %mulLymm4 %ymm13 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -3149,7 +3149,7 @@ broadcast %ymm12 16 [L0x555555560d80, L0x555555560d82, L0x555555560d84, L0x55555
 broadcast %ymm13 16 [L0x555555560d88, L0x555555560d8a, L0x555555560d8c, L0x555555560d8e];
 (* vpmullw %ymm12,%ymm7,%ymm12                     #! PC = 0x555555558213 *)
 smull %mulHymm7 %mulL %ymm12 %ymm7;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm7,%ymm7                      #! PC = 0x555555558218 *)
 smull %mulH %mulLymm7 %ymm13 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -3186,7 +3186,7 @@ broadcast %ymm12 16 [L0x555555560d90, L0x555555560d92, L0x555555560d94, L0x55555
 broadcast %ymm13 16 [L0x555555560d98, L0x555555560d9a, L0x555555560d9c, L0x555555560d9e];
 (* vpmullw %ymm12,%ymm6,%ymm12                     #! PC = 0x555555558238 *)
 smull %mulHymm6 %mulL %ymm12 %ymm6;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm6,%ymm6                      #! PC = 0x55555555823d *)
 smull %mulH %mulLymm6 %ymm13 %ymm6;
 mov [mulLymm6_0, mulLymm6_1, mulLymm6_2, mulLymm6_3, mulLymm6_4, mulLymm6_5, mulLymm6_6, mulLymm6_7, mulLymm6_8, mulLymm6_9, mulLymm6_a, mulLymm6_b, mulLymm6_c, mulLymm6_d, mulLymm6_e, mulLymm6_f] %mulLymm6;
@@ -3223,7 +3223,7 @@ broadcast %ymm12 16 [L0x555555560da0, L0x555555560da2, L0x555555560da4, L0x55555
 broadcast %ymm13 16 [L0x555555560da8, L0x555555560daa, L0x555555560dac, L0x555555560dae];
 (* vpmullw %ymm12,%ymm9,%ymm12                     #! PC = 0x55555555825d *)
 smull %mulHymm9 %mulL %ymm12 %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm9,%ymm9                      #! PC = 0x555555558262 *)
 smull %mulH %mulLymm9 %ymm13 %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;
@@ -3260,7 +3260,7 @@ broadcast %ymm12 16 [L0x555555560db0, L0x555555560db2, L0x555555560db4, L0x55555
 broadcast %ymm13 16 [L0x555555560db8, L0x555555560dba, L0x555555560dbc, L0x555555560dbe];
 (* vpmullw %ymm12,%ymm11,%ymm12                    #! PC = 0x555555558282 *)
 smull %mulHymm11 %mulL %ymm12 %ymm11;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm11,%ymm11                    #! PC = 0x555555558287 *)
 smull %mulH %mulLymm11 %ymm13 %ymm11;
 mov [mulLymm11_0, mulLymm11_1, mulLymm11_2, mulLymm11_3, mulLymm11_4, mulLymm11_5, mulLymm11_6, mulLymm11_7, mulLymm11_8, mulLymm11_9, mulLymm11_a, mulLymm11_b, mulLymm11_c, mulLymm11_d, mulLymm11_e, mulLymm11_f] %mulLymm11;
@@ -4079,10 +4079,10 @@ eqmod
 (* ===== Start of level 7, off 0 ===== *)
 (* vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x55555555836e *)
 smull %mulHymm9 %mulL %ymm1 %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x555555558372 *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x555555558376 *)
 smull %mulH %mulLymm9 %ymm2 %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;
@@ -5140,16 +5140,16 @@ mov %ymm11 [L0x7fffffffb6c0, L0x7fffffffb6c2, L0x7fffffffb6c4, L0x7fffffffb6c6, 
 mov %ymm3 [L0x5555555608e0, L0x5555555608e2, L0x5555555608e4, L0x5555555608e6, L0x5555555608e8, L0x5555555608ea, L0x5555555608ec, L0x5555555608ee, L0x5555555608f0, L0x5555555608f2, L0x5555555608f4, L0x5555555608f6, L0x5555555608f8, L0x5555555608fa, L0x5555555608fc, L0x5555555608fe];
 (* vpmullw %ymm15,%ymm8,%ymm12                     #! PC = 0x555555558421 *)
 smull %mulHymm8 %mulL %ymm15 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm9,%ymm13                     #! PC = 0x555555558426 *)
 smull %mulHymm9 %mulL %ymm15 %ymm9;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm10,%ymm14                    #! PC = 0x55555555842b *)
 smull %mulHymm10 %mulL %ymm15 %ymm10;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x555555558430 *)
 smull %mulHymm11 %mulL %ymm15 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm3,%ymm8,%ymm8                       #! PC = 0x555555558435 *)
 smull %mulH %mulLymm8 %ymm3 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -5460,16 +5460,16 @@ mov %ymm15 [L0x555555560900, L0x555555560902, L0x555555560904, L0x555555560906, 
 mov %ymm6 [L0x555555560920, L0x555555560922, L0x555555560924, L0x555555560926, L0x555555560928, L0x55555556092a, L0x55555556092c, L0x55555556092e, L0x555555560930, L0x555555560932, L0x555555560934, L0x555555560936, L0x555555560938, L0x55555556093a, L0x55555556093c, L0x55555556093e];
 (* vpmullw %ymm15,%ymm7,%ymm12                     #! PC = 0x5555555584ed *)
 smull %mulHymm7 %mulL %ymm15 %ymm7;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm10,%ymm13                    #! PC = 0x5555555584f2 *)
 smull %mulHymm10 %mulL %ymm15 %ymm10;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm5,%ymm14                     #! PC = 0x5555555584f7 *)
 smull %mulHymm5 %mulL %ymm15 %ymm5;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw %ymm15,%ymm11,%ymm15                    #! PC = 0x5555555584fc *)
 smull %mulHymm11 %mulL %ymm15 %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw %ymm6,%ymm7,%ymm7                       #! PC = 0x555555558501 *)
 smull %mulH %mulLymm7 %ymm6 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -5858,16 +5858,16 @@ _H8, _H9, _Ha, _Hb] %ymm3;
 mov %ymm11 [_H0, _H1, _H2, _H3, _H4, _H5, _H6, _H7, _H8, _H9, _Ha, _Hb, _Hc, _Hd, _He, _Hf];
 (* vpmullw 0x440(%rdx),%ymm9,%ymm12                #! EA = L0x555555560b40; Value = 0xa9e9de92f8c5fff7; PC = 0x5555555585a9 *)
 smull %mulHymm9 %mulL [L0x555555560b40, L0x555555560b42, L0x555555560b44, L0x555555560b46, L0x555555560b48, L0x555555560b4a, L0x555555560b4c, L0x555555560b4e, L0x555555560b50, L0x555555560b52, L0x555555560b54, L0x555555560b56, L0x555555560b58, L0x555555560b5a, L0x555555560b5c, L0x555555560b5e] %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x480(%rdx),%ymm7,%ymm13                #! EA = L0x555555560b80; Value = 0xedf060a7b4f106bc; PC = 0x5555555585b1 *)
 smull %mulHymm7 %mulL [L0x555555560b80, L0x555555560b82, L0x555555560b84, L0x555555560b86, L0x555555560b88, L0x555555560b8a, L0x555555560b8c, L0x555555560b8e, L0x555555560b90, L0x555555560b92, L0x555555560b94, L0x555555560b96, L0x555555560b98, L0x555555560b9a, L0x555555560b9c, L0x555555560b9e] %ymm7;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x4c0(%rdx),%ymm4,%ymm14                #! EA = L0x555555560bc0; Value = 0x40febbe0397eb00b; PC = 0x5555555585b9 *)
 smull %mulHymm4 %mulL [L0x555555560bc0, L0x555555560bc2, L0x555555560bc4, L0x555555560bc6, L0x555555560bc8, L0x555555560bca, L0x555555560bcc, L0x555555560bce, L0x555555560bd0, L0x555555560bd2, L0x555555560bd4, L0x555555560bd6, L0x555555560bd8, L0x555555560bda, L0x555555560bdc, L0x555555560bde] %ymm4;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw 0x500(%rdx),%ymm10,%ymm15               #! EA = L0x555555560c00; Value = 0xb7b6c124a283172a; PC = 0x5555555585c1 *)
 smull %mulHymm10 %mulL [L0x555555560c00, L0x555555560c02, L0x555555560c04, L0x555555560c06, L0x555555560c08, L0x555555560c0a, L0x555555560c0c, L0x555555560c0e, L0x555555560c10, L0x555555560c12, L0x555555560c14, L0x555555560c16, L0x555555560c18, L0x555555560c1a, L0x555555560c1c, L0x555555560c1e] %ymm10;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw 0x460(%rdx),%ymm9,%ymm9                 #! EA = L0x555555560b60; Value = 0xf7e9fa920ec5f1f7; PC = 0x5555555585c9 *)
 smull %mulH %mulLymm9 [L0x555555560b60, L0x555555560b62, L0x555555560b64, L0x555555560b66, L0x555555560b68, L0x555555560b6a, L0x555555560b6c, L0x555555560b6e, L0x555555560b70, L0x555555560b72, L0x555555560b74, L0x555555560b76, L0x555555560b78, L0x555555560b7a, L0x555555560b7c, L0x555555560b7e] %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;
@@ -5978,16 +5978,16 @@ mulLymm10_e = mulLymm15_e, mulLymm10_f = mulLymm15_f
 ] && true;
 (* vpmullw 0x540(%rdx),%ymm6,%ymm12                #! EA = L0x555555560c40; Value = 0x0ab3996ac48bb8f1; PC = 0x55555555860d *)
 smull %mulHymm6 %mulL [L0x555555560c40, L0x555555560c42, L0x555555560c44, L0x555555560c46, L0x555555560c48, L0x555555560c4a, L0x555555560c4c, L0x555555560c4e, L0x555555560c50, L0x555555560c52, L0x555555560c54, L0x555555560c56, L0x555555560c58, L0x555555560c5a, L0x555555560c5c, L0x555555560c5e] %ymm6;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x580(%rdx),%ymm5,%ymm13                #! EA = L0x555555560c80; Value = 0x8ee2f280eab41199; PC = 0x555555558615 *)
 smull %mulHymm5 %mulL [L0x555555560c80, L0x555555560c82, L0x555555560c84, L0x555555560c86, L0x555555560c88, L0x555555560c8a, L0x555555560c8c, L0x555555560c8e, L0x555555560c90, L0x555555560c92, L0x555555560c94, L0x555555560c96, L0x555555560c98, L0x555555560c9a, L0x555555560c9c, L0x555555560c9e] %ymm5;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x5c0(%rdx),%ymm8,%ymm14                #! EA = L0x555555560cc0; Value = 0x41f5a6a5ce0a1d43; PC = 0x55555555861d *)
 smull %mulHymm8 %mulL [L0x555555560cc0, L0x555555560cc2, L0x555555560cc4, L0x555555560cc6, L0x555555560cc8, L0x555555560cca, L0x555555560ccc, L0x555555560cce, L0x555555560cd0, L0x555555560cd2, L0x555555560cd4, L0x555555560cd6, L0x555555560cd8, L0x555555560cda, L0x555555560cdc, L0x555555560cde] %ymm8;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmullw 0x600(%rdx),%ymm11,%ymm15               #! EA = L0x555555560d00; Value = 0xf47881b76bf4e8e7; PC = 0x555555558625 *)
 smull %mulHymm11 %mulL [L0x555555560d00, L0x555555560d02, L0x555555560d04, L0x555555560d06, L0x555555560d08, L0x555555560d0a, L0x555555560d0c, L0x555555560d0e, L0x555555560d10, L0x555555560d12, L0x555555560d14, L0x555555560d16, L0x555555560d18, L0x555555560d1a, L0x555555560d1c, L0x555555560d1e] %ymm11;
-cast [] %ymm15@sint16[16] %mulL;
+cast %ymm15@sint16[16] %mulL;
 (* vpmulhw 0x560(%rdx),%ymm6,%ymm6                 #! EA = L0x555555560c60; Value = 0x04b3056a0e8bf6f1; PC = 0x55555555862d *)
 smull %mulH %mulLymm6 [L0x555555560c60, L0x555555560c62, L0x555555560c64, L0x555555560c66, L0x555555560c68, L0x555555560c6a, L0x555555560c6c, L0x555555560c6e, L0x555555560c70, L0x555555560c72, L0x555555560c74, L0x555555560c76, L0x555555560c78, L0x555555560c7a, L0x555555560c7c, L0x555555560c7e] %ymm6;
 mov [mulLymm6_0, mulLymm6_1, mulLymm6_2, mulLymm6_3, mulLymm6_4, mulLymm6_5, mulLymm6_6, mulLymm6_7, mulLymm6_8, mulLymm6_9, mulLymm6_a, mulLymm6_b, mulLymm6_c, mulLymm6_d, mulLymm6_e, mulLymm6_f] %mulLymm6;
@@ -6272,7 +6272,7 @@ mov %ymm14 [L0x555555560780, L0x555555560782, L0x555555560784, L0x555555560786, 
 mov %ymm15 [L0x5555555607a0, L0x5555555607a2, L0x5555555607a4, L0x5555555607a6, L0x5555555607a8, L0x5555555607aa, L0x5555555607ac, L0x5555555607ae, L0x5555555607b0, L0x5555555607b2, L0x5555555607b4, L0x5555555607b6, L0x5555555607b8, L0x5555555607ba, L0x5555555607bc, L0x5555555607be];
 (* vpmullw %ymm14,%ymm7,%ymm13                     #! PC = 0x5555555586a5 *)
 smull %mulHymm7 %mulL %ymm14 %ymm7;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm7,%ymm7                      #! PC = 0x5555555586aa *)
 smull %mulH %mulLymm7 %ymm15 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -6305,7 +6305,7 @@ mulLymm7_e = mulLymm13_e, mulLymm7_f = mulLymm13_f
 sub %ymm7 %ymm7 %ymm13;
 (* vpmullw %ymm14,%ymm4,%ymm13                     #! PC = 0x5555555586b8 *)
 smull %mulHymm4 %mulL %ymm14 %ymm4;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm4,%ymm4                      #! PC = 0x5555555586bd *)
 smull %mulH %mulLymm4 %ymm15 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -6338,10 +6338,10 @@ mulLymm4_e = mulLymm13_e, mulLymm4_f = mulLymm13_f
 sub %ymm4 %ymm4 %ymm13;
 (* vpmullw %ymm1,%ymm8,%ymm12                      #! PC = 0x5555555586cb *)
 smull %mulHymm8 %mulL %ymm1 %ymm8;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x5555555586cf *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm8,%ymm8                       #! PC = 0x5555555586d3 *)
 smull %mulH %mulLymm8 %ymm2 %ymm8;
 mov [mulLymm8_0, mulLymm8_1, mulLymm8_2, mulLymm8_3, mulLymm8_4, mulLymm8_5, mulLymm8_6, mulLymm8_7, mulLymm8_8, mulLymm8_9, mulLymm8_a, mulLymm8_b, mulLymm8_c, mulLymm8_d, mulLymm8_e, mulLymm8_f] %mulLymm8;
@@ -6614,7 +6614,7 @@ eqmod
 (* ===== Start of level 5, off 1 ===== *)
 (* vpmullw %ymm14,%ymm3,%ymm13                     #! PC = 0x55555555871b *)
 smull %mulHymm3 %mulL %ymm14 %ymm3;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm15,%ymm3,%ymm3                      #! PC = 0x555555558720 *)
 smull %mulH %mulLymm3 %ymm15 %ymm3;
 mov [mulLymm3_0, mulLymm3_1, mulLymm3_2, mulLymm3_3, mulLymm3_4, mulLymm3_5, mulLymm3_6, mulLymm3_7, mulLymm3_8, mulLymm3_9, mulLymm3_a, mulLymm3_b, mulLymm3_c, mulLymm3_d, mulLymm3_e, mulLymm3_f] %mulLymm3;
@@ -6647,13 +6647,13 @@ mulLymm3_e = mulLymm13_e, mulLymm3_f = mulLymm13_f
 sub %ymm3 %ymm3 %ymm13;
 (* vpmullw %ymm1,%ymm4,%ymm12                      #! PC = 0x55555555872e *)
 smull %mulHymm4 %mulL %ymm1 %ymm4;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw 0x140(%rdx),%ymm6,%ymm13                #! EA = L0x555555560840; Value = 0xd792d792d792d792; PC = 0x555555558732 *)
 smull %mulHymm6 %mulL [L0x555555560840, L0x555555560842, L0x555555560844, L0x555555560846, L0x555555560848, L0x55555556084a, L0x55555556084c, L0x55555556084e, L0x555555560850, L0x555555560852, L0x555555560854, L0x555555560856, L0x555555560858, L0x55555556085a, L0x55555556085c, L0x55555556085e] %ymm6;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmullw 0x1c0(%rdx),%ymm11,%ymm14               #! EA = L0x5555555608c0; Value = 0x4029402940294029; PC = 0x55555555873a *)
 smull %mulHymm11 %mulL [L0x5555555608c0, L0x5555555608c2, L0x5555555608c4, L0x5555555608c6, L0x5555555608c8, L0x5555555608ca, L0x5555555608cc, L0x5555555608ce, L0x5555555608d0, L0x5555555608d2, L0x5555555608d4, L0x5555555608d6, L0x5555555608d8, L0x5555555608da, L0x5555555608dc, L0x5555555608de] %ymm11;
-cast [] %ymm14@sint16[16] %mulL;
+cast %ymm14@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm4,%ymm4                       #! PC = 0x555555558742 *)
 smull %mulH %mulLymm4 %ymm2 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -7034,7 +7034,7 @@ eqmod
 (* ===== Start of level 6, off 1 ===== *)
 (* vpmullw 0x80(%rdx),%ymm5,%ymm12                 #! EA = L0x555555560780; Value = 0xfff7fff7fff7fff7; PC = 0x5555555587a2 *)
 smull %mulHymm5 %mulL [L0x555555560780, L0x555555560782, L0x555555560784, L0x555555560786, L0x555555560788, L0x55555556078a, L0x55555556078c, L0x55555556078e, L0x555555560790, L0x555555560792, L0x555555560794, L0x555555560796, L0x555555560798, L0x55555556079a, L0x55555556079c, L0x55555556079e] %ymm5;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw 0xa0(%rdx),%ymm5,%ymm5                  #! EA = L0x5555555607a0; Value = 0xf1f7f1f7f1f7f1f7; PC = 0x5555555587aa *)
 smull %mulH %mulLymm5 [L0x5555555607a0, L0x5555555607a2, L0x5555555607a4, L0x5555555607a6, L0x5555555607a8, L0x5555555607aa, L0x5555555607ac, L0x5555555607ae, L0x5555555607b0, L0x5555555607b2, L0x5555555607b4, L0x5555555607b6, L0x5555555607b8, L0x5555555607ba, L0x5555555607bc, L0x5555555607be] %ymm5;
 mov [mulLymm5_0, mulLymm5_1, mulLymm5_2, mulLymm5_3, mulLymm5_4, mulLymm5_5, mulLymm5_6, mulLymm5_7, mulLymm5_8, mulLymm5_9, mulLymm5_a, mulLymm5_b, mulLymm5_c, mulLymm5_d, mulLymm5_e, mulLymm5_f] %mulLymm5;
@@ -7071,7 +7071,7 @@ broadcast %ymm12 16 [L0x555555560d50, L0x555555560d52, L0x555555560d54, L0x55555
 broadcast %ymm13 16 [L0x555555560d58, L0x555555560d5a, L0x555555560d5c, L0x555555560d5e];
 (* vpmullw %ymm12,%ymm3,%ymm12                     #! PC = 0x5555555587cd *)
 smull %mulHymm3 %mulL %ymm12 %ymm3;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm3,%ymm3                      #! PC = 0x5555555587d2 *)
 smull %mulH %mulLymm3 %ymm13 %ymm3;
 mov [mulLymm3_0, mulLymm3_1, mulLymm3_2, mulLymm3_3, mulLymm3_4, mulLymm3_5, mulLymm3_6, mulLymm3_7, mulLymm3_8, mulLymm3_9, mulLymm3_a, mulLymm3_b, mulLymm3_c, mulLymm3_d, mulLymm3_e, mulLymm3_f] %mulLymm3;
@@ -7108,7 +7108,7 @@ broadcast %ymm12 16 [L0x555555560d60, L0x555555560d62, L0x555555560d64, L0x55555
 broadcast %ymm13 16 [L0x555555560d68, L0x555555560d6a, L0x555555560d6c, L0x555555560d6e];
 (* vpmullw %ymm12,%ymm10,%ymm12                    #! PC = 0x5555555587f2 *)
 smull %mulHymm10 %mulL %ymm12 %ymm10;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm10,%ymm10                    #! PC = 0x5555555587f7 *)
 smull %mulH %mulLymm10 %ymm13 %ymm10;
 mov [mulLymm10_0, mulLymm10_1, mulLymm10_2, mulLymm10_3, mulLymm10_4, mulLymm10_5, mulLymm10_6, mulLymm10_7, mulLymm10_8, mulLymm10_9, mulLymm10_a, mulLymm10_b, mulLymm10_c, mulLymm10_d, mulLymm10_e, mulLymm10_f] %mulLymm10;
@@ -7145,7 +7145,7 @@ broadcast %ymm12 16 [L0x555555560d70, L0x555555560d72, L0x555555560d74, L0x55555
 broadcast %ymm13 16 [L0x555555560d78, L0x555555560d7a, L0x555555560d7c, L0x555555560d7e];
 (* vpmullw %ymm12,%ymm4,%ymm12                     #! PC = 0x555555558817 *)
 smull %mulHymm4 %mulL %ymm12 %ymm4;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm4,%ymm4                      #! PC = 0x55555555881c *)
 smull %mulH %mulLymm4 %ymm13 %ymm4;
 mov [mulLymm4_0, mulLymm4_1, mulLymm4_2, mulLymm4_3, mulLymm4_4, mulLymm4_5, mulLymm4_6, mulLymm4_7, mulLymm4_8, mulLymm4_9, mulLymm4_a, mulLymm4_b, mulLymm4_c, mulLymm4_d, mulLymm4_e, mulLymm4_f] %mulLymm4;
@@ -7182,7 +7182,7 @@ broadcast %ymm12 16 [L0x555555560d80, L0x555555560d82, L0x555555560d84, L0x55555
 broadcast %ymm13 16 [L0x555555560d88, L0x555555560d8a, L0x555555560d8c, L0x555555560d8e];
 (* vpmullw %ymm12,%ymm7,%ymm12                     #! PC = 0x55555555883c *)
 smull %mulHymm7 %mulL %ymm12 %ymm7;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm7,%ymm7                      #! PC = 0x555555558841 *)
 smull %mulH %mulLymm7 %ymm13 %ymm7;
 mov [mulLymm7_0, mulLymm7_1, mulLymm7_2, mulLymm7_3, mulLymm7_4, mulLymm7_5, mulLymm7_6, mulLymm7_7, mulLymm7_8, mulLymm7_9, mulLymm7_a, mulLymm7_b, mulLymm7_c, mulLymm7_d, mulLymm7_e, mulLymm7_f] %mulLymm7;
@@ -7219,7 +7219,7 @@ broadcast %ymm12 16 [L0x555555560d90, L0x555555560d92, L0x555555560d94, L0x55555
 broadcast %ymm13 16 [L0x555555560d98, L0x555555560d9a, L0x555555560d9c, L0x555555560d9e];
 (* vpmullw %ymm12,%ymm6,%ymm12                     #! PC = 0x555555558861 *)
 smull %mulHymm6 %mulL %ymm12 %ymm6;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm6,%ymm6                      #! PC = 0x555555558866 *)
 smull %mulH %mulLymm6 %ymm13 %ymm6;
 mov [mulLymm6_0, mulLymm6_1, mulLymm6_2, mulLymm6_3, mulLymm6_4, mulLymm6_5, mulLymm6_6, mulLymm6_7, mulLymm6_8, mulLymm6_9, mulLymm6_a, mulLymm6_b, mulLymm6_c, mulLymm6_d, mulLymm6_e, mulLymm6_f] %mulLymm6;
@@ -7256,7 +7256,7 @@ broadcast %ymm12 16 [L0x555555560da0, L0x555555560da2, L0x555555560da4, L0x55555
 broadcast %ymm13 16 [L0x555555560da8, L0x555555560daa, L0x555555560dac, L0x555555560dae];
 (* vpmullw %ymm12,%ymm9,%ymm12                     #! PC = 0x555555558886 *)
 smull %mulHymm9 %mulL %ymm12 %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm9,%ymm9                      #! PC = 0x55555555888b *)
 smull %mulH %mulLymm9 %ymm13 %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;
@@ -7293,7 +7293,7 @@ broadcast %ymm12 16 [L0x555555560db0, L0x555555560db2, L0x555555560db4, L0x55555
 broadcast %ymm13 16 [L0x555555560db8, L0x555555560dba, L0x555555560dbc, L0x555555560dbe];
 (* vpmullw %ymm12,%ymm11,%ymm12                    #! PC = 0x5555555588ab *)
 smull %mulHymm11 %mulL %ymm12 %ymm11;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmulhw %ymm13,%ymm11,%ymm11                    #! PC = 0x5555555588b0 *)
 smull %mulH %mulLymm11 %ymm13 %ymm11;
 mov [mulLymm11_0, mulLymm11_1, mulLymm11_2, mulLymm11_3, mulLymm11_4, mulLymm11_5, mulLymm11_6, mulLymm11_7, mulLymm11_8, mulLymm11_9, mulLymm11_a, mulLymm11_b, mulLymm11_c, mulLymm11_d, mulLymm11_e, mulLymm11_f] %mulLymm11;
@@ -8112,10 +8112,10 @@ eqmod
 (* ===== Start of level 7, off 1 ===== *)
 (* vpmullw %ymm1,%ymm9,%ymm12                      #! PC = 0x555555558997 *)
 smull %mulHymm9 %mulL %ymm1 %ymm9;
-cast [] %ymm12@sint16[16] %mulL;
+cast %ymm12@sint16[16] %mulL;
 (* vpmullw %ymm1,%ymm11,%ymm13                     #! PC = 0x55555555899b *)
 smull %mulHymm11 %mulL %ymm1 %ymm11;
-cast [] %ymm13@sint16[16] %mulL;
+cast %ymm13@sint16[16] %mulL;
 (* vpmulhw %ymm2,%ymm9,%ymm9                       #! PC = 0x55555555899f *)
 smull %mulH %mulLymm9 %ymm2 %ymm9;
 mov [mulLymm9_0, mulLymm9_1, mulLymm9_2, mulLymm9_3, mulLymm9_4, mulLymm9_5, mulLymm9_6, mulLymm9_7, mulLymm9_8, mulLymm9_9, mulLymm9_a, mulLymm9_b, mulLymm9_c, mulLymm9_d, mulLymm9_e, mulLymm9_f] %mulLymm9;

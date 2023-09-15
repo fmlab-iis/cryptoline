@@ -10,7 +10,7 @@
 #! vmovdqa $1ea, $2ymm -> mov %$2ymm [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]]
 #! vmovdqa $1ymm, $2ea -> mov [$2ea, $2ea[+2], $2ea[+4], $2ea[+6], $2ea[+8], $2ea[+10], $2ea[+12], $2ea[+14], $2ea[+16], $2ea[+18], $2ea[+20], $2ea[+22], $2ea[+24], $2ea[+26], $2ea[+28], $2ea[+30]] %$1ymm
 #! vpbroadcastd $1ea, $2ymm -> broadcast %$2ymm 16 [$1ea, $1ea[+2]]
-#! vpmullw $1ymm, $2ymm, $3ymm -> smull %$3ymm_h %$3ymm_l %$1ymm %$2ymm;\ncast [] %$3ymm@sint16[16] %$3ymm_l
+#! vpmullw $1ymm, $2ymm, $3ymm -> smull %$3ymm_h %$3ymm_l %$1ymm %$2ymm;\ncast %$3ymm@sint16[16] %$3ymm_l
 #! vpmulhw $1ymm, $2ymm, $3ymm -> smull %$3ymm %$3ymm_L %$1ymm %$2ymm
 #! vpsubw $1ymm, $2ymm, $3ymm -> sub %$3ymm %$2ymm %$1ymm
 #! vpaddw $1ymm, $2ymm, $3ymm -> add %$3ymm %$1ymm %$2ymm

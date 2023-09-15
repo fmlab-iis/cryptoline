@@ -105,15 +105,17 @@ instrs:
 instr:
     MOV lval atom                                 { [min_int, Imov ($2, $3)] }
   | SHL lval atom atom                            { [min_int, Ishl ($2, $3, $4)] }
-  | SHLS lval lval atom const                     { [min_int, Ishls ($2, $3, $4, $5)] }
+  | SHLS lval lval atom const_exp_primary         { [min_int, Ishls ($2, $3, $4, $5)] }
   | SHR lval atom atom                            { [min_int, Ishr ($2, $3, $4)] }
-  | SHRS lval lval atom const                     { [min_int, Ishrs ($2, $3, $4, $5)] }
+  | SHRS lval lval atom const_exp_primary         { [min_int, Ishrs ($2, $3, $4, $5)] }
   | SAR lval atom atom                            { [min_int, Isar ($2, $3, $4)] }
-  | SARS lval lval atom const                     { [min_int, Isars ($2, $3, $4, $5)] }
-  | CSHL lval lval atom atom const                { [min_int, Icshl ($2, $3, $4, $5, $6)] }
-  | CSHLS lval lval lval atom atom const          { [min_int, Icshls ($2, $3, $4, $5, $6, $7)] }
-  | CSHR lval lval atom atom const                { [min_int, Icshr ($2, $3, $4, $5, $6)] }
-  | CSHRS lval lval lval atom atom const          { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
+  | SARS lval lval atom const_exp_primary         { [min_int, Isars ($2, $3, $4, $5)] }
+  | CSHL lval lval atom atom const_exp_primary    { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | CSHLS lval lval lval atom atom const_exp_primary
+                                                  { [min_int, Icshls ($2, $3, $4, $5, $6, $7)] }
+  | CSHR lval lval atom atom const_exp_primary    { [min_int, Icshr ($2, $3, $4, $5, $6)] }
+  | CSHRS lval lval lval atom atom const_exp_primary
+                                                  { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
   | ROL lval atom atom                            { [min_int, Irol ($2, $3, $4)] }
   | ROR lval atom atom                            { [min_int, Iror ($2, $3, $4)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
@@ -135,15 +137,14 @@ instr:
   | MULS lcarry lval atom atom                    { [min_int, Imuls ($2, $3, $4, $5)] }
   | MULL lval lval atom atom                      { [min_int, Imull ($2, $3, $4, $5)] }
   | MULJ lval atom atom                           { [min_int, Imulj ($2, $3, $4)] }
-  | SPLIT lval lval atom const                    { [min_int, Isplit ($2, $3, $4, $5)] }
-  | SPL lval lval atom const                      { [min_int, Ispl ($2, $3, $4, $5)] }
+  | SPLIT lval lval atom const_exp_primary        { [min_int, Isplit ($2, $3, $4, $5)] }
+  | SPL lval lval atom const_exp_primary          { [min_int, Ispl ($2, $3, $4, $5)] }
   | AND lval atom atom                            { [min_int, Iand ($2, $3, $4)] }
   | OR lval atom atom                             { [min_int, Ior ($2, $3, $4)] }
   | NOT lval atom                                 { [min_int, Inot ($2, $3)] }
-  | CAST lval_or_lcarry atom                      { [min_int, Icast (None, $2, $3)] }
-  | CAST LSQUARE lval_or_lcarry RSQUARE lval_or_lcarry atom
-                                                  { [min_int, Icast (Some $3, $5, $6)] }
-  | VPC lval_or_lcarry atom                       { [min_int, Ivpc ($2, $3)] }
+  | CAST lval atom                                { [min_int, Icast (None, $2, $3)] }
+  | CAST LSQUARE lval RSQUARE lval atom           { [min_int, Icast (Some $3, $5, $6)] }
+  | VPC lval atom                                 { [min_int, Ivpc ($2, $3)] }
   | JOIN lval atom atom                           { [min_int, Ijoin ($2, $3, $4)] }
   | ASSERT bexp_prove_with                        { let ((e, r), epwss, rpwss) = $2 in [min_int, Iassert ([(e, epwss)], [(r, rpwss)])] }
   | EASSERT ebexp_prove_with                      { [min_int, Iassert ([$2], [])] }
@@ -183,7 +184,7 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { Precondition }
-  | CUTS LSQUARE complex_const_list RSQUARE       { Cuts $3 }
+  | CUTS LSQUARE const_exp_list RSQUARE           { Cuts $3 }
   | ALL CUTS                                      { AllCuts }
   | ALL ASSUMES                                   { AllAssumes }
   | ALL GHOSTS                                    { AllGhosts }
@@ -263,7 +264,7 @@ cmpop_infix:
 
 eexp:
     defined_var                                   { Evar $1 }
-  | simple_const                                  { Econst $1 }
+  | const                                         { Econst $1 }
   | LPAR eexp RPAR                                { $2 }
   /* Extensions */
   | NEG eexp                                      { eneg $2 }
@@ -277,7 +278,7 @@ eexp:
   | eexp ADDOP eexp                               { eadd $1 $3 }
   | eexp SUBOP eexp                               { esub $1 $3 }
   | eexp MULOP eexp                               { emul $1 $3 }
-  | eexp POWOP const                              { let e = $1 in
+  | eexp POWOP const_exp_primary                              { let e = $1 in
                                                     let i = Z.to_int $3 in
                                                     match e with
                                                     | Econst n -> Econst (Z.pow n i)
@@ -288,12 +289,12 @@ eexp:
                                                         else if j = 2 then esq e
                                                         else emul (helper (j - 1)) e in
                                                       helper i }
-  | ULIMBS const LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
 ;
 
 eexp_no_unary:
     defined_var                                   { Evar $1 }
-  | simple_const                                  { Econst $1 }
+  | const                                         { Econst $1 }
   | LPAR eexp RPAR                                { $2 }
   /* Extensions */
   | NEG eexp                                      { eneg $2 }
@@ -306,7 +307,7 @@ eexp_no_unary:
   | eexp_no_unary ADDOP eexp                      { eadd $1 $3 }
   | eexp_no_unary SUBOP eexp                      { esub $1 $3 }
   | eexp_no_unary MULOP eexp                      { emul $1 $3 }
-  | eexp_no_unary POWOP const                     { let e = $1 in
+  | eexp_no_unary POWOP const_exp_primary                     { let e = $1 in
                                                     let i = Z.to_int $3 in
                                                     match e with
                                                     | Econst n -> Econst (Z.pow n i)
@@ -317,7 +318,7 @@ eexp_no_unary:
                                                         else if j = 2 then esq e
                                                         else emul (helper (j - 1)) e in
                                                       helper i }
-  | ULIMBS const LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
 ;
 
 eexps:
@@ -471,13 +472,13 @@ rbexps:
 
 rexp:
     defined_var                                   { Rvar $1 }
-  | CONST const const                             { Rconst (Z.to_int $2, $3) }
-  | const AT const                                { Rconst (Z.to_int $3, $1) }
-  | UEXT rexp const                               { let e = $2 in
+  | CONST const_exp_primary const_exp_primary     { Rconst (Z.to_int $2, $3) }
+  | const_exp_primary AT const_exp_primary        { Rconst (Z.to_int $3, $1) }
+  | UEXT rexp const_exp_primary                   { let e = $2 in
                                                     let i = Z.to_int $3 in
                                                     let w = size_of_rexp e in
                                                     Ruext (w, e, i) }
-  | SEXT rexp const                               { let e = $2 in
+  | SEXT rexp const_exp_primary                   { let e = $2 in
                                                     let i = Z.to_int $3 in
                                                     let w = size_of_rexp e in
                                                     Rsext (w, e, i) }
@@ -566,7 +567,8 @@ rexp:
                                                     match es with
                                                     | [] -> raise (Failure "No range expression is passed to bvradds.")
                                                     | hd::_tl -> rmuls (size_of_rexp hd) es }
-  | ULIMBS const LSQUARE rexps RSQUARE            { let w = Z.to_int $2 in
+  | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { let w = Z.to_int $2 in
                                                     let es = $4 in
                                                     let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
@@ -581,7 +583,8 @@ rexp:
                                                         | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
-  | SLIMBS const LSQUARE rexps RSQUARE            { let w = Z.to_int $2 in
+  | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { let w = Z.to_int $2 in
                                                     let es = $4 in
                                                     let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
@@ -642,14 +645,9 @@ lcarry:
                                                     else raise_at_line (get_line_start()) ("The type of a carry variable " ^ $2 ^ " should be \"bit\"") }
 ;
 
-lval_or_lcarry:
-    ID AT typ                                     { mkvar $1 $3 }
-  | typ ID                                        { mkvar $2 $1 }
-;
-
 atom:
-    const AT typ                                  { Aconst ($3, $1) }
-  | typ const                                     { Aconst ($1, $2) }
+    const_exp_primary AT typ                      { Aconst ($3, $1) }
+  | typ const_exp_primary                         { Aconst ($1, $2) }
   | defined_var                                   { Avar $1 }
 ;
 
@@ -668,27 +666,27 @@ gvar:
   | typ ID                                        { mkvar $2 $1 }
 ;
 
-complex_const_list:
-    complex_const                                 { [Z.to_int $1] }
-  | complex_const COMMA complex_const_list        { (Z.to_int $1)::$3 }
+const_exp_list:
+    const_exp                                 { [Z.to_int $1] }
+  | const_exp COMMA const_exp_list        { (Z.to_int $1)::$3 }
 ;
 
 const:
-    simple_const                                  { $1 }
-  | LPAR complex_const RPAR                       { $2 }
-;
-
-simple_const:
     NUM                                           { $1 }
 ;
 
-complex_const:
+const_exp:
+    const_exp_primary                             { $1 }
+  | SUBOP const_exp                               { Z.neg $2 }
+  | const_exp ADDOP const_exp                     { Z.add $1 $3 }
+  | const_exp SUBOP const_exp                     { Z.sub $1 $3 }
+  | const_exp MULOP const_exp                     { Z.mul $1 $3 }
+  | const_exp POWOP const_exp                     { Z.pow $1 (Z.to_int $3) }
+;
+
+const_exp_primary:
     const                                         { $1 }
-  | SUBOP complex_const                           { Z.neg $2 }
-  | complex_const ADDOP complex_const             { Z.add $1 $3 }
-  | complex_const SUBOP complex_const             { Z.sub $1 $3 }
-  | complex_const MULOP complex_const             { Z.mul $1 $3 }
-  | complex_const POWOP complex_const             { Z.pow $1 (Z.to_int $3) }
+  | LPAR const_exp RPAR                           { $2 }
 ;
 
 carry:
@@ -701,7 +699,7 @@ carry:
 ;
 
 typ:
-  UINT                                            { uint_t $1 }
-| SINT                                            { int_t $1 }
-| BIT                                             { bit_t }
+    UINT                                          { uint_t $1 }
+  | SINT                                          { int_t $1 }
+  | BIT                                           { bit_t }
 ;

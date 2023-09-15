@@ -7,7 +7,7 @@
 #! vpbroadcastq $1ea, $2v -> broadcast %$2v 16 [$1ea, $1ea[+2]]
 #! vmovdqa $1ea, $2v -> mov %$2v [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]]
 #! vmovdqa $1v, $2ea -> mov [$2ea, $2ea[+2], $2ea[+4], $2ea[+6], $2ea[+8], $2ea[+10], $2ea[+12], $2ea[+14], $2ea[+16], $2ea[+18], $2ea[+20], $2ea[+22], $2ea[+24], $2ea[+26], $2ea[+28], $2ea[+30]] %$1v
-#! vpmullw $1v, $2v, $3v -> smull %mulH$2v %mulL %$1v %$2v;\ncast [] %$3v@sint16[16] %mulL
+#! vpmullw $1v, $2v, $3v -> smull %mulH$2v %mulL %$1v %$2v;\ncast %$3v@sint16[16] %mulL
 #! vpmulhw %%ymm0, $1v, $2v -> smull %$2v %red %$1v %ymm0;\nmov [re_0, re_1, re_2, re_3, re_4, re_5, re_6, re_7, re_8, re_9, re_a, re_b, re_c, re_d, re_e, re_f] %red;\nmov [mL_0, mL_1, mL_2, mL_3, mL_4, mL_5, mL_6, mL_7, mL_8, mL_9, mL_a, mL_b, mL_c, mL_d, mL_e, mL_f] %mulLymm;\nassert true && and [mL_0 = re_0, mL_1 = re_1, mL_2 = re_2, mL_3 = re_3, mL_4 = re_4, mL_5 = re_5, mL_6 = re_6, mL_7 = re_7, mL_8 = re_8, mL_9 = re_9, mL_a = re_a, mL_b = re_b, mL_c = re_c, mL_d = re_d, mL_e = re_e, mL_f = re_f];\nassume and [mL_0 = re_0, mL_1 = re_1, mL_2 = re_2, mL_3 = re_3, mL_4 = re_4, mL_5 = re_5, mL_6 = re_6, mL_7 = re_7, mL_8 = re_8, mL_9 = re_9, mL_a = re_a, mL_b = re_b, mL_c = re_c, mL_d = re_d, mL_e = re_e, mL_f = re_f] && true
 #! vpmulhw $1v, $2v, $3v -> smull %$3v %mulL$2v %$1v %$2v
 #! vpaddw $1v, $2v, $3v -> add %$3v %$1v %$2v

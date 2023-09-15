@@ -11,8 +11,8 @@
 #! nttmul_poly_basemul_montgomery: -> nop
 #! vmovdqa $1ea, $2v -> mov %$2v [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]]
 #! vmovdqa $1v, $2ea -> mov [$2ea, $2ea[+2], $2ea[+4], $2ea[+6], $2ea[+8], $2ea[+10], $2ea[+12], $2ea[+14], $2ea[+16], $2ea[+18], $2ea[+20], $2ea[+22], $2ea[+24], $2ea[+26], $2ea[+28], $2ea[+30]] %$1v
-#! vpmullw $1ea, $2v, $3v -> smull %mulH$2v %mulL [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]] %$2v;\ncast [] %$3v@sint16[16] %mulL
-#! vpmullw $1v, $2v, $3v -> smull %mulH$2v %mulL %$1v %$2v;\ncast [] %$3v@sint16[16] %mulL
+#! vpmullw $1ea, $2v, $3v -> smull %mulH$2v %mulL [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]] %$2v;\ncast %$3v@sint16[16] %mulL
+#! vpmullw $1v, $2v, $3v -> smull %mulH$2v %mulL %$1v %$2v;\ncast %$3v@sint16[16] %mulL
 #! vpmulhw $1ea, $2v, $3v -> smull %mulH %mulL$2v [$1ea, $1ea[+2], $1ea[+4], $1ea[+6], $1ea[+8], $1ea[+10], $1ea[+12], $1ea[+14], $1ea[+16], $1ea[+18], $1ea[+20], $1ea[+22], $1ea[+24], $1ea[+26], $1ea[+28], $1ea[+30]] %$2v;\nmov [mulL$2v_0, mulL$2v_1, mulL$2v_2, mulL$2v_3, mulL$2v_4, mulL$2v_5, mulL$2v_6, mulL$2v_7, mulL$2v_8, mulL$2v_9, mulL$2v_a, mulL$2v_b, mulL$2v_c, mulL$2v_d, mulL$2v_e, mulL$2v_f] %mulL$2v;\nmov %$3v %mulH
 #! vpmulhw $1v, $2v, $3v -> smull %mulH %mulL$2v %$1v %$2v;\nmov [mulL$2v_0, mulL$2v_1, mulL$2v_2, mulL$2v_3, mulL$2v_4, mulL$2v_5, mulL$2v_6, mulL$2v_7, mulL$2v_8, mulL$2v_9, mulL$2v_a, mulL$2v_b, mulL$2v_c, mulL$2v_d, mulL$2v_e, mulL$2v_f] %mulL$2v;\nmov %$3v %mulH
 #! vpsubw $1v, $2v, $3v -> sub %$3v %$2v %$1v
