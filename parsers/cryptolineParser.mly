@@ -3235,7 +3235,7 @@ rbexp_and:
 
 rbexp_atom:
     TRUE                                          { fun _ -> Rtrue }
-  | EQ rexp rexp                                  { let lno = get_line_start() in
+  | EQ rexp_no_vec rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3339,7 +3339,7 @@ rbexp_atom:
                                                           raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                     List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
-  | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
+  | cmpop_prefix rexp_no_vec rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3368,7 +3368,7 @@ rbexp_atom:
   | LANDOP LSQUARE rbexps RSQUARE                 { fun ctx -> rands ($3 ctx) }
   | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
   | LOROP LSQUARE rbexps RSQUARE                  { fun ctx -> rors ($3 ctx) }
-  | EQMOD rexp rexp rexp                          { let lno = get_line_start() in
+  | EQMOD rexp_no_vec rexp rexp                          { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3400,7 +3400,7 @@ rbexp_atom:
                                                         if not (List.for_all (fun ((e1, e2), m) -> size_of_rexp e1 = size_of_rexp e2 && size_of_rexp e1 = size_of_rexp m) eqmods) then
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands                                                          }
-  | EQUMOD rexp rexp rexp                         { let lno = get_line_start() in
+  | EQUMOD rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3433,7 +3433,7 @@ rbexp_atom:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
+  | EQSMOD rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3466,7 +3466,7 @@ rbexp_atom:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSREM rexp rexp rexp                         { let lno = get_line_start() in
+  | EQSREM rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3499,11 +3499,13 @@ rbexp_atom:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsrem (size_of_rexp e1) e1 e2 m) eqrems |> List.rev |> rands
                                                   }
+
+
 ;
 
 rbexp_atom_without_eqmod:
     TRUE                                          { fun _ -> Rtrue }
-  | EQ rexp rexp                                  { let lno = get_line_start() in
+  | EQ rexp_no_vec rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3535,7 +3537,7 @@ rbexp_atom_without_eqmod:
                                                   { fun ctx -> Ror ($2 ctx, $3 ctx) }
   | LPAR rbexp RPAR                               { fun ctx -> $2 ctx }
   /* Extensions */
-  | rexp EQOP rexp                                { let lno = get_line_start() in
+  | rexp_no_vec EQOP rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
@@ -3560,7 +3562,7 @@ rbexp_atom_without_eqmod:
                                                           raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Req (size_of_rexp e1, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
-  | rexp cmpop_infix rexp                         { let lno = get_line_start() in
+  | rexp_no_vec cmpop_infix rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
@@ -3586,7 +3588,7 @@ rbexp_atom_without_eqmod:
                                                           raise_at_line lno ("Elements of vectors do not have the same width.") in
                                                       List.rev_map2 (fun e1 e2 -> Rcmp (size_of_rexp e1, op, e1, e2)) es1 es2 |> List.rev |> rands
                                                   }
-  | cmpop_prefix rexp rexp                        { let lno = get_line_start() in
+  | cmpop_prefix rexp_no_vec rexp                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3612,7 +3614,7 @@ rbexp_atom_without_eqmod:
                                                   }
   | AND LSQUARE rbexps RSQUARE                    { fun ctx -> rands ($3 ctx) }
   | OR LSQUARE rbexps RSQUARE                     { fun ctx -> rors ($3 ctx) }
-  | EQMOD rexp rexp rexp                          { let lno = get_line_start() in
+  | EQMOD rexp_no_vec rexp rexp                          { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3645,7 +3647,7 @@ rbexp_atom_without_eqmod:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQUMOD rexp rexp rexp                         { let lno = get_line_start() in
+  | EQUMOD rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3678,7 +3680,7 @@ rbexp_atom_without_eqmod:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSMOD rexp rexp rexp                         { let lno = get_line_start() in
+  | EQSMOD rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3711,7 +3713,7 @@ rbexp_atom_without_eqmod:
                                                           raise_at_line lno ("Widths of vector range expressions mismatch.") in
                                                       List.rev_map (fun ((e1, e2), m) -> reqsmod (size_of_rexp e1) e1 e2 m) eqmods |> List.rev |> rands
                                                   }
-  | EQSREM rexp rexp rexp                         { let lno = get_line_start() in
+  | EQSREM rexp_no_vec rexp rexp                         { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3793,12 +3795,22 @@ rexp:
                                                       let w = Z.to_int ($3 ctx) in
                                                       let n = $1 ctx in
                                                       Rconst (w, n) }
-  | UEXT rexp const_exp_primary                   { fun ctx ->
+  | VEC_ID LSQUARE NUM RSQUARE                    { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                    let vec = `AVECT { vecname = $1; vectyphint = None; } in
+                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let len = List.length atoms in
+                                                    let i = $3 in
+                                                    if len <= (Z.to_int i) then raise_at_line lno ("Index is larger than " ^ (string_of_int (len-1))) else
+                                                    let es = rexp_of_atom (List.nth (List.rev_map (resolve_atom_with ctx lno) atoms) ((len-1) - Z.to_int i)) in
+                                                    es
+                                                  }
+  | UEXT rexp_no_vec const_exp_primary                   { fun ctx ->
                                                       let e = $2 ctx in
                                                       let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
                                                       Ruext (w, e, i) }
-  | SEXT rexp const_exp_primary                   { fun ctx ->
+  | SEXT rexp_no_vec const_exp_primary                   { fun ctx ->
                                                       let e = $2 ctx in
                                                       let i = Z.to_int ($3 ctx) in
                                                       let w = size_of_rexp e in
@@ -3821,7 +3833,7 @@ rexp:
                                                       let e = $2 ctx in
                                                       let w = size_of_rexp e in
                                                       Runop (w, Rnotb, e) }
-  | ADD rexp rexp                                 { let lno = get_line_start() in
+  | ADD rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3832,7 +3844,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        radd w1 e1 e2 }
-  | SUB rexp rexp                                 { let lno = get_line_start() in
+  | SUB rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3843,7 +3855,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsub w1 e1 e2 }
-  | MUL rexp rexp                                 { let lno = get_line_start() in
+  | MUL rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3857,7 +3869,7 @@ rexp:
   | SQ rexp                                       { fun ctx ->
                                                       let e = $2 ctx in
                                                       rsq (size_of_rexp e) e }
-  | UMOD rexp rexp                                { let lno = get_line_start() in
+  | UMOD rexp_no_vec rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3868,7 +3880,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rumod w1 e1 e2 }
-  | SREM rexp rexp                                { let lno = get_line_start() in
+  | SREM rexp_no_vec rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3879,7 +3891,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsrem w1 e1 e2 }
-  | SMOD rexp rexp                                { let lno = get_line_start() in
+  | SMOD rexp_no_vec rexp                                { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3890,7 +3902,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                        rsmod w1 e1 e2 }
-  | AND rexp rexp                                 { let lno = get_line_start() in
+  | AND rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3901,7 +3913,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Randb, e1, e2) }
-  | OR rexp rexp                                  { let lno = get_line_start() in
+  | OR rexp_no_vec rexp                                  { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3912,7 +3924,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rorb, e1, e2) }
-  | XOR rexp rexp                                 { let lno = get_line_start() in
+  | XOR rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3924,7 +3936,7 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rxorb, e1, e2) }
 
-  | SHL rexp rexp                                 { let lno = get_line_start() in
+  | SHL rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3935,7 +3947,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rshl, e1, e2) }
-  | SHR rexp rexp                                 { let lno = get_line_start() in
+  | SHR rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3946,7 +3958,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
-  | SAR rexp rexp                                 { let lno = get_line_start() in
+  | SAR rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3957,7 +3969,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rashr, e1, e2) }
-  | ROL rexp rexp                                 { let lno = get_line_start() in
+  | ROL rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3968,7 +3980,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rrol, e1, e2) }
-  | ROR rexp rexp                                 { let lno = get_line_start() in
+  | ROR rexp_no_vec rexp                                 { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
@@ -3979,7 +3991,7 @@ rexp:
                                                                                      ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
                                                       else
                                                         Rbinop (w1, Rror, e1, e2) }
-  | CONCAT rexp rexp                              { fun ctx ->
+  | CONCAT rexp_no_vec rexp                              { fun ctx ->
                                                       let e1 = $2 ctx in
                                                       let e2 = $3 ctx in
                                                       let w1 = size_of_rexp e1 in
@@ -4122,6 +4134,362 @@ rexp:
                                                       else
                                                         Rbinop (w1, Rlshr, e1, e2) }
   | rexp SAROP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rashr, e1, e2) }
+  /* Errors */
+  | CONST const_exp_primary error                 { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
+  | const_exp_primary error                       { raise_at_line (get_line_start()) "Please specify the bit-width of a constant in range predicates" }
+;
+
+rexp_no_vec:
+    defined_var                                   { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                    Rvar (resolve_var_with ctx lno $1)
+                                                  }
+  | CONST const_exp_primary const_exp_primary     { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let n = $3 ctx in
+                                                      Rconst (w, n) }
+  | const_exp_primary AT const_exp_primary        { fun ctx ->
+                                                      let w = Z.to_int ($3 ctx) in
+                                                      let n = $1 ctx in
+                                                      Rconst (w, n) }
+  | UEXT rexp_no_vec const_exp_primary                   { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let i = Z.to_int ($3 ctx) in
+                                                      let w = size_of_rexp e in
+                                                      Ruext (w, e, i) }
+  | SEXT rexp_no_vec const_exp_primary                   { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let i = Z.to_int ($3 ctx) in
+                                                      let w = size_of_rexp e in
+                                                      Rsext (w, e, i) }
+  | LPAR rexp RPAR                                { fun ctx -> $2 ctx }
+  /* Extensions */
+  | NEG rexp_no_vec                                      { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let w = size_of_rexp e in
+                                                      Runop (w, Rnegb, e) }
+  | NEGOP rexp_no_vec                                    { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let w = size_of_rexp e in
+                                                      Runop (w, Rnegb, e) }
+  | NOT rexp_no_vec                                      { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let w = size_of_rexp e in
+                                                      Runop (w, Rnotb, e) }
+  | NOTOP rexp_no_vec                                    { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      let w = size_of_rexp e in
+                                                      Runop (w, Rnotb, e) }
+  | ADD rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       radd w1 e1 e2 }
+  | SUB rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       rsub w1 e1 e2 }
+  | MUL rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       rmul w1 e1 e2 }
+  | SQ rexp_no_vec                                       { fun ctx ->
+                                                      let e = $2 ctx in
+                                                      rsq (size_of_rexp e) e }
+  | UMOD rexp_no_vec rexp                                { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       rumod w1 e1 e2 }
+  | SREM rexp_no_vec rexp                                { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       rsrem w1 e1 e2 }
+  | SMOD rexp_no_vec rexp                                { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                       rsmod w1 e1 e2 }
+  | AND rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Randb, e1, e2) }
+  | OR rexp_no_vec rexp                                  { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rorb, e1, e2) }
+  | XOR rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rxorb, e1, e2) }
+  | SHL rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rshl, e1, e2) }
+  | SHR rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rlshr, e1, e2) }
+  | SAR rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rashr, e1, e2) }
+  | ROL rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rrol, e1, e2) }
+  | ROR rexp_no_vec rexp                                 { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rror, e1, e2) }
+  | CONCAT rexp_no_vec rexp                              { fun ctx ->
+                                                      let e1 = $2 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      Rconcat (w1, w2, e1, e2) }
+  | ADDS LSQUARE rexps RSQUARE                    { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let es = $3 ctx in
+                                                      match es with
+                                                      | [] -> raise_at_line lno ("No range expression is passed to add.")
+                                                      | hd::_tl -> radds (size_of_rexp hd) es }
+  | MULS LSQUARE rexps RSQUARE                    { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let es = $3 ctx in
+                                                      match es with
+                                                      | [] -> raise_at_line lno ("No range expression is passed to mul.")
+                                                      | hd::_tl -> rmuls (size_of_rexp hd) es }
+  | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let es = $4 ctx in
+                                                      let tw = List.fold_left (fun w1 w2 -> max w1 w2)
+                                                                              0
+                                                                              (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let es = List.map (fun e ->
+                                                                          let ew = size_of_rexp e in
+                                                                          Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                      let res = helper 0 es in
+                                                      res }
+  | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
+                                                  { fun ctx ->
+                                                      let w = Z.to_int ($2 ctx) in
+                                                      let es = $4 ctx in
+                                                      let tw = List.fold_left (fun w1 w2 -> max w1 w2)
+                                                                              0
+                                                                              (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
+                                                      let last = List.length es - 1 in
+                                                      let es = List.mapi (fun i e ->
+                                                                            let ew = size_of_rexp e in
+                                                                            if i == last then Rsext (ew, e, tw - ew)
+                                                                            else Ruext (ew, e, tw - ew)) es in
+                                                      let rec helper i es =
+                                                        match es with
+                                                        | [] -> Rconst (tw, Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                      let res = helper 0 es in
+                                                      res }
+  | rexp_no_vec ADDOP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Radd, e1, e2) }
+  | rexp_no_vec SUBOP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rsub, e1, e2) }
+  | rexp_no_vec MULOP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rmul, e1, e2) }
+  | rexp_no_vec ANDOP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Randb, e1, e2) }
+  | rexp_no_vec OROP rexp                                { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rorb, e1, e2) }
+  | rexp_no_vec XOROP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rxorb, e1, e2) }
+  | rexp_no_vec SHLOP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rshl, e1, e2) }
+  | rexp_no_vec SHROP rexp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                      let e1 = $1 ctx in
+                                                      let e2 = $3 ctx in
+                                                      let w1 = size_of_rexp e1 in
+                                                      let w2 = size_of_rexp e2 in
+                                                      if w1 != w2 then raise_at_line lno ("Widths of range expressions mismatch: "
+                                                                                     ^ string_of_rexp e1 ^ " (width " ^ string_of_int w1 ^ "), "
+                                                                                     ^ string_of_rexp e2 ^ " (width " ^ string_of_int w2 ^ ")")
+                                                      else
+                                                        Rbinop (w1, Rlshr, e1, e2) }
+  | rexp_no_vec SAROP rexp                               { let lno = get_line_start() in
                                                     fun ctx ->
                                                       let e1 = $1 ctx in
                                                       let e2 = $3 ctx in
