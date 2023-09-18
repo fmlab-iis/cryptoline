@@ -271,18 +271,18 @@ mov c2 L0x7fffffffdca0;
 mov c3 L0x7fffffffdca8;
 
 assert true
-    && eqmod limbs 64 [c0, c1, c2, c3]
-             limbs 64 [r8o, r9o, r10o, rdxo]
-             limbs 64 [m0, m1, m2, m3];
-assume eqmod limbs 64 [c0, c1, c2, c3]
-             limbs 64 [r8o, r9o, r10o, rdxo]
-             limbs 64 [m0, m1, m2, m3]
+    && eqmod (limbs 64 [c0, c1, c2, c3])
+             (limbs 64 [r8o, r9o, r10o, rdxo])
+             (limbs 64 [m0, m1, m2, m3]);
+assume eqmod (limbs 64 [c0, c1, c2, c3])
+             (limbs 64 [r8o, r9o, r10o, rdxo])
+             (limbs 64 [m0, m1, m2, m3])
     && true;
     
 {
-  eqmod limbs 64 [a0, a1, a2, a3]
-        limbs 64 [0, 0, 0, 0, c0, c1, c2, c3]
-        limbs 64 [m0, m1, m2, m3]
+  eqmod (limbs 64 [a0, a1, a2, a3])
+        (limbs 64 [0, 0, 0, 0, c0, c1, c2, c3])
+        (limbs 64 [m0, m1, m2, m3])
   &&
   true
 }

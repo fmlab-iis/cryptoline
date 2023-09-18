@@ -183,10 +183,10 @@ mov r6 L0xffffffffe868; mov r7 L0xffffffffe870;
 && and [
      limbs 64 [r0, r1, r2, r3, r4, r5, r6, r7, 0@64] <u
      2@576 * limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, 0@64],
-     equmod limbs 64 [r0, r1, r2, r3, r4, r5, r6, r7, 0@64]
+     equmod (limbs 64 [r0, r1, r2, r3, r4, r5, r6, r7, 0@64])
             (limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7, 0@64] +
              limbs 64 [b0, b1, b2, b3, b4, b5, b6, b7, 0@64])
-            limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, 0@64] ]
+            (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, 0@64]) ]
 }
 
 

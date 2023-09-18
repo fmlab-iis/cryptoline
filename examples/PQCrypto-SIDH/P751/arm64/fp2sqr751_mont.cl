@@ -387,36 +387,36 @@ adds dontcare sp sp 0x10@uint64;
 #ret                                            #! 0xaaaaaaab7a50 = 0xaaaaaaab7a50;
 
 assert true
-    && eqsmod limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
+    && eqsmod (limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
+                         L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
+                         L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
+                         L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0])
+              (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
+                         ar6, ar7, ar8, ar9, ara, arb] -
+               limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
+                         ai6, ai7, ai8, ai9, aia, aib])
+              (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]);
+assume eqmod (limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
                         L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
                         L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
-                        L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0]
-              limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
+                        L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0])
+             (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
                         ar6, ar7, ar8, ar9, ara, arb] -
               limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
-                        ai6, ai7, ai8, ai9, aia, aib]
-              limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb];
-assume eqmod limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
-                       L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
-                       L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
-                       L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0]
-             limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
-                       ar6, ar7, ar8, ar9, ara, arb] -
-             limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
-                       ai6, ai7, ai8, ai9, aia, aib]
-             limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+                        ai6, ai7, ai8, ai9, aia, aib])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     && true;
 
 (* CUT 1 *)
-cut eqmod limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
-                    L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
-                    L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
-                    L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0]
-          limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
-                    ar6, ar7, ar8, ar9, ara, arb] -
-          limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
-                    ai6, ai7, ai8, ai9, aia, aib]
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
+                     L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
+                     L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
+                     L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0])
+          (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
+                     ar6, ar7, ar8, ar9, ara, arb] -
+           limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
+                     ai6, ai7, ai8, ai9, aia, aib])
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
  && and [limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
                    L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
                    L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
@@ -2283,19 +2283,19 @@ adds dontcare sp sp 0x60@uint64;
 #ret                                            #! 0xaaaaaaab8544 = 0xaaaaaaab8544;
 
 (* CUT 3 *)
-cut eqmod limbs 64 [L0xffffffffe028, L0xffffffffe030, L0xffffffffe038,
-                    L0xffffffffe040, L0xffffffffe048, L0xffffffffe050,
-                    L0xffffffffe058, L0xffffffffe060, L0xffffffffe068,
-                    L0xffffffffe070, L0xffffffffe078, L0xffffffffe080,
-                    L0xffffffffe088, L0xffffffffe090, L0xffffffffe098,
-                    L0xffffffffe0a0, L0xffffffffe0a8, L0xffffffffe0b0,
-                    L0xffffffffe0b8, L0xffffffffe0c0, L0xffffffffe0c8,
-                    L0xffffffffe0d0, L0xffffffffe0d8, L0xffffffffe0e0]
-          (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-           limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) *
-          (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] -
-           limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib])
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [L0xffffffffe028, L0xffffffffe030, L0xffffffffe038,
+                     L0xffffffffe040, L0xffffffffe048, L0xffffffffe050,
+                     L0xffffffffe058, L0xffffffffe060, L0xffffffffe068,
+                     L0xffffffffe070, L0xffffffffe078, L0xffffffffe080,
+                     L0xffffffffe088, L0xffffffffe090, L0xffffffffe098,
+                     L0xffffffffe0a0, L0xffffffffe0a8, L0xffffffffe0b0,
+                     L0xffffffffe0b8, L0xffffffffe0c0, L0xffffffffe0c8,
+                     L0xffffffffe0d0, L0xffffffffe0d8, L0xffffffffe0e0])
+          ((limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+            limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) *
+           (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] -
+            limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]))
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
      prove with [ cuts [ 0, 1 ] ]
  && limbs 64 [L0xffffffffe028, L0xffffffffe030, L0xffffffffe038,
               L0xffffffffe040, L0xffffffffe048, L0xffffffffe050,
@@ -3365,16 +3365,16 @@ adds dontcare sp sp 0x60@uint64;
 #ret                                            #! 0xaaaaaaab8ce8 = 0xaaaaaaab8ce8;
 
 (* CUT 4 *)
-cut eqmod limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                    L0xffffffffe6b8, L0xffffffffe6c0, L0xffffffffe6c8,
-                    L0xffffffffe6d0, L0xffffffffe6d8, L0xffffffffe6e0,
-                    L0xffffffffe6e8, L0xffffffffe6f0, L0xffffffffe6f8,
-                    L0xffffffffe700, L0xffffffffe708, L0xffffffffe710]
-          (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-           limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) *
-          (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] -
-           limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib])
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                     L0xffffffffe6b8, L0xffffffffe6c0, L0xffffffffe6c8,
+                     L0xffffffffe6d0, L0xffffffffe6d8, L0xffffffffe6e0,
+                     L0xffffffffe6e8, L0xffffffffe6f0, L0xffffffffe6f8,
+                     L0xffffffffe700, L0xffffffffe708, L0xffffffffe710])
+          ((limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+            limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) *
+           (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] -
+            limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]))
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     prove with [ precondition, cuts [ 0, 1 ] ]
  && limbs 64 [L0xffffffffe6b8, L0xffffffffe6c0, L0xffffffffe6c8,
               L0xffffffffe6d0, L0xffffffffe6d8, L0xffffffffe6e0,
@@ -6180,14 +6180,14 @@ adds dontcare sp sp 0x60@uint64;
 #ret                                            #! 0xaaaaaaab8ce8 = 0xaaaaaaab8ce8;
 
 (* CUT 6 *)
-cut eqmod limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                    L0xffffffffe718, L0xffffffffe720, L0xffffffffe728,
-                    L0xffffffffe730, L0xffffffffe738, L0xffffffffe740,
-                    L0xffffffffe748, L0xffffffffe750, L0xffffffffe758,
-                    L0xffffffffe760, L0xffffffffe768, L0xffffffffe770]
-          2 * limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] *
-              limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                     L0xffffffffe718, L0xffffffffe720, L0xffffffffe728,
+                     L0xffffffffe730, L0xffffffffe738, L0xffffffffe740,
+                     L0xffffffffe748, L0xffffffffe750, L0xffffffffe758,
+                     L0xffffffffe760, L0xffffffffe768, L0xffffffffe770])
+          (2 * limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] *
+               limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib])
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     prove with [ precondition, cuts [ 2 ] ]
  && limbs 64 [L0xffffffffe718, L0xffffffffe720, L0xffffffffe728,
               L0xffffffffe730, L0xffffffffe738, L0xffffffffe740,
@@ -6239,12 +6239,12 @@ mov ci9 L0xffffffffe760; mov cia L0xffffffffe768; mov cib L0xffffffffe770;
 ghost I@uint64 : I**2 + 1 = 0 && true;
 
 {
-  eqmod 2**768 *
-        (    limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] +
-         I * limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib])
-        (    limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-         I * limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib])**2
-        limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]
+  eqmod (2**768 *
+         (    limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] +
+          I * limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib]))
+        ((    limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+          I * limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib])**2)
+        (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb])
   prove with [ cuts [ 4, 6 ] ]
 &&
   and [limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] <u

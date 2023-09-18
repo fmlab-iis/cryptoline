@@ -6177,15 +6177,43 @@ adds dontcare sp sp 0x10@uint64;
 #ret                                            #! 0xaaaaaaab8fd0 = 0xaaaaaaab8fd0;
 
 assert true
-    && eqsmod limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
+    && eqsmod (limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
+                         L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
+                         L0xffffffffded8, L0xffffffffdee0, L0xffffffffdee8,
+                         L0xffffffffdef0, L0xffffffffdef8, L0xffffffffdf00,
+                         L0xffffffffdf08, L0xffffffffdf10, L0xffffffffdf18,
+                         L0xffffffffdf20, L0xffffffffdf28, L0xffffffffdf30,
+                         L0xffffffffdf38, L0xffffffffdf40, L0xffffffffdf48,
+                         L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60])
+              (limbs 64 [L0xffffffffdea8o, L0xffffffffdeb0o, L0xffffffffdeb8o,
+                         L0xffffffffdec0o, L0xffffffffdec8o, L0xffffffffded0o,
+                         L0xffffffffded8o, L0xffffffffdee0o, L0xffffffffdee8o,
+                         L0xffffffffdef0o, L0xffffffffdef8o, L0xffffffffdf00o,
+                         L0xffffffffdf08o, L0xffffffffdf10o, L0xffffffffdf18o,
+                         L0xffffffffdf20o, L0xffffffffdf28o, L0xffffffffdf30o,
+                         L0xffffffffdf38o, L0xffffffffdf40o, L0xffffffffdf48o,
+                         L0xffffffffdf50o, L0xffffffffdf58o, L0xffffffffdf60o] -
+               limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
+                         L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
+                         L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
+                         L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0,
+                         L0xffffffffdfc8, L0xffffffffdfd0, L0xffffffffdfd8,
+                         L0xffffffffdfe0, L0xffffffffdfe8, L0xffffffffdff0,
+                         L0xffffffffdff8, L0xffffffffe000, L0xffffffffe008,
+                         L0xffffffffe010, L0xffffffffe018, L0xffffffffe020])
+              (limbs 64 [0@64,0@64,0@64,0@64,0@64,0@64,
+                         0@64,0@64,0@64,0@64,0@64,0@64,
+                         m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]);
+
+assume eqmod (limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
                         L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
                         L0xffffffffded8, L0xffffffffdee0, L0xffffffffdee8,
                         L0xffffffffdef0, L0xffffffffdef8, L0xffffffffdf00,
                         L0xffffffffdf08, L0xffffffffdf10, L0xffffffffdf18,
                         L0xffffffffdf20, L0xffffffffdf28, L0xffffffffdf30,
                         L0xffffffffdf38, L0xffffffffdf40, L0xffffffffdf48,
-                        L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60]
-              limbs 64 [L0xffffffffdea8o, L0xffffffffdeb0o, L0xffffffffdeb8o,
+                        L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60])
+             (limbs 64 [L0xffffffffdea8o, L0xffffffffdeb0o, L0xffffffffdeb8o,
                         L0xffffffffdec0o, L0xffffffffdec8o, L0xffffffffded0o,
                         L0xffffffffded8o, L0xffffffffdee0o, L0xffffffffdee8o,
                         L0xffffffffdef0o, L0xffffffffdef8o, L0xffffffffdf00o,
@@ -6200,53 +6228,25 @@ assert true
                         L0xffffffffdfc8, L0xffffffffdfd0, L0xffffffffdfd8,
                         L0xffffffffdfe0, L0xffffffffdfe8, L0xffffffffdff0,
                         L0xffffffffdff8, L0xffffffffe000, L0xffffffffe008,
-                        L0xffffffffe010, L0xffffffffe018, L0xffffffffe020]
-              limbs 64 [0@64,0@64,0@64,0@64,0@64,0@64,
-                        0@64,0@64,0@64,0@64,0@64,0@64,
-                        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb];
-
-assume eqmod limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
-                       L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
-                       L0xffffffffded8, L0xffffffffdee0, L0xffffffffdee8,
-                       L0xffffffffdef0, L0xffffffffdef8, L0xffffffffdf00,
-                       L0xffffffffdf08, L0xffffffffdf10, L0xffffffffdf18,
-                       L0xffffffffdf20, L0xffffffffdf28, L0xffffffffdf30,
-                       L0xffffffffdf38, L0xffffffffdf40, L0xffffffffdf48,
-                       L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60]
-             limbs 64 [L0xffffffffdea8o, L0xffffffffdeb0o, L0xffffffffdeb8o,
-                       L0xffffffffdec0o, L0xffffffffdec8o, L0xffffffffded0o,
-                       L0xffffffffded8o, L0xffffffffdee0o, L0xffffffffdee8o,
-                       L0xffffffffdef0o, L0xffffffffdef8o, L0xffffffffdf00o,
-                       L0xffffffffdf08o, L0xffffffffdf10o, L0xffffffffdf18o,
-                       L0xffffffffdf20o, L0xffffffffdf28o, L0xffffffffdf30o,
-                       L0xffffffffdf38o, L0xffffffffdf40o, L0xffffffffdf48o,
-                       L0xffffffffdf50o, L0xffffffffdf58o, L0xffffffffdf60o] -
-             limbs 64 [L0xffffffffdf68, L0xffffffffdf70, L0xffffffffdf78,
-                       L0xffffffffdf80, L0xffffffffdf88, L0xffffffffdf90,
-                       L0xffffffffdf98, L0xffffffffdfa0, L0xffffffffdfa8,
-                       L0xffffffffdfb0, L0xffffffffdfb8, L0xffffffffdfc0,
-                       L0xffffffffdfc8, L0xffffffffdfd0, L0xffffffffdfd8,
-                       L0xffffffffdfe0, L0xffffffffdfe8, L0xffffffffdff0,
-                       L0xffffffffdff8, L0xffffffffe000, L0xffffffffe008,
-                       L0xffffffffe010, L0xffffffffe018, L0xffffffffe020]
-             limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                       m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb] && true;
+                        L0xffffffffe010, L0xffffffffe018, L0xffffffffe020])
+             (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                        m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]) && true;
 
 (* CUT 6 *)
-cut eqmod limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
-                    L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
-                    L0xffffffffded8, L0xffffffffdee0, L0xffffffffdee8,
-                    L0xffffffffdef0, L0xffffffffdef8, L0xffffffffdf00,
-                    L0xffffffffdf08, L0xffffffffdf10, L0xffffffffdf18,
-                    L0xffffffffdf20, L0xffffffffdf28, L0xffffffffdf30,
-                    L0xffffffffdf38, L0xffffffffdf40, L0xffffffffdf48,
-                    L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60]
-          limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
-          limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] -
-          limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib] *
-          limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib]
-          limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                    m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
+                     L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
+                     L0xffffffffded8, L0xffffffffdee0, L0xffffffffdee8,
+                     L0xffffffffdef0, L0xffffffffdef8, L0xffffffffdf00,
+                     L0xffffffffdf08, L0xffffffffdf10, L0xffffffffdf18,
+                     L0xffffffffdf20, L0xffffffffdf28, L0xffffffffdf30,
+                     L0xffffffffdf38, L0xffffffffdf40, L0xffffffffdf48,
+                     L0xffffffffdf50, L0xffffffffdf58, L0xffffffffdf60])
+          (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
+           limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] -
+           limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib] *
+           limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib])
+          (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                     m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     prove with [ cuts [ 2, 3 ] ]
  && limbs 64 [L0xffffffffdea8, L0xffffffffdeb0, L0xffffffffdeb8,
               L0xffffffffdec0, L0xffffffffdec8, L0xffffffffded0,
@@ -7316,16 +7316,16 @@ adds dontcare sp sp 0x60@uint64;
 #ret                                            #! 0xaaaaaaab8ce8 = 0xaaaaaaab8ce8;
 
 (* CUT 7 *)
-cut eqmod limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                    L0xffffffffe898, L0xffffffffe8a0, L0xffffffffe8a8,
-                    L0xffffffffe8b0, L0xffffffffe8b8, L0xffffffffe8c0,
-                    L0xffffffffe8c8, L0xffffffffe8d0, L0xffffffffe8d8,
-                    L0xffffffffe8e0, L0xffffffffe8e8, L0xffffffffe8f0]
-          limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
-          limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib] +
-          limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] *
-          limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib]
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                     L0xffffffffe898, L0xffffffffe8a0, L0xffffffffe8a8,
+                     L0xffffffffe8b0, L0xffffffffe8b8, L0xffffffffe8c0,
+                     L0xffffffffe8c8, L0xffffffffe8d0, L0xffffffffe8d8,
+                     L0xffffffffe8e0, L0xffffffffe8e8, L0xffffffffe8f0])
+          (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
+           limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib] +
+           limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] *
+           limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib])
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     prove with [ precondition, cuts [ 5 ] ]
  && limbs 64 [L0xffffffffe898, L0xffffffffe8a0, L0xffffffffe8a8,
               L0xffffffffe8b0, L0xffffffffe8b8, L0xffffffffe8c0,
@@ -8391,16 +8391,16 @@ adds dontcare sp sp 0x60@uint64;
 #ret                                            #! 0xaaaaaaab8ce8 = 0xaaaaaaab8ce8;
 
 (* CUT 8 *)
-cut eqmod limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                    L0xffffffffe838, L0xffffffffe840, L0xffffffffe848,
-                    L0xffffffffe850, L0xffffffffe858, L0xffffffffe860,
-                    L0xffffffffe868, L0xffffffffe870, L0xffffffffe878,
-                    L0xffffffffe880, L0xffffffffe888, L0xffffffffe890]
-          limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
-          limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] -
-          limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib] *
-          limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib]
-          limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+cut eqmod (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                     L0xffffffffe838, L0xffffffffe840, L0xffffffffe848,
+                     L0xffffffffe850, L0xffffffffe858, L0xffffffffe860,
+                     L0xffffffffe868, L0xffffffffe870, L0xffffffffe878,
+                     L0xffffffffe880, L0xffffffffe888, L0xffffffffe890])
+          (limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5, ar6, ar7, ar8, ar9, ara, arb] *
+           limbs 64 [br0, br1, br2, br3, br4, br5, br6, br7, br8, br9, bra, brb] -
+           limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, aia, aib] *
+           limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5, bi6, bi7, bi8, bi9, bia, bib])
+          (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
     prove with [ precondition, cuts [ 6 ] ]
  && limbs 64 [L0xffffffffe838, L0xffffffffe840, L0xffffffffe848,
               L0xffffffffe850, L0xffffffffe858, L0xffffffffe860,
@@ -8457,19 +8457,19 @@ mov ci9 L0xffffffffe8e0; mov cia L0xffffffffe8e8; mov cib L0xffffffffe8f0;
 ghost I@uint64 : true && true;
 
 {
-  eqmod 2**768 *
-        (    limbs 64 [cr0, cr1, cr2, cr3, cr4, cr5,
-                       cr6, cr7, cr8, cr9, cra ,crb] +
-         I * limbs 64 [ci0, ci1, ci2, ci3, ci4, ci5,
-                       ci6, ci7, ci8, ci9, cia ,cib])
-        (    limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
-                       ar6, ar7, ar8, ar9, ara, arb] +
-         I * limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
-                       ai6, ai7, ai8, ai9, aia, aib]) *
-        (    limbs 64 [br0, br1, br2, br3, br4, br5,
-                       br6, br7, br8, br9, bra, brb] +
-         I * limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5,
-                       bi6, bi7, bi8, bi9, bia, bib])
+  eqmod (2**768 *
+         (    limbs 64 [cr0, cr1, cr2, cr3, cr4, cr5,
+                        cr6, cr7, cr8, cr9, cra ,crb] +
+          I * limbs 64 [ci0, ci1, ci2, ci3, ci4, ci5,
+                        ci6, ci7, ci8, ci9, cia ,cib]))
+        ((    limbs 64 [ar0, ar1, ar2, ar3, ar4, ar5,
+                        ar6, ar7, ar8, ar9, ara, arb] +
+          I * limbs 64 [ai0, ai1, ai2, ai3, ai4, ai5,
+                        ai6, ai7, ai8, ai9, aia, aib]) *
+         (    limbs 64 [br0, br1, br2, br3, br4, br5,
+                        br6, br7, br8, br9, bra, brb] +
+          I * limbs 64 [bi0, bi1, bi2, bi3, bi4, bi5,
+                        bi6, bi7, bi8, bi9, bia, bib]))
         [ I**2 + 1, limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb] ]
   prove with [ cuts [ 7, 8 ] ]
 &&

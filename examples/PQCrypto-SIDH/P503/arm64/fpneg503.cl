@@ -185,8 +185,8 @@ mov c7 L0xffffffffe870;
 &&
   and [eqmod (limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7] +
               limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7])
-             0@512
-             limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7],
+             (0@512)
+             (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]),
        limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7] <=u
        2@512 * limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]]
 }

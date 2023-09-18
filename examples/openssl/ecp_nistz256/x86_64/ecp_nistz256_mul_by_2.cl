@@ -121,10 +121,10 @@ mov c3 L0x7fffffffdca8;
   true
   &&
   and [
-        eqmod limbs 64 [c0, c1, c2, c3, 0@64]
-              limbs 64 [a0, a1, a2, a3, 0@64] +
-              limbs 64 [a0, a1, a2, a3, 0@64]
-              limbs 64 [m0, m1, m2, m3, 0@64],
+        eqmod (limbs 64 [c0, c1, c2, c3, 0@64])
+              (limbs 64 [a0, a1, a2, a3, 0@64] +
+               limbs 64 [a0, a1, a2, a3, 0@64])
+              (limbs 64 [m0, m1, m2, m3, 0@64]),
         limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
   ]
 }

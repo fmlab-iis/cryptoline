@@ -252,9 +252,9 @@ mov c9 L0xffffffffe760; mov ca L0xffffffffe768; mov cb L0xffffffffe770;
 {
   true
   &&
-  and [eqsmod limbs 64 [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb]
-              (-1)@768 * limbs 64 [a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab]
-              limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb],
+  and [eqsmod (limbs 64 [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb])
+              ((-1)@768 * limbs 64 [a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,aa,ab])
+              (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]),
        limbs 64 [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,ca,cb] <=u
        2@768 * limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]]
 }

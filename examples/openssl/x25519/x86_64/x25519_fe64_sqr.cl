@@ -273,8 +273,8 @@ mov c2 L0x7fffffffdbb0;
 mov c3 L0x7fffffffdbb8;
 
 {
-  eqmod limbs 64 [c0, c1, c2, c3]
-        limbs 64 [a0, a1, a2, a3] * limbs 64 [a0, a1, a2, a3]
+  eqmod (limbs 64 [c0, c1, c2, c3])
+        (limbs 64 [a0, a1, a2, a3] * limbs 64 [a0, a1, a2, a3])
         ((2**255)-19)
   &&
   true

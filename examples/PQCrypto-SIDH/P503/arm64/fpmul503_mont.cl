@@ -531,10 +531,10 @@ mov x14 L0xffffffffe950;
 adcs dontcare x18 x18 x23 carry;
 
 (* NOTE: summary *)
-assert eqmod limbs 64 [x8, x9, x10, x19, x15, x16, x17, x18]
-             (limbs 64 [a0, a1, a2, a3] + limbs 64 [a4, a5, a6, a7])*
-             (limbs 64 [b0, b1, b2, b3] + limbs 64 [b4, b5, b6, b7])
-             2**512 && true;
+assert eqmod (limbs 64 [x8, x9, x10, x19, x15, x16, x17, x18])
+             ((limbs 64 [a0, a1, a2, a3] + limbs 64 [a4, a5, a6, a7])*
+              (limbs 64 [b0, b1, b2, b3] + limbs 64 [b4, b5, b6, b7]))
+             (2**512) && true;
 
 (* NOTE: MUL256_KARATSUBA_COMBA START *)
 
@@ -784,11 +784,11 @@ mov L0xffffffffe690 x25;
 sbcs dontcare x18 x18 x27 carry;
 
 (* NOTE: summary *)
-assert eqmod limbs 64 [x8, x9, x10, x19, x15, x16, x17, x18]
-             (limbs 64 [a0, a1, a2, a3] + limbs 64 [a4, a5, a6, a7]) *
-             (limbs 64 [b0, b1, b2, b3] + limbs 64 [b4, b5, b6, b7]) -
-             limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3]
-             2**512 && true;
+assert eqmod (limbs 64 [x8, x9, x10, x19, x15, x16, x17, x18])
+             ((limbs 64 [a0, a1, a2, a3] + limbs 64 [a4, a5, a6, a7]) *
+              (limbs 64 [b0, b1, b2, b3] + limbs 64 [b4, b5, b6, b7]) -
+              limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3])
+             (2**512) && true;
 assume limbs 64 [x8, x9, x10, x19, x15, x16, x17, x18] =
        (limbs 64 [a0, a1, a2, a3] + limbs 64 [a4, a5, a6, a7]) *
        (limbs 64 [b0, b1, b2, b3] + limbs 64 [b4, b5, b6, b7]) -
@@ -1334,15 +1334,15 @@ adcs carry x22 0@uint64 x22 carry;
 adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
-assert eqmod limbs 64 [  0,   0,  x3, x11, x12, x13, x14, x15,
-                       x16, x17, x18, x19, x20, x21, x22, x23]
-             limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
-                       L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
-                       L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
-                       L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
-                       L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
-                       L0xffffffffe6e0]
-             limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7] && true;
+assert eqmod (limbs 64 [  0,   0,  x3, x11, x12, x13, x14, x15,
+                        x16, x17, x18, x19, x20, x21, x22, x23])
+             (limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
+                        L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
+                        L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
+                        L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
+                        L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
+                        L0xffffffffe6e0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]) && true;
 
 (* mul	x28, x11, x24                               #! PC = 0xaaaaaaab65a4 *)
 mull Hx11x24 x28 x11 x24;
@@ -1473,15 +1473,15 @@ adcs carry x22 0@uint64 x22 carry;
 adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
-assert eqmod limbs 64 [  0,   0,   0,   0, x12, x13, x14, x15,
-                       x16, x17, x18, x19, x20, x21, x22, x23]
-             limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
-                       L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
-                       L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
-                       L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
-                       L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
-                       L0xffffffffe6e0]
-             limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7] && true;
+assert eqmod (limbs 64 [  0,   0,   0,   0, x12, x13, x14, x15,
+                        x16, x17, x18, x19, x20, x21, x22, x23])
+             (limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
+                        L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
+                        L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
+                        L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
+                        L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
+                        L0xffffffffe6e0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]) && true;
 
 (* mul	x28, x13, x24                               #! PC = 0xaaaaaaab668c *)
 mull Hx13x24 x28 x13 x24;
@@ -1608,15 +1608,15 @@ adcs carry x22 0@uint64 x22 carry;
 adc x23 0@uint64 x23 carry;
 
 (* NOTE: montgomery reduction *)
-assert eqmod limbs 64 [  0,   0,   0,   0,   0,   0, x14, x15,
-                       x16, x17, x18, x19, x20, x21, x22, x23]
-             limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
-                       L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
-                       L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
-                       L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
-                       L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
-                       L0xffffffffe6e0]
-             limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7] && true;
+assert eqmod (limbs 64 [  0,   0,   0,   0,   0,   0, x14, x15,
+                        x16, x17, x18, x19, x20, x21, x22, x23])
+             (limbs 64 [L0xffffffffe668, L0xffffffffe670, L0xffffffffe678,
+                        L0xffffffffe680, L0xffffffffe688, L0xffffffffe690,
+                        L0xffffffffe698, L0xffffffffe6a0, L0xffffffffe6a8,
+                        L0xffffffffe6b0, L0xffffffffe6b8, L0xffffffffe6c0,
+                        L0xffffffffe6c8, L0xffffffffe6d0, L0xffffffffe6d8,
+                        L0xffffffffe6e0])
+             (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]) && true;
 
 (* mul	x28, x15, x24                               #! PC = 0xaaaaaaab676c *)
 mull Hx15x24 x28 x15 x24;
@@ -1798,11 +1798,11 @@ mov c6 L0xffffffffe9e8;
 mov c7 L0xffffffffe9f0;
 
 {
-  eqmod limbs 64 [ 0,  0,  0,  0,  0,  0,  0,  0,
-                  c0, c1, c2, c3, c4, c5, c6, c7]
-        limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7] *
-        limbs 64 [b0, b1, b2, b3, b4, b5, b6, b7]
-        limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]
+  eqmod (limbs 64 [ 0,  0,  0,  0,  0,  0,  0,  0,
+                   c0, c1, c2, c3, c4, c5, c6, c7])
+        (limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7] *
+         limbs 64 [b0, b1, b2, b3, b4, b5, b6, b7])
+        (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7])
 &&
   limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7] <u
   2@512 * limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7]

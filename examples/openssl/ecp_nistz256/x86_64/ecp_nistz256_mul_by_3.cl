@@ -205,9 +205,9 @@ mov c2 L0x7fffffffdca0;
 mov c3 L0x7fffffffdca8;
 
 {
-  eqmod limbs 64 [c0, c1, c2, c3]
-        limbs 64 [a0, a1, a2, a3] * 3
-        limbs 64 [m0, m1, m2, m3]
+  eqmod (limbs 64 [c0, c1, c2, c3])
+        (limbs 64 [a0, a1, a2, a3] * 3)
+        (limbs 64 [m0, m1, m2, m3])
   &&
   limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
 }

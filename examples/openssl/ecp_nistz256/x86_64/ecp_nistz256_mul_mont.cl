@@ -362,9 +362,9 @@ assert eqmod limbs 64 [0, 0, 0, 0, r12, r13, r8, r9, r10]
              limbs 64 [m0, m1, m2, m3] && true;
 *)
 
-cut eqmod limbs 64 [0, 0, 0, 0, r12, r13, r8, r9, r10]
+cut eqmod (limbs 64 [0, 0, 0, 0, r12, r13, r8, r9, r10])
           (limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3])
-          limbs 64 [m0, m1, m2, m3] &&
+          (limbs 64 [m0, m1, m2, m3]) &&
     and [m0 = 0xffffffffffffffff@64, m1 = 0x00000000ffffffff@64,
          m2 = 0x0000000000000000@64, m3 = 0xffffffff00000001@64,
          r14=0x00000000ffffffff@64, r15=0xffffffff00000001@64,
@@ -410,12 +410,12 @@ cmov r9 carry rbp r9;
 (* NOTE: final reduction *)
 
 assert true &&
-       eqmod limbs 64 [r12, r13, r8, r9, 0@64]
-             limbs 64 [r12o, r13o, r8o, r9o, r10o]
-             limbs 64 [m0, m1, m2, m3, 0@64];
-assume eqmod limbs 64 [r12, r13, r8, r9, 0]
-             limbs 64 [r12o, r13o, r8o, r9o, r10o]
-             limbs 64 [m0, m1, m2, m3, 0] && true;
+       eqmod (limbs 64 [r12, r13, r8, r9, 0@64])
+             (limbs 64 [r12o, r13o, r8o, r9o, r10o])
+             (limbs 64 [m0, m1, m2, m3, 0@64]);
+assume eqmod (limbs 64 [r12, r13, r8, r9, 0])
+             (limbs 64 [r12o, r13o, r8o, r9o, r10o])
+             (limbs 64 [m0, m1, m2, m3, 0]) && true;
        
 (* mov    %r8,0x10(%rdi)                           #! EA = L0x7fffffffda00; PC = 0x55555557d939 *)
 mov L0x7fffffffda00 r8;
@@ -450,9 +450,9 @@ mov c2 L0x7fffffffda00;
 mov c3 L0x7fffffffda08;
 
 {
-  eqmod limbs 64 [0, 0, 0, 0, c0, c1, c2, c3]
-        limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3]
-        limbs 64 [m0, m1, m2, m3]
+  eqmod (limbs 64 [0, 0, 0, 0, c0, c1, c2, c3])
+        (limbs 64 [a0, a1, a2, a3] * limbs 64 [b0, b1, b2, b3])
+        (limbs 64 [m0, m1, m2, m3])
 &&
   limbs 64 [c0, c1, c2, c3] <u limbs 64 [m0, m1, m2, m3]
 }

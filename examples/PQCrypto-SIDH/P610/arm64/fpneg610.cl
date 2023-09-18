@@ -210,9 +210,9 @@ mov c9 L0xffffffffe7f0;
 {
   true
 &&
-  and [eqsmod limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9]
-              (-1)@640 * limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9]
-              limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9],
+  and [eqsmod (limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9])
+              ((-1)@640 * limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9])
+              (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9]),
        limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9] <=u
        2@640 * limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9]]
             

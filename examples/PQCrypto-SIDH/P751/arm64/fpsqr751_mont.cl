@@ -2894,10 +2894,10 @@ mov c6 L0xffffffffe8c8; mov c7 L0xffffffffe8d0; mov c8 L0xffffffffe8d8;
 mov c9 L0xffffffffe8e0; mov ca L0xffffffffe8e8; mov cb L0xffffffffe8f0; 
 
 {
-  eqmod limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
-                  c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, ca, cb]
-        limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aa, ab]**2
-        limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb]
+  eqmod (limbs 64 [0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0,
+                   c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, ca, cb])
+        ((limbs 64 [a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aa, ab])**2)
+        (limbs 64 [m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, ma, mb])
   prove with [ precondition ]
 &&
   limbs 64 [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, ca, cb] <u

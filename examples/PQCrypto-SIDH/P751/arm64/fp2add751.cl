@@ -501,34 +501,34 @@ mov ci6 L0xffffffffe448; mov ci7 L0xffffffffe450; mov ci8 L0xffffffffe458;
 mov ci9 L0xffffffffe460; mov cia L0xffffffffe468; mov cib L0xffffffffe470;
 
 assert true
-    && and [eqmod limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb]
-                  limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-                  limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb]
-                  limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb],
-            eqmod limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib]
-                  limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib] +
-                  limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib]
-                  limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]];
-assume and [eqmod limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb]
-                  limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-                  limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb]
-                  limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb],
-            eqmod limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib]
-                  limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib] +
-                  limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib]
-                  limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]]
+    && and [eqmod (limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb])
+                  (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+                   limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb])
+                  (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]),
+            eqmod (limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib])
+                  (limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib] +
+                   limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib])
+                  (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb])];
+assume and [eqmod (limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb])
+                  (limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+                   limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb])
+                  (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]),
+            eqmod (limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib])
+                  (limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib] +
+                   limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib])
+                  (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb])]
     && true;
 
 ghost I@uint64 : I**2 + 1 = 0 && true;
 
 {
-  eqmod (    limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] +
-         I * limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib])
-        (    limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
-         I * limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) +
-        (    limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb] +
-         I * limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib])
-        limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb]        
+  eqmod ((    limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] +
+          I * limbs 64 [ci0,ci1,ci2,ci3,ci4,ci5,ci6,ci7,ci8,ci9,cia,cib]))
+        ((    limbs 64 [ar0,ar1,ar2,ar3,ar4,ar5,ar6,ar7,ar8,ar9,ara,arb] +
+          I * limbs 64 [ai0,ai1,ai2,ai3,ai4,ai5,ai6,ai7,ai8,ai9,aia,aib]) +
+         (    limbs 64 [br0,br1,br2,br3,br4,br5,br6,br7,br8,br9,bra,brb] +
+          I * limbs 64 [bi0,bi1,bi2,bi3,bi4,bi5,bi6,bi7,bi8,bi9,bia,bib]))
+        (limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb])
 &&
   and [limbs 64 [cr0,cr1,cr2,cr3,cr4,cr5,cr6,cr7,cr8,cr9,cra,crb] <u
        2@768 * limbs 64 [m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,ma,mb],
