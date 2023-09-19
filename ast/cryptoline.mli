@@ -65,8 +65,14 @@ val typ_to_unsigned : typ -> typ
 val typ_to_size : typ -> size -> typ
 (** [typ_to_size t w] is [t] with size changed to [w]. *)
 
+val typ_to_double_size : typ -> typ
+(** [typ_to_size t] is [t] with size doubled. *)
+
 val cmp_typ : typ -> typ -> int
 (** [cmp_typ a1 a2] compares two types. *)
+
+val typ_map : (int -> int) -> typ -> typ
+(** [typ_map f t] applies [f] to the size of [t] *)
 
 
 (** {1 Variables} *)

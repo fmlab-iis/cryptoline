@@ -105,11 +105,11 @@ let typ_is_signed ty =
 let typ_to_signed ty =
   match ty with
   | Tuint w -> Tsint w
-  | Tsint _w -> ty
+  | Tsint _ -> ty
 
 let typ_to_unsigned ty =
   match ty with
-  | Tuint _w -> ty
+  | Tuint _ -> ty
   | Tsint w -> Tuint w
 
 let typ_to_size ty w =
@@ -117,12 +117,22 @@ let typ_to_size ty w =
   | Tuint _ -> Tuint w
   | Tsint _ -> Tsint w
 
+let typ_to_double_size ty =
+  match ty with
+  | Tuint w -> Tuint (w * 2)
+  | Tsint w -> Tsint (w * 2)
+
 let cmp_typ t1 t2 =
   match t1, t2 with
   | Tuint w1, Tuint w2 -> compare w1 w2
   | Tuint _, Tsint _ -> -1
   | Tsint _, Tuint _ -> 1
   | Tsint w1, Tsint w2 -> compare w1 w2
+
+let typ_map f ty =
+  match ty with
+  | Tuint w -> Tuint (f w)
+  | Tsint w -> Tsint (f w)
 
 
 (** Variables *)
