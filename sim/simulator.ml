@@ -25,6 +25,8 @@ let apply_assignment_rewriting = ref false
 
 let print_hexadecimal = ref false
 
+let slice_size = ref 20
+
 type option_spec =
   OInt of (int -> unit)
 | OBool of (bool -> unit)
@@ -72,6 +74,14 @@ let option_print_hexadecimal =
     oprint = fun _ -> print_endline (name ^ " = " ^ string_of_bool !option)
   }
 
+let option_slice_size =
+  {
+    oname = "slice_size";
+    odesc = "The number of instructions printed at a time for sliced program";
+    ospec = OInt (fun n -> slice_size := n);
+    oprint = fun _ -> print_endline ("slice_size = " ^ string_of_int !slice_size)
+  }
+
 let options = Hashtbl.create 10
 
 let find_option name = Hashtbl.find options name
@@ -85,7 +95,7 @@ let get_options () =
 
 let _ = List.iter register_option [
             option_num_prev_instrs_to_print; option_num_next_instrs_to_print;
-            option_rewrite_assignments; option_print_hexadecimal
+            option_rewrite_assignments; option_print_hexadecimal; option_slice_size
           ]
 
 (* Convert an argument to an integer. Raise InvalidArgument if the argument is not a valid integer. *)
@@ -684,6 +694,14 @@ let exec_depend m var i =
                             print_endline (string_of_var x ^ ": Uninitialized")
                         ) vars
 
+let group_list xs n =
+  let helper (n, c, res) x =
+    if c == 0 then (n, n - 1, [x]::res)
+    else match res with
+         | [] -> (n, c - 1, [[x]])
+         | xs::rest -> (n, c - 1, (x::xs)::rest) in
+  List.fold_left helper (n, n, []) xs |> (fun (_, _, xs) -> xs) |> List.rev_map List.rev
+
 let exec_slice m var i =
   let history = List.filter (fun (_, _, ps) -> match ps with
                                                | (j, _)::_ -> j >= i
@@ -706,7 +724,18 @@ let exec_slice m var i =
                                                          |> dessa_program
                                                          |> List.iter (fun i -> print_endline (string_of_instr i))
                                       | _ -> ()
-  else List.iter print_indexed_instr relevant_instrs
+  else let groups = group_list relevant_instrs !slice_size in
+       let pause = ref true in
+       let num_groups = List.length groups in
+       List.iteri (fun i relevant_instrs ->
+           let _ = List.iter print_indexed_instr relevant_instrs in
+           let _ = if !pause && i < num_groups - 1 then
+                     let _ = print_string ("----- Press Enter to Continue -----") in
+                     let _ = flush stdout in
+                     let c = input_char stdin in
+                     if c = 'q' || c = 'Q' then pause := false in
+           ()
+         ) groups
 
 let command_exit = {
     cname = "exit";
