@@ -2451,6 +2451,12 @@ let parse_veexp_poly lno p_tok ves_tok =
   let p = p_tok ctx in
   lift_elistop_vec (poly p) lno ves_tok ctx
 
+let parse_veexp_polyv lno ps_tok ves_tok =
+  fun ctx ->
+  let ps = ps_tok ctx in
+  let ess = ves_tok ctx in
+  let _ = check_vec_sizes lno (ps::ess) in
+  List.rev (List.rev_map2 poly ps (transpose_lists ess))
 
 (* ---------- Range Predicates Parsing ---------- *)
 

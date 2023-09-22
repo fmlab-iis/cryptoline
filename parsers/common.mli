@@ -835,7 +835,10 @@ val parse_veexp_limbs : lno -> Z.t contextual -> eexp list list contextual -> ee
 (** [parse_veexp_limbs lno w_tok ves_tok] parses limbs of vectors *)
 
 val parse_veexp_poly : lno -> eexp contextual -> eexp list list contextual -> eexp list contextual
-(** [parse_veexp_poly lno w_tok ves_tok] parses polynomials of vectors *)
+(** [parse_veexp_poly lno p_tok ves_tok] parses polynomials of vectors *)
+
+val parse_veexp_polyv : lno -> eexp list contextual -> eexp list list contextual -> eexp list contextual
+(** [parse_veexp_polyv lno ps_tok ves_tok] parses polynomials of vectors *)
 
 
 (* ---------- Range Predicates Parsing ---------- *)

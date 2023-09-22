@@ -626,6 +626,7 @@ veexp:
   | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
                                                   { parse_veexp_limbs (get_line_start()) $2 $4 }
   | POLY eexp LSQUARE veexps RSQUARE              { parse_veexp_poly (get_line_start()) $2 $4 }
+  | POLY veexp_primary LSQUARE veexps RSQUARE     { parse_veexp_polyv (get_line_start()) $2 $4 }
 ;
 
 veexps:
