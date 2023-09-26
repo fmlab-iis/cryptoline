@@ -1859,7 +1859,7 @@ let unpack_vinstr_spl mapper ctx lno dest1_tok dest2_tok src_tok num =
   let dest1_vectyp =
     (typ_to_size relmtyp (size_of_typ relmtyp - n), List.length src) in
   let dest2_vectyp =
-    (typ_to_size relmtyp n, List.length src) in
+    (typ_to_size (typ_to_unsigned relmtyp) n, List.length src) in
   let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some dest1_vectyp) in
   let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_vectyp) in
   unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num
