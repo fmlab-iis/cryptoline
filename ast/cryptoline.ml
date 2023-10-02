@@ -2871,9 +2871,9 @@ let subst_instr am em rm i =
   | Icut e -> Icut (subst_bexp_prove_with em rm e)
   | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
 
-let subst_program am em rm p = List.map (subst_instr am em rm) p
+let subst_program am em rm p = List.rev_map (subst_instr am em rm) p |> List.rev
 
-let subst_lined_program am em rm p = List.map (fun (lno, i) -> lno, subst_instr am em rm i) p
+let subst_lined_program am em rm p = List.rev_map (fun (lno, i) -> lno, subst_instr am em rm i) p |> List.rev
 
 let rec replace_eexp pats e =
   try
