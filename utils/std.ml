@@ -65,6 +65,8 @@ let tmap f xs = List.rev_map f xs |> List.rev
 
 let (@@) ls1 ls2 = tappend ls1 ls2
 
+let rcons xs x = List.rev (x::List.rev xs)
+
 let partition_at xs n =
   let _ = assert (0 <= n) in
   let _ = assert (n <= List.length xs) in

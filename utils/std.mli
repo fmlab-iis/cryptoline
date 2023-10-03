@@ -60,6 +60,9 @@ val tmap : ('a -> 'b) -> 'a list -> 'b list
 val (@@) : 'a list -> 'a list -> 'a list
 (** [l1 @@ l2] is [tappend l1 l2]. *)
 
+val rcons : 'a list -> 'a -> 'a list
+(** [rcons xs x] returns the list [xs@[x]] but is tail-recursive *)
+
 val partition_at : 'a list -> int -> 'a list * 'a list
 (** partitition l n = (the first n elements of l, the remaining elements *)
 

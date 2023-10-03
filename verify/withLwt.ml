@@ -10,7 +10,7 @@ open Utils.Std
 open Tasks
 
 let apply_to_cuts_lwt ids f delivered_helper res pending ss =
-  let ids = ids |> Option.map Hashset.to_list |> Option.map (List.map (normalize_index (List.length ss))) |> Option.map Hashset.of_list in
+  let ids = ids |> Option.map Hashset.to_list |> Option.map (List.rev_map (normalize_index (List.length ss))) |> Option.map List.rev |> Option.map Hashset.of_list in
   let rec helper i (res, pending) ss =
     match ss with
     | [] -> finish_pending delivered_helper res pending
@@ -31,7 +31,7 @@ let verify_safety_conditions timeout f prog qs hashopt =
     let fp = safety_assumptions f p q hashopt in
     let%lwt res =
       try%lwt
-            match%lwt solve_simp ~timeout:timeout ~header:header (fp@[q]) with
+            match%lwt solve_simp ~timeout:timeout ~header:header (rcons fp q) with
             | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
             | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
             | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
@@ -90,8 +90,8 @@ let write_singular_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map singular_of_eexp gen)) in
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map singular_of_eexp gen |> List.rev)) in
     let poly = singular_of_eexp p in
     "proc is_generator(poly p, ideal I) {\n"
     ^ "  int idx;\n"
@@ -123,8 +123,8 @@ let write_sage_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map sage_of_eexp gen)) in
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map sage_of_eexp gen |> List.rev)) in
     let poly = sage_of_eexp p in
     "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (max 1 (List.length vars)) ^ ")\n"
     ^ "I = (" ^ generator ^ ") * R\n"
@@ -143,9 +143,9 @@ let write_magma_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
     let varlen = max 1 (List.length vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map magma_of_eexp gen |> List.rev)) in
     let poly = magma_of_eexp p in
     "function is_generator(p, I)\n"
     ^ "  for q in I do\n"
@@ -180,8 +180,8 @@ let write_mathematica_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map mathematica_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map mathematica_of_eexp gen)) in
+      | _ -> String.concat "," (List.rev_map mathematica_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map mathematica_of_eexp gen |> List.rev)) in
     let poly = mathematica_of_eexp p in
     "vars = {" ^ varseq ^ "};\n"
     ^ "gs = {" ^ generator ^ "};\n"
@@ -204,7 +204,7 @@ let write_macaulay2_input ifile vars gen p =
       let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
       if no_var_in_generator then
         (dummy_var::vars,
-         List.map (fun e -> emul (evar dummy_var) e) gen,
+         List.rev_map (emul (evar dummy_var)) gen |> List.rev,
          emul (evar dummy_var) p,
          string_of_var dummy_var ^ "*0")
       else
@@ -212,8 +212,8 @@ let write_macaulay2_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map macaulay2_of_var vars) in
-    let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.map macaulay2_of_eexp gen)) in
+      | _ -> String.concat "," (List.rev_map macaulay2_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.rev_map macaulay2_of_eexp gen |> List.rev)) in
     let poly = macaulay2_of_eexp p in
     "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
     ^ "myIdeal = ideal(" ^ generator ^ ")\n"
@@ -241,7 +241,7 @@ let write_maple_input ifile vars gen p =
     let varseq =
       match vars with
       | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
     let poly = magma_of_eexp p in
     "interface(prettyprint=0):\n"
     ^ "with(PolynomialIdeals):\n"
@@ -483,8 +483,8 @@ let verify_rspec_single_conjunct header s hashopt =
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
     let rheader = ["Range condition: " ^ string_of_bexp g] in
     let%lwt r = solve_simp ~solver:solver
-                  ~header:(List.rev_append (List.rev header) rheader)
-                  (f::(List.rev (g::List.rev p))) in
+                  ~header:(header @@ rheader)
+                  (f::(rcons p g)) in
     Lwt.return (r = Unsat) in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
@@ -502,16 +502,16 @@ let verify_rspec_single_conjunct header s hashopt =
  *)
 let verify_rspec_no_rcut header s hashopt : bool task list =
   let verify s = fun () -> verify_rspec_single_conjunct header s hashopt in
-  List.map verify (split_rspec_post s)
+  List.rev_map verify (split_rspec_post s) |> List.rev
 
 let verify_entailment ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
   let eheader = ["Algebraic condition: " ^ string_of_ebexp post;
                  "Try #0"] in
-  let%lwt r = is_in_ideal ~solver:solver (headers@eheader) vars [] p in
+  let%lwt r = is_in_ideal ~solver:solver (headers @@ eheader) vars [] p in
   if r then Lwt.return_true
   else let eheader = ["Algebraic condition: " ^ string_of_ebexp post;
                       "Try #1"] in
-       let%lwt r = is_in_ideal ~solver:solver (headers@eheader) vars ideal p in
+       let%lwt r = is_in_ideal ~solver:solver (headers @@ eheader) vars ideal p in
        Lwt.return r
 
 (* Verify an algebraic specification using a computer algebra system. *)
@@ -601,8 +601,8 @@ let verify_eassert vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks headers (sid, s) =
-    let headers = headers@["= Algebraic assertion #" ^ string_of_int sid ^ ": " ^
-                             Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " ="] in
+    let headers = rcons headers ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^
+                                   Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " =") in
     let tasks = verify_espec_no_ecut headers vgen s hashopt in
     tasks in
   let rec verify_spec cut_headers (res, pending) s =
@@ -623,8 +623,8 @@ let verify_rassert s hashopt =
   let _ = safe_trace "===== Verifying range assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks headers (sid, s) =
-    let headers = headers@["= Range assertion #" ^ string_of_int sid ^ ": " ^
-                             Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " ="] in
+    let headers = rcons headers ("= Range assertion #" ^ string_of_int sid ^ ": " ^
+                                   Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " =") in
     let tasks = verify_rspec_no_rcut headers s hashopt in
     tasks in
   let rec verify_spec headers (res, pending) s =
@@ -648,7 +648,7 @@ let verify_rspec s hashopt =
   let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
   (* Check previous result *)
   let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (headers@["= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " ="]) (res, pending) s
+    if res then verify_ands (rcons headers ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")) (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_rcuts verify delivered_helper true [] (cut_rspec s)
 
@@ -666,7 +666,7 @@ let verify_espec vgen s hashopt =
   let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
   (* Check previous result *)
   let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (headers@["= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " ="]) (res, pending) s
+    if res then verify_ands (rcons headers ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")) (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_ecuts verify (&&) true [] (cut_espec s)
 
