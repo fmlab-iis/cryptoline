@@ -1,15 +1,45 @@
-(* quine: cv -v -isafety -jobs 24 -slicing -no_carry_constraint  polyvec_ntt_vcl.vcl
-Parsing Cryptoline file:                [OK]            0.113058 seconds
-Checking well-formedness:               [OK]            0.038321 seconds
-Transforming to SSA form:               [OK]            0.036695 seconds
-Rewriting assignments:                  [OK]            0.052893 seconds
-Verifying program safety:               [OK]            243.865357 seconds
-Verifying range assertions:             [OK]            86.031386 seconds
-Verifying range specification:          [OK]            301.620362 seconds
-Rewriting value-preserved casting:      [OK]            0.000679 seconds
-Verifying algebraic assertions:         [OK]            0.009781 seconds
-Verifying algebraic specification:      [OK]            41.508523 seconds
-Verification result:                    [OK]            673.295143 seconds
+(* quine: cv.exe -v -isafety -jobs 48 -slicing -no_carry_constraint polyvec_ntt_vcl.vcl
+Parsing CryptoLine file:                [OK]            0.103204 seconds
+Checking well-formedness:               [OK]            0.032103 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:               [OK]            0.028382 seconds
+Normalizing specification:              [OK]            0.031131 seconds
+Rewriting assignments:                  [OK]            0.040372 seconds
+Verifying program safety:               [OK]            34.822545 seconds
+Verifying range assertions:             [OK]            35.193180 seconds
+Verifying range specification:          [OK]            24.996538 seconds
+Rewriting value-preserved casting:      [OK]            0.004681 seconds
+Verifying algebraic assertions:         [OK]            0.008927 seconds
+Verifying algebraic specification:      [OK]            4.586786 seconds
+Procedure verification:                 [OK]            99.726738 seconds
+
+Summary
+-------
+Verification result:                    [OK]            99.862649 seconds
+*)
+
+(* quine: cv.exe -v -isafety -jobs 24 -slicing -no_carry_constraint polyvec_ntt_vcl.vcl
+Parsing CryptoLine file:                [OK]            0.100056 seconds
+Checking well-formedness:               [OK]            0.030645 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:               [OK]            0.027273 seconds
+Normalizing specification:              [OK]            0.029583 seconds
+Rewriting assignments:                  [OK]            0.038485 seconds
+Verifying program safety:               [OK]            40.959620 seconds
+Verifying range assertions:             [OK]            43.534263 seconds
+Verifying range specification:          [OK]            25.268802 seconds
+Rewriting value-preserved casting:      [OK]            0.008775 seconds
+Verifying algebraic assertions:         [OK]            0.009168 seconds
+Verifying algebraic specification:      [OK]            4.160946 seconds
+Procedure verification:                 [OK]            114.050508 seconds
+
+Summary
+-------
+Verification result:                    [OK]            114.181733 seconds
 *)
 
 proc main (
@@ -79,141 +109,139 @@ sint16 f248, sint16 f249, sint16 f250, sint16 f251,
 sint16 f252, sint16 f253, sint16 f254, sint16 f255
 ) =
 {
-true && and [
-(-3329)@16 <s f000, f000 <s (3329)@16, (-3329)@16 <s f001, f001 <s (3329)@16,
-(-3329)@16 <s f002, f002 <s (3329)@16, (-3329)@16 <s f003, f003 <s (3329)@16,
-(-3329)@16 <s f004, f004 <s (3329)@16, (-3329)@16 <s f005, f005 <s (3329)@16,
-(-3329)@16 <s f006, f006 <s (3329)@16, (-3329)@16 <s f007, f007 <s (3329)@16,
-(-3329)@16 <s f008, f008 <s (3329)@16, (-3329)@16 <s f009, f009 <s (3329)@16,
-(-3329)@16 <s f010, f010 <s (3329)@16, (-3329)@16 <s f011, f011 <s (3329)@16,
-(-3329)@16 <s f012, f012 <s (3329)@16, (-3329)@16 <s f013, f013 <s (3329)@16,
-(-3329)@16 <s f014, f014 <s (3329)@16, (-3329)@16 <s f015, f015 <s (3329)@16,
-(-3329)@16 <s f016, f016 <s (3329)@16, (-3329)@16 <s f017, f017 <s (3329)@16,
-(-3329)@16 <s f018, f018 <s (3329)@16, (-3329)@16 <s f019, f019 <s (3329)@16,
-(-3329)@16 <s f020, f020 <s (3329)@16, (-3329)@16 <s f021, f021 <s (3329)@16,
-(-3329)@16 <s f022, f022 <s (3329)@16, (-3329)@16 <s f023, f023 <s (3329)@16,
-(-3329)@16 <s f024, f024 <s (3329)@16, (-3329)@16 <s f025, f025 <s (3329)@16,
-(-3329)@16 <s f026, f026 <s (3329)@16, (-3329)@16 <s f027, f027 <s (3329)@16,
-(-3329)@16 <s f028, f028 <s (3329)@16, (-3329)@16 <s f029, f029 <s (3329)@16,
-(-3329)@16 <s f030, f030 <s (3329)@16, (-3329)@16 <s f031, f031 <s (3329)@16,
-(-3329)@16 <s f032, f032 <s (3329)@16, (-3329)@16 <s f033, f033 <s (3329)@16,
-(-3329)@16 <s f034, f034 <s (3329)@16, (-3329)@16 <s f035, f035 <s (3329)@16,
-(-3329)@16 <s f036, f036 <s (3329)@16, (-3329)@16 <s f037, f037 <s (3329)@16,
-(-3329)@16 <s f038, f038 <s (3329)@16, (-3329)@16 <s f039, f039 <s (3329)@16,
-(-3329)@16 <s f040, f040 <s (3329)@16, (-3329)@16 <s f041, f041 <s (3329)@16,
-(-3329)@16 <s f042, f042 <s (3329)@16, (-3329)@16 <s f043, f043 <s (3329)@16,
-(-3329)@16 <s f044, f044 <s (3329)@16, (-3329)@16 <s f045, f045 <s (3329)@16,
-(-3329)@16 <s f046, f046 <s (3329)@16, (-3329)@16 <s f047, f047 <s (3329)@16,
-(-3329)@16 <s f048, f048 <s (3329)@16, (-3329)@16 <s f049, f049 <s (3329)@16,
-(-3329)@16 <s f050, f050 <s (3329)@16, (-3329)@16 <s f051, f051 <s (3329)@16,
-(-3329)@16 <s f052, f052 <s (3329)@16, (-3329)@16 <s f053, f053 <s (3329)@16,
-(-3329)@16 <s f054, f054 <s (3329)@16, (-3329)@16 <s f055, f055 <s (3329)@16,
-(-3329)@16 <s f056, f056 <s (3329)@16, (-3329)@16 <s f057, f057 <s (3329)@16,
-(-3329)@16 <s f058, f058 <s (3329)@16, (-3329)@16 <s f059, f059 <s (3329)@16,
-(-3329)@16 <s f060, f060 <s (3329)@16, (-3329)@16 <s f061, f061 <s (3329)@16,
-(-3329)@16 <s f062, f062 <s (3329)@16, (-3329)@16 <s f063, f063 <s (3329)@16,
-(-3329)@16 <s f064, f064 <s (3329)@16, (-3329)@16 <s f065, f065 <s (3329)@16,
-(-3329)@16 <s f066, f066 <s (3329)@16, (-3329)@16 <s f067, f067 <s (3329)@16,
-(-3329)@16 <s f068, f068 <s (3329)@16, (-3329)@16 <s f069, f069 <s (3329)@16,
-(-3329)@16 <s f070, f070 <s (3329)@16, (-3329)@16 <s f071, f071 <s (3329)@16,
-(-3329)@16 <s f072, f072 <s (3329)@16, (-3329)@16 <s f073, f073 <s (3329)@16,
-(-3329)@16 <s f074, f074 <s (3329)@16, (-3329)@16 <s f075, f075 <s (3329)@16,
-(-3329)@16 <s f076, f076 <s (3329)@16, (-3329)@16 <s f077, f077 <s (3329)@16,
-(-3329)@16 <s f078, f078 <s (3329)@16, (-3329)@16 <s f079, f079 <s (3329)@16,
-(-3329)@16 <s f080, f080 <s (3329)@16, (-3329)@16 <s f081, f081 <s (3329)@16,
-(-3329)@16 <s f082, f082 <s (3329)@16, (-3329)@16 <s f083, f083 <s (3329)@16,
-(-3329)@16 <s f084, f084 <s (3329)@16, (-3329)@16 <s f085, f085 <s (3329)@16,
-(-3329)@16 <s f086, f086 <s (3329)@16, (-3329)@16 <s f087, f087 <s (3329)@16,
-(-3329)@16 <s f088, f088 <s (3329)@16, (-3329)@16 <s f089, f089 <s (3329)@16,
-(-3329)@16 <s f090, f090 <s (3329)@16, (-3329)@16 <s f091, f091 <s (3329)@16,
-(-3329)@16 <s f092, f092 <s (3329)@16, (-3329)@16 <s f093, f093 <s (3329)@16,
-(-3329)@16 <s f094, f094 <s (3329)@16, (-3329)@16 <s f095, f095 <s (3329)@16,
-(-3329)@16 <s f096, f096 <s (3329)@16, (-3329)@16 <s f097, f097 <s (3329)@16,
-(-3329)@16 <s f098, f098 <s (3329)@16, (-3329)@16 <s f099, f099 <s (3329)@16,
-(-3329)@16 <s f100, f100 <s (3329)@16, (-3329)@16 <s f101, f101 <s (3329)@16,
-(-3329)@16 <s f102, f102 <s (3329)@16, (-3329)@16 <s f103, f103 <s (3329)@16,
-(-3329)@16 <s f104, f104 <s (3329)@16, (-3329)@16 <s f105, f105 <s (3329)@16,
-(-3329)@16 <s f106, f106 <s (3329)@16, (-3329)@16 <s f107, f107 <s (3329)@16,
-(-3329)@16 <s f108, f108 <s (3329)@16, (-3329)@16 <s f109, f109 <s (3329)@16,
-(-3329)@16 <s f110, f110 <s (3329)@16, (-3329)@16 <s f111, f111 <s (3329)@16,
-(-3329)@16 <s f112, f112 <s (3329)@16, (-3329)@16 <s f113, f113 <s (3329)@16,
-(-3329)@16 <s f114, f114 <s (3329)@16, (-3329)@16 <s f115, f115 <s (3329)@16,
-(-3329)@16 <s f116, f116 <s (3329)@16, (-3329)@16 <s f117, f117 <s (3329)@16,
-(-3329)@16 <s f118, f118 <s (3329)@16, (-3329)@16 <s f119, f119 <s (3329)@16,
-(-3329)@16 <s f120, f120 <s (3329)@16, (-3329)@16 <s f121, f121 <s (3329)@16,
-(-3329)@16 <s f122, f122 <s (3329)@16, (-3329)@16 <s f123, f123 <s (3329)@16,
-(-3329)@16 <s f124, f124 <s (3329)@16, (-3329)@16 <s f125, f125 <s (3329)@16,
-(-3329)@16 <s f126, f126 <s (3329)@16, (-3329)@16 <s f127, f127 <s (3329)@16,
-(-3329)@16 <s f128, f128 <s (3329)@16, (-3329)@16 <s f129, f129 <s (3329)@16,
-(-3329)@16 <s f130, f130 <s (3329)@16, (-3329)@16 <s f131, f131 <s (3329)@16,
-(-3329)@16 <s f132, f132 <s (3329)@16, (-3329)@16 <s f133, f133 <s (3329)@16,
-(-3329)@16 <s f134, f134 <s (3329)@16, (-3329)@16 <s f135, f135 <s (3329)@16,
-(-3329)@16 <s f136, f136 <s (3329)@16, (-3329)@16 <s f137, f137 <s (3329)@16,
-(-3329)@16 <s f138, f138 <s (3329)@16, (-3329)@16 <s f139, f139 <s (3329)@16,
-(-3329)@16 <s f140, f140 <s (3329)@16, (-3329)@16 <s f141, f141 <s (3329)@16,
-(-3329)@16 <s f142, f142 <s (3329)@16, (-3329)@16 <s f143, f143 <s (3329)@16,
-(-3329)@16 <s f144, f144 <s (3329)@16, (-3329)@16 <s f145, f145 <s (3329)@16,
-(-3329)@16 <s f146, f146 <s (3329)@16, (-3329)@16 <s f147, f147 <s (3329)@16,
-(-3329)@16 <s f148, f148 <s (3329)@16, (-3329)@16 <s f149, f149 <s (3329)@16,
-(-3329)@16 <s f150, f150 <s (3329)@16, (-3329)@16 <s f151, f151 <s (3329)@16,
-(-3329)@16 <s f152, f152 <s (3329)@16, (-3329)@16 <s f153, f153 <s (3329)@16,
-(-3329)@16 <s f154, f154 <s (3329)@16, (-3329)@16 <s f155, f155 <s (3329)@16,
-(-3329)@16 <s f156, f156 <s (3329)@16, (-3329)@16 <s f157, f157 <s (3329)@16,
-(-3329)@16 <s f158, f158 <s (3329)@16, (-3329)@16 <s f159, f159 <s (3329)@16,
-(-3329)@16 <s f160, f160 <s (3329)@16, (-3329)@16 <s f161, f161 <s (3329)@16,
-(-3329)@16 <s f162, f162 <s (3329)@16, (-3329)@16 <s f163, f163 <s (3329)@16,
-(-3329)@16 <s f164, f164 <s (3329)@16, (-3329)@16 <s f165, f165 <s (3329)@16,
-(-3329)@16 <s f166, f166 <s (3329)@16, (-3329)@16 <s f167, f167 <s (3329)@16,
-(-3329)@16 <s f168, f168 <s (3329)@16, (-3329)@16 <s f169, f169 <s (3329)@16,
-(-3329)@16 <s f170, f170 <s (3329)@16, (-3329)@16 <s f171, f171 <s (3329)@16,
-(-3329)@16 <s f172, f172 <s (3329)@16, (-3329)@16 <s f173, f173 <s (3329)@16,
-(-3329)@16 <s f174, f174 <s (3329)@16, (-3329)@16 <s f175, f175 <s (3329)@16,
-(-3329)@16 <s f176, f176 <s (3329)@16, (-3329)@16 <s f177, f177 <s (3329)@16,
-(-3329)@16 <s f178, f178 <s (3329)@16, (-3329)@16 <s f179, f179 <s (3329)@16,
-(-3329)@16 <s f180, f180 <s (3329)@16, (-3329)@16 <s f181, f181 <s (3329)@16,
-(-3329)@16 <s f182, f182 <s (3329)@16, (-3329)@16 <s f183, f183 <s (3329)@16,
-(-3329)@16 <s f184, f184 <s (3329)@16, (-3329)@16 <s f185, f185 <s (3329)@16,
-(-3329)@16 <s f186, f186 <s (3329)@16, (-3329)@16 <s f187, f187 <s (3329)@16,
-(-3329)@16 <s f188, f188 <s (3329)@16, (-3329)@16 <s f189, f189 <s (3329)@16,
-(-3329)@16 <s f190, f190 <s (3329)@16, (-3329)@16 <s f191, f191 <s (3329)@16,
-(-3329)@16 <s f192, f192 <s (3329)@16, (-3329)@16 <s f193, f193 <s (3329)@16,
-(-3329)@16 <s f194, f194 <s (3329)@16, (-3329)@16 <s f195, f195 <s (3329)@16,
-(-3329)@16 <s f196, f196 <s (3329)@16, (-3329)@16 <s f197, f197 <s (3329)@16,
-(-3329)@16 <s f198, f198 <s (3329)@16, (-3329)@16 <s f199, f199 <s (3329)@16,
-(-3329)@16 <s f200, f200 <s (3329)@16, (-3329)@16 <s f201, f201 <s (3329)@16,
-(-3329)@16 <s f202, f202 <s (3329)@16, (-3329)@16 <s f203, f203 <s (3329)@16,
-(-3329)@16 <s f204, f204 <s (3329)@16, (-3329)@16 <s f205, f205 <s (3329)@16,
-(-3329)@16 <s f206, f206 <s (3329)@16, (-3329)@16 <s f207, f207 <s (3329)@16,
-(-3329)@16 <s f208, f208 <s (3329)@16, (-3329)@16 <s f209, f209 <s (3329)@16,
-(-3329)@16 <s f210, f210 <s (3329)@16, (-3329)@16 <s f211, f211 <s (3329)@16,
-(-3329)@16 <s f212, f212 <s (3329)@16, (-3329)@16 <s f213, f213 <s (3329)@16,
-(-3329)@16 <s f214, f214 <s (3329)@16, (-3329)@16 <s f215, f215 <s (3329)@16,
-(-3329)@16 <s f216, f216 <s (3329)@16, (-3329)@16 <s f217, f217 <s (3329)@16,
-(-3329)@16 <s f218, f218 <s (3329)@16, (-3329)@16 <s f219, f219 <s (3329)@16,
-(-3329)@16 <s f220, f220 <s (3329)@16, (-3329)@16 <s f221, f221 <s (3329)@16,
-(-3329)@16 <s f222, f222 <s (3329)@16, (-3329)@16 <s f223, f223 <s (3329)@16,
-(-3329)@16 <s f224, f224 <s (3329)@16, (-3329)@16 <s f225, f225 <s (3329)@16,
-(-3329)@16 <s f226, f226 <s (3329)@16, (-3329)@16 <s f227, f227 <s (3329)@16,
-(-3329)@16 <s f228, f228 <s (3329)@16, (-3329)@16 <s f229, f229 <s (3329)@16,
-(-3329)@16 <s f230, f230 <s (3329)@16, (-3329)@16 <s f231, f231 <s (3329)@16,
-(-3329)@16 <s f232, f232 <s (3329)@16, (-3329)@16 <s f233, f233 <s (3329)@16,
-(-3329)@16 <s f234, f234 <s (3329)@16, (-3329)@16 <s f235, f235 <s (3329)@16,
-(-3329)@16 <s f236, f236 <s (3329)@16, (-3329)@16 <s f237, f237 <s (3329)@16,
-(-3329)@16 <s f238, f238 <s (3329)@16, (-3329)@16 <s f239, f239 <s (3329)@16,
-(-3329)@16 <s f240, f240 <s (3329)@16, (-3329)@16 <s f241, f241 <s (3329)@16,
-(-3329)@16 <s f242, f242 <s (3329)@16, (-3329)@16 <s f243, f243 <s (3329)@16,
-(-3329)@16 <s f244, f244 <s (3329)@16, (-3329)@16 <s f245, f245 <s (3329)@16,
-(-3329)@16 <s f246, f246 <s (3329)@16, (-3329)@16 <s f247, f247 <s (3329)@16,
-(-3329)@16 <s f248, f248 <s (3329)@16, (-3329)@16 <s f249, f249 <s (3329)@16,
-(-3329)@16 <s f250, f250 <s (3329)@16, (-3329)@16 <s f251, f251 <s (3329)@16,
-(-3329)@16 <s f252, f252 <s (3329)@16, (-3329)@16 <s f253, f253 <s (3329)@16,
-(-3329)@16 <s f254, f254 <s (3329)@16, (-3329)@16 <s f255, f255 <s (3329)@16
-]
+true &&
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f000,f001,f002,f003] /\
+[f000,f001,f002,f003] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f004,f005,f006,f007] /\
+[f004,f005,f006,f007] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f008,f009,f010,f011] /\
+[f008,f009,f010,f011] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f012,f013,f014,f015] /\
+[f012,f013,f014,f015] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f016,f017,f018,f019] /\
+[f016,f017,f018,f019] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f020,f021,f022,f023] /\
+[f020,f021,f022,f023] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f024,f025,f026,f027] /\
+[f024,f025,f026,f027] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f028,f029,f030,f031] /\
+[f028,f029,f030,f031] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f032,f033,f034,f035] /\
+[f032,f033,f034,f035] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f036,f037,f038,f039] /\
+[f036,f037,f038,f039] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f040,f041,f042,f043] /\
+[f040,f041,f042,f043] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f044,f045,f046,f047] /\
+[f044,f045,f046,f047] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f048,f049,f050,f051] /\
+[f048,f049,f050,f051] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f052,f053,f054,f055] /\
+[f052,f053,f054,f055] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f056,f057,f058,f059] /\
+[f056,f057,f058,f059] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f060,f061,f062,f063] /\
+[f060,f061,f062,f063] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f064,f065,f066,f067] /\
+[f064,f065,f066,f067] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f068,f069,f070,f071] /\
+[f068,f069,f070,f071] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f072,f073,f074,f075] /\
+[f072,f073,f074,f075] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f076,f077,f078,f079] /\
+[f076,f077,f078,f079] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f080,f081,f082,f083] /\
+[f080,f081,f082,f083] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f084,f085,f086,f087] /\
+[f084,f085,f086,f087] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f088,f089,f090,f091] /\
+[f088,f089,f090,f091] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f092,f093,f094,f095] /\
+[f092,f093,f094,f095] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f096,f097,f098,f099] /\
+[f096,f097,f098,f099] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f100,f101,f102,f103] /\
+[f100,f101,f102,f103] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f104,f105,f106,f107] /\
+[f104,f105,f106,f107] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f108,f109,f110,f111] /\
+[f108,f109,f110,f111] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f112,f113,f114,f115] /\
+[f112,f113,f114,f115] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f116,f117,f118,f119] /\
+[f116,f117,f118,f119] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f120,f121,f122,f123] /\
+[f120,f121,f122,f123] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f124,f125,f126,f127] /\
+[f124,f125,f126,f127] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f128,f129,f130,f131] /\
+[f128,f129,f130,f131] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f132,f133,f134,f135] /\
+[f132,f133,f134,f135] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f136,f137,f138,f139] /\
+[f136,f137,f138,f139] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f140,f141,f142,f143] /\
+[f140,f141,f142,f143] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f144,f145,f146,f147] /\
+[f144,f145,f146,f147] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f148,f149,f150,f151] /\
+[f148,f149,f150,f151] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f152,f153,f154,f155] /\
+[f152,f153,f154,f155] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f156,f157,f158,f159] /\
+[f156,f157,f158,f159] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f160,f161,f162,f163] /\
+[f160,f161,f162,f163] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f164,f165,f166,f167] /\
+[f164,f165,f166,f167] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f168,f169,f170,f171] /\
+[f168,f169,f170,f171] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f172,f173,f174,f175] /\
+[f172,f173,f174,f175] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f176,f177,f178,f179] /\
+[f176,f177,f178,f179] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f180,f181,f182,f183] /\
+[f180,f181,f182,f183] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f184,f185,f186,f187] /\
+[f184,f185,f186,f187] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f188,f189,f190,f191] /\
+[f188,f189,f190,f191] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f192,f193,f194,f195] /\
+[f192,f193,f194,f195] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f196,f197,f198,f199] /\
+[f196,f197,f198,f199] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f200,f201,f202,f203] /\
+[f200,f201,f202,f203] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f204,f205,f206,f207] /\
+[f204,f205,f206,f207] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f208,f209,f210,f211] /\
+[f208,f209,f210,f211] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f212,f213,f214,f215] /\
+[f212,f213,f214,f215] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f216,f217,f218,f219] /\
+[f216,f217,f218,f219] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f220,f221,f222,f223] /\
+[f220,f221,f222,f223] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f224,f225,f226,f227] /\
+[f224,f225,f226,f227] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f228,f229,f230,f231] /\
+[f228,f229,f230,f231] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f232,f233,f234,f235] /\
+[f232,f233,f234,f235] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f236,f237,f238,f239] /\
+[f236,f237,f238,f239] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f240,f241,f242,f243] /\
+[f240,f241,f242,f243] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f244,f245,f246,f247] /\
+[f244,f245,f246,f247] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f248,f249,f250,f251] /\
+[f248,f249,f250,f251] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16] /\
+[(-3329)@16,(-3329)@16,(-3329)@16,(-3329)@16] <s [f252,f253,f254,f255] /\
+[f252,f253,f254,f255] <s [(3329)@16,(3329)@16,(3329)@16,(3329)@16]
 }
 
 
 (*********** initialization ***********)
-
 
 
 mov L0x7fffffffaf80 f000; mov L0x7fffffffaf82 f001;  mov L0x7fffffffaf84 f002;
@@ -636,6 +664,26 @@ mov L0x555555639adc (    32)@sint16; mov L0x555555639ade (    32)@sint16;
 
 
 ghost x@bit, inp_poly@bit : inp_poly**2 =
+poly x [
+f000,f001,f002,f003,f004,f005,f006,f007,f008,f009,f010,f011,f012,f013,f014,
+f015,f016,f017,f018,f019,f020,f021,f022,f023,f024,f025,f026,f027,f028,f029,
+f030,f031,f032,f033,f034,f035,f036,f037,f038,f039,f040,f041,f042,f043,f044,
+f045,f046,f047,f048,f049,f050,f051,f052,f053,f054,f055,f056,f057,f058,f059,
+f060,f061,f062,f063,f064,f065,f066,f067,f068,f069,f070,f071,f072,f073,f074,
+f075,f076,f077,f078,f079,f080,f081,f082,f083,f084,f085,f086,f087,f088,f089,
+f090,f091,f092,f093,f094,f095,f096,f097,f098,f099,f100,f101,f102,f103,f104,
+f105,f106,f107,f108,f109,f110,f111,f112,f113,f114,f115,f116,f117,f118,f119,
+f120,f121,f122,f123,f124,f125,f126,f127,f128,f129,f130,f131,f132,f133,f134,
+f135,f136,f137,f138,f139,f140,f141,f142,f143,f144,f145,f146,f147,f148,f149,
+f150,f151,f152,f153,f154,f155,f156,f157,f158,f159,f160,f161,f162,f163,f164,
+f165,f166,f167,f168,f169,f170,f171,f172,f173,f174,f175,f176,f177,f178,f179,
+f180,f181,f182,f183,f184,f185,f186,f187,f188,f189,f190,f191,f192,f193,f194,
+f195,f196,f197,f198,f199,f200,f201,f202,f203,f204,f205,f206,f207,f208,f209,
+f210,f211,f212,f213,f214,f215,f216,f217,f218,f219,f220,f221,f222,f223,f224,
+f225,f226,f227,f228,f229,f230,f231,f232,f233,f234,f235,f236,f237,f238,f239,
+f240,f241,f242,f243,f244,f245,f246,f247,f248,f249,f250,f251,f252,f253,f254,
+f255] && true;
+(*
 f000*(x**0) + f001*(x**1) + f002*(x**2) + f003*(x**3) +
 f004*(x**4) + f005*(x**5) + f006*(x**6) + f007*(x**7) +
 f008*(x**8) + f009*(x**9) + f010*(x**10) + f011*(x**11) +
@@ -701,6 +749,7 @@ f244*(x**244) + f245*(x**245) + f246*(x**246) + f247*(x**247) +
 f248*(x**248) + f249*(x**249) + f250*(x**250) + f251*(x**251) +
 f252*(x**252) + f253*(x**253) + f254*(x**254) + f255*(x**255)
  && true;
+*)
 
 (* #! -> SP = 0x7fffffffa358 *)
 #! 0x7fffffffa358 = 0x7fffffffa358;
@@ -952,355 +1001,331 @@ mov [L0x7fffffffb160, L0x7fffffffb162, L0x7fffffffb164, L0x7fffffffb166, L0x7fff
 
 
 cut
-and [
 eqmod (inp_poly**2)
-(L0x7fffffffaf80*(x**0) + L0x7fffffffaf82*(x**1) + L0x7fffffffaf84*(x**2) +
- L0x7fffffffaf86*(x**3) + L0x7fffffffaf88*(x**4) + L0x7fffffffaf8a*(x**5) +
- L0x7fffffffaf8c*(x**6) + L0x7fffffffaf8e*(x**7) + L0x7fffffffaf90*(x**8) +
- L0x7fffffffaf92*(x**9) + L0x7fffffffaf94*(x**10) + L0x7fffffffaf96*(x**11) +
- L0x7fffffffaf98*(x**12) + L0x7fffffffaf9a*(x**13) + L0x7fffffffaf9c*(x**14) +
- L0x7fffffffaf9e*(x**15) + L0x7fffffffafa0*(x**16) + L0x7fffffffafa2*(x**17) +
- L0x7fffffffafa4*(x**18) + L0x7fffffffafa6*(x**19) + L0x7fffffffafa8*(x**20) +
- L0x7fffffffafaa*(x**21) + L0x7fffffffafac*(x**22) + L0x7fffffffafae*(x**23) +
- L0x7fffffffafb0*(x**24) + L0x7fffffffafb2*(x**25) + L0x7fffffffafb4*(x**26) +
- L0x7fffffffafb6*(x**27) + L0x7fffffffafb8*(x**28) + L0x7fffffffafba*(x**29) +
- L0x7fffffffafbc*(x**30) + L0x7fffffffafbe*(x**31) + L0x7fffffffafc0*(x**32) +
- L0x7fffffffafc2*(x**33) + L0x7fffffffafc4*(x**34) + L0x7fffffffafc6*(x**35) +
- L0x7fffffffafc8*(x**36) + L0x7fffffffafca*(x**37) + L0x7fffffffafcc*(x**38) +
- L0x7fffffffafce*(x**39) + L0x7fffffffafd0*(x**40) + L0x7fffffffafd2*(x**41) +
- L0x7fffffffafd4*(x**42) + L0x7fffffffafd6*(x**43) + L0x7fffffffafd8*(x**44) +
- L0x7fffffffafda*(x**45) + L0x7fffffffafdc*(x**46) + L0x7fffffffafde*(x**47) +
- L0x7fffffffafe0*(x**48) + L0x7fffffffafe2*(x**49) + L0x7fffffffafe4*(x**50) +
- L0x7fffffffafe6*(x**51) + L0x7fffffffafe8*(x**52) + L0x7fffffffafea*(x**53) +
- L0x7fffffffafec*(x**54) + L0x7fffffffafee*(x**55) + L0x7fffffffaff0*(x**56) +
- L0x7fffffffaff2*(x**57) + L0x7fffffffaff4*(x**58) + L0x7fffffffaff6*(x**59) +
- L0x7fffffffaff8*(x**60) + L0x7fffffffaffa*(x**61) + L0x7fffffffaffc*(x**62) +
- L0x7fffffffaffe*(x**63) + L0x7fffffffb000*(x**64) + L0x7fffffffb002*(x**65) +
- L0x7fffffffb004*(x**66) + L0x7fffffffb006*(x**67) + L0x7fffffffb008*(x**68) +
- L0x7fffffffb00a*(x**69) + L0x7fffffffb00c*(x**70) + L0x7fffffffb00e*(x**71) +
- L0x7fffffffb010*(x**72) + L0x7fffffffb012*(x**73) + L0x7fffffffb014*(x**74) +
- L0x7fffffffb016*(x**75) + L0x7fffffffb018*(x**76) + L0x7fffffffb01a*(x**77) +
- L0x7fffffffb01c*(x**78) + L0x7fffffffb01e*(x**79) + L0x7fffffffb020*(x**80) +
- L0x7fffffffb022*(x**81) + L0x7fffffffb024*(x**82) + L0x7fffffffb026*(x**83) +
- L0x7fffffffb028*(x**84) + L0x7fffffffb02a*(x**85) + L0x7fffffffb02c*(x**86) +
- L0x7fffffffb02e*(x**87) + L0x7fffffffb030*(x**88) + L0x7fffffffb032*(x**89) +
- L0x7fffffffb034*(x**90) + L0x7fffffffb036*(x**91) + L0x7fffffffb038*(x**92) +
- L0x7fffffffb03a*(x**93) + L0x7fffffffb03c*(x**94) + L0x7fffffffb03e*(x**95) +
- L0x7fffffffb040*(x**96) + L0x7fffffffb042*(x**97) + L0x7fffffffb044*(x**98) +
- L0x7fffffffb046*(x**99) + L0x7fffffffb048*(x**100) + L0x7fffffffb04a*(x**101) +
- L0x7fffffffb04c*(x**102) + L0x7fffffffb04e*(x**103) + L0x7fffffffb050*(x**104) +
- L0x7fffffffb052*(x**105) + L0x7fffffffb054*(x**106) + L0x7fffffffb056*(x**107) +
- L0x7fffffffb058*(x**108) + L0x7fffffffb05a*(x**109) + L0x7fffffffb05c*(x**110) +
- L0x7fffffffb05e*(x**111) + L0x7fffffffb060*(x**112) + L0x7fffffffb062*(x**113) +
- L0x7fffffffb064*(x**114) + L0x7fffffffb066*(x**115) + L0x7fffffffb068*(x**116) +
- L0x7fffffffb06a*(x**117) + L0x7fffffffb06c*(x**118) + L0x7fffffffb06e*(x**119) +
- L0x7fffffffb070*(x**120) + L0x7fffffffb072*(x**121) + L0x7fffffffb074*(x**122) +
- L0x7fffffffb076*(x**123) + L0x7fffffffb078*(x**124) + L0x7fffffffb07a*(x**125) +
- L0x7fffffffb07c*(x**126) + L0x7fffffffb07e*(x**127))
-[3329, x**128 - (1729)],
+      (poly x [L0x7fffffffaf80,L0x7fffffffaf82,L0x7fffffffaf84,L0x7fffffffaf86,
+               L0x7fffffffaf88,L0x7fffffffaf8a,L0x7fffffffaf8c,L0x7fffffffaf8e,
+               L0x7fffffffaf90,L0x7fffffffaf92,L0x7fffffffaf94,L0x7fffffffaf96,
+               L0x7fffffffaf98,L0x7fffffffaf9a,L0x7fffffffaf9c,L0x7fffffffaf9e,
+               L0x7fffffffafa0,L0x7fffffffafa2,L0x7fffffffafa4,L0x7fffffffafa6,
+               L0x7fffffffafa8,L0x7fffffffafaa,L0x7fffffffafac,L0x7fffffffafae,
+               L0x7fffffffafb0,L0x7fffffffafb2,L0x7fffffffafb4,L0x7fffffffafb6,
+               L0x7fffffffafb8,L0x7fffffffafba,L0x7fffffffafbc,L0x7fffffffafbe,
+               L0x7fffffffafc0,L0x7fffffffafc2,L0x7fffffffafc4,L0x7fffffffafc6,
+               L0x7fffffffafc8,L0x7fffffffafca,L0x7fffffffafcc,L0x7fffffffafce,
+               L0x7fffffffafd0,L0x7fffffffafd2,L0x7fffffffafd4,L0x7fffffffafd6,
+               L0x7fffffffafd8,L0x7fffffffafda,L0x7fffffffafdc,L0x7fffffffafde,
+               L0x7fffffffafe0,L0x7fffffffafe2,L0x7fffffffafe4,L0x7fffffffafe6,
+               L0x7fffffffafe8,L0x7fffffffafea,L0x7fffffffafec,L0x7fffffffafee,
+               L0x7fffffffaff0,L0x7fffffffaff2,L0x7fffffffaff4,L0x7fffffffaff6,
+               L0x7fffffffaff8,L0x7fffffffaffa,L0x7fffffffaffc,L0x7fffffffaffe,
+               L0x7fffffffb000,L0x7fffffffb002,L0x7fffffffb004,L0x7fffffffb006,
+               L0x7fffffffb008,L0x7fffffffb00a,L0x7fffffffb00c,L0x7fffffffb00e,
+               L0x7fffffffb010,L0x7fffffffb012,L0x7fffffffb014,L0x7fffffffb016,
+               L0x7fffffffb018,L0x7fffffffb01a,L0x7fffffffb01c,L0x7fffffffb01e,
+               L0x7fffffffb020,L0x7fffffffb022,L0x7fffffffb024,L0x7fffffffb026,
+               L0x7fffffffb028,L0x7fffffffb02a,L0x7fffffffb02c,L0x7fffffffb02e,
+               L0x7fffffffb030,L0x7fffffffb032,L0x7fffffffb034,L0x7fffffffb036,
+               L0x7fffffffb038,L0x7fffffffb03a,L0x7fffffffb03c,L0x7fffffffb03e,
+               L0x7fffffffb040,L0x7fffffffb042,L0x7fffffffb044,L0x7fffffffb046,
+               L0x7fffffffb048,L0x7fffffffb04a,L0x7fffffffb04c,L0x7fffffffb04e,
+               L0x7fffffffb050,L0x7fffffffb052,L0x7fffffffb054,L0x7fffffffb056,
+               L0x7fffffffb058,L0x7fffffffb05a,L0x7fffffffb05c,L0x7fffffffb05e,
+               L0x7fffffffb060,L0x7fffffffb062,L0x7fffffffb064,L0x7fffffffb066,
+               L0x7fffffffb068,L0x7fffffffb06a,L0x7fffffffb06c,L0x7fffffffb06e,
+               L0x7fffffffb070,L0x7fffffffb072,L0x7fffffffb074,L0x7fffffffb076,
+               L0x7fffffffb078,L0x7fffffffb07a,L0x7fffffffb07c,L0x7fffffffb07e])
+      [3329, x**128 - (1729)] /\
 eqmod (inp_poly**2)
-(L0x7fffffffb080*(x**0) + L0x7fffffffb082*(x**1) + L0x7fffffffb084*(x**2) +
- L0x7fffffffb086*(x**3) + L0x7fffffffb088*(x**4) + L0x7fffffffb08a*(x**5) +
- L0x7fffffffb08c*(x**6) + L0x7fffffffb08e*(x**7) + L0x7fffffffb090*(x**8) +
- L0x7fffffffb092*(x**9) + L0x7fffffffb094*(x**10) + L0x7fffffffb096*(x**11) +
- L0x7fffffffb098*(x**12) + L0x7fffffffb09a*(x**13) + L0x7fffffffb09c*(x**14) +
- L0x7fffffffb09e*(x**15) + L0x7fffffffb0a0*(x**16) + L0x7fffffffb0a2*(x**17) +
- L0x7fffffffb0a4*(x**18) + L0x7fffffffb0a6*(x**19) + L0x7fffffffb0a8*(x**20) +
- L0x7fffffffb0aa*(x**21) + L0x7fffffffb0ac*(x**22) + L0x7fffffffb0ae*(x**23) +
- L0x7fffffffb0b0*(x**24) + L0x7fffffffb0b2*(x**25) + L0x7fffffffb0b4*(x**26) +
- L0x7fffffffb0b6*(x**27) + L0x7fffffffb0b8*(x**28) + L0x7fffffffb0ba*(x**29) +
- L0x7fffffffb0bc*(x**30) + L0x7fffffffb0be*(x**31) + L0x7fffffffb0c0*(x**32) +
- L0x7fffffffb0c2*(x**33) + L0x7fffffffb0c4*(x**34) + L0x7fffffffb0c6*(x**35) +
- L0x7fffffffb0c8*(x**36) + L0x7fffffffb0ca*(x**37) + L0x7fffffffb0cc*(x**38) +
- L0x7fffffffb0ce*(x**39) + L0x7fffffffb0d0*(x**40) + L0x7fffffffb0d2*(x**41) +
- L0x7fffffffb0d4*(x**42) + L0x7fffffffb0d6*(x**43) + L0x7fffffffb0d8*(x**44) +
- L0x7fffffffb0da*(x**45) + L0x7fffffffb0dc*(x**46) + L0x7fffffffb0de*(x**47) +
- L0x7fffffffb0e0*(x**48) + L0x7fffffffb0e2*(x**49) + L0x7fffffffb0e4*(x**50) +
- L0x7fffffffb0e6*(x**51) + L0x7fffffffb0e8*(x**52) + L0x7fffffffb0ea*(x**53) +
- L0x7fffffffb0ec*(x**54) + L0x7fffffffb0ee*(x**55) + L0x7fffffffb0f0*(x**56) +
- L0x7fffffffb0f2*(x**57) + L0x7fffffffb0f4*(x**58) + L0x7fffffffb0f6*(x**59) +
- L0x7fffffffb0f8*(x**60) + L0x7fffffffb0fa*(x**61) + L0x7fffffffb0fc*(x**62) +
- L0x7fffffffb0fe*(x**63) + L0x7fffffffb100*(x**64) + L0x7fffffffb102*(x**65) +
- L0x7fffffffb104*(x**66) + L0x7fffffffb106*(x**67) + L0x7fffffffb108*(x**68) +
- L0x7fffffffb10a*(x**69) + L0x7fffffffb10c*(x**70) + L0x7fffffffb10e*(x**71) +
- L0x7fffffffb110*(x**72) + L0x7fffffffb112*(x**73) + L0x7fffffffb114*(x**74) +
- L0x7fffffffb116*(x**75) + L0x7fffffffb118*(x**76) + L0x7fffffffb11a*(x**77) +
- L0x7fffffffb11c*(x**78) + L0x7fffffffb11e*(x**79) + L0x7fffffffb120*(x**80) +
- L0x7fffffffb122*(x**81) + L0x7fffffffb124*(x**82) + L0x7fffffffb126*(x**83) +
- L0x7fffffffb128*(x**84) + L0x7fffffffb12a*(x**85) + L0x7fffffffb12c*(x**86) +
- L0x7fffffffb12e*(x**87) + L0x7fffffffb130*(x**88) + L0x7fffffffb132*(x**89) +
- L0x7fffffffb134*(x**90) + L0x7fffffffb136*(x**91) + L0x7fffffffb138*(x**92) +
- L0x7fffffffb13a*(x**93) + L0x7fffffffb13c*(x**94) + L0x7fffffffb13e*(x**95) +
- L0x7fffffffb140*(x**96) + L0x7fffffffb142*(x**97) + L0x7fffffffb144*(x**98) +
- L0x7fffffffb146*(x**99) + L0x7fffffffb148*(x**100) + L0x7fffffffb14a*(x**101) +
- L0x7fffffffb14c*(x**102) + L0x7fffffffb14e*(x**103) + L0x7fffffffb150*(x**104) +
- L0x7fffffffb152*(x**105) + L0x7fffffffb154*(x**106) + L0x7fffffffb156*(x**107) +
- L0x7fffffffb158*(x**108) + L0x7fffffffb15a*(x**109) + L0x7fffffffb15c*(x**110) +
- L0x7fffffffb15e*(x**111) + L0x7fffffffb160*(x**112) + L0x7fffffffb162*(x**113) +
- L0x7fffffffb164*(x**114) + L0x7fffffffb166*(x**115) + L0x7fffffffb168*(x**116) +
- L0x7fffffffb16a*(x**117) + L0x7fffffffb16c*(x**118) + L0x7fffffffb16e*(x**119) +
- L0x7fffffffb170*(x**120) + L0x7fffffffb172*(x**121) + L0x7fffffffb174*(x**122) +
- L0x7fffffffb176*(x**123) + L0x7fffffffb178*(x**124) + L0x7fffffffb17a*(x**125) +
- L0x7fffffffb17c*(x**126) + L0x7fffffffb17e*(x**127))
-[3329, x**128 - (1600)]]
+      (poly x [L0x7fffffffb080,L0x7fffffffb082,L0x7fffffffb084,L0x7fffffffb086,
+               L0x7fffffffb088,L0x7fffffffb08a,L0x7fffffffb08c,L0x7fffffffb08e,
+               L0x7fffffffb090,L0x7fffffffb092,L0x7fffffffb094,L0x7fffffffb096,
+               L0x7fffffffb098,L0x7fffffffb09a,L0x7fffffffb09c,L0x7fffffffb09e,
+               L0x7fffffffb0a0,L0x7fffffffb0a2,L0x7fffffffb0a4,L0x7fffffffb0a6,
+               L0x7fffffffb0a8,L0x7fffffffb0aa,L0x7fffffffb0ac,L0x7fffffffb0ae,
+               L0x7fffffffb0b0,L0x7fffffffb0b2,L0x7fffffffb0b4,L0x7fffffffb0b6,
+               L0x7fffffffb0b8,L0x7fffffffb0ba,L0x7fffffffb0bc,L0x7fffffffb0be,
+               L0x7fffffffb0c0,L0x7fffffffb0c2,L0x7fffffffb0c4,L0x7fffffffb0c6,
+               L0x7fffffffb0c8,L0x7fffffffb0ca,L0x7fffffffb0cc,L0x7fffffffb0ce,
+               L0x7fffffffb0d0,L0x7fffffffb0d2,L0x7fffffffb0d4,L0x7fffffffb0d6,
+               L0x7fffffffb0d8,L0x7fffffffb0da,L0x7fffffffb0dc,L0x7fffffffb0de,
+               L0x7fffffffb0e0,L0x7fffffffb0e2,L0x7fffffffb0e4,L0x7fffffffb0e6,
+               L0x7fffffffb0e8,L0x7fffffffb0ea,L0x7fffffffb0ec,L0x7fffffffb0ee,
+               L0x7fffffffb0f0,L0x7fffffffb0f2,L0x7fffffffb0f4,L0x7fffffffb0f6,
+               L0x7fffffffb0f8,L0x7fffffffb0fa,L0x7fffffffb0fc,L0x7fffffffb0fe,
+               L0x7fffffffb100,L0x7fffffffb102,L0x7fffffffb104,L0x7fffffffb106,
+               L0x7fffffffb108,L0x7fffffffb10a,L0x7fffffffb10c,L0x7fffffffb10e,
+               L0x7fffffffb110,L0x7fffffffb112,L0x7fffffffb114,L0x7fffffffb116,
+               L0x7fffffffb118,L0x7fffffffb11a,L0x7fffffffb11c,L0x7fffffffb11e,
+               L0x7fffffffb120,L0x7fffffffb122,L0x7fffffffb124,L0x7fffffffb126,
+               L0x7fffffffb128,L0x7fffffffb12a,L0x7fffffffb12c,L0x7fffffffb12e,
+               L0x7fffffffb130,L0x7fffffffb132,L0x7fffffffb134,L0x7fffffffb136,
+               L0x7fffffffb138,L0x7fffffffb13a,L0x7fffffffb13c,L0x7fffffffb13e,
+               L0x7fffffffb140,L0x7fffffffb142,L0x7fffffffb144,L0x7fffffffb146,
+               L0x7fffffffb148,L0x7fffffffb14a,L0x7fffffffb14c,L0x7fffffffb14e,
+               L0x7fffffffb150,L0x7fffffffb152,L0x7fffffffb154,L0x7fffffffb156,
+               L0x7fffffffb158,L0x7fffffffb15a,L0x7fffffffb15c,L0x7fffffffb15e,
+               L0x7fffffffb160,L0x7fffffffb162,L0x7fffffffb164,L0x7fffffffb166,
+               L0x7fffffffb168,L0x7fffffffb16a,L0x7fffffffb16c,L0x7fffffffb16e,
+               L0x7fffffffb170,L0x7fffffffb172,L0x7fffffffb174,L0x7fffffffb176,
+               L0x7fffffffb178,L0x7fffffffb17a,L0x7fffffffb17c,L0x7fffffffb17e])
+      [3329, x**128 - (1600)]
 &&
-and [
-(-6658)@16 <s L0x7fffffffaf80, L0x7fffffffaf80 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf82, L0x7fffffffaf82 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf84, L0x7fffffffaf84 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf86, L0x7fffffffaf86 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf88, L0x7fffffffaf88 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf8a, L0x7fffffffaf8a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf8c, L0x7fffffffaf8c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf8e, L0x7fffffffaf8e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf90, L0x7fffffffaf90 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf92, L0x7fffffffaf92 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf94, L0x7fffffffaf94 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf96, L0x7fffffffaf96 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf98, L0x7fffffffaf98 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf9a, L0x7fffffffaf9a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf9c, L0x7fffffffaf9c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaf9e, L0x7fffffffaf9e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafa0, L0x7fffffffafa0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafa2, L0x7fffffffafa2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafa4, L0x7fffffffafa4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafa6, L0x7fffffffafa6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafa8, L0x7fffffffafa8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafaa, L0x7fffffffafaa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafac, L0x7fffffffafac <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafae, L0x7fffffffafae <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafb0, L0x7fffffffafb0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafb2, L0x7fffffffafb2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafb4, L0x7fffffffafb4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafb6, L0x7fffffffafb6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafb8, L0x7fffffffafb8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafba, L0x7fffffffafba <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafbc, L0x7fffffffafbc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafbe, L0x7fffffffafbe <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafc0, L0x7fffffffafc0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafc2, L0x7fffffffafc2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafc4, L0x7fffffffafc4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafc6, L0x7fffffffafc6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafc8, L0x7fffffffafc8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafca, L0x7fffffffafca <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafcc, L0x7fffffffafcc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafce, L0x7fffffffafce <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafd0, L0x7fffffffafd0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafd2, L0x7fffffffafd2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafd4, L0x7fffffffafd4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafd6, L0x7fffffffafd6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafd8, L0x7fffffffafd8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafda, L0x7fffffffafda <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafdc, L0x7fffffffafdc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafde, L0x7fffffffafde <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafe0, L0x7fffffffafe0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafe2, L0x7fffffffafe2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafe4, L0x7fffffffafe4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafe6, L0x7fffffffafe6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafe8, L0x7fffffffafe8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafea, L0x7fffffffafea <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafec, L0x7fffffffafec <s (6658)@16,
-(-6658)@16 <s L0x7fffffffafee, L0x7fffffffafee <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaff0, L0x7fffffffaff0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaff2, L0x7fffffffaff2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaff4, L0x7fffffffaff4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaff6, L0x7fffffffaff6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaff8, L0x7fffffffaff8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaffa, L0x7fffffffaffa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaffc, L0x7fffffffaffc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffaffe, L0x7fffffffaffe <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb000, L0x7fffffffb000 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb002, L0x7fffffffb002 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb004, L0x7fffffffb004 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb006, L0x7fffffffb006 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb008, L0x7fffffffb008 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb00a, L0x7fffffffb00a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb00c, L0x7fffffffb00c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb00e, L0x7fffffffb00e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb010, L0x7fffffffb010 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb012, L0x7fffffffb012 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb014, L0x7fffffffb014 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb016, L0x7fffffffb016 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb018, L0x7fffffffb018 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb01a, L0x7fffffffb01a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb01c, L0x7fffffffb01c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb01e, L0x7fffffffb01e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb020, L0x7fffffffb020 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb022, L0x7fffffffb022 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb024, L0x7fffffffb024 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb026, L0x7fffffffb026 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb028, L0x7fffffffb028 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb02a, L0x7fffffffb02a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb02c, L0x7fffffffb02c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb02e, L0x7fffffffb02e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb030, L0x7fffffffb030 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb032, L0x7fffffffb032 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb034, L0x7fffffffb034 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb036, L0x7fffffffb036 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb038, L0x7fffffffb038 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb03a, L0x7fffffffb03a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb03c, L0x7fffffffb03c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb03e, L0x7fffffffb03e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb040, L0x7fffffffb040 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb042, L0x7fffffffb042 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb044, L0x7fffffffb044 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb046, L0x7fffffffb046 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb048, L0x7fffffffb048 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb04a, L0x7fffffffb04a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb04c, L0x7fffffffb04c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb04e, L0x7fffffffb04e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb050, L0x7fffffffb050 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb052, L0x7fffffffb052 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb054, L0x7fffffffb054 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb056, L0x7fffffffb056 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb058, L0x7fffffffb058 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb05a, L0x7fffffffb05a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb05c, L0x7fffffffb05c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb05e, L0x7fffffffb05e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb060, L0x7fffffffb060 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb062, L0x7fffffffb062 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb064, L0x7fffffffb064 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb066, L0x7fffffffb066 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb068, L0x7fffffffb068 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb06a, L0x7fffffffb06a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb06c, L0x7fffffffb06c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb06e, L0x7fffffffb06e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb070, L0x7fffffffb070 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb072, L0x7fffffffb072 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb074, L0x7fffffffb074 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb076, L0x7fffffffb076 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb078, L0x7fffffffb078 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb07a, L0x7fffffffb07a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb07c, L0x7fffffffb07c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb07e, L0x7fffffffb07e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb080, L0x7fffffffb080 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb082, L0x7fffffffb082 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb084, L0x7fffffffb084 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb086, L0x7fffffffb086 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb088, L0x7fffffffb088 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08a, L0x7fffffffb08a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08c, L0x7fffffffb08c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08e, L0x7fffffffb08e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb090, L0x7fffffffb090 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb092, L0x7fffffffb092 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb094, L0x7fffffffb094 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb096, L0x7fffffffb096 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb098, L0x7fffffffb098 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09a, L0x7fffffffb09a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09c, L0x7fffffffb09c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09e, L0x7fffffffb09e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a0, L0x7fffffffb0a0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a2, L0x7fffffffb0a2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a4, L0x7fffffffb0a4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a6, L0x7fffffffb0a6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a8, L0x7fffffffb0a8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0aa, L0x7fffffffb0aa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ac, L0x7fffffffb0ac <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ae, L0x7fffffffb0ae <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b0, L0x7fffffffb0b0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b2, L0x7fffffffb0b2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b4, L0x7fffffffb0b4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b6, L0x7fffffffb0b6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b8, L0x7fffffffb0b8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ba, L0x7fffffffb0ba <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0bc, L0x7fffffffb0bc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0be, L0x7fffffffb0be <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c0, L0x7fffffffb0c0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c2, L0x7fffffffb0c2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c4, L0x7fffffffb0c4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c6, L0x7fffffffb0c6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c8, L0x7fffffffb0c8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ca, L0x7fffffffb0ca <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0cc, L0x7fffffffb0cc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ce, L0x7fffffffb0ce <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d0, L0x7fffffffb0d0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d2, L0x7fffffffb0d2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d4, L0x7fffffffb0d4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d6, L0x7fffffffb0d6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d8, L0x7fffffffb0d8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0da, L0x7fffffffb0da <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0dc, L0x7fffffffb0dc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0de, L0x7fffffffb0de <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e0, L0x7fffffffb0e0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e2, L0x7fffffffb0e2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e4, L0x7fffffffb0e4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e6, L0x7fffffffb0e6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e8, L0x7fffffffb0e8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ea, L0x7fffffffb0ea <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ec, L0x7fffffffb0ec <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ee, L0x7fffffffb0ee <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f0, L0x7fffffffb0f0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f2, L0x7fffffffb0f2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f4, L0x7fffffffb0f4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f6, L0x7fffffffb0f6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f8, L0x7fffffffb0f8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fa, L0x7fffffffb0fa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fc, L0x7fffffffb0fc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fe, L0x7fffffffb0fe <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb100, L0x7fffffffb100 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb102, L0x7fffffffb102 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb104, L0x7fffffffb104 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb106, L0x7fffffffb106 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb108, L0x7fffffffb108 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10a, L0x7fffffffb10a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10c, L0x7fffffffb10c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10e, L0x7fffffffb10e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb110, L0x7fffffffb110 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb112, L0x7fffffffb112 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb114, L0x7fffffffb114 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb116, L0x7fffffffb116 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb118, L0x7fffffffb118 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11a, L0x7fffffffb11a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11c, L0x7fffffffb11c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11e, L0x7fffffffb11e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb120, L0x7fffffffb120 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb122, L0x7fffffffb122 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb124, L0x7fffffffb124 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb126, L0x7fffffffb126 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb128, L0x7fffffffb128 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12a, L0x7fffffffb12a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12c, L0x7fffffffb12c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12e, L0x7fffffffb12e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb130, L0x7fffffffb130 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb132, L0x7fffffffb132 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb134, L0x7fffffffb134 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb136, L0x7fffffffb136 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb138, L0x7fffffffb138 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13a, L0x7fffffffb13a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13c, L0x7fffffffb13c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13e, L0x7fffffffb13e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb140, L0x7fffffffb140 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb142, L0x7fffffffb142 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb144, L0x7fffffffb144 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb146, L0x7fffffffb146 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb148, L0x7fffffffb148 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14a, L0x7fffffffb14a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14c, L0x7fffffffb14c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14e, L0x7fffffffb14e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb150, L0x7fffffffb150 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb152, L0x7fffffffb152 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb154, L0x7fffffffb154 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb156, L0x7fffffffb156 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb158, L0x7fffffffb158 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15a, L0x7fffffffb15a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15c, L0x7fffffffb15c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15e, L0x7fffffffb15e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb160, L0x7fffffffb160 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb162, L0x7fffffffb162 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb164, L0x7fffffffb164 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb166, L0x7fffffffb166 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb168, L0x7fffffffb168 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16a, L0x7fffffffb16a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16c, L0x7fffffffb16c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16e, L0x7fffffffb16e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb170, L0x7fffffffb170 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb172, L0x7fffffffb172 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb174, L0x7fffffffb174 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb176, L0x7fffffffb176 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb178, L0x7fffffffb178 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17a, L0x7fffffffb17a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17c, L0x7fffffffb17c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17e, L0x7fffffffb17e <s (6658)@16];
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf80,L0x7fffffffaf82] /\
+[L0x7fffffffaf80,L0x7fffffffaf82] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf84,L0x7fffffffaf86] /\
+[L0x7fffffffaf84,L0x7fffffffaf86] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf88,L0x7fffffffaf8a] /\
+[L0x7fffffffaf88,L0x7fffffffaf8a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf8c,L0x7fffffffaf8e] /\
+[L0x7fffffffaf8c,L0x7fffffffaf8e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf90,L0x7fffffffaf92] /\
+[L0x7fffffffaf90,L0x7fffffffaf92] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf94,L0x7fffffffaf96] /\
+[L0x7fffffffaf94,L0x7fffffffaf96] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf98,L0x7fffffffaf9a] /\
+[L0x7fffffffaf98,L0x7fffffffaf9a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaf9c,L0x7fffffffaf9e] /\
+[L0x7fffffffaf9c,L0x7fffffffaf9e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafa0,L0x7fffffffafa2] /\
+[L0x7fffffffafa0,L0x7fffffffafa2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafa4,L0x7fffffffafa6] /\
+[L0x7fffffffafa4,L0x7fffffffafa6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafa8,L0x7fffffffafaa] /\
+[L0x7fffffffafa8,L0x7fffffffafaa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafac,L0x7fffffffafae] /\
+[L0x7fffffffafac,L0x7fffffffafae] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafb0,L0x7fffffffafb2] /\
+[L0x7fffffffafb0,L0x7fffffffafb2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafb4,L0x7fffffffafb6] /\
+[L0x7fffffffafb4,L0x7fffffffafb6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafb8,L0x7fffffffafba] /\
+[L0x7fffffffafb8,L0x7fffffffafba] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafbc,L0x7fffffffafbe] /\
+[L0x7fffffffafbc,L0x7fffffffafbe] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafc0,L0x7fffffffafc2] /\
+[L0x7fffffffafc0,L0x7fffffffafc2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafc4,L0x7fffffffafc6] /\
+[L0x7fffffffafc4,L0x7fffffffafc6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafc8,L0x7fffffffafca] /\
+[L0x7fffffffafc8,L0x7fffffffafca] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafcc,L0x7fffffffafce] /\
+[L0x7fffffffafcc,L0x7fffffffafce] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafd0,L0x7fffffffafd2] /\
+[L0x7fffffffafd0,L0x7fffffffafd2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafd4,L0x7fffffffafd6] /\
+[L0x7fffffffafd4,L0x7fffffffafd6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafd8,L0x7fffffffafda] /\
+[L0x7fffffffafd8,L0x7fffffffafda] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafdc,L0x7fffffffafde] /\
+[L0x7fffffffafdc,L0x7fffffffafde] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafe0,L0x7fffffffafe2] /\
+[L0x7fffffffafe0,L0x7fffffffafe2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafe4,L0x7fffffffafe6] /\
+[L0x7fffffffafe4,L0x7fffffffafe6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafe8,L0x7fffffffafea] /\
+[L0x7fffffffafe8,L0x7fffffffafea] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffafec,L0x7fffffffafee] /\
+[L0x7fffffffafec,L0x7fffffffafee] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaff0,L0x7fffffffaff2] /\
+[L0x7fffffffaff0,L0x7fffffffaff2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaff4,L0x7fffffffaff6] /\
+[L0x7fffffffaff4,L0x7fffffffaff6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaff8,L0x7fffffffaffa] /\
+[L0x7fffffffaff8,L0x7fffffffaffa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffaffc,L0x7fffffffaffe] /\
+[L0x7fffffffaffc,L0x7fffffffaffe] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb000,L0x7fffffffb002] /\
+[L0x7fffffffb000,L0x7fffffffb002] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb004,L0x7fffffffb006] /\
+[L0x7fffffffb004,L0x7fffffffb006] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb008,L0x7fffffffb00a] /\
+[L0x7fffffffb008,L0x7fffffffb00a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb00c,L0x7fffffffb00e] /\
+[L0x7fffffffb00c,L0x7fffffffb00e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb010,L0x7fffffffb012] /\
+[L0x7fffffffb010,L0x7fffffffb012] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb014,L0x7fffffffb016] /\
+[L0x7fffffffb014,L0x7fffffffb016] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb018,L0x7fffffffb01a] /\
+[L0x7fffffffb018,L0x7fffffffb01a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb01c,L0x7fffffffb01e] /\
+[L0x7fffffffb01c,L0x7fffffffb01e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb020,L0x7fffffffb022] /\
+[L0x7fffffffb020,L0x7fffffffb022] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb024,L0x7fffffffb026] /\
+[L0x7fffffffb024,L0x7fffffffb026] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb028,L0x7fffffffb02a] /\
+[L0x7fffffffb028,L0x7fffffffb02a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb02c,L0x7fffffffb02e] /\
+[L0x7fffffffb02c,L0x7fffffffb02e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb030,L0x7fffffffb032] /\
+[L0x7fffffffb030,L0x7fffffffb032] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb034,L0x7fffffffb036] /\
+[L0x7fffffffb034,L0x7fffffffb036] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb038,L0x7fffffffb03a] /\
+[L0x7fffffffb038,L0x7fffffffb03a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb03c,L0x7fffffffb03e] /\
+[L0x7fffffffb03c,L0x7fffffffb03e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb040,L0x7fffffffb042] /\
+[L0x7fffffffb040,L0x7fffffffb042] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb044,L0x7fffffffb046] /\
+[L0x7fffffffb044,L0x7fffffffb046] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb048,L0x7fffffffb04a] /\
+[L0x7fffffffb048,L0x7fffffffb04a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb04c,L0x7fffffffb04e] /\
+[L0x7fffffffb04c,L0x7fffffffb04e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb050,L0x7fffffffb052] /\
+[L0x7fffffffb050,L0x7fffffffb052] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb054,L0x7fffffffb056] /\
+[L0x7fffffffb054,L0x7fffffffb056] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb058,L0x7fffffffb05a] /\
+[L0x7fffffffb058,L0x7fffffffb05a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb05c,L0x7fffffffb05e] /\
+[L0x7fffffffb05c,L0x7fffffffb05e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb060,L0x7fffffffb062] /\
+[L0x7fffffffb060,L0x7fffffffb062] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb064,L0x7fffffffb066] /\
+[L0x7fffffffb064,L0x7fffffffb066] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb068,L0x7fffffffb06a] /\
+[L0x7fffffffb068,L0x7fffffffb06a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb06c,L0x7fffffffb06e] /\
+[L0x7fffffffb06c,L0x7fffffffb06e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb070,L0x7fffffffb072] /\
+[L0x7fffffffb070,L0x7fffffffb072] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb074,L0x7fffffffb076] /\
+[L0x7fffffffb074,L0x7fffffffb076] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb078,L0x7fffffffb07a] /\
+[L0x7fffffffb078,L0x7fffffffb07a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb07c,L0x7fffffffb07e] /\
+[L0x7fffffffb07c,L0x7fffffffb07e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb080,L0x7fffffffb082] /\
+[L0x7fffffffb080,L0x7fffffffb082] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb084,L0x7fffffffb086] /\
+[L0x7fffffffb084,L0x7fffffffb086] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb088,L0x7fffffffb08a] /\
+[L0x7fffffffb088,L0x7fffffffb08a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb08c,L0x7fffffffb08e] /\
+[L0x7fffffffb08c,L0x7fffffffb08e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb090,L0x7fffffffb092] /\
+[L0x7fffffffb090,L0x7fffffffb092] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb094,L0x7fffffffb096] /\
+[L0x7fffffffb094,L0x7fffffffb096] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb098,L0x7fffffffb09a] /\
+[L0x7fffffffb098,L0x7fffffffb09a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb09c,L0x7fffffffb09e] /\
+[L0x7fffffffb09c,L0x7fffffffb09e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a0,L0x7fffffffb0a2] /\
+[L0x7fffffffb0a0,L0x7fffffffb0a2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a4,L0x7fffffffb0a6] /\
+[L0x7fffffffb0a4,L0x7fffffffb0a6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a8,L0x7fffffffb0aa] /\
+[L0x7fffffffb0a8,L0x7fffffffb0aa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0ac,L0x7fffffffb0ae] /\
+[L0x7fffffffb0ac,L0x7fffffffb0ae] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b0,L0x7fffffffb0b2] /\
+[L0x7fffffffb0b0,L0x7fffffffb0b2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b4,L0x7fffffffb0b6] /\
+[L0x7fffffffb0b4,L0x7fffffffb0b6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b8,L0x7fffffffb0ba] /\
+[L0x7fffffffb0b8,L0x7fffffffb0ba] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0bc,L0x7fffffffb0be] /\
+[L0x7fffffffb0bc,L0x7fffffffb0be] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c0,L0x7fffffffb0c2] /\
+[L0x7fffffffb0c0,L0x7fffffffb0c2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c4,L0x7fffffffb0c6] /\
+[L0x7fffffffb0c4,L0x7fffffffb0c6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c8,L0x7fffffffb0ca] /\
+[L0x7fffffffb0c8,L0x7fffffffb0ca] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0cc,L0x7fffffffb0ce] /\
+[L0x7fffffffb0cc,L0x7fffffffb0ce] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d0,L0x7fffffffb0d2] /\
+[L0x7fffffffb0d0,L0x7fffffffb0d2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d4,L0x7fffffffb0d6] /\
+[L0x7fffffffb0d4,L0x7fffffffb0d6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d8,L0x7fffffffb0da] /\
+[L0x7fffffffb0d8,L0x7fffffffb0da] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0dc,L0x7fffffffb0de] /\
+[L0x7fffffffb0dc,L0x7fffffffb0de] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e0,L0x7fffffffb0e2] /\
+[L0x7fffffffb0e0,L0x7fffffffb0e2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e4,L0x7fffffffb0e6] /\
+[L0x7fffffffb0e4,L0x7fffffffb0e6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e8,L0x7fffffffb0ea] /\
+[L0x7fffffffb0e8,L0x7fffffffb0ea] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0ec,L0x7fffffffb0ee] /\
+[L0x7fffffffb0ec,L0x7fffffffb0ee] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f0,L0x7fffffffb0f2] /\
+[L0x7fffffffb0f0,L0x7fffffffb0f2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f4,L0x7fffffffb0f6] /\
+[L0x7fffffffb0f4,L0x7fffffffb0f6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f8,L0x7fffffffb0fa] /\
+[L0x7fffffffb0f8,L0x7fffffffb0fa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0fc,L0x7fffffffb0fe] /\
+[L0x7fffffffb0fc,L0x7fffffffb0fe] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb100,L0x7fffffffb102] /\
+[L0x7fffffffb100,L0x7fffffffb102] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb104,L0x7fffffffb106] /\
+[L0x7fffffffb104,L0x7fffffffb106] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb108,L0x7fffffffb10a] /\
+[L0x7fffffffb108,L0x7fffffffb10a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb10c,L0x7fffffffb10e] /\
+[L0x7fffffffb10c,L0x7fffffffb10e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb110,L0x7fffffffb112] /\
+[L0x7fffffffb110,L0x7fffffffb112] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb114,L0x7fffffffb116] /\
+[L0x7fffffffb114,L0x7fffffffb116] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb118,L0x7fffffffb11a] /\
+[L0x7fffffffb118,L0x7fffffffb11a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb11c,L0x7fffffffb11e] /\
+[L0x7fffffffb11c,L0x7fffffffb11e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb120,L0x7fffffffb122] /\
+[L0x7fffffffb120,L0x7fffffffb122] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb124,L0x7fffffffb126] /\
+[L0x7fffffffb124,L0x7fffffffb126] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb128,L0x7fffffffb12a] /\
+[L0x7fffffffb128,L0x7fffffffb12a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb12c,L0x7fffffffb12e] /\
+[L0x7fffffffb12c,L0x7fffffffb12e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb130,L0x7fffffffb132] /\
+[L0x7fffffffb130,L0x7fffffffb132] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb134,L0x7fffffffb136] /\
+[L0x7fffffffb134,L0x7fffffffb136] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb138,L0x7fffffffb13a] /\
+[L0x7fffffffb138,L0x7fffffffb13a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb13c,L0x7fffffffb13e] /\
+[L0x7fffffffb13c,L0x7fffffffb13e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb140,L0x7fffffffb142] /\
+[L0x7fffffffb140,L0x7fffffffb142] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb144,L0x7fffffffb146] /\
+[L0x7fffffffb144,L0x7fffffffb146] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb148,L0x7fffffffb14a] /\
+[L0x7fffffffb148,L0x7fffffffb14a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb14c,L0x7fffffffb14e] /\
+[L0x7fffffffb14c,L0x7fffffffb14e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb150,L0x7fffffffb152] /\
+[L0x7fffffffb150,L0x7fffffffb152] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb154,L0x7fffffffb156] /\
+[L0x7fffffffb154,L0x7fffffffb156] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb158,L0x7fffffffb15a] /\
+[L0x7fffffffb158,L0x7fffffffb15a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb15c,L0x7fffffffb15e] /\
+[L0x7fffffffb15c,L0x7fffffffb15e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb160,L0x7fffffffb162] /\
+[L0x7fffffffb160,L0x7fffffffb162] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb164,L0x7fffffffb166] /\
+[L0x7fffffffb164,L0x7fffffffb166] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb168,L0x7fffffffb16a] /\
+[L0x7fffffffb168,L0x7fffffffb16a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb16c,L0x7fffffffb16e] /\
+[L0x7fffffffb16c,L0x7fffffffb16e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb170,L0x7fffffffb172] /\
+[L0x7fffffffb170,L0x7fffffffb172] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb174,L0x7fffffffb176] /\
+[L0x7fffffffb174,L0x7fffffffb176] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb178,L0x7fffffffb17a] /\
+[L0x7fffffffb178,L0x7fffffffb17a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb17c,L0x7fffffffb17e] /\
+[L0x7fffffffb17c,L0x7fffffffb17e] <s [6658@16,6658@16];
 
 
 (* vmovdqa 0x160(%rsi),%ymm15                      #! EA = L0x555555639740; Value = 0x3999399939993999; PC = 0x55555556ed65 *)
@@ -1414,173 +1439,59 @@ mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm
 
 cut
 and [
-eqmod (inp_poly**2)
-(ymm3_0*(x**0) + ymm3_1*(x**1) + ymm3_2*(x**2) + ymm3_3*(x**3) +
- ymm3_4*(x**4) + ymm3_5*(x**5) + ymm3_6*(x**6) + ymm3_7*(x**7) +
- ymm3_8*(x**8) + ymm3_9*(x**9) + ymm3_a*(x**10) + ymm3_b*(x**11) +
- ymm3_c*(x**12) + ymm3_d*(x**13) + ymm3_e*(x**14) + ymm3_f*(x**15) +
- ymm4_0*(x**16) + ymm4_1*(x**17) + ymm4_2*(x**18) + ymm4_3*(x**19) +
- ymm4_4*(x**20) + ymm4_5*(x**21) + ymm4_6*(x**22) + ymm4_7*(x**23) +
- ymm4_8*(x**24) + ymm4_9*(x**25) + ymm4_a*(x**26) + ymm4_b*(x**27) +
- ymm4_c*(x**28) + ymm4_d*(x**29) + ymm4_e*(x**30) + ymm4_f*(x**31) +
- ymm5_0*(x**32) + ymm5_1*(x**33) + ymm5_2*(x**34) + ymm5_3*(x**35) +
- ymm5_4*(x**36) + ymm5_5*(x**37) + ymm5_6*(x**38) + ymm5_7*(x**39) +
- ymm5_8*(x**40) + ymm5_9*(x**41) + ymm5_a*(x**42) + ymm5_b*(x**43) +
- ymm5_c*(x**44) + ymm5_d*(x**45) + ymm5_e*(x**46) + ymm5_f*(x**47) +
- ymm6_0*(x**48) + ymm6_1*(x**49) + ymm6_2*(x**50) + ymm6_3*(x**51) +
- ymm6_4*(x**52) + ymm6_5*(x**53) + ymm6_6*(x**54) + ymm6_7*(x**55) +
- ymm6_8*(x**56) + ymm6_9*(x**57) + ymm6_a*(x**58) + ymm6_b*(x**59) +
- ymm6_c*(x**60) + ymm6_d*(x**61) + ymm6_e*(x**62) + ymm6_f*(x**63))
-[3329, x**64 - (2580)],
-eqmod (inp_poly**2)
-(ymm8_0*(x**0) + ymm8_1*(x**1) + ymm8_2*(x**2) + ymm8_3*(x**3) +
- ymm8_4*(x**4) + ymm8_5*(x**5) + ymm8_6*(x**6) + ymm8_7*(x**7) +
- ymm8_8*(x**8) + ymm8_9*(x**9) + ymm8_a*(x**10) + ymm8_b*(x**11) +
- ymm8_c*(x**12) + ymm8_d*(x**13) + ymm8_e*(x**14) + ymm8_f*(x**15) +
- ymm9_0*(x**16) + ymm9_1*(x**17) + ymm9_2*(x**18) + ymm9_3*(x**19) +
- ymm9_4*(x**20) + ymm9_5*(x**21) + ymm9_6*(x**22) + ymm9_7*(x**23) +
- ymm9_8*(x**24) + ymm9_9*(x**25) + ymm9_a*(x**26) + ymm9_b*(x**27) +
- ymm9_c*(x**28) + ymm9_d*(x**29) + ymm9_e*(x**30) + ymm9_f*(x**31) +
- ymm10_0*(x**32) + ymm10_1*(x**33) + ymm10_2*(x**34) + ymm10_3*(x**35) +
- ymm10_4*(x**36) + ymm10_5*(x**37) + ymm10_6*(x**38) + ymm10_7*(x**39) +
- ymm10_8*(x**40) + ymm10_9*(x**41) + ymm10_a*(x**42) + ymm10_b*(x**43) +
- ymm10_c*(x**44) + ymm10_d*(x**45) + ymm10_e*(x**46) + ymm10_f*(x**47) +
- ymm11_0*(x**48) + ymm11_1*(x**49) + ymm11_2*(x**50) + ymm11_3*(x**51) +
- ymm11_4*(x**52) + ymm11_5*(x**53) + ymm11_6*(x**54) + ymm11_7*(x**55) +
- ymm11_8*(x**56) + ymm11_9*(x**57) + ymm11_a*(x**58) + ymm11_b*(x**59) +
- ymm11_c*(x**60) + ymm11_d*(x**61) + ymm11_e*(x**62) + ymm11_f*(x**63))
-[3329, x**64 - (749)]]
+eqmod (inp_poly**2) (poly x [*%ymm3, *%ymm4, *%ymm5, *%ymm6])
+      [3329, x**64 - (2580)],
+eqmod (inp_poly**2) (poly x [*%ymm8, *%ymm9, *%ymm10, *%ymm11])
+      [3329, x**64 - (749)]]
 &&
-and [
-(-9987)@16 <s ymm3_0, ymm3_0 <s (9987)@16,
-(-9987)@16 <s ymm3_1, ymm3_1 <s (9987)@16,
-(-9987)@16 <s ymm3_2, ymm3_2 <s (9987)@16,
-(-9987)@16 <s ymm3_3, ymm3_3 <s (9987)@16,
-(-9987)@16 <s ymm3_4, ymm3_4 <s (9987)@16,
-(-9987)@16 <s ymm3_5, ymm3_5 <s (9987)@16,
-(-9987)@16 <s ymm3_6, ymm3_6 <s (9987)@16,
-(-9987)@16 <s ymm3_7, ymm3_7 <s (9987)@16,
-(-9987)@16 <s ymm3_8, ymm3_8 <s (9987)@16,
-(-9987)@16 <s ymm3_9, ymm3_9 <s (9987)@16,
-(-9987)@16 <s ymm3_a, ymm3_a <s (9987)@16,
-(-9987)@16 <s ymm3_b, ymm3_b <s (9987)@16,
-(-9987)@16 <s ymm3_c, ymm3_c <s (9987)@16,
-(-9987)@16 <s ymm3_d, ymm3_d <s (9987)@16,
-(-9987)@16 <s ymm3_e, ymm3_e <s (9987)@16,
-(-9987)@16 <s ymm3_f, ymm3_f <s (9987)@16,
-(-9987)@16 <s ymm4_0, ymm4_0 <s (9987)@16,
-(-9987)@16 <s ymm4_1, ymm4_1 <s (9987)@16,
-(-9987)@16 <s ymm4_2, ymm4_2 <s (9987)@16,
-(-9987)@16 <s ymm4_3, ymm4_3 <s (9987)@16,
-(-9987)@16 <s ymm4_4, ymm4_4 <s (9987)@16,
-(-9987)@16 <s ymm4_5, ymm4_5 <s (9987)@16,
-(-9987)@16 <s ymm4_6, ymm4_6 <s (9987)@16,
-(-9987)@16 <s ymm4_7, ymm4_7 <s (9987)@16,
-(-9987)@16 <s ymm4_8, ymm4_8 <s (9987)@16,
-(-9987)@16 <s ymm4_9, ymm4_9 <s (9987)@16,
-(-9987)@16 <s ymm4_a, ymm4_a <s (9987)@16,
-(-9987)@16 <s ymm4_b, ymm4_b <s (9987)@16,
-(-9987)@16 <s ymm4_c, ymm4_c <s (9987)@16,
-(-9987)@16 <s ymm4_d, ymm4_d <s (9987)@16,
-(-9987)@16 <s ymm4_e, ymm4_e <s (9987)@16,
-(-9987)@16 <s ymm4_f, ymm4_f <s (9987)@16,
-(-9987)@16 <s ymm5_0, ymm5_0 <s (9987)@16,
-(-9987)@16 <s ymm5_1, ymm5_1 <s (9987)@16,
-(-9987)@16 <s ymm5_2, ymm5_2 <s (9987)@16,
-(-9987)@16 <s ymm5_3, ymm5_3 <s (9987)@16,
-(-9987)@16 <s ymm5_4, ymm5_4 <s (9987)@16,
-(-9987)@16 <s ymm5_5, ymm5_5 <s (9987)@16,
-(-9987)@16 <s ymm5_6, ymm5_6 <s (9987)@16,
-(-9987)@16 <s ymm5_7, ymm5_7 <s (9987)@16,
-(-9987)@16 <s ymm5_8, ymm5_8 <s (9987)@16,
-(-9987)@16 <s ymm5_9, ymm5_9 <s (9987)@16,
-(-9987)@16 <s ymm5_a, ymm5_a <s (9987)@16,
-(-9987)@16 <s ymm5_b, ymm5_b <s (9987)@16,
-(-9987)@16 <s ymm5_c, ymm5_c <s (9987)@16,
-(-9987)@16 <s ymm5_d, ymm5_d <s (9987)@16,
-(-9987)@16 <s ymm5_e, ymm5_e <s (9987)@16,
-(-9987)@16 <s ymm5_f, ymm5_f <s (9987)@16,
-(-9987)@16 <s ymm6_0, ymm6_0 <s (9987)@16,
-(-9987)@16 <s ymm6_1, ymm6_1 <s (9987)@16,
-(-9987)@16 <s ymm6_2, ymm6_2 <s (9987)@16,
-(-9987)@16 <s ymm6_3, ymm6_3 <s (9987)@16,
-(-9987)@16 <s ymm6_4, ymm6_4 <s (9987)@16,
-(-9987)@16 <s ymm6_5, ymm6_5 <s (9987)@16,
-(-9987)@16 <s ymm6_6, ymm6_6 <s (9987)@16,
-(-9987)@16 <s ymm6_7, ymm6_7 <s (9987)@16,
-(-9987)@16 <s ymm6_8, ymm6_8 <s (9987)@16,
-(-9987)@16 <s ymm6_9, ymm6_9 <s (9987)@16,
-(-9987)@16 <s ymm6_a, ymm6_a <s (9987)@16,
-(-9987)@16 <s ymm6_b, ymm6_b <s (9987)@16,
-(-9987)@16 <s ymm6_c, ymm6_c <s (9987)@16,
-(-9987)@16 <s ymm6_d, ymm6_d <s (9987)@16,
-(-9987)@16 <s ymm6_e, ymm6_e <s (9987)@16,
-(-9987)@16 <s ymm6_f, ymm6_f <s (9987)@16,
-(-9987)@16 <s ymm8_0, ymm8_0 <s (9987)@16,
-(-9987)@16 <s ymm8_1, ymm8_1 <s (9987)@16,
-(-9987)@16 <s ymm8_2, ymm8_2 <s (9987)@16,
-(-9987)@16 <s ymm8_3, ymm8_3 <s (9987)@16,
-(-9987)@16 <s ymm8_4, ymm8_4 <s (9987)@16,
-(-9987)@16 <s ymm8_5, ymm8_5 <s (9987)@16,
-(-9987)@16 <s ymm8_6, ymm8_6 <s (9987)@16,
-(-9987)@16 <s ymm8_7, ymm8_7 <s (9987)@16,
-(-9987)@16 <s ymm8_8, ymm8_8 <s (9987)@16,
-(-9987)@16 <s ymm8_9, ymm8_9 <s (9987)@16,
-(-9987)@16 <s ymm8_a, ymm8_a <s (9987)@16,
-(-9987)@16 <s ymm8_b, ymm8_b <s (9987)@16,
-(-9987)@16 <s ymm8_c, ymm8_c <s (9987)@16,
-(-9987)@16 <s ymm8_d, ymm8_d <s (9987)@16,
-(-9987)@16 <s ymm8_e, ymm8_e <s (9987)@16,
-(-9987)@16 <s ymm8_f, ymm8_f <s (9987)@16,
-(-9987)@16 <s ymm9_0, ymm9_0 <s (9987)@16,
-(-9987)@16 <s ymm9_1, ymm9_1 <s (9987)@16,
-(-9987)@16 <s ymm9_2, ymm9_2 <s (9987)@16,
-(-9987)@16 <s ymm9_3, ymm9_3 <s (9987)@16,
-(-9987)@16 <s ymm9_4, ymm9_4 <s (9987)@16,
-(-9987)@16 <s ymm9_5, ymm9_5 <s (9987)@16,
-(-9987)@16 <s ymm9_6, ymm9_6 <s (9987)@16,
-(-9987)@16 <s ymm9_7, ymm9_7 <s (9987)@16,
-(-9987)@16 <s ymm9_8, ymm9_8 <s (9987)@16,
-(-9987)@16 <s ymm9_9, ymm9_9 <s (9987)@16,
-(-9987)@16 <s ymm9_a, ymm9_a <s (9987)@16,
-(-9987)@16 <s ymm9_b, ymm9_b <s (9987)@16,
-(-9987)@16 <s ymm9_c, ymm9_c <s (9987)@16,
-(-9987)@16 <s ymm9_d, ymm9_d <s (9987)@16,
-(-9987)@16 <s ymm9_e, ymm9_e <s (9987)@16,
-(-9987)@16 <s ymm9_f, ymm9_f <s (9987)@16,
-(-9987)@16 <s ymm10_0, ymm10_0 <s (9987)@16,
-(-9987)@16 <s ymm10_1, ymm10_1 <s (9987)@16,
-(-9987)@16 <s ymm10_2, ymm10_2 <s (9987)@16,
-(-9987)@16 <s ymm10_3, ymm10_3 <s (9987)@16,
-(-9987)@16 <s ymm10_4, ymm10_4 <s (9987)@16,
-(-9987)@16 <s ymm10_5, ymm10_5 <s (9987)@16,
-(-9987)@16 <s ymm10_6, ymm10_6 <s (9987)@16,
-(-9987)@16 <s ymm10_7, ymm10_7 <s (9987)@16,
-(-9987)@16 <s ymm10_8, ymm10_8 <s (9987)@16,
-(-9987)@16 <s ymm10_9, ymm10_9 <s (9987)@16,
-(-9987)@16 <s ymm10_a, ymm10_a <s (9987)@16,
-(-9987)@16 <s ymm10_b, ymm10_b <s (9987)@16,
-(-9987)@16 <s ymm10_c, ymm10_c <s (9987)@16,
-(-9987)@16 <s ymm10_d, ymm10_d <s (9987)@16,
-(-9987)@16 <s ymm10_e, ymm10_e <s (9987)@16,
-(-9987)@16 <s ymm10_f, ymm10_f <s (9987)@16,
-(-9987)@16 <s ymm11_0, ymm11_0 <s (9987)@16,
-(-9987)@16 <s ymm11_1, ymm11_1 <s (9987)@16,
-(-9987)@16 <s ymm11_2, ymm11_2 <s (9987)@16,
-(-9987)@16 <s ymm11_3, ymm11_3 <s (9987)@16,
-(-9987)@16 <s ymm11_4, ymm11_4 <s (9987)@16,
-(-9987)@16 <s ymm11_5, ymm11_5 <s (9987)@16,
-(-9987)@16 <s ymm11_6, ymm11_6 <s (9987)@16,
-(-9987)@16 <s ymm11_7, ymm11_7 <s (9987)@16,
-(-9987)@16 <s ymm11_8, ymm11_8 <s (9987)@16,
-(-9987)@16 <s ymm11_9, ymm11_9 <s (9987)@16,
-(-9987)@16 <s ymm11_a, ymm11_a <s (9987)@16,
-(-9987)@16 <s ymm11_b, ymm11_b <s (9987)@16,
-(-9987)@16 <s ymm11_c, ymm11_c <s (9987)@16,
-(-9987)@16 <s ymm11_d, ymm11_d <s (9987)@16,
-(-9987)@16 <s ymm11_e, ymm11_e <s (9987)@16,
-(-9987)@16 <s ymm11_f, ymm11_f <s (9987)@16];
-
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm3 /\ %ymm3 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm4 /\ %ymm4 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm5 /\ %ymm5 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm6 /\ %ymm6 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm8 /\ %ymm8 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm9 /\ %ymm9 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm10 /\ %ymm10 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm11 /\ %ymm11 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16];
 
 (* vperm2i128 $0x20,%ymm10,%ymm5,%ymm7             #! PC = 0x55555556ee2c *)
 mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3,
@@ -1755,180 +1666,89 @@ mov [ymm10_0, ymm10_1, ymm10_2, ymm10_3, ymm10_4, ymm10_5, ymm10_6, ymm10_7, ymm
 mov [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7, ymm5_8, ymm5_9, ymm5_a, ymm5_b, ymm5_c, ymm5_d, ymm5_e, ymm5_f] %ymm5;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm4_0*(x**0) + ymm4_1*(x**1) + ymm4_2*(x**2) + ymm4_3*(x**3) +
- ymm4_4*(x**4) + ymm4_5*(x**5) + ymm4_6*(x**6) + ymm4_7*(x**7) +
- ymm6_0*(x**8) + ymm6_1*(x**9) + ymm6_2*(x**10) + ymm6_3*(x**11) +
- ymm6_4*(x**12) + ymm6_5*(x**13) + ymm6_6*(x**14) + ymm6_7*(x**15) +
- ymm8_0*(x**16) + ymm8_1*(x**17) + ymm8_2*(x**18) + ymm8_3*(x**19) +
- ymm8_4*(x**20) + ymm8_5*(x**21) + ymm8_6*(x**22) + ymm8_7*(x**23) +
- ymm3_0*(x**24) + ymm3_1*(x**25) + ymm3_2*(x**26) + ymm3_3*(x**27) +
- ymm3_4*(x**28) + ymm3_5*(x**29) + ymm3_6*(x**30) + ymm3_7*(x**31))
-[3329, x**32 - (2642)],
-eqmod (inp_poly**2)
-(ymm7_0*(x**0) + ymm7_1*(x**1) + ymm7_2*(x**2) + ymm7_3*(x**3) +
- ymm7_4*(x**4) + ymm7_5*(x**5) + ymm7_6*(x**6) + ymm7_7*(x**7) +
- ymm10_0*(x**8) + ymm10_1*(x**9) + ymm10_2*(x**10) + ymm10_3*(x**11) +
- ymm10_4*(x**12) + ymm10_5*(x**13) + ymm10_6*(x**14) + ymm10_7*(x**15) +
- ymm5_0*(x**16) + ymm5_1*(x**17) + ymm5_2*(x**18) + ymm5_3*(x**19) +
- ymm5_4*(x**20) + ymm5_5*(x**21) + ymm5_6*(x**22) + ymm5_7*(x**23) +
- ymm11_0*(x**24) + ymm11_1*(x**25) + ymm11_2*(x**26) + ymm11_3*(x**27) +
- ymm11_4*(x**28) + ymm11_5*(x**29) + ymm11_6*(x**30) + ymm11_7*(x**31))
-[3329, x**32 - (687)],
-eqmod (inp_poly**2)
-(ymm4_8*(x**0) + ymm4_9*(x**1) + ymm4_a*(x**2) + ymm4_b*(x**3) +
- ymm4_c*(x**4) + ymm4_d*(x**5) + ymm4_e*(x**6) + ymm4_f*(x**7) +
- ymm6_8*(x**8) + ymm6_9*(x**9) + ymm6_a*(x**10) + ymm6_b*(x**11) +
- ymm6_c*(x**12) + ymm6_d*(x**13) + ymm6_e*(x**14) + ymm6_f*(x**15) +
- ymm8_8*(x**16) + ymm8_9*(x**17) + ymm8_a*(x**18) + ymm8_b*(x**19) +
- ymm8_c*(x**20) + ymm8_d*(x**21) + ymm8_e*(x**22) + ymm8_f*(x**23) +
- ymm3_8*(x**24) + ymm3_9*(x**25) + ymm3_a*(x**26) + ymm3_b*(x**27) +
- ymm3_c*(x**28) + ymm3_d*(x**29) + ymm3_e*(x**30) + ymm3_f*(x**31))
-[3329, x**32 - (630)],
-eqmod (inp_poly**2)
-(ymm7_8*(x**0) + ymm7_9*(x**1) + ymm7_a*(x**2) + ymm7_b*(x**3) +
- ymm7_c*(x**4) + ymm7_d*(x**5) + ymm7_e*(x**6) + ymm7_f*(x**7) +
- ymm10_8*(x**8) + ymm10_9*(x**9) + ymm10_a*(x**10) + ymm10_b*(x**11) +
- ymm10_c*(x**12) + ymm10_d*(x**13) + ymm10_e*(x**14) + ymm10_f*(x**15) +
- ymm5_8*(x**16) + ymm5_9*(x**17) + ymm5_a*(x**18) + ymm5_b*(x**19) +
- ymm5_c*(x**20) + ymm5_d*(x**21) + ymm5_e*(x**22) + ymm5_f*(x**23) +
- ymm11_8*(x**24) + ymm11_9*(x**25) + ymm11_a*(x**26) + ymm11_b*(x**27) +
- ymm11_c*(x**28) + ymm11_d*(x**29) + ymm11_e*(x**30) + ymm11_f*(x**31))
-[3329, x**32 - (2699)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm4[0],%ymm4[1],%ymm4[2],%ymm4[3],
+                   %ymm4[4],%ymm4[5],%ymm4[6],%ymm4[7],
+                   %ymm6[0],%ymm6[1],%ymm6[2],%ymm6[3],
+                   %ymm6[4],%ymm6[5],%ymm6[6],%ymm6[7],
+                   %ymm8[0],%ymm8[1],%ymm8[2],%ymm8[3],
+                   %ymm8[4],%ymm8[5],%ymm8[6],%ymm8[7],
+                   %ymm3[0],%ymm3[1],%ymm3[2],%ymm3[3],
+                   %ymm3[4],%ymm3[5],%ymm3[6],%ymm3[7]])
+          [3329, x**32 - (2642)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm7[0],%ymm7[1],%ymm7[2],%ymm7[3],
+                   %ymm7[4],%ymm7[5],%ymm7[6],%ymm7[7],
+                   %ymm10[0],%ymm10[1],%ymm10[2],%ymm10[3],
+                   %ymm10[4],%ymm10[5],%ymm10[6],%ymm10[7],
+                   %ymm5[0],%ymm5[1],%ymm5[2],%ymm5[3],
+                   %ymm5[4],%ymm5[5],%ymm5[6],%ymm5[7],
+                   %ymm11[0],%ymm11[1],%ymm11[2],%ymm11[3],
+                   %ymm11[4],%ymm11[5],%ymm11[6],%ymm11[7]])
+          [3329, x**32 - (687)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[8],%ymm4[9],%ymm4[10],%ymm4[11],
+                   %ymm4[12],%ymm4[13],%ymm4[14],%ymm4[15],
+                   %ymm6[8],%ymm6[9],%ymm6[10],%ymm6[11],
+                   %ymm6[12],%ymm6[13],%ymm6[14],%ymm6[15],
+                   %ymm8[8],%ymm8[9],%ymm8[10],%ymm8[11],
+                   %ymm8[12],%ymm8[13],%ymm8[14],%ymm8[15],
+                   %ymm3[8],%ymm3[9],%ymm3[10],%ymm3[11],
+                   %ymm3[12],%ymm3[13],%ymm3[14],%ymm3[15]])
+          [3329, x**32 - (630)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm7[8],%ymm7[9],%ymm7[10],%ymm7[11],
+                   %ymm7[12],%ymm7[13],%ymm7[14],%ymm7[15],
+                   %ymm10[8],%ymm10[9],%ymm10[10],%ymm10[11],
+                   %ymm10[12],%ymm10[13],%ymm10[14],%ymm10[15],
+                   %ymm5[8],%ymm5[9],%ymm5[10],%ymm5[11],
+                   %ymm5[12],%ymm5[13],%ymm5[14],%ymm5[15],
+                   %ymm11[8],%ymm11[9],%ymm11[10],%ymm11[11],
+                   %ymm11[12],%ymm11[13],%ymm11[14],%ymm11[15]])
+          [3329, x**32 - (2699)]
 &&
-and [
-(-13316)@16 <s ymm4_0, ymm4_0 <s (13316)@16,
-(-13316)@16 <s ymm4_1, ymm4_1 <s (13316)@16,
-(-13316)@16 <s ymm4_2, ymm4_2 <s (13316)@16,
-(-13316)@16 <s ymm4_3, ymm4_3 <s (13316)@16,
-(-13316)@16 <s ymm4_4, ymm4_4 <s (13316)@16,
-(-13316)@16 <s ymm4_5, ymm4_5 <s (13316)@16,
-(-13316)@16 <s ymm4_6, ymm4_6 <s (13316)@16,
-(-13316)@16 <s ymm4_7, ymm4_7 <s (13316)@16,
-(-13316)@16 <s ymm6_0, ymm6_0 <s (13316)@16,
-(-13316)@16 <s ymm6_1, ymm6_1 <s (13316)@16,
-(-13316)@16 <s ymm6_2, ymm6_2 <s (13316)@16,
-(-13316)@16 <s ymm6_3, ymm6_3 <s (13316)@16,
-(-13316)@16 <s ymm6_4, ymm6_4 <s (13316)@16,
-(-13316)@16 <s ymm6_5, ymm6_5 <s (13316)@16,
-(-13316)@16 <s ymm6_6, ymm6_6 <s (13316)@16,
-(-13316)@16 <s ymm6_7, ymm6_7 <s (13316)@16,
-(-13316)@16 <s ymm8_0, ymm8_0 <s (13316)@16,
-(-13316)@16 <s ymm8_1, ymm8_1 <s (13316)@16,
-(-13316)@16 <s ymm8_2, ymm8_2 <s (13316)@16,
-(-13316)@16 <s ymm8_3, ymm8_3 <s (13316)@16,
-(-13316)@16 <s ymm8_4, ymm8_4 <s (13316)@16,
-(-13316)@16 <s ymm8_5, ymm8_5 <s (13316)@16,
-(-13316)@16 <s ymm8_6, ymm8_6 <s (13316)@16,
-(-13316)@16 <s ymm8_7, ymm8_7 <s (13316)@16,
-(-13316)@16 <s ymm3_0, ymm3_0 <s (13316)@16,
-(-13316)@16 <s ymm3_1, ymm3_1 <s (13316)@16,
-(-13316)@16 <s ymm3_2, ymm3_2 <s (13316)@16,
-(-13316)@16 <s ymm3_3, ymm3_3 <s (13316)@16,
-(-13316)@16 <s ymm3_4, ymm3_4 <s (13316)@16,
-(-13316)@16 <s ymm3_5, ymm3_5 <s (13316)@16,
-(-13316)@16 <s ymm3_6, ymm3_6 <s (13316)@16,
-(-13316)@16 <s ymm3_7, ymm3_7 <s (13316)@16,
-(-13316)@16 <s ymm7_0, ymm7_0 <s (13316)@16,
-(-13316)@16 <s ymm7_1, ymm7_1 <s (13316)@16,
-(-13316)@16 <s ymm7_2, ymm7_2 <s (13316)@16,
-(-13316)@16 <s ymm7_3, ymm7_3 <s (13316)@16,
-(-13316)@16 <s ymm7_4, ymm7_4 <s (13316)@16,
-(-13316)@16 <s ymm7_5, ymm7_5 <s (13316)@16,
-(-13316)@16 <s ymm7_6, ymm7_6 <s (13316)@16,
-(-13316)@16 <s ymm7_7, ymm7_7 <s (13316)@16,
-(-13316)@16 <s ymm10_0, ymm10_0 <s (13316)@16,
-(-13316)@16 <s ymm10_1, ymm10_1 <s (13316)@16,
-(-13316)@16 <s ymm10_2, ymm10_2 <s (13316)@16,
-(-13316)@16 <s ymm10_3, ymm10_3 <s (13316)@16,
-(-13316)@16 <s ymm10_4, ymm10_4 <s (13316)@16,
-(-13316)@16 <s ymm10_5, ymm10_5 <s (13316)@16,
-(-13316)@16 <s ymm10_6, ymm10_6 <s (13316)@16,
-(-13316)@16 <s ymm10_7, ymm10_7 <s (13316)@16,
-(-13316)@16 <s ymm5_0, ymm5_0 <s (13316)@16,
-(-13316)@16 <s ymm5_1, ymm5_1 <s (13316)@16,
-(-13316)@16 <s ymm5_2, ymm5_2 <s (13316)@16,
-(-13316)@16 <s ymm5_3, ymm5_3 <s (13316)@16,
-(-13316)@16 <s ymm5_4, ymm5_4 <s (13316)@16,
-(-13316)@16 <s ymm5_5, ymm5_5 <s (13316)@16,
-(-13316)@16 <s ymm5_6, ymm5_6 <s (13316)@16,
-(-13316)@16 <s ymm5_7, ymm5_7 <s (13316)@16,
-(-13316)@16 <s ymm11_0, ymm11_0 <s (13316)@16,
-(-13316)@16 <s ymm11_1, ymm11_1 <s (13316)@16,
-(-13316)@16 <s ymm11_2, ymm11_2 <s (13316)@16,
-(-13316)@16 <s ymm11_3, ymm11_3 <s (13316)@16,
-(-13316)@16 <s ymm11_4, ymm11_4 <s (13316)@16,
-(-13316)@16 <s ymm11_5, ymm11_5 <s (13316)@16,
-(-13316)@16 <s ymm11_6, ymm11_6 <s (13316)@16,
-(-13316)@16 <s ymm11_7, ymm11_7 <s (13316)@16,
-(-13316)@16 <s ymm4_8, ymm4_8 <s (13316)@16,
-(-13316)@16 <s ymm4_9, ymm4_9 <s (13316)@16,
-(-13316)@16 <s ymm4_a, ymm4_a <s (13316)@16,
-(-13316)@16 <s ymm4_b, ymm4_b <s (13316)@16,
-(-13316)@16 <s ymm4_c, ymm4_c <s (13316)@16,
-(-13316)@16 <s ymm4_d, ymm4_d <s (13316)@16,
-(-13316)@16 <s ymm4_e, ymm4_e <s (13316)@16,
-(-13316)@16 <s ymm4_f, ymm4_f <s (13316)@16,
-(-13316)@16 <s ymm6_8, ymm6_8 <s (13316)@16,
-(-13316)@16 <s ymm6_9, ymm6_9 <s (13316)@16,
-(-13316)@16 <s ymm6_a, ymm6_a <s (13316)@16,
-(-13316)@16 <s ymm6_b, ymm6_b <s (13316)@16,
-(-13316)@16 <s ymm6_c, ymm6_c <s (13316)@16,
-(-13316)@16 <s ymm6_d, ymm6_d <s (13316)@16,
-(-13316)@16 <s ymm6_e, ymm6_e <s (13316)@16,
-(-13316)@16 <s ymm6_f, ymm6_f <s (13316)@16,
-(-13316)@16 <s ymm8_8, ymm8_8 <s (13316)@16,
-(-13316)@16 <s ymm8_9, ymm8_9 <s (13316)@16,
-(-13316)@16 <s ymm8_a, ymm8_a <s (13316)@16,
-(-13316)@16 <s ymm8_b, ymm8_b <s (13316)@16,
-(-13316)@16 <s ymm8_c, ymm8_c <s (13316)@16,
-(-13316)@16 <s ymm8_d, ymm8_d <s (13316)@16,
-(-13316)@16 <s ymm8_e, ymm8_e <s (13316)@16,
-(-13316)@16 <s ymm8_f, ymm8_f <s (13316)@16,
-(-13316)@16 <s ymm3_8, ymm3_8 <s (13316)@16,
-(-13316)@16 <s ymm3_9, ymm3_9 <s (13316)@16,
-(-13316)@16 <s ymm3_a, ymm3_a <s (13316)@16,
-(-13316)@16 <s ymm3_b, ymm3_b <s (13316)@16,
-(-13316)@16 <s ymm3_c, ymm3_c <s (13316)@16,
-(-13316)@16 <s ymm3_d, ymm3_d <s (13316)@16,
-(-13316)@16 <s ymm3_e, ymm3_e <s (13316)@16,
-(-13316)@16 <s ymm3_f, ymm3_f <s (13316)@16,
-(-13316)@16 <s ymm7_8, ymm7_8 <s (13316)@16,
-(-13316)@16 <s ymm7_9, ymm7_9 <s (13316)@16,
-(-13316)@16 <s ymm7_a, ymm7_a <s (13316)@16,
-(-13316)@16 <s ymm7_b, ymm7_b <s (13316)@16,
-(-13316)@16 <s ymm7_c, ymm7_c <s (13316)@16,
-(-13316)@16 <s ymm7_d, ymm7_d <s (13316)@16,
-(-13316)@16 <s ymm7_e, ymm7_e <s (13316)@16,
-(-13316)@16 <s ymm7_f, ymm7_f <s (13316)@16,
-(-13316)@16 <s ymm10_8, ymm10_8 <s (13316)@16,
-(-13316)@16 <s ymm10_9, ymm10_9 <s (13316)@16,
-(-13316)@16 <s ymm10_a, ymm10_a <s (13316)@16,
-(-13316)@16 <s ymm10_b, ymm10_b <s (13316)@16,
-(-13316)@16 <s ymm10_c, ymm10_c <s (13316)@16,
-(-13316)@16 <s ymm10_d, ymm10_d <s (13316)@16,
-(-13316)@16 <s ymm10_e, ymm10_e <s (13316)@16,
-(-13316)@16 <s ymm10_f, ymm10_f <s (13316)@16,
-(-13316)@16 <s ymm5_8, ymm5_8 <s (13316)@16,
-(-13316)@16 <s ymm5_9, ymm5_9 <s (13316)@16,
-(-13316)@16 <s ymm5_a, ymm5_a <s (13316)@16,
-(-13316)@16 <s ymm5_b, ymm5_b <s (13316)@16,
-(-13316)@16 <s ymm5_c, ymm5_c <s (13316)@16,
-(-13316)@16 <s ymm5_d, ymm5_d <s (13316)@16,
-(-13316)@16 <s ymm5_e, ymm5_e <s (13316)@16,
-(-13316)@16 <s ymm5_f, ymm5_f <s (13316)@16,
-(-13316)@16 <s ymm11_8, ymm11_8 <s (13316)@16,
-(-13316)@16 <s ymm11_9, ymm11_9 <s (13316)@16,
-(-13316)@16 <s ymm11_a, ymm11_a <s (13316)@16,
-(-13316)@16 <s ymm11_b, ymm11_b <s (13316)@16,
-(-13316)@16 <s ymm11_c, ymm11_c <s (13316)@16,
-(-13316)@16 <s ymm11_d, ymm11_d <s (13316)@16,
-(-13316)@16 <s ymm11_e, ymm11_e <s (13316)@16,
-(-13316)@16 <s ymm11_f, ymm11_f <s (13316)@16];
-
-
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm4 /\ %ymm4 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm6 /\ %ymm6 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm8 /\ %ymm8 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm3 /\ %ymm3 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm7 /\ %ymm7 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm10 /\ %ymm10 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm11 /\ %ymm11 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16];
 
 (* vpunpcklqdq %ymm5,%ymm8,%ymm9                   #! PC = 0x55555556eeec *)
 mov [ymm9_4, ymm9_5, ymm9_6, ymm9_7,
@@ -2103,187 +1923,103 @@ mov [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7, ymm5_8, ymm
 mov [ymm8_0, ymm8_1, ymm8_2, ymm8_3, ymm8_4, ymm8_5, ymm8_6, ymm8_7, ymm8_8, ymm8_9, ymm8_a, ymm8_b, ymm8_c, ymm8_d, ymm8_e, ymm8_f] %ymm8;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm6_0*(x**0) + ymm6_1*(x**1) + ymm6_2*(x**2) + ymm6_3*(x**3) +
- ymm3_0*(x**4) + ymm3_1*(x**5) + ymm3_2*(x**6) + ymm3_3*(x**7) +
- ymm7_0*(x**8) + ymm7_1*(x**9) + ymm7_2*(x**10) + ymm7_3*(x**11) +
- ymm4_0*(x**12) + ymm4_1*(x**13) + ymm4_2*(x**14) + ymm4_3*(x**15))
-[3329, x**16 - (1062)],
-eqmod (inp_poly**2)
-(ymm9_0*(x**0) + ymm9_1*(x**1) + ymm9_2*(x**2) + ymm9_3*(x**3) +
- ymm5_0*(x**4) + ymm5_1*(x**5) + ymm5_2*(x**6) + ymm5_3*(x**7) +
- ymm8_0*(x**8) + ymm8_1*(x**9) + ymm8_2*(x**10) + ymm8_3*(x**11) +
- ymm11_0*(x**12) + ymm11_1*(x**13) + ymm11_2*(x**14) + ymm11_3*(x**15))
-[3329, x**16 - (2267)],
-eqmod (inp_poly**2)
-(ymm6_4*(x**0) + ymm6_5*(x**1) + ymm6_6*(x**2) + ymm6_7*(x**3) +
- ymm3_4*(x**4) + ymm3_5*(x**5) + ymm3_6*(x**6) + ymm3_7*(x**7) +
- ymm7_4*(x**8) + ymm7_5*(x**9) + ymm7_6*(x**10) + ymm7_7*(x**11) +
- ymm4_4*(x**12) + ymm4_5*(x**13) + ymm4_6*(x**14) + ymm4_7*(x**15))
-[3329, x**16 - (1919)],
-eqmod (inp_poly**2)
-(ymm9_4*(x**0) + ymm9_5*(x**1) + ymm9_6*(x**2) + ymm9_7*(x**3) +
- ymm5_4*(x**4) + ymm5_5*(x**5) + ymm5_6*(x**6) + ymm5_7*(x**7) +
- ymm8_4*(x**8) + ymm8_5*(x**9) + ymm8_6*(x**10) + ymm8_7*(x**11) +
- ymm11_4*(x**12) + ymm11_5*(x**13) + ymm11_6*(x**14) + ymm11_7*(x**15))
-[3329, x**16 - (1410)],
-eqmod (inp_poly**2)
-(ymm6_8*(x**0) + ymm6_9*(x**1) + ymm6_a*(x**2) + ymm6_b*(x**3) +
- ymm3_8*(x**4) + ymm3_9*(x**5) + ymm3_a*(x**6) + ymm3_b*(x**7) +
- ymm7_8*(x**8) + ymm7_9*(x**9) + ymm7_a*(x**10) + ymm7_b*(x**11) +
- ymm4_8*(x**12) + ymm4_9*(x**13) + ymm4_a*(x**14) + ymm4_b*(x**15))
-[3329, x**16 - (193)],
-eqmod (inp_poly**2)
-(ymm9_8*(x**0) + ymm9_9*(x**1) + ymm9_a*(x**2) + ymm9_b*(x**3) +
- ymm5_8*(x**4) + ymm5_9*(x**5) + ymm5_a*(x**6) + ymm5_b*(x**7) +
- ymm8_8*(x**8) + ymm8_9*(x**9) + ymm8_a*(x**10) + ymm8_b*(x**11) +
- ymm11_8*(x**12) + ymm11_9*(x**13) + ymm11_a*(x**14) + ymm11_b*(x**15))
-[3329, x**16 - (3136)],
-eqmod (inp_poly**2)
-(ymm6_c*(x**0) + ymm6_d*(x**1) + ymm6_e*(x**2) + ymm6_f*(x**3) +
- ymm3_c*(x**4) + ymm3_d*(x**5) + ymm3_e*(x**6) + ymm3_f*(x**7) +
- ymm7_c*(x**8) + ymm7_d*(x**9) + ymm7_e*(x**10) + ymm7_f*(x**11) +
- ymm4_c*(x**12) + ymm4_d*(x**13) + ymm4_e*(x**14) + ymm4_f*(x**15))
-[3329, x**16 - (797)],
-eqmod (inp_poly**2)
-(ymm9_c*(x**0) + ymm9_d*(x**1) + ymm9_e*(x**2) + ymm9_f*(x**3) +
- ymm5_c*(x**4) + ymm5_d*(x**5) + ymm5_e*(x**6) + ymm5_f*(x**7) +
- ymm8_c*(x**8) + ymm8_d*(x**9) + ymm8_e*(x**10) + ymm8_f*(x**11) +
- ymm11_c*(x**12) + ymm11_d*(x**13) + ymm11_e*(x**14) + ymm11_f*(x**15))
-[3329, x**16 - (2532)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm6[0],%ymm6[1],%ymm6[2],%ymm6[3],
+                   %ymm3[0],%ymm3[1],%ymm3[2],%ymm3[3],
+                   %ymm7[0],%ymm7[1],%ymm7[2],%ymm7[3],
+                   %ymm4[0],%ymm4[1],%ymm4[2],%ymm4[3]])
+          [3329, x**16 - (1062)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[0],%ymm9[1],%ymm9[2],%ymm9[3],
+                   %ymm5[0],%ymm5[1],%ymm5[2],%ymm5[3],
+                   %ymm8[0],%ymm8[1],%ymm8[2],%ymm8[3],
+                   %ymm11[0],%ymm11[1],%ymm11[2],%ymm11[3]])
+          [3329, x**16 - (2267)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[4],%ymm6[5],%ymm6[6],%ymm6[7],
+                   %ymm3[4],%ymm3[5],%ymm3[6],%ymm3[7],
+                   %ymm7[4],%ymm7[5],%ymm7[6],%ymm7[7],
+                   %ymm4[4],%ymm4[5],%ymm4[6],%ymm4[7]])
+          [3329, x**16 - (1919)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[4],%ymm9[5],%ymm9[6],%ymm9[7],
+                   %ymm5[4],%ymm5[5],%ymm5[6],%ymm5[7],
+                   %ymm8[4],%ymm8[5],%ymm8[6],%ymm8[7],
+                   %ymm11[4],%ymm11[5],%ymm11[6],%ymm11[7]])
+          [3329, x**16 - (1410)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[8],%ymm6[9],%ymm6[10],%ymm6[11],
+                   %ymm3[8],%ymm3[9],%ymm3[10],%ymm3[11],
+                   %ymm7[8],%ymm7[9],%ymm7[10],%ymm7[11],
+                   %ymm4[8],%ymm4[9],%ymm4[10],%ymm4[11]])
+          [3329, x**16 - (193)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[8],%ymm9[9],%ymm9[10],%ymm9[11],
+                   %ymm5[8],%ymm5[9],%ymm5[10],%ymm5[11],
+                   %ymm8[8],%ymm8[9],%ymm8[10],%ymm8[11],
+                   %ymm11[8],%ymm11[9],%ymm11[10],%ymm11[11]])
+          [3329, x**16 - (3136)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[12],%ymm6[13],%ymm6[14],%ymm6[15],
+                   %ymm3[12],%ymm3[13],%ymm3[14],%ymm3[15],
+                   %ymm7[12],%ymm7[13],%ymm7[14],%ymm7[15],
+                   %ymm4[12],%ymm4[13],%ymm4[14],%ymm4[15]])
+          [3329, x**16 - (797)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[12],%ymm9[13],%ymm9[14],%ymm9[15],
+                   %ymm5[12],%ymm5[13],%ymm5[14],%ymm5[15],
+                   %ymm8[12],%ymm8[13],%ymm8[14],%ymm8[15],
+                   %ymm11[12],%ymm11[13],%ymm11[14],%ymm11[15]])
+          [3329, x**16 - (2532)]
 &&
-and [
-(-16645)@16 <s ymm6_0, ymm6_0 <s (16645)@16,
-(-16645)@16 <s ymm6_1, ymm6_1 <s (16645)@16,
-(-16645)@16 <s ymm6_2, ymm6_2 <s (16645)@16,
-(-16645)@16 <s ymm6_3, ymm6_3 <s (16645)@16,
-(-16645)@16 <s ymm3_0, ymm3_0 <s (16645)@16,
-(-16645)@16 <s ymm3_1, ymm3_1 <s (16645)@16,
-(-16645)@16 <s ymm3_2, ymm3_2 <s (16645)@16,
-(-16645)@16 <s ymm3_3, ymm3_3 <s (16645)@16,
-(-16645)@16 <s ymm7_0, ymm7_0 <s (16645)@16,
-(-16645)@16 <s ymm7_1, ymm7_1 <s (16645)@16,
-(-16645)@16 <s ymm7_2, ymm7_2 <s (16645)@16,
-(-16645)@16 <s ymm7_3, ymm7_3 <s (16645)@16,
-(-16645)@16 <s ymm4_0, ymm4_0 <s (16645)@16,
-(-16645)@16 <s ymm4_1, ymm4_1 <s (16645)@16,
-(-16645)@16 <s ymm4_2, ymm4_2 <s (16645)@16,
-(-16645)@16 <s ymm4_3, ymm4_3 <s (16645)@16,
-(-16645)@16 <s ymm9_0, ymm9_0 <s (16645)@16,
-(-16645)@16 <s ymm9_1, ymm9_1 <s (16645)@16,
-(-16645)@16 <s ymm9_2, ymm9_2 <s (16645)@16,
-(-16645)@16 <s ymm9_3, ymm9_3 <s (16645)@16,
-(-16645)@16 <s ymm5_0, ymm5_0 <s (16645)@16,
-(-16645)@16 <s ymm5_1, ymm5_1 <s (16645)@16,
-(-16645)@16 <s ymm5_2, ymm5_2 <s (16645)@16,
-(-16645)@16 <s ymm5_3, ymm5_3 <s (16645)@16,
-(-16645)@16 <s ymm8_0, ymm8_0 <s (16645)@16,
-(-16645)@16 <s ymm8_1, ymm8_1 <s (16645)@16,
-(-16645)@16 <s ymm8_2, ymm8_2 <s (16645)@16,
-(-16645)@16 <s ymm8_3, ymm8_3 <s (16645)@16,
-(-16645)@16 <s ymm11_0, ymm11_0 <s (16645)@16,
-(-16645)@16 <s ymm11_1, ymm11_1 <s (16645)@16,
-(-16645)@16 <s ymm11_2, ymm11_2 <s (16645)@16,
-(-16645)@16 <s ymm11_3, ymm11_3 <s (16645)@16,
-(-16645)@16 <s ymm6_4, ymm6_4 <s (16645)@16,
-(-16645)@16 <s ymm6_5, ymm6_5 <s (16645)@16,
-(-16645)@16 <s ymm6_6, ymm6_6 <s (16645)@16,
-(-16645)@16 <s ymm6_7, ymm6_7 <s (16645)@16,
-(-16645)@16 <s ymm3_4, ymm3_4 <s (16645)@16,
-(-16645)@16 <s ymm3_5, ymm3_5 <s (16645)@16,
-(-16645)@16 <s ymm3_6, ymm3_6 <s (16645)@16,
-(-16645)@16 <s ymm3_7, ymm3_7 <s (16645)@16,
-(-16645)@16 <s ymm7_4, ymm7_4 <s (16645)@16,
-(-16645)@16 <s ymm7_5, ymm7_5 <s (16645)@16,
-(-16645)@16 <s ymm7_6, ymm7_6 <s (16645)@16,
-(-16645)@16 <s ymm7_7, ymm7_7 <s (16645)@16,
-(-16645)@16 <s ymm4_4, ymm4_4 <s (16645)@16,
-(-16645)@16 <s ymm4_5, ymm4_5 <s (16645)@16,
-(-16645)@16 <s ymm4_6, ymm4_6 <s (16645)@16,
-(-16645)@16 <s ymm4_7, ymm4_7 <s (16645)@16,
-(-16645)@16 <s ymm9_4, ymm9_4 <s (16645)@16,
-(-16645)@16 <s ymm9_5, ymm9_5 <s (16645)@16,
-(-16645)@16 <s ymm9_6, ymm9_6 <s (16645)@16,
-(-16645)@16 <s ymm9_7, ymm9_7 <s (16645)@16,
-(-16645)@16 <s ymm5_4, ymm5_4 <s (16645)@16,
-(-16645)@16 <s ymm5_5, ymm5_5 <s (16645)@16,
-(-16645)@16 <s ymm5_6, ymm5_6 <s (16645)@16,
-(-16645)@16 <s ymm5_7, ymm5_7 <s (16645)@16,
-(-16645)@16 <s ymm8_4, ymm8_4 <s (16645)@16,
-(-16645)@16 <s ymm8_5, ymm8_5 <s (16645)@16,
-(-16645)@16 <s ymm8_6, ymm8_6 <s (16645)@16,
-(-16645)@16 <s ymm8_7, ymm8_7 <s (16645)@16,
-(-16645)@16 <s ymm11_4, ymm11_4 <s (16645)@16,
-(-16645)@16 <s ymm11_5, ymm11_5 <s (16645)@16,
-(-16645)@16 <s ymm11_6, ymm11_6 <s (16645)@16,
-(-16645)@16 <s ymm11_7, ymm11_7 <s (16645)@16,
-(-16645)@16 <s ymm6_8, ymm6_8 <s (16645)@16,
-(-16645)@16 <s ymm6_9, ymm6_9 <s (16645)@16,
-(-16645)@16 <s ymm6_a, ymm6_a <s (16645)@16,
-(-16645)@16 <s ymm6_b, ymm6_b <s (16645)@16,
-(-16645)@16 <s ymm3_8, ymm3_8 <s (16645)@16,
-(-16645)@16 <s ymm3_9, ymm3_9 <s (16645)@16,
-(-16645)@16 <s ymm3_a, ymm3_a <s (16645)@16,
-(-16645)@16 <s ymm3_b, ymm3_b <s (16645)@16,
-(-16645)@16 <s ymm7_8, ymm7_8 <s (16645)@16,
-(-16645)@16 <s ymm7_9, ymm7_9 <s (16645)@16,
-(-16645)@16 <s ymm7_a, ymm7_a <s (16645)@16,
-(-16645)@16 <s ymm7_b, ymm7_b <s (16645)@16,
-(-16645)@16 <s ymm4_8, ymm4_8 <s (16645)@16,
-(-16645)@16 <s ymm4_9, ymm4_9 <s (16645)@16,
-(-16645)@16 <s ymm4_a, ymm4_a <s (16645)@16,
-(-16645)@16 <s ymm4_b, ymm4_b <s (16645)@16,
-(-16645)@16 <s ymm9_8, ymm9_8 <s (16645)@16,
-(-16645)@16 <s ymm9_9, ymm9_9 <s (16645)@16,
-(-16645)@16 <s ymm9_a, ymm9_a <s (16645)@16,
-(-16645)@16 <s ymm9_b, ymm9_b <s (16645)@16,
-(-16645)@16 <s ymm5_8, ymm5_8 <s (16645)@16,
-(-16645)@16 <s ymm5_9, ymm5_9 <s (16645)@16,
-(-16645)@16 <s ymm5_a, ymm5_a <s (16645)@16,
-(-16645)@16 <s ymm5_b, ymm5_b <s (16645)@16,
-(-16645)@16 <s ymm8_8, ymm8_8 <s (16645)@16,
-(-16645)@16 <s ymm8_9, ymm8_9 <s (16645)@16,
-(-16645)@16 <s ymm8_a, ymm8_a <s (16645)@16,
-(-16645)@16 <s ymm8_b, ymm8_b <s (16645)@16,
-(-16645)@16 <s ymm11_8, ymm11_8 <s (16645)@16,
-(-16645)@16 <s ymm11_9, ymm11_9 <s (16645)@16,
-(-16645)@16 <s ymm11_a, ymm11_a <s (16645)@16,
-(-16645)@16 <s ymm11_b, ymm11_b <s (16645)@16,
-(-16645)@16 <s ymm6_c, ymm6_c <s (16645)@16,
-(-16645)@16 <s ymm6_d, ymm6_d <s (16645)@16,
-(-16645)@16 <s ymm6_e, ymm6_e <s (16645)@16,
-(-16645)@16 <s ymm6_f, ymm6_f <s (16645)@16,
-(-16645)@16 <s ymm3_c, ymm3_c <s (16645)@16,
-(-16645)@16 <s ymm3_d, ymm3_d <s (16645)@16,
-(-16645)@16 <s ymm3_e, ymm3_e <s (16645)@16,
-(-16645)@16 <s ymm3_f, ymm3_f <s (16645)@16,
-(-16645)@16 <s ymm7_c, ymm7_c <s (16645)@16,
-(-16645)@16 <s ymm7_d, ymm7_d <s (16645)@16,
-(-16645)@16 <s ymm7_e, ymm7_e <s (16645)@16,
-(-16645)@16 <s ymm7_f, ymm7_f <s (16645)@16,
-(-16645)@16 <s ymm4_c, ymm4_c <s (16645)@16,
-(-16645)@16 <s ymm4_d, ymm4_d <s (16645)@16,
-(-16645)@16 <s ymm4_e, ymm4_e <s (16645)@16,
-(-16645)@16 <s ymm4_f, ymm4_f <s (16645)@16,
-(-16645)@16 <s ymm9_c, ymm9_c <s (16645)@16,
-(-16645)@16 <s ymm9_d, ymm9_d <s (16645)@16,
-(-16645)@16 <s ymm9_e, ymm9_e <s (16645)@16,
-(-16645)@16 <s ymm9_f, ymm9_f <s (16645)@16,
-(-16645)@16 <s ymm5_c, ymm5_c <s (16645)@16,
-(-16645)@16 <s ymm5_d, ymm5_d <s (16645)@16,
-(-16645)@16 <s ymm5_e, ymm5_e <s (16645)@16,
-(-16645)@16 <s ymm5_f, ymm5_f <s (16645)@16,
-(-16645)@16 <s ymm8_c, ymm8_c <s (16645)@16,
-(-16645)@16 <s ymm8_d, ymm8_d <s (16645)@16,
-(-16645)@16 <s ymm8_e, ymm8_e <s (16645)@16,
-(-16645)@16 <s ymm8_f, ymm8_f <s (16645)@16,
-(-16645)@16 <s ymm11_c, ymm11_c <s (16645)@16,
-(-16645)@16 <s ymm11_d, ymm11_d <s (16645)@16,
-(-16645)@16 <s ymm11_e, ymm11_e <s (16645)@16,
-(-16645)@16 <s ymm11_f, ymm11_f <s (16645)@16];
-
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm6 /\ %ymm6 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm3 /\ %ymm3 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm7 /\ %ymm7 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm4 /\ %ymm4 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm9 /\ %ymm9 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm5 /\ %ymm5 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm8 /\ %ymm8 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm11 /\ %ymm11 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16];
 
 (* vmovsldup %ymm8,%ymm10                          #! PC = 0x55555556efa2 *)
 mov [ymm8_0, ymm8_1, _, _,
@@ -2535,203 +2271,119 @@ mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7, ymm7_8, ymm
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm3_0*(x**0) + ymm3_1*(x**1) + ymm4_0*(x**2) + ymm4_1*(x**3) +
- ymm9_0*(x**4) + ymm9_1*(x**5) + ymm6_0*(x**6) + ymm6_1*(x**7))
-[3329, x**8 - (296)],
-eqmod (inp_poly**2)
-(ymm10_0*(x**0) + ymm10_1*(x**1) + ymm8_0*(x**2) + ymm8_1*(x**3) +
- ymm7_0*(x**4) + ymm7_1*(x**5) + ymm11_0*(x**6) + ymm11_1*(x**7))
-[3329, x**8 - (3033)],
-eqmod (inp_poly**2)
-(ymm3_2*(x**0) + ymm3_3*(x**1) + ymm4_2*(x**2) + ymm4_3*(x**3) +
- ymm9_2*(x**4) + ymm9_3*(x**5) + ymm6_2*(x**6) + ymm6_3*(x**7))
-[3329, x**8 - (2447)],
-eqmod (inp_poly**2)
-(ymm10_2*(x**0) + ymm10_3*(x**1) + ymm8_2*(x**2) + ymm8_3*(x**3) +
- ymm7_2*(x**4) + ymm7_3*(x**5) + ymm11_2*(x**6) + ymm11_3*(x**7))
-[3329, x**8 - (882)],
-eqmod (inp_poly**2)
-(ymm3_4*(x**0) + ymm3_5*(x**1) + ymm4_4*(x**2) + ymm4_5*(x**3) +
- ymm9_4*(x**4) + ymm9_5*(x**5) + ymm6_4*(x**6) + ymm6_5*(x**7))
-[3329, x**8 - (1339)],
-eqmod (inp_poly**2)
-(ymm10_4*(x**0) + ymm10_5*(x**1) + ymm8_4*(x**2) + ymm8_5*(x**3) +
- ymm7_4*(x**4) + ymm7_5*(x**5) + ymm11_4*(x**6) + ymm11_5*(x**7))
-[3329, x**8 - (1990)],
-eqmod (inp_poly**2)
-(ymm3_6*(x**0) + ymm3_7*(x**1) + ymm4_6*(x**2) + ymm4_7*(x**3) +
- ymm9_6*(x**4) + ymm9_7*(x**5) + ymm6_6*(x**6) + ymm6_7*(x**7))
-[3329, x**8 - (1476)],
-eqmod (inp_poly**2)
-(ymm10_6*(x**0) + ymm10_7*(x**1) + ymm8_6*(x**2) + ymm8_7*(x**3) +
- ymm7_6*(x**4) + ymm7_7*(x**5) + ymm11_6*(x**6) + ymm11_7*(x**7))
-[3329, x**8 - (1853)],
-eqmod (inp_poly**2)
-(ymm3_8*(x**0) + ymm3_9*(x**1) + ymm4_8*(x**2) + ymm4_9*(x**3) +
- ymm9_8*(x**4) + ymm9_9*(x**5) + ymm6_8*(x**6) + ymm6_9*(x**7))
-[3329, x**8 - (3046)],
-eqmod (inp_poly**2)
-(ymm10_8*(x**0) + ymm10_9*(x**1) + ymm8_8*(x**2) + ymm8_9*(x**3) +
- ymm7_8*(x**4) + ymm7_9*(x**5) + ymm11_8*(x**6) + ymm11_9*(x**7))
-[3329, x**8 - (283)],
-eqmod (inp_poly**2)
-(ymm3_a*(x**0) + ymm3_b*(x**1) + ymm4_a*(x**2) + ymm4_b*(x**3) +
- ymm9_a*(x**4) + ymm9_b*(x**5) + ymm6_a*(x**6) + ymm6_b*(x**7))
-[3329, x**8 - (56)],
-eqmod (inp_poly**2)
-(ymm10_a*(x**0) + ymm10_b*(x**1) + ymm8_a*(x**2) + ymm8_b*(x**3) +
- ymm7_a*(x**4) + ymm7_b*(x**5) + ymm11_a*(x**6) + ymm11_b*(x**7))
-[3329, x**8 - (3273)],
-eqmod (inp_poly**2)
-(ymm3_c*(x**0) + ymm3_d*(x**1) + ymm4_c*(x**2) + ymm4_d*(x**3) +
- ymm9_c*(x**4) + ymm9_d*(x**5) + ymm6_c*(x**6) + ymm6_d*(x**7))
-[3329, x**8 - (2240)],
-eqmod (inp_poly**2)
-(ymm10_c*(x**0) + ymm10_d*(x**1) + ymm8_c*(x**2) + ymm8_d*(x**3) +
- ymm7_c*(x**4) + ymm7_d*(x**5) + ymm11_c*(x**6) + ymm11_d*(x**7))
-[3329, x**8 - (1089)],
-eqmod (inp_poly**2)
-(ymm3_e*(x**0) + ymm3_f*(x**1) + ymm4_e*(x**2) + ymm4_f*(x**3) +
- ymm9_e*(x**4) + ymm9_f*(x**5) + ymm6_e*(x**6) + ymm6_f*(x**7))
-[3329, x**8 - (1333)],
-eqmod (inp_poly**2)
-(ymm10_e*(x**0) + ymm10_f*(x**1) + ymm8_e*(x**2) + ymm8_f*(x**3) +
- ymm7_e*(x**4) + ymm7_f*(x**5) + ymm11_e*(x**6) + ymm11_f*(x**7))
-[3329, x**8 - (1996)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm3[0],%ymm3[1],%ymm4[0],%ymm4[1],
+                   %ymm9[0],%ymm9[1],%ymm6[0],%ymm6[1]])
+          [3329, x**8 - (296)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[0],%ymm10[1],%ymm8[0],%ymm8[1],
+                   %ymm7[0],%ymm7[1],%ymm11[0],%ymm11[1]])
+          [3329, x**8 - (3033)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[2],%ymm3[3],%ymm4[2],%ymm4[3],
+                   %ymm9[2],%ymm9[3],%ymm6[2],%ymm6[3]])
+          [3329, x**8 - (2447)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[2],%ymm10[3],%ymm8[2],%ymm8[3],
+                   %ymm7[2],%ymm7[3],%ymm11[2],%ymm11[3]])
+          [3329, x**8 - (882)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[4],%ymm3[5],%ymm4[4],%ymm4[5],
+                   %ymm9[4],%ymm9[5],%ymm6[4],%ymm6[5]])
+          [3329, x**8 - (1339)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[4],%ymm10[5],%ymm8[4],%ymm8[5],
+                   %ymm7[4],%ymm7[5],%ymm11[4],%ymm11[5]])
+          [3329, x**8 - (1990)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[6],%ymm3[7],%ymm4[6],%ymm4[7],
+                   %ymm9[6],%ymm9[7],%ymm6[6],%ymm6[7]])
+          [3329, x**8 - (1476)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[6],%ymm10[7],%ymm8[6],%ymm8[7],
+                   %ymm7[6],%ymm7[7],%ymm11[6],%ymm11[7]])
+          [3329, x**8 - (1853)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[8],%ymm3[9],%ymm4[8],%ymm4[9],
+                   %ymm9[8],%ymm9[9],%ymm6[8],%ymm6[9]])
+          [3329, x**8 - (3046)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[8],%ymm10[9],%ymm8[8],%ymm8[9],
+                   %ymm7[8],%ymm7[9],%ymm11[8],%ymm11[9]])
+          [3329, x**8 - (283)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[10],%ymm3[11],%ymm4[10],%ymm4[11],
+                   %ymm9[10],%ymm9[11],%ymm6[10],%ymm6[11]])
+          [3329, x**8 - (56)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[10],%ymm10[11],%ymm8[10],%ymm8[11],
+                   %ymm7[10],%ymm7[11],%ymm11[10],%ymm11[11]])
+          [3329, x**8 - (3273)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[12],%ymm3[13],%ymm4[12],%ymm4[13],
+                   %ymm9[12],%ymm9[13],%ymm6[12],%ymm6[13]])
+          [3329, x**8 - (2240)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[12],%ymm10[13],%ymm8[12],%ymm8[13],
+                   %ymm7[12],%ymm7[13],%ymm11[12],%ymm11[13]])
+          [3329, x**8 - (1089)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[14],%ymm3[15],%ymm4[14],%ymm4[15],
+                   %ymm9[14],%ymm9[15],%ymm6[14],%ymm6[15]])
+          [3329, x**8 - (1333)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[14],%ymm10[15],%ymm8[14],%ymm8[15],
+                   %ymm7[14],%ymm7[15],%ymm11[14],%ymm11[15]])
+          [3329, x**8 - (1996)]
 &&
-and [
-(-19974)@16 <s ymm3_0, ymm3_0 <s (19974)@16,
-(-19974)@16 <s ymm3_1, ymm3_1 <s (19974)@16,
-(-19974)@16 <s ymm4_0, ymm4_0 <s (19974)@16,
-(-19974)@16 <s ymm4_1, ymm4_1 <s (19974)@16,
-(-19974)@16 <s ymm9_0, ymm9_0 <s (19974)@16,
-(-19974)@16 <s ymm9_1, ymm9_1 <s (19974)@16,
-(-19974)@16 <s ymm6_0, ymm6_0 <s (19974)@16,
-(-19974)@16 <s ymm6_1, ymm6_1 <s (19974)@16,
-(-19974)@16 <s ymm10_0, ymm10_0 <s (19974)@16,
-(-19974)@16 <s ymm10_1, ymm10_1 <s (19974)@16,
-(-19974)@16 <s ymm8_0, ymm8_0 <s (19974)@16,
-(-19974)@16 <s ymm8_1, ymm8_1 <s (19974)@16,
-(-19974)@16 <s ymm7_0, ymm7_0 <s (19974)@16,
-(-19974)@16 <s ymm7_1, ymm7_1 <s (19974)@16,
-(-19974)@16 <s ymm11_0, ymm11_0 <s (19974)@16,
-(-19974)@16 <s ymm11_1, ymm11_1 <s (19974)@16,
-(-19974)@16 <s ymm3_2, ymm3_2 <s (19974)@16,
-(-19974)@16 <s ymm3_3, ymm3_3 <s (19974)@16,
-(-19974)@16 <s ymm4_2, ymm4_2 <s (19974)@16,
-(-19974)@16 <s ymm4_3, ymm4_3 <s (19974)@16,
-(-19974)@16 <s ymm9_2, ymm9_2 <s (19974)@16,
-(-19974)@16 <s ymm9_3, ymm9_3 <s (19974)@16,
-(-19974)@16 <s ymm6_2, ymm6_2 <s (19974)@16,
-(-19974)@16 <s ymm6_3, ymm6_3 <s (19974)@16,
-(-19974)@16 <s ymm10_2, ymm10_2 <s (19974)@16,
-(-19974)@16 <s ymm10_3, ymm10_3 <s (19974)@16,
-(-19974)@16 <s ymm8_2, ymm8_2 <s (19974)@16,
-(-19974)@16 <s ymm8_3, ymm8_3 <s (19974)@16,
-(-19974)@16 <s ymm7_2, ymm7_2 <s (19974)@16,
-(-19974)@16 <s ymm7_3, ymm7_3 <s (19974)@16,
-(-19974)@16 <s ymm11_2, ymm11_2 <s (19974)@16,
-(-19974)@16 <s ymm11_3, ymm11_3 <s (19974)@16,
-(-19974)@16 <s ymm3_4, ymm3_4 <s (19974)@16,
-(-19974)@16 <s ymm3_5, ymm3_5 <s (19974)@16,
-(-19974)@16 <s ymm4_4, ymm4_4 <s (19974)@16,
-(-19974)@16 <s ymm4_5, ymm4_5 <s (19974)@16,
-(-19974)@16 <s ymm9_4, ymm9_4 <s (19974)@16,
-(-19974)@16 <s ymm9_5, ymm9_5 <s (19974)@16,
-(-19974)@16 <s ymm6_4, ymm6_4 <s (19974)@16,
-(-19974)@16 <s ymm6_5, ymm6_5 <s (19974)@16,
-(-19974)@16 <s ymm10_4, ymm10_4 <s (19974)@16,
-(-19974)@16 <s ymm10_5, ymm10_5 <s (19974)@16,
-(-19974)@16 <s ymm8_4, ymm8_4 <s (19974)@16,
-(-19974)@16 <s ymm8_5, ymm8_5 <s (19974)@16,
-(-19974)@16 <s ymm7_4, ymm7_4 <s (19974)@16,
-(-19974)@16 <s ymm7_5, ymm7_5 <s (19974)@16,
-(-19974)@16 <s ymm11_4, ymm11_4 <s (19974)@16,
-(-19974)@16 <s ymm11_5, ymm11_5 <s (19974)@16,
-(-19974)@16 <s ymm3_6, ymm3_6 <s (19974)@16,
-(-19974)@16 <s ymm3_7, ymm3_7 <s (19974)@16,
-(-19974)@16 <s ymm4_6, ymm4_6 <s (19974)@16,
-(-19974)@16 <s ymm4_7, ymm4_7 <s (19974)@16,
-(-19974)@16 <s ymm9_6, ymm9_6 <s (19974)@16,
-(-19974)@16 <s ymm9_7, ymm9_7 <s (19974)@16,
-(-19974)@16 <s ymm6_6, ymm6_6 <s (19974)@16,
-(-19974)@16 <s ymm6_7, ymm6_7 <s (19974)@16,
-(-19974)@16 <s ymm10_6, ymm10_6 <s (19974)@16,
-(-19974)@16 <s ymm10_7, ymm10_7 <s (19974)@16,
-(-19974)@16 <s ymm8_6, ymm8_6 <s (19974)@16,
-(-19974)@16 <s ymm8_7, ymm8_7 <s (19974)@16,
-(-19974)@16 <s ymm7_6, ymm7_6 <s (19974)@16,
-(-19974)@16 <s ymm7_7, ymm7_7 <s (19974)@16,
-(-19974)@16 <s ymm11_6, ymm11_6 <s (19974)@16,
-(-19974)@16 <s ymm11_7, ymm11_7 <s (19974)@16,
-(-19974)@16 <s ymm3_8, ymm3_8 <s (19974)@16,
-(-19974)@16 <s ymm3_9, ymm3_9 <s (19974)@16,
-(-19974)@16 <s ymm4_8, ymm4_8 <s (19974)@16,
-(-19974)@16 <s ymm4_9, ymm4_9 <s (19974)@16,
-(-19974)@16 <s ymm9_8, ymm9_8 <s (19974)@16,
-(-19974)@16 <s ymm9_9, ymm9_9 <s (19974)@16,
-(-19974)@16 <s ymm6_8, ymm6_8 <s (19974)@16,
-(-19974)@16 <s ymm6_9, ymm6_9 <s (19974)@16,
-(-19974)@16 <s ymm10_8, ymm10_8 <s (19974)@16,
-(-19974)@16 <s ymm10_9, ymm10_9 <s (19974)@16,
-(-19974)@16 <s ymm8_8, ymm8_8 <s (19974)@16,
-(-19974)@16 <s ymm8_9, ymm8_9 <s (19974)@16,
-(-19974)@16 <s ymm7_8, ymm7_8 <s (19974)@16,
-(-19974)@16 <s ymm7_9, ymm7_9 <s (19974)@16,
-(-19974)@16 <s ymm11_8, ymm11_8 <s (19974)@16,
-(-19974)@16 <s ymm11_9, ymm11_9 <s (19974)@16,
-(-19974)@16 <s ymm3_a, ymm3_a <s (19974)@16,
-(-19974)@16 <s ymm3_b, ymm3_b <s (19974)@16,
-(-19974)@16 <s ymm4_a, ymm4_a <s (19974)@16,
-(-19974)@16 <s ymm4_b, ymm4_b <s (19974)@16,
-(-19974)@16 <s ymm9_a, ymm9_a <s (19974)@16,
-(-19974)@16 <s ymm9_b, ymm9_b <s (19974)@16,
-(-19974)@16 <s ymm6_a, ymm6_a <s (19974)@16,
-(-19974)@16 <s ymm6_b, ymm6_b <s (19974)@16,
-(-19974)@16 <s ymm10_a, ymm10_a <s (19974)@16,
-(-19974)@16 <s ymm10_b, ymm10_b <s (19974)@16,
-(-19974)@16 <s ymm8_a, ymm8_a <s (19974)@16,
-(-19974)@16 <s ymm8_b, ymm8_b <s (19974)@16,
-(-19974)@16 <s ymm7_a, ymm7_a <s (19974)@16,
-(-19974)@16 <s ymm7_b, ymm7_b <s (19974)@16,
-(-19974)@16 <s ymm11_a, ymm11_a <s (19974)@16,
-(-19974)@16 <s ymm11_b, ymm11_b <s (19974)@16,
-(-19974)@16 <s ymm3_c, ymm3_c <s (19974)@16,
-(-19974)@16 <s ymm3_d, ymm3_d <s (19974)@16,
-(-19974)@16 <s ymm4_c, ymm4_c <s (19974)@16,
-(-19974)@16 <s ymm4_d, ymm4_d <s (19974)@16,
-(-19974)@16 <s ymm9_c, ymm9_c <s (19974)@16,
-(-19974)@16 <s ymm9_d, ymm9_d <s (19974)@16,
-(-19974)@16 <s ymm6_c, ymm6_c <s (19974)@16,
-(-19974)@16 <s ymm6_d, ymm6_d <s (19974)@16,
-(-19974)@16 <s ymm10_c, ymm10_c <s (19974)@16,
-(-19974)@16 <s ymm10_d, ymm10_d <s (19974)@16,
-(-19974)@16 <s ymm8_c, ymm8_c <s (19974)@16,
-(-19974)@16 <s ymm8_d, ymm8_d <s (19974)@16,
-(-19974)@16 <s ymm7_c, ymm7_c <s (19974)@16,
-(-19974)@16 <s ymm7_d, ymm7_d <s (19974)@16,
-(-19974)@16 <s ymm11_c, ymm11_c <s (19974)@16,
-(-19974)@16 <s ymm11_d, ymm11_d <s (19974)@16,
-(-19974)@16 <s ymm3_e, ymm3_e <s (19974)@16,
-(-19974)@16 <s ymm3_f, ymm3_f <s (19974)@16,
-(-19974)@16 <s ymm4_e, ymm4_e <s (19974)@16,
-(-19974)@16 <s ymm4_f, ymm4_f <s (19974)@16,
-(-19974)@16 <s ymm9_e, ymm9_e <s (19974)@16,
-(-19974)@16 <s ymm9_f, ymm9_f <s (19974)@16,
-(-19974)@16 <s ymm6_e, ymm6_e <s (19974)@16,
-(-19974)@16 <s ymm6_f, ymm6_f <s (19974)@16,
-(-19974)@16 <s ymm10_e, ymm10_e <s (19974)@16,
-(-19974)@16 <s ymm10_f, ymm10_f <s (19974)@16,
-(-19974)@16 <s ymm8_e, ymm8_e <s (19974)@16,
-(-19974)@16 <s ymm8_f, ymm8_f <s (19974)@16,
-(-19974)@16 <s ymm7_e, ymm7_e <s (19974)@16,
-(-19974)@16 <s ymm7_f, ymm7_f <s (19974)@16,
-(-19974)@16 <s ymm11_e, ymm11_e <s (19974)@16,
-(-19974)@16 <s ymm11_f, ymm11_f <s (19974)@16];
-
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm3 /\ %ymm3 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm4 /\ %ymm4 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm9 /\ %ymm9 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm6 /\ %ymm6 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm10 /\ %ymm10 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm8 /\ %ymm8 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm7 /\ %ymm7 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm11 /\ %ymm11 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16];
 
 
 (* vpslld $0x10,%ymm7,%ymm5                        #! PC = 0x55555556f08b *)
@@ -2979,235 +2631,151 @@ mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7, ymm7_8, ymm
 mov [ymm9_0, ymm9_1, ymm9_2, ymm9_3, ymm9_4, ymm9_5, ymm9_6, ymm9_7, ymm9_8, ymm9_9, ymm9_a, ymm9_b, ymm9_c, ymm9_d, ymm9_e, ymm9_f] %ymm9;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm4_0*(x**0) + ymm6_0*(x**1) + ymm10_0*(x**2) + ymm3_0*(x**3))
-[3329, x**4 - (289)],
-eqmod (inp_poly**2)
-(ymm5_0*(x**0) + ymm7_0*(x**1) + ymm9_0*(x**2) + ymm11_0*(x**3))
-[3329, x**4 - (3040)],
-eqmod (inp_poly**2)
-(ymm4_1*(x**0) + ymm6_1*(x**1) + ymm10_1*(x**2) + ymm3_1*(x**3))
-[3329, x**4 - (331)],
-eqmod (inp_poly**2)
-(ymm5_1*(x**0) + ymm7_1*(x**1) + ymm9_1*(x**2) + ymm11_1*(x**3))
-[3329, x**4 - (2998)],
-eqmod (inp_poly**2)
-(ymm4_2*(x**0) + ymm6_2*(x**1) + ymm10_2*(x**2) + ymm3_2*(x**3))
-[3329, x**4 - (3253)],
-eqmod (inp_poly**2)
-(ymm5_2*(x**0) + ymm7_2*(x**1) + ymm9_2*(x**2) + ymm11_2*(x**3))
-[3329, x**4 - (76)],
-eqmod (inp_poly**2)
-(ymm4_3*(x**0) + ymm6_3*(x**1) + ymm10_3*(x**2) + ymm3_3*(x**3))
-[3329, x**4 - (1756)],
-eqmod (inp_poly**2)
-(ymm5_3*(x**0) + ymm7_3*(x**1) + ymm9_3*(x**2) + ymm11_3*(x**3))
-[3329, x**4 - (1573)],
-eqmod (inp_poly**2)
-(ymm4_4*(x**0) + ymm6_4*(x**1) + ymm10_4*(x**2) + ymm3_4*(x**3))
-[3329, x**4 - (1197)],
-eqmod (inp_poly**2)
-(ymm5_4*(x**0) + ymm7_4*(x**1) + ymm9_4*(x**2) + ymm11_4*(x**3))
-[3329, x**4 - (2132)],
-eqmod (inp_poly**2)
-(ymm4_5*(x**0) + ymm6_5*(x**1) + ymm10_5*(x**2) + ymm3_5*(x**3))
-[3329, x**4 - (2304)],
-eqmod (inp_poly**2)
-(ymm5_5*(x**0) + ymm7_5*(x**1) + ymm9_5*(x**2) + ymm11_5*(x**3))
-[3329, x**4 - (1025)],
-eqmod (inp_poly**2)
-(ymm4_6*(x**0) + ymm6_6*(x**1) + ymm10_6*(x**2) + ymm3_6*(x**3))
-[3329, x**4 - (2277)],
-eqmod (inp_poly**2)
-(ymm5_6*(x**0) + ymm7_6*(x**1) + ymm9_6*(x**2) + ymm11_6*(x**3))
-[3329, x**4 - (1052)],
-eqmod (inp_poly**2)
-(ymm4_7*(x**0) + ymm6_7*(x**1) + ymm10_7*(x**2) + ymm3_7*(x**3))
-[3329, x**4 - (2055)],
-eqmod (inp_poly**2)
-(ymm5_7*(x**0) + ymm7_7*(x**1) + ymm9_7*(x**2) + ymm11_7*(x**3))
-[3329, x**4 - (1274)],
-eqmod (inp_poly**2)
-(ymm4_8*(x**0) + ymm6_8*(x**1) + ymm10_8*(x**2) + ymm3_8*(x**3))
-[3329, x**4 - (650)],
-eqmod (inp_poly**2)
-(ymm5_8*(x**0) + ymm7_8*(x**1) + ymm9_8*(x**2) + ymm11_8*(x**3))
-[3329, x**4 - (2679)],
-eqmod (inp_poly**2)
-(ymm4_9*(x**0) + ymm6_9*(x**1) + ymm10_9*(x**2) + ymm3_9*(x**3))
-[3329, x**4 - (1977)],
-eqmod (inp_poly**2)
-(ymm5_9*(x**0) + ymm7_9*(x**1) + ymm9_9*(x**2) + ymm11_9*(x**3))
-[3329, x**4 - (1352)],
-eqmod (inp_poly**2)
-(ymm4_a*(x**0) + ymm6_a*(x**1) + ymm10_a*(x**2) + ymm3_a*(x**3))
-[3329, x**4 - (2513)],
-eqmod (inp_poly**2)
-(ymm5_a*(x**0) + ymm7_a*(x**1) + ymm9_a*(x**2) + ymm11_a*(x**3))
-[3329, x**4 - (816)],
-eqmod (inp_poly**2)
-(ymm4_b*(x**0) + ymm6_b*(x**1) + ymm10_b*(x**2) + ymm3_b*(x**3))
-[3329, x**4 - (632)],
-eqmod (inp_poly**2)
-(ymm5_b*(x**0) + ymm7_b*(x**1) + ymm9_b*(x**2) + ymm11_b*(x**3))
-[3329, x**4 - (2697)],
-eqmod (inp_poly**2)
-(ymm4_c*(x**0) + ymm6_c*(x**1) + ymm10_c*(x**2) + ymm3_c*(x**3))
-[3329, x**4 - (2865)],
-eqmod (inp_poly**2)
-(ymm5_c*(x**0) + ymm7_c*(x**1) + ymm9_c*(x**2) + ymm11_c*(x**3))
-[3329, x**4 - (464)],
-eqmod (inp_poly**2)
-(ymm4_d*(x**0) + ymm6_d*(x**1) + ymm10_d*(x**2) + ymm3_d*(x**3))
-[3329, x**4 - (33)],
-eqmod (inp_poly**2)
-(ymm5_d*(x**0) + ymm7_d*(x**1) + ymm9_d*(x**2) + ymm11_d*(x**3))
-[3329, x**4 - (3296)],
-eqmod (inp_poly**2)
-(ymm4_e*(x**0) + ymm6_e*(x**1) + ymm10_e*(x**2) + ymm3_e*(x**3))
-[3329, x**4 - (1320)],
-eqmod (inp_poly**2)
-(ymm5_e*(x**0) + ymm7_e*(x**1) + ymm9_e*(x**2) + ymm11_e*(x**3))
-[3329, x**4 - (2009)],
-eqmod (inp_poly**2)
-(ymm4_f*(x**0) + ymm6_f*(x**1) + ymm10_f*(x**2) + ymm3_f*(x**3))
-[3329, x**4 - (1915)],
-eqmod (inp_poly**2)
-(ymm5_f*(x**0) + ymm7_f*(x**1) + ymm9_f*(x**2) + ymm11_f*(x**3))
-[3329, x**4 - (1414)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm4[0], %ymm6[0], %ymm10[0], %ymm3[0]])
+          [3329, x**4 - (289)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[0], %ymm7[0], %ymm9[0], %ymm11[0]])
+          [3329, x**4 - (3040)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[1], %ymm6[1], %ymm10[1], %ymm3[1]])
+          [3329, x**4 - (331)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[1], %ymm7[1], %ymm9[1], %ymm11[1]])
+          [3329, x**4 - (2998)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[2], %ymm6[2], %ymm10[2], %ymm3[2]])
+          [3329, x**4 - (3253)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[2], %ymm7[2], %ymm9[2], %ymm11[2]])
+          [3329, x**4 - (76)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[3], %ymm6[3], %ymm10[3], %ymm3[3]])
+          [3329, x**4 - (1756)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[3], %ymm7[3], %ymm9[3], %ymm11[3]])
+          [3329, x**4 - (1573)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[4], %ymm6[4], %ymm10[4], %ymm3[4]])
+          [3329, x**4 - (1197)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[4], %ymm7[4], %ymm9[4], %ymm11[4]])
+          [3329, x**4 - (2132)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[5], %ymm6[5], %ymm10[5], %ymm3[5]])
+          [3329, x**4 - (2304)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[5], %ymm7[5], %ymm9[5], %ymm11[5]])
+          [3329, x**4 - (1025)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[6], %ymm6[6], %ymm10[6], %ymm3[6]])
+          [3329, x**4 - (2277)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[6], %ymm7[6], %ymm9[6], %ymm11[6]])
+          [3329, x**4 - (1052)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[7], %ymm6[7], %ymm10[7], %ymm3[7]])
+          [3329, x**4 - (2055)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[7], %ymm7[7], %ymm9[7], %ymm11[7]])
+          [3329, x**4 - (1274)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[8], %ymm6[8], %ymm10[8], %ymm3[8]])
+          [3329, x**4 - (650)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[8], %ymm7[8], %ymm9[8], %ymm11[8]])
+          [3329, x**4 - (2679)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[9], %ymm6[9], %ymm10[9], %ymm3[9]])
+          [3329, x**4 - (1977)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[9], %ymm7[9], %ymm9[9], %ymm11[9]])
+          [3329, x**4 - (1352)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[10], %ymm6[10], %ymm10[10], %ymm3[10]])
+          [3329, x**4 - (2513)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[10], %ymm7[10], %ymm9[10], %ymm11[10]])
+          [3329, x**4 - (816)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[11], %ymm6[11], %ymm10[11], %ymm3[11]])
+          [3329, x**4 - (632)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[11], %ymm7[11], %ymm9[11], %ymm11[11]])
+          [3329, x**4 - (2697)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[12], %ymm6[12], %ymm10[12], %ymm3[12]])
+          [3329, x**4 - (2865)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[12], %ymm7[12], %ymm9[12], %ymm11[12]])
+          [3329, x**4 - (464)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[13], %ymm6[13], %ymm10[13], %ymm3[13]])
+          [3329, x**4 - (33)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[13], %ymm7[13], %ymm9[13], %ymm11[13]])
+          [3329, x**4 - (3296)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[14], %ymm6[14], %ymm10[14], %ymm3[14]])
+          [3329, x**4 - (1320)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[14], %ymm7[14], %ymm9[14], %ymm11[14]])
+          [3329, x**4 - (2009)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[15], %ymm6[15], %ymm10[15], %ymm3[15]])
+          [3329, x**4 - (1915)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[15], %ymm7[15], %ymm9[15], %ymm11[15]])
+          [3329, x**4 - (1414)]
 &&
-and [
-(-23303)@16 <s ymm4_0, ymm4_0 <s (23303)@16,
-(-23303)@16 <s ymm6_0, ymm6_0 <s (23303)@16,
-(-23303)@16 <s ymm10_0, ymm10_0 <s (23303)@16,
-(-23303)@16 <s ymm3_0, ymm3_0 <s (23303)@16,
-(-23303)@16 <s ymm5_0, ymm5_0 <s (23303)@16,
-(-23303)@16 <s ymm7_0, ymm7_0 <s (23303)@16,
-(-23303)@16 <s ymm9_0, ymm9_0 <s (23303)@16,
-(-23303)@16 <s ymm11_0, ymm11_0 <s (23303)@16,
-(-23303)@16 <s ymm4_1, ymm4_1 <s (23303)@16,
-(-23303)@16 <s ymm6_1, ymm6_1 <s (23303)@16,
-(-23303)@16 <s ymm10_1, ymm10_1 <s (23303)@16,
-(-23303)@16 <s ymm3_1, ymm3_1 <s (23303)@16,
-(-23303)@16 <s ymm5_1, ymm5_1 <s (23303)@16,
-(-23303)@16 <s ymm7_1, ymm7_1 <s (23303)@16,
-(-23303)@16 <s ymm9_1, ymm9_1 <s (23303)@16,
-(-23303)@16 <s ymm11_1, ymm11_1 <s (23303)@16,
-(-23303)@16 <s ymm4_2, ymm4_2 <s (23303)@16,
-(-23303)@16 <s ymm6_2, ymm6_2 <s (23303)@16,
-(-23303)@16 <s ymm10_2, ymm10_2 <s (23303)@16,
-(-23303)@16 <s ymm3_2, ymm3_2 <s (23303)@16,
-(-23303)@16 <s ymm5_2, ymm5_2 <s (23303)@16,
-(-23303)@16 <s ymm7_2, ymm7_2 <s (23303)@16,
-(-23303)@16 <s ymm9_2, ymm9_2 <s (23303)@16,
-(-23303)@16 <s ymm11_2, ymm11_2 <s (23303)@16,
-(-23303)@16 <s ymm4_3, ymm4_3 <s (23303)@16,
-(-23303)@16 <s ymm6_3, ymm6_3 <s (23303)@16,
-(-23303)@16 <s ymm10_3, ymm10_3 <s (23303)@16,
-(-23303)@16 <s ymm3_3, ymm3_3 <s (23303)@16,
-(-23303)@16 <s ymm5_3, ymm5_3 <s (23303)@16,
-(-23303)@16 <s ymm7_3, ymm7_3 <s (23303)@16,
-(-23303)@16 <s ymm9_3, ymm9_3 <s (23303)@16,
-(-23303)@16 <s ymm11_3, ymm11_3 <s (23303)@16,
-(-23303)@16 <s ymm4_4, ymm4_4 <s (23303)@16,
-(-23303)@16 <s ymm6_4, ymm6_4 <s (23303)@16,
-(-23303)@16 <s ymm10_4, ymm10_4 <s (23303)@16,
-(-23303)@16 <s ymm3_4, ymm3_4 <s (23303)@16,
-(-23303)@16 <s ymm5_4, ymm5_4 <s (23303)@16,
-(-23303)@16 <s ymm7_4, ymm7_4 <s (23303)@16,
-(-23303)@16 <s ymm9_4, ymm9_4 <s (23303)@16,
-(-23303)@16 <s ymm11_4, ymm11_4 <s (23303)@16,
-(-23303)@16 <s ymm4_5, ymm4_5 <s (23303)@16,
-(-23303)@16 <s ymm6_5, ymm6_5 <s (23303)@16,
-(-23303)@16 <s ymm10_5, ymm10_5 <s (23303)@16,
-(-23303)@16 <s ymm3_5, ymm3_5 <s (23303)@16,
-(-23303)@16 <s ymm5_5, ymm5_5 <s (23303)@16,
-(-23303)@16 <s ymm7_5, ymm7_5 <s (23303)@16,
-(-23303)@16 <s ymm9_5, ymm9_5 <s (23303)@16,
-(-23303)@16 <s ymm11_5, ymm11_5 <s (23303)@16,
-(-23303)@16 <s ymm4_6, ymm4_6 <s (23303)@16,
-(-23303)@16 <s ymm6_6, ymm6_6 <s (23303)@16,
-(-23303)@16 <s ymm10_6, ymm10_6 <s (23303)@16,
-(-23303)@16 <s ymm3_6, ymm3_6 <s (23303)@16,
-(-23303)@16 <s ymm5_6, ymm5_6 <s (23303)@16,
-(-23303)@16 <s ymm7_6, ymm7_6 <s (23303)@16,
-(-23303)@16 <s ymm9_6, ymm9_6 <s (23303)@16,
-(-23303)@16 <s ymm11_6, ymm11_6 <s (23303)@16,
-(-23303)@16 <s ymm4_7, ymm4_7 <s (23303)@16,
-(-23303)@16 <s ymm6_7, ymm6_7 <s (23303)@16,
-(-23303)@16 <s ymm10_7, ymm10_7 <s (23303)@16,
-(-23303)@16 <s ymm3_7, ymm3_7 <s (23303)@16,
-(-23303)@16 <s ymm5_7, ymm5_7 <s (23303)@16,
-(-23303)@16 <s ymm7_7, ymm7_7 <s (23303)@16,
-(-23303)@16 <s ymm9_7, ymm9_7 <s (23303)@16,
-(-23303)@16 <s ymm11_7, ymm11_7 <s (23303)@16,
-(-23303)@16 <s ymm4_8, ymm4_8 <s (23303)@16,
-(-23303)@16 <s ymm6_8, ymm6_8 <s (23303)@16,
-(-23303)@16 <s ymm10_8, ymm10_8 <s (23303)@16,
-(-23303)@16 <s ymm3_8, ymm3_8 <s (23303)@16,
-(-23303)@16 <s ymm5_8, ymm5_8 <s (23303)@16,
-(-23303)@16 <s ymm7_8, ymm7_8 <s (23303)@16,
-(-23303)@16 <s ymm9_8, ymm9_8 <s (23303)@16,
-(-23303)@16 <s ymm11_8, ymm11_8 <s (23303)@16,
-(-23303)@16 <s ymm4_9, ymm4_9 <s (23303)@16,
-(-23303)@16 <s ymm6_9, ymm6_9 <s (23303)@16,
-(-23303)@16 <s ymm10_9, ymm10_9 <s (23303)@16,
-(-23303)@16 <s ymm3_9, ymm3_9 <s (23303)@16,
-(-23303)@16 <s ymm5_9, ymm5_9 <s (23303)@16,
-(-23303)@16 <s ymm7_9, ymm7_9 <s (23303)@16,
-(-23303)@16 <s ymm9_9, ymm9_9 <s (23303)@16,
-(-23303)@16 <s ymm11_9, ymm11_9 <s (23303)@16,
-(-23303)@16 <s ymm4_a, ymm4_a <s (23303)@16,
-(-23303)@16 <s ymm6_a, ymm6_a <s (23303)@16,
-(-23303)@16 <s ymm10_a, ymm10_a <s (23303)@16,
-(-23303)@16 <s ymm3_a, ymm3_a <s (23303)@16,
-(-23303)@16 <s ymm5_a, ymm5_a <s (23303)@16,
-(-23303)@16 <s ymm7_a, ymm7_a <s (23303)@16,
-(-23303)@16 <s ymm9_a, ymm9_a <s (23303)@16,
-(-23303)@16 <s ymm11_a, ymm11_a <s (23303)@16,
-(-23303)@16 <s ymm4_b, ymm4_b <s (23303)@16,
-(-23303)@16 <s ymm6_b, ymm6_b <s (23303)@16,
-(-23303)@16 <s ymm10_b, ymm10_b <s (23303)@16,
-(-23303)@16 <s ymm3_b, ymm3_b <s (23303)@16,
-(-23303)@16 <s ymm5_b, ymm5_b <s (23303)@16,
-(-23303)@16 <s ymm7_b, ymm7_b <s (23303)@16,
-(-23303)@16 <s ymm9_b, ymm9_b <s (23303)@16,
-(-23303)@16 <s ymm11_b, ymm11_b <s (23303)@16,
-(-23303)@16 <s ymm4_c, ymm4_c <s (23303)@16,
-(-23303)@16 <s ymm6_c, ymm6_c <s (23303)@16,
-(-23303)@16 <s ymm10_c, ymm10_c <s (23303)@16,
-(-23303)@16 <s ymm3_c, ymm3_c <s (23303)@16,
-(-23303)@16 <s ymm5_c, ymm5_c <s (23303)@16,
-(-23303)@16 <s ymm7_c, ymm7_c <s (23303)@16,
-(-23303)@16 <s ymm9_c, ymm9_c <s (23303)@16,
-(-23303)@16 <s ymm11_c, ymm11_c <s (23303)@16,
-(-23303)@16 <s ymm4_d, ymm4_d <s (23303)@16,
-(-23303)@16 <s ymm6_d, ymm6_d <s (23303)@16,
-(-23303)@16 <s ymm10_d, ymm10_d <s (23303)@16,
-(-23303)@16 <s ymm3_d, ymm3_d <s (23303)@16,
-(-23303)@16 <s ymm5_d, ymm5_d <s (23303)@16,
-(-23303)@16 <s ymm7_d, ymm7_d <s (23303)@16,
-(-23303)@16 <s ymm9_d, ymm9_d <s (23303)@16,
-(-23303)@16 <s ymm11_d, ymm11_d <s (23303)@16,
-(-23303)@16 <s ymm4_e, ymm4_e <s (23303)@16,
-(-23303)@16 <s ymm6_e, ymm6_e <s (23303)@16,
-(-23303)@16 <s ymm10_e, ymm10_e <s (23303)@16,
-(-23303)@16 <s ymm3_e, ymm3_e <s (23303)@16,
-(-23303)@16 <s ymm5_e, ymm5_e <s (23303)@16,
-(-23303)@16 <s ymm7_e, ymm7_e <s (23303)@16,
-(-23303)@16 <s ymm9_e, ymm9_e <s (23303)@16,
-(-23303)@16 <s ymm11_e, ymm11_e <s (23303)@16,
-(-23303)@16 <s ymm4_f, ymm4_f <s (23303)@16,
-(-23303)@16 <s ymm6_f, ymm6_f <s (23303)@16,
-(-23303)@16 <s ymm10_f, ymm10_f <s (23303)@16,
-(-23303)@16 <s ymm3_f, ymm3_f <s (23303)@16,
-(-23303)@16 <s ymm5_f, ymm5_f <s (23303)@16,
-(-23303)@16 <s ymm7_f, ymm7_f <s (23303)@16,
-(-23303)@16 <s ymm9_f, ymm9_f <s (23303)@16,
-(-23303)@16 <s ymm11_f, ymm11_f <s (23303)@16];
-
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm4 /\ %ymm4 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm6 /\ %ymm6 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm10 /\ %ymm10 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm3 /\ %ymm3 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm5 /\ %ymm5 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm7 /\ %ymm7 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm9 /\ %ymm9 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm11 /\ %ymm11 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16];
 
 
 (* vmovdqa 0x2a0(%rsi),%ymm14                      #! EA = L0x555555639880; Value = 0x500e821dd32bfeb1; PC = 0x55555556f177 *)
@@ -3580,183 +3148,170 @@ and [
 
 (* 7 *)
 cut
-and [
 eqmod (inp_poly**2)
-(L0x7fffffffb080*(x**0) + L0x7fffffffb082*(x**1) + L0x7fffffffb084*(x**2) +
- L0x7fffffffb086*(x**3) + L0x7fffffffb088*(x**4) + L0x7fffffffb08a*(x**5) +
- L0x7fffffffb08c*(x**6) + L0x7fffffffb08e*(x**7) + L0x7fffffffb090*(x**8) +
- L0x7fffffffb092*(x**9) + L0x7fffffffb094*(x**10) + L0x7fffffffb096*(x**11) +
- L0x7fffffffb098*(x**12) + L0x7fffffffb09a*(x**13) + L0x7fffffffb09c*(x**14) +
- L0x7fffffffb09e*(x**15) + L0x7fffffffb0a0*(x**16) + L0x7fffffffb0a2*(x**17) +
- L0x7fffffffb0a4*(x**18) + L0x7fffffffb0a6*(x**19) + L0x7fffffffb0a8*(x**20) +
- L0x7fffffffb0aa*(x**21) + L0x7fffffffb0ac*(x**22) + L0x7fffffffb0ae*(x**23) +
- L0x7fffffffb0b0*(x**24) + L0x7fffffffb0b2*(x**25) + L0x7fffffffb0b4*(x**26) +
- L0x7fffffffb0b6*(x**27) + L0x7fffffffb0b8*(x**28) + L0x7fffffffb0ba*(x**29) +
- L0x7fffffffb0bc*(x**30) + L0x7fffffffb0be*(x**31) + L0x7fffffffb0c0*(x**32) +
- L0x7fffffffb0c2*(x**33) + L0x7fffffffb0c4*(x**34) + L0x7fffffffb0c6*(x**35) +
- L0x7fffffffb0c8*(x**36) + L0x7fffffffb0ca*(x**37) + L0x7fffffffb0cc*(x**38) +
- L0x7fffffffb0ce*(x**39) + L0x7fffffffb0d0*(x**40) + L0x7fffffffb0d2*(x**41) +
- L0x7fffffffb0d4*(x**42) + L0x7fffffffb0d6*(x**43) + L0x7fffffffb0d8*(x**44) +
- L0x7fffffffb0da*(x**45) + L0x7fffffffb0dc*(x**46) + L0x7fffffffb0de*(x**47) +
- L0x7fffffffb0e0*(x**48) + L0x7fffffffb0e2*(x**49) + L0x7fffffffb0e4*(x**50) +
- L0x7fffffffb0e6*(x**51) + L0x7fffffffb0e8*(x**52) + L0x7fffffffb0ea*(x**53) +
- L0x7fffffffb0ec*(x**54) + L0x7fffffffb0ee*(x**55) + L0x7fffffffb0f0*(x**56) +
- L0x7fffffffb0f2*(x**57) + L0x7fffffffb0f4*(x**58) + L0x7fffffffb0f6*(x**59) +
- L0x7fffffffb0f8*(x**60) + L0x7fffffffb0fa*(x**61) + L0x7fffffffb0fc*(x**62) +
- L0x7fffffffb0fe*(x**63) + L0x7fffffffb100*(x**64) + L0x7fffffffb102*(x**65) +
- L0x7fffffffb104*(x**66) + L0x7fffffffb106*(x**67) + L0x7fffffffb108*(x**68) +
- L0x7fffffffb10a*(x**69) + L0x7fffffffb10c*(x**70) + L0x7fffffffb10e*(x**71) +
- L0x7fffffffb110*(x**72) + L0x7fffffffb112*(x**73) + L0x7fffffffb114*(x**74) +
- L0x7fffffffb116*(x**75) + L0x7fffffffb118*(x**76) + L0x7fffffffb11a*(x**77) +
- L0x7fffffffb11c*(x**78) + L0x7fffffffb11e*(x**79) + L0x7fffffffb120*(x**80) +
- L0x7fffffffb122*(x**81) + L0x7fffffffb124*(x**82) + L0x7fffffffb126*(x**83) +
- L0x7fffffffb128*(x**84) + L0x7fffffffb12a*(x**85) + L0x7fffffffb12c*(x**86) +
- L0x7fffffffb12e*(x**87) + L0x7fffffffb130*(x**88) + L0x7fffffffb132*(x**89) +
- L0x7fffffffb134*(x**90) + L0x7fffffffb136*(x**91) + L0x7fffffffb138*(x**92) +
- L0x7fffffffb13a*(x**93) + L0x7fffffffb13c*(x**94) + L0x7fffffffb13e*(x**95) +
- L0x7fffffffb140*(x**96) + L0x7fffffffb142*(x**97) + L0x7fffffffb144*(x**98) +
- L0x7fffffffb146*(x**99) + L0x7fffffffb148*(x**100) + L0x7fffffffb14a*(x**101) +
- L0x7fffffffb14c*(x**102) + L0x7fffffffb14e*(x**103) + L0x7fffffffb150*(x**104) +
- L0x7fffffffb152*(x**105) + L0x7fffffffb154*(x**106) + L0x7fffffffb156*(x**107) +
- L0x7fffffffb158*(x**108) + L0x7fffffffb15a*(x**109) + L0x7fffffffb15c*(x**110) +
- L0x7fffffffb15e*(x**111) + L0x7fffffffb160*(x**112) + L0x7fffffffb162*(x**113) +
- L0x7fffffffb164*(x**114) + L0x7fffffffb166*(x**115) + L0x7fffffffb168*(x**116) +
- L0x7fffffffb16a*(x**117) + L0x7fffffffb16c*(x**118) + L0x7fffffffb16e*(x**119) +
- L0x7fffffffb170*(x**120) + L0x7fffffffb172*(x**121) + L0x7fffffffb174*(x**122) +
- L0x7fffffffb176*(x**123) + L0x7fffffffb178*(x**124) + L0x7fffffffb17a*(x**125) +
- L0x7fffffffb17c*(x**126) + L0x7fffffffb17e*(x**127))
-[3329, x**128 - (1600)]]
+      (poly x [L0x7fffffffb080,L0x7fffffffb082,L0x7fffffffb084,L0x7fffffffb086,
+              L0x7fffffffb088,L0x7fffffffb08a,L0x7fffffffb08c,L0x7fffffffb08e,
+              L0x7fffffffb090,L0x7fffffffb092,L0x7fffffffb094,L0x7fffffffb096,
+              L0x7fffffffb098,L0x7fffffffb09a,L0x7fffffffb09c,L0x7fffffffb09e,
+              L0x7fffffffb0a0,L0x7fffffffb0a2,L0x7fffffffb0a4,L0x7fffffffb0a6,
+              L0x7fffffffb0a8,L0x7fffffffb0aa,L0x7fffffffb0ac,L0x7fffffffb0ae,
+              L0x7fffffffb0b0,L0x7fffffffb0b2,L0x7fffffffb0b4,L0x7fffffffb0b6,
+              L0x7fffffffb0b8,L0x7fffffffb0ba,L0x7fffffffb0bc,L0x7fffffffb0be,
+              L0x7fffffffb0c0,L0x7fffffffb0c2,L0x7fffffffb0c4,L0x7fffffffb0c6,
+              L0x7fffffffb0c8,L0x7fffffffb0ca,L0x7fffffffb0cc,L0x7fffffffb0ce,
+              L0x7fffffffb0d0,L0x7fffffffb0d2,L0x7fffffffb0d4,L0x7fffffffb0d6,
+              L0x7fffffffb0d8,L0x7fffffffb0da,L0x7fffffffb0dc,L0x7fffffffb0de,
+              L0x7fffffffb0e0,L0x7fffffffb0e2,L0x7fffffffb0e4,L0x7fffffffb0e6,
+              L0x7fffffffb0e8,L0x7fffffffb0ea,L0x7fffffffb0ec,L0x7fffffffb0ee,
+              L0x7fffffffb0f0,L0x7fffffffb0f2,L0x7fffffffb0f4,L0x7fffffffb0f6,
+              L0x7fffffffb0f8,L0x7fffffffb0fa,L0x7fffffffb0fc,L0x7fffffffb0fe,
+              L0x7fffffffb100,L0x7fffffffb102,L0x7fffffffb104,L0x7fffffffb106,
+              L0x7fffffffb108,L0x7fffffffb10a,L0x7fffffffb10c,L0x7fffffffb10e,
+              L0x7fffffffb110,L0x7fffffffb112,L0x7fffffffb114,L0x7fffffffb116,
+              L0x7fffffffb118,L0x7fffffffb11a,L0x7fffffffb11c,L0x7fffffffb11e,
+              L0x7fffffffb120,L0x7fffffffb122,L0x7fffffffb124,L0x7fffffffb126,
+              L0x7fffffffb128,L0x7fffffffb12a,L0x7fffffffb12c,L0x7fffffffb12e,
+              L0x7fffffffb130,L0x7fffffffb132,L0x7fffffffb134,L0x7fffffffb136,
+              L0x7fffffffb138,L0x7fffffffb13a,L0x7fffffffb13c,L0x7fffffffb13e,
+              L0x7fffffffb140,L0x7fffffffb142,L0x7fffffffb144,L0x7fffffffb146,
+              L0x7fffffffb148,L0x7fffffffb14a,L0x7fffffffb14c,L0x7fffffffb14e,
+              L0x7fffffffb150,L0x7fffffffb152,L0x7fffffffb154,L0x7fffffffb156,
+              L0x7fffffffb158,L0x7fffffffb15a,L0x7fffffffb15c,L0x7fffffffb15e,
+              L0x7fffffffb160,L0x7fffffffb162,L0x7fffffffb164,L0x7fffffffb166,
+              L0x7fffffffb168,L0x7fffffffb16a,L0x7fffffffb16c,L0x7fffffffb16e,
+              L0x7fffffffb170,L0x7fffffffb172,L0x7fffffffb174,L0x7fffffffb176,
+              L0x7fffffffb178,L0x7fffffffb17a,L0x7fffffffb17c,L0x7fffffffb17e])
+      [3329, x**128 - (1600)]
 prove with [ cuts [ 0 ] ]
 &&
-and [
-(-6658)@16 <s L0x7fffffffb080, L0x7fffffffb080 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb082, L0x7fffffffb082 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb084, L0x7fffffffb084 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb086, L0x7fffffffb086 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb088, L0x7fffffffb088 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08a, L0x7fffffffb08a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08c, L0x7fffffffb08c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb08e, L0x7fffffffb08e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb090, L0x7fffffffb090 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb092, L0x7fffffffb092 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb094, L0x7fffffffb094 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb096, L0x7fffffffb096 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb098, L0x7fffffffb098 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09a, L0x7fffffffb09a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09c, L0x7fffffffb09c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb09e, L0x7fffffffb09e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a0, L0x7fffffffb0a0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a2, L0x7fffffffb0a2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a4, L0x7fffffffb0a4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a6, L0x7fffffffb0a6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0a8, L0x7fffffffb0a8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0aa, L0x7fffffffb0aa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ac, L0x7fffffffb0ac <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ae, L0x7fffffffb0ae <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b0, L0x7fffffffb0b0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b2, L0x7fffffffb0b2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b4, L0x7fffffffb0b4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b6, L0x7fffffffb0b6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0b8, L0x7fffffffb0b8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ba, L0x7fffffffb0ba <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0bc, L0x7fffffffb0bc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0be, L0x7fffffffb0be <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c0, L0x7fffffffb0c0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c2, L0x7fffffffb0c2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c4, L0x7fffffffb0c4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c6, L0x7fffffffb0c6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0c8, L0x7fffffffb0c8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ca, L0x7fffffffb0ca <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0cc, L0x7fffffffb0cc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ce, L0x7fffffffb0ce <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d0, L0x7fffffffb0d0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d2, L0x7fffffffb0d2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d4, L0x7fffffffb0d4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d6, L0x7fffffffb0d6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0d8, L0x7fffffffb0d8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0da, L0x7fffffffb0da <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0dc, L0x7fffffffb0dc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0de, L0x7fffffffb0de <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e0, L0x7fffffffb0e0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e2, L0x7fffffffb0e2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e4, L0x7fffffffb0e4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e6, L0x7fffffffb0e6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0e8, L0x7fffffffb0e8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ea, L0x7fffffffb0ea <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ec, L0x7fffffffb0ec <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0ee, L0x7fffffffb0ee <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f0, L0x7fffffffb0f0 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f2, L0x7fffffffb0f2 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f4, L0x7fffffffb0f4 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f6, L0x7fffffffb0f6 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0f8, L0x7fffffffb0f8 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fa, L0x7fffffffb0fa <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fc, L0x7fffffffb0fc <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb0fe, L0x7fffffffb0fe <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb100, L0x7fffffffb100 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb102, L0x7fffffffb102 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb104, L0x7fffffffb104 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb106, L0x7fffffffb106 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb108, L0x7fffffffb108 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10a, L0x7fffffffb10a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10c, L0x7fffffffb10c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb10e, L0x7fffffffb10e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb110, L0x7fffffffb110 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb112, L0x7fffffffb112 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb114, L0x7fffffffb114 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb116, L0x7fffffffb116 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb118, L0x7fffffffb118 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11a, L0x7fffffffb11a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11c, L0x7fffffffb11c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb11e, L0x7fffffffb11e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb120, L0x7fffffffb120 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb122, L0x7fffffffb122 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb124, L0x7fffffffb124 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb126, L0x7fffffffb126 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb128, L0x7fffffffb128 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12a, L0x7fffffffb12a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12c, L0x7fffffffb12c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb12e, L0x7fffffffb12e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb130, L0x7fffffffb130 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb132, L0x7fffffffb132 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb134, L0x7fffffffb134 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb136, L0x7fffffffb136 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb138, L0x7fffffffb138 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13a, L0x7fffffffb13a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13c, L0x7fffffffb13c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb13e, L0x7fffffffb13e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb140, L0x7fffffffb140 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb142, L0x7fffffffb142 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb144, L0x7fffffffb144 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb146, L0x7fffffffb146 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb148, L0x7fffffffb148 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14a, L0x7fffffffb14a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14c, L0x7fffffffb14c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb14e, L0x7fffffffb14e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb150, L0x7fffffffb150 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb152, L0x7fffffffb152 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb154, L0x7fffffffb154 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb156, L0x7fffffffb156 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb158, L0x7fffffffb158 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15a, L0x7fffffffb15a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15c, L0x7fffffffb15c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb15e, L0x7fffffffb15e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb160, L0x7fffffffb160 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb162, L0x7fffffffb162 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb164, L0x7fffffffb164 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb166, L0x7fffffffb166 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb168, L0x7fffffffb168 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16a, L0x7fffffffb16a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16c, L0x7fffffffb16c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb16e, L0x7fffffffb16e <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb170, L0x7fffffffb170 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb172, L0x7fffffffb172 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb174, L0x7fffffffb174 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb176, L0x7fffffffb176 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb178, L0x7fffffffb178 <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17a, L0x7fffffffb17a <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17c, L0x7fffffffb17c <s (6658)@16,
-(-6658)@16 <s L0x7fffffffb17e, L0x7fffffffb17e <s (6658)@16]
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb080,L0x7fffffffb082] /\
+[L0x7fffffffb080,L0x7fffffffb082] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb084,L0x7fffffffb086] /\
+[L0x7fffffffb084,L0x7fffffffb086] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb088,L0x7fffffffb08a] /\
+[L0x7fffffffb088,L0x7fffffffb08a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb08c,L0x7fffffffb08e] /\
+[L0x7fffffffb08c,L0x7fffffffb08e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb090,L0x7fffffffb092] /\
+[L0x7fffffffb090,L0x7fffffffb092] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb094,L0x7fffffffb096] /\
+[L0x7fffffffb094,L0x7fffffffb096] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb098,L0x7fffffffb09a] /\
+[L0x7fffffffb098,L0x7fffffffb09a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb09c,L0x7fffffffb09e] /\
+[L0x7fffffffb09c,L0x7fffffffb09e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a0,L0x7fffffffb0a2] /\
+[L0x7fffffffb0a0,L0x7fffffffb0a2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a4,L0x7fffffffb0a6] /\
+[L0x7fffffffb0a4,L0x7fffffffb0a6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0a8,L0x7fffffffb0aa] /\
+[L0x7fffffffb0a8,L0x7fffffffb0aa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0ac,L0x7fffffffb0ae] /\
+[L0x7fffffffb0ac,L0x7fffffffb0ae] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b0,L0x7fffffffb0b2] /\
+[L0x7fffffffb0b0,L0x7fffffffb0b2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b4,L0x7fffffffb0b6] /\
+[L0x7fffffffb0b4,L0x7fffffffb0b6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0b8,L0x7fffffffb0ba] /\
+[L0x7fffffffb0b8,L0x7fffffffb0ba] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0bc,L0x7fffffffb0be] /\
+[L0x7fffffffb0bc,L0x7fffffffb0be] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c0,L0x7fffffffb0c2] /\
+[L0x7fffffffb0c0,L0x7fffffffb0c2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c4,L0x7fffffffb0c6] /\
+[L0x7fffffffb0c4,L0x7fffffffb0c6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0c8,L0x7fffffffb0ca] /\
+[L0x7fffffffb0c8,L0x7fffffffb0ca] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0cc,L0x7fffffffb0ce] /\
+[L0x7fffffffb0cc,L0x7fffffffb0ce] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d0,L0x7fffffffb0d2] /\
+[L0x7fffffffb0d0,L0x7fffffffb0d2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d4,L0x7fffffffb0d6] /\
+[L0x7fffffffb0d4,L0x7fffffffb0d6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0d8,L0x7fffffffb0da] /\
+[L0x7fffffffb0d8,L0x7fffffffb0da] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0dc,L0x7fffffffb0de] /\
+[L0x7fffffffb0dc,L0x7fffffffb0de] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e0,L0x7fffffffb0e2] /\
+[L0x7fffffffb0e0,L0x7fffffffb0e2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e4,L0x7fffffffb0e6] /\
+[L0x7fffffffb0e4,L0x7fffffffb0e6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0e8,L0x7fffffffb0ea] /\
+[L0x7fffffffb0e8,L0x7fffffffb0ea] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0ec,L0x7fffffffb0ee] /\
+[L0x7fffffffb0ec,L0x7fffffffb0ee] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f0,L0x7fffffffb0f2] /\
+[L0x7fffffffb0f0,L0x7fffffffb0f2] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f4,L0x7fffffffb0f6] /\
+[L0x7fffffffb0f4,L0x7fffffffb0f6] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0f8,L0x7fffffffb0fa] /\
+[L0x7fffffffb0f8,L0x7fffffffb0fa] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb0fc,L0x7fffffffb0fe] /\
+[L0x7fffffffb0fc,L0x7fffffffb0fe] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb100,L0x7fffffffb102] /\
+[L0x7fffffffb100,L0x7fffffffb102] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb104,L0x7fffffffb106] /\
+[L0x7fffffffb104,L0x7fffffffb106] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb108,L0x7fffffffb10a] /\
+[L0x7fffffffb108,L0x7fffffffb10a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb10c,L0x7fffffffb10e] /\
+[L0x7fffffffb10c,L0x7fffffffb10e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb110,L0x7fffffffb112] /\
+[L0x7fffffffb110,L0x7fffffffb112] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb114,L0x7fffffffb116] /\
+[L0x7fffffffb114,L0x7fffffffb116] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb118,L0x7fffffffb11a] /\
+[L0x7fffffffb118,L0x7fffffffb11a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb11c,L0x7fffffffb11e] /\
+[L0x7fffffffb11c,L0x7fffffffb11e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb120,L0x7fffffffb122] /\
+[L0x7fffffffb120,L0x7fffffffb122] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb124,L0x7fffffffb126] /\
+[L0x7fffffffb124,L0x7fffffffb126] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb128,L0x7fffffffb12a] /\
+[L0x7fffffffb128,L0x7fffffffb12a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb12c,L0x7fffffffb12e] /\
+[L0x7fffffffb12c,L0x7fffffffb12e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb130,L0x7fffffffb132] /\
+[L0x7fffffffb130,L0x7fffffffb132] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb134,L0x7fffffffb136] /\
+[L0x7fffffffb134,L0x7fffffffb136] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb138,L0x7fffffffb13a] /\
+[L0x7fffffffb138,L0x7fffffffb13a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb13c,L0x7fffffffb13e] /\
+[L0x7fffffffb13c,L0x7fffffffb13e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb140,L0x7fffffffb142] /\
+[L0x7fffffffb140,L0x7fffffffb142] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb144,L0x7fffffffb146] /\
+[L0x7fffffffb144,L0x7fffffffb146] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb148,L0x7fffffffb14a] /\
+[L0x7fffffffb148,L0x7fffffffb14a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb14c,L0x7fffffffb14e] /\
+[L0x7fffffffb14c,L0x7fffffffb14e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb150,L0x7fffffffb152] /\
+[L0x7fffffffb150,L0x7fffffffb152] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb154,L0x7fffffffb156] /\
+[L0x7fffffffb154,L0x7fffffffb156] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb158,L0x7fffffffb15a] /\
+[L0x7fffffffb158,L0x7fffffffb15a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb15c,L0x7fffffffb15e] /\
+[L0x7fffffffb15c,L0x7fffffffb15e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb160,L0x7fffffffb162] /\
+[L0x7fffffffb160,L0x7fffffffb162] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb164,L0x7fffffffb166] /\
+[L0x7fffffffb164,L0x7fffffffb166] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb168,L0x7fffffffb16a] /\
+[L0x7fffffffb168,L0x7fffffffb16a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb16c,L0x7fffffffb16e] /\
+[L0x7fffffffb16c,L0x7fffffffb16e] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb170,L0x7fffffffb172] /\
+[L0x7fffffffb170,L0x7fffffffb172] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb174,L0x7fffffffb176] /\
+[L0x7fffffffb174,L0x7fffffffb176] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb178,L0x7fffffffb17a] /\
+[L0x7fffffffb178,L0x7fffffffb17a] <s [6658@16,6658@16] /\
+[(-6658)@16,(-6658)@16] <s [L0x7fffffffb17c,L0x7fffffffb17e] /\
+[L0x7fffffffb17c,L0x7fffffffb17e] <s [6658@16,6658@16]
 prove with [ cuts [ 0 ] ];
 
 (* vmovdqa 0x320(%rsi),%ymm15                      #! EA = L0x555555639900; Value = 0x0313031303130313; PC = 0x55555556f24e *)
@@ -3868,176 +3423,61 @@ mov [ymm9_0, ymm9_1, ymm9_2, ymm9_3, ymm9_4, ymm9_5, ymm9_6, ymm9_7, ymm9_8, ymm
 mov [ymm10_0, ymm10_1, ymm10_2, ymm10_3, ymm10_4, ymm10_5, ymm10_6, ymm10_7, ymm10_8, ymm10_9, ymm10_a, ymm10_b, ymm10_c, ymm10_d, ymm10_e, ymm10_f] %ymm10;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm3_0*(x**0) + ymm3_1*(x**1) + ymm3_2*(x**2) + ymm3_3*(x**3) +
- ymm3_4*(x**4) + ymm3_5*(x**5) + ymm3_6*(x**6) + ymm3_7*(x**7) +
- ymm3_8*(x**8) + ymm3_9*(x**9) + ymm3_a*(x**10) + ymm3_b*(x**11) +
- ymm3_c*(x**12) + ymm3_d*(x**13) + ymm3_e*(x**14) + ymm3_f*(x**15) +
- ymm4_0*(x**16) + ymm4_1*(x**17) + ymm4_2*(x**18) + ymm4_3*(x**19) +
- ymm4_4*(x**20) + ymm4_5*(x**21) + ymm4_6*(x**22) + ymm4_7*(x**23) +
- ymm4_8*(x**24) + ymm4_9*(x**25) + ymm4_a*(x**26) + ymm4_b*(x**27) +
- ymm4_c*(x**28) + ymm4_d*(x**29) + ymm4_e*(x**30) + ymm4_f*(x**31) +
- ymm5_0*(x**32) + ymm5_1*(x**33) + ymm5_2*(x**34) + ymm5_3*(x**35) +
- ymm5_4*(x**36) + ymm5_5*(x**37) + ymm5_6*(x**38) + ymm5_7*(x**39) +
- ymm5_8*(x**40) + ymm5_9*(x**41) + ymm5_a*(x**42) + ymm5_b*(x**43) +
- ymm5_c*(x**44) + ymm5_d*(x**45) + ymm5_e*(x**46) + ymm5_f*(x**47) +
- ymm6_0*(x**48) + ymm6_1*(x**49) + ymm6_2*(x**50) + ymm6_3*(x**51) +
- ymm6_4*(x**52) + ymm6_5*(x**53) + ymm6_6*(x**54) + ymm6_7*(x**55) +
- ymm6_8*(x**56) + ymm6_9*(x**57) + ymm6_a*(x**58) + ymm6_b*(x**59) +
- ymm6_c*(x**60) + ymm6_d*(x**61) + ymm6_e*(x**62) + ymm6_f*(x**63))
-[3329, x**64 - (3289)],
-eqmod (inp_poly**2)
-(ymm8_0*(x**0) + ymm8_1*(x**1) + ymm8_2*(x**2) + ymm8_3*(x**3) +
- ymm8_4*(x**4) + ymm8_5*(x**5) + ymm8_6*(x**6) + ymm8_7*(x**7) +
- ymm8_8*(x**8) + ymm8_9*(x**9) + ymm8_a*(x**10) + ymm8_b*(x**11) +
- ymm8_c*(x**12) + ymm8_d*(x**13) + ymm8_e*(x**14) + ymm8_f*(x**15) +
- ymm9_0*(x**16) + ymm9_1*(x**17) + ymm9_2*(x**18) + ymm9_3*(x**19) +
- ymm9_4*(x**20) + ymm9_5*(x**21) + ymm9_6*(x**22) + ymm9_7*(x**23) +
- ymm9_8*(x**24) + ymm9_9*(x**25) + ymm9_a*(x**26) + ymm9_b*(x**27) +
- ymm9_c*(x**28) + ymm9_d*(x**29) + ymm9_e*(x**30) + ymm9_f*(x**31) +
- ymm10_0*(x**32) + ymm10_1*(x**33) + ymm10_2*(x**34) + ymm10_3*(x**35) +
- ymm10_4*(x**36) + ymm10_5*(x**37) + ymm10_6*(x**38) + ymm10_7*(x**39) +
- ymm10_8*(x**40) + ymm10_9*(x**41) + ymm10_a*(x**42) + ymm10_b*(x**43) +
- ymm10_c*(x**44) + ymm10_d*(x**45) + ymm10_e*(x**46) + ymm10_f*(x**47) +
- ymm11_0*(x**48) + ymm11_1*(x**49) + ymm11_2*(x**50) + ymm11_3*(x**51) +
- ymm11_4*(x**52) + ymm11_5*(x**53) + ymm11_6*(x**54) + ymm11_7*(x**55) +
- ymm11_8*(x**56) + ymm11_9*(x**57) + ymm11_a*(x**58) + ymm11_b*(x**59) +
- ymm11_c*(x**60) + ymm11_d*(x**61) + ymm11_e*(x**62) + ymm11_f*(x**63))
-[3329, x**64 - (40)]]
+cut eqmod (inp_poly**2)
+    (poly x [*%ymm3, *%ymm4, *%ymm5, *%ymm6])
+    [3329, x**64 - (3289)] /\
+    eqmod (inp_poly**2)
+    (poly x [*%ymm8, *%ymm9, *%ymm10, *%ymm11])
+    [3329, x**64 - (40)]
 &&
-and [
-(-9987)@16 <s ymm3_0, ymm3_0 <s (9987)@16,
-(-9987)@16 <s ymm3_1, ymm3_1 <s (9987)@16,
-(-9987)@16 <s ymm3_2, ymm3_2 <s (9987)@16,
-(-9987)@16 <s ymm3_3, ymm3_3 <s (9987)@16,
-(-9987)@16 <s ymm3_4, ymm3_4 <s (9987)@16,
-(-9987)@16 <s ymm3_5, ymm3_5 <s (9987)@16,
-(-9987)@16 <s ymm3_6, ymm3_6 <s (9987)@16,
-(-9987)@16 <s ymm3_7, ymm3_7 <s (9987)@16,
-(-9987)@16 <s ymm3_8, ymm3_8 <s (9987)@16,
-(-9987)@16 <s ymm3_9, ymm3_9 <s (9987)@16,
-(-9987)@16 <s ymm3_a, ymm3_a <s (9987)@16,
-(-9987)@16 <s ymm3_b, ymm3_b <s (9987)@16,
-(-9987)@16 <s ymm3_c, ymm3_c <s (9987)@16,
-(-9987)@16 <s ymm3_d, ymm3_d <s (9987)@16,
-(-9987)@16 <s ymm3_e, ymm3_e <s (9987)@16,
-(-9987)@16 <s ymm3_f, ymm3_f <s (9987)@16,
-(-9987)@16 <s ymm4_0, ymm4_0 <s (9987)@16,
-(-9987)@16 <s ymm4_1, ymm4_1 <s (9987)@16,
-(-9987)@16 <s ymm4_2, ymm4_2 <s (9987)@16,
-(-9987)@16 <s ymm4_3, ymm4_3 <s (9987)@16,
-(-9987)@16 <s ymm4_4, ymm4_4 <s (9987)@16,
-(-9987)@16 <s ymm4_5, ymm4_5 <s (9987)@16,
-(-9987)@16 <s ymm4_6, ymm4_6 <s (9987)@16,
-(-9987)@16 <s ymm4_7, ymm4_7 <s (9987)@16,
-(-9987)@16 <s ymm4_8, ymm4_8 <s (9987)@16,
-(-9987)@16 <s ymm4_9, ymm4_9 <s (9987)@16,
-(-9987)@16 <s ymm4_a, ymm4_a <s (9987)@16,
-(-9987)@16 <s ymm4_b, ymm4_b <s (9987)@16,
-(-9987)@16 <s ymm4_c, ymm4_c <s (9987)@16,
-(-9987)@16 <s ymm4_d, ymm4_d <s (9987)@16,
-(-9987)@16 <s ymm4_e, ymm4_e <s (9987)@16,
-(-9987)@16 <s ymm4_f, ymm4_f <s (9987)@16,
-(-9987)@16 <s ymm5_0, ymm5_0 <s (9987)@16,
-(-9987)@16 <s ymm5_1, ymm5_1 <s (9987)@16,
-(-9987)@16 <s ymm5_2, ymm5_2 <s (9987)@16,
-(-9987)@16 <s ymm5_3, ymm5_3 <s (9987)@16,
-(-9987)@16 <s ymm5_4, ymm5_4 <s (9987)@16,
-(-9987)@16 <s ymm5_5, ymm5_5 <s (9987)@16,
-(-9987)@16 <s ymm5_6, ymm5_6 <s (9987)@16,
-(-9987)@16 <s ymm5_7, ymm5_7 <s (9987)@16,
-(-9987)@16 <s ymm5_8, ymm5_8 <s (9987)@16,
-(-9987)@16 <s ymm5_9, ymm5_9 <s (9987)@16,
-(-9987)@16 <s ymm5_a, ymm5_a <s (9987)@16,
-(-9987)@16 <s ymm5_b, ymm5_b <s (9987)@16,
-(-9987)@16 <s ymm5_c, ymm5_c <s (9987)@16,
-(-9987)@16 <s ymm5_d, ymm5_d <s (9987)@16,
-(-9987)@16 <s ymm5_e, ymm5_e <s (9987)@16,
-(-9987)@16 <s ymm5_f, ymm5_f <s (9987)@16,
-(-9987)@16 <s ymm6_0, ymm6_0 <s (9987)@16,
-(-9987)@16 <s ymm6_1, ymm6_1 <s (9987)@16,
-(-9987)@16 <s ymm6_2, ymm6_2 <s (9987)@16,
-(-9987)@16 <s ymm6_3, ymm6_3 <s (9987)@16,
-(-9987)@16 <s ymm6_4, ymm6_4 <s (9987)@16,
-(-9987)@16 <s ymm6_5, ymm6_5 <s (9987)@16,
-(-9987)@16 <s ymm6_6, ymm6_6 <s (9987)@16,
-(-9987)@16 <s ymm6_7, ymm6_7 <s (9987)@16,
-(-9987)@16 <s ymm6_8, ymm6_8 <s (9987)@16,
-(-9987)@16 <s ymm6_9, ymm6_9 <s (9987)@16,
-(-9987)@16 <s ymm6_a, ymm6_a <s (9987)@16,
-(-9987)@16 <s ymm6_b, ymm6_b <s (9987)@16,
-(-9987)@16 <s ymm6_c, ymm6_c <s (9987)@16,
-(-9987)@16 <s ymm6_d, ymm6_d <s (9987)@16,
-(-9987)@16 <s ymm6_e, ymm6_e <s (9987)@16,
-(-9987)@16 <s ymm6_f, ymm6_f <s (9987)@16,
-(-9987)@16 <s ymm8_0, ymm8_0 <s (9987)@16,
-(-9987)@16 <s ymm8_1, ymm8_1 <s (9987)@16,
-(-9987)@16 <s ymm8_2, ymm8_2 <s (9987)@16,
-(-9987)@16 <s ymm8_3, ymm8_3 <s (9987)@16,
-(-9987)@16 <s ymm8_4, ymm8_4 <s (9987)@16,
-(-9987)@16 <s ymm8_5, ymm8_5 <s (9987)@16,
-(-9987)@16 <s ymm8_6, ymm8_6 <s (9987)@16,
-(-9987)@16 <s ymm8_7, ymm8_7 <s (9987)@16,
-(-9987)@16 <s ymm8_8, ymm8_8 <s (9987)@16,
-(-9987)@16 <s ymm8_9, ymm8_9 <s (9987)@16,
-(-9987)@16 <s ymm8_a, ymm8_a <s (9987)@16,
-(-9987)@16 <s ymm8_b, ymm8_b <s (9987)@16,
-(-9987)@16 <s ymm8_c, ymm8_c <s (9987)@16,
-(-9987)@16 <s ymm8_d, ymm8_d <s (9987)@16,
-(-9987)@16 <s ymm8_e, ymm8_e <s (9987)@16,
-(-9987)@16 <s ymm8_f, ymm8_f <s (9987)@16,
-(-9987)@16 <s ymm9_0, ymm9_0 <s (9987)@16,
-(-9987)@16 <s ymm9_1, ymm9_1 <s (9987)@16,
-(-9987)@16 <s ymm9_2, ymm9_2 <s (9987)@16,
-(-9987)@16 <s ymm9_3, ymm9_3 <s (9987)@16,
-(-9987)@16 <s ymm9_4, ymm9_4 <s (9987)@16,
-(-9987)@16 <s ymm9_5, ymm9_5 <s (9987)@16,
-(-9987)@16 <s ymm9_6, ymm9_6 <s (9987)@16,
-(-9987)@16 <s ymm9_7, ymm9_7 <s (9987)@16,
-(-9987)@16 <s ymm9_8, ymm9_8 <s (9987)@16,
-(-9987)@16 <s ymm9_9, ymm9_9 <s (9987)@16,
-(-9987)@16 <s ymm9_a, ymm9_a <s (9987)@16,
-(-9987)@16 <s ymm9_b, ymm9_b <s (9987)@16,
-(-9987)@16 <s ymm9_c, ymm9_c <s (9987)@16,
-(-9987)@16 <s ymm9_d, ymm9_d <s (9987)@16,
-(-9987)@16 <s ymm9_e, ymm9_e <s (9987)@16,
-(-9987)@16 <s ymm9_f, ymm9_f <s (9987)@16,
-(-9987)@16 <s ymm10_0, ymm10_0 <s (9987)@16,
-(-9987)@16 <s ymm10_1, ymm10_1 <s (9987)@16,
-(-9987)@16 <s ymm10_2, ymm10_2 <s (9987)@16,
-(-9987)@16 <s ymm10_3, ymm10_3 <s (9987)@16,
-(-9987)@16 <s ymm10_4, ymm10_4 <s (9987)@16,
-(-9987)@16 <s ymm10_5, ymm10_5 <s (9987)@16,
-(-9987)@16 <s ymm10_6, ymm10_6 <s (9987)@16,
-(-9987)@16 <s ymm10_7, ymm10_7 <s (9987)@16,
-(-9987)@16 <s ymm10_8, ymm10_8 <s (9987)@16,
-(-9987)@16 <s ymm10_9, ymm10_9 <s (9987)@16,
-(-9987)@16 <s ymm10_a, ymm10_a <s (9987)@16,
-(-9987)@16 <s ymm10_b, ymm10_b <s (9987)@16,
-(-9987)@16 <s ymm10_c, ymm10_c <s (9987)@16,
-(-9987)@16 <s ymm10_d, ymm10_d <s (9987)@16,
-(-9987)@16 <s ymm10_e, ymm10_e <s (9987)@16,
-(-9987)@16 <s ymm10_f, ymm10_f <s (9987)@16,
-(-9987)@16 <s ymm11_0, ymm11_0 <s (9987)@16,
-(-9987)@16 <s ymm11_1, ymm11_1 <s (9987)@16,
-(-9987)@16 <s ymm11_2, ymm11_2 <s (9987)@16,
-(-9987)@16 <s ymm11_3, ymm11_3 <s (9987)@16,
-(-9987)@16 <s ymm11_4, ymm11_4 <s (9987)@16,
-(-9987)@16 <s ymm11_5, ymm11_5 <s (9987)@16,
-(-9987)@16 <s ymm11_6, ymm11_6 <s (9987)@16,
-(-9987)@16 <s ymm11_7, ymm11_7 <s (9987)@16,
-(-9987)@16 <s ymm11_8, ymm11_8 <s (9987)@16,
-(-9987)@16 <s ymm11_9, ymm11_9 <s (9987)@16,
-(-9987)@16 <s ymm11_a, ymm11_a <s (9987)@16,
-(-9987)@16 <s ymm11_b, ymm11_b <s (9987)@16,
-(-9987)@16 <s ymm11_c, ymm11_c <s (9987)@16,
-(-9987)@16 <s ymm11_d, ymm11_d <s (9987)@16,
-(-9987)@16 <s ymm11_e, ymm11_e <s (9987)@16,
-(-9987)@16 <s ymm11_f, ymm11_f <s (9987)@16]
-;
-
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm3 /\ %ymm3 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm4 /\ %ymm4 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm5 /\ %ymm5 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm6 /\ %ymm6 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm8 /\ %ymm8 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm9 /\ %ymm9 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm10 /\ %ymm10 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16] /\
+[(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16,
+ (-9987)@16,(-9987)@16,(-9987)@16,(-9987)@16] <s %ymm11 /\ %ymm11 <s
+[(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,(9987)@16,
+ (9987)@16,(9987)@16,(9987)@16,(9987)@16];
 
 (* vperm2i128 $0x20,%ymm10,%ymm5,%ymm7             #! PC = 0x55555556f322 *)
 mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3,
@@ -4212,178 +3652,89 @@ mov [ymm10_0, ymm10_1, ymm10_2, ymm10_3, ymm10_4, ymm10_5, ymm10_6, ymm10_7, ymm
 mov [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7, ymm5_8, ymm5_9, ymm5_a, ymm5_b, ymm5_c, ymm5_d, ymm5_e, ymm5_f] %ymm5;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm4_0*(x**0) + ymm4_1*(x**1) + ymm4_2*(x**2) + ymm4_3*(x**3) +
- ymm4_4*(x**4) + ymm4_5*(x**5) + ymm4_6*(x**6) + ymm4_7*(x**7) +
- ymm6_0*(x**8) + ymm6_1*(x**9) + ymm6_2*(x**10) + ymm6_3*(x**11) +
- ymm6_4*(x**12) + ymm6_5*(x**13) + ymm6_6*(x**14) + ymm6_7*(x**15) +
- ymm8_0*(x**16) + ymm8_1*(x**17) + ymm8_2*(x**18) + ymm8_3*(x**19) +
- ymm8_4*(x**20) + ymm8_5*(x**21) + ymm8_6*(x**22) + ymm8_7*(x**23) +
- ymm3_0*(x**24) + ymm3_1*(x**25) + ymm3_2*(x**26) + ymm3_3*(x**27) +
- ymm3_4*(x**28) + ymm3_5*(x**29) + ymm3_6*(x**30) + ymm3_7*(x**31))
-[3329, x**32 - (1897)],
-eqmod (inp_poly**2)
-(ymm7_0*(x**0) + ymm7_1*(x**1) + ymm7_2*(x**2) + ymm7_3*(x**3) +
- ymm7_4*(x**4) + ymm7_5*(x**5) + ymm7_6*(x**6) + ymm7_7*(x**7) +
- ymm10_0*(x**8) + ymm10_1*(x**9) + ymm10_2*(x**10) + ymm10_3*(x**11) +
- ymm10_4*(x**12) + ymm10_5*(x**13) + ymm10_6*(x**14) + ymm10_7*(x**15) +
- ymm5_0*(x**16) + ymm5_1*(x**17) + ymm5_2*(x**18) + ymm5_3*(x**19) +
- ymm5_4*(x**20) + ymm5_5*(x**21) + ymm5_6*(x**22) + ymm5_7*(x**23) +
- ymm11_0*(x**24) + ymm11_1*(x**25) + ymm11_2*(x**26) + ymm11_3*(x**27) +
- ymm11_4*(x**28) + ymm11_5*(x**29) + ymm11_6*(x**30) + ymm11_7*(x**31))
-[3329, x**32 - (1432)],
-eqmod (inp_poly**2)
-(ymm4_8*(x**0) + ymm4_9*(x**1) + ymm4_a*(x**2) + ymm4_b*(x**3) +
- ymm4_c*(x**4) + ymm4_d*(x**5) + ymm4_e*(x**6) + ymm4_f*(x**7) +
- ymm6_8*(x**8) + ymm6_9*(x**9) + ymm6_a*(x**10) + ymm6_b*(x**11) +
- ymm6_c*(x**12) + ymm6_d*(x**13) + ymm6_e*(x**14) + ymm6_f*(x**15) +
- ymm8_8*(x**16) + ymm8_9*(x**17) + ymm8_a*(x**18) + ymm8_b*(x**19) +
- ymm8_c*(x**20) + ymm8_d*(x**21) + ymm8_e*(x**22) + ymm8_f*(x**23) +
- ymm3_8*(x**24) + ymm3_9*(x**25) + ymm3_a*(x**26) + ymm3_b*(x**27) +
- ymm3_c*(x**28) + ymm3_d*(x**29) + ymm3_e*(x**30) + ymm3_f*(x**31))
-[3329, x**32 - (848)],
-eqmod (inp_poly**2)
-(ymm7_8*(x**0) + ymm7_9*(x**1) + ymm7_a*(x**2) + ymm7_b*(x**3) +
- ymm7_c*(x**4) + ymm7_d*(x**5) + ymm7_e*(x**6) + ymm7_f*(x**7) +
- ymm10_8*(x**8) + ymm10_9*(x**9) + ymm10_a*(x**10) + ymm10_b*(x**11) +
- ymm10_c*(x**12) + ymm10_d*(x**13) + ymm10_e*(x**14) + ymm10_f*(x**15) +
- ymm5_8*(x**16) + ymm5_9*(x**17) + ymm5_a*(x**18) + ymm5_b*(x**19) +
- ymm5_c*(x**20) + ymm5_d*(x**21) + ymm5_e*(x**22) + ymm5_f*(x**23) +
- ymm11_8*(x**24) + ymm11_9*(x**25) + ymm11_a*(x**26) + ymm11_b*(x**27) +
- ymm11_c*(x**28) + ymm11_d*(x**29) + ymm11_e*(x**30) + ymm11_f*(x**31))
-[3329, x**32 - (2481)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm4[0],%ymm4[1],%ymm4[2],%ymm4[3],
+                  %ymm4[4],%ymm4[5],%ymm4[6],%ymm4[7],
+                  %ymm6[0],%ymm6[1],%ymm6[2],%ymm6[3],
+                  %ymm6[4],%ymm6[5],%ymm6[6],%ymm6[7],
+                  %ymm8[0],%ymm8[1],%ymm8[2],%ymm8[3],
+                  %ymm8[4],%ymm8[5],%ymm8[6],%ymm8[7],
+                  %ymm3[0],%ymm3[1],%ymm3[2],%ymm3[3],
+                  %ymm3[4],%ymm3[5],%ymm3[6],%ymm3[7]])
+          [3329, x**32 - (1897)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm7[0],%ymm7[1],%ymm7[2],%ymm7[3],
+                  %ymm7[4],%ymm7[5],%ymm7[6],%ymm7[7],
+                  %ymm10[0],%ymm10[1],%ymm10[2],%ymm10[3],
+                  %ymm10[4],%ymm10[5],%ymm10[6],%ymm10[7],
+                  %ymm5[0],%ymm5[1],%ymm5[2],%ymm5[3],
+                  %ymm5[4],%ymm5[5],%ymm5[6],%ymm5[7],
+                  %ymm11[0],%ymm11[1],%ymm11[2],%ymm11[3],
+                  %ymm11[4],%ymm11[5],%ymm11[6],%ymm11[7]])
+          [3329, x**32 - (1432)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[8],%ymm4[9],%ymm4[10],%ymm4[11],
+                  %ymm4[12],%ymm4[13],%ymm4[14],%ymm4[15],
+                  %ymm6[8],%ymm6[9],%ymm6[10],%ymm6[11],
+                  %ymm6[12],%ymm6[13],%ymm6[14],%ymm6[15],
+                  %ymm8[8],%ymm8[9],%ymm8[10],%ymm8[11],
+                  %ymm8[12],%ymm8[13],%ymm8[14],%ymm8[15],
+                  %ymm3[8],%ymm3[9],%ymm3[10],%ymm3[11],
+                  %ymm3[12],%ymm3[13],%ymm3[14],%ymm3[15]])
+          [3329, x**32 - (848)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm7[8],%ymm7[9],%ymm7[10],%ymm7[11],
+                  %ymm7[12],%ymm7[13],%ymm7[14],%ymm7[15],
+                  %ymm10[8],%ymm10[9],%ymm10[10],%ymm10[11],
+                  %ymm10[12],%ymm10[13],%ymm10[14],%ymm10[15],
+                  %ymm5[8],%ymm5[9],%ymm5[10],%ymm5[11],
+                  %ymm5[12],%ymm5[13],%ymm5[14],%ymm5[15],
+                  %ymm11[8],%ymm11[9],%ymm11[10],%ymm11[11],
+                  %ymm11[12],%ymm11[13],%ymm11[14],%ymm11[15]])
+          [3329, x**32 - (2481)]
 prove with [ cuts [ 1 ] ] &&
-and [
-(-13316)@16 <s ymm4_0, ymm4_0 <s (13316)@16,
-(-13316)@16 <s ymm4_1, ymm4_1 <s (13316)@16,
-(-13316)@16 <s ymm4_2, ymm4_2 <s (13316)@16,
-(-13316)@16 <s ymm4_3, ymm4_3 <s (13316)@16,
-(-13316)@16 <s ymm4_4, ymm4_4 <s (13316)@16,
-(-13316)@16 <s ymm4_5, ymm4_5 <s (13316)@16,
-(-13316)@16 <s ymm4_6, ymm4_6 <s (13316)@16,
-(-13316)@16 <s ymm4_7, ymm4_7 <s (13316)@16,
-(-13316)@16 <s ymm6_0, ymm6_0 <s (13316)@16,
-(-13316)@16 <s ymm6_1, ymm6_1 <s (13316)@16,
-(-13316)@16 <s ymm6_2, ymm6_2 <s (13316)@16,
-(-13316)@16 <s ymm6_3, ymm6_3 <s (13316)@16,
-(-13316)@16 <s ymm6_4, ymm6_4 <s (13316)@16,
-(-13316)@16 <s ymm6_5, ymm6_5 <s (13316)@16,
-(-13316)@16 <s ymm6_6, ymm6_6 <s (13316)@16,
-(-13316)@16 <s ymm6_7, ymm6_7 <s (13316)@16,
-(-13316)@16 <s ymm8_0, ymm8_0 <s (13316)@16,
-(-13316)@16 <s ymm8_1, ymm8_1 <s (13316)@16,
-(-13316)@16 <s ymm8_2, ymm8_2 <s (13316)@16,
-(-13316)@16 <s ymm8_3, ymm8_3 <s (13316)@16,
-(-13316)@16 <s ymm8_4, ymm8_4 <s (13316)@16,
-(-13316)@16 <s ymm8_5, ymm8_5 <s (13316)@16,
-(-13316)@16 <s ymm8_6, ymm8_6 <s (13316)@16,
-(-13316)@16 <s ymm8_7, ymm8_7 <s (13316)@16,
-(-13316)@16 <s ymm3_0, ymm3_0 <s (13316)@16,
-(-13316)@16 <s ymm3_1, ymm3_1 <s (13316)@16,
-(-13316)@16 <s ymm3_2, ymm3_2 <s (13316)@16,
-(-13316)@16 <s ymm3_3, ymm3_3 <s (13316)@16,
-(-13316)@16 <s ymm3_4, ymm3_4 <s (13316)@16,
-(-13316)@16 <s ymm3_5, ymm3_5 <s (13316)@16,
-(-13316)@16 <s ymm3_6, ymm3_6 <s (13316)@16,
-(-13316)@16 <s ymm3_7, ymm3_7 <s (13316)@16,
-(-13316)@16 <s ymm7_0, ymm7_0 <s (13316)@16,
-(-13316)@16 <s ymm7_1, ymm7_1 <s (13316)@16,
-(-13316)@16 <s ymm7_2, ymm7_2 <s (13316)@16,
-(-13316)@16 <s ymm7_3, ymm7_3 <s (13316)@16,
-(-13316)@16 <s ymm7_4, ymm7_4 <s (13316)@16,
-(-13316)@16 <s ymm7_5, ymm7_5 <s (13316)@16,
-(-13316)@16 <s ymm7_6, ymm7_6 <s (13316)@16,
-(-13316)@16 <s ymm7_7, ymm7_7 <s (13316)@16,
-(-13316)@16 <s ymm10_0, ymm10_0 <s (13316)@16,
-(-13316)@16 <s ymm10_1, ymm10_1 <s (13316)@16,
-(-13316)@16 <s ymm10_2, ymm10_2 <s (13316)@16,
-(-13316)@16 <s ymm10_3, ymm10_3 <s (13316)@16,
-(-13316)@16 <s ymm10_4, ymm10_4 <s (13316)@16,
-(-13316)@16 <s ymm10_5, ymm10_5 <s (13316)@16,
-(-13316)@16 <s ymm10_6, ymm10_6 <s (13316)@16,
-(-13316)@16 <s ymm10_7, ymm10_7 <s (13316)@16,
-(-13316)@16 <s ymm5_0, ymm5_0 <s (13316)@16,
-(-13316)@16 <s ymm5_1, ymm5_1 <s (13316)@16,
-(-13316)@16 <s ymm5_2, ymm5_2 <s (13316)@16,
-(-13316)@16 <s ymm5_3, ymm5_3 <s (13316)@16,
-(-13316)@16 <s ymm5_4, ymm5_4 <s (13316)@16,
-(-13316)@16 <s ymm5_5, ymm5_5 <s (13316)@16,
-(-13316)@16 <s ymm5_6, ymm5_6 <s (13316)@16,
-(-13316)@16 <s ymm5_7, ymm5_7 <s (13316)@16,
-(-13316)@16 <s ymm11_0, ymm11_0 <s (13316)@16,
-(-13316)@16 <s ymm11_1, ymm11_1 <s (13316)@16,
-(-13316)@16 <s ymm11_2, ymm11_2 <s (13316)@16,
-(-13316)@16 <s ymm11_3, ymm11_3 <s (13316)@16,
-(-13316)@16 <s ymm11_4, ymm11_4 <s (13316)@16,
-(-13316)@16 <s ymm11_5, ymm11_5 <s (13316)@16,
-(-13316)@16 <s ymm11_6, ymm11_6 <s (13316)@16,
-(-13316)@16 <s ymm11_7, ymm11_7 <s (13316)@16,
-(-13316)@16 <s ymm4_8, ymm4_8 <s (13316)@16,
-(-13316)@16 <s ymm4_9, ymm4_9 <s (13316)@16,
-(-13316)@16 <s ymm4_a, ymm4_a <s (13316)@16,
-(-13316)@16 <s ymm4_b, ymm4_b <s (13316)@16,
-(-13316)@16 <s ymm4_c, ymm4_c <s (13316)@16,
-(-13316)@16 <s ymm4_d, ymm4_d <s (13316)@16,
-(-13316)@16 <s ymm4_e, ymm4_e <s (13316)@16,
-(-13316)@16 <s ymm4_f, ymm4_f <s (13316)@16,
-(-13316)@16 <s ymm6_8, ymm6_8 <s (13316)@16,
-(-13316)@16 <s ymm6_9, ymm6_9 <s (13316)@16,
-(-13316)@16 <s ymm6_a, ymm6_a <s (13316)@16,
-(-13316)@16 <s ymm6_b, ymm6_b <s (13316)@16,
-(-13316)@16 <s ymm6_c, ymm6_c <s (13316)@16,
-(-13316)@16 <s ymm6_d, ymm6_d <s (13316)@16,
-(-13316)@16 <s ymm6_e, ymm6_e <s (13316)@16,
-(-13316)@16 <s ymm6_f, ymm6_f <s (13316)@16,
-(-13316)@16 <s ymm8_8, ymm8_8 <s (13316)@16,
-(-13316)@16 <s ymm8_9, ymm8_9 <s (13316)@16,
-(-13316)@16 <s ymm8_a, ymm8_a <s (13316)@16,
-(-13316)@16 <s ymm8_b, ymm8_b <s (13316)@16,
-(-13316)@16 <s ymm8_c, ymm8_c <s (13316)@16,
-(-13316)@16 <s ymm8_d, ymm8_d <s (13316)@16,
-(-13316)@16 <s ymm8_e, ymm8_e <s (13316)@16,
-(-13316)@16 <s ymm8_f, ymm8_f <s (13316)@16,
-(-13316)@16 <s ymm3_8, ymm3_8 <s (13316)@16,
-(-13316)@16 <s ymm3_9, ymm3_9 <s (13316)@16,
-(-13316)@16 <s ymm3_a, ymm3_a <s (13316)@16,
-(-13316)@16 <s ymm3_b, ymm3_b <s (13316)@16,
-(-13316)@16 <s ymm3_c, ymm3_c <s (13316)@16,
-(-13316)@16 <s ymm3_d, ymm3_d <s (13316)@16,
-(-13316)@16 <s ymm3_e, ymm3_e <s (13316)@16,
-(-13316)@16 <s ymm3_f, ymm3_f <s (13316)@16,
-(-13316)@16 <s ymm7_8, ymm7_8 <s (13316)@16,
-(-13316)@16 <s ymm7_9, ymm7_9 <s (13316)@16,
-(-13316)@16 <s ymm7_a, ymm7_a <s (13316)@16,
-(-13316)@16 <s ymm7_b, ymm7_b <s (13316)@16,
-(-13316)@16 <s ymm7_c, ymm7_c <s (13316)@16,
-(-13316)@16 <s ymm7_d, ymm7_d <s (13316)@16,
-(-13316)@16 <s ymm7_e, ymm7_e <s (13316)@16,
-(-13316)@16 <s ymm7_f, ymm7_f <s (13316)@16,
-(-13316)@16 <s ymm10_8, ymm10_8 <s (13316)@16,
-(-13316)@16 <s ymm10_9, ymm10_9 <s (13316)@16,
-(-13316)@16 <s ymm10_a, ymm10_a <s (13316)@16,
-(-13316)@16 <s ymm10_b, ymm10_b <s (13316)@16,
-(-13316)@16 <s ymm10_c, ymm10_c <s (13316)@16,
-(-13316)@16 <s ymm10_d, ymm10_d <s (13316)@16,
-(-13316)@16 <s ymm10_e, ymm10_e <s (13316)@16,
-(-13316)@16 <s ymm10_f, ymm10_f <s (13316)@16,
-(-13316)@16 <s ymm5_8, ymm5_8 <s (13316)@16,
-(-13316)@16 <s ymm5_9, ymm5_9 <s (13316)@16,
-(-13316)@16 <s ymm5_a, ymm5_a <s (13316)@16,
-(-13316)@16 <s ymm5_b, ymm5_b <s (13316)@16,
-(-13316)@16 <s ymm5_c, ymm5_c <s (13316)@16,
-(-13316)@16 <s ymm5_d, ymm5_d <s (13316)@16,
-(-13316)@16 <s ymm5_e, ymm5_e <s (13316)@16,
-(-13316)@16 <s ymm5_f, ymm5_f <s (13316)@16,
-(-13316)@16 <s ymm11_8, ymm11_8 <s (13316)@16,
-(-13316)@16 <s ymm11_9, ymm11_9 <s (13316)@16,
-(-13316)@16 <s ymm11_a, ymm11_a <s (13316)@16,
-(-13316)@16 <s ymm11_b, ymm11_b <s (13316)@16,
-(-13316)@16 <s ymm11_c, ymm11_c <s (13316)@16,
-(-13316)@16 <s ymm11_d, ymm11_d <s (13316)@16,
-(-13316)@16 <s ymm11_e, ymm11_e <s (13316)@16,
-(-13316)@16 <s ymm11_f, ymm11_f <s (13316)@16]
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm4 /\ %ymm4 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm6 /\ %ymm6 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm8 /\ %ymm8 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm3 /\ %ymm3 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm7 /\ %ymm7 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm10 /\ %ymm10 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16] /\
+[(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16,
+ (-13316)@16,(-13316)@16,(-13316)@16,(-13316)@16] <s %ymm11 /\ %ymm11 <s
+[(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,(13316)@16,
+ (13316)@16,(13316)@16,(13316)@16,(13316)@16]
 prove with [ cuts [ 1 ] ];
 
 (* vpunpcklqdq %ymm5,%ymm8,%ymm9                   #! PC = 0x55555556f3e2 *)
@@ -4560,186 +3911,103 @@ mov [ymm5_0, ymm5_1, ymm5_2, ymm5_3, ymm5_4, ymm5_5, ymm5_6, ymm5_7, ymm5_8, ymm
 mov [ymm8_0, ymm8_1, ymm8_2, ymm8_3, ymm8_4, ymm8_5, ymm8_6, ymm8_7, ymm8_8, ymm8_9, ymm8_a, ymm8_b, ymm8_c, ymm8_d, ymm8_e, ymm8_f] %ymm8;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm6_0*(x**0) + ymm6_1*(x**1) + ymm6_2*(x**2) + ymm6_3*(x**3) +
- ymm3_0*(x**4) + ymm3_1*(x**5) + ymm3_2*(x**6) + ymm3_3*(x**7) +
- ymm7_0*(x**8) + ymm7_1*(x**9) + ymm7_2*(x**10) + ymm7_3*(x**11) +
- ymm4_0*(x**12) + ymm4_1*(x**13) + ymm4_2*(x**14) + ymm4_3*(x**15))
-[3329, x**16 - (2786)],
-eqmod (inp_poly**2)
-(ymm9_0*(x**0) + ymm9_1*(x**1) + ymm9_2*(x**2) + ymm9_3*(x**3) +
- ymm5_0*(x**4) + ymm5_1*(x**5) + ymm5_2*(x**6) + ymm5_3*(x**7) +
- ymm8_0*(x**8) + ymm8_1*(x**9) + ymm8_2*(x**10) + ymm8_3*(x**11) +
- ymm11_0*(x**12) + ymm11_1*(x**13) + ymm11_2*(x**14) + ymm11_3*(x**15))
-[3329, x**16 - (543)],
-eqmod (inp_poly**2)
-(ymm6_4*(x**0) + ymm6_5*(x**1) + ymm6_6*(x**2) + ymm6_7*(x**3) +
- ymm3_4*(x**4) + ymm3_5*(x**5) + ymm3_6*(x**6) + ymm3_7*(x**7) +
- ymm7_4*(x**8) + ymm7_5*(x**9) + ymm7_6*(x**10) + ymm7_7*(x**11) +
- ymm4_4*(x**12) + ymm4_5*(x**13) + ymm4_6*(x**14) + ymm4_7*(x**15))
-[3329, x**16 - (3260)],
-eqmod (inp_poly**2)
-(ymm9_4*(x**0) + ymm9_5*(x**1) + ymm9_6*(x**2) + ymm9_7*(x**3) +
- ymm5_4*(x**4) + ymm5_5*(x**5) + ymm5_6*(x**6) + ymm5_7*(x**7) +
- ymm8_4*(x**8) + ymm8_5*(x**9) + ymm8_6*(x**10) + ymm8_7*(x**11) +
- ymm11_4*(x**12) + ymm11_5*(x**13) + ymm11_6*(x**14) + ymm11_7*(x**15))
-[3329, x**16 - (69)],
-eqmod (inp_poly**2)
-(ymm6_8*(x**0) + ymm6_9*(x**1) + ymm6_a*(x**2) + ymm6_b*(x**3) +
- ymm3_8*(x**4) + ymm3_9*(x**5) + ymm3_a*(x**6) + ymm3_b*(x**7) +
- ymm7_8*(x**8) + ymm7_9*(x**9) + ymm7_a*(x**10) + ymm7_b*(x**11) +
- ymm4_8*(x**12) + ymm4_9*(x**13) + ymm4_a*(x**14) + ymm4_b*(x**15))
-[3329, x**16 - (569)],
-eqmod (inp_poly**2)
-(ymm9_8*(x**0) + ymm9_9*(x**1) + ymm9_a*(x**2) + ymm9_b*(x**3) +
- ymm5_8*(x**4) + ymm5_9*(x**5) + ymm5_a*(x**6) + ymm5_b*(x**7) +
- ymm8_8*(x**8) + ymm8_9*(x**9) + ymm8_a*(x**10) + ymm8_b*(x**11) +
- ymm11_8*(x**12) + ymm11_9*(x**13) + ymm11_a*(x**14) + ymm11_b*(x**15))
-[3329, x**16 - (2760)],
-eqmod (inp_poly**2)
-(ymm6_c*(x**0) + ymm6_d*(x**1) + ymm6_e*(x**2) + ymm6_f*(x**3) +
- ymm3_c*(x**4) + ymm3_d*(x**5) + ymm3_e*(x**6) + ymm3_f*(x**7) +
- ymm7_c*(x**8) + ymm7_d*(x**9) + ymm7_e*(x**10) + ymm7_f*(x**11) +
- ymm4_c*(x**12) + ymm4_d*(x**13) + ymm4_e*(x**14) + ymm4_f*(x**15))
-[3329, x**16 - (1746)],
-eqmod (inp_poly**2)
-(ymm9_c*(x**0) + ymm9_d*(x**1) + ymm9_e*(x**2) + ymm9_f*(x**3) +
- ymm5_c*(x**4) + ymm5_d*(x**5) + ymm5_e*(x**6) + ymm5_f*(x**7) +
- ymm8_c*(x**8) + ymm8_d*(x**9) + ymm8_e*(x**10) + ymm8_f*(x**11) +
- ymm11_c*(x**12) + ymm11_d*(x**13) + ymm11_e*(x**14) + ymm11_f*(x**15))
-[3329, x**16 - (1583)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm6[0],%ymm6[1],%ymm6[2],%ymm6[3],
+                  %ymm3[0],%ymm3[1],%ymm3[2],%ymm3[3],
+                  %ymm7[0],%ymm7[1],%ymm7[2],%ymm7[3],
+                  %ymm4[0],%ymm4[1],%ymm4[2],%ymm4[3]])
+          [3329, x**16 - (2786)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[0],%ymm9[1],%ymm9[2],%ymm9[3],
+                  %ymm5[0],%ymm5[1],%ymm5[2],%ymm5[3],
+                  %ymm8[0],%ymm8[1],%ymm8[2],%ymm8[3],
+                  %ymm11[0],%ymm11[1],%ymm11[2],%ymm11[3]])
+          [3329, x**16 - (543)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[4],%ymm6[5],%ymm6[6],%ymm6[7],
+                  %ymm3[4],%ymm3[5],%ymm3[6],%ymm3[7],
+                  %ymm7[4],%ymm7[5],%ymm7[6],%ymm7[7],
+                  %ymm4[4],%ymm4[5],%ymm4[6],%ymm4[7]])
+          [3329, x**16 - (3260)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[4],%ymm9[5],%ymm9[6],%ymm9[7],
+                  %ymm5[4],%ymm5[5],%ymm5[6],%ymm5[7],
+                  %ymm8[4],%ymm8[5],%ymm8[6],%ymm8[7],
+                  %ymm11[4],%ymm11[5],%ymm11[6],%ymm11[7]])
+          [3329, x**16 - (69)],
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[8],%ymm6[9],%ymm6[10],%ymm6[11],
+                  %ymm3[8],%ymm3[9],%ymm3[10],%ymm3[11],
+                  %ymm7[8],%ymm7[9],%ymm7[10],%ymm7[11],
+                  %ymm4[8],%ymm4[9],%ymm4[10],%ymm4[11]])
+          [3329, x**16 - (569)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[8],%ymm9[9],%ymm9[10],%ymm9[11],
+                  %ymm5[8],%ymm5[9],%ymm5[10],%ymm5[11],
+                  %ymm8[8],%ymm8[9],%ymm8[10],%ymm8[11],
+                  %ymm11[8],%ymm11[9],%ymm11[10],%ymm11[11]])
+          [3329, x**16 - (2760)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm6[12],%ymm6[13],%ymm6[14],%ymm6[15],
+                  %ymm3[12],%ymm3[13],%ymm3[14],%ymm3[15],
+                  %ymm7[12],%ymm7[13],%ymm7[14],%ymm7[15],
+                  %ymm4[12],%ymm4[13],%ymm4[14],%ymm4[15]])
+          [3329, x**16 - (1746)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm9[12],%ymm9[13],%ymm9[14],%ymm9[15],
+                  %ymm5[12],%ymm5[13],%ymm5[14],%ymm5[15],
+                  %ymm8[12],%ymm8[13],%ymm8[14],%ymm8[15],
+                  %ymm11[12],%ymm11[13],%ymm11[14],%ymm11[15]])
+          [3329, x**16 - (1583)]
 prove with [ cuts [ 2 ] ] &&
-and [
-(-16645)@16 <s ymm6_0, ymm6_0 <s (16645)@16,
-(-16645)@16 <s ymm6_1, ymm6_1 <s (16645)@16,
-(-16645)@16 <s ymm6_2, ymm6_2 <s (16645)@16,
-(-16645)@16 <s ymm6_3, ymm6_3 <s (16645)@16,
-(-16645)@16 <s ymm3_0, ymm3_0 <s (16645)@16,
-(-16645)@16 <s ymm3_1, ymm3_1 <s (16645)@16,
-(-16645)@16 <s ymm3_2, ymm3_2 <s (16645)@16,
-(-16645)@16 <s ymm3_3, ymm3_3 <s (16645)@16,
-(-16645)@16 <s ymm7_0, ymm7_0 <s (16645)@16,
-(-16645)@16 <s ymm7_1, ymm7_1 <s (16645)@16,
-(-16645)@16 <s ymm7_2, ymm7_2 <s (16645)@16,
-(-16645)@16 <s ymm7_3, ymm7_3 <s (16645)@16,
-(-16645)@16 <s ymm4_0, ymm4_0 <s (16645)@16,
-(-16645)@16 <s ymm4_1, ymm4_1 <s (16645)@16,
-(-16645)@16 <s ymm4_2, ymm4_2 <s (16645)@16,
-(-16645)@16 <s ymm4_3, ymm4_3 <s (16645)@16,
-(-16645)@16 <s ymm9_0, ymm9_0 <s (16645)@16,
-(-16645)@16 <s ymm9_1, ymm9_1 <s (16645)@16,
-(-16645)@16 <s ymm9_2, ymm9_2 <s (16645)@16,
-(-16645)@16 <s ymm9_3, ymm9_3 <s (16645)@16,
-(-16645)@16 <s ymm5_0, ymm5_0 <s (16645)@16,
-(-16645)@16 <s ymm5_1, ymm5_1 <s (16645)@16,
-(-16645)@16 <s ymm5_2, ymm5_2 <s (16645)@16,
-(-16645)@16 <s ymm5_3, ymm5_3 <s (16645)@16,
-(-16645)@16 <s ymm8_0, ymm8_0 <s (16645)@16,
-(-16645)@16 <s ymm8_1, ymm8_1 <s (16645)@16,
-(-16645)@16 <s ymm8_2, ymm8_2 <s (16645)@16,
-(-16645)@16 <s ymm8_3, ymm8_3 <s (16645)@16,
-(-16645)@16 <s ymm11_0, ymm11_0 <s (16645)@16,
-(-16645)@16 <s ymm11_1, ymm11_1 <s (16645)@16,
-(-16645)@16 <s ymm11_2, ymm11_2 <s (16645)@16,
-(-16645)@16 <s ymm11_3, ymm11_3 <s (16645)@16,
-(-16645)@16 <s ymm6_4, ymm6_4 <s (16645)@16,
-(-16645)@16 <s ymm6_5, ymm6_5 <s (16645)@16,
-(-16645)@16 <s ymm6_6, ymm6_6 <s (16645)@16,
-(-16645)@16 <s ymm6_7, ymm6_7 <s (16645)@16,
-(-16645)@16 <s ymm3_4, ymm3_4 <s (16645)@16,
-(-16645)@16 <s ymm3_5, ymm3_5 <s (16645)@16,
-(-16645)@16 <s ymm3_6, ymm3_6 <s (16645)@16,
-(-16645)@16 <s ymm3_7, ymm3_7 <s (16645)@16,
-(-16645)@16 <s ymm7_4, ymm7_4 <s (16645)@16,
-(-16645)@16 <s ymm7_5, ymm7_5 <s (16645)@16,
-(-16645)@16 <s ymm7_6, ymm7_6 <s (16645)@16,
-(-16645)@16 <s ymm7_7, ymm7_7 <s (16645)@16,
-(-16645)@16 <s ymm4_4, ymm4_4 <s (16645)@16,
-(-16645)@16 <s ymm4_5, ymm4_5 <s (16645)@16,
-(-16645)@16 <s ymm4_6, ymm4_6 <s (16645)@16,
-(-16645)@16 <s ymm4_7, ymm4_7 <s (16645)@16,
-(-16645)@16 <s ymm9_4, ymm9_4 <s (16645)@16,
-(-16645)@16 <s ymm9_5, ymm9_5 <s (16645)@16,
-(-16645)@16 <s ymm9_6, ymm9_6 <s (16645)@16,
-(-16645)@16 <s ymm9_7, ymm9_7 <s (16645)@16,
-(-16645)@16 <s ymm5_4, ymm5_4 <s (16645)@16,
-(-16645)@16 <s ymm5_5, ymm5_5 <s (16645)@16,
-(-16645)@16 <s ymm5_6, ymm5_6 <s (16645)@16,
-(-16645)@16 <s ymm5_7, ymm5_7 <s (16645)@16,
-(-16645)@16 <s ymm8_4, ymm8_4 <s (16645)@16,
-(-16645)@16 <s ymm8_5, ymm8_5 <s (16645)@16,
-(-16645)@16 <s ymm8_6, ymm8_6 <s (16645)@16,
-(-16645)@16 <s ymm8_7, ymm8_7 <s (16645)@16,
-(-16645)@16 <s ymm11_4, ymm11_4 <s (16645)@16,
-(-16645)@16 <s ymm11_5, ymm11_5 <s (16645)@16,
-(-16645)@16 <s ymm11_6, ymm11_6 <s (16645)@16,
-(-16645)@16 <s ymm11_7, ymm11_7 <s (16645)@16,
-(-16645)@16 <s ymm6_8, ymm6_8 <s (16645)@16,
-(-16645)@16 <s ymm6_9, ymm6_9 <s (16645)@16,
-(-16645)@16 <s ymm6_a, ymm6_a <s (16645)@16,
-(-16645)@16 <s ymm6_b, ymm6_b <s (16645)@16,
-(-16645)@16 <s ymm3_8, ymm3_8 <s (16645)@16,
-(-16645)@16 <s ymm3_9, ymm3_9 <s (16645)@16,
-(-16645)@16 <s ymm3_a, ymm3_a <s (16645)@16,
-(-16645)@16 <s ymm3_b, ymm3_b <s (16645)@16,
-(-16645)@16 <s ymm7_8, ymm7_8 <s (16645)@16,
-(-16645)@16 <s ymm7_9, ymm7_9 <s (16645)@16,
-(-16645)@16 <s ymm7_a, ymm7_a <s (16645)@16,
-(-16645)@16 <s ymm7_b, ymm7_b <s (16645)@16,
-(-16645)@16 <s ymm4_8, ymm4_8 <s (16645)@16,
-(-16645)@16 <s ymm4_9, ymm4_9 <s (16645)@16,
-(-16645)@16 <s ymm4_a, ymm4_a <s (16645)@16,
-(-16645)@16 <s ymm4_b, ymm4_b <s (16645)@16,
-(-16645)@16 <s ymm9_8, ymm9_8 <s (16645)@16,
-(-16645)@16 <s ymm9_9, ymm9_9 <s (16645)@16,
-(-16645)@16 <s ymm9_a, ymm9_a <s (16645)@16,
-(-16645)@16 <s ymm9_b, ymm9_b <s (16645)@16,
-(-16645)@16 <s ymm5_8, ymm5_8 <s (16645)@16,
-(-16645)@16 <s ymm5_9, ymm5_9 <s (16645)@16,
-(-16645)@16 <s ymm5_a, ymm5_a <s (16645)@16,
-(-16645)@16 <s ymm5_b, ymm5_b <s (16645)@16,
-(-16645)@16 <s ymm8_8, ymm8_8 <s (16645)@16,
-(-16645)@16 <s ymm8_9, ymm8_9 <s (16645)@16,
-(-16645)@16 <s ymm8_a, ymm8_a <s (16645)@16,
-(-16645)@16 <s ymm8_b, ymm8_b <s (16645)@16,
-(-16645)@16 <s ymm11_8, ymm11_8 <s (16645)@16,
-(-16645)@16 <s ymm11_9, ymm11_9 <s (16645)@16,
-(-16645)@16 <s ymm11_a, ymm11_a <s (16645)@16,
-(-16645)@16 <s ymm11_b, ymm11_b <s (16645)@16,
-(-16645)@16 <s ymm6_c, ymm6_c <s (16645)@16,
-(-16645)@16 <s ymm6_d, ymm6_d <s (16645)@16,
-(-16645)@16 <s ymm6_e, ymm6_e <s (16645)@16,
-(-16645)@16 <s ymm6_f, ymm6_f <s (16645)@16,
-(-16645)@16 <s ymm3_c, ymm3_c <s (16645)@16,
-(-16645)@16 <s ymm3_d, ymm3_d <s (16645)@16,
-(-16645)@16 <s ymm3_e, ymm3_e <s (16645)@16,
-(-16645)@16 <s ymm3_f, ymm3_f <s (16645)@16,
-(-16645)@16 <s ymm7_c, ymm7_c <s (16645)@16,
-(-16645)@16 <s ymm7_d, ymm7_d <s (16645)@16,
-(-16645)@16 <s ymm7_e, ymm7_e <s (16645)@16,
-(-16645)@16 <s ymm7_f, ymm7_f <s (16645)@16,
-(-16645)@16 <s ymm4_c, ymm4_c <s (16645)@16,
-(-16645)@16 <s ymm4_d, ymm4_d <s (16645)@16,
-(-16645)@16 <s ymm4_e, ymm4_e <s (16645)@16,
-(-16645)@16 <s ymm4_f, ymm4_f <s (16645)@16,
-(-16645)@16 <s ymm9_c, ymm9_c <s (16645)@16,
-(-16645)@16 <s ymm9_d, ymm9_d <s (16645)@16,
-(-16645)@16 <s ymm9_e, ymm9_e <s (16645)@16,
-(-16645)@16 <s ymm9_f, ymm9_f <s (16645)@16,
-(-16645)@16 <s ymm5_c, ymm5_c <s (16645)@16,
-(-16645)@16 <s ymm5_d, ymm5_d <s (16645)@16,
-(-16645)@16 <s ymm5_e, ymm5_e <s (16645)@16,
-(-16645)@16 <s ymm5_f, ymm5_f <s (16645)@16,
-(-16645)@16 <s ymm8_c, ymm8_c <s (16645)@16,
-(-16645)@16 <s ymm8_d, ymm8_d <s (16645)@16,
-(-16645)@16 <s ymm8_e, ymm8_e <s (16645)@16,
-(-16645)@16 <s ymm8_f, ymm8_f <s (16645)@16,
-(-16645)@16 <s ymm11_c, ymm11_c <s (16645)@16,
-(-16645)@16 <s ymm11_d, ymm11_d <s (16645)@16,
-(-16645)@16 <s ymm11_e, ymm11_e <s (16645)@16,
-(-16645)@16 <s ymm11_f, ymm11_f <s (16645)@16]
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm6 /\ %ymm6 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm3 /\ %ymm3 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm7 /\ %ymm7 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm4 /\ %ymm4 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm9 /\ %ymm9 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm5 /\ %ymm5 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm8 /\ %ymm8 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16] /\
+[(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16,
+ (-16645)@16,(-16645)@16,(-16645)@16,(-16645)@16] <s %ymm11 /\ %ymm11 <s
+[(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,(16645)@16,
+ (16645)@16,(16645)@16,(16645)@16,(16645)@16]
 prove with [ cuts [ 2 ] ];
 
 
@@ -4992,202 +4260,119 @@ mov [ymm8_0, ymm8_1, ymm8_2, ymm8_3, ymm8_4, ymm8_5, ymm8_6, ymm8_7, ymm8_8, ymm
 mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7, ymm7_8, ymm7_9, ymm7_a, ymm7_b, ymm7_c, ymm7_d, ymm7_e, ymm7_f] %ymm7;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm3_0*(x**0) + ymm3_1*(x**1) + ymm4_0*(x**2) + ymm4_1*(x**3) +
- ymm9_0*(x**4) + ymm9_1*(x**5) + ymm6_0*(x**6) + ymm6_1*(x**7))
-[3329, x**8 - (1426)],
-eqmod (inp_poly**2)
-(ymm10_0*(x**0) + ymm10_1*(x**1) + ymm8_0*(x**2) + ymm8_1*(x**3) +
- ymm7_0*(x**4) + ymm7_1*(x**5) + ymm11_0*(x**6) + ymm11_1*(x**7))
-[3329, x**8 - (1903)],
-eqmod (inp_poly**2)
-(ymm3_2*(x**0) + ymm3_3*(x**1) + ymm4_2*(x**2) + ymm4_3*(x**3) +
- ymm9_2*(x**4) + ymm9_3*(x**5) + ymm6_2*(x**6) + ymm6_3*(x**7))
-[3329, x**8 - (2094)],
-eqmod (inp_poly**2)
-(ymm10_2*(x**0) + ymm10_3*(x**1) + ymm8_2*(x**2) + ymm8_3*(x**3) +
- ymm7_2*(x**4) + ymm7_3*(x**5) + ymm11_2*(x**6) + ymm11_3*(x**7))
-[3329, x**8 - (1235)],
-eqmod (inp_poly**2)
-(ymm3_4*(x**0) + ymm3_5*(x**1) + ymm4_4*(x**2) + ymm4_5*(x**3) +
- ymm9_4*(x**4) + ymm9_5*(x**5) + ymm6_4*(x**6) + ymm6_5*(x**7))
-[3329, x**8 - (535)],
-eqmod (inp_poly**2)
-(ymm10_4*(x**0) + ymm10_5*(x**1) + ymm8_4*(x**2) + ymm8_5*(x**3) +
- ymm7_4*(x**4) + ymm7_5*(x**5) + ymm11_4*(x**6) + ymm11_5*(x**7))
-[3329, x**8 - (2794)],
-eqmod (inp_poly**2)
-(ymm3_6*(x**0) + ymm3_7*(x**1) + ymm4_6*(x**2) + ymm4_7*(x**3) +
- ymm9_6*(x**4) + ymm9_7*(x**5) + ymm6_6*(x**6) + ymm6_7*(x**7))
-[3329, x**8 - (2882)],
-eqmod (inp_poly**2)
-(ymm10_6*(x**0) + ymm10_7*(x**1) + ymm8_6*(x**2) + ymm8_7*(x**3) +
- ymm7_6*(x**4) + ymm7_7*(x**5) + ymm11_6*(x**6) + ymm11_7*(x**7))
-[3329, x**8 - (447)],
-eqmod (inp_poly**2)
-(ymm3_8*(x**0) + ymm3_9*(x**1) + ymm4_8*(x**2) + ymm4_9*(x**3) +
- ymm9_8*(x**4) + ymm9_9*(x**5) + ymm6_8*(x**6) + ymm6_9*(x**7))
-[3329, x**8 - (2393)],
-eqmod (inp_poly**2)
-(ymm10_8*(x**0) + ymm10_9*(x**1) + ymm8_8*(x**2) + ymm8_9*(x**3) +
- ymm7_8*(x**4) + ymm7_9*(x**5) + ymm11_8*(x**6) + ymm11_9*(x**7))
-[3329, x**8 - (936)],
-eqmod (inp_poly**2)
-(ymm3_a*(x**0) + ymm3_b*(x**1) + ymm4_a*(x**2) + ymm4_b*(x**3) +
- ymm9_a*(x**4) + ymm9_b*(x**5) + ymm6_a*(x**6) + ymm6_b*(x**7))
-[3329, x**8 - (2879)],
-eqmod (inp_poly**2)
-(ymm10_a*(x**0) + ymm10_b*(x**1) + ymm8_a*(x**2) + ymm8_b*(x**3) +
- ymm7_a*(x**4) + ymm7_b*(x**5) + ymm11_a*(x**6) + ymm11_b*(x**7))
-[3329, x**8 - (450)],
-eqmod (inp_poly**2)
-(ymm3_c*(x**0) + ymm3_d*(x**1) + ymm4_c*(x**2) + ymm4_d*(x**3) +
- ymm9_c*(x**4) + ymm9_d*(x**5) + ymm6_c*(x**6) + ymm6_d*(x**7))
-[3329, x**8 - (1974)],
-eqmod (inp_poly**2)
-(ymm10_c*(x**0) + ymm10_d*(x**1) + ymm8_c*(x**2) + ymm8_d*(x**3) +
- ymm7_c*(x**4) + ymm7_d*(x**5) + ymm11_c*(x**6) + ymm11_d*(x**7))
-[3329, x**8 - (1355)],
-eqmod (inp_poly**2)
-(ymm3_e*(x**0) + ymm3_f*(x**1) + ymm4_e*(x**2) + ymm4_f*(x**3) +
- ymm9_e*(x**4) + ymm9_f*(x**5) + ymm6_e*(x**6) + ymm6_f*(x**7))
-[3329, x**8 - (821)],
-eqmod (inp_poly**2)
-(ymm10_e*(x**0) + ymm10_f*(x**1) + ymm8_e*(x**2) + ymm8_f*(x**3) +
- ymm7_e*(x**4) + ymm7_f*(x**5) + ymm11_e*(x**6) + ymm11_f*(x**7))
-[3329, x**8 - (2508)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm3[0],%ymm3[1],%ymm4[0],%ymm4[1],
+                  %ymm9[0],%ymm9[1],%ymm6[0],%ymm6[1]])
+          [3329, x**8 - (1426)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[0],%ymm10[1],%ymm8[0],%ymm8[1],
+                  %ymm7[0],%ymm7[1],%ymm11[0],%ymm11[1]])
+          [3329, x**8 - (1903)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[2],%ymm3[3],%ymm4[2],%ymm4[3],
+                  %ymm9[2],%ymm9[3],%ymm6[2],%ymm6[3]])
+          [3329, x**8 - (2094)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[2],%ymm10[3],%ymm8[2],%ymm8[3],
+                  %ymm7[2],%ymm7[3],%ymm11[2],%ymm11[3]])
+          [3329, x**8 - (1235)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[4],%ymm3[5],%ymm4[4],%ymm4[5],
+                  %ymm9[4],%ymm9[5],%ymm6[4],%ymm6[5]])
+          [3329, x**8 - (535)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[4],%ymm10[5],%ymm8[4],%ymm8[5],
+                  %ymm7[4],%ymm7[5],%ymm11[4],%ymm11[5]])
+          [3329, x**8 - (2794)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[6],%ymm3[7],%ymm4[6],%ymm4[7],
+                  %ymm9[6],%ymm9[7],%ymm6[6],%ymm6[7]])
+          [3329, x**8 - (2882)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[6],%ymm10[7],%ymm8[6],%ymm8[7],
+                  %ymm7[6],%ymm7[7],%ymm11[6],%ymm11[7]])
+          [3329, x**8 - (447)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[8],%ymm3[9],%ymm4[8],%ymm4[9],
+                  %ymm9[8],%ymm9[9],%ymm6[8],%ymm6[9]])
+          [3329, x**8 - (2393)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[8],%ymm10[9],%ymm8[8],%ymm8[9],
+                  %ymm7[8],%ymm7[9],%ymm11[8],%ymm11[9]])
+          [3329, x**8 - (936)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[10],%ymm3[11],%ymm4[10],%ymm4[11],
+                  %ymm9[10],%ymm9[11],%ymm6[10],%ymm6[11]])
+          [3329, x**8 - (2879)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[10],%ymm10[11],%ymm8[10],%ymm8[11],
+                  %ymm7[10],%ymm7[11],%ymm11[10],%ymm11[11]])
+          [3329, x**8 - (450)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[12],%ymm3[13],%ymm4[12],%ymm4[13],
+                  %ymm9[12],%ymm9[13],%ymm6[12],%ymm6[13]])
+          [3329, x**8 - (1974)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[12],%ymm10[13],%ymm8[12],%ymm8[13],
+                  %ymm7[12],%ymm7[13],%ymm11[12],%ymm11[13]])
+          [3329, x**8 - (1355)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm3[14],%ymm3[15],%ymm4[14],%ymm4[15],
+                  %ymm9[14],%ymm9[15],%ymm6[14],%ymm6[15]])
+          [3329, x**8 - (821)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm10[14],%ymm10[15],%ymm8[14],%ymm8[15],
+                  %ymm7[14],%ymm7[15],%ymm11[14],%ymm11[15]])
+          [3329, x**8 - (2508)]
 prove with [ cuts [ 3 ] ] &&
-and [
-(-19974)@16 <s ymm3_0, ymm3_0 <s (19974)@16,
-(-19974)@16 <s ymm3_1, ymm3_1 <s (19974)@16,
-(-19974)@16 <s ymm4_0, ymm4_0 <s (19974)@16,
-(-19974)@16 <s ymm4_1, ymm4_1 <s (19974)@16,
-(-19974)@16 <s ymm9_0, ymm9_0 <s (19974)@16,
-(-19974)@16 <s ymm9_1, ymm9_1 <s (19974)@16,
-(-19974)@16 <s ymm6_0, ymm6_0 <s (19974)@16,
-(-19974)@16 <s ymm6_1, ymm6_1 <s (19974)@16,
-(-19974)@16 <s ymm10_0, ymm10_0 <s (19974)@16,
-(-19974)@16 <s ymm10_1, ymm10_1 <s (19974)@16,
-(-19974)@16 <s ymm8_0, ymm8_0 <s (19974)@16,
-(-19974)@16 <s ymm8_1, ymm8_1 <s (19974)@16,
-(-19974)@16 <s ymm7_0, ymm7_0 <s (19974)@16,
-(-19974)@16 <s ymm7_1, ymm7_1 <s (19974)@16,
-(-19974)@16 <s ymm11_0, ymm11_0 <s (19974)@16,
-(-19974)@16 <s ymm11_1, ymm11_1 <s (19974)@16,
-(-19974)@16 <s ymm3_2, ymm3_2 <s (19974)@16,
-(-19974)@16 <s ymm3_3, ymm3_3 <s (19974)@16,
-(-19974)@16 <s ymm4_2, ymm4_2 <s (19974)@16,
-(-19974)@16 <s ymm4_3, ymm4_3 <s (19974)@16,
-(-19974)@16 <s ymm9_2, ymm9_2 <s (19974)@16,
-(-19974)@16 <s ymm9_3, ymm9_3 <s (19974)@16,
-(-19974)@16 <s ymm6_2, ymm6_2 <s (19974)@16,
-(-19974)@16 <s ymm6_3, ymm6_3 <s (19974)@16,
-(-19974)@16 <s ymm10_2, ymm10_2 <s (19974)@16,
-(-19974)@16 <s ymm10_3, ymm10_3 <s (19974)@16,
-(-19974)@16 <s ymm8_2, ymm8_2 <s (19974)@16,
-(-19974)@16 <s ymm8_3, ymm8_3 <s (19974)@16,
-(-19974)@16 <s ymm7_2, ymm7_2 <s (19974)@16,
-(-19974)@16 <s ymm7_3, ymm7_3 <s (19974)@16,
-(-19974)@16 <s ymm11_2, ymm11_2 <s (19974)@16,
-(-19974)@16 <s ymm11_3, ymm11_3 <s (19974)@16,
-(-19974)@16 <s ymm3_4, ymm3_4 <s (19974)@16,
-(-19974)@16 <s ymm3_5, ymm3_5 <s (19974)@16,
-(-19974)@16 <s ymm4_4, ymm4_4 <s (19974)@16,
-(-19974)@16 <s ymm4_5, ymm4_5 <s (19974)@16,
-(-19974)@16 <s ymm9_4, ymm9_4 <s (19974)@16,
-(-19974)@16 <s ymm9_5, ymm9_5 <s (19974)@16,
-(-19974)@16 <s ymm6_4, ymm6_4 <s (19974)@16,
-(-19974)@16 <s ymm6_5, ymm6_5 <s (19974)@16,
-(-19974)@16 <s ymm10_4, ymm10_4 <s (19974)@16,
-(-19974)@16 <s ymm10_5, ymm10_5 <s (19974)@16,
-(-19974)@16 <s ymm8_4, ymm8_4 <s (19974)@16,
-(-19974)@16 <s ymm8_5, ymm8_5 <s (19974)@16,
-(-19974)@16 <s ymm7_4, ymm7_4 <s (19974)@16,
-(-19974)@16 <s ymm7_5, ymm7_5 <s (19974)@16,
-(-19974)@16 <s ymm11_4, ymm11_4 <s (19974)@16,
-(-19974)@16 <s ymm11_5, ymm11_5 <s (19974)@16,
-(-19974)@16 <s ymm3_6, ymm3_6 <s (19974)@16,
-(-19974)@16 <s ymm3_7, ymm3_7 <s (19974)@16,
-(-19974)@16 <s ymm4_6, ymm4_6 <s (19974)@16,
-(-19974)@16 <s ymm4_7, ymm4_7 <s (19974)@16,
-(-19974)@16 <s ymm9_6, ymm9_6 <s (19974)@16,
-(-19974)@16 <s ymm9_7, ymm9_7 <s (19974)@16,
-(-19974)@16 <s ymm6_6, ymm6_6 <s (19974)@16,
-(-19974)@16 <s ymm6_7, ymm6_7 <s (19974)@16,
-(-19974)@16 <s ymm10_6, ymm10_6 <s (19974)@16,
-(-19974)@16 <s ymm10_7, ymm10_7 <s (19974)@16,
-(-19974)@16 <s ymm8_6, ymm8_6 <s (19974)@16,
-(-19974)@16 <s ymm8_7, ymm8_7 <s (19974)@16,
-(-19974)@16 <s ymm7_6, ymm7_6 <s (19974)@16,
-(-19974)@16 <s ymm7_7, ymm7_7 <s (19974)@16,
-(-19974)@16 <s ymm11_6, ymm11_6 <s (19974)@16,
-(-19974)@16 <s ymm11_7, ymm11_7 <s (19974)@16,
-(-19974)@16 <s ymm3_8, ymm3_8 <s (19974)@16,
-(-19974)@16 <s ymm3_9, ymm3_9 <s (19974)@16,
-(-19974)@16 <s ymm4_8, ymm4_8 <s (19974)@16,
-(-19974)@16 <s ymm4_9, ymm4_9 <s (19974)@16,
-(-19974)@16 <s ymm9_8, ymm9_8 <s (19974)@16,
-(-19974)@16 <s ymm9_9, ymm9_9 <s (19974)@16,
-(-19974)@16 <s ymm6_8, ymm6_8 <s (19974)@16,
-(-19974)@16 <s ymm6_9, ymm6_9 <s (19974)@16,
-(-19974)@16 <s ymm10_8, ymm10_8 <s (19974)@16,
-(-19974)@16 <s ymm10_9, ymm10_9 <s (19974)@16,
-(-19974)@16 <s ymm8_8, ymm8_8 <s (19974)@16,
-(-19974)@16 <s ymm8_9, ymm8_9 <s (19974)@16,
-(-19974)@16 <s ymm7_8, ymm7_8 <s (19974)@16,
-(-19974)@16 <s ymm7_9, ymm7_9 <s (19974)@16,
-(-19974)@16 <s ymm11_8, ymm11_8 <s (19974)@16,
-(-19974)@16 <s ymm11_9, ymm11_9 <s (19974)@16,
-(-19974)@16 <s ymm3_a, ymm3_a <s (19974)@16,
-(-19974)@16 <s ymm3_b, ymm3_b <s (19974)@16,
-(-19974)@16 <s ymm4_a, ymm4_a <s (19974)@16,
-(-19974)@16 <s ymm4_b, ymm4_b <s (19974)@16,
-(-19974)@16 <s ymm9_a, ymm9_a <s (19974)@16,
-(-19974)@16 <s ymm9_b, ymm9_b <s (19974)@16,
-(-19974)@16 <s ymm6_a, ymm6_a <s (19974)@16,
-(-19974)@16 <s ymm6_b, ymm6_b <s (19974)@16,
-(-19974)@16 <s ymm10_a, ymm10_a <s (19974)@16,
-(-19974)@16 <s ymm10_b, ymm10_b <s (19974)@16,
-(-19974)@16 <s ymm8_a, ymm8_a <s (19974)@16,
-(-19974)@16 <s ymm8_b, ymm8_b <s (19974)@16,
-(-19974)@16 <s ymm7_a, ymm7_a <s (19974)@16,
-(-19974)@16 <s ymm7_b, ymm7_b <s (19974)@16,
-(-19974)@16 <s ymm11_a, ymm11_a <s (19974)@16,
-(-19974)@16 <s ymm11_b, ymm11_b <s (19974)@16,
-(-19974)@16 <s ymm3_c, ymm3_c <s (19974)@16,
-(-19974)@16 <s ymm3_d, ymm3_d <s (19974)@16,
-(-19974)@16 <s ymm4_c, ymm4_c <s (19974)@16,
-(-19974)@16 <s ymm4_d, ymm4_d <s (19974)@16,
-(-19974)@16 <s ymm9_c, ymm9_c <s (19974)@16,
-(-19974)@16 <s ymm9_d, ymm9_d <s (19974)@16,
-(-19974)@16 <s ymm6_c, ymm6_c <s (19974)@16,
-(-19974)@16 <s ymm6_d, ymm6_d <s (19974)@16,
-(-19974)@16 <s ymm10_c, ymm10_c <s (19974)@16,
-(-19974)@16 <s ymm10_d, ymm10_d <s (19974)@16,
-(-19974)@16 <s ymm8_c, ymm8_c <s (19974)@16,
-(-19974)@16 <s ymm8_d, ymm8_d <s (19974)@16,
-(-19974)@16 <s ymm7_c, ymm7_c <s (19974)@16,
-(-19974)@16 <s ymm7_d, ymm7_d <s (19974)@16,
-(-19974)@16 <s ymm11_c, ymm11_c <s (19974)@16,
-(-19974)@16 <s ymm11_d, ymm11_d <s (19974)@16,
-(-19974)@16 <s ymm3_e, ymm3_e <s (19974)@16,
-(-19974)@16 <s ymm3_f, ymm3_f <s (19974)@16,
-(-19974)@16 <s ymm4_e, ymm4_e <s (19974)@16,
-(-19974)@16 <s ymm4_f, ymm4_f <s (19974)@16,
-(-19974)@16 <s ymm9_e, ymm9_e <s (19974)@16,
-(-19974)@16 <s ymm9_f, ymm9_f <s (19974)@16,
-(-19974)@16 <s ymm6_e, ymm6_e <s (19974)@16,
-(-19974)@16 <s ymm6_f, ymm6_f <s (19974)@16,
-(-19974)@16 <s ymm10_e, ymm10_e <s (19974)@16,
-(-19974)@16 <s ymm10_f, ymm10_f <s (19974)@16,
-(-19974)@16 <s ymm8_e, ymm8_e <s (19974)@16,
-(-19974)@16 <s ymm8_f, ymm8_f <s (19974)@16,
-(-19974)@16 <s ymm7_e, ymm7_e <s (19974)@16,
-(-19974)@16 <s ymm7_f, ymm7_f <s (19974)@16,
-(-19974)@16 <s ymm11_e, ymm11_e <s (19974)@16,
-(-19974)@16 <s ymm11_f, ymm11_f <s (19974)@16]
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm3 /\ %ymm3 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm4 /\ %ymm4 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm9 /\ %ymm9 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm6 /\ %ymm6 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm10 /\ %ymm10 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm8 /\ %ymm8 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm7 /\ %ymm7 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16] /\
+[(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16,
+ (-19974)@16,(-19974)@16,(-19974)@16,(-19974)@16] <s %ymm11 /\ %ymm11 <s
+[(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,(19974)@16,
+ (19974)@16,(19974)@16,(19974)@16,(19974)@16]
 prove with [ cuts [ 3 ] ];
 
 (* vpslld $0x10,%ymm7,%ymm5                        #! PC = 0x55555556f581 *)
@@ -5434,234 +4619,151 @@ mov [ymm7_0, ymm7_1, ymm7_2, ymm7_3, ymm7_4, ymm7_5, ymm7_6, ymm7_7, ymm7_8, ymm
 mov [ymm9_0, ymm9_1, ymm9_2, ymm9_3, ymm9_4, ymm9_5, ymm9_6, ymm9_7, ymm9_8, ymm9_9, ymm9_a, ymm9_b, ymm9_c, ymm9_d, ymm9_e, ymm9_f] %ymm9;
 mov [ymm11_0, ymm11_1, ymm11_2, ymm11_3, ymm11_4, ymm11_5, ymm11_6, ymm11_7, ymm11_8, ymm11_9, ymm11_a, ymm11_b, ymm11_c, ymm11_d, ymm11_e, ymm11_f] %ymm11;
 
-cut
-and [
-eqmod (inp_poly**2)
-(ymm4_0*(x**0) + ymm6_0*(x**1) + ymm10_0*(x**2) + ymm3_0*(x**3))
-[3329, x**4 - (2319)],
-eqmod (inp_poly**2)
-(ymm5_0*(x**0) + ymm7_0*(x**1) + ymm9_0*(x**2) + ymm11_0*(x**3))
-[3329, x**4 - (1010)],
-eqmod (inp_poly**2)
-(ymm4_1*(x**0) + ymm6_1*(x**1) + ymm10_1*(x**2) + ymm3_1*(x**3))
-[3329, x**4 - (1435)],
-eqmod (inp_poly**2)
-(ymm5_1*(x**0) + ymm7_1*(x**1) + ymm9_1*(x**2) + ymm11_1*(x**3))
-[3329, x**4 - (1894)],
-eqmod (inp_poly**2)
-(ymm4_2*(x**0) + ymm6_2*(x**1) + ymm10_2*(x**2) + ymm3_2*(x**3))
-[3329, x**4 - (807)],
-eqmod (inp_poly**2)
-(ymm5_2*(x**0) + ymm7_2*(x**1) + ymm9_2*(x**2) + ymm11_2*(x**3))
-[3329, x**4 - (2522)],
-eqmod (inp_poly**2)
-(ymm4_3*(x**0) + ymm6_3*(x**1) + ymm10_3*(x**2) + ymm3_3*(x**3))
-[3329, x**4 - (452)],
-eqmod (inp_poly**2)
-(ymm5_3*(x**0) + ymm7_3*(x**1) + ymm9_3*(x**2) + ymm11_3*(x**3))
-[3329, x**4 - (2877)],
-eqmod (inp_poly**2)
-(ymm4_4*(x**0) + ymm6_4*(x**1) + ymm10_4*(x**2) + ymm3_4*(x**3))
-[3329, x**4 - (1438)],
-eqmod (inp_poly**2)
-(ymm5_4*(x**0) + ymm7_4*(x**1) + ymm9_4*(x**2) + ymm11_4*(x**3))
-[3329, x**4 - (1891)],
-eqmod (inp_poly**2)
-(ymm4_5*(x**0) + ymm6_5*(x**1) + ymm10_5*(x**2) + ymm3_5*(x**3))
-[3329, x**4 - (2868)],
-eqmod (inp_poly**2)
-(ymm5_5*(x**0) + ymm7_5*(x**1) + ymm9_5*(x**2) + ymm11_5*(x**3))
-[3329, x**4 - (461)],
-eqmod (inp_poly**2)
-(ymm4_6*(x**0) + ymm6_6*(x**1) + ymm10_6*(x**2) + ymm3_6*(x**3))
-[3329, x**4 - (1534)],
-eqmod (inp_poly**2)
-(ymm5_6*(x**0) + ymm7_6*(x**1) + ymm9_6*(x**2) + ymm11_6*(x**3))
-[3329, x**4 - (1795)],
-eqmod (inp_poly**2)
-(ymm4_7*(x**0) + ymm6_7*(x**1) + ymm10_7*(x**2) + ymm3_7*(x**3))
-[3329, x**4 - (2402)],
-eqmod (inp_poly**2)
-(ymm5_7*(x**0) + ymm7_7*(x**1) + ymm9_7*(x**2) + ymm11_7*(x**3))
-[3329, x**4 - (927)],
-eqmod (inp_poly**2)
-(ymm4_8*(x**0) + ymm6_8*(x**1) + ymm10_8*(x**2) + ymm3_8*(x**3))
-[3329, x**4 - (2647)],
-eqmod (inp_poly**2)
-(ymm5_8*(x**0) + ymm7_8*(x**1) + ymm9_8*(x**2) + ymm11_8*(x**3))
-[3329, x**4 - (682)],
-eqmod (inp_poly**2)
-(ymm4_9*(x**0) + ymm6_9*(x**1) + ymm10_9*(x**2) + ymm3_9*(x**3))
-[3329, x**4 - (2617)],
-eqmod (inp_poly**2)
-(ymm5_9*(x**0) + ymm7_9*(x**1) + ymm9_9*(x**2) + ymm11_9*(x**3))
-[3329, x**4 - (712)],
-eqmod (inp_poly**2)
-(ymm4_a*(x**0) + ymm6_a*(x**1) + ymm10_a*(x**2) + ymm3_a*(x**3))
-[3329, x**4 - (1481)],
-eqmod (inp_poly**2)
-(ymm5_a*(x**0) + ymm7_a*(x**1) + ymm9_a*(x**2) + ymm11_a*(x**3))
-[3329, x**4 - (1848)],
-eqmod (inp_poly**2)
-(ymm4_b*(x**0) + ymm6_b*(x**1) + ymm10_b*(x**2) + ymm3_b*(x**3))
-[3329, x**4 - (648)],
-eqmod (inp_poly**2)
-(ymm5_b*(x**0) + ymm7_b*(x**1) + ymm9_b*(x**2) + ymm11_b*(x**3))
-[3329, x**4 - (2681)],
-eqmod (inp_poly**2)
-(ymm4_c*(x**0) + ymm6_c*(x**1) + ymm10_c*(x**2) + ymm3_c*(x**3))
-[3329, x**4 - (2474)],
-eqmod (inp_poly**2)
-(ymm5_c*(x**0) + ymm7_c*(x**1) + ymm9_c*(x**2) + ymm11_c*(x**3))
-[3329, x**4 - (855)],
-eqmod (inp_poly**2)
-(ymm4_d*(x**0) + ymm6_d*(x**1) + ymm10_d*(x**2) + ymm3_d*(x**3))
-[3329, x**4 - (3110)],
-eqmod (inp_poly**2)
-(ymm5_d*(x**0) + ymm7_d*(x**1) + ymm9_d*(x**2) + ymm11_d*(x**3))
-[3329, x**4 - (219)],
-eqmod (inp_poly**2)
-(ymm4_e*(x**0) + ymm6_e*(x**1) + ymm10_e*(x**2) + ymm3_e*(x**3))
-[3329, x**4 - (1227)],
-eqmod (inp_poly**2)
-(ymm5_e*(x**0) + ymm7_e*(x**1) + ymm9_e*(x**2) + ymm11_e*(x**3))
-[3329, x**4 - (2102)],
-eqmod (inp_poly**2)
-(ymm4_f*(x**0) + ymm6_f*(x**1) + ymm10_f*(x**2) + ymm3_f*(x**3))
-[3329, x**4 - (910)],
-eqmod (inp_poly**2)
-(ymm5_f*(x**0) + ymm7_f*(x**1) + ymm9_f*(x**2) + ymm11_f*(x**3))
-[3329, x**4 - (2419)]]
+cut eqmod (inp_poly**2)
+          (poly x [%ymm4[0], %ymm6[0], %ymm10[0], %ymm3[0]])
+          [3329, x**4 - (2319)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[0], %ymm7[0], %ymm9[0], %ymm11[0]])
+          [3329, x**4 - (1010)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[1], %ymm6[1], %ymm10[1], %ymm3[1]])
+          [3329, x**4 - (1435)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[1], %ymm7[1], %ymm9[1], %ymm11[1]])
+          [3329, x**4 - (1894)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[2], %ymm6[2], %ymm10[2], %ymm3[2]])
+          [3329, x**4 - (807)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[2], %ymm7[2], %ymm9[2], %ymm11[2]])
+          [3329, x**4 - (2522)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[3], %ymm6[3], %ymm10[3], %ymm3[3]])
+          [3329, x**4 - (452)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[3], %ymm7[3], %ymm9[3], %ymm11[3]])
+          [3329, x**4 - (2877)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[4], %ymm6[4], %ymm10[4], %ymm3[4]])
+          [3329, x**4 - (1438)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[4], %ymm7[4], %ymm9[4], %ymm11[4]])
+          [3329, x**4 - (1891)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[5], %ymm6[5], %ymm10[5], %ymm3[5]])
+          [3329, x**4 - (2868)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[5], %ymm7[5], %ymm9[5], %ymm11[5]])
+          [3329, x**4 - (461)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[6], %ymm6[6], %ymm10[6], %ymm3[6]])
+          [3329, x**4 - (1534)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[6], %ymm7[6], %ymm9[6], %ymm11[6]])
+          [3329, x**4 - (1795)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[7], %ymm6[7], %ymm10[7], %ymm3[7]])
+          [3329, x**4 - (2402)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[7], %ymm7[7], %ymm9[7], %ymm11[7]])
+          [3329, x**4 - (927)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[8], %ymm6[8], %ymm10[8], %ymm3[8]])
+          [3329, x**4 - (2647)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[8], %ymm7[8], %ymm9[8], %ymm11[8]])
+          [3329, x**4 - (682)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[9], %ymm6[9], %ymm10[9], %ymm3[9]])
+          [3329, x**4 - (2617)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[9], %ymm7[9], %ymm9[9], %ymm11[9]])
+          [3329, x**4 - (712)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[10], %ymm6[10], %ymm10[10], %ymm3[10]])
+          [3329, x**4 - (1481)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[10], %ymm7[10], %ymm9[10], %ymm11[10]])
+          [3329, x**4 - (1848)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[11], %ymm6[11], %ymm10[11], %ymm3[11]])
+          [3329, x**4 - (648)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[11], %ymm7[11], %ymm9[11], %ymm11[11]])
+          [3329, x**4 - (2681)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[12], %ymm6[12], %ymm10[12], %ymm3[12]])
+          [3329, x**4 - (2474)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[12], %ymm7[12], %ymm9[12], %ymm11[12]])
+          [3329, x**4 - (855)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[13], %ymm6[13], %ymm10[13], %ymm3[13]])
+          [3329, x**4 - (3110)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[13], %ymm7[13], %ymm9[13], %ymm11[13]])
+          [3329, x**4 - (219)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[14], %ymm6[14], %ymm10[14], %ymm3[14]])
+          [3329, x**4 - (1227)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[14], %ymm7[14], %ymm9[14], %ymm11[14]])
+          [3329, x**4 - (2102)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm4[15], %ymm6[15], %ymm10[15], %ymm3[15]])
+          [3329, x**4 - (910)] /\
+    eqmod (inp_poly**2)
+          (poly x [%ymm5[15], %ymm7[15], %ymm9[15], %ymm11[15]])
+          [3329, x**4 - (2419)]
 prove with [ cuts [ 4 ] ] &&
-and [
-(-23303)@16 <s ymm4_0, ymm4_0 <s (23303)@16,
-(-23303)@16 <s ymm6_0, ymm6_0 <s (23303)@16,
-(-23303)@16 <s ymm10_0, ymm10_0 <s (23303)@16,
-(-23303)@16 <s ymm3_0, ymm3_0 <s (23303)@16,
-(-23303)@16 <s ymm5_0, ymm5_0 <s (23303)@16,
-(-23303)@16 <s ymm7_0, ymm7_0 <s (23303)@16,
-(-23303)@16 <s ymm9_0, ymm9_0 <s (23303)@16,
-(-23303)@16 <s ymm11_0, ymm11_0 <s (23303)@16,
-(-23303)@16 <s ymm4_1, ymm4_1 <s (23303)@16,
-(-23303)@16 <s ymm6_1, ymm6_1 <s (23303)@16,
-(-23303)@16 <s ymm10_1, ymm10_1 <s (23303)@16,
-(-23303)@16 <s ymm3_1, ymm3_1 <s (23303)@16,
-(-23303)@16 <s ymm5_1, ymm5_1 <s (23303)@16,
-(-23303)@16 <s ymm7_1, ymm7_1 <s (23303)@16,
-(-23303)@16 <s ymm9_1, ymm9_1 <s (23303)@16,
-(-23303)@16 <s ymm11_1, ymm11_1 <s (23303)@16,
-(-23303)@16 <s ymm4_2, ymm4_2 <s (23303)@16,
-(-23303)@16 <s ymm6_2, ymm6_2 <s (23303)@16,
-(-23303)@16 <s ymm10_2, ymm10_2 <s (23303)@16,
-(-23303)@16 <s ymm3_2, ymm3_2 <s (23303)@16,
-(-23303)@16 <s ymm5_2, ymm5_2 <s (23303)@16,
-(-23303)@16 <s ymm7_2, ymm7_2 <s (23303)@16,
-(-23303)@16 <s ymm9_2, ymm9_2 <s (23303)@16,
-(-23303)@16 <s ymm11_2, ymm11_2 <s (23303)@16,
-(-23303)@16 <s ymm4_3, ymm4_3 <s (23303)@16,
-(-23303)@16 <s ymm6_3, ymm6_3 <s (23303)@16,
-(-23303)@16 <s ymm10_3, ymm10_3 <s (23303)@16,
-(-23303)@16 <s ymm3_3, ymm3_3 <s (23303)@16,
-(-23303)@16 <s ymm5_3, ymm5_3 <s (23303)@16,
-(-23303)@16 <s ymm7_3, ymm7_3 <s (23303)@16,
-(-23303)@16 <s ymm9_3, ymm9_3 <s (23303)@16,
-(-23303)@16 <s ymm11_3, ymm11_3 <s (23303)@16,
-(-23303)@16 <s ymm4_4, ymm4_4 <s (23303)@16,
-(-23303)@16 <s ymm6_4, ymm6_4 <s (23303)@16,
-(-23303)@16 <s ymm10_4, ymm10_4 <s (23303)@16,
-(-23303)@16 <s ymm3_4, ymm3_4 <s (23303)@16,
-(-23303)@16 <s ymm5_4, ymm5_4 <s (23303)@16,
-(-23303)@16 <s ymm7_4, ymm7_4 <s (23303)@16,
-(-23303)@16 <s ymm9_4, ymm9_4 <s (23303)@16,
-(-23303)@16 <s ymm11_4, ymm11_4 <s (23303)@16,
-(-23303)@16 <s ymm4_5, ymm4_5 <s (23303)@16,
-(-23303)@16 <s ymm6_5, ymm6_5 <s (23303)@16,
-(-23303)@16 <s ymm10_5, ymm10_5 <s (23303)@16,
-(-23303)@16 <s ymm3_5, ymm3_5 <s (23303)@16,
-(-23303)@16 <s ymm5_5, ymm5_5 <s (23303)@16,
-(-23303)@16 <s ymm7_5, ymm7_5 <s (23303)@16,
-(-23303)@16 <s ymm9_5, ymm9_5 <s (23303)@16,
-(-23303)@16 <s ymm11_5, ymm11_5 <s (23303)@16,
-(-23303)@16 <s ymm4_6, ymm4_6 <s (23303)@16,
-(-23303)@16 <s ymm6_6, ymm6_6 <s (23303)@16,
-(-23303)@16 <s ymm10_6, ymm10_6 <s (23303)@16,
-(-23303)@16 <s ymm3_6, ymm3_6 <s (23303)@16,
-(-23303)@16 <s ymm5_6, ymm5_6 <s (23303)@16,
-(-23303)@16 <s ymm7_6, ymm7_6 <s (23303)@16,
-(-23303)@16 <s ymm9_6, ymm9_6 <s (23303)@16,
-(-23303)@16 <s ymm11_6, ymm11_6 <s (23303)@16,
-(-23303)@16 <s ymm4_7, ymm4_7 <s (23303)@16,
-(-23303)@16 <s ymm6_7, ymm6_7 <s (23303)@16,
-(-23303)@16 <s ymm10_7, ymm10_7 <s (23303)@16,
-(-23303)@16 <s ymm3_7, ymm3_7 <s (23303)@16,
-(-23303)@16 <s ymm5_7, ymm5_7 <s (23303)@16,
-(-23303)@16 <s ymm7_7, ymm7_7 <s (23303)@16,
-(-23303)@16 <s ymm9_7, ymm9_7 <s (23303)@16,
-(-23303)@16 <s ymm11_7, ymm11_7 <s (23303)@16,
-(-23303)@16 <s ymm4_8, ymm4_8 <s (23303)@16,
-(-23303)@16 <s ymm6_8, ymm6_8 <s (23303)@16,
-(-23303)@16 <s ymm10_8, ymm10_8 <s (23303)@16,
-(-23303)@16 <s ymm3_8, ymm3_8 <s (23303)@16,
-(-23303)@16 <s ymm5_8, ymm5_8 <s (23303)@16,
-(-23303)@16 <s ymm7_8, ymm7_8 <s (23303)@16,
-(-23303)@16 <s ymm9_8, ymm9_8 <s (23303)@16,
-(-23303)@16 <s ymm11_8, ymm11_8 <s (23303)@16,
-(-23303)@16 <s ymm4_9, ymm4_9 <s (23303)@16,
-(-23303)@16 <s ymm6_9, ymm6_9 <s (23303)@16,
-(-23303)@16 <s ymm10_9, ymm10_9 <s (23303)@16,
-(-23303)@16 <s ymm3_9, ymm3_9 <s (23303)@16,
-(-23303)@16 <s ymm5_9, ymm5_9 <s (23303)@16,
-(-23303)@16 <s ymm7_9, ymm7_9 <s (23303)@16,
-(-23303)@16 <s ymm9_9, ymm9_9 <s (23303)@16,
-(-23303)@16 <s ymm11_9, ymm11_9 <s (23303)@16,
-(-23303)@16 <s ymm4_a, ymm4_a <s (23303)@16,
-(-23303)@16 <s ymm6_a, ymm6_a <s (23303)@16,
-(-23303)@16 <s ymm10_a, ymm10_a <s (23303)@16,
-(-23303)@16 <s ymm3_a, ymm3_a <s (23303)@16,
-(-23303)@16 <s ymm5_a, ymm5_a <s (23303)@16,
-(-23303)@16 <s ymm7_a, ymm7_a <s (23303)@16,
-(-23303)@16 <s ymm9_a, ymm9_a <s (23303)@16,
-(-23303)@16 <s ymm11_a, ymm11_a <s (23303)@16,
-(-23303)@16 <s ymm4_b, ymm4_b <s (23303)@16,
-(-23303)@16 <s ymm6_b, ymm6_b <s (23303)@16,
-(-23303)@16 <s ymm10_b, ymm10_b <s (23303)@16,
-(-23303)@16 <s ymm3_b, ymm3_b <s (23303)@16,
-(-23303)@16 <s ymm5_b, ymm5_b <s (23303)@16,
-(-23303)@16 <s ymm7_b, ymm7_b <s (23303)@16,
-(-23303)@16 <s ymm9_b, ymm9_b <s (23303)@16,
-(-23303)@16 <s ymm11_b, ymm11_b <s (23303)@16,
-(-23303)@16 <s ymm4_c, ymm4_c <s (23303)@16,
-(-23303)@16 <s ymm6_c, ymm6_c <s (23303)@16,
-(-23303)@16 <s ymm10_c, ymm10_c <s (23303)@16,
-(-23303)@16 <s ymm3_c, ymm3_c <s (23303)@16,
-(-23303)@16 <s ymm5_c, ymm5_c <s (23303)@16,
-(-23303)@16 <s ymm7_c, ymm7_c <s (23303)@16,
-(-23303)@16 <s ymm9_c, ymm9_c <s (23303)@16,
-(-23303)@16 <s ymm11_c, ymm11_c <s (23303)@16,
-(-23303)@16 <s ymm4_d, ymm4_d <s (23303)@16,
-(-23303)@16 <s ymm6_d, ymm6_d <s (23303)@16,
-(-23303)@16 <s ymm10_d, ymm10_d <s (23303)@16,
-(-23303)@16 <s ymm3_d, ymm3_d <s (23303)@16,
-(-23303)@16 <s ymm5_d, ymm5_d <s (23303)@16,
-(-23303)@16 <s ymm7_d, ymm7_d <s (23303)@16,
-(-23303)@16 <s ymm9_d, ymm9_d <s (23303)@16,
-(-23303)@16 <s ymm11_d, ymm11_d <s (23303)@16,
-(-23303)@16 <s ymm4_e, ymm4_e <s (23303)@16,
-(-23303)@16 <s ymm6_e, ymm6_e <s (23303)@16,
-(-23303)@16 <s ymm10_e, ymm10_e <s (23303)@16,
-(-23303)@16 <s ymm3_e, ymm3_e <s (23303)@16,
-(-23303)@16 <s ymm5_e, ymm5_e <s (23303)@16,
-(-23303)@16 <s ymm7_e, ymm7_e <s (23303)@16,
-(-23303)@16 <s ymm9_e, ymm9_e <s (23303)@16,
-(-23303)@16 <s ymm11_e, ymm11_e <s (23303)@16,
-(-23303)@16 <s ymm4_f, ymm4_f <s (23303)@16,
-(-23303)@16 <s ymm6_f, ymm6_f <s (23303)@16,
-(-23303)@16 <s ymm10_f, ymm10_f <s (23303)@16,
-(-23303)@16 <s ymm3_f, ymm3_f <s (23303)@16,
-(-23303)@16 <s ymm5_f, ymm5_f <s (23303)@16,
-(-23303)@16 <s ymm7_f, ymm7_f <s (23303)@16,
-(-23303)@16 <s ymm9_f, ymm9_f <s (23303)@16,
-(-23303)@16 <s ymm11_f, ymm11_f <s (23303)@16]
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm4 /\ %ymm4 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm6 /\ %ymm6 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm10 /\ %ymm10 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm3 /\ %ymm3 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm5 /\ %ymm5 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm7 /\ %ymm7 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm9 /\ %ymm9 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16] /\
+[(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16,
+ (-23303)@16,(-23303)@16,(-23303)@16,(-23303)@16] <s %ymm11 /\ %ymm11 <s
+[(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,(23303)@16,
+ (23303)@16,(23303)@16,(23303)@16,(23303)@16]
 prove with [ cuts [ 4 ] ] ;
 
 (* vmovdqa 0x460(%rsi),%ymm14                      #! EA = L0x555555639a40; Value = 0x5f47e32a635b8631; PC = 0x55555556f66d *)
