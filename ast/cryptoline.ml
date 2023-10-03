@@ -3637,7 +3637,7 @@ let visit_lined_program visitor p =
        | DoChildren -> (p, id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
-     f (List.map (fun (lno, i) -> lno, visit_instr visitor i) p)
+     f (tmap (fun (lno, i) -> lno, visit_instr visitor i) p)
 
 let visit_spec visitor s =
   let act = visitor#vspec s in
