@@ -1070,7 +1070,7 @@ let smtlib2_of_imp es =
     match List.rev es with
     | g::ps -> (List.rev ps, g)
     | _ -> fail "imp is empty" in
-  String.concat "\n" (List.map (fun e -> "(assert " ^ smtlib2_of_bexp e ^ ")") premises)
+  String.concat "\n" (List.rev (List.rev_map (fun e -> "(assert " ^ smtlib2_of_bexp e ^ ")") premises))
   ^ "\n"
   ^ "(assert " ^ bvlneg (smtlib2_of_bexp goal) ^ ")"
 
