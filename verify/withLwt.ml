@@ -482,7 +482,9 @@ let verify_rspec_single_conjunct header s hashopt =
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
     let rheader = ["Range condition: " ^ string_of_bexp g] in
-    let%lwt r = solve_simp ~solver:solver ~header:(header@rheader) (f::p@[g]) in
+    let%lwt r = solve_simp ~solver:solver
+                  ~header:(List.rev_append (List.rev header) rheader)
+                  (f::(List.rev (g::List.rev p))) in
     Lwt.return (r = Unsat) in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
