@@ -901,17 +901,20 @@ let btor_instr m i =
   | Icut _ -> ()
   | Ighost _ -> ()
 
-let btor_program ?(rename=false) m p ins outs =
-  let rec mkbits res_rev w j v_btor =
-    if w <= j then List.rev res_rev
-    else mkbits (m#mkextract w j j v_btor::res_rev) w (j + 1) v_btor in
-  let print_roots bits =
-    String.concat "\n" (tmap (fun b ->
-                            let v = m#newvar in
-                            Printf.sprintf "%d root 1 %d" v b) bits) in
-  let mkoutputs outs =
-    let out_btors = tmap (fun v -> mkbits [] (size_of_var v) 0 (m#mkvar v)) outs in
-    String.concat "\n" (tmap print_roots out_btors) in
+let rec btor_mkbits m res_rev w j v_btor =
+  if w <= j then List.rev res_rev
+  else btor_mkbits m (m#mkextract w j j v_btor::res_rev) w (j + 1) v_btor
+
+let btor_string_of_roots m bits =
+  String.concat "\n" (tmap (fun b ->
+                          let v = m#newvar in
+                          Printf.sprintf "%d root 1 %d" v b) bits)
+
+let _btor_mk_output_bits m outs =
+  let out_btors = tmap (fun v -> btor_mkbits m [] (size_of_var v) 0 (m#mkvar v)) outs in
+  String.concat "\n" (tmap (btor_string_of_roots m) out_btors)
+
+let btor_program ?(rename=false) ?(pre=None) m p ins outs =
   (* inputs *)
   let _ = m#mkcomment "variables" in
   let _ = if rename then let vnames = List.mapi (fun i _ -> Printf.sprintf "pi%d" i) ins in
@@ -921,11 +924,19 @@ let btor_program ?(rename=false) m p ins outs =
   let _ = m#mkcomment "program" in
   let _ = List.iter (btor_instr m) p in
   let _ = m#mkcomment "outputs" in
-  let outputs = mkoutputs outs in
+  let program_outputs = tmap (fun v -> btor_mkbits m [] (size_of_var v) 0 (m#mkvar v)) outs in
+  (* precondition *)
+  let outputs =
+    match pre with
+    | None -> program_outputs
+    | Some f ->
+       let bf = btor_of_bexp m f in
+       let bd = m#mkvar (mkvar "__dummy_output_bit__" bit_t) in
+       tmap (tmap (fun o -> m#mkcond 1 bf o bd)) program_outputs in
   (* outputs *)
   (String.concat "\n" m#getstmts)
   ^ "\n"
-  ^ outputs
+  ^ String.concat "\n" (tmap (btor_string_of_roots m) outputs)
   ^ "\n"
 
 

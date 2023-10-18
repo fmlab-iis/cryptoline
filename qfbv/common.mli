@@ -161,9 +161,11 @@ val cnf_imp_check_sat : out_channel -> bexp list -> unit
     to [ch]. If the result is unsat, e{_ n} is implied by the conjunction of
     e{_ 1}, ..., and e{_ n-1}. *)
 
-val btor_program : ?rename:bool -> btor_manager -> program -> var list -> var list -> string
-(** [btor_program ~rename:b m p ins outs] is a bit-vector program in BTOR format
-    with input variables [ins] and output variables [outs] as the roots. The
-    output variables [outs] are sliced into bits in order (from LSB to MSB).
-    Specification-related instructions such as [Iassert] are ignored. Input
-    variables are renamed in the output BTOR if [b] is [true]. *)
+val btor_program : ?rename:bool -> ?pre:(bexp option) -> btor_manager -> program -> var list -> var list -> string
+(** [btor_program ~rename:b ~pre:fopt m p ins outs] is a bit-vector program
+    in BTOR format with input variables [ins] and output variables [outs] as
+    the roots. The output variables [outs] are sliced into bits in order
+    (from LSB to MSB). Specification-related instructions such as [Iassert]
+    are ignored. Input variables are renamed in the output BTOR if [b] is
+    [true]. If [fopt] is [Some f], then [f], the precondition, is taken into
+    consideration. *)

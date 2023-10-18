@@ -6,6 +6,8 @@ open Utils.Std
 open Utils
 open Verify.Tasks
 
+let include_precondition = ref false
+
 (** Parsing arguments *)
 
 let input_files_rev = ref []
@@ -19,6 +21,7 @@ let args_spec =
     [
       ("-abc", String (fun str -> abc_path := str), Common.mk_arg_desc(["PATH"; "Set the path to ABC."]));
       ("-boolector", String (fun str -> boolector_path := str), Common.mk_arg_desc(["PATH"; "Set the path to Boolector."]));
+      ("-incl-pre", Set include_precondition, Common.mk_arg_desc([""; "Take range preconditions into consideration."]));
       ("-jobs", Int (fun j -> jobs := j), Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
       ("-ov1", String (fun str -> outputs1 := parse_output_variables str),
        Common.mk_arg_desc(["VARIABLES";
@@ -56,11 +59,11 @@ let anon_fun file = input_files_rev := file::!input_files_rev
 (** Equivalence checking *)
 
 (* Convert a program to AIG by Boolector. *)
-let convert_program_to_aig p ins outs =
-  let btor_file = Filename.temp_file "" ".btor" in
-  let aag_file = Filename.temp_file "" ".aag" in
+let convert_program_to_aig fopt p ins outs =
+  let btor_file = tmpfile "" ".btor" in
+  let aag_file = tmpfile "" ".aag" in
   (* to BTOR *)
-  let btor = Qfbv.Common.btor_program ~rename:true (new Qfbv.Common.btor_manager) p ins outs in
+  let btor = Qfbv.Common.btor_program ~rename:true ~pre:fopt (new Qfbv.Common.btor_manager) p ins outs in
   let outch = open_out btor_file in
   let _ = output_string outch btor in
   let _ = close_out outch in
@@ -92,18 +95,18 @@ let equalize_aig_inputs aig1 aig2 =
 (* Prepare AIGs for checking equivalence. *)
 let prepare_aig s1 s2 vs1 vs2 outs1 outs2 =
   let _ = trace ("=== Converting first program to AIG ===") in
-  let aig1 = convert_program_to_aig s1.sprog vs1 outs1 in
+  let aig1 = convert_program_to_aig (if !include_precondition then Some (Verify.Common.bexp_rbexp (rng_bexp s1.spre)) else None) s1.sprog vs1 outs1 in
   let _ = trace ("=== Converting second program to AIG ===") in
-  let aig2 = convert_program_to_aig s2.sprog vs2 outs2 in
+  let aig2 = convert_program_to_aig (if !include_precondition then Some (Verify.Common.bexp_rbexp (rng_bexp s2.spre)) else None) s2.sprog vs2 outs2 in
   let _ = trace ("=== Equalize input variables ===") in
   let _ = equalize_aig_inputs aig1 aig2 in
   (aig1, aig2)
 
 (* Invoke the combinational equivalence checking (CEC) of ABC. *)
 let apply_cec aig1 aig2 =
-  let aig_file1 = Filename.temp_file "" ".aig" in
-  let aig_file2 = Filename.temp_file "" ".aig" in
-  let output_file = Filename.temp_file "" ".log" in
+  let aig_file1 = tmpfile "" ".aig" in
+  let aig_file2 = tmpfile "" ".aig" in
+  let output_file = tmpfile "" ".log" in
   let res1 = Aig.write_to_file aig1 Aig.Binary aig_file1 in
   let res2 = Aig.write_to_file aig2 Aig.Binary aig_file2 in
   match res1, res2 with
@@ -122,9 +125,9 @@ let apply_cec aig1 aig2 =
 
 (* Invoke the combinational equivalence checking (CEC) of ABC. *)
 let apply_cec_lwt aig1 aig2 =
-  let aig_file1 = Filename.temp_file "" ".aig" in
-  let aig_file2 = Filename.temp_file "" ".aig" in
-  let output_file = Filename.temp_file "" ".log" in
+  let aig_file1 = tmpfile "" ".aig" in
+  let aig_file2 = tmpfile "" ".aig" in
+  let output_file = tmpfile "" ".log" in
   let res1 = Aig.write_to_file aig1 Aig.Binary aig_file1 in
   let res2 = Aig.write_to_file aig2 Aig.Binary aig_file2 in
   match res1, res2 with
