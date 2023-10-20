@@ -11,7 +11,7 @@ open Verify.Tasks
 
 let include_precondition = ref false
 
-type cec_engine = CEC | SAT | IPROVE | KISSAT
+type cec_engine = CEC | SAT | IPROVE | KISSAT | ABC9_CEC | ABC9_CEC_TWO
 
 let cec_engine = ref CEC
 
@@ -20,6 +20,8 @@ let cec_engine_of_string str =
   else if str = "sat" then SAT
   else if str = "kissat" then KISSAT
   else if str = "iprove" then IPROVE
+  else if str = "&cec" then ABC9_CEC
+  else if str = "&cec-two" then ABC9_CEC_TWO
   else failwith (Printf.sprintf "Unknown CEC engine %s" str)
 
 let abc_args = ref None
@@ -50,11 +52,12 @@ let args_spec =
       ("-ec", String (fun str -> abc_cmds := Some str), Common.mk_arg_desc(["CMDS"; "Apply extra commands (semicolon separated) to the miter if the"; "engine is not \"cec\"."]));
       ("-pp", Set abc_preprocess, Common.mk_arg_desc([""; "Apply preprocessing (rwsat defined in abc.rc) to the miter if the"; "engine is not \"cec\"."]));
       ("-boolector", String (fun str -> boolector_path := str), Common.mk_arg_desc(["PATH"; "Set the path to Boolector."]));
-      ("-e", Symbol (["cec"; "sat"; "iprove"; "kissat"], fun str -> cec_engine := cec_engine_of_string str), Common.mk_arg_desc(["";
-                                                                                                                                 "Use the selected prover for equivalence checking. For sat, iprove,";
-                                                                                                                                 "and kissat, a miter is constructed first, preprocessing may be";
-                                                                                                                                 "applied, extra commands may be executed, and finally the selected";
-                                                                                                                                 "prover is invoked."]));
+      ("-e", Symbol (["cec"; "sat"; "iprove"; "kissat"; "&cec"],
+                     fun str -> cec_engine := cec_engine_of_string str), Common.mk_arg_desc(["";
+                                                                                             "Use the selected prover for equivalence checking. For sat, iprove,";
+                                                                                             "kissat, and &cec, a miter is constructed first, preprocessing may";
+                                                                                             "be applied, extra commands may be executed, and finally the";
+                                                                                             "selected prover is invoked."]));
       ("-ip", Set include_precondition, Common.mk_arg_desc([""; "Include preconditions in circuits."]));
       ("-jobs", Int (fun j -> jobs := j), Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
       ("-ov1", String (fun str -> outputs1 := parse_output_variables str),
@@ -152,6 +155,48 @@ let run_abc_cec aig1 aig2 output =
   let _ = cleanup [aig1; aig2; output] in
   res
 
+(*
+  With abc commit 3c4c558656a35c6947569eb703412380b0f5b22d, using &cec directly on two aig files may produce inconsistent results.
+  We construct the miter with `miter` (rather than `&r` followed by `&miter`).
+ *)
+let run_abc9_cec aig1 aig2 output =
+  let _ = unix (Printf.sprintf "%s -q \"miter %s %s %s; %s &get; %s &cec -m\" 2>&1 1>%s"
+                  !abc_path
+                  (match !abc_args with
+                   | None -> ""
+                   | Some args -> args)
+                  aig1 aig2
+                  (if !abc_preprocess then abc_preprocess_cmd else "")
+                  (match !abc_cmds with
+                   | None -> ""
+                   | Some cmds -> cmds ^ ";")
+                  output) in
+  let _ = trace ("= Outputs from ABC =") in
+  let _ = trace_file output in
+  let res =
+    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
+    | Unix.WEXITED 0 -> true
+    | _ -> false in
+  let _ = cleanup [aig1; aig2; output] in
+  res
+
+let run_abc9_cec_two aig1 aig2 output =
+  let _ = unix (Printf.sprintf "%s -q \"&cec %s %s %s\" 2>&1 1>%s"
+                  !abc_path
+                  (match !abc_args with
+                   | None -> ""
+                   | Some args -> args)
+                  aig1 aig2
+                  output) in
+  let _ = trace ("= Outputs from ABC =") in
+  let _ = trace_file output in
+  let res =
+    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
+    | Unix.WEXITED 0 -> true
+    | _ -> false in
+  let _ = cleanup [aig1; aig2; output] in
+  res
+
 let run_abc_miter_prover prover aig1 aig2 output =
   let _ = unix (Printf.sprintf "%s -q \"miter %s %s %s; %s %s %s\" 2>&1 1>%s"
                   !abc_path
@@ -194,7 +239,54 @@ let run_abc_miter_cnf aig1 aig2 cnf output =
   res
 
 let run_abc_cec_lwt aig1 aig2 output =
-  let%lwt _ = Options.WithLwt.unix (Printf.sprintf "%s -q \"cec %s %s\" 2>&1 1>%s" !abc_path aig1 aig2 output) in
+  let%lwt _ = Options.WithLwt.unix (Printf.sprintf "%s -q \"cec %s %s %s\" 2>&1 1>%s"
+                                      !abc_path
+                                      (match !abc_args with
+                                       | None -> ""
+                                       | Some args -> args)
+                                      aig1 aig2 output) in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
+  let%lwt _ = Options.WithLwt.trace_file output in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  let res =
+    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
+    | Unix.WEXITED 0 -> true
+    | _ -> false in
+  let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
+  Lwt.return res
+
+let run_abc9_cec_lwt aig1 aig2 output =
+  let%lwt _ = Options.WithLwt.unix (Printf.sprintf "%s -q \"miter %s %s %s; %s &get; %s &cec -m\" 2>&1 1>%s"
+                                      !abc_path
+                                      (match !abc_args with
+                                       | None -> ""
+                                       | Some args -> args)
+                                      aig1 aig2
+                                      (if !abc_preprocess then abc_preprocess_cmd else "")
+                                      (match !abc_cmds with
+                                       | None -> ""
+                                       | Some cmds -> cmds ^ ";")
+                                      output) in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
+  let%lwt _ = Options.WithLwt.trace_file output in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  let res =
+    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
+    | Unix.WEXITED 0 -> true
+    | _ -> false in
+  let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
+  Lwt.return res
+
+let run_abc9_cec_two_lwt aig1 aig2 output =
+  let%lwt _ = Options.WithLwt.unix (Printf.sprintf "%s -q \"&cec %s %s %s\" 2>&1 1>%s"
+                                      !abc_path
+                                      (match !abc_args with
+                                       | None -> ""
+                                       | Some args -> args)
+                                      aig1 aig2
+                                      output) in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
   let%lwt _ = Options.WithLwt.trace_file output in
@@ -254,6 +346,8 @@ let apply_cec aig1 aig2 =
      begin
        match !cec_engine with
        | CEC -> run_abc_cec aig_file1 aig_file2 output_file
+       | ABC9_CEC -> run_abc9_cec aig_file1 aig_file2 output_file
+       | ABC9_CEC_TWO -> run_abc9_cec_two aig_file1 aig_file2 output_file
        | SAT -> run_abc_miter_prover "sat" aig_file1 aig_file2 output_file
        | IPROVE -> run_abc_miter_prover "iprove" aig_file1 aig_file2 output_file
        | KISSAT -> run_abc_miter_cnf aig_file1 aig_file2 cnf_file output_file
@@ -275,6 +369,8 @@ let apply_cec_lwt aig1 aig2 =
      begin
        match !cec_engine with
        | CEC -> run_abc_cec_lwt aig_file1 aig_file2 output_file
+       | ABC9_CEC -> run_abc9_cec_lwt aig_file1 aig_file2 output_file
+       | ABC9_CEC_TWO -> run_abc9_cec_two_lwt aig_file1 aig_file2 output_file
        | SAT -> run_abc_miter_prover_lwt "sat" aig_file1 aig_file2 output_file
        | IPROVE -> run_abc_miter_prover_lwt "iprove" aig_file1 aig_file2 output_file
        | KISSAT -> run_abc_miter_cnf_lwt aig_file1 aig_file2 cnf_file output_file
