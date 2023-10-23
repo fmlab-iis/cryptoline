@@ -16,19 +16,8 @@
 #! vpaddd $1v, $2v, $3v -> add %$3v %$2v %$1v
 #! vperm2i128 \$0x20, $1v, $2v, $3v -> mov %$3v (%$2v[0, 1, 2, 3] ++ %$1v[0, 1, 2, 3])
 #! vperm2i128 \$0x31, $1v, $2v, $3v -> mov %$3v (%$2v[4, 5, 6, 7] ++ %$1v[4, 5, 6, 7])
-
-# vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$1v[0], %$2v[2], %$1v[2], %$2v[4], %$1v[4], %$2v[6], %$1v[6]]
-# vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[1], %$1v[1], %$2v[3], %$1v[3], %$2v[5], %$1v[5], %$2v[7], %$1v[7]]
-
-# vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$2v[1], %$2v[4], %$2v[5], %$1v[0], %$1v[1], %$1v[4], %$1v[5]] # first and last post works
-# vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[2], %$2v[3], %$2v[6], %$2v[7], %$1v[2], %$1v[3], %$1v[6], %$1v[7]] # first and last post works
-
-# vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$1v[0], %$2v[1], %$1v[1], %$2v[4], %$1v[4], %$2v[5], %$1v[5]]  # all post fails
-# vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[2], %$1v[2], %$2v[3], %$1v[3], %$2v[6], %$1v[6], %$2v[7], %$1v[7]]  # all post fails
-
-#! vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$2v[1], %$1v[0], %$1v[1], %$2v[4], %$2v[5], %$1v[4], %$1v[5]]  # first and last post works
-#! vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[2], %$2v[3], %$1v[2], %$1v[3], %$2v[6], %$2v[7], %$1v[6], %$1v[7]]  # first and last post works
-
+#! vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$2v[1], %$1v[0], %$1v[1], %$2v[4], %$2v[5], %$1v[4], %$1v[5]]
+#! vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[2], %$2v[3], %$1v[2], %$1v[3], %$2v[6], %$2v[7], %$1v[6], %$1v[7]]
 #! vpsrlq \$0x20, $1v, $2v -> mov %$2v [%$1v[1], 0@sint32, %$1v[3], 0@sint32, %$1v[5], 0@sint32, %$1v[7], 0@sint32]
 
 PQCLEAN_DILITHIUM3_AVX2_ntt_avx:
