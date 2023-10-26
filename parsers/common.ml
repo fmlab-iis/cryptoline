@@ -1987,33 +1987,51 @@ let parse_vcast_at ctx lno dest_tok src_tok =
         else ((x::(List.hd r))::(List.tl r), succ n)) ([], 0) xs in
 
   let cast_vars_to_unsigned typ src =
-    let mk_cast_var i = mkvar ("vcast_"^(string_of_int i)^"_"^vcast_suffix)
-                          (typ_to_unsigned typ) in
+    let mk_cast_var i =
+      { lvname = "vcast_" ^ (string_of_int i) ^ "_" ^ vcast_suffix;
+        lvtyphint = Some (typ_to_unsigned typ) } in
     let rev_unsigned_cast_instrs, rev_cast_vars, _ =
       List.fold_left (fun (r, cvs, i) av ->
-          let cv = mk_cast_var i in
-          let v = resolve_atom_with ctx lno av in
-          ((lno, Icast (None, cv, v))::r, cv::cvs, succ i))
+          let lv_cv = mk_cast_var i in
+          let cast = List.hd (parse_cast_at ctx lno None lv_cv av) in
+          let cv = ctx_find_var ctx lv_cv.lvname in
+          (cast::r, cv::cvs, succ i))
         ([], [], 0) src in
     (rev_unsigned_cast_instrs, rev_cast_vars) in
 
   let rev_join_instrs typ cast_vars =
     match cast_vars with
     | cv1::cv2::cv_others ->
-       let jvar = mkvar ("vjoin_" ^ vcast_suffix)
-                    (uint_t ((size_of_typ typ)*2)) in
+       let lv_jvar = { lvname = "vjoin_" ^ vcast_suffix;
+                       lvtyphint = Some (uint_t ((size_of_typ typ)*2)) } in
+       let acv1 = `AVAR { atmname = cv1.vname; atmtyphint = Some cv1.vtyp } in
+       let acv2 = `AVAR { atmname = cv2.vname; atmtyphint = Some cv2.vtyp } in
+       let first = parse_join_at ctx lno lv_jvar acv2 acv1 in
+       let jvar = ctx_find_var ctx lv_jvar.lvname in
        let jvar', rev_joins = 
          List.fold_left (fun (jvar, r) cv ->
-             let jvar' = mkvar jvar.vname
-                           (typ_map ((+) (size_of_typ typ))
-                              (typ_of_var jvar)) in
-             jvar', (lno, Ijoin (jvar', mkatom_var cv, mkatom_var jvar))::r)
-           (jvar, [(lno, Ijoin (jvar, mkatom_var cv2, mkatom_var cv1))])
+             let lv_jvar' =
+               { lvname = jvar.vname;
+                 lvtyphint = Some (typ_map ((+) (size_of_typ typ))
+                                     (typ_of_var jvar)) } in
+             let ajvar = `AVAR { atmname = jvar.vname;
+                                 atmtyphint = Some jvar.vtyp } in
+             let acv =
+               `AVAR { atmname = cv.vname; atmtyphint = Some cv.vtyp } in
+             let join = List.hd (parse_join_at ctx lno lv_jvar' acv ajvar) in
+             let jvar' = ctx_find_var ctx lv_jvar'.lvname in
+             (jvar', join::r))
+           (jvar, first)
            cv_others in
        (jvar', rev_joins)
     | [cv] ->
-       let jvar = mkvar ("vjoin_" ^ vcast_suffix) (uint_t (size_of_typ typ)) in
-       (jvar, [(lno, Imov (jvar, mkatom_var cv))])
+       let lv_jvar = { lvname = "vjoin_" ^ vcast_suffix;
+                       lvtyphint = Some (uint_t (size_of_typ typ)) } in
+       let acv = `AVAR { atmname = cv.vname;
+                         atmtyphint = Some cv.vtyp } in
+       let join = parse_imov_at ctx lno lv_jvar acv in
+       let jvar = ctx_find_var ctx lv_jvar.lvname in
+       (jvar, join)
     | [] -> assert false (* empty vector variable? *) in
 
   let rev_spl_instrs typ jvar names =
@@ -2022,28 +2040,46 @@ let parse_vcast_at ctx lno dest_tok src_tok =
     let typ_size_z = Z.of_int typ_size in
     let rec spl_helper names jvar rev_ret =
       match names with
-      | [name] -> (lno, Imov (mkvar name unsigned_typ,
-                              mkatom_var jvar))::rev_ret
+      | [name] ->
+         let lv_svar = { lvname = name;
+                         lvtyphint = Some unsigned_typ } in
+         let ajvar = `AVAR { atmname = jvar.vname;
+                             atmtyphint = Some jvar.vtyp } in
+         let mov = List.hd (parse_imov_at ctx lno lv_svar ajvar) in
+         mov::rev_ret
       | [name1; name2] ->
-         let spl_instr = (lno, Ispl (mkvar name2 unsigned_typ,
-                                     mkvar name1 unsigned_typ,
-                                     mkatom_var jvar, typ_size_z)) in
-         spl_instr::rev_ret
+         let lv_svar1 = { lvname = name1;
+                          lvtyphint = Some unsigned_typ } in
+         let lv_svar2 = { lvname = name2;
+                          lvtyphint = Some unsigned_typ } in
+         let ajvar = `AVAR { atmname = jvar.vname;
+                             atmtyphint = Some jvar.vtyp } in
+         let spl = List.hd (parse_spl_at ctx lno lv_svar2 lv_svar1 ajvar
+                              (fun _ -> typ_size_z)) in
+         spl::rev_ret
       | name::names ->
-         let jvar' = mkvar jvar.vname (typ_map (fun n -> n - typ_size)
-                                         (typ_of_var jvar)) in
-         let spl_instr = (lno, Ispl (jvar', mkvar name unsigned_typ,
-                                     mkatom_var jvar, typ_size_z)) in
-         spl_helper names jvar' (spl_instr::rev_ret)
+         let lv_jvar' = { lvname = jvar.vname;
+                          lvtyphint = Some (typ_map (fun n -> n - typ_size)
+                                            jvar.vtyp) } in
+         let lv_svar = { lvname = name;
+                         lvtyphint = Some unsigned_typ } in
+         let ajvar = `AVAR { atmname = jvar.vname;
+                             atmtyphint = Some jvar.vtyp } in
+         let spl = List.hd (parse_spl_at ctx lno lv_jvar' lv_svar ajvar
+                              (fun _ -> typ_size_z)) in
+         let jvar' = ctx_find_var ctx lv_jvar'.lvname in
+         spl_helper names jvar' (spl::rev_ret)
       | [] -> assert false (* empty names *) in
     spl_helper names jvar [] in
 
   let final_cast_instrs typ names =
     let unsigned_typ = typ_to_unsigned typ in
     List.rev (List.fold_left (fun r n ->
-                  let d = mkvar n typ in
-                  let s = mkvar n unsigned_typ in
-                  (lno, Icast (None, d, mkatom_var s))::r)
+                  let d = { lvname = n; lvtyphint = Some typ } in
+                  let s = `AVAR { atmname = n;
+                                  atmtyphint = (Some unsigned_typ) } in
+                  let cast = List.hd (parse_cast_at ctx lno None d s) in
+                  cast::r)
                 [] names) in
   
   if (List.length dest_names) = (List.length src) then
