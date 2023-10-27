@@ -1,3 +1,26 @@
+#! $1c(%rsi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rsi) = %%EA
+#! (%rdi) = %%EA
+#! %ymm$1c = %%ymm$1c
+
+#! PQCLEAN_DILITHIUM3_AVX2_invntt_avx: -> nop
+#! vpbroadcastd $1ea, $2v -> broadcast %$2v 8 [$1ea]
+#! vmovdqa $1ea, $2v -> mov %$2v [$1ea, $1ea[+4], $1ea[+8], $1ea[+12], $1ea[+16], $1ea[+20], $1ea[+24], $1ea[+28]]
+#! vmovdqa $1v, $2ea -> mov [$2ea, $2ea[+4], $2ea[+8], $2ea[+12], $2ea[+16], $2ea[+20], $2ea[+24], $2ea[+28]] %$1v
+#! vpmuldq $1v, $2v, $3v -> mull %$3v_h %$3v_l (%$2v[0, 2, 4, 6]) (%$1v[0, 2, 4, 6]);\ncast %$3v_ls@sint32[4] %$3v_l;\nmov %$3v [%$3v_ls[0], %$3v_h[0], %$3v_ls[1], %$3v_h[1], %$3v_ls[2], %$3v_h[2], %$3v_ls[3], %$3v_h[3]]
+#! vmovsldup $1v, $2v -> mov %$2v (%$1v[0, 0, 2, 2, 4, 4, 6, 6])
+#! vmovshdup $1v, $2v -> mov %$2v (%$1v[1, 1, 3, 3, 5, 5, 7, 7])
+#! vpblendd \$0xaa, $1v, $2v, $3v -> mov %$3v [%$2v[0], %$1v[1], %$2v[2], %$1v[3], %$2v[4], %$1v[5], %$2v[6], %$1v[7]]
+#! vpsubd $1v, $2v, $3v -> sub %$3v %$2v %$1v
+#! vpaddd $1v, $2v, $3v -> add %$3v %$2v %$1v
+#! vperm2i128 \$0x20, $1v, $2v, $3v -> mov %$3v (%$2v[0, 1, 2, 3] ++ %$1v[0, 1, 2, 3])
+#! vperm2i128 \$0x31, $1v, $2v, $3v -> mov %$3v (%$2v[4, 5, 6, 7] ++ %$1v[4, 5, 6, 7])
+#! vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0], %$2v[1], %$1v[0], %$1v[1], %$2v[4], %$2v[5], %$1v[4], %$1v[5]]
+#! vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[2], %$2v[3], %$1v[2], %$1v[3], %$2v[6], %$2v[7], %$1v[6], %$1v[7]]
+#! vpsrlq \$0x20, $1v, $2v -> mov %$2v [%$1v[1], 0@sint32, %$1v[3], 0@sint32, %$1v[5], 0@sint32, %$1v[7], 0@sint32]
+#! vpermq \$0x1b, $1ea, $2v -> mov %$2v [$1ea[+24], $1ea[+28], $1ea[+16], $1ea[+20], $1ea[+8], $1ea[+12], $1ea, $1ea[+4]]
+
 PQCLEAN_DILITHIUM3_AVX2_invntt_avx:
 # %rdi = 0x7fffffff4120
 # %rsi = 0x555555579ea0
