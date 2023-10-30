@@ -10,7 +10,6 @@ open Utils.Std
 (** QF_BV *)
 
 type result = Sat | Unsat | Unknown
-exception TimeoutException
 
 type exp =
   | Var of var

@@ -1,6 +1,7 @@
 (library
   (name        utils)
+  (preprocess  (pps lwt_ppx))
   (flags       (:standard -w -3))
-  (libraries   zarith)
+  (libraries   zarith lwt.unix)
   (public_name cryptoline.utils)
 )

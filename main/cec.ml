@@ -2,9 +2,9 @@
 open Arg
 open Options.Std
 open Ast.Cryptoline
-open Utils.Std
 open Utils
-open Verify.Tasks
+open Utils.Std
+open Utils.Tasks
 
 
 (** Options *)

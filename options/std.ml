@@ -151,7 +151,7 @@ let vprint msg = if !verbose then print_string msg; flush stdout
 
 let vprintln msg = if !verbose then print_endline msg; flush stdout
 
-let jobs = ref 4
+let jobs = Utils.Tasks.jobs
 
 let use_cli = ref false
 

@@ -1,4 +1,10 @@
 
+exception TimeoutException
+(** raise when [exec] timed out *)
+
+val jobs : int ref
+(** The number of tasks *)
+
 type 'o task = unit -> 'o Lwt.t
 (** A ['o task] computes an output of type ['o]. *)
 
@@ -36,3 +42,11 @@ val add_to_pending : 'r continue_helper -> ('r, 'o) delivered_helper -> 'r -> 'o
     the number of pending promises is less than the number of allowed jobs
     {!Options.jobs} so that new promises generated from [tasks] can be
     inserted. *)
+
+val exec : ?timeout:float -> ?env:string array -> ?cwd:string -> ?stdin:Lwt_process.redirection -> ?stdout:Lwt_process.redirection -> ?stderr:Lwt_process.redirection -> Lwt_process.command -> Unix.process_status Lwt.t
+(** Spawn a process running a specified command using Lwt_process.exec. Raise [TimeoutException] if timeout is reached. *)
+
+val exec_shell : ?timeout:float -> ?env:string array -> ?cwd:string -> string -> string -> string -> Unix.process_status Lwt.t
+(** [exec_shell ofile errfile cmd] spawns a process running a specified shell command using Lwt_process.exec.
+    Standard output and standard error are redirected respectively to [ofile] and [errfile].
+    Raise [TimeoutException] if timeout is reached. *)

@@ -7,9 +7,6 @@ open Ast.Cryptoline
 type result = Sat | Unsat | Unknown (* *)
 (** the result of solving a QF_BV query *)
 
-exception TimeoutException
-(** raise when the range solver times out in solving a QF_BV query *)
-
 type exp =
   | Var of var                          (** variable *)
   | Const of size * Z.t                 (** constant *)

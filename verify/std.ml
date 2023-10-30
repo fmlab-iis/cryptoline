@@ -85,7 +85,7 @@ let verify_safety_conditions timeout f p qs hashopt =
            | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
            | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
            | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
-         with TimeoutException ->
+         with Tasks.TimeoutException ->
            let _ = vprintln "[TIMEOUT]" in
            (add_unsolved (id, i, q) res, revp, p) in
        let t2 = Unix.gettimeofday() in

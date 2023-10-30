@@ -71,7 +71,7 @@ let anon file =
          | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
          | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
          | _ -> failwith "Unfinished tasks. Should not happen!")
-      with Qfbv.Common.TimeoutException ->
+      with Utils.Tasks.TimeoutException ->
         print_endline "timeout")
   | ParseESpec ->
      let spec = from_typecheck_espec (espec_from_file file) in
@@ -79,7 +79,3 @@ let anon file =
   | ParseRSpec ->
      let spec = from_typecheck_rspec (rspec_from_file file) in
      print_endline (string_of_rspec spec)
-(*
-let _ =
-  parse args anon usage
-*)

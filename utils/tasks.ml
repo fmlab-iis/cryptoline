@@ -1,5 +1,7 @@
 
-open Options.Std
+exception TimeoutException
+
+let jobs = ref 4
 
 type 'o task = unit -> 'o Lwt.t
 
@@ -65,3 +67,43 @@ let add_to_pending continue_helper delivered_helper res pending tasks =
     else
       (res, pending) in
   helper res pending tasks
+
+let exec ?timeout ?env ?cwd ?stdin ?stdout ?stderr cmd =
+  let%lwt st =
+    Lwt_process.exec
+      ?timeout:timeout
+      ?env:env
+      ?cwd:cwd
+      ?stdin:stdin
+      ?stdout:stdout
+      ?stderr:stderr
+      cmd
+  in
+  let%lwt _ =
+    match st with
+    | WSIGNALED n -> if n = Sys.sigkill then raise TimeoutException
+                     else Lwt.return_unit
+    | _ -> Lwt.return_unit
+  in
+  Lwt.return st
+
+let exec_shell ?timeout ?env ?cwd ofile errfile cmd =
+  let outf = Unix.openfile ofile [O_RDWR; O_CREAT] 0o644 in
+  let errf = Unix.openfile errfile [O_RDWR; O_CREAT] 0o644 in
+  let%lwt st =
+    Lwt_process.exec
+      ?timeout:timeout
+      ?env:env
+      ?cwd:cwd
+      ~stdout:(`FD_move outf)
+      ~stderr:(`FD_move errf)
+      (Lwt_process.shell cmd)
+  in
+  let%lwt _ =
+    match st with
+    | WSIGNALED n -> if n = Sys.sigkill then raise TimeoutException
+                     else Lwt.return_unit
+    | _ -> Lwt.return_unit
+  in
+  Lwt.return st
+
