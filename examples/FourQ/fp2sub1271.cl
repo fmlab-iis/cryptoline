@@ -28,14 +28,16 @@ mov r9 rax;
 (* mov    %rdx,%r10 *)
 mov r10 rdx;
 (* sar    $0x3f,%rdx *)
-split sign tmp rdx 63; subb carry0 rdx 0@uint64 sign;
+split sign tmp rdx 63; subb carry0 rdx 0@uint64 sign; 
+(* split sign tmp rdx 63; *)
+(* cast carry0@bit sign; *)
 (* NOTE: add assertion and assumption *)
 assert true && eq carry0 carry;
 assume eq carry0 carry && true;
 (* NOTE: the 127th bit equals the 128th bit *)
-vpc sign@uint1 sign;
-assert true && eq sign carry;
-assume eq sign carry && true;
+vpc sign@uint1 sign; 
+assert true && eq sign carry; 
+assume eq sign carry && true; 
 (* mov    %rdx,%rax *)
 mov rax rdx;
 (* add    %r9,%rax *)
