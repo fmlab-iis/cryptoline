@@ -40,7 +40,7 @@ val add_to_pending : 'r continue_helper -> ('r, 'o) delivered_helper -> 'r -> 'o
     the updated result and list of pending promises. During the insertion
     of tasks, [add_to_pending] may run pending promises in [pending] until
     the number of pending promises is less than the number of allowed jobs
-    {!Options.jobs} so that new promises generated from [tasks] can be
+    {!jobs} so that new promises generated from [tasks] can be
     inserted. *)
 
 val exec : ?timeout:float -> ?env:string array -> ?cwd:string -> ?stdin:Lwt_process.redirection -> ?stdout:Lwt_process.redirection -> ?stderr:Lwt_process.redirection -> Lwt_process.command -> Unix.process_status Lwt.t

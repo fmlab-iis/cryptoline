@@ -65,7 +65,7 @@ val verify_instruction_safety : ?comments:(string list) -> int -> int -> rbexp -
    is the timeout. [j] is used as the ID of the safety condition.
    [comments] are comments written to input files for external solvers if
    {!Options.Std.debug} is enabled.
-   @raise TimeoutException if the range solver times out.
+   @raise Utils.Tasks.TimeoutException if the range solver times out.
  *)
 
 val verify_espec_single_conjunct : ?comments:(string list) ->
