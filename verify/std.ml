@@ -35,20 +35,21 @@ let apply_to_cuts ids f res ss =
  * Raise TimeoutException if the SMT solver timed out.
  * Currently, this function is only used in the CLI mode.
  *)
-let verify_instruction_safety timeout sid f p n hashopt =
+let verify_instruction_safety ?comments timeout sid f p n hashopt =
+  let i =
+    try List.nth p n
+    with Failure _ -> failwith ("The program does not contain the instruction: #" ^ string_of_int n) in
   let do_verify f p q =
     match q with
     | True -> Solved Unsat
     | _ ->
        let fp = safety_assumptions f p q hashopt in
-       Solved (solve_simp ~timeout:timeout (fp@[q]))
+       Solved (solve_simp
+                 ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int sid;
+                                                              "Instruction: " ^ string_of_instr i ])
+                 ~timeout:timeout (fp@[q]))
   in
-  let i =
-    try List.nth p n
-    with Failure _ -> failwith ("The program does not contain the instruction: #" ^ string_of_int n) in
   let q = bexp_instr_safe i in
-  let _ = trace ("= Safety condition #" ^ string_of_int sid ^ " =") in
-  let _ = trace ("Instruction: " ^ string_of_instr i) in
   do_verify f p q
 
 (*
@@ -57,7 +58,7 @@ let verify_instruction_safety timeout sid f p n hashopt =
  * p: program
  * qs: safety conditions
  *)
-let verify_safety_conditions timeout f p qs hashopt =
+let verify_safety_conditions ?comments timeout f p qs hashopt =
   let add_unsolved q res =
     match res with
     | Solved Unsat -> Unfinished [q]
@@ -76,12 +77,11 @@ let verify_safety_conditions timeout f p qs hashopt =
        let t1 = Unix.gettimeofday() in
        let res =
          try
-           let _ = trace ("= Safety condition #" ^ string_of_int id ^ " =") in
-           let _ = trace ("Instruction: " ^ string_of_instr i) in
            let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
            let (revp', p') = find_program_prefix i revp p in
            let fp = safety_assumptions f (List.rev revp') q hashopt in
-           match solve_simp ~timeout:timeout (fp@[q]) with
+           match solve_simp ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
+                                                                         "Instruction: " ^ string_of_instr i ]) ~timeout:timeout (fp@[q]) with
            | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
            | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
            | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
@@ -89,7 +89,7 @@ let verify_safety_conditions timeout f p qs hashopt =
            let _ = vprintln "[TIMEOUT]" in
            (add_unsolved (id, i, q) res, revp, p) in
        let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2 ^ "\n") in
        res in
   let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
   res
@@ -99,7 +99,7 @@ let verify_safety_conditions timeout f p qs hashopt =
  * sid: the ID of the next safety condition
  * s: the specification to be verified
  *)
-let verify_safety_inc sid s hashopt =
+let verify_safety_inc ?comments sid s hashopt =
   let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
   let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
   let round = ref 1 in
@@ -110,17 +110,17 @@ let verify_safety_inc sid s hashopt =
   let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
   let _ =
     while !safety = None do
-      let _ = trace ("Round: " ^ string_of_int !round ^ "\n"
-                     ^ "Timeout: " ^ string_of_int !timeout ^ "\n"
-                     ^ "Number of safety conditions to be verified: " ^ string_of_int (List.length !qs)) in
+      let _ = trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
       let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                         ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
                         ^ string_of_int !timeout ^ " seconds)") in
+      let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
+                                                       "Timeout: " ^ string_of_int !timeout ] in
       let res =
         if !jobs > 1 then
-          WithLwt.verify_safety_conditions !timeout s.rspre s.rsprog !qs hashopt
+          WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
         else
-          verify_safety_conditions !timeout s.rspre s.rsprog !qs hashopt in
+          verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
       let _ =
         match res with
           Solved r -> safety := if r = Unsat then Some true else Some false
@@ -143,7 +143,7 @@ let verify_safety_all_in_one sid s hashopt =
   let t1 = Unix.gettimeofday() in
   let g = bexp_program_safe s.rsprog in
   let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-  let res = solve_simp (fp@[g]) = Unsat in
+  let res = solve_simp ~comments:["Verify: safety (all in one query)"] (fp@[g]) = Unsat in
   let t2 = Unix.gettimeofday() in
   let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
   (res, sid + 1)
@@ -153,11 +153,12 @@ let verify_safety s hashopt =
   let _ = trace "===== Verifying program safety =====" in
   let _ = if !incremental_safety then vprintln "" in
   let verify_safety_without_cuts cid (_, sid) s =
-    let _ = if !incremental_safety then let _ = trace ("=== Verifying program safety incrementally: Cut #" ^ string_of_int cid ^ " ===") in
-                                        vprintln ("\t Cut " ^ string_of_int cid) in
     if !incremental_safety then
-      if !jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_cli sid s.rspre s.rsprog
-      else verify_safety_inc sid s hashopt
+      let _ = vprintln ("\t Cut " ^ string_of_int cid) in
+      let msgs = [ "Verify: safety";
+                   "Cut: #" ^ string_of_int cid ] in
+      if !jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_cli ~comments:msgs sid s.rspre s.rsprog
+      else verify_safety_inc ~comments:msgs sid s hashopt
     else verify_safety_all_in_one sid s hashopt in
   (* Check previous result, cid: cut id, sid: id of the next safety condition *)
   let verify_safety_without_cuts cid (res, sid) (_, s) =
@@ -171,7 +172,7 @@ let verify_safety s hashopt =
  * groebner: https://www.singular.uni-kl.de/Manual/4-3-2/sing_261.htm#SEC301
  * reduce: https://www.singular.uni-kl.de/Manual/4-3-2/sing_337.htm#SEC377
  *)
-let write_singular_input ifile vars gen p =
+let write_singular_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -179,7 +180,9 @@ let write_singular_input ifile vars gen p =
       | _ -> String.concat "," (List.map string_of_var vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map singular_of_eexp gen)) in
     let poly = singular_of_eexp p in
-    "proc is_generator(poly p, ideal I) {\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "proc is_generator(poly p, ideal I) {\n"
     ^ "  int idx;\n"
     ^ "  for (idx=1; idx<=size(I); idx++) {\n"
     ^ "    if (p == I[idx]) { return (0==0); }\n"
@@ -205,7 +208,7 @@ let write_singular_input ifile vars gen p =
 (*
  * ideals: https://doc.sagemath.org/html/en/reference/rings/sage/rings/ideal.html
  *)
-let write_sage_input ifile vars gen p =
+let write_sage_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -213,7 +216,9 @@ let write_sage_input ifile vars gen p =
       | _ -> String.concat "," (List.map string_of_var vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map sage_of_eexp gen)) in
     let poly = sage_of_eexp p in
-    "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (List.length vars) ^ ")\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (List.length vars) ^ ")\n"
     ^ "I = (" ^ generator ^ ") * R\n"
     ^ "P = " ^ poly ^ "\n"
     ^ "assert P in I\n" in
@@ -226,7 +231,7 @@ let write_sage_input ifile vars gen p =
 (*
  * ideals: https://magma.maths.usyd.edu.au/magma/handbook/text/413
  *)
-let write_magma_input ifile vars gen p =
+let write_magma_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -235,7 +240,9 @@ let write_magma_input ifile vars gen p =
     let varlen = max 1 (List.length vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
-    "Z := IntegerRing();\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "Z := IntegerRing();\n"
     ^ "R<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
     ^ "G := [" ^ generator ^ "];\n"
     ^ "p := " ^ poly ^ ";\n"
@@ -252,7 +259,7 @@ let write_magma_input ifile vars gen p =
   trace_file ifile;
   trace ""
 
-let write_mathematica_input ifile vars gen p =
+let write_mathematica_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -260,7 +267,9 @@ let write_mathematica_input ifile vars gen p =
       | _ -> String.concat "," (List.map mathematica_of_var vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map mathematica_of_eexp gen)) in
     let poly = mathematica_of_eexp p in
-    "vars = {" ^ varseq ^ "};\n"
+    let comment = if !debug then Option.value (Option.map (make_block_comments "(*" "*)") comments) ~default:"" else "" in
+    comment
+    ^ "vars = {" ^ varseq ^ "};\n"
     ^ "gs = {" ^ generator ^ "};\n"
     ^ "p = " ^ poly ^ ";\n"
     ^ "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers];\n"
@@ -272,7 +281,7 @@ let write_mathematica_input ifile vars gen p =
   trace_file ifile;
   trace ""
 
-let write_macaulay2_input ifile vars gen p =
+let write_macaulay2_input ?comments ifile vars gen p =
   let input_text =
     let (vars, gen, p, default_generator) =
       let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
@@ -290,7 +299,9 @@ let write_macaulay2_input ifile vars gen p =
       | _ -> String.concat "," (List.map macaulay2_of_var vars) in
     let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.map macaulay2_of_eexp gen)) in
     let poly = macaulay2_of_eexp p in
-    "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "--") comments) ~default:"" else "" in
+    comment
+    ^ "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
     ^ "myIdeal = ideal(" ^ generator ^ ")\n"
     ^ "myPoly = " ^ poly ^ "\n"
     ^ "myBasis = groebnerBasis myIdeal\n"
@@ -302,7 +313,7 @@ let write_macaulay2_input ifile vars gen p =
   trace_file ifile;
   trace ""
 
-let write_maple_input ifile vars gen p =
+let write_maple_input ?comments ifile vars gen p =
   let const_gen =
     let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
     let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
@@ -316,7 +327,9 @@ let write_maple_input ifile vars gen p =
       | [] -> "x"
       | _ -> String.concat "," (List.map string_of_var vars) in
     let poly = magma_of_eexp p in
-    "interface(prettyprint=0):\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "interface(prettyprint=0):\n"
     ^ "with(PolynomialIdeals):\n"
     ^ "with(Groebner):\n"
     ^ "Ord := plex(" ^ varseq ^ "):\n"
@@ -442,42 +455,43 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let is_in_ideal ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
+let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   let res =
     match solver with
     | Singular ->
-       let _ = write_singular_input ifile vars ideal p in
+       let _ = write_singular_input ~comments ifile vars ideal p in
        let _ = run_singular ifile ofile in
        let res = read_singular_output ofile in
        res = "0"
     | Sage ->
        (* The input file to Sage must have file extension ".sage". *)
        let ifile = ifile ^ ".sage" in
-       let _ = write_sage_input ifile vars ideal p in
+       let _ = write_sage_input ~comments ifile vars ideal p in
        let _ = run_sage ifile ofile in
        let res = read_sage_output ofile in
        res = "true"
     | Magma ->
-       let _ = write_magma_input ifile vars ideal p in
+       let _ = write_magma_input ~comments ifile vars ideal p in
        let _ = run_magma ifile ofile in
        let res = read_magma_output ofile in
        res = "true"
     | Mathematica ->
-       let _ = write_mathematica_input ifile vars ideal p in
+       let _ = write_mathematica_input ~comments ifile vars ideal p in
        let _ = run_mathematica ifile ofile in
        let res = read_mathematica_output ofile in
        res = "0"
     | Macaulay2 ->
-       let _ = write_macaulay2_input ifile vars ideal p in
+       let _ = write_macaulay2_input ~comments ifile vars ideal p in
        let _ = run_macaulay2 ifile ofile in
        let res = read_macaulay2_output ofile in
        res = "0"
     | Maple ->
-       let _ = write_maple_input ifile vars ideal p in
+       let _ = write_maple_input ~comments ifile vars ideal p in
        let _ = run_maple ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
@@ -487,62 +501,72 @@ let is_in_ideal ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal 
   res
 
 (* Applied in this function: slicing, solving *)
-let verify_rspec_single_conjunct s hashopt =
+let verify_rspec_single_conjunct ?comments s hashopt =
   let verify s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
-    let _ = trace ("Range condition: " ^ string_of_bexp g) in
     let solver = range_solver_of_prove_with (rbexp_prove_with_specs s.rspost) in
-    solve_simp ~solver:solver (f::p@[g]) = Unsat in
+    solve_simp
+      ~comments:(rcons_comments_option comments ("Range condition: " ^ string_of_bexp g))
+      ~solver:solver (f::p@[g]) = Unsat in
   (is_rspec_trivial s) ||
     (verify (if !apply_slicing then slice_rspec_ssa s hashopt else s))
 
 (* Applied in this function: split conjunctions *)
-let verify_rspec_without_cuts hashopt s =
-  let verify res s = if res then verify_rspec_single_conjunct s hashopt
+let verify_rspec_without_cuts ?comments hashopt s =
+  let verify res s = if res then verify_rspec_single_conjunct ?comments s hashopt
                      else res in
   List.fold_left verify true (split_rspec_post s)
 
 (* Applied in this function: split cuts *)
-let verify_rspec_with_cuts hashopt s =
+let verify_rspec_with_cuts ?comments hashopt s =
   (* Check previous result *)
-  let verify _ res (sid, s) =
-    if res then let _ = trace ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =") in
-                verify_rspec_without_cuts hashopt s
+  let verify cid res (sid, s) =
+    if res then verify_rspec_without_cuts
+                  ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                                                               "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
+                  hashopt s
     else res in
   apply_to_cuts !verify_rcuts verify true (cut_rspec s)
 
 (* The top function of verifying range specifications when !jobs <= 1 *)
 let verify_rspec s hashopt =
   let _ = trace "===== Verifying range specifications =====" in
-  verify_rspec_with_cuts hashopt s
+  verify_rspec_with_cuts ~comments:["Verify: range specifications"] hashopt s
 
-let verify_entailments ?(solver=(!algebra_solver)) entailments =
+let verify_entailments ?comments ?(solver=(!algebra_solver)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
-        let _ = trace ("Algebraic condition: " ^ string_of_ebexp post) in
-        if let _ = trace ("Try #0") in is_in_ideal ~solver:solver vars [] p then true
-        else let _ = trace ("Try #1") in is_in_ideal ~solver:solver vars ideal p
+        if is_in_ideal
+             ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
+                                                          "Try: #0 (pure equality)" ])
+             ~solver:solver vars [] p then true
+        else is_in_ideal
+               ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
+                                                            "Try: #1 (modular equality)" ])
+               ~solver:solver vars ideal p
       )
       else res) true entailments
 
 (* Verify an algebraic specification using a computer algebra system.
    Applied in this function: converting to ideal membership problems, polynomial rewriting, solving *)
-let verify_espec_single_conjunct_ideal vgen s =
+let verify_espec_single_conjunct_ideal ?comments vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  verify_entailments ~solver:(algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost)) entailments
+  verify_entailments ?comments ~solver:(algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost)) entailments
 
 (* Verify an algebraic specification using a specified SMT solver.
    Applied in this function: solving *)
-let verify_espec_single_conjunct_smt solver vgen s =
+let verify_espec_single_conjunct_smt solver ?comments vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
   let ifile = tmpfile "inputfgb_" ".smt2" in
   let ofile = tmpfile "outputfgb_" "" in
-  let _ = trace ("algebraic condition: " ^ string_of_ebexp_prove_with s.espost) in
+  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
   let _ =
     let ch = open_out ifile in
+    let _ = if !debug then output_string ch comments in
     let _ = output_string ch smtlib; close_out ch in
     trace "INPUT TO SMT Solver:";
     trace_file ifile;
@@ -562,18 +586,18 @@ let verify_espec_single_conjunct_smt solver vgen s =
 (* Verify an algebraic specification. The solver used can be specified in the
    prove-with clauses of the specification.
    Applied in this function: slicing *)
-let verify_espec_single_conjunct vgen s hashopt =
+let verify_espec_single_conjunct ?comments vgen s hashopt =
   let verify =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
-    | SMTSolver solver -> verify_espec_single_conjunct_smt solver
-    | _ -> verify_espec_single_conjunct_ideal in
+    | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
+    | _ -> verify_espec_single_conjunct_ideal ?comments in
   is_espec_trivial s || Deduce.espec_prover s ||
     (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))
 
 (* Applied in this function:
    - With two_phase_rewriting: converting to ideal membership problems, polynomial rewriting, slicing, solving
    - Without two_phase_rewriting: split conjunctions *)
-let verify_espec_without_cuts hashopt vgen s =
+let verify_espec_without_cuts ?comments hashopt vgen s =
   if !Options.Std.two_phase_rewriting then
     let s = remove_trivial_epost s in
     match s.espost with
@@ -585,37 +609,42 @@ let verify_espec_without_cuts hashopt vgen s =
          | _ -> (slice_espec_ssa s None, true) in
        (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
        let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-       verify_entailments ~solver:(algebra_solver_of_prove_with pwss) entailments
+       verify_entailments ?comments ~solver:(algebra_solver_of_prove_with pwss) entailments
     | _ -> assert false
   else
     let verify res s =
-      if res then verify_espec_single_conjunct vgen s hashopt
+      if res then verify_espec_single_conjunct ?comments vgen s hashopt
       else res in
     List.fold_left verify true (split_espec_post s)
 
 (* Applied in this function: split cuts *)
-let verify_espec_with_cuts hashopt vgen s =
+let verify_espec_with_cuts ?comments hashopt vgen s =
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
-  let verify _ res (sid, s) =
-    if res then let _ = trace ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =") in
-                verify_espec_without_cuts hashopt vgen s
+  let verify cid res (sid, s) =
+    if res then verify_espec_without_cuts
+                  ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                                                               "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
+                  hashopt vgen s
     else res in
   apply_to_cuts !verify_ecuts verify true (cut_espec s)
 
 (* The top function of verifying algebraic specifications when !jobs <= 1 *)
 let verify_espec vgen s hashopt =
   let _ = trace "===== Verifying algebraic specifications =====" in
-  verify_espec_with_cuts hashopt vgen s
+  verify_espec_with_cuts ~comments:[ "Verify: algebraic specifications" ] hashopt vgen s
 
 (* The top function of verifying algebraic assertions when !jobs <= 1.
    Applied in this function: split cuts *)
 let verify_eassert vgen s hashopt =
   let _ = trace "===== Verifying algebraic assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
-  let verify _ res (sid, s) =
+  let verify cid res (sid, s) =
     if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid then
-      let _ = trace ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " =") in
-      verify_espec_without_cuts hashopt vgen s
+      verify_espec_without_cuts
+        ~comments:[ "Verify: algebraic assertions";
+                    "Cut: #" ^ string_of_int cid;
+                    "Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost ]
+        hashopt vgen s
     else
       res in
   apply_to_cuts !verify_eacuts verify true (cut_eassert (espec_of_spec s))
@@ -625,10 +654,13 @@ let verify_eassert vgen s hashopt =
 let verify_rassert s hashopt =
   let _ = trace "===== Verifying range assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
-  let verify _ res (sid, s) =
+  let verify cid res (sid, s) =
     if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid then
-      let _ = trace ("= Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " =") in
-      verify_rspec_without_cuts hashopt s
+      verify_rspec_without_cuts
+        ~comments:[ "Verify: range assertions";
+                    "Cut: #" ^ string_of_int cid;
+                    "Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ]
+        hashopt s
     else
       res in
   apply_to_cuts !verify_racuts verify true (cut_rassert (rspec_of_spec s))

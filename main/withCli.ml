@@ -52,21 +52,33 @@ let anon file =
   let _ = Options.Std.jobs := 1 in
   match !action with
   | VerifyESpec ->
-     let spec = from_typecheck_espec (espec_from_file file) in
+     let (comments, espec) = espec_from_file file in
+     let comments =
+       match comments with
+       | [] -> None
+       | _ -> Some comments in
+     let spec = from_typecheck_espec espec in
      let spec = normalize_espec spec in
      let vgen = Verify.Common.vgen_of_espec spec in
-     let res = Verify.Std.verify_espec_single_conjunct vgen spec None in
+     let res = Verify.Std.verify_espec_single_conjunct ?comments vgen spec None in
      print_endline (string_of_bool res)
   | VerifyRSpec ->
-     let spec = from_typecheck_rspec (rspec_from_file file) in
+     let (comments, rspec) = rspec_from_file file in
+     let comments =
+       match comments with
+       | [] -> None
+       | _ -> Some comments in
+     let spec = from_typecheck_rspec rspec in
      let spec = normalize_rspec spec in
-     let res = Verify.Std.verify_rspec_single_conjunct spec None in
+     let res = Verify.Std.verify_rspec_single_conjunct ?comments spec None in
      print_endline (string_of_bool res)
   | VerifySafety ->
-     let spec = from_typecheck_rspec (rspec_from_file file) in
+     let (comments, rspec) = rspec_from_file file in
+     let comments = Utils.Std.rcons comments ("Timeout: " ^ string_of_int !Options.Std.incremental_safety_timeout) in
+     let spec = from_typecheck_rspec rspec in
      let spec = normalize_rspec spec in
      (try
-        (match Verify.Std.verify_instruction_safety !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
+        (match Verify.Std.verify_instruction_safety ~comments !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
          | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
          | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
          | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
@@ -74,8 +86,8 @@ let anon file =
       with Utils.Tasks.TimeoutException ->
         print_endline "timeout")
   | ParseESpec ->
-     let spec = from_typecheck_espec (espec_from_file file) in
+     let spec = from_typecheck_espec (snd (espec_from_file file)) in
      print_endline (string_of_espec spec)
   | ParseRSpec ->
-     let spec = from_typecheck_rspec (rspec_from_file file) in
+     let spec = from_typecheck_rspec (snd (rspec_from_file file)) in
      print_endline (string_of_rspec spec)

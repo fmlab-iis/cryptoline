@@ -154,6 +154,8 @@
               "solver"                     , SOLVER;
               "smt"                        , SMT
             ]
+
+    let buffer = Buffer.create 100
 }
 
 let letter = ['a'-'z' 'A'-'Z' '_']
@@ -183,7 +185,16 @@ and
 
 line_comment = parse
     ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; token lexbuf }
-  | _                              { line_comment lexbuf }
+  | (_ as c)                       { Buffer.add_char buffer c; line_comment lexbuf }
+
+and
+
+save_comment = parse
+    ("\r\n"|'\n'|'\r')             { let _ = Lexing.new_line lexbuf in
+                                     let s = Buffer.contents buffer in
+                                     let _ = Buffer.clear buffer in
+                                     COMMENT (String.trim s) }
+  | (_ as c)                       { Buffer.add_char buffer c; save_comment lexbuf }
 
 and
 
@@ -191,6 +202,7 @@ token = parse
     [' ' '\t']                     { token lexbuf }
   | ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; token lexbuf }
   (* Others *)
+  | "#!"                           { save_comment lexbuf }
   | "//"                           { line_comment lexbuf }
   | "#"                            { line_comment lexbuf }
   | "/*"                           { c_block_comment lexbuf }

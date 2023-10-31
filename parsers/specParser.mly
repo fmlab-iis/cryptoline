@@ -56,25 +56,30 @@
 
 %start espec
 %start rspec
-%type <Typecheck.Std.espec> espec
-%type <Typecheck.Std.rspec> rspec
+%type <string list * Typecheck.Std.espec> espec
+%type <string list * Typecheck.Std.rspec> rspec
 
 %%
 
 espec:
-  epre program epost
+  comments epre program epost
   {
-    let (post, pwss) = $3 in
-    { espre = $1; esprog = $2; espost = [(post, pwss)] }
+    let (post, pwss) = $4 in
+    ($1, { espre = $2; esprog = $3; espost = [(post, pwss)] })
   }
 ;
 
 rspec:
-  rpre program rpost
+  comments rpre program rpost
   {
-    let (post, pwss) = $3 in
-    { rspre = $1; rsprog = $2; rspost = [(post, pwss)] }
+    let (post, pwss) = $4 in
+    ($1, { rspre = $2; rsprog = $3; rspost = [(post, pwss)] })
   }
+;
+
+comments:
+                                                  { [] }
+  | COMMENT comments                              { $1::$2 }
 ;
 
 epre:

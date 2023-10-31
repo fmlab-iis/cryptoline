@@ -16,7 +16,7 @@ let apply_to_cuts_lwt ids f delivered_helper res pending ss =
     | [] -> finish_pending delivered_helper res pending
     | hd::tl -> if Options.Std.mem_hashset_opt ids i then
                   let cut_header = ("=== Cut #" ^ string_of_int i ^ " ===") in
-                  let (res, pending) = List.fold_left (f [cut_header]) (res, pending) hd in
+                  let (res, pending) = List.fold_left (f i [cut_header]) (res, pending) hd in
                   helper (i+1) (res, pending) tl
                 else
                   let _ = safe_trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
@@ -24,14 +24,15 @@ let apply_to_cuts_lwt ids f delivered_helper res pending ss =
   helper 0 (res, pending) ss
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_conditions timeout f prog qs hashopt =
+let verify_safety_conditions ?comments timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
-    let header = ["= Safety condition #" ^ string_of_int id ^ " =";
-                  "Instruction: " ^ string_of_instr i] in
     let fp = safety_assumptions f p q hashopt in
     let%lwt res =
       try%lwt
-            match%lwt solve_simp ~timeout:timeout ~header:header (rcons fp q) with
+            match%lwt solve_simp
+                    ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
+                                                                 "Instruction: " ^ string_of_instr i ])
+                    ~timeout:timeout ~header:[] (rcons fp q) with
             | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
             | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
             | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
@@ -85,7 +86,7 @@ let write_header_to_log header =
    Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
                              Lwt.return_unit) header
 
-let write_singular_input ifile vars gen p =
+let write_singular_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -93,7 +94,9 @@ let write_singular_input ifile vars gen p =
       | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map singular_of_eexp gen |> List.rev)) in
     let poly = singular_of_eexp p in
-    "proc is_generator(poly p, ideal I) {\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "proc is_generator(poly p, ideal I) {\n"
     ^ "  int idx;\n"
     ^ "  for (idx=1; idx<=size(I); idx++) {\n"
     ^ "    if (p == I[idx]) { return (0==0); }\n"
@@ -118,7 +121,7 @@ let write_singular_input ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_sage_input ifile vars gen p =
+let write_sage_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -126,7 +129,9 @@ let write_sage_input ifile vars gen p =
       | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map sage_of_eexp gen |> List.rev)) in
     let poly = sage_of_eexp p in
-    "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (max 1 (List.length vars)) ^ ")\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (max 1 (List.length vars)) ^ ")\n"
     ^ "I = (" ^ generator ^ ") * R\n"
     ^ "P = " ^ poly ^ "\n"
     ^ "assert P in I\n" in
@@ -138,7 +143,7 @@ let write_sage_input ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_magma_input ifile vars gen p =
+let write_magma_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -147,7 +152,9 @@ let write_magma_input ifile vars gen p =
     let varlen = max 1 (List.length vars) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map magma_of_eexp gen |> List.rev)) in
     let poly = magma_of_eexp p in
-    "function is_generator(p, I)\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "function is_generator(p, I)\n"
     ^ "  for q in I do\n"
     ^ "    if p eq q then\n"
     ^ "      return true;\n"
@@ -175,7 +182,7 @@ let write_magma_input ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_mathematica_input ifile vars gen p =
+let write_mathematica_input ?comments ifile vars gen p =
   let input_text =
     let varseq =
       match vars with
@@ -183,7 +190,9 @@ let write_mathematica_input ifile vars gen p =
       | _ -> String.concat "," (List.rev_map mathematica_of_var vars |> List.rev) in
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map mathematica_of_eexp gen |> List.rev)) in
     let poly = mathematica_of_eexp p in
-    "vars = {" ^ varseq ^ "};\n"
+    let comment = if !debug then Option.value (Option.map (make_block_comments "(*" "*)") comments) ~default:"" else "" in
+    comment
+    ^ "vars = {" ^ varseq ^ "};\n"
     ^ "gs = {" ^ generator ^ "};\n"
     ^ "p = " ^ poly ^ ";\n"
     ^ "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers];\n"
@@ -197,7 +206,7 @@ let write_mathematica_input ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_macaulay2_input ifile vars gen p =
+let write_macaulay2_input ?comments ifile vars gen p =
   let input_text =
     let (vars, gen, p, default_generator) =
       let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The type is no matter here. *) in
@@ -215,7 +224,9 @@ let write_macaulay2_input ifile vars gen p =
       | _ -> String.concat "," (List.rev_map macaulay2_of_var vars |> List.rev) in
     let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.rev_map macaulay2_of_eexp gen |> List.rev)) in
     let poly = macaulay2_of_eexp p in
-    "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "--") comments) ~default:"" else "" in
+    comment
+    ^ "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
     ^ "myIdeal = ideal(" ^ generator ^ ")\n"
     ^ "myPoly = " ^ poly ^ "\n"
     ^ "myBasis = groebnerBasis myIdeal\n"
@@ -229,7 +240,7 @@ let write_macaulay2_input ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_maple_input ifile vars gen p =
+let write_maple_input ?comments ifile vars gen p =
   let const_gen =
     let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
     let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
@@ -243,7 +254,9 @@ let write_maple_input ifile vars gen p =
       | [] -> "x"
       | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
     let poly = magma_of_eexp p in
-    "interface(prettyprint=0):\n"
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "interface(prettyprint=0):\n"
     ^ "with(PolynomialIdeals):\n"
     ^ "with(Groebner):\n"
     ^ "Ord := plex(" ^ varseq ^ "):\n"
@@ -416,15 +429,16 @@ let read_maple_output = read_one_line
    @param ideal the generator of an ideal
    @param p a polynomial
 *)
-let is_in_ideal ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
+let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   let res =
     match solver with
     | Singular ->
-       let%lwt _ = write_singular_input ifile vars ideal p in
+       let%lwt _ = write_singular_input ~comments ifile vars ideal p in
        let%lwt _ = run_singular header ifile ofile in
        let%lwt res = read_singular_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
@@ -432,31 +446,31 @@ let is_in_ideal ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.alge
     | Sage ->
        (* The input file to Sage must have file extension ".sage". *)
        let ifile = ifile ^ ".sage" in
-       let%lwt _ = write_sage_input ifile vars ideal p in
+       let%lwt _ = write_sage_input ~comments ifile vars ideal p in
        let%lwt _ = run_sage header ifile ofile in
        let%lwt res = read_sage_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | Magma ->
-       let%lwt _ = write_magma_input ifile vars ideal p in
+       let%lwt _ = write_magma_input ~comments ifile vars ideal p in
        let%lwt _ = run_magma header ifile ofile in
        let%lwt res = read_magma_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | Mathematica ->
-       let%lwt _ = write_mathematica_input ifile vars ideal p in
+       let%lwt _ = write_mathematica_input ~comments ifile vars ideal p in
        let%lwt _ = run_mathematica header ifile ofile in
        let%lwt res = read_mathematica_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Macaulay2 ->
-       let%lwt _ = write_macaulay2_input ifile vars ideal p in
+       let%lwt _ = write_macaulay2_input ~comments ifile vars ideal p in
        let%lwt _ = run_macaulay2 header ifile ofile in
        let%lwt res = read_macaulay2_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Maple ->
-       let%lwt _ = write_maple_input ifile vars ideal p in
+       let%lwt _ = write_maple_input ~comments ifile vars ideal p in
        let%lwt _ = run_maple header ifile ofile in
        let%lwt res = read_maple_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
@@ -475,15 +489,16 @@ let is_in_ideal ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.alge
    @param hashopt
    @return a bool promise
  *)
-let verify_rspec_single_conjunct header s hashopt =
+let verify_rspec_single_conjunct ?comments header s hashopt =
   let solver = range_solver_of_prove_with (List.split s.rspost |> snd |> tflatten) in
   let verify_one header s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
-    let rheader = ["Range condition: " ^ string_of_bexp g] in
-    let%lwt r = solve_simp ~solver:solver
-                  ~header:(header @@ rheader)
+    let%lwt r = solve_simp
+                  ~comments:(rcons_comments_option comments ("Range condition: " ^ string_of_bexp g))
+                  ~solver:solver
+                  ~header:header
                   (f::(rcons p g)) in
     Lwt.return (r = Unsat) in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
@@ -500,34 +515,40 @@ let verify_rspec_single_conjunct header s hashopt =
    @param hashopt
    @return a list of [task]
  *)
-let verify_rspec_no_rcut header s hashopt : bool task list =
-  let verify s = fun () -> verify_rspec_single_conjunct header s hashopt in
+let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
+  let verify s = fun () -> verify_rspec_single_conjunct ?comments header s hashopt in
   List.rev_map verify (split_rspec_post s) |> List.rev
 
-let verify_entailment ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
-  let eheader = ["Algebraic condition: " ^ string_of_ebexp post;
-                 "Try #0"] in
-  let%lwt r = is_in_ideal ~solver:solver (headers @@ eheader) vars [] p in
+let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
+  let poststr = string_of_ebexp post in
+  let%lwt r = is_in_ideal
+                ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
+                                                             "Try: #0 (pure equality)" ])
+                ~solver:solver headers vars [] p in
   if r then Lwt.return_true
-  else let eheader = ["Algebraic condition: " ^ string_of_ebexp post;
-                      "Try #1"] in
-       let%lwt r = is_in_ideal ~solver:solver (headers @@ eheader) vars ideal p in
+  else let%lwt r = is_in_ideal
+                     ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
+                                                                  "Try: #1 (modular equality)" ])
+                     ~solver:solver headers vars ideal p in
        Lwt.return r
 
 (* Verify an algebraic specification using a computer algebra system. *)
-let verify_espec_single_conjunct_ideal headers vgen s =
+let verify_espec_single_conjunct_ideal ?comments headers vgen s =
   let (_, entailments) = polys_of_espec vgen s in
   let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-  Lwt_list.for_all_p (fun entailment -> verify_entailment ~solver:solver headers entailment) entailments
+  Lwt_list.for_all_p (fun entailment -> verify_entailment ?comments ~solver:solver headers entailment) entailments
 
 (* Verify an algebraic specification using a specified SMT solver. *)
-let verify_espec_single_conjunct_smt solver cut_headers vgen s =
+let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
   let (_, smtlib) = smtlib_espec vgen s in
   let ifile = tmpfile "inputfgb_" ".smt2" in
   let ofile = tmpfile "outputfgb_" "" in
+  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
   let%lwt _ =
     let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
     let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+    let%lwt _ = Lwt_io.write ch comments in
     let%lwt _ = Lwt_io.write ch smtlib in
     Lwt_io.close ch in
   let%lwt _ =
@@ -537,7 +558,6 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
     let%lwt _ =
       let%lwt _ = Options.WithLwt.log_lock () in
       let%lwt _ = write_header_to_log cut_headers in
-      let%lwt _ = Options.WithLwt.trace ("algebraic condition: " ^ string_of_ebexp_prove_with s.espost) in
       let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
       let%lwt _ = Options.WithLwt.trace_file ifile in
       let%lwt _ = Options.WithLwt.trace "" in
@@ -554,11 +574,11 @@ let verify_espec_single_conjunct_smt solver cut_headers vgen s =
  * Verify an algebraic specification containing neither cut nor conjunction.
  * What is done in this function: trivial postcondition check, trivial implication check, program slicing, solver invocation.
  *)
-let verify_espec_single_conjunct cut_headers vgen s hashopt =
+let verify_espec_single_conjunct ?comments cut_headers vgen s hashopt =
   let verify_one =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
-    | SMTSolver solver -> verify_espec_single_conjunct_smt solver
-    | _ -> verify_espec_single_conjunct_ideal in
+    | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
+    | _ -> verify_espec_single_conjunct_ideal ?comments in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_espec_trivial s || Deduce.espec_prover s
                 then Lwt.return_true
@@ -569,10 +589,10 @@ let verify_espec_single_conjunct cut_headers vgen s hashopt =
  * Verify an algebraic specification containing no ecut.
  * What is done in this function: split conjunctions.
  *)
-let verify_espec_no_ecut headers vgen s hashopt =
+let verify_espec_no_ecut ?comments headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
     let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-    let mk_task entailment = fun () -> verify_entailment ~solver:solver headers entailment in
+    let mk_task entailment = fun () -> verify_entailment ?comments ~solver:solver headers entailment in
     let s = remove_trivial_epost s in
     (* We don't need the full is_espec_trivial test. espre_implies_espost and espost_in_assumes are considered in remove_trivial_epost. *)
     match s.espost with
@@ -593,28 +613,32 @@ let verify_espec_no_ecut headers vgen s hashopt =
     let verify_task s =
       match s.espost with
       | [] -> []
-      | _ -> [fun () -> verify_espec_single_conjunct headers vgen s hashopt] in
+      | _ -> [fun () -> verify_espec_single_conjunct ?comments headers vgen s hashopt] in
     tmap verify_task (split_espec_post s) |> tflatten
 
 (* The top function of verifying algebraic assertions when !jobs > 1. *)
 let verify_eassert vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   let delivered_helper = (&&) in
-  let mk_tasks headers (sid, s) =
-    let headers = rcons headers ("= Algebraic assertion #" ^ string_of_int sid ^ ": " ^
-                                   Ast.Cryptoline.string_of_ebexp_prove_with s.espost ^ " =") in
-    let tasks = verify_espec_no_ecut headers vgen s hashopt in
+  let mk_tasks ?comments headers (sid, s) =
+    let tasks = verify_espec_no_ecut
+                  ~comments:(rcons_comments_option comments ("Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost))
+                  headers vgen s hashopt in
     tasks in
-  let rec verify_spec cut_headers (res, pending) s =
+  let rec verify_spec ?comments cut_headers (res, pending) s =
     if List.length pending < !jobs then
-      let tasks = mk_tasks cut_headers s in
+      let tasks = mk_tasks ?comments cut_headers s in
       add_to_pending Fun.id delivered_helper res pending tasks
     else
       let (res', pending') = work_on_pending delivered_helper res pending in
-      verify_spec cut_headers (res', pending') s in
+      verify_spec ?comments cut_headers (res', pending') s in
   (* Check previous result *)
-  let verify cut_headers (res, pending) (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid then verify_spec cut_headers (res, pending) (sid, s)
+  let verify cid cut_headers (res, pending) (sid, s) =
+    if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid
+    then verify_spec
+           ~comments:[ "Verify: algebraic assertions";
+                       "Cut: #" ^ string_of_int cid ]
+           cut_headers (res, pending) (sid, s)
     else (res, pending) in
   apply_to_cuts_lwt !verify_eacuts verify delivered_helper true [] (cut_eassert (espec_of_spec s))
 
@@ -622,21 +646,25 @@ let verify_eassert vgen s hashopt =
 let verify_rassert s hashopt =
   let _ = safe_trace "===== Verifying range assertions =====" in
   let delivered_helper = (&&) in
-  let mk_tasks headers (sid, s) =
-    let headers = rcons headers ("= Range assertion #" ^ string_of_int sid ^ ": " ^
-                                   Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ^ " =") in
-    let tasks = verify_rspec_no_rcut headers s hashopt in
+  let mk_tasks ?comments headers (sid, s) =
+    let tasks = verify_rspec_no_rcut
+                  ~comments:(rcons_comments_option comments ("Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost))
+                  headers s hashopt in
     tasks in
-  let rec verify_spec headers (res, pending) s =
+  let rec verify_spec ?comments headers (res, pending) s =
     if List.length pending < !jobs then
-      let tasks = mk_tasks headers s in
+      let tasks = mk_tasks ?comments headers s in
       add_to_pending Fun.id delivered_helper res pending tasks
     else
       let (res', promised) = work_on_pending delivered_helper res pending in
-      verify_spec headers (res', promised) s in
+      verify_spec ?comments headers (res', promised) s in
   (* Check previous result *)
-  let verify headers (res, pending) (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid then verify_spec headers (res, pending) (sid, s)
+  let verify cid headers (res, pending) (sid, s) =
+    if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid
+    then verify_spec
+           ~comments:[ "Verify: range assertions";
+                       "Cut: #" ^ string_of_int cid ]
+           headers (res, pending) (sid, s)
     else (res, pending) in
   apply_to_cuts_lwt !verify_racuts verify delivered_helper true [] (cut_rassert (rspec_of_spec s))
 
@@ -644,11 +672,15 @@ let verify_rassert s hashopt =
 let verify_rspec s hashopt =
   let _ = safe_trace "===== Verifying range specifications =====" in
   let delivered_helper = (&&) in
-  let mk_tasks headers s = verify_rspec_no_rcut headers s hashopt in
-  let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
+  let mk_tasks ?comments headers s = verify_rspec_no_rcut ?comments headers s hashopt in
+  let verify_ands ?comments headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks ?comments headers s) in
   (* Check previous result *)
-  let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (rcons headers ("= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")) (res, pending) s
+  let verify cid headers (res, pending) (sid, s) =
+    if res then verify_ands
+                  ~comments:[ "Verify: range specifications";
+                              "Cut: #" ^ string_of_int cid;
+                              "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ]
+                  headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_rcuts verify delivered_helper true [] (cut_rspec s)
 
@@ -662,11 +694,15 @@ let verify_rspec s hashopt =
 let verify_espec vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
   let delivered_helper = (&&) in
-  let mk_tasks headers s = verify_espec_no_ecut headers vgen s hashopt in
-  let verify_ands headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks headers s) in
+  let mk_tasks ?comments headers s = verify_espec_no_ecut ?comments headers vgen s hashopt in
+  let verify_ands ?comments headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks ?comments headers s) in
   (* Check previous result *)
-  let verify headers (res, pending) (sid, s) =
-    if res then verify_ands (rcons headers ("= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")) (res, pending) s
+  let verify cid headers (res, pending) (sid, s) =
+    if res then verify_ands
+                  ~comments:[ "Verify: algebraic specifications";
+                              "Cut: #" ^ string_of_int cid;
+                              "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ]
+                  headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt !verify_ecuts verify (&&) true [] (cut_espec s)
 
@@ -687,6 +723,11 @@ let run_cli_vsafety id timeout idx instr ifile =
   (* Run CLI *)
   let cmd = String.concat " "
                           [!cli_path;
+                           if !debug then "-debug" else "";
+                           (match !tmpdir with
+                            | None -> ""
+                            | Some d -> "-tmpdir \"" ^ d ^ "\"");
+                           if !keep_temp_files then "-keep" else "";
                            "-c vsafety";
                            "-instr " ^ string_of_int idx;
                            "-id " ^ string_of_int id;
@@ -740,9 +781,12 @@ let run_cli_vsafety id timeout idx instr ifile =
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_cli sid f p =
+let verify_safety_cli ?comments sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
+  let _ = if !debug then
+            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+            output_string ch comments in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = [(Rtrue, [])]}); close_out ch in
   let add_unsolved q res =
     match res with
@@ -805,17 +849,18 @@ let verify_safety_cli sid f p =
  * verify_cuts: a list option specifying the indices of cuts to be verified
  * verify_ids: an [(int Hashset.t) option] specifying the indices of specifications to be verified
  *)
-let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cuts verify_ids =
+let verify_spec_cli s run_cli_verify comments_gen header_gen flatten_spec cut_spec verify_cuts verify_ids =
   let delivered_helper res r = res && r in
-  let verify_ands cut_headers (res, pending) (sid, s) =
-    let header = header_gen (sid, s) (String.concat "" cut_headers) in
+  let verify_ands cid cut_headers (res, pending) (sid, s) =
+    let header = header_gen cid (sid, s) (String.concat "" cut_headers) in
     let rec verify_ands_helper (res, pending) ss =
       if res then
         if List.length pending < !jobs then
           match ss with
           | [] -> (res, pending)
           | hd::tl ->
-             let promise = run_cli_verify header hd in
+             let comments = comments_gen cid (sid, s) in
+             let promise = run_cli_verify ?comments header hd in
              verify_ands_helper (res, promise::pending) tl
         else
           let (res', pending') = work_on_pending delivered_helper res pending in
@@ -831,19 +876,28 @@ let verify_spec_cli s run_cli_verify header_gen flatten_spec cut_spec verify_cut
   apply_to_cuts_lwt verify_cuts verify_ands delivered_helper true [] (cut_spec s)
 
 (* Run CLI to verify an espec (no conjunction in the postcondition, no cut). *)
-let run_cli_vespec header s =
+let run_cli_vespec ?comments header s =
   let ifile = tmpfile "espec_input_" "" in
   let ofile = tmpfile "espec_output_" "" in
   let lfile = tmpfile "espec_log_" "" in
   (* Write the input to CLI *)
   let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = if !debug then let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+                             Lwt_io.write ch comments
+              else Lwt.return_unit in
   let%lwt _ = Lwt_io.write ch (string_of_espec ~typ:true s) in
   let%lwt _ = Lwt_io.close ch in
   (* Run CLI *)
   let cmd = String.concat " "
                           [!cli_path;
+                           if !debug then "-debug" else "";
+                           (match !tmpdir with
+                            | None -> ""
+                            | Some d -> "-tmpdir \"" ^ d ^ "\"");
+                           if !keep_temp_files then "-keep" else "";
                            "-c vespec";
+                           if !debug then "-debug" else "";
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
                             else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
@@ -917,33 +971,46 @@ let run_cli_vespec header s =
  * Run CLI to verify an espec (no conjunction in the postcondition, no cut).
  * Check if the input specification is trivially valid first.
  *)
-let run_cli_vespec header s =
+let run_cli_vespec ?comments header s =
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
     if is_espec_trivial s then Lwt.return_true
-    else run_cli_vespec header s in
+    else run_cli_vespec ?comments header s in
   Lwt.return res
 
 (* The top function of verifying algebraic specifications when !jobs > 1 and CLI is enabled. *)
 let verify_espec_cli s =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
-  verify_spec_cli s
-                  run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")
-                  split_espec_post cut_espec !verify_ecuts None
+  verify_spec_cli
+    s
+    run_cli_vespec
+    (fun cid (sid, s) -> Some [ "Verify: algebraic specifications";
+                                "Cut: #" ^ string_of_int cid;
+                                "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
+    (fun _ _ cut_header -> cut_header)
+    split_espec_post cut_espec !verify_ecuts None
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
-let run_cli_vrspec header s =
+let run_cli_vrspec ?comments header s =
   let ifile = tmpfile "rspec_input_" "" in
   let ofile = tmpfile "rspec_output_" "" in
   let lfile = tmpfile "rspec_log_" "" in
   (* Write the input to CLI *)
   let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let _ = if !debug then let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+                         Lwt_io.write ch comments
+          else Lwt.return_unit in
   let%lwt _ = Lwt_io.write ch (string_of_rspec ~typ:true s) in
   let%lwt _ = Lwt_io.close ch in
   (* Run CLI *)
   let cmd = String.concat " "
                           [!cli_path;
+                           if !debug then "-debug" else "";
+                           (match !tmpdir with
+                            | None -> ""
+                            | Some d -> "-tmpdir \"" ^ d ^ "\"");
+                           if !keep_temp_files then "-keep" else "";
                            "-c vrspec";
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
                            (if !Options.Std.range_solver_args = "" then ""
@@ -995,30 +1062,45 @@ let run_cli_vrspec header s =
  * Run CLI to verify a rspec (no conjunction in the postcondition, no cut).
  * Check if the input specification is trivially valid first.
  *)
-let run_cli_vrspec header s =
+let run_cli_vrspec ?comments header s =
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
     if is_rspec_trivial s then Lwt.return_true
-    else run_cli_vrspec header s in
+    else run_cli_vrspec ?comments header s in
   Lwt.return res
 
 (* The top function of verifying range specifications when !jobs > 1 and CLI is enabled. *)
 let verify_rspec_cli s _ =
   let _ = safe_trace "===== Verifying range specifications =====" in
-  verify_spec_cli s
-                  run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")
-                  split_rspec_post cut_rspec !verify_rcuts None
+  verify_spec_cli
+    s
+    run_cli_vrspec
+    (fun cid (sid, s) -> Some [ "Verify: range specifications";
+                                "Cut: #" ^ string_of_int cid;
+                                "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
+    (fun _ _ cut_header -> cut_header)
+    split_rspec_post cut_rspec !verify_rcuts None
 
 (* The top function of verifying algebraic assertions when !jobs > 1 and CLI is enabled. *)
 let verify_eassert_cli s =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
-  verify_spec_cli (espec_of_spec s)
-    run_cli_vespec (fun (sid, s) cut_header -> cut_header ^ "\n= Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ^ " =")
+  verify_spec_cli
+    (espec_of_spec s)
+    run_cli_vespec
+    (fun cid (sid, s) -> Some [ "Verify: algebraic assertions";
+                                "Cut: #" ^ string_of_int cid;
+                                "Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
+    (fun _ _ cut_header -> cut_header)
     split_espec_post cut_eassert !verify_eacuts !Options.Std.verify_eassert_ids
 
 (* The top function of verifying range assertions when !jobs > 1 and CLI is enabled. *)
 let verify_rassert_cli s =
   let _ = safe_trace "===== Verifying range assertions =====" in
-  verify_spec_cli (rspec_of_spec s)
-    run_cli_vrspec (fun (sid, s) cut_header -> cut_header ^ "\n= Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ^ " =")
+  verify_spec_cli
+    (rspec_of_spec s)
+    run_cli_vrspec
+    (fun cid (sid, s) -> Some [ "Verify: range assertions";
+                                "Cut: #" ^ string_of_int cid;
+                                "Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
+    (fun _ _ cut_header -> cut_header)
     split_rspec_post cut_rassert !verify_racuts !Options.Std.verify_rassert_ids

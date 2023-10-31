@@ -832,15 +832,15 @@ type instr =
    - [Iseteq (r, a1, a2)]: [r] is 0x11...1 if [a1] equals [a2]; otherwise [r] is 0x00...0
                         {ul {- Type: [a1] and [a2] have the same type. [r] is [Tuint 1]}
                             {- QF_BV:
-                              {- r is a bit: (= r (bvcomp a1 a2)) (SMTLIB), r eq 1 a1 a2 (BTOR)}
-                              {- otherwise: (= r (bvsub 0 (zext (sr - 1) (bvcomp a1 a2)))) (SMTLIB)}
+                              {ul {- r is a bit: (= r (bvcomp a1 a2)) (SMTLIB), r eq 1 a1 a2 (BTOR)}
+                                  {- l otherwise: (= r (bvsub 0 (zext (sr - 1) (bvcomp a1 a2)))) (SMTLIB)}}
                             }
                             {- Algebra: True}}
    - [Isetne (r, a1, a2)]: [r] is 0 if [a1] equals [a2]; otherwise [r] is 1
                         {ul {- Type: [a1] and [a2] have the same type. [r] is [Tuint 1]}
                             {- QF_BV:
-                              {- r is a bit: (= r (bvnot (bvcomp a1 a2))) (SMTLIB), r ne 1 a1 a2 (BTOR)}
-                              {- otherwise: (= r (bvsub 0 (zext (sr - 1) (bvnot (bvcomp a1 a2))))) (SMTLIB)}
+                              {ul {- r is a bit: (= r (bvnot (bvcomp a1 a2))) (SMTLIB), r ne 1 a1 a2 (BTOR)}
+                                  {- otherwise: (= r (bvsub 0 (zext (sr - 1) (bvnot (bvcomp a1 a2))))) (SMTLIB)}}
                             }
                             {- Algebra: True}}
    - [Iand (v, a1, a2)]: Assign [v] the bit-wise AND of [a1] and [a2].

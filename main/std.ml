@@ -273,10 +273,10 @@ let anon file =
                  print_procedure fn ivs ovs s; print_endline "") specs in
      ()
   | PrintESpec ->
-     let s = from_typecheck_espec (espec_from_file file) in
+     let s = from_typecheck_espec (espec_from_file file |> snd) in
      print_endline (string_of_espec ~typ:!print_with_types s)
   | PrintRSpec ->
-     let s = from_typecheck_rspec (rspec_from_file file) in
+     let s = from_typecheck_rspec (rspec_from_file file |> snd) in
      print_endline (string_of_rspec ~typ:!print_with_types s)
   | PrintDataFlow ->
      let (_, s) = Common.parse_and_check file in

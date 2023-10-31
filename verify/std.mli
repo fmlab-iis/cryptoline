@@ -24,13 +24,16 @@ val verify_spec : spec -> bool
 (** {1 Sequential Verification Functions} *)
 
 val verify_safety_conditions :
+  ?comments:(string list) ->
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   Common.round_result
-(** [verify_safety_inc t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
+(** [verify_safety_conditions ?comments t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
     sequentially verifies the safety conditions [e1; ...; en] of the program [p]
-    under the precondition [f]. [t] is the timeout. *)
+    under the precondition [f]. [t] is the timeout.
+    [comments] are comments written to input files for external solvers if
+    {!Options.Std.debug} is enabled. *)
 
 val verify_eassert : Common.var_gen -> spec -> VS.t atomhash_t option -> bool
 (** [verify_eassert g s o] sequentially verifies all algebraic assertions of the
@@ -53,23 +56,30 @@ val verify_rspec : rspec -> VS.t atomhash_t option -> bool
 
 (** {1 Low-level Verification Functions} *)
 
-val verify_instruction_safety : int -> int -> rbexp -> program -> int ->
+val verify_instruction_safety : ?comments:(string list) -> int -> int -> rbexp -> program -> int ->
                                 VS.t atomhash_t option ->
                                 Common.round_result
 (**
-   [verify_instruction_safety t j f p i o] verifies the safety condition of the
+   [verify_instruction_safety ?comments t j f p i o] verifies the safety condition of the
    [i]-th instruction of the program [p] in SSA under the precondition [f]. [t]
    is the timeout. [j] is used as the ID of the safety condition.
-   @raise TimeoutException if the range solver times out.
+   [comments] are comments written to input files for external solvers if
+   {!Options.Std.debug} is enabled.
+   @raise Utils.Tasks.TimeoutException if the range solver times out.
  *)
 
-val verify_espec_single_conjunct : Common.var_gen -> espec ->
+val verify_espec_single_conjunct : ?comments:(string list) ->
+                                   Common.var_gen -> espec ->
                                    VS.t atomhash_t option -> bool
-(** [verify_espec_single_conjunct g s o] is [true] if the algebraic
+(** [verify_espec_single_conjunct ?comments g s o] is [true] if the algebraic
     specification [s] in SSA is valid. Note that the specification [s] must
-    not contain any cut and its postcondition must be an atomic predicate. *)
+    not contain any cut and its postcondition must be an atomic predicate.
+    [comments] are written to input files for external solvers if
+    {!Options.Std.debug} is enabled. *)
 
-val verify_rspec_single_conjunct : rspec -> VS.t atomhash_t option -> bool
-(** [verify_rspec_single_conjunct s o] is [true] if the range specification [s]
-    in SSA is valid. Note that the specification [s] must not contain any
-    cut and its postcondition must be an atomic predicate. *)
+val verify_rspec_single_conjunct : ?comments:(string list) -> rspec -> VS.t atomhash_t option -> bool
+(** [verify_rspec_single_conjunct comments s o] is [true] if the range
+    specification [s] in SSA is valid. Note that the specification [s]
+    must not contain any cut and its postcondition must be an atomic
+    predicate. [comments] are written to input files for external solvers
+    if {!Options.Std.debug} is enabled. *)
