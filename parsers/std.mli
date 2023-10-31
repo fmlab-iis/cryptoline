@@ -22,14 +22,14 @@ val program_from_file : string -> lined_program
 val program_from_string : string -> lined_program
 (** Parse the instructions of the main procedure in a string *)
 
-val espec_from_file : string -> Typecheck.Std.espec
+val espec_from_file : string -> string list * Typecheck.Std.espec
 (** Parse an algebraic specification in a file *)
 
-val espec_from_string : string -> Typecheck.Std.espec
+val espec_from_string : string -> string list * Typecheck.Std.espec
 (** Parse an algebraic specification in a string *)
 
-val rspec_from_file : string -> Typecheck.Std.rspec
+val rspec_from_file : string -> string list * Typecheck.Std.rspec
 (** Parse a range specification in a file *)
 
-val rspec_from_string : string -> Typecheck.Std.rspec
+val rspec_from_string : string -> string list * Typecheck.Std.rspec
 (** Parse a range specification in a string *)

@@ -86,3 +86,26 @@ let transpose xss =
          start tl in
      rev_rss |> List.rev_map List.rev |> List.rev
 
+
+
+(** Comments for external solvers *)
+
+let make_line_comments leading comments =
+  String.concat "\n" (tmap (Printf.sprintf "%s %s" leading) comments) ^ "\n"
+
+let make_block_comments op cl comments =
+  let padding = String.init (String.length op) (fun _ -> ' ') in
+  Printf.sprintf "%s %s %s\n"
+    op
+    (String.concat "\n" (List.mapi (fun i c -> if i = 0 then c else (Printf.sprintf "%s %s" padding c)) comments))
+    cl
+
+let rcons_comments_option cso c =
+  match cso with
+  | None -> [c]
+  | Some cs -> rcons cs c
+
+let append_comments_option cso cs =
+  match cso with
+  | None -> cs
+  | Some cs0 -> tappend cs0 cs

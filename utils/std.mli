@@ -68,3 +68,23 @@ val partition_at : 'a list -> int -> 'a list * 'a list
 
 val transpose : 'a list list -> 'a list list
 (** transpose xss computes the transpose of xss *)
+
+
+(** {1 Comments} *)
+
+val make_line_comments : string -> string list -> string
+(** [make_line_comments leading comments] returns a comment string.
+    Each element in [comments] is a line of comment.
+    [leading] is the line comment prefix. *)
+
+val make_block_comments : string -> string -> string list -> string
+(** [make_block_comments op cl comments] returns a comment string.
+    Each element in [comments] is a line of comment.
+    [op] is the opening string of a block comment.
+    [cl] is the closing string of a block comment. *)
+
+val rcons_comments_option : string list option -> string -> string list
+(** Append a comment *)
+
+val append_comments_option : string list option -> string list -> string list
+(** Append comments *)

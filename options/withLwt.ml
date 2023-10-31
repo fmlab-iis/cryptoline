@@ -5,7 +5,7 @@ let unix cmd = Lwt_unix.system cmd
 
 let trace msg =
   if !debug then
-    let%lwt _ = unix ("echo \"" ^ msg ^ "\n\" >> " ^ !logfile) in
+    let%lwt _ = unix ("echo \"" ^ msg ^ "\" >> " ^ !logfile) in
     Lwt.return()
   else
     Lwt.return()

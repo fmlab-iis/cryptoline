@@ -2,23 +2,32 @@ open Options.Std
 open Options.WithLwt
 open Common
 open Utils
+open Utils.Std
 
-let smtlib2_write_input ifile es =
+let smtlib2_write_input ?comments ifile es =
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
   let input_text = smtlib2_imp_check_sat es in
+  let%lwt _ =
+    if !debug then let comments = Option.value (Option.map (make_line_comments ";") comments) ~default:"" in
+                   Lwt_io.write ch comments
+    else Lwt.return_unit in
   let%lwt _ = Lwt_io.write ch input_text in
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let btor_write_input m ifile es =
+let btor_write_input ?comments m ifile es =
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
   let input_text = btor_imp_check_sat m es in
+  let%lwt _ =
+    if !debug then let comments = Option.value (Option.map (make_line_comments ";") comments) ~default:"" in
+                   Lwt_io.write ch comments
+    else Lwt.return_unit in
   let%lwt _ = Lwt_io.write ch input_text in
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
@@ -63,16 +72,17 @@ let read_smt_output ofile _errfile =
   else if res = "unknown" then Lwt.return Unknown
   else failwith ("Unknown result from the SMT solver: " ^ res)
 
-let solve_simp ?timeout:timeout ?(solver=(!range_solver)) ?(header=[]) fs =
+let solve_simp ?comments ?timeout:timeout ?(solver=(!range_solver)) ?(header=[]) fs =
   let ifile = tmpfile "inputqfbv_" (if !use_btor then ".btor" else ".smt2") in
   let ofile = tmpfile "outputqfbv_" ".log" in
   let errfile = tmpfile "errorqfbv_" ".log" in
   let res =
     try
+      let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
       let%lwt _ =
         if !use_btor
-        then btor_write_input (new btor_manager) ifile fs
-        else smtlib2_write_input ifile fs in
+        then btor_write_input ~comments (new btor_manager) ifile fs
+        else smtlib2_write_input ~comments ifile fs in
       let%lwt _ = run_smt_solver ?timeout:timeout ~solver:solver header ifile ofile errfile in
       let%lwt res = read_smt_output ofile errfile in
       let%lwt _ = cleanup_lwt [ifile; ofile; errfile] in
