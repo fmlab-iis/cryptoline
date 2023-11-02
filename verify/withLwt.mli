@@ -17,6 +17,11 @@ val verify_safety_conditions :
     written to input files for external solvers if {!Options.Std.debug}
     is enabled. *)
 
+val verify_safety_lwt :
+  ?comments:(string list) -> Ast.Cryptoline.spec ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
+(** Verify safety conditions of a specification. *)
+
 val verify_eassert :
   Common.var_gen -> Ast.Cryptoline.spec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
@@ -57,12 +62,17 @@ val verify_rspec_cli : Ast.Cryptoline.rspec ->
 (** [verify_rspec_cli s o] parallelly verifies the range specification [s]
     in SSA. *)
 
-val verify_safety_cli : ?comments:(string list) -> int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> bool * int
-(** [verify_safety_cli ?comments i f p] parallelly verifies the safety conditions of the
+val verify_safety_conditions_cli : ?comments:(string list) -> int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> bool * int
+(** [verify_safety_conditions_cli ?comments i f p] parallelly verifies the safety conditions of the
     program [p] in SSA under the precondition [f]. The first safety condition in
     [p] is numbered by [i]. This function returns a pair [(b, j)] where [b]
     indicates if the safety conditions in [p] are successfully verified and
     [j] denotes the ID of the next safety condition. *)
+
+val verify_safety_cli :
+  ?comments:(string list) -> Ast.Cryptoline.spec ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
+(** Verify safety conditions of a specification. *)
 
 val verify_eassert_cli : Ast.Cryptoline.spec -> bool
 (** [verify_eassert_cli s] parallelly verifies all algebraic assertions of the

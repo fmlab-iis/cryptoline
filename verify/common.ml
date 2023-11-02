@@ -1937,6 +1937,21 @@ let safety_assumptions f p safety_cond hashopt =
     else (f, p) in
   (bexp_rbexp f)::(bexp_program p)
 
+let bexp_program_safe_numbered_conds sid f p hashopt =
+  let add_ids id (i, cond) = (id + sid, i, cond) in
+  let bexp_program_safe_conds' p =
+    let rec helper res_rev prefix_rev p =
+      match p with
+      | [] -> List.rev res_rev
+      | i::p -> let q = bexp_instr_safe i in
+                if q = True then helper res_rev (i::prefix_rev) p
+                else let fp = safety_assumptions f (List.rev prefix_rev) q hashopt in
+                     helper ((i, rcons fp q)::res_rev) (i::prefix_rev) p in
+    helper [] [] p in
+  let conds = bexp_program_safe_conds' p |> List.mapi add_ids in
+  let next_sid = sid + List.length conds in
+  (next_sid, conds)
+
 
 (*
  * Convert `eeqmod e1 e2 [m1; m2; ...; mn]` to `e1 - e2 = k1 * m1 + k2 * m2 + ... + kn * mn`
@@ -2130,9 +2145,6 @@ let rewrite_poly_spec vgen ps =
                                              pextra = [] }) in
   let (vgen, _, ps) = poly_spec_elim_eand_prog ps |> poly_spec_elim_eqmod vgen in
   (vgen, do_rewrite (add_varsets (split_eand ps.ppre), add_varsets ps.pprog, add_varset ps.ppost))
-
-
-(* lala *)
 
 
 (** For redlog *)

@@ -17,9 +17,9 @@ let parse_action str =
   else if str = "prspec" then action := ParseRSpec
   else failwith("Unknown command: " ^ str)
 
-let instr_index = ref 0
+let instr_index = ref (-1)
 
-let id = ref 0
+let id = ref (-1)
 
 let args =
   [
@@ -77,14 +77,22 @@ let anon file =
      let comments = Utils.Std.rcons comments ("Timeout: " ^ string_of_int !Options.Std.incremental_safety_timeout) in
      let spec = from_typecheck_rspec rspec in
      let spec = normalize_rspec spec in
-     (try
-        (match Verify.Std.verify_instruction_safety ~comments !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
-         | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
-         | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
-         | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
-         | _ -> failwith "Unfinished tasks. Should not happen!")
-      with Utils.Tasks.TimeoutException ->
-        print_endline "timeout")
+     (* Verify the safety of an instruction if its index is given.
+        Otherwise verify the safety of the program as a whole. *)
+     if !instr_index >= 0 then
+       try
+         begin
+           match Verify.Std.verify_instruction_safety ~comments !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
+           | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
+           | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
+           | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
+           | _ -> failwith "Unfinished tasks. Should not happen!"
+         end
+       with Utils.Tasks.TimeoutException ->
+             print_endline "timeout"
+     else
+       if fst (Verify.Std.verify_safety_all_seq ~comments !id spec None) then print_endline "unsat"
+       else print_endline "sat"
   | ParseESpec ->
      let spec = from_typecheck_espec (snd (espec_from_file file)) in
      print_endline (string_of_espec spec)

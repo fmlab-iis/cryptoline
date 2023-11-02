@@ -143,6 +143,21 @@ val bexp_program_safe_conds :
            are not counted) with safety condition [ei]
  *)
 
+val bexp_program_safe_numbered_conds :
+  int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
+  VS.t Ast.Cryptoline.atomhash_t option ->
+  int * (int * Ast.Cryptoline.instr * Qfbv.Common.bexp list) list
+(**
+   [bexp_program_safe_conds_ids id f p hashopt] converts the safety of the
+   program [p] under the precondition [f] to numbered QF_BV predicates.
+   The number starts with [id].
+   @return [(next_id, (id1, instr1, es1); ...; (idn, instrn, esn))] where
+           [next_id] is ID for the next QF_BV predicates; [instri] is the
+           [idi]-th instruction (instructions that do not have safety conditions
+           are not counted) with safety condition [esi] ([esi] is ready for
+           [solve_simp])
+ *)
+
 val bexp_program_safe : Ast.Cryptoline.instr list -> Qfbv.Common.bexp
 (** Convert the safety of a program to a QF_BV predicate, which is the
     conjunction of the safety conditions returned by

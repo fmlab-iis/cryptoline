@@ -161,7 +161,7 @@ let usage = "Usage: cv OPTIONS FILE\n"
 
 let parse_program file =
   let t1 = Unix.gettimeofday() in
-  let _ = vprint ("Parsing Cryptoline file: ") in
+  let _ = vprint ("Parsing Cryptoline file:\t") in
   try
     let p = program_from_file file in
     let t2 = Unix.gettimeofday() in
@@ -237,13 +237,13 @@ let anon file =
                    let _ = vprintln_title ("Procedure " ^ fn) in
                    let r = Verify.Std.verify_spec s in
                    let lt2 = Unix.gettimeofday() in
-                   let _ = vprintln ("Procedure verification:\t\t\t"
+                   let _ = vprintln ("Procedure verification:\t\t\t\t"
                                      ^ (if r then "[OK]\t" else "[FAILED]") ^ "\t"
                                      ^ string_of_running_time lt1 lt2) in
                    r && res) specs true in
      let t2 = Unix.gettimeofday() in
      let _ = vprintln_title "Summary" in
-     let _ = print_endline ("Verification result:\t\t\t"
+     let _ = print_endline ("Verification result:\t\t\t\t"
                             ^ (if res then "[OK]\t" else "[FAILED]") ^ "\t"
                             ^ string_of_running_time t1 t2) in
      if res then exit 0 else exit 1

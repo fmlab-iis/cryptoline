@@ -34,6 +34,11 @@ val finish_pending : ('r, 'o) delivered_helper -> 'r -> 'o Lwt.t list -> 'r
     updates the result by the delivered helper [helper] based on the current
     result [res] and the outputs of the promises, and returns the final result. *)
 
+val finish_pending_with_timedouts : ('r * 't list) continue_helper -> (('r * 't list), 'o) delivered_helper -> ('t list -> (unit -> 'o Lwt.t) list) -> ('r * 't list) -> 'o Lwt.t list -> 'r
+(** [finish_pending_with_timedouts chelper dhelper promise_maker (res, timedouts) pending]
+    reruns all timed-out cases [timedouts] and runs all pending promises [pending] until
+    there is neither timed-out cases nor pending promise. *)
+
 val add_to_pending : 'r continue_helper -> ('r, 'o) delivered_helper -> 'r -> 'o Lwt.t list -> 'o task list -> 'r * 'o Lwt.t list
 (** [add_to_pending chelper dhelper res pending tasks] inserts promises
     generated from [tasks] to the pending promises [pending] and returns

@@ -23,6 +23,26 @@ let apply_to_cuts_lwt ids f delivered_helper res pending ss =
                   helper (i+1) (res, pending) tl in
   helper 0 (res, pending) ss
 
+(*
+ * This is same as apply_to_cuts_lwt except that finish_pending is not invoked
+ * after all cuts are processed. It is the caller's responsibility to finish
+ * all pending tasks.
+*)
+let apply_to_cuts_lwt_unfinished ids f res pending ss =
+  let ids = ids |> Option.map Hashset.to_list |> Option.map (List.rev_map (normalize_index (List.length ss))) |> Option.map List.rev |> Option.map Hashset.of_list in
+  let rec helper i (res, pending) ss =
+    match ss with
+    | [] -> (res, pending)
+    | hd::tl -> if Options.Std.mem_hashset_opt ids i then
+                  let cut_header = ("=== Cut #" ^ string_of_int i ^ " ===") in
+                  let (res, pending) = List.fold_left (f i [cut_header]) (res, pending) hd in
+                  helper (i+1) (res, pending) tl
+                else
+                  let _ = safe_trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+                  helper (i+1) (res, pending) tl in
+  helper 0 (res, pending) ss
+
+
 (* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_conditions ?comments timeout f prog qs hashopt =
   let mk_promise (id, i, q, p) =
@@ -40,8 +60,8 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
         Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
     Lwt.return res in
   let delivered_helper r (id, i, q, ret_str, ret) =
-    let _ = vprint ("\t\t Safety condition #" ^
-                      string_of_int id ^ "\t") in
+    let _ = vprint ("\t\tSafety condition #" ^
+                      string_of_int id ^ "\t\t") in
     let _ = vprintln ret_str in
     let add_unsolved q res =
       match res with
@@ -81,6 +101,73 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
   let (res, _, _, pending) =
     List.fold_left fold_fun (Solved Unsat, [], prog, []) qs in
   finish_pending delivered_helper res pending
+
+
+(*
+ * Verify safety of a specification instruction by instruction parallelly.
+ * A single predicate is created for the safety of each instruction.
+ *)
+let verify_safety_inc_lwt ?comments s hashopt =
+  let continue_helper ((res, _), _) = res in
+  let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, i, q, res_str, timedout, safe) =
+    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout * 2, header, id, i, q)::rtimedouts else rtimedouts) in
+  let make_promise (cid, timeout, header, id, i, q) () =
+    let%lwt res =
+      try%lwt
+            match%lwt solve_simp
+                    ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid ;
+                                                                 "Safety condition: #" ^ string_of_int id;
+                                                                 "Instruction: " ^ string_of_instr i ])
+                    ~timeout ~header q with
+            | Sat -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+            | Unknown -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+            | Unsat -> Lwt.return (cid, timeout, header, id, i, q, "[OK]", false, true)
+      with TimeoutException ->
+        Lwt.return (cid, timeout, header, id, i, q, "[TIMEOUT]", true, true) in
+    Lwt.return res in
+  let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
+    if res then let (next_sid, conds) = bexp_program_safe_numbered_conds sid s.rspre s.rsprog hashopt in
+                let promises_rev = List.fold_left (
+                                       fun promises_rev (id, i, q) ->
+                                       if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id
+                                       then let promise = make_promise (cid, !incremental_safety_timeout, header, id, i, q) in
+                                            promise::promises_rev
+                                       else promises_rev
+                                     ) [] conds in
+                let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length conds) sid (next_sid - 1))
+                        else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
+                add_to_pending continue_helper delivered_helper ((res, next_sid), timedouts) pending (List.rev promises_rev)
+    else (((res, sid), timedouts), pending) in
+  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished !verify_scuts verify_cut ((true, 0), []) [] (cut_safety (rspec_of_spec s)) in
+  let (res, _) = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) ((res, sid), List.rev timedouts_rev) pending in
+  res
+
+(*
+ * Verify safety of a specification cut by cut parallelly.
+ * A single predicate is created for the safety of each cut.
+ *)
+let verify_safety_all_lwt ?comments s hashopt =
+  let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
+  let verify_cut cid header ((res, sid), pending) (_, s) =
+    if res then if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids sid
+                then let comments = append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                                                                      "Target: all instructions in this cut" ] in
+                     let promise () = let g = bexp_program_safe s.rsprog in
+                                      let fp = safety_assumptions s.rspre s.rsprog g hashopt in
+                                      let%lwt res = solve_simp ~comments ~header (fp@[g]) in
+                                      Lwt.return (res = Unsat) in
+                     add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
+                else ((res, sid + 1), pending)
+    else ((res, sid), pending) in
+  let (res, _) = apply_to_cuts_lwt !verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
+  res
+
+(* Verify safety of a specification parallelly *)
+let verify_safety_lwt ?comments s hashopt =
+  if !incremental_safety then verify_safety_inc_lwt ?comments s hashopt
+  else verify_safety_all_lwt ?comments s hashopt
+
 
 let write_header_to_log header =
    Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
@@ -717,7 +804,7 @@ type cli_round_result =
  * idx: the index of the instruction in the program containing the instruction
  * ifile: the range specification containing the program
  *)
-let run_cli_vsafety id timeout idx instr ifile =
+let run_cli_visafety id timeout idx instr ifile =
   let ofile = tmpfile "safety_output_" "" in
   let lfile = tmpfile "safety_log_" "" in
   (* Run CLI *)
@@ -774,14 +861,87 @@ let run_cli_vsafety id timeout idx instr ifile =
   let%lwt _ = cleanup_lwt [ofile; lfile] in
   (* Return the result *)
   Lwt.return (match line with
-              | "sat" -> (id, timeout, idx, instr, "[FAILED]", Solved Sat)
-              | "unsat" -> (id, timeout, idx, instr, "[OK]", Solved Unsat)
-              | "unknown" -> (id, timeout, idx, instr, "[FAILED]", Solved Unknown)
-              | "timeout" -> (id, timeout, idx, instr, "[TIMEOUT]", Unfinished [(id, timeout, idx, instr)])
+              | "sat" -> (id, timeout, idx, instr, ifile, "[FAILED]", false, false)
+              | "unsat" -> (id, timeout, idx, instr, ifile, "[OK]", false, true)
+              | "unknown" -> (id, timeout, idx, instr, ifile, "[FAILED]", false, false)
+              | "timeout" -> (id, timeout, idx, instr, ifile, "[TIMEOUT]", true, true)
+              | _ -> failwith ("Unknown result from the CLI: " ^ line))
+
+let run_cli_visafety_with_cut cid id timeout idx instr ifile =
+  let%lwt (id, timeout, idx, instr, ifile, ret_str, timedout, safe) = run_cli_visafety id timeout idx instr ifile in
+  Lwt.return (cid, id, timeout, idx, instr, ifile, ret_str, timedout, safe)
+
+
+(*
+ * Run CLI to verify the safety of a cut as a single predicate.
+ * id: the ID of this safety verification
+ * s: a cut
+ *)
+let run_cli_vsafety ?comments id s =
+  let ofile = tmpfile "safety_output_" "" in
+  let lfile = tmpfile "safety_log_" "" in
+  let ifile = tmpfile "safety_input_" "" in
+  (* Write input *)
+  let ch = open_out ifile in
+  let _ = if !debug then
+            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+            output_string ch comments in
+  let _ = output_string ch (string_of_rspec ~typ:true {rspre = s.rspre; rsprog = s.rsprog; rspost = [(Rtrue, [])]}); close_out ch in
+  (* Run CLI *)
+  let cmd = String.concat " "
+                          [!cli_path;
+                           if !debug then "-debug" else "";
+                           (match !tmpdir with
+                            | None -> ""
+                            | Some d -> "-tmpdir \"" ^ d ^ "\"");
+                           if !keep_temp_files then "-keep" else "";
+                           "-c vsafety";
+                           "-id " ^ string_of_int id;
+                           ("-qfbv_solver " ^ !Options.Std.range_solver);
+                           (if !Options.Std.range_solver_args = "" then ""
+                            else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
+                           (if !Options.Std.use_btor then "-btor"
+                            else "");
+                           (if !Options.Std.apply_slicing then "-slicing"
+                            else "");
+                           (if !Options.Std.rename_local then "-rename_local"
+                            else "");
+                           "-o \"" ^ lfile ^ "\"";
+                           "\"" ^ ifile ^ "\"";
+                           "1> \"" ^ ofile ^ "\" 2>&1"
+                          ] in
+  let%lwt _ = Options.WithLwt.unix cmd in
+  (* Read the output of CLI *)
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt line = try%lwt Lwt_io.read_line ch
+                 with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
+  let line = String.trim line in
+  let%lwt _ = Lwt_io.close ch in
+  (* Write to the log file *)
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = Options.WithLwt.unix ("cat \"" ^ lfile ^ "\" >> \"" ^ !Options.Std.logfile ^ "\"") in
+  let _ =
+    (* Log abnormal outputs *)
+    if not (List.mem line ["sat"; "unsat"; "unknown"; "timeout"]) then
+      let _ = Options.WithLwt.trace ("Got abnormal output:\n"
+                                     ^ line) in
+      let _ = Options.WithLwt.trace_file ifile in
+      ()
+  in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  (* Remove temporary files *)
+  let%lwt _ = cleanup_lwt [ofile; lfile] in
+  (* Return the result *)
+  Lwt.return (match line with
+              | "sat" -> false
+              | "unsat" -> true
+              | "unknown" -> false
+              | "timeout" -> assert false
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_cli ?comments sid f p =
+let verify_safety_conditions_cli ?comments sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
   let _ = if !debug then
@@ -793,19 +953,15 @@ let verify_safety_cli ?comments sid f p =
     | Solved Unsat -> Unfinished [q]
     | Unfinished unsolved -> Unfinished (q::unsolved)
     | _ -> assert false in
-  let delivered_helper r (id, timeout, idx, i, ret_str, ret) =
-    let _ = vprint ("\t\t Safety condition #" ^ string_of_int id ^ "\t") in
-    let _ = vprintln (ret_str ^ (match ret with Unfinished _ -> " timeout = " ^ string_of_int timeout | _ -> "")) in
+  let delivered_helper r (id, timeout, idx, i, _ifile, ret_str, timedout, safe) =
+    let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
+    let _ = vprintln (ret_str ^ (if timedout then " timeout = " ^ string_of_int timeout else "")) in
     match r with
     | Solved Sat | Solved Unknown -> r
     | _ ->
-       match ret with
-       | Solved Sat | Solved Unknown -> ret
-       | Solved Unsat -> r
-       | Unfinished qs ->
-          let _ = assert (List.length qs = 1) in
-          (* Increase timeout for unsolved tasks *)
-          add_unsolved (id, timeout * 2, idx, i) r in
+       if not safe then Solved Sat
+       else if timedout then add_unsolved (id, timeout * 2, idx, i) r
+       else r in
   let rec verify_round qs (res, pending) =
     match res with
       Solved Sat
@@ -815,7 +971,7 @@ let verify_safety_cli ?comments sid f p =
          match qs with
          | [] -> (res, pending)
          | (id, timeout, idx, i)::tl ->
-            let promise = run_cli_vsafety id timeout idx i ifile in
+            let promise = run_cli_visafety id timeout idx i ifile in
             verify_round tl (res, promise::pending)
        else
          let (res', pending') = work_on_pending delivered_helper res pending in
@@ -835,6 +991,7 @@ let verify_safety_cli ?comments sid f p =
   let res = verify_rec (all_safety_conds |> List.filter in_verify_safety_ids |> List.rev) (Solved Unsat, []) in
   let _ = cleanup [ifile] in
   (res, sid + List.length all_safety_conds)
+
 
 (*
  * Verify a range or an algebraic specification using CLI to run verification tasks.
@@ -1104,3 +1261,57 @@ let verify_rassert_cli s =
                                 "Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
     (fun _ _ cut_header -> cut_header)
     split_rspec_post cut_rassert !verify_racuts !Options.Std.verify_rassert_ids
+
+let verify_safety_inc_cli ?comments s _hashopt =
+  let continue_helper ((res, _, _), _) = res in
+  let delivered_helper ((rsafe, rsid, rifiles), rtimedouts) (cid, id, timeout, idx, i, ifile, res_str, timedout, safe) =
+    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
+    ((rsafe && safe, rsid, rifiles), (if timedout then (cid, id, timeout * 2, idx, i, ifile)::rtimedouts else rtimedouts)) in
+  let make_promise (cid, id, timeout, idx, i, ifile) () = run_cli_visafety_with_cut cid id timeout idx i ifile in
+  let verify_cut cid _header (((res, sid, ifiles), timedouts), pending) (_, s) =
+    if res then
+      let ifile =
+        let ifile = tmpfile "safety_input_" "" in
+        let ch = open_out ifile in
+        let _ = if !debug then
+                  let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+                  output_string ch comments in
+        let _ = output_string ch (string_of_rspec ~typ:true {rspre = s.rspre; rsprog = s.rsprog; rspost = [(Rtrue, [])]}); close_out ch in
+        ifile in
+      let add_instr_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
+      let filter_out_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
+      let add_cond_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (sid + id, timeout, idx, i, ifile)) qs in
+      let in_verify_safety_ids (id, _, _, _, _) = mem_hashset_opt !Options.Std.verify_safety_ids id in
+      let conds = add_instr_index s.rsprog |> filter_out_true |> add_cond_id |> List.filter in_verify_safety_ids in
+      let next_sid = sid + List.length conds in
+      let promises_rev = List.fold_left (
+                             fun promises_rev (id, timeout, idx, i, ifile) ->
+                             let promise = make_promise (cid, id, timeout, idx, i, ifile) in
+                             promise::promises_rev
+                           ) [] conds in
+      let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length conds) sid (next_sid - 1))
+              else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
+      add_to_pending continue_helper delivered_helper ((res, next_sid, ifile::ifiles), timedouts) pending (List.rev promises_rev)
+    else (((res, sid, ifiles), timedouts), pending) in
+  let (((res, sid, ifiles), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished !verify_scuts verify_cut ((true, 0, []), []) [] (cut_safety (rspec_of_spec s)) in
+  let (res, _, _) = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) ((res, sid, ifiles), List.rev timedouts_rev) pending in
+  let _ = cleanup_lwt ifiles in
+  res
+
+let verify_safety_all_cli ?comments s _hashopt =
+  let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
+  let verify_cut cid _header ((res, sid), pending) (_, s) =
+    if res then if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids sid
+                then let comments = append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                                                                      "Target: all instructions in this cut" ] in
+                     let promise () = run_cli_vsafety ~comments sid s in
+                     add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
+                else ((res, sid + 1), pending)
+    else ((res, sid), pending) in
+  let (res, _) = apply_to_cuts_lwt !verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
+  res
+
+(* verify safety parallelly by CLI *)
+let verify_safety_cli ?comments s hashopt =
+  if !incremental_safety then verify_safety_inc_cli ?comments s hashopt
+  else verify_safety_all_cli ?comments s hashopt

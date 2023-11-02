@@ -382,14 +382,14 @@ let apply_cec_lwt aig1 aig2 =
 let chk_equ_for_out_grp s1 s2 vs1 vs2 i (outs1, outs2) =
   let _ = trace (Printf.sprintf "===== Output Group #%d =====" i) in
   let _ = vprintln (Printf.sprintf "Output group #%d:\t\t" i) in
-  let _ = vprint ("  Converting programs to AIG:\t\t") in
+  let _ = vprint ("  Converting programs to AIG:\t\t\t") in
   let t1 = Unix.gettimeofday() in
   let (aig1, aig2) = prepare_aig s1 s2 vs1 vs2 outs1 outs2 in
   let t2 = Unix.gettimeofday() in
   let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
   (* Checking equivalence *)
   let _ = trace ("=== Checking equivalence ===") in
-  let _ = vprint ("  Checking equivalence:\t\t\t") in
+  let _ = vprint ("  Checking equivalence:\t\t\t\t") in
   let _ = flush stdout in
   let t1 = Unix.gettimeofday() in
   let res = apply_cec aig1 aig2 in
@@ -404,7 +404,7 @@ let chk_equ_for_out_grp_task s1 s2 vs1 vs2 i (outs1, outs2) =
             let t1 = Unix.gettimeofday() in
             let%lwt r = apply_cec_lwt aig1 aig2 in
             let t2 = Unix.gettimeofday() in
-            let _ = vprintln (Printf.sprintf "Equivalence of output group #%d:\t\t%s%s" i (if r then "[OK]\t\t" else "[FAILED]\t") (string_of_running_time t1 t2)) in
+            let _ = vprintln (Printf.sprintf "Equivalence of output group #%d:\t\t\t%s%s" i (if r then "[OK]\t\t" else "[FAILED]\t") (string_of_running_time t1 t2)) in
             Lwt.return r
 
 let check_equivalence_seq s1 s2 vs1 vs2 groups1 groups2 =
@@ -444,7 +444,7 @@ let check_equivalence_file file1 file2 =
   let res = if !jobs > 1 then check_equivalence_lwt s1 s2 ivs1 ivs2 groups1 groups2
             else check_equivalence_seq s1 s2 ivs1 ivs2 groups1 groups2 in
   let t2 = Unix.gettimeofday() in
-  print_endline (Printf.sprintf "Final result:\t\t\t\t%s%s" (if res then "[OK]\t\t" else "[FAILED]\t") (string_of_running_time t1 t2))
+  print_endline (Printf.sprintf "Final result:\t\t\t\t\t%s%s" (if res then "[OK]\t\t" else "[FAILED]\t") (string_of_running_time t1 t2))
 
 (** Main function *)
 

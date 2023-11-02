@@ -68,6 +68,25 @@ let add_to_pending continue_helper delivered_helper res pending tasks =
       (res, pending) in
   helper res pending tasks
 
+let finish_pending_with_timedouts continue_helper delivered_helper make_promise (res, timedouts) pending =
+  let rec verify_timedouts (res, timedouts) pending =
+    if continue_helper (res, timedouts) then match timedouts with
+                                             | [] -> verify_pending res pending
+                                             | _ -> let promises = make_promise timedouts in
+                                                    let ((res, timedouts), pending) = add_to_pending continue_helper delivered_helper (res, []) pending promises in
+                                                    verify_timedouts (res, timedouts) pending
+    else res
+  and verify_pending res pending =
+    if continue_helper (res, []) then match pending with
+                                             | [] -> res
+                                             | _ -> let ((res, timedouts), pending) = work_on_pending delivered_helper (res, []) pending in
+                                                    (match timedouts with
+                                                     | [] -> verify_pending res pending
+                                                     | _ -> verify_timedouts (res, timedouts) pending)
+    else res
+  in
+  verify_timedouts (res, timedouts) pending
+
 let exec ?timeout ?env ?cwd ?stdin ?stdout ?stderr cmd =
   let%lwt st =
     Lwt_process.exec

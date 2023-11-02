@@ -8,9 +8,7 @@ open Ast.Cryptoline
 
 val verify_safety : spec -> VS.t atomhash_t option -> bool
 (** [verify_safety s o] is [true] if the safety conditions of the specification
-    [s] in SSA are verified successfully. Depending on {!Options.Std.jobs},
-    either {!verify_safety_conditions} or {!WithLwt.verify_safety_conditions}
-    is invoked. *)
+    [s] in SSA are verified successfully. *)
 
 val verify_spec : spec -> bool
 (** [verify_spec s] is [true] if the specification [s] is valid. SSA
@@ -34,6 +32,12 @@ val verify_safety_conditions :
     under the precondition [f]. [t] is the timeout.
     [comments] are comments written to input files for external solvers if
     {!Options.Std.debug} is enabled. *)
+
+val verify_safety_all_seq :
+  ?comments:(string list) -> int -> rspec ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
+  bool * int
+(** Verify safety condition of a whole specification containing no cut. *)
 
 val verify_eassert : Common.var_gen -> spec -> VS.t atomhash_t option -> bool
 (** [verify_eassert g s o] sequentially verifies all algebraic assertions of the

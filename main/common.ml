@@ -52,6 +52,7 @@ let args_verifier =
     ("-implicit-const-conversion", Set implicit_const_conversion, mk_arg_desc([""; "Implicitly convert constants to fit into their types"]));
     ("-isafety", Set incremental_safety, mk_arg_desc(["  Verify program safety incrementally."]));
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), mk_arg_desc(["INT"; "Set initial timeout for incremental verification of program safety."]));
+    ("-isafety-across-cuts", Set cross_cuts, mk_arg_desc(["  Verify safety conditions across cuts."]));
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_solver := Macaulay2),
      mk_arg_desc(["PATH"; "Use Macaulay2 at the specified path."]));
     ("-macaulay2_path", String (fun str -> macaulay2_path := str),
@@ -99,7 +100,7 @@ let args_verifier =
 let parse_and_check_all file =
   let parse_specs file =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Parsing CryptoLine file:\t\t") in
+    let _ = vprint ("Parsing CryptoLine file:\t\t\t") in
     try
       let specs = specs_from_file file in
       let t2 = Unix.gettimeofday() in
@@ -111,7 +112,7 @@ let parse_and_check_all file =
       raise ex in
   let check_well_formedness specs =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Checking well-formedness:\t\t") in
+    let _ = vprint ("Checking well-formedness:\t\t\t") in
     let ropt = SM.fold (
                    fun _ ((ivs, _), s) ropt ->
                    match ropt with
@@ -135,7 +136,7 @@ let parse_and_check_all file =
 let parse_and_check ?(proc = main_proc_name) file =
   let parse_spec file =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Parsing CryptoLine file:\t\t") in
+    let _ = vprint ("Parsing CryptoLine file:\t\t\t") in
     try
       let specs = specs_from_file file in
       let spec =
@@ -152,7 +153,7 @@ let parse_and_check ?(proc = main_proc_name) file =
       raise ex in
   let check_well_formedness vs s =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Checking well-formedness:\t\t") in
+    let _ = vprint ("Checking well-formedness:\t\t\t") in
     let ropt = illformed_spec_reason vs s in
     let wf = ropt = None in
     let t2 = Unix.gettimeofday() in

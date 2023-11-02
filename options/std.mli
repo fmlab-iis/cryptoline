@@ -71,6 +71,9 @@ val incremental_safety_timeout : int ref
     range solver will verify the safety condition again with an increased
     timeout. *)
 
+val cross_cuts : bool ref
+(** [true] to verify safety conditions of next cuts whenever there are free job workers *)
+
 val jobs : int ref
 (** number of concurrent jobs to be used *)
 
