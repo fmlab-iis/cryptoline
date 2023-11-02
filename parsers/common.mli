@@ -305,10 +305,13 @@ type instr_t =
   | `EXTRACT of lval_vec_t * int list * atom_vec_t list
   | `VBROADCAST of lval_vec_t * Z.t contextual * atom_vec_t
   | `SHL of lval_t * atom_t * atom_t
+  | `VSHL of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHLS of lval_t * lval_t * atom_t * Z.t contextual
   | `SHR of lval_t * atom_t * atom_t
+  | `VSHR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHRS of lval_t * lval_t * atom_t * Z.t contextual
   | `SAR of lval_t * atom_t * atom_t
+  | `VSAR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SARS of lval_t * lval_t * atom_t * Z.t contextual
   | `CSHL of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHLS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual

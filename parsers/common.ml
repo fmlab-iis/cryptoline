@@ -347,10 +347,13 @@ type instr_t =
   | `EXTRACT of lval_vec_t * int list * atom_vec_t list
   | `VBROADCAST of lval_vec_t * Z.t contextual * atom_vec_t
   | `SHL of lval_t * atom_t * atom_t
+  | `VSHL of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHLS of lval_t * lval_t * atom_t * Z.t contextual
   | `SHR of lval_t * atom_t * atom_t
+  | `VSHR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHRS of lval_t * lval_t * atom_t * Z.t contextual
   | `SAR of lval_t * atom_t * atom_t
+  | `VSAR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SARS of lval_t * lval_t * atom_t * Z.t contextual
   | `CSHL of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHLS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual
@@ -2162,14 +2165,20 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_vbroadcast_at ctx lno dest num src
   | `SHL (`LVPLAIN dest, src, num) ->
      parse_ishl_at ctx lno dest src num
+  | `VSHL (dest, src, num) ->
+     unpack_vinstr_12 parse_ishl_at ctx lno dest src num
   | `SHLS (`LVPLAIN lost, `LVPLAIN dest, src, num) ->
      parse_ishls_at ctx lno lost dest src num
   | `SHR (`LVPLAIN dest, src, num) ->
      parse_ishr_at ctx lno dest src num
+  | `VSHR (dest, src, num) ->
+     unpack_vinstr_12 parse_ishr_at ctx lno dest src num
   | `SHRS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
      parse_ishrs_at ctx lno dest lost src num
   | `SAR (`LVPLAIN dest, src, num) ->
      parse_isar_at ctx lno dest src num
+  | `VSAR (dest, src, num) ->
+     unpack_vinstr_12 parse_isar_at ctx lno dest src num
   | `SARS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
      parse_isars_at ctx lno dest lost src num
   | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
