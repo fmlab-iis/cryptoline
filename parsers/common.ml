@@ -1720,10 +1720,11 @@ let unpack_vinstr_1 mapper ctx lno dest_tok =
   let iss = List.rev (List.rev_map map_func dest_names) in
   List.concat iss
 
-let unpack_vinstr_11 mapper ctx lno dest_tok src_tok =
+let unpack_vinstr_11 ?(fix_dst_ty=true) mapper ctx lno dest_tok src_tok =
   let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
   let src_vectyp = (relmtyp, List.length src) in
-  let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_vectyp) in
+  let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok
+                          (if fix_dst_ty then Some src_vectyp else None) in
 
   let _ = if (List.length dest_names) <> (List.length src) then
             raise_at_line lno "Destination vector should be as long as the source vector."
@@ -1739,13 +1740,16 @@ let unpack_vinstr_11 mapper ctx lno dest_tok src_tok =
   let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
   List.concat (aliasing_instrs::iss)
 
-let unpack_vinstr_12 mapper ctx lno dest_tok src1_tok src2_tok =
+let unpack_vinstr_12 ?(fix_dst_ty=true) mapper ctx lno 
+      dest_tok src1_tok src2_tok =
   let vatm1 = resolve_vec_with ctx lno src1_tok in
   let vatm2 = resolve_vec_with ctx lno src2_tok in
   let (src_vectyp, src1, src2) = unify_vec_srcs_at lno vatm1 vatm2 in
   let (relmtyp, srclen) = src_vectyp in
 
-  let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok (Some src_vectyp) in
+  let (dest_typ, dest_names) =
+    resolve_lv_vec_with ctx lno dest_tok
+      (if fix_dst_ty then Some src_vectyp else None) in
   let _ = if (List.length dest_names) <> srclen then
             raise_at_line lno "Destination vector should be as long as the source vector."
           else () in
@@ -2382,19 +2386,19 @@ let recognize_instr_at ctx lno (instr : instr_t) =
   | `AND (`LVPLAIN dest, src1, src2) ->
      parse_and_at ctx lno dest src1 src2
   | `VAND (dest, src1, src2) ->
-     unpack_vinstr_12 parse_and_at ctx lno dest src1 src2
+     unpack_vinstr_12 ~fix_dst_ty:false parse_and_at ctx lno dest src1 src2
   | `OR (`LVPLAIN dest, src1, src2) ->
      parse_or_at ctx lno dest src1 src2
   | `VOR (dest, src1, src2) ->
-     unpack_vinstr_12 parse_or_at ctx lno dest src1 src2
+     unpack_vinstr_12 ~fix_dst_ty:false parse_or_at ctx lno dest src1 src2
   | `XOR (`LVPLAIN dest, src1, src2) ->
      parse_xor_at ctx lno dest src1 src2
   | `VXOR (dest, src1, src2) ->
-     unpack_vinstr_12 parse_xor_at ctx lno dest src1 src2
+     unpack_vinstr_12 ~fix_dst_ty:false parse_xor_at ctx lno dest src1 src2
   | `NOT (`LVPLAIN dest, src) ->
      parse_not_at ctx lno dest src
   | `VNOT (dest, src) ->
-     unpack_vinstr_11 parse_not_at ctx lno dest src
+     unpack_vinstr_11 ~fix_dst_ty:false parse_not_at ctx lno dest src
   | `CAST (optlv, `LVPLAIN dest, src) ->
      parse_cast_at ctx lno optlv dest src
   | `VCAST (optlv, dest, src) -> (

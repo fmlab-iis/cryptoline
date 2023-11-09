@@ -728,11 +728,11 @@ val parse_inline_at : (string -> (typ list * typ list -> atom list) contextual -
 val unpack_vinstr_1 : (lv_prim_t -> lined_program) lined contextual -> (lval_vec_t -> lined_program) lined contextual
 (** [unpack_vinstr_1 mapper ctx lno dst_tok] applies [mapper] applies a scalar instruction [mapper], that expects a destination variable, to vector elements *)
 
-val unpack_vinstr_11 : (lv_prim_t -> atom_t -> lined_program) lined contextual -> (lval_vec_t -> atom_vec_t -> lined_program) lined contextual
-(** [unpack_vinstr_11 mapper ctx lno dst_tok src_tok] applies a scalar instruction [mapper], that expects a destination variable and a source variable, to vector elements *)
+val unpack_vinstr_11 : ?fix_dst_ty:bool -> (lv_prim_t -> atom_t -> lined_program) lined contextual -> (lval_vec_t -> atom_vec_t -> lined_program) lined contextual
+(** [unpack_vinstr_11 fix_dst_ty mapper ctx lno dst_tok src_tok] applies a scalar instruction [mapper], that expects a destination variable and a source variable, to vector elements *)
 
-val unpack_vinstr_12 : (lv_prim_t -> atom_t -> atom_t -> lined_program) lined contextual -> (lval_vec_t -> atom_vec_t -> atom_vec_t -> lined_program) lined contextual
-(** [unpack_vinstr_12 mapper ctx lno dst_tok src1_tok src2_tok] applies a scalar instruction [mapper], that expects a destination variable and two source variables, to vector elements *)
+val unpack_vinstr_12 : ?fix_dst_ty:bool -> (lv_prim_t -> atom_t -> atom_t -> lined_program) lined contextual -> (lval_vec_t -> atom_vec_t -> atom_vec_t -> lined_program) lined contextual
+(** [unpack_vinstr_12 fix_dst_ty mapper ctx lno dst_tok src1_tok src2_tok] applies a scalar instruction [mapper], that expects a destination variable and two source variables, to vector elements *)
 
 val unpack_vinstr_1n2 : (lv_prim_t -> atom_t -> atom_t -> lined_program) lined contextual -> (lval_vec_t -> atom_vec_t -> atom_vec_t -> lined_program) lined contextual
 (** [unpack_vinstr_1n2 mapper ctx lno dst_tok src1_tok src2_tok] applies a scalar instruction [mapper], that expects a destination variable and two source variables, to vector elements.
