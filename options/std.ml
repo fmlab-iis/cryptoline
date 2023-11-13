@@ -145,7 +145,7 @@ let trace_file ?log:(lf=(!logfile)) file =
 
 let fail s = trace s; failwith s
 
-let string_of_running_time st ed = (Printf.sprintf "%f" (ed -. st)) ^ " seconds"
+let string_of_running_time st ed = (Printf.sprintf "%.4f" (ed -. st)) ^ " seconds"
 
 let vprint msg = if !verbose then print_string msg; flush stdout
 
