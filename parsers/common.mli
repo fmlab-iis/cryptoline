@@ -325,12 +325,15 @@ type instr_t =
   | `SHL of lval_t * atom_t * atom_t
   | `VSHL of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHLS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSHLS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `SHR of lval_t * atom_t * atom_t
   | `VSHR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHRS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSHRS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `SAR of lval_t * atom_t * atom_t
   | `VSAR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SARS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSARS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `CSHL of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHLS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHR of lval_t * lval_t * atom_t * atom_t * Z.t contextual

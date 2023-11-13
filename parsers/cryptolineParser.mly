@@ -141,16 +141,22 @@ instr:
   | SHL lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSHL ($2, $3, $4)) }
   | lval EQOP SHL atom atom                       { (get_line_start(), `SHL ($1, $4, $5)) }
   | SHLS lval lval atom const_exp_primary         { (get_line_start(), `SHLS ($2, $3, $4, $5)) }
+  | SHLS lval_v lval_v atom_v_primary const_exp_v_primary
+                                                  { (get_line_start(), `VSHLS ($2, $3, $4, $5)) }
   | lval lval EQOP SHLS atom const_exp_primary    { (get_line_start(), `SHLS ($1, $2, $5, $6)) }
   | SHR lval atom atom                            { (get_line_start(), `SHR ($2, $3, $4)) }
   | SHR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSHR ($2, $3, $4)) }
   | lval EQOP SHR atom atom                       { (get_line_start(), `SHR ($1, $4, $5)) }
   | SHRS lval lval atom const_exp_primary         { (get_line_start(), `SHRS ($2, $3, $4, $5)) }
+  | SHRS lval_v lval_v atom_v_primary const_exp_v_primary
+                                                  { (get_line_start(), `VSHRS ($2, $3, $4, $5)) }
   | lval lval EQOP SHRS atom const_exp_primary    { (get_line_start(), `SHRS ($1, $2, $5, $6)) }
   | SAR lval atom atom                            { (get_line_start(), `SAR ($2, $3, $4)) }
   | SAR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSAR ($2, $3, $4)) }
   | lval EQOP SAR atom atom                       { (get_line_start(), `SAR ($1, $4, $5)) }
   | SARS lval lval atom const_exp_primary         { (get_line_start(), `SARS ($2, $3, $4, $5)) }
+  | SARS lval_v lval_v atom_v_primary const_exp_v_primary
+                                                  { (get_line_start(), `VSARS ($2, $3, $4, $5)) }
   | lval lval EQOP SARS atom const_exp_primary    { (get_line_start(), `SARS ($1, $2, $5, $6)) }
   | CSHL lval lval atom atom const_exp_primary    { (get_line_start(), `CSHL ($2, $3, $4, $5, $6)) }
   | lval DOT lval EQOP CSHL atom atom const_exp_primary
@@ -981,6 +987,16 @@ const_exp:
 const_exp_primary:
     const                                         { fun ctx -> $1 ctx }
   | LPAR const_exp RPAR                           { fun ctx -> $2 ctx }
+;
+
+const_exp_primarys:
+    const_exp_primary                             { [$1] }
+  | const_exp_primary COMMA const_exp_primarys    { $1::$3 }
+;
+
+const_exp_v_primary:
+  LSQUARE const_exp_primarys RSQUARE              { $2 }
+
 ;
 
 const:

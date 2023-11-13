@@ -372,12 +372,15 @@ type instr_t =
   | `SHL of lval_t * atom_t * atom_t
   | `VSHL of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHLS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSHLS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `SHR of lval_t * atom_t * atom_t
   | `VSHR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SHRS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSHRS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `SAR of lval_t * atom_t * atom_t
   | `VSAR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SARS of lval_t * lval_t * atom_t * Z.t contextual
+  | `VSARS of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual list
   | `CSHL of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHLS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHR of lval_t * lval_t * atom_t * atom_t * Z.t contextual
@@ -1865,6 +1868,34 @@ let unpack_vinstr_21n mapper ctx lno dest1_tok dest2_tok src_tok num =
   let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_vectyp) in
   unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num
 
+let unpack_vinstr_21ns_helper mapper ctx lno dest1_names dest2_names src relmtyp nums =
+  let _ = if ((List.length dest1_names) <> (List.length src) ||
+                (List.length dest2_names) <> (List.length src)) then
+            raise_at_line lno "Destination vector should be as long as the source vector." in
+  let _ = if List.length src <> List.length nums then
+            raise_at_line lno "Lengths of source vectors are inconsistent." in
+  let rwpairs = List.map2 (fun (d1, d2) s -> ([d1; d2], s)) (List.combine dest1_names dest2_names) src in
+  let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
+
+  let map_func ((lvname1, lvname2), (rv, num)) = (
+      let lvtoken1 = {lvname=lvname1; lvtyphint=None} in
+      let lvtoken2 = {lvname=lvname2; lvtyphint=None} in
+      mapper ctx lno lvtoken1 lvtoken2 rv num
+    ) in
+  let dest_names = List.combine dest1_names dest2_names in
+  let src_ans = List.combine src_safe nums in
+  let iss = List.rev (List.rev_map map_func (List.combine dest_names src_ans)) in
+  let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+  List.concat (aliasing_instrs::iss)
+
+let unpack_vinstr_21ns mapper ctx lno dest1_tok dest2_tok src_tok nums =
+  let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
+  let dest1_vectyp = (relmtyp, List.length src) in
+  let dest2_vectyp = (typ_to_unsigned relmtyp, List.length src) in
+  let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some dest1_vectyp) in
+  let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_vectyp) in
+  unpack_vinstr_21ns_helper mapper ctx lno dest1_names dest2_names src relmtyp nums
+
 let parse_extract_at mapper ctx lno dest_tok nums src_toks =
   if (List.length nums) <> (List.length src_toks) then
     raise_at_line lno "Number of extract positions should be as same as the number of vectors."
@@ -2208,18 +2239,24 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      unpack_vinstr_12 parse_ishl_at ctx lno dest src num
   | `SHLS (`LVPLAIN lost, `LVPLAIN dest, src, num) ->
      parse_ishls_at ctx lno lost dest src num
+  | `VSHLS (lost, dest, src, nums) ->
+     unpack_vinstr_21ns parse_ishls_at ctx lno lost dest src nums
   | `SHR (`LVPLAIN dest, src, num) ->
      parse_ishr_at ctx lno dest src num
   | `VSHR (dest, src, num) ->
      unpack_vinstr_12 parse_ishr_at ctx lno dest src num
   | `SHRS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
      parse_ishrs_at ctx lno dest lost src num
+  | `VSHRS (dest, lost, src, nums) ->
+     unpack_vinstr_21ns parse_ishrs_at ctx lno dest lost src nums
   | `SAR (`LVPLAIN dest, src, num) ->
      parse_isar_at ctx lno dest src num
   | `VSAR (dest, src, num) ->
      unpack_vinstr_12 parse_isar_at ctx lno dest src num
   | `SARS (`LVPLAIN dest, `LVPLAIN lost, src, num) ->
      parse_isars_at ctx lno dest lost src num
+  | `VSARS (dest, lost, src, nums) ->
+     unpack_vinstr_21ns parse_isars_at ctx lno dest lost src nums
   | `CSHL (`LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
      parse_cshl_at ctx lno destH destL src1 src2 num
   | `CSHLS (`LVPLAIN lostL, `LVPLAIN destH, `LVPLAIN destL, src1, src2, num) ->
