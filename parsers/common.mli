@@ -126,6 +126,9 @@ val check_vec_sizes3 : lno -> 'a list -> 'b list -> 'c list -> int
 type vectyp = typ * int
 (** vector type *)
 
+type vecvar = string * vectyp
+(** vector variable *)
+
 val string_of_vectyp : vectyp -> string
 (** return the string representation of a vector type *)
 
@@ -159,7 +162,8 @@ type parsing_context =
     mutable cvars: var SM.t;        (** a map from variable name to variable *)
     mutable cvecs: vectyp SM.t;     (** a map from vector name to its type *)
     mutable ccarries: var SM.t;     (** a map from carry name to carry variable *)
-    mutable cghosts: var SM.t       (** a map from ghost name to ghost variable *)
+    mutable cghosts: var SM.t;      (** a map from ghost scalar name to ghost variable *)
+    mutable cvecghosts: vectyp SM.t (** a map from ghost vector name to vector type *)
   }
 (** the type of parsing context *)
 
@@ -176,28 +180,42 @@ val ctx_define_carry : parsing_context -> var -> unit
 (** add a carry to a parsing context (type is not checked in this function) *)
 
 val ctx_define_vec : parsing_context -> string -> vectyp -> unit
-(** add a vector program variable to a parsing context *)
+(** Add a vector program variable to a parsing context.
+    Vector elements will not be added to the parsing context. *)
 
 val ctx_define_ghost : parsing_context -> var -> unit
-(** add a ghost variable to a parsing context *)
+(** add a scalar ghost variable to a parsing context *)
+
+val ctx_define_vec_ghost : parsing_context -> string -> vectyp -> unit
+(** Add a vector ghost variable to a parsing context.
+    Vector elements will not be added to the parsing context. *)
 
 val ctx_find_var : parsing_context -> string -> var
-(** find a variable by name *)
+(** find a scalar variable by name *)
 
 val ctx_find_vec : parsing_context -> string -> vectyp
 (** find a vector type by name *)
 
 val ctx_find_ghost : parsing_context -> string -> var
-(** find a ghost variable by name *)
+(** find a scalar ghost variable by name *)
+
+val ctx_find_vec_ghost : parsing_context -> string -> vectyp
+(** find a vector ghost variable by name *)
 
 val ctx_name_is_var : parsing_context -> string -> bool
-(** check if a name is a variable *)
+(** check if a name is a scalar variable *)
+
+val ctx_name_is_vec : parsing_context -> string -> bool
+(** check if a name is a vector variable *)
 
 val ctx_name_is_ghost : parsing_context -> string -> bool
-(** check if a name is a ghost variable *)
+(** check if a name is a scalar ghost variable *)
+
+val ctx_name_is_vec_ghost : parsing_context -> string -> bool
+(** check if a name is a vector ghost variable *)
 
 val ctx_var_is_defined : parsing_context -> var -> bool
-(** check if a variable is defined in the context *)
+(** check if a scalar variable is defined in the context *)
 
 val ctx_vec_is_defined : parsing_context -> var -> bool
 (** check if a vector variable is defined in the context *)
@@ -206,7 +224,7 @@ val ctx_carry_is_defined : parsing_context -> var -> bool
 (** check if a carry is defined in the context *)
 
 val ctx_ghost_is_defined : parsing_context -> var -> bool
-(** check if a ghost variable is defined in the context *)
+(** check if a scalar ghost variable is defined in the context *)
 
 val ctx_atom_is_defined : parsing_context -> atom -> bool
 (** check if an atom is defined in the context *)
@@ -431,7 +449,7 @@ type instr_t =
   | `CUT of (bexp_prove_with contextual)
   | `ECUT of (ebexp_prove_with contextual)
   | `RCUT of (rbexp_prove_with contextual)
-  | `GHOST of (VS.t contextual) * (bexp contextual)
+  | `GHOST of ((var list * vecvar list) contextual) * (bexp contextual)
   | `CALL of string * ((typ list * typ list -> atom list) contextual)
   | `INLINE of string * ((typ list * typ list -> atom list) contextual)
   | `NOP
@@ -461,7 +479,7 @@ val resolve_lv_vec_with : (lval_vec_t -> vectyp option -> typ * string list) lin
 val resolve_atom_with : (?typ:typ -> atom_t -> atom) lined contextual
 (** resolve a scalar atom *)
 
-val resolve_vec_with : (atom_vec_t -> typ * atom_t list) lined contextual
+val resolve_vec_with : ?with_ghost:bool -> (atom_vec_t -> typ * atom_t list) lined contextual
 (** resolve a vector atom *)
 
 val parse_imov_at : (lv_prim_t -> atom_t -> lined_program) lined contextual
@@ -716,7 +734,7 @@ val parse_ecut_at : ((ebexp_prove_with contextual) -> lined_program) lined conte
 val parse_rcut_at : ((rbexp_prove_with contextual) -> lined_program) lined contextual
 (** [parse_rcut_at ctx lno rbexp_prove_with_token] parses an rcut instruction *)
 
-val parse_ghost_at : ((VS.t contextual) -> (bexp contextual) -> lined_program) lined contextual
+val parse_ghost_at : (((var list * vecvar list) contextual) -> (bexp contextual) -> lined_program) lined contextual
 (** [parse_ghost_at ctx lno gvars_token bexp_token] parses a ghost instruction *)
 
 val parse_call_at : (string -> (typ list * typ list -> atom list) contextual -> lined_program) lined contextual
@@ -1082,7 +1100,10 @@ val parse_defined_var : lno -> string -> typ option -> [`AVAR of avar_prim_t]
 (** [parse_defined_var lno vname vtypopt] parses a defined variable *)
 
 val parse_gvar : lno -> string -> typ -> var contextual
-(** [parse_gvar lno vname vtyp] parses a ghost variable *)
+(** [parse_gvar lno vname vtyp] parses a scalar ghost variable *)
+
+val parse_vgvar : lno -> string -> vectyp -> vecvar contextual
+(** [parse_vgvar lno vecname vectyp] parses a vector ghost variable *)
 
 val parse_fvar : lno -> string -> typ -> var list
 (** [parse_fvar lno vname vtyp] parses a formal variable *)

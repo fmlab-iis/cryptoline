@@ -601,7 +601,7 @@ veexp_primary:
     VEC_ID                                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let (_, atoms) = (resolve_vec_with ~with_ghost:true ctx lno vec) in
                                                     let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
                                                     es
                                                   }
@@ -769,7 +769,7 @@ vrexp_primary:
     VEC_ID                                        { let lno = get_line_start() in
                                                     fun ctx ->
                                                     let vec = `AVECT { vecname = $1; vectyphint = None; } in
-                                                    let (_, atoms) = (resolve_vec_with ctx lno vec) in
+                                                    let (_, atoms) = (resolve_vec_with ~with_ghost:true ctx lno vec) in
                                                     let es = List.rev_map rexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
                                                     es
                                                   }
@@ -937,8 +937,12 @@ defined_var:
 ;
 
 gvars:
-    gvar                                          { fun ctx -> VS.singleton ($1 ctx) }
-  | gvar COMMA gvars                              { fun ctx -> VS.add ($1 ctx) ($3 ctx) }
+    gvar                                          { fun ctx -> ([$1 ctx], []) }
+  | vgvar                                         { fun ctx -> ([], [$1 ctx]) }
+  | gvar COMMA gvars                              { fun ctx -> let (sgvars, vgvars) = $3 ctx in
+                                                               ($1 ctx::sgvars, vgvars) }
+  | vgvar COMMA gvars                             { fun ctx -> let (sgvars, vgvars) = $3 ctx in
+                                                               (sgvars, $1 ctx::vgvars) }
   | gvar error                                    { raise_at_line (get_line_start()) ("A comma is used to separate ghost variables.") }
   | error                                         { raise_at_line (get_line_start()) ("Invalid ghost variable.") }
 ;
@@ -946,6 +950,11 @@ gvars:
 gvar:
     typ ID                                        { parse_gvar (get_line_start()) $2 $1 }
   | ID AT typ                                     { parse_gvar (get_line_start()) $1 $3 }
+;
+
+vgvar:
+    vectyp VEC_ID                                 { parse_vgvar (get_line_start()) $2 $1 }
+  | VEC_ID AT vectyp                              { parse_vgvar (get_line_start()) $1 $3 }
 ;
 
 const_exp_list:

@@ -1,5 +1,6 @@
 
 open Parsing
+open Utils.Std
 open Ast.Cryptoline
 
 
@@ -148,6 +149,8 @@ let is_type_compatible formal actual =
 type vectyp = typ * int
 (** type of vector variables *)
 
+type vecvar = string * vectyp
+
 let string_of_vectyp (t, n) = Printf.sprintf "%s[%d]" (string_of_typ t) n
 
 let vec_name_fn vname =
@@ -155,6 +158,9 @@ let vec_name_fn vname =
   let name = String.sub vname 1 (n - 1) in
   (* XXX: Find a suitable delimiter for name and index that don't choke Boolector and Singular *)
   Printf.sprintf "VEC_%s_%d" name
+
+let vars_of_vec vecname (vtyp, vnum) =
+  List.map (fun i -> mkvar (vec_name_fn vecname i) vtyp) (List.init vnum Fun.id)
 
 
 (* ---------- Functions ---------- *)
@@ -182,7 +188,8 @@ type parsing_context =
     mutable cvars: var SM.t;        (* a map from variable name to variable *)
     mutable cvecs: vectyp SM.t;     (* a map from vector name to its type *)
     mutable ccarries: var SM.t;     (* a map from carry name to carry variable *)
-    mutable cghosts: var SM.t       (* a map from ghost name to ghost variable *)
+    mutable cghosts: var SM.t;      (* a map from ghost name to ghost variable *)
+    mutable cvecghosts: vectyp SM.t (* a map from ghost vector name to vector type *)
   }
 
 type 'a contextual = parsing_context -> 'a
@@ -194,7 +201,8 @@ let empty_parsing_context () =
     cvars = SM.empty;
     cvecs = SM.empty;
     ccarries = SM.empty;
-    cghosts = SM.empty
+    cghosts = SM.empty;
+    cvecghosts = SM.empty
   }
 
 (* Add a scalar program variable to a parsing context *)
@@ -211,39 +219,54 @@ let ctx_define_carry ctx v =
   let _ = ctx.ccarries <- SM.add v.vname v ctx.ccarries in
   ()
 
-(* Add a vector program variable to a parsing context *)
+(* Add a vector program variable to a parsing context.
+   Vector elements will not be added to the parsing context. *)
 let ctx_define_vec ctx vecname vectyp =
   ctx.cvecs <- SM.add vecname vectyp ctx.cvecs
 
-(* Add a ghost variable to a parsing context *)
+(* Add a scalar ghost variable to a parsing context *)
 let ctx_define_ghost ctx v =
   ctx.cghosts <- SM.add v.vname v ctx.cghosts
 
-(* Find a variable by name *)
+(* Add a vector ghost variable to a parsing context.
+   Vector elements will not be added to the parsing context. *)
+let ctx_define_vec_ghost ctx vecname vectyp  =
+  ctx.cvecghosts <- SM.add vecname vectyp ctx.cvecghosts
+
+(* Find a scalar variable by name *)
 let ctx_find_var ctx n = SM.find n ctx.cvars
 
-(* Find a vector by name *)
+(* Find a vector variable by name *)
 let ctx_find_vec ctx n = SM.find n ctx.cvecs
 
-(* Find a ghost variable by name *)
+(* Find a scalar ghost variable by name *)
 let ctx_find_ghost ctx n = SM.find n ctx.cghosts
 
-(* Check if a name is a variable *)
+(* Find a vector ghost variable by name *)
+let ctx_find_vec_ghost ctx n = SM.find n ctx.cvecghosts
+
+(* Check if a name is a scalar variable *)
 let ctx_name_is_var ctx n = SM.mem n ctx.cvars
 
-(* Check if a name is a ghost variable *)
+(* Check if a name is a vector variable *)
+let ctx_name_is_vec ctx n = SM.mem n ctx.cvecs
+
+(* Check if a name is a scalar ghost variable *)
 let ctx_name_is_ghost ctx n = SM.mem n ctx.cghosts
 
-(* Check if a variable is defined *)
+(* Check if a name is a vector ghost variable *)
+let ctx_name_is_vec_ghost ctx n = SM.mem n ctx.cvecghosts
+
+(* Check if a scalar variable is defined *)
 let ctx_var_is_defined ctx v = SM.mem v.vname ctx.cvars
 
-(* Check if a vector is defined *)
+(* Check if a vector variable is defined *)
 let ctx_vec_is_defined ctx v = SM.mem v.vname ctx.cvecs
 
 (* Check if a carry is defined *)
 let ctx_carry_is_defined ctx v = SM.mem v.vname ctx.ccarries
 
-(* Check if a ghost variable is defined *)
+(* Check if a scalar ghost variable is defined *)
 let ctx_ghost_is_defined ctx v = SM.mem v.vname ctx.cghosts
 
 (* Check if an atom is defined *)
@@ -473,7 +496,7 @@ type instr_t =
   | `CUT of (bexp_prove_with contextual)
   | `ECUT of (ebexp_prove_with contextual)
   | `RCUT of (rbexp_prove_with contextual)
-  | `GHOST of (VS.t contextual) * (bexp contextual)
+  | `GHOST of ((var list * vecvar list) contextual) * (bexp contextual)
   | `CALL of string * ((typ list * typ list -> atom list) contextual)
   | `INLINE of string * ((typ list * typ list -> atom list) contextual)
   | `NOP
@@ -590,6 +613,8 @@ let resolve_lv_or_lcarry_with ctx lno {lvname; lvtyphint} =
 let resolve_lv_vec_with ctx lno dest_tok src_vtyp_opt : typ * string list =
   match dest_tok with
   | `LVVECT {vecname; vectyphint} ->
+     let _ = if ctx_name_is_vec_ghost ctx vecname then raise_at_line lno ("The vector variable " ^ vecname ^
+                                                                            " has been defined as a ghost variable.") in
      let vtyp = match (src_vtyp_opt, vectyphint) with
        | (None, None) -> raise_at_line lno (Printf.sprintf "Failed to determine the vector type of %s." vecname)
        | (None, Some hinted_vtyp) -> hinted_vtyp
@@ -636,13 +661,16 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
                        | Invalid_argument _ -> raise_at_line lno ("The index " ^ string_of_int v.avecindex ^ " must be positive.") in
                   resolve_atom_with ctx lno ~typ:elmty a
   and
-    resolve_vec_with ctx lno src_tok : typ * atom_t list =
+    resolve_vec_with ?(with_ghost=false) ctx lno src_tok : typ * atom_t list =
     match src_tok with
     | `AVECT {vecname; vectyphint} ->
        let tv = try
            ctx_find_vec ctx vecname
          with Not_found ->
-           raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
+               if with_ghost then try ctx_find_vec_ghost ctx vecname
+                                  with Not_found -> raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
+               else if ctx_name_is_vec_ghost ctx vecname then raise_at_line lno ("Vector " ^ vecname ^ " has been defined as a ghost variable.")
+               else raise_at_line lno ("Vector variable " ^ vecname ^ " is undefined.")
        in
        let _ = match vectyphint with
          | None -> ()
@@ -1396,8 +1424,15 @@ let parse_rcut_at ctx lno rbexp_prove_with_list_token =
   [lno, Icut ([], rcuts)]
 
 let parse_ghost_at ctx lno gvars_token bexp_token =
-  let gvars = gvars_token ctx in
-  let _ = VS.iter (ctx_define_ghost ctx) gvars in
+  let (sgvars, vgvars) = gvars_token ctx in
+  let _ = List.iter (ctx_define_ghost ctx) sgvars in
+  let _ = List.iter (fun (vecname, vectyp) -> ctx_define_vec_ghost ctx vecname vectyp) vgvars in
+  (* We need to define ghost vector elements here. *)
+  let vgelems = List.rev_map (fun (vecname, vectyp) -> vars_of_vec vecname vectyp) vgvars |> List.rev |> tflatten in
+  let _ = List.iter (ctx_define_ghost ctx) vgelems in
+  let gvars =
+    let add_fun = fun res v -> VS.add v res in
+    List.fold_left add_fun (List.fold_left add_fun VS.empty sgvars)  vgelems in
   let e = bexp_token ctx in
   let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
   let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
@@ -1740,7 +1775,7 @@ let unpack_vinstr_11 ?(fix_dst_ty=true) mapper ctx lno dest_tok src_tok =
   let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
   List.concat (aliasing_instrs::iss)
 
-let unpack_vinstr_12 ?(fix_dst_ty=true) mapper ctx lno 
+let unpack_vinstr_12 ?(fix_dst_ty=true) mapper ctx lno
       dest_tok src1_tok src2_tok =
   let vatm1 = resolve_vec_with ctx lno src1_tok in
   let vatm2 = resolve_vec_with ctx lno src2_tok in
@@ -2975,9 +3010,14 @@ let parse_gvar lno vname vtyp =
   if vname = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
   else
     fun ctx ->
-    if ctx_name_is_var ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined as a program variable.")
-    else if ctx_name_is_var ctx vname then raise_at_line lno ("The ghost variable " ^ vname ^ " has been defined previously.")
+    if ctx_name_is_var ctx vname then raise_at_line lno ("The scalar ghost variable " ^ vname ^ " has been defined.")
     else mkvar vname vtyp
+
+let parse_vgvar lno vecname (vtyp, vnum) =
+  fun ctx ->
+  if ctx_name_is_vec ctx vecname then raise_at_line lno ("The vector ghost variable " ^ vecname ^ " has been defined.")
+  else if List.exists (ctx_name_is_var ctx) (List.init vnum (vec_name_fn vecname)) then raise_at_line lno ("Some vector element in " ^ vecname ^ " has been defined.")
+  else (vecname, (vtyp, vnum))
 
 let parse_fvar _lno vname vtyp = [mkvar vname vtyp]
 
