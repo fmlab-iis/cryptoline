@@ -264,3 +264,6 @@ val abc_path : string ref
 
 val boolector_path : string ref
 (** The path to Boolector *)
+
+val abs_interp : bool ref
+(** enable abstract interpretation for range *)

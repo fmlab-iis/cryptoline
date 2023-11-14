@@ -567,6 +567,26 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
   res
 
 (**
+   [verify_rspec_single_conjunct_abs_interp ?comments s hashopt]
+   verifies the range specification [s] which contains neither cut nor
+   conjunction by abstract interpretation.
+   @param s a range specification
+   @param hashopt
+   @return bool
+ *)
+let verify_rspec_single_conjunct_abs_interp ?_comments s hashopt =
+  let s' = if !apply_slicing then slice_rspec_ssa s hashopt else s in
+  let vs = vars_rspec s' in
+  let mgr = Absdom.Std.create_manager vs in
+  match Absdom.Std.dom_of_rbexp mgr s'.rspre with
+  | Some dom ->
+     let dom' = Absdom.Std.interp_prog mgr dom s'.rsprog in
+     (* let _ = Absdom.Std.print_dom mgr dom' in *)
+     let (rs, _) = merge_rbexp_prove_with s'.rspost in
+     Absdom.Std.sat_rbexp mgr dom' rs
+  | _ -> false
+
+(**
    [verify_rspec_single_conjunct header s hashopt] verifies the range
    specification [s] which contains neither cut nor conjunction. What is done in
    this function: trivial postcondition check, trivial implication check, program
@@ -577,6 +597,9 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
    @return a bool promise
  *)
 let verify_rspec_single_conjunct ?comments header s hashopt =
+  let heuristics s =
+    !abs_interp &&
+      (verify_rspec_single_conjunct_abs_interp s hashopt) in
   let solver = range_solver_of_prove_with (List.split s.rspost |> snd |> tflatten) in
   let verify_one header s =
     let f = bexp_rbexp s.rspre in
@@ -590,6 +613,7 @@ let verify_rspec_single_conjunct ?comments header s hashopt =
     Lwt.return (r = Unsat) in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
+                else if heuristics s then Lwt.return_true
                 else verify_one header (if !apply_slicing then slice_rspec_ssa s hashopt else s) in
   Lwt.return res
 

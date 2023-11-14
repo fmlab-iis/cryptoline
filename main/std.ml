@@ -65,6 +65,8 @@ let suggest_name name ext id =
   else fn
 
 let args = [
+    ("-abs_interp", Unit (fun () -> Options.Std.abs_interp := true),
+     Common.mk_arg_desc(["  Use abstract interpretation."]));
     ("-autocast", Set Options.Std.auto_cast,
      Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
     ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),

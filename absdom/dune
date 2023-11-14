@@ -1,0 +1,7 @@
+(library
+  (name        absdom)
+  (preprocess  (pps lwt_ppx))
+  (libraries   camlidl bigarray gmp apron apron.boxD apron.boxMPQ
+               options ast utils)
+  (public_name cryptoline.absdom)
+)

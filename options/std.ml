@@ -189,3 +189,4 @@ let implicit_const_conversion = ref false
 
 let cross_cuts = ref false
 
+let abs_interp = ref false
