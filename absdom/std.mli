@@ -12,4 +12,4 @@ val interp_prog : manager_t -> abs_t -> program -> abs_t
 
 val sat_rbexp : manager_t -> abs_t -> rbexp -> bool
 
-val print_dom : manager_t -> abs_t -> unit
+val string_of_dom : manager_t -> abs_t -> string

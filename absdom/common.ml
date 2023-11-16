@@ -349,5 +349,10 @@ let sat_rbexp (mgr, env) dom rbe =
     | [] -> true in
   helper [rbe]
 
-let print_dom (_mgr, _env) dom =
-  Abstract1.print Format.std_formatter dom
+let string_of_dom (_mgr, _env) dom =
+  let buf = Buffer.create 16 in
+  let buf_fmtter = Format.formatter_of_buffer buf in
+  let _ = Abstract1.print buf_fmtter dom in
+  let _ = Format.pp_print_flush buf_fmtter () in
+  Buffer.contents buf
+

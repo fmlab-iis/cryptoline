@@ -601,42 +601,27 @@ let verify_rspec_single_conjunct ?comments header s hashopt =
    @param hashopt
    @return rspec list with splitted rpost
  *)
-let verify_rspec_no_rcut_abs_interp ?_comments s =
+let verify_rspec_no_rcut_abs_interp ?comments s =
   let splitted_s = split_rspec_post s in
   let vs = vars_rspec s in
   let mgr = Absdom.Std.create_manager vs in
   match Absdom.Std.dom_of_rbexp mgr s.rspre with
   | Some dom ->
-     (*
-     let _ = Format.pp_print_string Format.std_formatter "start domain" in
-     let _ = Format.pp_force_newline Format.std_formatter () in
-     let _ = Absdom.Std.print_dom mgr dom in
-     let _ = Format.pp_force_newline Format.std_formatter () in
-      *)
+     let comments = Some (append_comments_option comments ["Start domain:"; Absdom.Std.string_of_dom mgr dom]) in
      let dom' = Absdom.Std.interp_prog mgr dom s.rsprog in
-     (*
-     let _ = Format.pp_print_string Format.std_formatter "end domain" in
-     let _ = Format.pp_force_newline Format.std_formatter () in
-     let _ = Absdom.Std.print_dom mgr dom' in
-     let _ = Format.pp_force_newline Format.std_formatter () in
-      *)
-     List.rev (List.fold_left (fun ret rs ->
-                   (* must be the same program and pre condition *)
-                   let _ = assert (s.rspre == rs.rspre) in
-                   let _ = assert (s.rsprog == rs.rsprog) in
-                   let (post, _) = merge_rbexp_prove_with rs.rspost in
-                   if Absdom.Std.sat_rbexp mgr dom' post then
-                     (*
-                     let _ = Format.pp_print_string Format.std_formatter
-                              ((string_of_rbexp post)^"ok") in
-                      *)
-                     ret
-                   else
-                     (*
-                     let _ = Format.pp_print_string Format.std_formatter
-                               ((string_of_rbexp post)^"bad") in
-                     *)
-                     rs::ret) [] splitted_s)
+     let comments = Some (append_comments_option comments ["End domain:"; Absdom.Std.string_of_dom mgr dom']) in
+     let rev_ret, _comments = 
+       List.fold_left (fun (ret, comments) rs ->
+           (* must be the same program and pre condition *)
+           let _ = assert (s.rspre == rs.rspre) in
+           let _ = assert (s.rsprog == rs.rsprog) in
+           let (post, _) = merge_rbexp_prove_with rs.rspost in
+           if Absdom.Std.sat_rbexp mgr dom' post then
+             let comments = Some (append_comments_option comments ["Range condition proved by abstract interpretation:"; string_of_rbexp post]) in
+             (ret, comments)
+           else
+             (rs::ret, comments)) ([], comments) splitted_s in
+     List.rev rev_ret
   | None -> splitted_s
 
 (**
@@ -649,8 +634,9 @@ let verify_rspec_no_rcut_abs_interp ?_comments s =
    @return a list of [task]
  *)
 let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
-  let verify s = fun () -> verify_rspec_single_conjunct ?comments header s hashopt in
-  verify_rspec_no_rcut_abs_interp s |> List.rev_map verify |> List.rev
+  let verify comments s = fun () -> verify_rspec_single_conjunct ?comments header s hashopt in
+  verify_rspec_no_rcut_abs_interp s |>
+  List.rev_map (verify comments) |> List.rev
 
 let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in

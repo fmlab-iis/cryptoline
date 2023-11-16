@@ -608,23 +608,28 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
   res
 
 
-let verify_rspec_single_conjunct_abs_interp ?_comments s hashopt =
+let verify_rspec_single_conjunct_abs_interp ?comments s hashopt =
   let s' = if !apply_slicing then slice_rspec_ssa s hashopt else s in
   let vs = vars_rspec s' in
   let mgr = Absdom.Std.create_manager vs in
   match Absdom.Std.dom_of_rbexp mgr s'.rspre with
   | Some dom ->
+     let comments = Some (append_comments_option comments ["Start domain:"; Absdom.Std.string_of_dom mgr dom]) in
      let dom' = Absdom.Std.interp_prog mgr dom s'.rsprog in
-     let _ = Absdom.Std.print_dom mgr dom' in
+     let comments = Some (append_comments_option comments ["End domain:"; Absdom.Std.string_of_dom mgr dom']) in
      let (rs, _) = merge_rbexp_prove_with s'.rspost in
-     Absdom.Std.sat_rbexp mgr dom' rs
+     if Absdom.Std.sat_rbexp mgr dom' rs then
+       let _comments = Some (append_comments_option comments ["Range condition proved by abstract interpretation:"; string_of_rbexp rs]) in
+       true
+     else
+       false
   | _ -> false
 
 (* Applied in this function: slicing, solving *)
 let verify_rspec_single_conjunct ?comments s hashopt =
   let heuristics s =
     !Options.Std.abs_interp &&
-      (verify_rspec_single_conjunct_abs_interp s hashopt) in
+      verify_rspec_single_conjunct_abs_interp s hashopt in
   let verify s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
@@ -633,8 +638,8 @@ let verify_rspec_single_conjunct ?comments s hashopt =
     solve_simp
       ~comments:(rcons_comments_option comments ("Range condition: " ^ string_of_bexp g))
       ~solver:solver (f::p@[g]) = Unsat in
-  (is_rspec_trivial s) || heuristics s ||
-    (verify (if !apply_slicing then slice_rspec_ssa s hashopt else s))
+  is_rspec_trivial s || heuristics s ||
+  verify (if !apply_slicing then slice_rspec_ssa s hashopt else s)
 
 (* Applied in this function: split conjunctions *)
 let verify_rspec_without_cuts ?comments hashopt s =

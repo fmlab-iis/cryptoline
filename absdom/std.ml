@@ -11,4 +11,4 @@ let interp_prog = Common.interp_prog
 
 let sat_rbexp = Common.sat_rbexp
 
-let print_dom = Common.print_dom
+let string_of_dom = Common.string_of_dom
