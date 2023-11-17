@@ -10,6 +10,41 @@ type abs_t = Box.t Abstract1.t
 (* Auxiliary functions for Apron *)
 let apvar v = Var.of_string (string_of_var v)
 
+let interval_union i0 i1 =
+  let inf0 = i0.Interval.inf in
+  let inf1 = i1.Interval.inf in
+  let inf = if Scalar.cmp inf0 inf1 < 0 then inf0
+            else if Scalar.cmp inf0 inf1 > 0 then inf1
+            else inf0 in
+  let sup0 = i0.Interval.sup in
+  let sup1 = i1.Interval.sup in
+  let sup = if Scalar.cmp sup0 sup1 > 0 then inf0
+            else if Scalar.cmp sup0 sup1 < 0 then sup1
+            else sup0 in
+  Interval.of_infsup inf sup
+
+let interval_of_typ typ =
+  match typ with
+  | Tuint sz ->
+     let upper = Mpq.init () in
+     let _ = Mpq.mul_2exp upper (Mpq.of_int 1) sz in
+     let _ = Mpq.sub upper upper (Mpq.of_int 1) in
+     Interval.of_mpq (Mpq.of_int 0) upper 
+  | Tsint sz ->
+     let lower = Mpq.init () in
+     let _ = Mpq.mul_2exp lower (Mpq.of_int 1) (pred sz) in
+     let _ = Mpq.neg lower lower in
+     let upper = Mpq.init () in
+     let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
+     let _ = Mpq.sub upper upper (Mpq.of_int 1) in
+     Interval.of_mpq lower upper
+
+let interval_of_atom mgr dom a =
+  match a with
+  | Avar v -> Abstract1.bound_variable mgr dom (apvar v)
+  | Aconst (_, z) -> Interval.of_mpq (Mpq.of_string (Z.to_string z))
+                       (Mpq.of_string (Z.to_string z))
+
 let texpr_var env v =
   Texpr1.var env (apvar v)
 let texpr_cst env z =
@@ -40,6 +75,9 @@ let tcons_le tel ter =
 let tcons_eq tel ter =
   let te = Texpr1.binop Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
   Tcons1.make te Tcons1.EQ
+let tcons_deq tel ter =
+  let te = Texpr1.binop Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
+  Tcons1.make te Tcons1.DISEQ
 
 let texpr_of_atom env a =
   match a with
@@ -52,22 +90,6 @@ let create_manager vs =
                (VS.elements vs) in
   let ret = Environment.make (Array.of_list vars) [| |] in
   (Box.manager_alloc (), ret)
-
-let interval_of_typ typ =
-  match typ with
-  | Tuint sz ->
-     let upper = Mpq.init () in
-     let _ = Mpq.mul_2exp upper (Mpq.of_int 1) sz in
-     let _ = Mpq.sub upper upper (Mpq.of_int 1) in
-     Interval.of_mpq (Mpq.of_int 0) upper 
-  | Tsint sz ->
-     let lower = Mpq.init () in
-     let _ = Mpq.mul_2exp lower (Mpq.of_int 1) (pred sz) in
-     let _ = Mpq.neg lower lower in
-     let upper = Mpq.init () in
-     let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
-     let _ = Mpq.sub upper upper (Mpq.of_int 1) in
-     Interval.of_mpq lower upper
 
 let var_bound_dom mgr env v =
   Abstract1.of_box mgr env [| apvar v |] [| interval_of_typ (typ_of_var v) |]
@@ -124,37 +146,45 @@ let rec texpr_of_rexp env re =
 (* meet {dom} with an abstract domain with a primitive rbexp,
    returns {dom} if the primitive rbexp is not supported *)
 let meet_primitive_rbexp mgr env dom cmpop rel rer =
-  let texpr_zero = texpr_cst env Z.zero in
   let sz = size_of_rexp rel in
+  (* normalize for unsigned comparison *)
+  let _unormalize texprv =
+    let texprm = texpr_pow2 env sz in
+    let texprmod =
+      Texpr1.binop Texpr1.Mod texprv texprm Texpr1.Int Texpr1.Down in
+    let texpradd =
+      Texpr1.binop Texpr1.Add texprmod texprm Texpr1.Int Texpr1.Down in
+      Texpr1.binop Texpr1.Mod texpradd texprm Texpr1.Int Texpr1.Down in
+  (* normalize for signed comparison *)
+  let _snormalize texprv =
+    let texprm = texpr_pow2 env sz in
+    let texprm1 = texpr_pow2 env (pred sz) in
+    let texprmod =
+      Texpr1.binop Texpr1.Mod texprv texprm Texpr1.Int Texpr1.Down in
+    let texpradd =
+      Texpr1.binop Texpr1.Add texprmod texprm Texpr1.Int Texpr1.Down in
+    let texprmod' =
+      Texpr1.binop Texpr1.Mod texpradd texprm Texpr1.Int Texpr1.Down in
+    let texprdiv =
+      Texpr1.binop Texpr1.Div texprmod' texprm1 Texpr1.Int Texpr1.Down in
+    let texprmul =
+      Texpr1.binop Texpr1.Mul texprdiv texprm Texpr1.Int Texpr1.Down in
+    Texpr1.binop Texpr1.Sub texprmod' texprmul Texpr1.Int Texpr1.Down in
   let rec helper dom cmpop tel ter =
     match cmpop with
-    | Rult -> let tcons = Tcons1.array_make env 3 in
-              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter);
-                      Tcons1.array_set tcons 1 (tcons_le texpr_zero tel);
-                      Tcons1.array_set tcons 2
-                        (tcons_lt ter (texpr_pow2 env sz)) in
+    | Rult -> let tcons = Tcons1.array_make env 1 in
+              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter) in
               Abstract1.meet_tcons_array mgr dom tcons
-    | Rule -> let tcons = Tcons1.array_make env 3 in
-              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter);
-                      Tcons1.array_set tcons 1 (tcons_le texpr_zero tel);
-                      Tcons1.array_set tcons 2
-                        (tcons_lt ter (texpr_pow2 env sz)) in
+    | Rule -> let tcons = Tcons1.array_make env 1 in
+              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter) in
               Abstract1.meet_tcons_array mgr dom tcons
     | Rugt -> helper dom Rult ter tel
     | Ruge -> helper dom Rule ter tel
-    | Rslt -> let tcons = Tcons1.array_make env 3 in
-              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter);
-                      Tcons1.array_set tcons 1
-                        (tcons_le (texpr_neg (texpr_pow2 env (sz-1))) tel);
-                      Tcons1.array_set tcons 2
-                        (tcons_lt ter (texpr_pow2 env (sz-1))) in
+    | Rslt -> let tcons = Tcons1.array_make env 1 in
+              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter) in
               Abstract1.meet_tcons_array mgr dom tcons
-    | Rsle -> let tcons = Tcons1.array_make env 3 in
-              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter);
-                      Tcons1.array_set tcons 1
-                        (tcons_le (texpr_neg (texpr_pow2 env (sz-1))) tel);
-                      Tcons1.array_set tcons 2
-                        (tcons_lt ter (texpr_pow2 env (sz-1))) in
+    | Rsle -> let tcons = Tcons1.array_make env 1 in
+              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter) in
               Abstract1.meet_tcons_array mgr dom tcons
     | Rsgt -> helper dom Rslt ter tel
     | Rsge -> helper dom Rsle ter tel in
@@ -209,186 +239,284 @@ let interp_instr mgr env dom instr =
           l, h in
      Abstract1.assign_texpr mgr dom (apvar v)
        (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None in
+  let add_dom mgr dom v a0 a1 =
+     let ta0 = texpr_of_atom env a0 in
+     let ta1 = texpr_of_atom env a1 in
+     Abstract1.assign_texpr_array mgr dom [| apvar v |]
+       [| texpr_add ta0 ta1 |] (Some (var_bound_dom mgr env v)) in
+  let adds_dom mgr dom f v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_add ta0 ta1 |] None in
+    let texpr_f = texpr_flag mgr dom' v in
+    Abstract1.assign_texpr_array mgr dom' [| apvar f |]
+      [| texpr_f |] (Some (var_bound_dom mgr env v)) in
+  let adc_dom mgr dom v a0 a1 a2 =
+     let ta0 = texpr_of_atom env a0 in
+     let ta1 = texpr_of_atom env a1 in
+     let ta2 = texpr_of_atom env a2 in
+     Abstract1.assign_texpr_array mgr dom [| apvar v |]
+       [| texpr_add (texpr_add ta0 ta1) ta2 |]
+       (Some (var_bound_dom mgr env v)) in
+  let adcs_dom mgr dom f v a0 a1 a2 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let ta2 = texpr_of_atom env a2 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_add (texpr_add ta0 ta1) ta2 |] None in
+    let texpr_f = texpr_flag mgr dom' v in
+    Abstract1.assign_texpr_array mgr dom' [| apvar f |]
+      [| texpr_f |] (Some (var_bound_dom mgr env v)) in
+  let sub_dom mgr dom v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_sub ta0 ta1 |] (Some (var_bound_dom mgr env v)) in
+  let sbc_dom mgr dom v a0 a1 a2 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let ta2 = texpr_of_atom env a2 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_sub (texpr_sub ta0 ta1)
+           (texpr_sub (texpr_cst env Z.one) ta2) |] 
+      (Some (var_bound_dom mgr env v)) in
+  let sbb_dom mgr dom v a0 a1 a2 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let ta2 = texpr_of_atom env a2 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_sub (texpr_sub ta0 ta1) ta2 |] 
+      (Some (var_bound_dom mgr env v)) in
+  let subc_dom mgr dom c v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_sub ta0 ta1 |] None in
+    let texpr_c = texpr_sub (texpr_cst env Z.one) (texpr_flag mgr dom' v) in
+    Abstract1.assign_texpr_array mgr dom' [| apvar c |]
+      [| texpr_c |] (Some (var_bound_dom mgr env v)) in
+  let subb_dom mgr dom b v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_sub ta0 ta1 |] None in
+    let texpr_b = texpr_flag mgr dom' v in
+    Abstract1.assign_texpr_array mgr dom' [| apvar b |]
+      [| texpr_b |] (Some (var_bound_dom mgr env v)) in
+  let sbcs_dom mgr dom c v a0 a1 a2 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let ta2 = texpr_of_atom env a2 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_sub (texpr_sub ta0 ta1)
+                      (texpr_sub (texpr_cst env Z.one) ta2) |] None in
+    let texpr_c = texpr_sub (texpr_cst env Z.one) (texpr_flag mgr dom' v) in
+    Abstract1.assign_texpr_array mgr dom' [| apvar c |]
+      [| texpr_c |] (Some (var_bound_dom mgr env v)) in
+  let sbbs_dom mgr dom b v a0 a1 a2 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let ta2 = texpr_of_atom env a2 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_sub (texpr_sub ta0 ta1) ta2 |] None in
+    let texpr_b = texpr_flag mgr dom' v in
+    Abstract1.assign_texpr_array mgr dom' [| apvar b |]
+      [| texpr_b |] (Some (var_bound_dom mgr env v)) in
+  let mul_dom mgr dom v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_mul ta0 ta1 |] (Some (var_bound_dom mgr env v)) in
+  let muls_dom mgr dom f v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                 [| texpr_mul ta0 ta1 |] None in
+    let texpr_f = texpr_flag mgr dom v in
+    Abstract1.assign_texpr_array mgr dom' [| apvar f |]
+      [| texpr_f |] (Some (var_bound_dom mgr env v)) in
+  let mull_dom mgr dom vh vl a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let tpow2 = texpr_pow2 env (size_of_var vl) in
+    Abstract1.assign_texpr_array mgr dom [| apvar vh; apvar vl |]
+      [| texpr_div (texpr_mul ta0 ta1) tpow2; texpr_mul ta0 ta1 |]
+      (Some (vars_bounds_dom mgr env [vh; vl])) in
+  let mulj_dom mgr dom v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_mul ta0 ta1 |] None in
+  let split_dom mgr dom vh vl a z =
+    match a with
+    | Aconst (_, za) ->
+       let zpow2 = Z.pow (Z.of_int 2) (Z.to_int z) in
+       let h = Z.div za zpow2 in
+       let l = Z.rem za zpow2 in
+       if Z.geq l Z.zero then
+         Abstract1.assign_texpr_array mgr dom
+           [| apvar vh; apvar vl |]
+           [| texpr_cst env h; texpr_cst env l |] None
+       else
+         let h' = Z.sub h Z.one in
+         let l' = Z.add l zpow2 in
+         Abstract1.assign_texpr_array mgr dom
+           [| apvar vh; apvar vl |]
+           [| texpr_cst env h'; texpr_cst env l' |] None
+    | Avar va ->
+       let upper = Mpq.init () in
+       let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (Z.to_int z) in
+       let _ = Mpq.sub upper upper (Mpq.of_int 1) in
+       let ilow = Interval.of_mpq (Mpq.of_int 0) upper in
+       if Abstract1.sat_interval mgr dom (apvar va) ilow then
+         Abstract1.assign_texpr_array mgr dom
+           [| apvar vh; apvar vl |]
+           [| texpr_cst env Z.zero; texpr_var env va |] None
+       else
+         let lbound = Abstract1.of_box mgr env [| apvar va |] [| ilow |] in
+         let tpow2 = texpr_pow2 env (Z.to_int z) in
+         Abstract1.assign_texpr_array mgr dom
+           [| apvar vh; apvar vl |]
+           [| texpr_div (texpr_var env va) tpow2; texpr_var env va |]
+           (Some lbound) in
+  let join_dom mgr dom v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let tpow2 = texpr_pow2 env (size_of_atom a1) in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| texpr_add ta1 (texpr_mul ta0 tpow2) |] None in
+  let shl_dom mgr dom v a0 a1 =
+    match a1 with
+    | Avar _ -> assign_nondet_dom mgr dom v
+    | Aconst (_, z) ->
+       let ta0 = texpr_of_atom env a0 in
+       let tpow2 = texpr_pow2 env (Z.to_int z) in
+       Abstract1.assign_texpr_array mgr dom [| apvar v |]
+         [| texpr_mul ta0 tpow2 |] (Some (var_bound_dom mgr env v)) in
+  let shr_dom mgr dom v a0 a1 =
+     match a1 with
+     | Avar _ -> assign_nondet_dom mgr dom v
+     | Aconst (_, z) ->
+        if typ_is_signed (typ_of_var v) then
+          let ta0 = texpr_of_atom env a0 in
+          let tpow2 = texpr_pow2 env (Z.to_int z) in
+          Abstract1.assign_texpr_array mgr dom [| apvar v |]
+            [| texpr_div ta0 tpow2 |] (Some (var_bound_dom mgr env v))
+        else assign_nondet_dom mgr dom v in
+  let sar_dom mgr dom v a0 a1 =
+    match a1 with
+    | Avar _ -> assign_nondet_dom mgr dom v
+    | Aconst (_, z) ->
+       let ta0 = texpr_of_atom env a0 in
+       let tpow2 = texpr_pow2 env (Z.to_int z) in
+       Abstract1.assign_texpr_array mgr dom [| apvar v |]
+         [| texpr_div ta0 tpow2 |] (Some (var_bound_dom mgr env v)) in
+  let seteq_dom mgr dom v al ar =
+    let tel = texpr_of_atom env al in
+    let ter = texpr_of_atom env ar in
+    if Abstract1.sat_tcons mgr dom (tcons_eq tel ter) then
+      Abstract1.assign_texpr_array mgr dom [| apvar v |]
+        [| texpr_cst env (Z.of_int 1) |] None
+    else
+      assign_nondet_dom mgr dom v in
+  let setne_dom mgr dom v al ar =
+    let tel = texpr_of_atom env al in
+    let ter = texpr_of_atom env ar in
+    if Abstract1.sat_tcons mgr dom (tcons_deq tel ter) then
+      Abstract1.assign_texpr_array mgr dom [| apvar v |]
+        [| texpr_cst env (Z.of_int 1) |] None
+    else
+      assign_nondet_dom mgr dom v in
+  let cmov_dom mgr dom v a0 a1 =
+    let int0 = interval_of_atom mgr dom a0 in
+    let int1 = interval_of_atom mgr dom a1 in
+    let uint = interval_union int0 int1 in
+    let texpr = Texpr1.cst env
+                  (Coeff.i_of_scalar uint.Interval.inf uint.Interval.sup) in
+    Abstract1.assign_texpr mgr dom (apvar v) texpr None in
+  let cshl_dom mgr dom vh vl a0 a1 z =
+    let te0 = texpr_of_atom env a0 in
+    let te1 = texpr_of_atom env a1 in
+    let sz = size_of_atom a0 in
+    let tpow2sz = texpr_pow2 env sz in
+    let tejoin = texpr_add te1 (texpr_mul te0 tpow2sz) in
+    let tpow2z = texpr_pow2 env (Z.to_int z) in
+    let teshl = texpr_mul tejoin tpow2z in
+    Abstract1.assign_texpr_array mgr dom [| apvar vh; apvar vl |]
+      [| texpr_div teshl tpow2sz; teshl |]
+      (Some (vars_bounds_dom mgr env [vh; vl])) in
+  let cshr_dom mgr dom vh vl a0 a1 z =
+    let te0 = texpr_of_atom env a0 in
+    let te1 = texpr_of_atom env a1 in
+    let sz = size_of_atom a0 in
+    let tpow2sz = texpr_pow2 env sz in
+    let tejoin = texpr_add te1 (texpr_mul te0 tpow2sz) in
+    let tpow2z = texpr_pow2 env (Z.to_int z) in
+    let teshr = texpr_div tejoin tpow2z in
+    Abstract1.assign_texpr_array mgr dom [| apvar vh; apvar vl |]
+      [| texpr_div teshr tpow2sz; teshr |]
+      (Some (vars_bounds_dom mgr env [vh; vl])) in
+  let vpc_dom mgr dom v a =
+    let int_a = interval_of_atom mgr dom a in
+    let int_v = interval_of_typ (typ_of_var v) in
+    if Interval.is_leq int_a int_v then
+      Abstract1.assign_texpr mgr dom (apvar v) (texpr_of_atom env a) None
+    else
+      assign_nondet_dom mgr dom v in
   match instr with
   | Imov (v, a) ->
      let ta = texpr_of_atom env a in
      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| ta |] None
-  | Iadd (v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_add ta0 ta1 |] (Some (var_bound_dom mgr env v))
-  | Iadc  (v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_add (texpr_add ta0 ta1) ta2 |] (Some (var_bound_dom mgr env v))
-  | Iadds (f, v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_add ta0 ta1 |] None in
-     let texpr_f = texpr_flag mgr dom' v in
-     Abstract1.assign_texpr_array mgr dom' [| apvar f |]
-       [| texpr_f |] (Some (var_bound_dom mgr env v))
-  | Iadcs (f, v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_add (texpr_add ta0 ta1) ta2 |] None in
-     let texpr_f = texpr_flag mgr dom' v in
-     Abstract1.assign_texpr_array mgr dom' [| apvar f |]
-       [| texpr_f |] (Some (var_bound_dom mgr env v))
-  | Isub (v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_sub ta0 ta1 |] (Some (var_bound_dom mgr env v))
-  | Isbc (v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_sub (texpr_sub ta0 ta1)
-            (texpr_sub (texpr_cst env Z.one) ta2) |] 
-       (Some (var_bound_dom mgr env v))
-  | Isbb (v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_sub (texpr_sub ta0 ta1) ta2 |] 
-       (Some (var_bound_dom mgr env v))
-  | Isubc (c, v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_sub ta0 ta1 |] None in
-     let texpr_c = texpr_sub (texpr_cst env Z.one) (texpr_flag mgr dom' v) in
-     Abstract1.assign_texpr_array mgr dom' [| apvar c |]
-       [| texpr_c |] (Some (var_bound_dom mgr env v))
-  | Isubb (b, v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_sub ta0 ta1 |] None in
-     let texpr_b = texpr_flag mgr dom' v in
-     Abstract1.assign_texpr_array mgr dom' [| apvar b |]
-       [| texpr_b |] (Some (var_bound_dom mgr env v))
-  | Isbcs (c, v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_sub (texpr_sub ta0 ta1)
-                       (texpr_sub (texpr_cst env Z.one) ta2) |] None in
-     let texpr_c = texpr_sub (texpr_cst env Z.one) (texpr_flag mgr dom' v) in
-     Abstract1.assign_texpr_array mgr dom' [| apvar c |]
-       [| texpr_c |] (Some (var_bound_dom mgr env v))
-  | Isbbs (b, v, a0, a1, a2) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let ta2 = texpr_of_atom env a2 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_sub (texpr_sub ta0 ta1) ta2 |] None in
-     let texpr_b = texpr_flag mgr dom' v in
-     Abstract1.assign_texpr_array mgr dom' [| apvar b |]
-       [| texpr_b |] (Some (var_bound_dom mgr env v))
-  | Imul (v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_mul ta0 ta1 |] (Some (var_bound_dom mgr env v))
-  | Imuls (f, v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                  [| texpr_mul ta0 ta1 |] None in
-     let texpr_f = texpr_flag mgr dom v in
-     Abstract1.assign_texpr_array mgr dom' [| apvar f |]
-       [| texpr_f |] (Some (var_bound_dom mgr env v))
-  | Imull (vh, vl, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let tpow2 = texpr_pow2 env (size_of_var vl) in
-     Abstract1.assign_texpr_array mgr dom [| apvar vh; apvar vl |]
-       [| texpr_div (texpr_mul ta0 ta1) tpow2; texpr_mul ta0 ta1 |]
-       (Some (vars_bounds_dom mgr env [vh; vl]))
-  | Imulj (v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_mul ta0 ta1 |] None
-  | Isplit (vh, vl, a, z) | Ispl (vh, vl, a, z) ->
-     (match a with
-     | Aconst (_, za) ->
-        let zpow2 = Z.pow (Z.of_int 2) (Z.to_int z) in
-        let h = Z.div za zpow2 in
-        let l = Z.rem za zpow2 in
-        if Z.geq l Z.zero then
-          Abstract1.assign_texpr_array mgr dom
-            [| apvar vh; apvar vl |]
-            [| texpr_cst env h; texpr_cst env l |] None
-        else
-          let h' = Z.sub h Z.one in
-          let l' = Z.add l zpow2 in
-          Abstract1.assign_texpr_array mgr dom
-            [| apvar vh; apvar vl |]
-            [| texpr_cst env h'; texpr_cst env l' |] None
-     | Avar va ->
-        let upper = Mpq.init () in
-        let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (Z.to_int z) in
-        let _ = Mpq.sub upper upper (Mpq.of_int 1) in
-        let ilow = Interval.of_mpq (Mpq.of_int 0) upper in
-        if Abstract1.sat_interval mgr dom (apvar va) ilow then
-          Abstract1.assign_texpr_array mgr dom
-            [| apvar vh; apvar vl |]
-            [| texpr_cst env Z.zero; texpr_var env va |] None
-        else
-          let lbound = Abstract1.of_box mgr env [| apvar va |] [| ilow |] in
-          let tpow2 = texpr_pow2 env (Z.to_int z) in
-          Abstract1.assign_texpr_array mgr dom
-            [| apvar vh; apvar vl |]
-            [| texpr_div (texpr_var env va) tpow2; texpr_var env va |]
-            (Some lbound))
-  | Ijoin (v, a0, a1) ->
-     let ta0 = texpr_of_atom env a0 in
-     let ta1 = texpr_of_atom env a1 in
-     let tpow2 = texpr_pow2 env (size_of_atom a1) in
-     Abstract1.assign_texpr_array mgr dom [| apvar v |]
-       [| texpr_add ta1 (texpr_mul ta0 tpow2) |] None
-  | Inop -> dom
-  | Iassert _ -> dom
-  | Iassume (_, rbe) ->
+  | Iadd (v, a0, a1) -> add_dom mgr dom v a0 a1
+  | Iadc  (v, a0, a1, a2) -> adc_dom mgr dom v a0 a1 a2
+  | Iadds (f, v, a0, a1) -> adds_dom mgr dom f v a0 a1
+  | Iadcs (f, v, a0, a1, a2) -> adcs_dom mgr dom f v a0 a1 a2
+  | Isub (v, a0, a1) -> sub_dom mgr dom v a0 a1
+  | Isbc (v, a0, a1, a2) -> sbc_dom mgr dom v a0 a1 a2
+  | Isbb (v, a0, a1, a2) -> sbb_dom mgr dom v a0 a1 a2
+  | Isubc (c, v, a0, a1) -> subc_dom mgr dom c v a0 a1
+  | Isubb (b, v, a0, a1) -> subb_dom mgr dom b v a0 a1
+  | Isbcs (c, v, a0, a1, a2) -> sbcs_dom mgr dom c v a0 a1 a2
+  | Isbbs (b, v, a0, a1, a2) -> sbbs_dom mgr dom b v a0 a1 a2
+  | Imul (v, a0, a1) -> mul_dom mgr dom v a0 a1
+  | Imuls (f, v, a0, a1) -> muls_dom mgr dom f v a0 a1
+  | Imull (vh, vl, a0, a1) -> mull_dom mgr dom vh vl a0 a1
+  | Imulj (v, a0, a1) -> mulj_dom mgr dom v a0 a1
+  | Isplit (vh, vl, a, z) | Ispl (vh, vl, a, z) -> split_dom mgr dom vh vl a z
+  | Ijoin (v, a0, a1) -> join_dom mgr dom v a0 a1
+  | Ighost (_, (_, rbe)) | Iassume (_, rbe) ->
      (match dom_of_rbexp (mgr, env) rbe with
       | Some rdom -> Abstract1.meet mgr dom rdom
       | None -> dom)
-  | Ighost _ -> dom
-  | Ishl (v, _, _)
-  | Ishr (v, _, _)
-  | Isar (v, _, _)
-  | Icmov (v, _, _, _)
-  | Iseteq (v, _, _)
-  | Isetne (v, _ ,_)
-  | Ivpc (v, _)
-  | Icast (None, v, _)
+  | Ishl (v, a0, a1) -> shl_dom mgr dom v a0 a1
+  | Ishls (vf, v, a0, z) ->
+     let a1 = mkatom_const (typ_of_var v) z in
+     assign_nondet_dom mgr (shl_dom mgr dom v a0 a1) vf
+  | Isar (v, a0, a1) -> sar_dom mgr dom v a0 a1
+  | Isars (vf, v, a0, z) ->
+     let a1 = mkatom_const (typ_of_var v) z in
+     assign_nondet_dom mgr (sar_dom mgr dom v a0 a1) vf
+  | Ishr (v, a0, a1) -> shr_dom mgr dom v a0 a1
+  | Ishrs (vf, v, a0, z) ->
+     let a1 = mkatom_const (typ_of_var v) z in
+     assign_nondet_dom mgr (shr_dom mgr dom v a0 a1) vf
+  | Iseteq (v, al, ar) -> seteq_dom mgr dom v al ar
+  | Isetne (v, al, ar) -> setne_dom mgr dom v al ar
+  | Icmov (v, _, a0, a1) -> cmov_dom mgr dom v a0 a1
+  | Icshl (vh, vl, a0, a1, z) -> cshl_dom mgr dom vh vl a0 a1 z
+  | Icshls (vf, vh, vl, a0, a1, z) ->
+     assign_nondet_dom mgr (cshl_dom mgr dom vh vl a0 a1 z) vf
+  | Icshr (vh, vl, a0, a1, z) -> cshr_dom mgr dom vh vl a0 a1 z
+  | Icshrs (vf, vh, vl, a0, a1, z) ->
+     assign_nondet_dom mgr (cshr_dom mgr dom vh vl a0 a1 z) vf
   | Inondet v | Iand (v, _, _) | Ior (v, _, _) | Ixor (v, _, _)
   | Irol (v, _, _)  | Iror (v, _, _) | Inot (v, _) ->
      assign_nondet_dom mgr dom v
-  | Ishls (v0, v1, _, _)
-  | Ishrs (v0, v1, _, _)
-  | Isars (v0, v1, _, _)
-  | Icshl (v0, v1, _, _, _)
-  | Icshr (v0, v1, _, _, _)
-  | Icast (Some v0, v1, _) ->
-     assign_nondet_dom mgr (assign_nondet_dom mgr dom v0) v1
-  | Icshls (v0, v1, v2, _, _, _)
-  | Icshrs (v0, v1, v2, _, _, _) ->
-     assign_nondet_dom mgr
-       (assign_nondet_dom mgr (assign_nondet_dom mgr dom v0) v1) v2
-     
+  | Icast (_, v, a)
+  | Ivpc (v, a) -> vpc_dom mgr dom v a
+  | Inop | Iassert _ -> dom
+
   | Icut _ -> assert false
 
 let rec interp_prog (mgr, env) dom prog =
