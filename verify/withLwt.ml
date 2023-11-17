@@ -603,26 +603,40 @@ let verify_rspec_single_conjunct ?comments header s hashopt =
  *)
 let verify_rspec_no_rcut_abs_interp ?comments s =
   let splitted_s = split_rspec_post s in
-  let vs = vars_rspec s in
-  let mgr = Absdom.Std.create_manager vs in
-  match Absdom.Std.dom_of_rbexp mgr s.rspre with
-  | Some dom ->
-     let comments = Some (append_comments_option comments ["Start domain:"; Absdom.Std.string_of_dom mgr dom]) in
-     let dom' = Absdom.Std.interp_prog mgr dom s.rsprog in
-     let comments = Some (append_comments_option comments ["End domain:"; Absdom.Std.string_of_dom mgr dom']) in
-     let rev_ret, _comments = 
-       List.fold_left (fun (ret, comments) rs ->
-           (* must be the same program and pre condition *)
-           let _ = assert (s.rspre == rs.rspre) in
-           let _ = assert (s.rsprog == rs.rsprog) in
-           let (post, _) = merge_rbexp_prove_with rs.rspost in
-           if Absdom.Std.sat_rbexp mgr dom' post then
-             let comments = Some (append_comments_option comments ["Range condition proved by abstract interpretation:"; string_of_rbexp post]) in
-             (ret, comments)
-           else
-             (rs::ret, comments)) ([], comments) splitted_s in
-     List.rev rev_ret
-  | None -> splitted_s
+  if !Options.Std.abs_interp then
+    let vs = vars_rspec s in
+    let mgr = Absdom.Std.create_manager vs in
+    match Absdom.Std.dom_of_rbexp mgr s.rspre with
+    | Some dom ->
+       let str_dom = Absdom.Std.string_of_dom mgr dom in
+       let comments =
+         Some (append_comments_option comments ["Start domain:"; str_dom]) in
+       let dom' = Absdom.Std.interp_prog mgr dom s.rsprog in
+       let str_dom' = Absdom.Std.string_of_dom mgr dom' in
+       let comments =
+         Some (append_comments_option comments ["End domain:"; str_dom']) in
+       (*
+       let _ = print_endline "Start domain"; print_endline str_dom in
+       let _ = print_endline "End domain"; print_endline str_dom' in
+        *)
+       let rev_ret, _comments = 
+         List.fold_left (fun (ret, comments) rs ->
+             (* must be the same program and pre condition *)
+             let _ = assert (s.rspre == rs.rspre) in
+             let _ = assert (s.rsprog == rs.rsprog) in
+             let (post, _) = merge_rbexp_prove_with rs.rspost in
+             if Absdom.Std.sat_rbexp mgr dom' post then
+               let comments = Some (append_comments_option comments ["Range condition proved by abstract interpretation:"; string_of_rbexp post]) in
+               (*
+                 let _ = print_endline (string_of_rbexp post) in
+                *)
+               (ret, comments)
+             else
+               (rs::ret, comments)) ([], comments) splitted_s in
+       List.rev rev_ret
+    | None -> splitted_s
+  else
+    splitted_s
 
 (**
   [verify_rspec_no_rcut header s hashopt] creates tasks that verify a range

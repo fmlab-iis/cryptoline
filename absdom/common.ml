@@ -28,13 +28,23 @@ let texpr_mul te' te'' =
   Texpr1.binop Texpr1.Mul te' te'' Texpr1.Int Texpr1.Near
 let texpr_div te' te'' =
   Texpr1.binop Texpr1.Div te' te'' Texpr1.Int Texpr1.Down
+let texpr_mod te' te'' =
+  Texpr1.binop Texpr1.Mod te' te'' Texpr1.Int Texpr1.Down
 
 let tcons_lt tel ter =
-  let te = Texpr1.binop  Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
+  let te = Texpr1.binop Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
   Tcons1.make te Tcons1.SUP
 let tcons_le tel ter =
-  let te = Texpr1.binop  Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
+  let te = Texpr1.binop Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
   Tcons1.make te Tcons1.SUPEQ
+let tcons_eq tel ter =
+  let te = Texpr1.binop Texpr1.Sub ter tel Texpr1.Int Texpr1.Near in
+  Tcons1.make te Tcons1.EQ
+
+let texpr_of_atom env a =
+  match a with
+  | Avar v -> texpr_var env v
+  | Aconst (_, z) -> texpr_cst env z
 
 (* create_env vs creates an Environment from vs *)
 let create_manager vs =
@@ -69,15 +79,12 @@ let vars_bounds_dom mgr env vars =
                     var_ary in
   Abstract1.of_box mgr env apvar_ary intervals
 
-let texpr_of_atom env a =
-  match a with
-  | Avar v -> texpr_var env v
-  | Aconst (_, z) -> texpr_cst env z
-
 let rec texpr_of_rexp env re =
   match re with
   | Rvar v -> Some (texpr_var env v)
   | Rconst (_sz, z) -> Some (texpr_cst env z)
+  | Ruext (_, re', _) -> texpr_of_rexp env re'
+  | Rsext (_, re', _) -> texpr_of_rexp env re'
   | Runop (_sz, Rnegb, re') ->
      (match texpr_of_rexp env re' with
       | Some te' -> Some (texpr_neg te')
@@ -93,6 +100,24 @@ let rec texpr_of_rexp env re =
   | Rbinop (_sz, Rmul, re', re'') ->
      (match texpr_of_rexp env re', texpr_of_rexp env re'' with
       | Some te', Some te'' -> Some (texpr_mul te' te'')
+      | _ -> None)
+  | Rbinop (_sz, Rshl, re', re'') ->
+     (match texpr_of_rexp env re', texpr_of_rexp env re'' with
+      | Some teb, Some tee ->
+         if Texpr1.is_scalar tee then
+           match Texpr1.to_expr tee with
+           | Texpr1.Cst (Coeff.Scalar (Scalar.Mpqf mpqf)) ->
+              let mpqf_str = Mpqf.to_string mpqf in
+              (* check if mpqf represents an integer *)
+              let _ = assert (Str.string_match
+                                (Str.regexp "[1-9][0-9]*") mpqf_str 0) in
+              let z = Z.to_int (Z.of_string mpqf_str) in
+              let sz = size_of_rexp re' in
+              let pow2z = Z.pow (Z.of_int 2) sz in
+              Some (texpr_mod (texpr_mul teb (texpr_pow2 env z))
+                      (texpr_cst env pow2z))
+           | _ -> None
+         else None
       | _ -> None)
   | _ -> None   
 
@@ -145,6 +170,14 @@ let dom_of_rbexp (mgr, env) rbe =
        (match rbe' with
         | Rtrue -> helper ret rbes'
         | Rand (rbe0, rbe1) -> helper ret (rbe0::rbe1::rbes')
+        | Req (_, rel, rer) ->
+           (match texpr_of_rexp env rel, texpr_of_rexp env rer with
+            | Some tel, Some ter ->
+               let tcons = Tcons1.array_make env 1 in
+               let _ = Tcons1.array_set tcons 0 (tcons_eq tel ter) in
+               let ret' = Abstract1.meet_tcons_array mgr ret tcons in
+               helper ret' rbes'
+            | _ -> None)
         | Rcmp (_, cmpop, rel, rer) ->
            let ret' = meet_primitive_rbexp mgr env ret cmpop rel rer in
            helper ret' rbes'
@@ -161,6 +194,21 @@ let interp_instr mgr env dom instr =
     else
     if Abstract1.sat_interval mgr dom (apvar v) v_interval then
       texpr_cst env Z.zero else texpr_cst env Z.one in
+  let assign_nondet_dom mgr dom v =
+     let lo, hi =
+       match typ_of_var v with
+       | Tuint sz ->
+          let ret = Mpq.init () in
+          let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
+          Mpq.of_int 0, ret
+       | Tsint sz ->
+          let h = Mpq.init () in
+          let l = Mpq.init () in
+          let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
+          let _ = Mpq.neg l h in
+          l, h in
+     Abstract1.assign_texpr mgr dom (apvar v)
+       (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None in
   match instr with
   | Imov (v, a) ->
      let ta = texpr_of_atom env a in
@@ -273,45 +321,75 @@ let interp_instr mgr env dom instr =
      let ta1 = texpr_of_atom env a1 in
      Abstract1.assign_texpr_array mgr dom [| apvar v |]
        [| texpr_mul ta0 ta1 |] None
+  | Isplit (vh, vl, a, z) | Ispl (vh, vl, a, z) ->
+     (match a with
+     | Aconst (_, za) ->
+        let zpow2 = Z.pow (Z.of_int 2) (Z.to_int z) in
+        let h = Z.div za zpow2 in
+        let l = Z.rem za zpow2 in
+        if Z.geq l Z.zero then
+          Abstract1.assign_texpr_array mgr dom
+            [| apvar vh; apvar vl |]
+            [| texpr_cst env h; texpr_cst env l |] None
+        else
+          let h' = Z.sub h Z.one in
+          let l' = Z.add l zpow2 in
+          Abstract1.assign_texpr_array mgr dom
+            [| apvar vh; apvar vl |]
+            [| texpr_cst env h'; texpr_cst env l' |] None
+     | Avar va ->
+        let upper = Mpq.init () in
+        let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (Z.to_int z) in
+        let _ = Mpq.sub upper upper (Mpq.of_int 1) in
+        let ilow = Interval.of_mpq (Mpq.of_int 0) upper in
+        if Abstract1.sat_interval mgr dom (apvar va) ilow then
+          Abstract1.assign_texpr_array mgr dom
+            [| apvar vh; apvar vl |]
+            [| texpr_cst env Z.zero; texpr_var env va |] None
+        else
+          let lbound = Abstract1.of_box mgr env [| apvar va |] [| ilow |] in
+          let tpow2 = texpr_pow2 env (Z.to_int z) in
+          Abstract1.assign_texpr_array mgr dom
+            [| apvar vh; apvar vl |]
+            [| texpr_div (texpr_var env va) tpow2; texpr_var env va |]
+            (Some lbound))
+  | Ijoin (v, a0, a1) ->
+     let ta0 = texpr_of_atom env a0 in
+     let ta1 = texpr_of_atom env a1 in
+     let tpow2 = texpr_pow2 env (size_of_atom a1) in
+     Abstract1.assign_texpr_array mgr dom [| apvar v |]
+       [| texpr_add ta1 (texpr_mul ta0 tpow2) |] None
+  | Inop -> dom
+  | Iassert _ -> dom
+  | Iassume (_, rbe) ->
+     (match dom_of_rbexp (mgr, env) rbe with
+      | Some rdom -> Abstract1.meet mgr dom rdom
+      | None -> dom)
+  | Ighost _ -> dom
+  | Ishl (v, _, _)
+  | Ishr (v, _, _)
+  | Isar (v, _, _)
+  | Icmov (v, _, _, _)
+  | Iseteq (v, _, _)
+  | Isetne (v, _ ,_)
+  | Ivpc (v, _)
+  | Icast (None, v, _)
   | Inondet v | Iand (v, _, _) | Ior (v, _, _) | Ixor (v, _, _)
   | Irol (v, _, _)  | Iror (v, _, _) | Inot (v, _) ->
-     let lo, hi =
-       match typ_of_var v with
-       | Tuint sz ->
-          let ret = Mpq.init () in
-          let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
-          Mpq.of_int 0, ret
-       | Tsint sz ->
-          let h = Mpq.init () in
-          let l = Mpq.init () in
-          let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
-          let _ = Mpq.neg l h in
-          l, h in
-     Abstract1.assign_texpr mgr dom (apvar v)
-       (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None
-  | Ishl _
-  | Ishls _
-  | Ishr _
-  | Ishrs _
-  | Isar _
-  | Isars _
-  | Icshl _
-  | Icshls _
-  | Icshr _
-  | Icshrs _
-  | Icmov _
-  | Inop
-  | Isplit _
-  | Ispl _
-  | Iseteq _
-  | Isetne _
-  | Icast _
-  | Ivpc _
-  | Ijoin _
-  | Iassert _
-  | Iassume _
-  | Icut _
-  | Ighost _ -> dom
+     assign_nondet_dom mgr dom v
+  | Ishls (v0, v1, _, _)
+  | Ishrs (v0, v1, _, _)
+  | Isars (v0, v1, _, _)
+  | Icshl (v0, v1, _, _, _)
+  | Icshr (v0, v1, _, _, _)
+  | Icast (Some v0, v1, _) ->
+     assign_nondet_dom mgr (assign_nondet_dom mgr dom v0) v1
+  | Icshls (v0, v1, v2, _, _, _)
+  | Icshrs (v0, v1, v2, _, _, _) ->
+     assign_nondet_dom mgr
+       (assign_nondet_dom mgr (assign_nondet_dom mgr dom v0) v1) v2
+     
+  | Icut _ -> assert false
 
 let rec interp_prog (mgr, env) dom prog =
   match prog with
