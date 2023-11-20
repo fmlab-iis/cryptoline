@@ -67,6 +67,8 @@ let suggest_name name ext id =
 let args = [
     ("-abs_interp", Unit (fun () -> Options.Std.abs_interp := true),
      Common.mk_arg_desc(["  Use abstract interpretation."]));
+    ("-abs_dom", Symbol (["box"; "oct"; "polka"], fun s -> Absdom.Common.domain := Absdom.Common.domain_of_string s),
+     Common.mk_arg_desc([""; "Set abstract domain. The default domain is " ^ Absdom.Common.string_of_domain !Absdom.Common.domain ^ "."]));
     ("-autocast", Set Options.Std.auto_cast,
      Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
     ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),

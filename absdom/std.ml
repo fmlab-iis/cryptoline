@@ -1,7 +1,7 @@
 
-type manager_t = Common.manager_t
+type 'a manager_t = 'a Common.manager_t
 
-type abs_t = Common.abs_t
+type 'a abs_t = 'a Common.abs_t
 
 let create_manager = Common.create_manager
 

@@ -1,15 +1,15 @@
 open Ast.Cryptoline
 
-type manager_t
+type 'a manager_t
 
-type abs_t
+type 'a abs_t
 
-val create_manager : VS.t -> manager_t
+val create_manager : VS.t -> 'a manager_t
 
-val dom_of_rbexp : manager_t -> rbexp -> abs_t option
+val dom_of_rbexp : 'a manager_t -> rbexp -> 'a abs_t option
 
-val interp_prog : manager_t -> abs_t -> program -> abs_t
+val interp_prog : 'a manager_t -> 'a abs_t -> program -> 'a abs_t
 
-val sat_rbexp : manager_t -> abs_t -> rbexp -> bool
+val sat_rbexp : 'a manager_t -> 'a abs_t -> rbexp -> bool
 
-val string_of_dom : manager_t -> abs_t -> string
+val string_of_dom : 'a manager_t -> 'a abs_t -> string

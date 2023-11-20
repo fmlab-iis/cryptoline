@@ -2,9 +2,47 @@
 open Ast.Cryptoline
 open Apron
 
-type manager_t = Box.t Manager.t * Environment.t
+type 'a manager_t = 'a Manager.t * Environment.t
 
-type abs_t = Box.t Abstract1.t
+type 'a abs_t = 'a Abstract1.t
+
+type domain =
+  [
+  | `Box
+  | `Oct
+  | `Polka
+  (*
+  | `Ppl
+  | `PolkaGrid
+   *)
+  ]
+
+let default_domain = `Box
+
+let domain = ref default_domain
+
+type polka_flavor =
+  [
+  | `Loose
+  | `Strict
+  | `Equalities
+  ]
+
+let default_polka_flavor = `Strict
+
+let polka_flavor = ref default_polka_flavor
+
+let string_of_domain d =
+  match d with
+  | `Box -> "box"
+  | `Oct -> "oct"
+  | `Polka -> "polka"
+
+let domain_of_string s =
+  if s = "box" then `Box
+  else if s = "oct" then `Oct
+  else if s = "polka" then `Polka
+  else raise (Invalid_argument ("Unknown domain " ^ s))
 
 
 (* Auxiliary functions for Apron *)
@@ -29,7 +67,7 @@ let interval_of_typ typ =
      let upper = Mpq.init () in
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) sz in
      let _ = Mpq.sub upper upper (Mpq.of_int 1) in
-     Interval.of_mpq (Mpq.of_int 0) upper 
+     Interval.of_mpq (Mpq.of_int 0) upper
   | Tsint sz ->
      let lower = Mpq.init () in
      let _ = Mpq.mul_2exp lower (Mpq.of_int 1) (pred sz) in
@@ -89,13 +127,30 @@ let create_manager vs =
   let vars = List.rev_map apvar
                (VS.elements vs) in
   let ret = Environment.make (Array.of_list vars) [| |] in
-  (Box.manager_alloc (), ret)
+  match !domain with
+  | `Box -> (Box.manager_of_box (Box.manager_alloc ()), ret)
+  | `Oct -> (Oct.manager_of_oct (Oct.manager_alloc ()), ret)
+  | `Polka -> let m =
+                match !polka_flavor with
+                | `Loose -> Polka.manager_of_polka_loose (Polka.manager_alloc_loose ())
+                | `Strict -> Polka.manager_of_polka_strict (Polka.manager_alloc_strict ())
+                | `Equalities -> Polka.manager_of_polka_equalities (Polka.manager_alloc_equalities ()) in
+              (m, ret)
+ (*
+  | `Ppl -> let m =
+                match !ppl_flavor with
+                | `Loose -> Ppl.manager_of_ppl_loose (Ppl.manager_alloc_loose ())
+                | `Strict -> Ppl.manager_of_ppl_strict (Ppl.manager_alloc_strict ())
+                | `Grid -> Ppl.manager_of_ppl_grid (Ppl.manager_alloc_grid ()) in
+              (m, ret)
+  | `PolkaGrid -> (PolkaGrid.manager_of_polkagrid (PolkaGrid.manager_alloc ()), ret)
+ *)
 
 let var_bound_dom mgr env v =
   Abstract1.of_box mgr env [| apvar v |] [| interval_of_typ (typ_of_var v) |]
 
 let vars_bounds_dom mgr env vars =
-  let var_ary = Array.of_list vars in 
+  let var_ary = Array.of_list vars in
   let apvar_ary = Array.map apvar var_ary in
   let intervals = Array.map (fun v -> interval_of_typ (typ_of_var v))
                     var_ary in
@@ -141,7 +196,7 @@ let rec texpr_of_rexp env re =
            | _ -> None
          else None
       | _ -> None)
-  | _ -> None   
+  | _ -> None
 
 (* meet {dom} with an abstract domain with a primitive rbexp,
    returns {dom} if the primitive rbexp is not supported *)
