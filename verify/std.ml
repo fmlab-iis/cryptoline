@@ -608,18 +608,22 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
   res
 
 
-let verify_rspec_single_conjunct_abs_interp ?comments s hashopt =
+let verify_rspec_single_conjunct_abs_interp s hashopt =
   let s' = if !apply_slicing then slice_rspec_ssa s hashopt else s in
   let vs = vars_rspec s' in
   let mgr = Absdom.Std.create_manager vs in
+  let _ = Options.Std.trace "Running abstract interpreter" in
   match Absdom.Std.dom_of_rbexp mgr s'.rspre with
   | Some dom ->
-     let comments = Some (append_comments_option comments ["Start domain:"; Absdom.Std.string_of_dom mgr dom]) in
+     let _ = Options.Std.trace "Start abstract domain:" in
+     let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom) in
      let dom' = Absdom.Std.interp_prog mgr dom s'.rsprog in
-     let comments = Some (append_comments_option comments ["End domain:"; Absdom.Std.string_of_dom mgr dom']) in
+     let _ = Options.Std.trace "Start abstract domain:" in
+     let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom') in
      let (rs, _) = merge_rbexp_prove_with s'.rspost in
      if Absdom.Std.sat_rbexp mgr dom' rs then
-       let _comments = Some (append_comments_option comments ["Range condition proved by abstract interpretation:"; string_of_rbexp rs]) in
+       let _ = Options.Std.trace "Proved range condition:" in
+       let _ = Options.Std.trace (string_of_rbexp rs) in
        true
      else
        false
