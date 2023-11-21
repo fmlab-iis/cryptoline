@@ -285,12 +285,15 @@ let interp_instr mgr env dom instr =
        | Tuint sz ->
           let ret = Mpq.init () in
           let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
+          let _ = Mpq.sub ret ret (Mpq.of_int 1) in
           Mpq.of_int 0, ret
        | Tsint sz ->
           let h = Mpq.init () in
           let l = Mpq.init () in
           let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
-          let _ = Mpq.neg l h in
+          let _ = Mpq.sub h h (Mpq.of_int 1) in
+          let _ = Mpq.mul_2exp l (Mpq.of_int 1) (pred sz) in
+          let _ = Mpq.neg l l in
           l, h in
      Abstract1.assign_texpr mgr dom (apvar v)
        (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None in
@@ -429,7 +432,7 @@ let interp_instr mgr env dom instr =
            [| apvar vh; apvar vl |]
            [| texpr_cst env Z.zero; texpr_var env va |] None
        else
-         let lbound = Abstract1.of_box mgr env [| apvar va |] [| ilow |] in
+         let lbound = Abstract1.of_box mgr env [| apvar vl |] [| ilow |] in
          let tpow2 = texpr_pow2 env (Z.to_int z) in
          Abstract1.assign_texpr_array mgr dom
            [| apvar vh; apvar vl |]
