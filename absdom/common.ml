@@ -157,7 +157,7 @@ let vars_bounds_dom mgr env vars =
                     var_ary in
   Abstract1.of_box mgr env apvar_ary intervals
 
-let dom_of_vars (mgr, env) vars = vars_bounds_dom mgr env (VS.to_list vars)
+let dom_of_vars (mgr, env) vars = vars_bounds_dom mgr env (VS.elements vars)
 
 let rec texpr_of_rexp env re =
   match re with
