@@ -93,7 +93,47 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
        let t2 = Unix.gettimeofday() in
        let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2 ^ "\n") in
        res in
-  let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
+  let rec fold_fun_abs_interp (res, revp, p, mgr, dom) (id, i, q) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (res, revp, p, mgr, dom)
+    | _ -> match p with
+           | h::t -> if i <> h then
+                       let dom' = Absdom.Std.interp_instr ~var_bound:false
+                                    mgr dom h in
+                       fold_fun_abs_interp (res, h::revp, t, mgr, dom')
+                         (id, i, q)
+                     else if Absdom.Std.instr_safe mgr dom i then
+                       let dom' = Absdom.Std.interp_instr ~var_bound:false
+                                    mgr dom i in
+                       (res, h::revp, t, mgr, dom')
+                     else let dom' =
+                            VS.fold (fun v dom ->
+                                Absdom.Std.dom_set_nondet_var mgr dom v)
+                              (lvs_instr i) dom in
+                          let (res', revp', p') =
+                            fold_fun (res, revp, p) (id, i, q) in
+                          let _ = assert (t == p') in
+                          (res', revp', p', mgr, dom')
+           | [] -> failwith "fold_fun_abs_interp fails" in
+  let res =
+    if !Options.Std.abs_interp then
+      let vars = VS.union (vars_rbexp f) (vars_program p) in
+      let mgr = Absdom.Std.create_manager vars in
+      match Absdom.Std.dom_of_rbexp mgr f with
+      | Some dom ->
+         let vars_dom = Absdom.Std.dom_of_vars mgr
+                          (VS.diff vars (lvs_program p)) in
+         let start_dom = Absdom.Std.meet mgr dom vars_dom in
+         let (res, _, _, _, _) = List.fold_left fold_fun_abs_interp
+                                   (Solved Unsat, [], p, mgr, start_dom) qs in
+         res
+      | None -> let (res, _, _) =
+                  List.fold_left fold_fun (Solved Unsat, [], p) qs in
+                res
+    else
+      let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
+      res in
   res
 
 (*

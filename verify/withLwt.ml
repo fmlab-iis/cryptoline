@@ -98,8 +98,51 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
          let (revp', p') = find_program_prefix i revp p in
          let promise = mk_promise (id, i, q, List.rev revp') in
          (res', revp', p', promise::pending') in
+  let rec fold_fun_abs_interp (res, revp, p, pending, mgr, dom) (id, i, q) =
+    match p with
+    | h::t ->
+       if h <> i then
+         let dom' = Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+         fold_fun_abs_interp (res, h::revp, t, pending, mgr, dom') (id, i, q)
+       else
+         (*
+         let _ = Format.pp_print_string Format.std_formatter
+                   (Absdom.Std.string_of_dom mgr dom);
+                 Format.pp_force_newline Format.std_formatter ();
+                 Format.pp_print_string Format.std_formatter
+                   (string_of_instr i);
+                 Format.pp_force_newline Format.std_formatter ();
+                 Format.pp_print_flush Format.std_formatter () in
+          *)
+         if Absdom.Std.instr_safe mgr dom i then
+           let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^
+                             "\t\t[ok]\n") in
+           let dom' = Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+           (res, h::revp, t, pending, mgr, dom')
+         else
+           let dom' =
+             VS.fold (fun v dom -> Absdom.Std.dom_set_nondet_var mgr dom v)
+               (lvs_instr i) dom in
+           let (res', revp', p', pending') = 
+             fold_fun (res, revp, p, pending) (id, i, q) in
+           let _ = assert (p' == t) in
+           (res', revp', p', pending', mgr, dom')
+    | [] -> failwith "fold_fun_abs_interp fails" in
   let (res, _, _, pending) =
-    List.fold_left fold_fun (Solved Unsat, [], prog, []) qs in
+    if !Options.Std.abs_interp then
+      let vars = VS.union (vars_rbexp f) (vars_program prog) in
+      let mgr = Absdom.Std.create_manager vars in
+      match Absdom.Std.dom_of_rbexp mgr f with
+      | Some dom ->
+         let vars_dom = Absdom.Std.dom_of_vars mgr
+                          (VS.diff vars (lvs_program prog)) in
+         let start_dom = Absdom.Std.meet mgr dom vars_dom in
+         let (res, revp, p, pending, _, _) =
+           List.fold_left fold_fun_abs_interp
+             (Solved Unsat, [], prog, [], mgr, start_dom) qs in
+         (res, revp, p, pending)
+      | None -> List.fold_left fold_fun (Solved Unsat, [], prog, []) qs
+    else List.fold_left fold_fun (Solved Unsat, [], prog, []) qs in
   finish_pending delivered_helper res pending
 
 
@@ -127,14 +170,50 @@ let verify_safety_inc_lwt ?comments s hashopt =
         Lwt.return (cid, timeout, header, id, i, q, "[TIMEOUT]", true, true) in
     Lwt.return res in
   let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
+    let verify_cut_helper promises_rev (id, i, q) =
+      if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id
+      then let promise =  make_promise (cid, !incremental_safety_timeout,
+                                        header, id, i, q) in
+           promise::promises_rev
+      else promises_rev in
+    let rec verify_cut_helper_abs_interp (promises_rev, mgr, dom, p)
+              (id, i, q) =
+      match p with
+      | h::t -> if i <> h then
+                  let dom' =
+                    Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+                  verify_cut_helper_abs_interp (promises_rev, mgr, dom', t)
+                    (id, i, q)
+                else if Absdom.Std.instr_safe mgr dom i then
+                  let dom' =
+                    Absdom.Std.interp_instr ~var_bound:false mgr dom i in
+                  (promises_rev, mgr, dom', t)
+                else
+                  let dom' =
+                    VS.fold (fun v dom ->
+                        Absdom.Std.dom_set_nondet_var mgr dom v)
+                      (lvs_instr i) dom in
+                  (verify_cut_helper promises_rev (id, i, q), mgr, dom', t)
+      | [] -> failwith "verify_cut_helper_abs_interp fails" in
     if res then let (next_sid, conds) = bexp_program_safe_numbered_conds sid s.rspre s.rsprog hashopt in
-                let promises_rev = List.fold_left (
-                                       fun promises_rev (id, i, q) ->
-                                       if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id
-                                       then let promise = make_promise (cid, !incremental_safety_timeout, header, id, i, q) in
-                                            promise::promises_rev
-                                       else promises_rev
-                                     ) [] conds in
+                let promises_rev =
+                  if !Options.Std.abs_interp then
+                    let vars = VS.union (vars_rbexp s.rspre)
+                                 (vars_program s.rsprog) in
+                    let mgr = Absdom.Std.create_manager vars in
+                    match Absdom.Std.dom_of_rbexp mgr s.rspre with
+                    | Some dom ->
+                       let vars_dom = Absdom.Std.dom_of_vars mgr
+                                        (VS.diff vars (lvs_program s.rsprog)) in
+                       let start_dom = Absdom.Std.meet mgr dom vars_dom in
+                       let (ret, _, _, _) = List.fold_left
+                                              verify_cut_helper_abs_interp
+                                              ([], mgr, start_dom, s.rsprog)
+                                              conds in
+                       ret
+                    | None -> List.fold_left verify_cut_helper [] conds
+                  else
+                    List.fold_left verify_cut_helper [] conds in
                 let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length conds) sid (next_sid - 1))
                         else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
                 add_to_pending continue_helper delivered_helper ((res, next_sid), timedouts) pending (List.rev promises_rev)
@@ -606,15 +685,26 @@ let verify_rspec_no_rcut_abs_interp s =
   if !Options.Std.abs_interp then
     let vs = vars_rspec s in
     let mgr = Absdom.Std.create_manager vs in
-    let _ = Options.Std.trace "Running abstract interpreter" in
     match Absdom.Std.dom_of_rbexp mgr s.rspre with
     | Some dom ->
-       let _ = Options.Std.trace "Start abstract domain:" in
-       let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom) in
-       let dom' = Absdom.Std.interp_prog mgr dom s.rsprog in
-       let _ = Options.Std.trace "End abstract domain:" in
-       let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom') in
-       let _ = Options.Std.trace "Proved range condition:" in
+       let vars_dom = Absdom.Std.dom_of_vars mgr
+                        (VS.diff vs (lvs_program s.rsprog)) in
+       let start_dom = Absdom.Std.meet mgr dom vars_dom in
+       let dom' = Absdom.Std.interp_prog mgr start_dom s.rsprog in
+       (*
+       let _ = Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter "Start domain:";
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter
+                 (Absdom.Std.string_of_dom mgr dom);
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter "End domain:";
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter
+                 (Absdom.Std.string_of_dom mgr dom');
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_flush Format.std_formatter () in
+        *)
        let rev_ret = 
          List.fold_left (fun ret rs ->
              (* must be the same program and pre condition *)
@@ -622,7 +712,8 @@ let verify_rspec_no_rcut_abs_interp s =
              let _ = assert (s.rsprog == rs.rsprog) in
              let (post, _) = merge_rbexp_prove_with rs.rspost in
              if Absdom.Std.sat_rbexp mgr dom' post then
-               let _ = Options.Std.trace (string_of_rbexp post) in
+               let _ = safe_trace ("Range condition: " ^
+                                     (string_of_rbexp post) ^ " [ok]") in
                ret
              else
                rs::ret) [] splitted_s in
