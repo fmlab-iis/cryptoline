@@ -17,7 +17,11 @@ let args_io =
   [
     ("-debug", Set Options.Std.debug, mk_arg_desc(["    Log debug messages"]));
     ("-keep", Set keep_temp_files, mk_arg_desc(["     Keep temporary files."]));
-    ("-o", String (fun str -> logfile := str), mk_arg_desc(["FILE    Save log messages to the specified file (default is"; !logfile ^ ")."]));
+    ("-o", String (fun str -> logfile := str), mk_arg_desc(["FILE    Save log messages to files with the specified prefix. The log file";
+                                                            "appended with \".FN.log\" stores the messages for verifying the";
+                                                            "function FN. If the specified prefix ends with filename extension";
+                                                            "\".log\" or \".txt\", the function name FN will be prepended to the";
+                                                            "extension. The default is " ^ !logfile ^ "."]));
     ("-tmpdir", String (fun str -> tmpdir := Some str), mk_arg_desc(["PATH"; "Specify a directory for temporary files."]));
     ("-v", Set verbose, mk_arg_desc(["\t     Display verbose messages."]))
   ]

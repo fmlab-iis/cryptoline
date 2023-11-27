@@ -129,7 +129,9 @@ let propose_logfile fnopt =
     match fnopt with
     | None -> ""
     | Some fn -> "." ^ fn in
-  "cryptoline" ^ fnstr ^ ".log"
+  let (fn, ext) = if Str.string_match (Str.regexp "^\\(.*\\)\\(\\.log\\|\\.txt\\)$") !logfile 0 then (Str.matched_group 1 !logfile, Str.matched_group 2 !logfile)
+                  else (!logfile, ".log") in
+  fn ^ fnstr ^ ext
 
 let trace ?log:(lf=(!logfile)) msg =
   if !debug then
