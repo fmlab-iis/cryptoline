@@ -134,6 +134,11 @@ let typ_map f ty =
   | Tuint w -> Tuint (f w)
   | Tsint w -> Tsint (f w)
 
+let random_value ty =
+  let min = min_of_typ ty in
+  let max = max_of_typ ty in
+  Z.add min (Z.random_int (Z.add (Z.sub max min) Z.one))
+
 
 (** Variables *)
 

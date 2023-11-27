@@ -74,6 +74,9 @@ val cmp_typ : typ -> typ -> int
 val typ_map : (int -> int) -> typ -> typ
 (** [typ_map f t] applies [f] to the size of [t] *)
 
+val random_value : typ -> Z.t
+(** return a random value representable by the specified type *)
+
 
 (** {1 Variables} *)
 

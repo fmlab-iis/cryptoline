@@ -22,6 +22,8 @@ let save_cuts_filename = ref ""
 
 let initial_values_string_none = "none"
 
+let initial_values_string_random = "random"
+
 let initial_values_string = ref ""
 
 let simulation_steps = ref (-1)
@@ -123,7 +125,17 @@ let args = [
     ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
     ("-rmalg", Set apply_remove_algebra, Common.mk_arg_desc(["    Remove all algebraic predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
     ("-rmrng", Set apply_remove_range, Common.mk_arg_desc(["    Remove all range predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
-    ("-sim", String (fun s -> action := Simulation; initial_values_string := if s = initial_values_string_none then "" else s), Common.mk_arg_desc(["INPUTS"; "Simulate the parsed specification starting with a list of initial"; "input values (comma separated), which should be \"none\" if the"; "specification has no input variable."]));
+    ("-sim", String (
+                 fun s ->
+                 action := Simulation;
+                 initial_values_string := if s = initial_values_string_none then ""
+                                          else s
+               ),
+     Common.mk_arg_desc(["INPUTS";
+                         "Simulate the parsed specification starting with a list of initial";
+                         "input values (comma separated). The input values should be an empty";
+                         "string \"\" or \"none\" if the specification has no input variable.";
+                         "Use \"random\" to simulate with random input values."]));
     ("-sim_steps", Int (fun n -> simulation_steps := n),
      Common.mk_arg_desc([""; "Stop simulate after the specified number of steps."]));
     ("-sim_dumps", String (fun s -> simulation_dumps_string := s),
@@ -177,13 +189,13 @@ let parse_program file =
     raise ex
 
 let parse_initial_values vars =
-  let vals = split_on_char_nonempty ',' !initial_values_string in
+  let vals = if !initial_values_string = initial_values_string_random then List.rev_map typ_of_var vars |> List.rev_map random_value |> List.rev_map Z.to_string |> List.rev
+             else split_on_char_nonempty ',' !initial_values_string in
   List.map2 (
       fun x v ->
       let w = size_of_var x in
       let bs = if Str.string_match (Str.regexp "0b\\([0-1]+\\)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
                else if Str.string_match (Str.regexp "0x\\([0-9a-fA-F]+\\)") v 0 then
-                 let _ = print_endline (Str.matched_group 1 v) in
                  NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
                else let bs = NBits.bits_of_num v in
                     let negative = String.length v > 0 && String.get v 0 = '-' in
