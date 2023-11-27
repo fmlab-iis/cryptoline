@@ -57,7 +57,9 @@ let bits_of_num str =
   if String.length str <= 0 then []
   else if String.get str 0 = '-' then let str = String.trim (String.sub str 1 (String.length str - 1)) in
                                       let bs = Extracted.from_string (explode str) in
-                                      if Extracted.msb bs == Extracted.b1 then Extracted.negB (Extracted.zext 1 bs)
+                                      (* The unsigned value 0b100...0 is representable by a signed value 0b100...0 of the same length. *)
+                                      if Extracted.msb bs == Extracted.b1 && (List.rev bs |> List.tl |> List.exists Fun.id)
+                                      then Extracted.negB (Extracted.zext 1 bs)
                                       else Extracted.negB bs
   else Extracted.from_string (explode str)
 

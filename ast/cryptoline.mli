@@ -77,6 +77,9 @@ val typ_map : (int -> int) -> typ -> typ
 val random_value : typ -> Z.t
 (** return a random value representable by the specified type *)
 
+val is_representable : typ -> Z.t -> bool
+(** check if a value is representable by a type *)
+
 
 (** {1 Variables} *)
 

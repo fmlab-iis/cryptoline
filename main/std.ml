@@ -194,13 +194,15 @@ let parse_initial_values vars =
   List.map2 (
       fun x v ->
       let w = size_of_var x in
-      let bs = if Str.string_match (Str.regexp "0b\\([0-1]+\\)") v 0 then NBits.bits_of_binary (String.trim (Str.matched_group 1 v))
-               else if Str.string_match (Str.regexp "0x\\([0-9a-fA-F]+\\)") v 0 then
-                 NBits.bits_of_hex (String.trim (Str.matched_group 1 v))
-               else let bs = NBits.bits_of_num v in
-                    let negative = String.length v > 0 && String.get v 0 = '-' in
-                    if negative then NBits.sext (w - List.length bs) bs
-                    else NBits.zext (w - List.length bs) bs in
+      let bs = let zv = Z.of_string v in
+               let _ = if not (is_representable (typ_of_var x) zv) then
+                         failwith (Printf.sprintf "The value %s is not representable by the type %s of variable %s."
+                                     v (string_of_typ (typ_of_var x)) (string_of_var x))
+               in
+               let bs = NBits.bits_of_num v in
+               let extlen = w - List.length bs in
+               if Z.lt zv Z.zero then NBits.sext extlen bs
+               else NBits.zext extlen bs in
       if List.length bs <> w then failwith ("Bit width mismatch: variable " ^ string_of_var x ^ ", value " ^ v)
       else bs
     ) vars vals

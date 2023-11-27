@@ -139,6 +139,9 @@ let random_value ty =
   let max = max_of_typ ty in
   Z.add min (Z.random_int (Z.add (Z.sub max min) Z.one))
 
+let is_representable ty v =
+  not (Z.lt v (min_of_typ ty) || Z.gt v (max_of_typ ty))
+
 
 (** Variables *)
 
