@@ -38,6 +38,15 @@ val polka_flavor : polka_flavor ref
 
 val create_manager : VS.t -> 'a manager_t
 
+val string_of_abs : 'a abs_t -> string
+(** return the string representation of an abstract domain *)
+
+val top_abs : 'a manager_t -> 'a abs_t
+(** the top abstract domain *)
+
+val bottom_abs : 'a manager_t -> 'a abs_t
+(** the bottom abstract domain *)
+
 val meet : 'a manager_t -> 'a abs_t -> 'a abs_t -> 'a abs_t
 
 val dom_of_vars : 'a manager_t -> VS.t -> 'a abs_t

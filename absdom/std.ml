@@ -5,6 +5,10 @@ type 'a abs_t = 'a Common.abs_t
 
 let create_manager = Common.create_manager
 
+let top_abs = Common.top_abs
+
+let bottom_abs = Common.bottom_abs
+
 let meet = Common.meet
 
 let dom_of_rbexp = Common.dom_of_rbexp
