@@ -103,6 +103,15 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
     | h::t ->
        if h <> i then
          let dom' = Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+         (*
+         let _ = Format.pp_print_string Format.std_formatter
+                   (Absdom.Std.string_of_dom mgr dom);
+                 Format.pp_force_newline Format.std_formatter ();
+                 Format.pp_print_string Format.std_formatter
+                   (string_of_instr i);
+                 Format.pp_force_newline Format.std_formatter ();
+                 Format.pp_print_flush Format.std_formatter () in
+         *)
          fold_fun_abs_interp (res, h::revp, t, pending, mgr, dom') (id, i, q)
        else
          (*
@@ -714,6 +723,8 @@ let verify_rspec_no_rcut_abs_interp s =
              if Absdom.Std.sat_rbexp mgr dom' post then
                let _ = safe_trace ("Range condition: " ^
                                      (string_of_rbexp post) ^ " [ok]") in
+               let _ = safe_trace ("End abstract domain: " ^
+                                     (Absdom.Std.string_of_dom mgr dom')) in
                ret
              else
                rs::ret) [] splitted_s in
