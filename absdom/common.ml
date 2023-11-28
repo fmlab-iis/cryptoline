@@ -103,8 +103,6 @@ let texpr_sub te' te'' =
   Texpr1.binop Texpr1.Sub te' te'' Texpr1.Int Texpr1.Near
 let texpr_mul te' te'' =
   Texpr1.binop Texpr1.Mul te' te'' Texpr1.Int Texpr1.Near
-let texpr_div te' te'' =
-  Texpr1.binop Texpr1.Div te' te'' Texpr1.Int Texpr1.Down
 let texpr_pow te' te'' =
   Texpr1.binop Texpr1.Pow te' te'' Texpr1.Int Texpr1.Down
 let texpr_pow2e env i =
@@ -113,6 +111,12 @@ let texpr_pow2i env i =
   let ret = Mpq.init () in
   let _ = Mpq.mul_2exp ret (Mpq.of_int 1) i in
   Texpr1.cst env (Coeff.s_of_mpq ret)
+let texpr_div te' te'' =
+  Texpr1.binop Texpr1.Div te' te'' Texpr1.Int Texpr1.Down
+let texpr_div2e env e i =
+  texpr_div e (texpr_pow2e env i)
+let texpr_div2i env e i =
+  texpr_div e (texpr_pow2i env i)
 let texpr_mod te' te'' =
   Texpr1.binop Texpr1.Mod te' te'' Texpr1.Int Texpr1.Down
 let _texpr_mod2e env e i =
@@ -311,11 +315,14 @@ let dom_set_nondet_var (mgr, env) dom v =
     (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None
 
 let interp_instr ?(var_bound=true) (mgr, env) dom instr =
-  let texpr_to_unsigned env w e =
+  let texpr_to_unsigned_i env w e =
     texpr_mod (texpr_add e (texpr_pow2i env w)) (texpr_pow2i env w) in
-  let texpr_to_signed env w e =
-    let sign_bit = texpr_div e (texpr_pow2i env (w - 1)) in
+  let texpr_to_signed_i env w e =
+    let sign_bit = texpr_div2i env e (w - 1) in
     texpr_sub e (texpr_mul sign_bit (texpr_pow2i env w)) in
+  let texpr_to_signed_e env w e =
+    let sign_bit = texpr_div2e env e (texpr_sub w (texpr_cst env Z.one)) in
+    texpr_sub e (texpr_mul sign_bit (texpr_pow2e env w)) in
   let texpr_flag mgr dom v =
     let v_interval = interval_of_typ (typ_of_var v) in
     if typ_is_signed (typ_of_var v) then
@@ -473,19 +480,29 @@ let interp_instr ?(var_bound=true) (mgr, env) dom instr =
   let shl_dom mgr dom v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
-    match typ_of_atom a0 with
-    | Tuint w ->
-       let e = texpr_mod2i env (texpr_mul ta0 (texpr_pow2e env ta1)) w in
-       Abstract1.assign_texpr_array mgr dom [| apvar v |]
-         [| e |]
-         (if var_bound then Some (var_bound_dom mgr env v) else None)
-    | Tsint w ->
-       let uta0 = texpr_to_unsigned env w ta0 in
-       let e = texpr_mod2i env (texpr_mul uta0 (texpr_pow2e env ta1)) w in
-       let se = texpr_to_signed env w e in
-       Abstract1.assign_texpr_array mgr dom [| apvar v |]
-         [| se |]
-         (if var_bound then Some (var_bound_dom mgr env v) else None) in
+    let w = size_of_atom a0 in
+    let is_signed = atom_is_signed a0 in
+    let uta0 = if is_signed then texpr_to_unsigned_i env w ta0 else ta0 in
+    let tv = let tv = texpr_mod2i env (texpr_mul uta0 (texpr_pow2e env ta1)) w in
+             if is_signed then texpr_to_signed_i env w tv else tv in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |]
+      [| tv |]
+      (if var_bound then Some (var_bound_dom mgr env v) else None) in
+  let shls_dom mgr dom f v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let w = size_of_atom a0 in
+    let is_signed = atom_is_signed a0 in
+    let uta0 = if is_signed then texpr_to_unsigned_i env w ta0 else ta0 in
+    let (tv, tf) =
+      let t = texpr_mul uta0 (texpr_pow2e env ta1) in
+      let tv = texpr_mod2i env t w in
+      let tf = texpr_div2i env t w in
+      ((if is_signed then texpr_to_signed_i env w tv else tv),
+       (if is_signed then texpr_to_signed_e env ta1 tf else tf)) in
+    Abstract1.assign_texpr_array mgr dom [| apvar v; apvar f |]
+      [| tv; tf |]
+      (if var_bound then Some (vars_bounds_dom mgr env [v; f]) else None) in
   let shr_dom mgr dom v a0 a1 =
      match a1 with
      | Avar _ -> dom_set_nondet_var (mgr, env) dom v
@@ -584,9 +601,7 @@ let interp_instr ?(var_bound=true) (mgr, env) dom instr =
       | Some rdom -> Abstract1.meet mgr dom rdom
       | None -> dom)
   | Ishl (v, a0, a1) -> shl_dom mgr dom v a0 a1
-  | Ishls (vf, v, a0, z) ->
-     let a1 = mkatom_const (typ_of_var v) z in
-     dom_set_nondet_var (mgr, env) (shl_dom mgr dom v a0 a1) vf
+  | Ishls (vf, v, a0, z) -> shls_dom mgr dom vf v a0 (mkatom_const (typ_of_var v) z)
   | Isar (v, a0, a1) -> sar_dom mgr dom v a0 a1
   | Isars (vf, v, a0, z) ->
      let a1 = mkatom_const (typ_of_var v) z in

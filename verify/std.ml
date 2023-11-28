@@ -655,11 +655,9 @@ let verify_rspec_single_conjunct_abs_interp s hashopt =
   let _ = Options.Std.trace "Running abstract interpreter" in
   match Absdom.Std.dom_of_rbexp mgr s'.rspre with
   | Some dom ->
-     let _ = Options.Std.trace "Start abstract domain:" in
-     let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom) in
+     let _ = Options.Std.trace ("Start abstract domain: " ^ Absdom.Std.string_of_dom mgr dom) in
      let dom' = Absdom.Std.interp_prog mgr dom s'.rsprog in
-     let _ = Options.Std.trace "Final abstract domain:" in
-     let _ = Options.Std.trace (Absdom.Std.string_of_dom mgr dom') in
+     let _ = Options.Std.trace ("Final abstract domain: " ^ Absdom.Std.string_of_dom mgr dom') in
      let (rs, _) = merge_rbexp_prove_with s'.rspost in
      if Absdom.Std.sat_rbexp mgr dom' rs then
        let _ = Options.Std.trace "Proved range condition:" in
