@@ -102,7 +102,7 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
     match p with
     | h::t ->
        if h <> i then
-         let dom' = Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+         let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
          (*
          let _ = Format.pp_print_string Format.std_formatter
                    (Absdom.Std.string_of_dom mgr dom);
@@ -126,13 +126,11 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
          if Absdom.Std.instr_safe mgr dom i then
            let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^
                              "\t\t[ok]\n") in
-           let dom' = Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+           let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
            (res, h::revp, t, pending, mgr, dom')
          else
-           let dom' =
-             VS.fold (fun v dom -> Absdom.Std.dom_set_nondet_var mgr dom v)
-               (lvs_instr i) dom in
-           let (res', revp', p', pending') = 
+           let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom h in
+           let (res', revp', p', pending') =
              fold_fun (res, revp, p, pending) (id, i, q) in
            let _ = assert (p' == t) in
            (res', revp', p', pending', mgr, dom')
@@ -141,9 +139,9 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
     if !Options.Std.abs_interp then
       let vars = VS.union (vars_rbexp f) (vars_program prog) in
       let mgr = Absdom.Std.create_manager vars in
-      match Absdom.Std.dom_of_rbexp mgr f with
+      match Absdom.Std.abs_of_rbexp mgr f with
       | Some dom ->
-         let vars_dom = Absdom.Std.dom_of_vars mgr
+         let vars_dom = Absdom.Std.abs_of_vars mgr
                           (VS.diff vars (lvs_program prog)) in
          let start_dom = Absdom.Std.meet mgr dom vars_dom in
          let (res, revp, p, pending, _, _) =
@@ -190,18 +188,15 @@ let verify_safety_inc_lwt ?comments s hashopt =
       match p with
       | h::t -> if i <> h then
                   let dom' =
-                    Absdom.Std.interp_instr ~var_bound:false mgr dom h in
+                    Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
                   verify_cut_helper_abs_interp (promises_rev, mgr, dom', t)
                     (id, i, q)
                 else if Absdom.Std.instr_safe mgr dom i then
                   let dom' =
-                    Absdom.Std.interp_instr ~var_bound:false mgr dom i in
+                    Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom i in
                   (promises_rev, mgr, dom', t)
                 else
-                  let dom' =
-                    VS.fold (fun v dom ->
-                        Absdom.Std.dom_set_nondet_var mgr dom v)
-                      (lvs_instr i) dom in
+                  let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom i in
                   (verify_cut_helper promises_rev (id, i, q), mgr, dom', t)
       | [] -> failwith "verify_cut_helper_abs_interp fails" in
     if res then let (next_sid, conds) = bexp_program_safe_numbered_conds sid s.rspre s.rsprog hashopt in
@@ -210,9 +205,9 @@ let verify_safety_inc_lwt ?comments s hashopt =
                     let vars = VS.union (vars_rbexp s.rspre)
                                  (vars_program s.rsprog) in
                     let mgr = Absdom.Std.create_manager vars in
-                    match Absdom.Std.dom_of_rbexp mgr s.rspre with
+                    match Absdom.Std.abs_of_rbexp mgr s.rspre with
                     | Some dom ->
-                       let vars_dom = Absdom.Std.dom_of_vars mgr
+                       let vars_dom = Absdom.Std.abs_of_vars mgr
                                         (VS.diff vars (lvs_program s.rsprog)) in
                        let start_dom = Absdom.Std.meet mgr dom vars_dom in
                        let (ret, _, _, _) = List.fold_left
@@ -694,9 +689,9 @@ let verify_rspec_no_rcut_abs_interp s =
   if !Options.Std.abs_interp then
     let vs = vars_rspec s in
     let mgr = Absdom.Std.create_manager vs in
-    match Absdom.Std.dom_of_rbexp mgr s.rspre with
+    match Absdom.Std.abs_of_rbexp mgr s.rspre with
     | Some dom ->
-       let vars_dom = Absdom.Std.dom_of_vars mgr
+       let vars_dom = Absdom.Std.abs_of_vars mgr
                         (VS.diff vs (lvs_program s.rsprog)) in
        let start_dom = Absdom.Std.meet mgr dom vars_dom in
        let dom' = Absdom.Std.interp_prog mgr start_dom s.rsprog in
@@ -714,7 +709,7 @@ let verify_rspec_no_rcut_abs_interp s =
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_flush Format.std_formatter () in
         *)
-       let rev_ret = 
+       let rev_ret =
          List.fold_left (fun ret rs ->
              (* must be the same program and pre condition *)
              let _ = assert (s.rspre == rs.rspre) in
@@ -724,7 +719,7 @@ let verify_rspec_no_rcut_abs_interp s =
                let _ = safe_trace ("Range condition: " ^
                                      (string_of_rbexp post) ^ " [ok]") in
                let _ = safe_trace ("End abstract domain: " ^
-                                     (Absdom.Std.string_of_dom mgr dom')) in
+                                     (Absdom.Std.string_of_abs dom')) in
                ret
              else
                rs::ret) [] splitted_s in
@@ -1461,7 +1456,7 @@ let verify_safety_cli ?comments s hashopt =
 
 
 
-let test_absdom_lwt s =
+let test_absdom_lwt ?(safe=true) s =
   let test_var cid mgr dom s v =
     fun () ->
     let (inf, sup) = Absdom.Std.zinterval_of_var mgr dom v in
@@ -1481,11 +1476,11 @@ let test_absdom_lwt s =
     if res then let vars = vars_rspec s in
                 let lvs = lvs_program s.rsprog in
                 let mgr = Absdom.Std.create_manager vars in
-                match Absdom.Std.dom_of_rbexp mgr s.rspre with
+                match Absdom.Std.abs_of_rbexp mgr s.rspre with
                 | Some dom ->
-                   let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars lvs) in
+                   let vars_dom = Absdom.Std.abs_of_vars mgr (VS.diff vars lvs) in
                    let start_dom = Absdom.Std.meet mgr dom vars_dom in
-                   let dom' = Absdom.Std.interp_prog mgr start_dom s.rsprog in
+                   let dom' = Absdom.Std.interp_prog ~safe mgr start_dom s.rsprog in
                    if Absdom.Std.is_bottom mgr dom'
                    then let _ = let str = Printf.sprintf "    Cut #%d" cid in
                                 vprintln (Printf.sprintf "%-55s%s" str "[BOTTOM]") in

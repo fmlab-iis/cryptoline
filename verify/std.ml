@@ -99,18 +99,15 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
     | Solved Unknown -> (res, revp, p, mgr, dom)
     | _ -> match p with
            | h::t -> if i <> h then
-                       let dom' = Absdom.Std.interp_instr ~var_bound:false
+                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
                                     mgr dom h in
                        fold_fun_abs_interp (res, h::revp, t, mgr, dom')
                          (id, i, q)
                      else if Absdom.Std.instr_safe mgr dom i then
-                       let dom' = Absdom.Std.interp_instr ~var_bound:false
+                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
                                     mgr dom i in
                        (res, h::revp, t, mgr, dom')
-                     else let dom' =
-                            VS.fold (fun v dom ->
-                                Absdom.Std.dom_set_nondet_var mgr dom v)
-                              (lvs_instr i) dom in
+                     else let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom i in
                           let (res', revp', p') =
                             fold_fun (res, revp, p) (id, i, q) in
                           let _ = assert (t == p') in
@@ -120,9 +117,9 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
     if !Options.Std.abs_interp then
       let vars = VS.union (vars_rbexp f) (vars_program p) in
       let mgr = Absdom.Std.create_manager vars in
-      match Absdom.Std.dom_of_rbexp mgr f with
+      match Absdom.Std.abs_of_rbexp mgr f with
       | Some dom ->
-         let vars_dom = Absdom.Std.dom_of_vars mgr
+         let vars_dom = Absdom.Std.abs_of_vars mgr
                           (VS.diff vars (lvs_program p)) in
          let start_dom = Absdom.Std.meet mgr dom vars_dom in
          let (res, _, _, _, _) = List.fold_left fold_fun_abs_interp
@@ -653,11 +650,13 @@ let verify_rspec_single_conjunct_abs_interp s hashopt =
   let vs = vars_rspec s' in
   let mgr = Absdom.Std.create_manager vs in
   let _ = Options.Std.trace "Running abstract interpreter" in
-  match Absdom.Std.dom_of_rbexp mgr s'.rspre with
+  match Absdom.Std.abs_of_rbexp mgr s'.rspre with
   | Some dom ->
-     let _ = Options.Std.trace ("Start abstract domain: " ^ Absdom.Std.string_of_dom mgr dom) in
+     let _ = Options.Std.trace ("Start abstract domain:") in
+     let _ = Options.Std.trace (Absdom.Std.string_of_abs dom) in
      let dom' = Absdom.Std.interp_prog mgr dom s'.rsprog in
-     let _ = Options.Std.trace ("Final abstract domain: " ^ Absdom.Std.string_of_dom mgr dom') in
+     let _ = Options.Std.trace ("Final abstract domain:") in
+     let _ = Options.Std.trace (Absdom.Std.string_of_abs dom') in
      let (rs, _) = merge_rbexp_prove_with s'.rspost in
      if Absdom.Std.sat_rbexp mgr dom' rs then
        let _ = Options.Std.trace "Proved range condition:" in

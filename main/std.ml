@@ -54,6 +54,8 @@ let save_rep_uniform_types = ref false
 
 let print_with_types = ref false
 
+let absdom_assume_safe = ref false
+
 let str_to_ids str =
   if str = "-" then Hashset.of_list []
   else (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
@@ -70,9 +72,13 @@ let suggest_name name ext id =
 
 let args = [
     ("-abs_interp", Unit (fun () -> Options.Std.abs_interp := true),
-     Common.mk_arg_desc(["  Use abstract interpretation."]));
+     Common.mk_arg_desc([""; "Use abstract interpretation."]));
     ("-abs_dom", Symbol (["box"; "oct"; "polka"], fun s -> Absdom.Common.domain := Absdom.Common.domain_of_string s),
      Common.mk_arg_desc([""; "Set abstract domain. The default domain is " ^ Absdom.Common.string_of_domain !Absdom.Common.domain ^ "."]));
+    ("-abs_safe", Bool (fun b -> absdom_assume_safe := b),
+     Common.mk_arg_desc(["b";
+                         "Assume the program is safe iff b is true when doing abstract";
+                         "interpretation with -pabsdom or -abs_test."]));
     ("-abs_test", Unit (fun () -> action := TestAbsdom),
      Common.mk_arg_desc([""; "Verify abstract domains computed by abstract interpretation."]));
     ("-autocast", Set Options.Std.auto_cast,
@@ -107,8 +113,9 @@ let args = [
                                                        "with -pssa. Note that if the specification contains assume";
                                                        "instructions, the move of assertions may be unsound."]));
     ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
-    ("-pabsdom", Unit (fun () -> action := PrintAbsdom), Common.mk_arg_desc(["  Print the final abstract domain without considering cuts. Variables";
-                                                                             "are in SSA form."]));
+    ("-pabsdom", Unit (fun () -> action := PrintAbsdom),
+     Common.mk_arg_desc(["  Print the final abstract domain without considering cuts. Variables";
+                         "are in SSA form."]));
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
@@ -453,12 +460,12 @@ let anon file =
      let vars = vars_rspec rs in
      let mgr = Absdom.Std.create_manager vars in
      begin
-       match Absdom.Std.dom_of_rbexp mgr rs.rspre with
+       match Absdom.Std.abs_of_rbexp mgr rs.rspre with
        | Some dom ->
-          let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
+          let vars_dom = Absdom.Std.abs_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
           let start_dom = Absdom.Std.meet mgr dom vars_dom in
-          let dom' = Absdom.Std.interp_prog mgr start_dom rs.rsprog in
-          let _ = print_endline (Absdom.Std.string_of_dom mgr dom') in
+          let dom' = Absdom.Std.interp_prog ~safe:!absdom_assume_safe mgr start_dom rs.rsprog in
+          let _ = print_endline (Absdom.Std.string_of_abs dom') in
           ()
        | None ->
           print_endline ("None")
@@ -467,7 +474,7 @@ let anon file =
      let _ = Options.Std.abs_interp := false in
      let t1 = Unix.gettimeofday() in
      let (_, s) = Common.parse_and_check file in
-     let res = Verify.WithLwt.test_absdom_lwt (ssa_spec s) in
+     let res = Verify.WithLwt.test_absdom_lwt ~safe:!absdom_assume_safe (ssa_spec s) in
      let t2 = Unix.gettimeofday() in
      let _ = print_endline (Printf.sprintf "%-55s%-8s%-14s" "Final result:"  (if res then "[OK]" else "[FAIL]") (string_of_running_time t1 t2)) in
      ()

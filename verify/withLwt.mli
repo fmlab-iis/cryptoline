@@ -48,8 +48,8 @@ val verify_rspec :
 (** [verify_rspec s o] parallelly verifies the range specification [s]
     in SSA. *)
 
-val test_absdom_lwt : Ast.Cryptoline.spec -> bool
-(** test absdom *)
+val test_absdom_lwt : ?safe:bool -> Ast.Cryptoline.spec -> bool
+(** test absdom, assuming the specification is safe unless safe is false *)
 
 
 (** {1 With CLI} *)
