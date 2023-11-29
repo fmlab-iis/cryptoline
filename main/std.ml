@@ -8,7 +8,7 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | Simulation
+type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | Simulation | PrintDomain
 
 let action = ref Verify
 
@@ -103,6 +103,8 @@ let args = [
                                                        "with -pssa. Note that if the specification contains assume";
                                                        "instructions, the move of assertions may be unsound."]));
     ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
+    ("-pabsdom", Unit (fun () -> action := PrintDomain), Common.mk_arg_desc(["  Print the final abstract domain without considering cuts. Variables";
+                                                                             "are in SSA form."]));
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
     ("-pssa", Unit (fun () -> action := PrintSSA), Common.mk_arg_desc(["     Print the parsed specification in SSA."]));
@@ -441,7 +443,20 @@ let anon file =
      let m = Simulator.make_map ivs vals in
      if !interactive_simulation then Simulator.shell m s.sprog
      else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
-
+  | PrintDomain ->
+     let (_, s) = Common.parse_and_check file in
+     let rs = rspec_of_spec (ssa_spec (remove_cut_spec s)) in
+     let vars = vars_rspec rs in
+     let mgr = Absdom.Std.create_manager vars in
+     match Absdom.Std.dom_of_rbexp mgr rs.rspre with
+     | Some dom ->
+        let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
+        let start_dom = Absdom.Std.meet mgr dom vars_dom in
+        let dom' = Absdom.Std.interp_prog mgr start_dom rs.rsprog in
+        let _ = print_endline (Absdom.Std.string_of_dom mgr dom') in
+        ()
+     | None ->
+        print_endline ("None")
 
 (*
 let _ =
