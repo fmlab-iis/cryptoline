@@ -68,7 +68,7 @@ let interval_union i0 i1 =
             else inf0 in
   let sup0 = i0.Interval.sup in
   let sup1 = i1.Interval.sup in
-  let sup = if Scalar.cmp sup0 sup1 > 0 then inf0
+  let sup = if Scalar.cmp sup0 sup1 > 0 then sup0
             else if Scalar.cmp sup0 sup1 < 0 then sup1
             else sup0 in
   Interval.of_infsup inf sup
