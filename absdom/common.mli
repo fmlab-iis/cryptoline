@@ -41,11 +41,15 @@ val create_manager : VS.t -> 'a manager_t
 val string_of_abs : 'a abs_t -> string
 (** return the string representation of an abstract domain *)
 
-val top_abs : 'a manager_t -> 'a abs_t
+val top : 'a manager_t -> 'a abs_t
 (** the top abstract domain *)
 
-val bottom_abs : 'a manager_t -> 'a abs_t
+val bottom : 'a manager_t -> 'a abs_t
 (** the bottom abstract domain *)
+
+val is_top : 'a manager_t -> 'a abs_t -> bool
+
+val is_bottom : 'a manager_t -> 'a abs_t -> bool
 
 val meet : 'a manager_t -> 'a abs_t -> 'a abs_t -> 'a abs_t
 
@@ -65,3 +69,5 @@ val sat_rbexp : 'a manager_t -> 'a abs_t -> rbexp -> bool
 val instr_safe : 'a manager_t -> 'a abs_t -> instr -> bool
 
 val string_of_dom : 'a manager_t -> 'a abs_t -> string
+
+val zinterval_of_var : 'a manager_t -> 'a abs_t -> Ast.Cryptoline.var -> Z.t * Z.t

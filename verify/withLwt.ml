@@ -1456,3 +1456,47 @@ let verify_safety_all_cli ?comments s _hashopt =
 let verify_safety_cli ?comments s hashopt =
   if !incremental_safety then verify_safety_inc_cli ?comments s hashopt
   else verify_safety_all_cli ?comments s hashopt
+
+
+
+
+
+let test_absdom_lwt s =
+  let test_var cid mgr dom s v =
+    fun () ->
+    let (inf, sup) = Absdom.Std.zinterval_of_var mgr dom v in
+    if Z.equal inf (min_of_typ (typ_of_var v)) && Z.equal sup (max_of_typ (typ_of_var v)) then Lwt.return (true, cid, v, inf, sup)
+    else let op = if var_is_signed v then rsle else rule in
+         let w = size_of_var v in
+         let e = rand (op w (rconst w inf) (rvar v)) (op w (rvar v) (rconst w sup)) in
+         let%lwt res = verify_rspec_single_conjunct [] { s with rspost = [(e, [])] } None in
+         Lwt.return (res, cid, v, inf, sup) in
+  let delivered_helper res (resv, cid, v, inf, sup) =
+    let _ = let str = Printf.sprintf "    Cut #%d, var %s:" cid (string_of_var v) in
+            let _ = vprintln(Printf.sprintf "%-55s%-8s" str (if res then "[OK]" else "[FAIL]")) in
+            () in
+    let _ = if not resv then vprintln(Printf.sprintf "    Failed interval: [%s, %s]" (Z.to_string inf) (Z.to_string sup)) in
+    res && resv in
+  let test_cut cid _ (res, pending) (_, s) =
+    if res then let vars = vars_rspec s in
+                let lvs = lvs_program s.rsprog in
+                let mgr = Absdom.Std.create_manager vars in
+                match Absdom.Std.dom_of_rbexp mgr s.rspre with
+                | Some dom ->
+                   let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars lvs) in
+                   let start_dom = Absdom.Std.meet mgr dom vars_dom in
+                   let dom' = Absdom.Std.interp_prog mgr start_dom s.rsprog in
+                   if Absdom.Std.is_bottom mgr dom'
+                   then let _ = let str = Printf.sprintf "    Cut #%d" cid in
+                                vprintln (Printf.sprintf "%-55s%s" str "[BOTTOM]") in
+                        (false, pending)
+                   else let tasks = List.map (test_var cid mgr dom' s) (VS.elements lvs) in
+                        add_to_pending Fun.id delivered_helper res pending tasks
+                | None ->
+                   let _ = let str = Printf.sprintf "    Cut #%d" cid in
+                           vprintln(Printf.sprintf "%-55s%-8s" str "[SKIP]") in
+                   (res, pending)
+    else (res, pending) in
+  let res = apply_to_cuts_lwt !verify_rcuts test_cut delivered_helper true [] (remove_assert_spec s |> merge_bexp_prove_with_spec |> rspec_of_spec |> cut_rspec) in
+  res
+

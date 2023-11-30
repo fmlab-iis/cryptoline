@@ -6,9 +6,17 @@ type 'a abs_t
 
 val create_manager : VS.t -> 'a manager_t
 
-val top_abs : 'a manager_t -> 'a abs_t
+val top : 'a manager_t -> 'a abs_t
+(** the top abstract domain *)
 
-val bottom_abs : 'a manager_t -> 'a abs_t
+val bottom : 'a manager_t -> 'a abs_t
+(** the bottom abstract domain *)
+
+val is_top : 'a manager_t -> 'a abs_t -> bool
+(** check if an abstract domain is top *)
+
+val is_bottom : 'a manager_t -> 'a abs_t -> bool
+(** check if an abstract domain is bottom *)
 
 val meet : 'a manager_t -> 'a abs_t -> 'a abs_t -> 'a abs_t
 
@@ -28,3 +36,6 @@ val sat_rbexp : 'a manager_t -> 'a abs_t -> rbexp -> bool
 val instr_safe : 'a manager_t -> 'a abs_t -> instr -> bool
 
 val string_of_dom : 'a manager_t -> 'a abs_t -> string
+
+val zinterval_of_var : 'a manager_t -> 'a abs_t -> Ast.Cryptoline.var -> Z.t * Z.t
+(** interval of a variable in an abstract domain *)

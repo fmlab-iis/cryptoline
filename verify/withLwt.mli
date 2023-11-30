@@ -48,6 +48,9 @@ val verify_rspec :
 (** [verify_rspec s o] parallelly verifies the range specification [s]
     in SSA. *)
 
+val test_absdom_lwt : Ast.Cryptoline.spec -> bool
+(** test absdom *)
+
 
 (** {1 With CLI} *)
 

@@ -8,7 +8,9 @@ open Utils
 open Utils.Std
 open Sim
 
-type action = Verify | Parse | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | Simulation | PrintDomain
+type action = Verify | Parse | Simulation | TestAbsdom
+              | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts
+              | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | PrintAbsdom
 
 let action = ref Verify
 
@@ -71,6 +73,8 @@ let args = [
      Common.mk_arg_desc(["  Use abstract interpretation."]));
     ("-abs_dom", Symbol (["box"; "oct"; "polka"], fun s -> Absdom.Common.domain := Absdom.Common.domain_of_string s),
      Common.mk_arg_desc([""; "Set abstract domain. The default domain is " ^ Absdom.Common.string_of_domain !Absdom.Common.domain ^ "."]));
+    ("-abs_test", Unit (fun () -> action := TestAbsdom),
+     Common.mk_arg_desc([""; "Verify abstract domains computed by abstract interpretation."]));
     ("-autocast", Set Options.Std.auto_cast,
      Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
     ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),
@@ -103,7 +107,7 @@ let args = [
                                                        "with -pssa. Note that if the specification contains assume";
                                                        "instructions, the move of assertions may be unsound."]));
     ("-p", Unit (fun () -> action := Parse), Common.mk_arg_desc(["\t     Print the parsed specification."]));
-    ("-pabsdom", Unit (fun () -> action := PrintDomain), Common.mk_arg_desc(["  Print the final abstract domain without considering cuts. Variables";
+    ("-pabsdom", Unit (fun () -> action := PrintAbsdom), Common.mk_arg_desc(["  Print the final abstract domain without considering cuts. Variables";
                                                                              "are in SSA form."]));
     ("-pespec", Unit (fun () -> action := PrintESpec), Common.mk_arg_desc(["   Print the parsed algebraic specification."]));
     ("-prspec", Unit (fun () -> action := PrintRSpec), Common.mk_arg_desc(["   Print the parsed range specification."]));
@@ -443,20 +447,30 @@ let anon file =
      let m = Simulator.make_map ivs vals in
      if !interactive_simulation then Simulator.shell m s.sprog
      else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
-  | PrintDomain ->
+  | PrintAbsdom ->
      let (_, s) = Common.parse_and_check file in
      let rs = rspec_of_spec (ssa_spec (remove_cut_spec s)) in
      let vars = vars_rspec rs in
      let mgr = Absdom.Std.create_manager vars in
-     match Absdom.Std.dom_of_rbexp mgr rs.rspre with
-     | Some dom ->
-        let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
-        let start_dom = Absdom.Std.meet mgr dom vars_dom in
-        let dom' = Absdom.Std.interp_prog mgr start_dom rs.rsprog in
-        let _ = print_endline (Absdom.Std.string_of_dom mgr dom') in
-        ()
-     | None ->
-        print_endline ("None")
+     begin
+       match Absdom.Std.dom_of_rbexp mgr rs.rspre with
+       | Some dom ->
+          let vars_dom = Absdom.Std.dom_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
+          let start_dom = Absdom.Std.meet mgr dom vars_dom in
+          let dom' = Absdom.Std.interp_prog mgr start_dom rs.rsprog in
+          let _ = print_endline (Absdom.Std.string_of_dom mgr dom') in
+          ()
+       | None ->
+          print_endline ("None")
+     end
+  | TestAbsdom ->
+     let _ = Options.Std.abs_interp := false in
+     let t1 = Unix.gettimeofday() in
+     let (_, s) = Common.parse_and_check file in
+     let res = Verify.WithLwt.test_absdom_lwt (ssa_spec s) in
+     let t2 = Unix.gettimeofday() in
+     let _ = print_endline (Printf.sprintf "%-55s%-8s%-14s" "Final result:"  (if res then "[OK]" else "[FAIL]") (string_of_running_time t1 t2)) in
+     ()
 
 (*
 let _ =

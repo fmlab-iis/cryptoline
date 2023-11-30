@@ -5,9 +5,13 @@ type 'a abs_t = 'a Common.abs_t
 
 let create_manager = Common.create_manager
 
-let top_abs = Common.top_abs
+let top = Common.top
 
-let bottom_abs = Common.bottom_abs
+let bottom = Common.bottom
+
+let is_top = Common.is_top
+
+let is_bottom = Common.is_bottom
 
 let meet = Common.meet
 
@@ -26,3 +30,5 @@ let sat_rbexp = Common.sat_rbexp
 let instr_safe = Common.instr_safe
 
 let string_of_dom = Common.string_of_dom
+
+let zinterval_of_var = Common.zinterval_of_var

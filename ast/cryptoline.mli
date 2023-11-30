@@ -1879,6 +1879,9 @@ val remove_algebra_spec : spec -> spec
 val remove_range_spec : spec -> spec
 (** Remove all range predicates from assertions, cuts, and postconditions in a specification. *)
 
+val merge_bexp_prove_with_spec : spec -> spec
+(** Merge prove with clauses *)
+
 
 (** Profiling *)
 

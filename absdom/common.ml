@@ -50,9 +50,13 @@ let string_of_abs abs = String.trim (Format.asprintf "%a@." Abstract1.print abs)
 
 let _string_of_texpr e = String.trim (Format.asprintf "%a@." Texpr1.print e)
 
-let top_abs (mgr, env) = Abstract1.top mgr env
+let top (mgr, env) = Abstract1.top mgr env
 
-let bottom_abs (mgr, env) = Abstract1.bottom mgr env
+let bottom (mgr, env) = Abstract1.bottom mgr env
+
+let is_top (mgr, _) dom = Abstract1.is_top mgr dom
+let is_bottom (mgr, _) dom = Abstract1.is_bottom mgr dom
+
 
 let apvar v = Var.of_string (string_of_var v)
 
@@ -84,6 +88,10 @@ let interval_of_typ typ =
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
      let _ = Mpq.sub upper upper (Mpq.of_int 1) in
      Interval.of_mpq lower upper
+
+let zinterval_of_var (mgr, _) dom v =
+  let ivl = Abstract1.bound_variable mgr dom (apvar v) in
+  (Z.of_string (Scalar.to_string (ivl.Interval.inf)), Z.of_string (Scalar.to_string (ivl.Interval.sup)))
 
 let interval_of_atom mgr dom a =
   match a with
