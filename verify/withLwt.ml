@@ -1473,7 +1473,7 @@ let test_absdom_lwt s =
          Lwt.return (res, cid, v, inf, sup) in
   let delivered_helper res (resv, cid, v, inf, sup) =
     let _ = let str = Printf.sprintf "    Cut #%d, var %s:" cid (string_of_var v) in
-            let _ = vprintln(Printf.sprintf "%-55s%-8s" str (if res then "[OK]" else "[FAIL]")) in
+            let _ = vprintln(Printf.sprintf "%-55s%-8s" str (if resv then "[OK]" else "[FAIL]")) in
             () in
     let _ = if not resv then vprintln(Printf.sprintf "    Failed interval: [%s, %s]" (Z.to_string inf) (Z.to_string sup)) in
     res && resv in
