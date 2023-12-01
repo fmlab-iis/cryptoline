@@ -459,10 +459,10 @@ let anon file =
      let rs = rspec_of_spec (ssa_spec (remove_cut_spec s)) in
      let vars = vars_rspec rs in
      let mgr = Absdom.Std.create_manager vars in
+     let vars_dom = Absdom.Std.abs_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
      begin
-       match Absdom.Std.abs_of_rbexp mgr rs.rspre with
+       match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom rs.rspre with
        | Some dom ->
-          let vars_dom = Absdom.Std.abs_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
           let start_dom = Absdom.Std.meet mgr dom vars_dom in
           let dom' = Absdom.Std.interp_prog ~safe:!absdom_assume_safe mgr start_dom rs.rsprog in
           let _ = print_endline (Absdom.Std.string_of_abs dom') in

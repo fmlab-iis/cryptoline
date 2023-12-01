@@ -80,8 +80,8 @@ val abs_set_nondet_var : 'a manager_t -> 'a abs_t -> var -> 'a abs_t
  * abstract value is bounded by the range of [v]'s type.
  *)
 
-val abs_of_rbexp : 'a manager_t -> rbexp -> 'a abs_t option
-(** return an abstract value that satisfies a range predicate *)
+val abs_of_rbexp : 'a manager_t -> ?abs:'a abs_t -> rbexp -> 'a abs_t option
+(** return an abstract value containing all scalar numbers that satisfy a range predicate *)
 
 val interp_instr : ?safe:bool -> ?var_bound:bool ->
                    'a manager_t -> 'a abs_t -> instr -> 'a abs_t

@@ -1,6 +1,7 @@
 
 open Ast.Cryptoline
 open Apron
+open Utils.Std
 
 type 'a manager_t = 'a Manager.t * Environment.t
 
@@ -49,6 +50,7 @@ let domain_of_string s =
 let string_of_abs abs = String.trim (Format.asprintf "%a@." Abstract1.print abs)
 let _string_of_interval iv = String.trim (Format.asprintf "%a@." Interval.print iv)
 let _string_of_texpr e = String.trim (Format.asprintf "%a@." Texpr1.print e)
+let _string_of_tcons e = String.trim (Format.asprintf "%a@." Tcons1.print e)
 let _string_of_dom (_mgr, _env) dom =
   let buf = Buffer.create 16 in
   let buf_fmtter = Format.formatter_of_buffer buf in
@@ -221,120 +223,214 @@ let vars_bounds_dom mgr env vars =
 
 let abs_of_vars (mgr, env) vars = vars_bounds_dom mgr env (VS.elements vars)
 
-let rec texpr_of_rexp env re =
-  match re with
-  | Rvar v -> Some (texpr_var env v)
-  | Rconst (_sz, z) -> Some (texpr_cst env z)
-  | Ruext (_, re', _) -> texpr_of_rexp env re'
-  | Rsext (_, re', _) -> texpr_of_rexp env re'
-  | Runop (_sz, Rnegb, re') ->
-     (match texpr_of_rexp env re' with
-      | Some te' -> Some (texpr_neg te')
-      | _ -> None)
-  | Rbinop (_sz, Radd, re', re'') ->
-     (match texpr_of_rexp env re', texpr_of_rexp env re'' with
-      | Some te', Some te'' -> Some (texpr_add te' te'')
-      | _ -> None)
-  | Rbinop (_sz, Rsub, re', re'') ->
-     (match texpr_of_rexp env re', texpr_of_rexp env re'' with
-      | Some te', Some te'' -> Some (texpr_sub te' te'')
-      | _ -> None)
-  | Rbinop (_sz, Rmul, re', re'') ->
-     (match texpr_of_rexp env re', texpr_of_rexp env re'' with
-      | Some te', Some te'' -> Some (texpr_mul te' te'')
-      | _ -> None)
-  | Rbinop (_sz, Rshl, re', re'') ->
-     (match texpr_of_rexp env re', texpr_of_rexp env re'' with
-      | Some teb, Some tee ->
-         if Texpr1.is_scalar tee then
-           match Texpr1.to_expr tee with
-           | Texpr1.Cst (Coeff.Scalar (Scalar.Mpqf mpqf)) ->
-              let mpqf_str = Mpqf.to_string mpqf in
-              (* check if mpqf represents an integer *)
-              let _ = assert (Str.string_match
-                                (Str.regexp "[1-9][0-9]*") mpqf_str 0) in
-              let z = Z.to_int (Z.of_string mpqf_str) in
-              let sz = size_of_rexp re' in
-              let pow2z = Z.pow (Z.of_int 2) sz in
-              Some (texpr_mod (texpr_mul teb (texpr_pow2i env z))
-                      (texpr_cst env pow2z))
-           | _ -> None
-         else None
-      | _ -> None)
+let texpr_to_unsigned_i env w e =
+  texpr_mod2i env (texpr_add e (texpr_pow2i env w)) w
+let texpr_to_signed_i env w e =
+  let tmp = texpr_pow2i env (w - 1) in
+  texpr_sub (texpr_mod2i env (texpr_add e tmp) w) tmp
+let _texpr_to_signed_e env w e =
+  let tmp = texpr_pow2e env (texpr_sub w (texpr_one env)) in
+  texpr_sub (texpr_mod2e env (texpr_add e tmp) w) tmp
+(* apply a signed extension to an unsigned numbe *)
+let texpr_sext env w e i =
+  if i < 0 then failwith ("The size of signed extension in texpr_sext must be nonnegative.")
+  else if i = 0 then e
+  else let sign_bit = texpr_div2i env e (w - 1) in
+       let grow = texpr_sub (texpr_pow2i env (w + i)) (texpr_pow2i env w) in
+       texpr_add e (texpr_mul sign_bit grow)
+(* signed split: vh * 2^i + vl = e, 0 <= vl < 2^i, sign of vh follows the sign of e *)
+let texpr_split_i env e i =
+  let vh = texpr_div2i env e i in
+  let vl = texpr_sub e (texpr_mul2i env vh i) in
+  (vh, vl)
+let texpr_split_e env e i =
+  let vh = texpr_div2e env e i in
+  let vl = texpr_sub e (texpr_mul2e env vh i) in
+  (vh, vl)
+let texpr_eucl_rem2i env e i = snd (texpr_split_i env e i)
+let _texpr_eucl_rem2e env e i = snd (texpr_split_e env e i)
+
+let rcmpop_is_signed op =
+  match op with
+  | Rult | Rule | Rugt | Ruge -> false
+  | Rslt | Rsle | Rsgt | Rsge -> true
+
+let texpr_bv_add ?(safe=true) env w signed ta0 ta1 =
+  if safe then texpr_add ta0 ta1
+  else let tsum = let uta0 = if signed then texpr_to_unsigned_i env w ta0 else ta0 in
+                  let uta1 = if signed then texpr_to_unsigned_i env w ta1 else ta1 in
+                  texpr_add uta0 uta1 in
+       let tv = texpr_mod2i env tsum w in
+       if signed then texpr_to_signed_i env w tv else tv
+
+let texpr_bv_sub ?(safe=true) env w signed ta0 ta1 =
+  if safe then texpr_sub ta0 ta1
+  else let tsub = let uta0 = if signed then texpr_to_unsigned_i env w ta0 else ta0 in
+                  let uta1 = if signed then texpr_to_unsigned_i env w ta1 else ta1 in
+                  texpr_add (texpr_sub uta0 uta1) (texpr_pow2i env w) in
+       let tv = texpr_mod2i env tsub w in
+       if signed then texpr_to_signed_i env w tv else tv
+
+let texpr_bv_mul ?(safe=true) env w signed ta0 ta1 =
+  if safe then texpr_mul ta0 ta1
+  else let tmul = texpr_mul ta0 ta1 in
+       let tvh = texpr_div2i env tmul w in
+       let tv = texpr_sub tmul (texpr_mul tvh (texpr_pow2i env w)) in
+       if signed then texpr_to_signed_i env w tv else tv
+
+let texpr_bv_shl ?(safe=true) env w signed ta0 ta1 =
+  if safe then texpr_mul ta0 (texpr_pow2e env ta1)
+  else let tv = texpr_eucl_rem2i env (texpr_mul2e env ta0 ta1) w in
+       if signed then texpr_to_signed_i env w tv else tv
+
+let texpr_bv_const ~signed env w z =
+  let tz = texpr_cst env z in
+  let utz = texpr_to_unsigned_i env w tz in
+  if signed then texpr_to_signed_i env w utz else utz
+
+let texpr_of_rexp ~signed mgr env abs re =
+  let uext_safe te = if signed then Abstract1.sat_tcons mgr abs (tcons_le (texpr_zero env) te)
+                     else true in
+  let sext_safe w te = if signed then true
+                       else Abstract1.sat_tcons mgr abs (tcons_lt te (texpr_pow2i env (w - 1))) in
+  let rneg_safe w te = if signed then Abstract1.sat_tcons mgr abs (tcons_lt (texpr_neg (texpr_pow2i env (w - 1))) te)
+                       else false in
+  let rec helper re =
+    match re with
+    | Rvar v -> let tv =
+                  let tv = texpr_var env v in
+                  if var_is_signed v then if signed then tv
+                                          else texpr_to_unsigned_i env (size_of_var v) tv
+                  else if signed then texpr_to_signed_i env (size_of_var v) tv
+                  else tv in
+                Some tv
+    | Rconst (sz, z) -> let tz = texpr_bv_const ~signed env sz z in
+                        Some tz
+    | Ruext (sz, e, i) -> if i < 0 then assert false
+                          else if i = 0 then helper e
+                          else (match helper e with
+                                | Some te -> if uext_safe te then Some te
+                                             else let extte = if signed then texpr_to_unsigned_i env sz te else te in
+                                                  Some extte
+                                | None -> None)
+    | Rsext (sz, e, i) -> if i < 0 then assert false
+                          else if i = 0 then helper e
+                          else (match helper e with
+                                | Some te -> if sext_safe sz te then Some te
+                                             else let extte = if signed then te else texpr_sext env sz te i in
+                                                  Some extte
+                                | None -> None)
+    | Runop (sz, Rnegb, e) -> (match helper e with
+                               | Some te -> if rneg_safe sz te then Some (texpr_neg te)
+                                            else Some (texpr_bv_sub ~safe:false env sz signed (texpr_zero env) te)
+                               | _ -> None)
+    | Rbinop (sz, Radd, e0, e1) -> (match helper e0, helper e1 with
+                                    | Some te0, Some te1 -> Some (texpr_bv_add ~safe:false env sz signed te0 te1)
+                                    | _ -> None)
+    | Rbinop (sz, Rsub, e0, e1) -> (match helper e0, helper e1 with
+                                    | Some te0, Some te1 -> Some (texpr_bv_sub ~safe:false env sz signed te0 te1)
+                                    | _ -> None)
+    | Rbinop (sz, Rmul, e0, e1) -> (match helper e0, helper e1 with
+                                    | Some te0, Some te1 -> Some (texpr_bv_mul ~safe:false env sz signed te0 te1)
+                                    | _ -> None)
+    | Rbinop (sz, Rshl, e0, e1) -> (match helper e0, helper e1 with
+                                    | Some te0, Some te1 -> Some (texpr_bv_shl ~safe:false env sz signed te0 te1)
+                                    | _ -> None)
+    | _ -> None in
+  helper re
+
+let rec rexp_is_pure_unsigned e =
+  match e with
+  | Rvar v -> var_is_unsigned v
+  | Rconst _ -> true
+  | Runop (_, _, e) -> rexp_is_pure_unsigned e
+  | Rbinop (_, _, e0, e1) -> rexp_is_pure_unsigned e0 && rexp_is_pure_unsigned e1
+  | Ruext (_, e, _) -> rexp_is_pure_unsigned e
+  | Rsext (_, e, _) -> rexp_is_pure_unsigned e
+  | Rconcat (_, _, e0, e1) -> rexp_is_pure_unsigned e0 && rexp_is_pure_unsigned e1
+
+let rec rexp_is_pure_signed e =
+  match e with
+  | Rvar v -> var_is_signed v
+  | Rconst _ -> true
+  | Runop (_, _, e) -> rexp_is_pure_signed e
+  | Rbinop (_, _, e0, e1) -> rexp_is_pure_signed e0 && rexp_is_pure_signed e1
+  | Ruext (_, e, _) -> rexp_is_pure_signed e
+  | Rsext (_, e, _) -> rexp_is_pure_signed e
+  | Rconcat (_, _, e0, e1) -> rexp_is_pure_signed e0 && rexp_is_pure_signed e1
+
+let tcons_req mgr env abs e0 e1 =
+  let pure_unsigned = rexp_is_pure_unsigned (radd 0 e0 e1) in
+  let pure_signed = rexp_is_pure_signed (radd 0 e0 e1) in
+  let signed = if pure_unsigned then false
+               else if pure_signed then true
+               else false in
+  match texpr_of_rexp ~signed mgr env abs e0, texpr_of_rexp ~signed mgr env abs e1 with
+  | Some te0, Some te1 -> Some (tcons_eq te0 te1)
   | _ -> None
+let tcons_rneq mgr env abs e0 e1 =
+  let pure_unsigned = rexp_is_pure_unsigned (radd 0 e0 e1) in
+  let pure_signed = rexp_is_pure_signed (radd 0 e0 e1) in
+  let signed = if pure_unsigned then false
+               else if pure_signed then true
+               else false in
+  match texpr_of_rexp ~signed mgr env abs e0, texpr_of_rexp ~signed mgr env abs e1 with
+  | Some te0, Some te1 -> Some (tcons_deq te0 te1)
+  | _ -> None
+let tcons_rcmp mgr env abs op e0 e1 =
+  let signed = rcmpop_is_signed op in
+  match texpr_of_rexp ~signed mgr env abs e0, texpr_of_rexp ~signed mgr env abs e1 with
+  | Some te0, Some te1 -> (match op with
+                           | Rult | Rslt -> Some (tcons_lt te0 te1)
+                           | Rule | Rsle -> Some (tcons_le te0 te1)
+                           | Rugt | Rsgt -> Some (tcons_lt te1 te0)
+                           | Ruge | Rsge -> Some (tcons_le te1 te0))
+  | _ -> None
+let neg_cmpop op =
+  match op with
+  | Rult -> Ruge
+  | Rule -> Rugt
+  | Rugt -> Rule
+  | Ruge -> Rult
+  | Rslt -> Rsge
+  | Rsle -> Rsgt
+  | Rsgt -> Rsle
+  | Rsge -> Rslt
 
-(* meet {dom} with an abstract domain with a primitive rbexp,
-   returns {dom} if the primitive rbexp is not supported *)
-let meet_primitive_rbexp mgr env dom cmpop rel rer =
-  let sz = size_of_rexp rel in
-  (* normalize for unsigned comparison *)
-  let _unormalize texprv =
-    let texprm = texpr_pow2i env sz in
-    let texprmod =
-      Texpr1.binop Texpr1.Mod texprv texprm Texpr1.Int Texpr1.Down in
-    let texpradd =
-      Texpr1.binop Texpr1.Add texprmod texprm Texpr1.Int Texpr1.Down in
-      Texpr1.binop Texpr1.Mod texpradd texprm Texpr1.Int Texpr1.Down in
-  (* normalize for signed comparison *)
-  let _snormalize texprv =
-    let texprm = texpr_pow2i env sz in
-    let texprm1 = texpr_pow2i env (pred sz) in
-    let texprmod =
-      Texpr1.binop Texpr1.Mod texprv texprm Texpr1.Int Texpr1.Down in
-    let texpradd =
-      Texpr1.binop Texpr1.Add texprmod texprm Texpr1.Int Texpr1.Down in
-    let texprmod' =
-      Texpr1.binop Texpr1.Mod texpradd texprm Texpr1.Int Texpr1.Down in
-    let texprdiv =
-      Texpr1.binop Texpr1.Div texprmod' texprm1 Texpr1.Int Texpr1.Down in
-    let texprmul =
-      Texpr1.binop Texpr1.Mul texprdiv texprm Texpr1.Int Texpr1.Down in
-    Texpr1.binop Texpr1.Sub texprmod' texprmul Texpr1.Int Texpr1.Down in
-  let rec helper dom cmpop tel ter =
-    match cmpop with
-    | Rult -> let tcons = Tcons1.array_make env 1 in
-              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter) in
-              Abstract1.meet_tcons_array mgr dom tcons
-    | Rule -> let tcons = Tcons1.array_make env 1 in
-              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter) in
-              Abstract1.meet_tcons_array mgr dom tcons
-    | Rugt -> helper dom Rult ter tel
-    | Ruge -> helper dom Rule ter tel
-    | Rslt -> let tcons = Tcons1.array_make env 1 in
-              let _ = Tcons1.array_set tcons 0 (tcons_lt tel ter) in
-              Abstract1.meet_tcons_array mgr dom tcons
-    | Rsle -> let tcons = Tcons1.array_make env 1 in
-              let _ = Tcons1.array_set tcons 0 (tcons_le tel ter) in
-              Abstract1.meet_tcons_array mgr dom tcons
-    | Rsgt -> helper dom Rslt ter tel
-    | Rsge -> helper dom Rsle ter tel in
-  match texpr_of_rexp env rel, texpr_of_rexp env rer with
-  | Some tel, Some ter -> helper dom cmpop tel ter
-  | _ -> dom
+let tconses_of_rbexp mgr abs env e =
+  let singleton a = [a] in
+  let rec helper e =
+    match e with
+    | Rtrue -> Some []
+    | Req (_, e0, e1) -> Option.map singleton (tcons_req mgr env abs e0 e1)
+    | Rcmp (_, op, e0, e1) -> Option.map singleton (tcons_rcmp mgr env abs op e0 e1)
+    | Rneg (Req (_, e0, e1)) -> Option.map singleton (tcons_rneq mgr env abs e0 e1)
+    | Rneg (Rcmp (_, op, e0, e1)) -> Option.map singleton (tcons_rcmp mgr env abs (neg_cmpop op) e0 e1)
+    | Rneg (Ror (e0, e1)) -> (match helper (Rneg e0), helper (Rneg e1) with
+                              | Some ts0, Some ts1 -> Some (ts0 @@ ts1)
+                              | _ -> None)
+    | Rneg _ -> None
+    | Rand (e1, e2) -> (match helper e1, helper e2 with
+                        | Some ts1, Some ts2 -> Some (ts1 @@ ts2)
+                        | _ -> None)
+    | Ror _ -> None in
+  helper e
 
-(* build an abstract domain from a rbexp, returns None if not supported *)
-let abs_of_rbexp (mgr, env) rbe =
-  let rec helper ret rbes =
-    match rbes with
-    | rbe'::rbes' ->
-       (match rbe' with
-        | Rtrue -> helper ret rbes'
-        | Rand (rbe0, rbe1) -> helper ret (rbe0::rbe1::rbes')
-        | Req (_, rel, rer) ->
-           (match texpr_of_rexp env rel, texpr_of_rexp env rer with
-            | Some tel, Some ter ->
-               let tcons = Tcons1.array_make env 1 in
-               let _ = Tcons1.array_set tcons 0 (tcons_eq tel ter) in
-               let ret' = Abstract1.meet_tcons_array mgr ret tcons in
-               helper ret' rbes'
-            | _ -> None)
-        | Rcmp (_, cmpop, rel, rer) ->
-           let ret' = meet_primitive_rbexp mgr env ret cmpop rel rer in
-           helper ret' rbes'
-        | _ -> None)
-    | [] -> Some ret in
-  let ret = Abstract1.top mgr env in
-  helper ret [rbe]
+let abs_of_rbexp (mgr, env) ?abs rbe =
+  let abs =
+    match abs with
+    | Some abs -> abs
+    | None -> abs_of_vars (mgr, env) (vars_rbexp rbe) in
+  let rec helper abs =
+    let tso = tconses_of_rbexp mgr abs env rbe in
+    match tso with
+    | Some ts -> let tarr = Tcons1.array_make env (List.length ts) in
+                 let _ = List.iteri (fun i t -> Tcons1.array_set tarr i t) ts in
+                 let abs' = Abstract1.meet_tcons_array mgr abs tarr in
+                 if Abstract1.is_eq mgr abs abs' then Some abs'
+                 else helper abs'
+    | None -> None in
+  helper abs
 
 let abs_set_nondet_var (mgr, env) dom v =
   let lo, hi =
@@ -357,47 +453,13 @@ let abs_set_nondet_var (mgr, env) dom v =
 
 (* safe: the instruction is safe *)
 let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
-  let texpr_to_unsigned_i env w e =
-    texpr_mod (texpr_add e (texpr_pow2i env w)) (texpr_pow2i env w) in
-  let texpr_to_signed_i env w e =
-    let tmp = texpr_pow2i env (w - 1) in
-    texpr_sub (texpr_mod2i env (texpr_add e tmp) w) tmp in
-  let _texpr_to_signed_e env w e =
-    let tmp = texpr_pow2e env (texpr_sub w (texpr_one env)) in
-    texpr_sub (texpr_mod2e env (texpr_add e tmp) w) tmp in
-  (* apply a signed extension to an unsigned numbe *)
-  let texpr_sext env w e i =
-    if i < 0 then failwith ("The size of signed extension in texpr_sext must be nonnegative.")
-    else if i = 0 then e
-    else let sign_bit = texpr_div2i env e (w - 1) in
-         let grow = texpr_sub (texpr_pow2i env (w + i)) (texpr_pow2i env w) in
-         texpr_add e (texpr_mul sign_bit grow) in
   (* split at position i and returns (vh, vl) where vh is signed/unsigned value and vl is unsigned value *)
-  let texpr_split_i env e i =
-    let vh = texpr_div2i env e i in
-    let vl = texpr_sub e (texpr_mul2i env vh i) in
-    (vh, vl) in
-  let texpr_split_e env e i =
-    let vh = texpr_div2e env e i in
-    let vl = texpr_sub e (texpr_mul2e env vh i) in
-    (vh, vl) in
   let add_dom mgr dom v a0 a1 =
      let ta0 = texpr_of_atom env a0 in
      let ta1 = texpr_of_atom env a1 in
-     if safe then
-       let tv = texpr_add ta0 ta1 in
-       Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-         (if var_bound then Some (var_bound_dom mgr env v) else None)
-     else
-       let w = size_of_atom a0 in
-       let is_signed = atom_is_signed a0 in
-       let tsum = let uta0 = if is_signed then texpr_to_unsigned_i env w ta0 else ta0 in
-                  let uta1 = if is_signed then texpr_to_unsigned_i env w ta1 else ta1 in
-                  texpr_add uta0 uta1 in
-       let tv = let tv = texpr_mod2i env tsum w in
-                if is_signed then texpr_to_signed_i env w tv else tv in
-       Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-         (if var_bound then Some (var_bound_dom mgr env v) else None) in
+     let tv = texpr_bv_add ~safe env (size_of_atom a0) (atom_is_signed a0) ta0 ta1 in
+     Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
+       (if var_bound then Some (var_bound_dom mgr env v) else None) in
   let adds_dom mgr dom f v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
@@ -446,20 +508,9 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
   let sub_dom mgr dom v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
-    if safe then
-      let tv = texpr_sub ta0 ta1 in
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None)
-    else
-      let w = size_of_atom a0 in
-      let is_signed = atom_is_signed a0 in
-      let tsub = let uta0 = if is_signed then texpr_to_unsigned_i env w ta0 else ta0 in
-                 let uta1 = if is_signed then texpr_to_unsigned_i env w ta1 else ta1 in
-                 texpr_add (texpr_sub uta0 uta1) (texpr_pow2i env w) in
-      let tv = let tv = texpr_mod2i env tsub w in
-               if is_signed then texpr_to_signed_i env w tv else tv in
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None) in
+    let tv = texpr_bv_sub ~safe env (size_of_atom a0) (atom_is_signed a0) ta0 ta1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
+      (if var_bound then Some (var_bound_dom mgr env v) else None) in
   let sbc_dom mgr dom v a0 a1 a2 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
@@ -554,19 +605,9 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
   let mul_dom mgr dom v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
-    if safe then
-      let tv = texpr_mul ta0 ta1 in
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None)
-    else
-      let w = size_of_atom a0 in
-      let is_signed = atom_is_signed a0 in
-      let tmul = texpr_mul ta0 ta1 in
-      let tv = let tvh = texpr_div2i env tmul w in
-               let tv = texpr_sub tmul (texpr_mul tvh (texpr_pow2i env w)) in
-               if is_signed then texpr_to_signed_i env w tv else tv in
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None) in
+    let tv = texpr_bv_mul ~safe env (size_of_atom a0) (atom_is_signed a0) ta0 ta1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
+      (if var_bound then Some (var_bound_dom mgr env v) else None) in
   let muls_dom mgr dom f v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
@@ -624,22 +665,14 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
   let shl_dom mgr dom v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
-    if safe then
-      let tv = texpr_mul ta0 (texpr_pow2e env ta1) in
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None)
-    else
-      let w = size_of_atom a0 in
-      let is_signed = atom_is_signed a0 in
-      let tv = let (_, tv) = texpr_split_i env (texpr_mul ta0 (texpr_pow2e env ta1)) w in
-               if is_signed then texpr_to_signed_i env w tv else tv in
+    let tv = texpr_bv_shl ~safe env (size_of_atom a0) (atom_is_signed a0) ta0 ta1 in
       (*
       let uta0 = if is_signed then texpr_to_unsigned_i env w ta0 else ta0 in
       let tv = let tv = texpr_mod2i env (texpr_mul uta0 (texpr_pow2e env ta1)) w in
                if is_signed then texpr_to_signed_i env w tv else tv in
        *)
-      Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
-        (if var_bound then Some (var_bound_dom mgr env v) else None) in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
+      (if var_bound then Some (var_bound_dom mgr env v) else None) in
   let shls_dom mgr dom f v a0 a1 =
     let ta0 = texpr_of_atom env a0 in
     let ta1 = texpr_of_atom env a1 in
@@ -822,22 +855,22 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
       else match typ_of_var v, typ_of_atom a with
            | Tuint wv, Tuint wa ->
               if wv >= wa then ta
-              else let (_, tvl) = texpr_split_i env ta wv in
+              else let tvl = texpr_eucl_rem2i env ta wv in
                    tvl
            | Tsint wv, Tuint wa ->
               if wv > wa then ta
               else if wv = wa then texpr_to_signed_i env wv ta
-              else let (_, tvl) = texpr_split_i env ta wv in
+              else let tvl = texpr_eucl_rem2i env ta wv in
                    texpr_to_signed_i env wv tvl
            | Tuint wv, Tsint wa ->
               if wv >= wa then let uta = texpr_to_unsigned_i env wa ta in
                                let utaext = texpr_sext env wa uta (wv - wa) in
                                utaext
-              else let (_, utv) = texpr_split_i env ta wv in
+              else let utv = texpr_eucl_rem2i env ta wv in
                    utv
            | Tsint wv, Tsint wa ->
               if wv >= wa then ta
-              else let (_, utv) = texpr_split_i env ta wv in
+              else let utv = texpr_eucl_rem2i env ta wv in
                    texpr_to_signed_i env wv utv in
     Abstract1.assign_texpr mgr dom (apvar v) tv
       (if var_bound then Some (vars_bounds_dom mgr env [v]) else None) in
@@ -869,7 +902,7 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
   | Isplit (vh, vl, a, z) | Ispl (vh, vl, a, z) -> split_dom mgr dom vh vl a z
   | Ijoin (v, a0, a1) -> join_dom mgr dom v a0 a1
   | Ighost (_, (_, rbe)) | Iassume (_, rbe) ->
-     (match abs_of_rbexp (mgr, env) rbe with
+     (match abs_of_rbexp (mgr, env) ~abs:dom rbe with
       | Some rdom -> Abstract1.meet mgr dom rdom
       | None -> dom)
   | Ishl (v, a0, a1) -> shl_dom mgr dom v a0 a1
@@ -903,34 +936,27 @@ let rec interp_prog ?(safe=true) ?(var_bound=true) (mgr, env) dom prog =
      interp_prog ~safe ~var_bound (mgr, env) dom' prog'
   | _ -> dom
 
-let sat_primitive_rbexp mgr env dom cmpop rel rer =
-  let rec helper cmpop tel ter =
-    match cmpop with
-    | Rult -> Abstract1.sat_tcons mgr dom (tcons_lt tel ter)
-    | Rule -> Abstract1.sat_tcons mgr dom (tcons_le tel ter)
-    | Rugt -> helper Rult ter tel
-    | Ruge -> helper Rule ter tel
-    | Rslt -> Abstract1.sat_tcons mgr dom (tcons_lt tel ter)
-    | Rsle -> Abstract1.sat_tcons mgr dom (tcons_le tel ter)
-    | Rsgt -> helper Rslt ter tel
-    | Rsge -> helper Rsle ter tel in
-  match texpr_of_rexp env rel, texpr_of_rexp env rer with
-  | Some tel, Some ter -> helper cmpop tel ter
-  | _ -> false
-
-let sat_rbexp (mgr, env) dom rbe =
-  let rec helper rbes =
-    match rbes with
-    | rbe'::rbes' ->
-       (match rbe' with
-        | Rtrue -> helper rbes'
-        | Rand (rbe0, rbe1) -> helper (rbe0::rbe1::rbes')
-        | Rcmp (_, cmpop, rel, rer) ->
-               (sat_primitive_rbexp mgr env dom cmpop rel rer) &&
-                 (helper rbes')
-        | _ -> false)
-    | [] -> true in
-  helper [rbe]
+let sat_rbexp (mgr, env) dom e =
+  let rec helper e =
+    match e with
+    | Rtrue -> true
+    | Req (_, e0, e1) -> (match tcons_req mgr env dom e0 e1 with
+                          | Some tc -> Abstract1.sat_tcons mgr dom tc
+                          | None -> false)
+    | Rcmp (_, op, e0, e1) -> (match tcons_rcmp mgr env dom op e0 e1 with
+                               | Some tc -> Abstract1.sat_tcons mgr dom tc
+                               | None -> false)
+    | Rneg (Req (_, e0, e1)) -> (match tcons_rneq mgr env dom e0 e1 with
+                                 | Some tc -> Abstract1.sat_tcons mgr dom tc
+                                 | None -> false)
+    | Rneg (Rcmp (_, op, e0, e1)) -> (match tcons_rcmp mgr env dom (neg_cmpop op) e0 e1 with
+                                      | Some tc -> Abstract1.sat_tcons mgr dom tc
+                                      | None -> false)
+    | Rneg (Ror (e0, e1)) -> helper (Rneg e0) && helper (Rneg e1)
+    | Rneg _ -> false
+    | Rand (e0, e1) -> helper e0 && helper e1
+    | Ror (e0, e1) -> helper e0 || helper e1 in
+  helper e
 
 let instr_safe (mgr, env) dom instr =
   let add_safe mgr env dom v a0 a1 =

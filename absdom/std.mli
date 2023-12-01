@@ -24,8 +24,8 @@ val is_bottom : 'a manager_t -> 'a abs_t -> bool
 val meet : 'a manager_t -> 'a abs_t -> 'a abs_t -> 'a abs_t
 (** return the meet of two abstract values *)
 
-val abs_of_rbexp : 'a manager_t -> rbexp -> 'a abs_t option
-(** return an abstract value that satisfies a range predicate *)
+val abs_of_rbexp : 'a manager_t -> ?abs:'a abs_t -> rbexp -> 'a abs_t option
+(** return an abstract value containing all scalar numbers that satisfy a range predicate *)
 
 val abs_of_vars : 'a manager_t -> VS.t -> 'a abs_t
 (**

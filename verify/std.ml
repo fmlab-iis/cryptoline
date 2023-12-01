@@ -117,10 +117,10 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
     if !Options.Std.abs_interp then
       let vars = VS.union (vars_rbexp f) (vars_program p) in
       let mgr = Absdom.Std.create_manager vars in
-      match Absdom.Std.abs_of_rbexp mgr f with
+      let vars_dom = Absdom.Std.abs_of_vars mgr
+                       (VS.diff vars (lvs_program p)) in
+      match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom f with
       | Some dom ->
-         let vars_dom = Absdom.Std.abs_of_vars mgr
-                          (VS.diff vars (lvs_program p)) in
          let start_dom = Absdom.Std.meet mgr dom vars_dom in
          let (res, _, _, _, _) = List.fold_left fold_fun_abs_interp
                                    (Solved Unsat, [], p, mgr, start_dom) qs in
