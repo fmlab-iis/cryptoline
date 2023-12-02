@@ -377,13 +377,25 @@ def trace():
                           .format(mnemonic, ea["addr"], ea["value"], insns[0]["addr"]))
                 elif ea.get("load") :
                     unit = 'g' if wordsize == 64 else 'w'
-                    try :
-                        value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
-                        value = re.match('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)', value).group(1)
-                    except gdb.MemoryError :
-                        value = "'?'"
-                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
-                          .format(mnemonic, ea["addr"], value, insns[0]["addr"]))
+                    if 'xmm' in insns[0]['asm']:
+                        try :
+                            value = gdb.execute("x/2x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
+                            value = re.findall('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)\s+(0x[0-9a-fA-F]+)', value)
+                            value1 = value[0][0]
+                            value2 = value[0][1]
+                        except gdb.MemoryError :
+                            value1 = "'?'"
+                            value2 = "'?'"
+                        print("\t{0:48s}#! EA = L0x{1:x}; Value_l = {2}; Value_h = {3}; PC = 0x{4:x}"
+                              .format(mnemonic, ea["addr"], value1, value2, insns[0]["addr"]))
+                    else:
+                        try :
+                            value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
+                            value = re.match('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)', value).group(1)
+                        except gdb.MemoryError :
+                            value = "'?'"
+                        print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
+                              .format(mnemonic, ea["addr"], value, insns[0]["addr"]))
                 else :
                     print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}"
                           .format(mnemonic, ea["addr"], insns[0]["addr"]))
