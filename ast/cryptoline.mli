@@ -1502,13 +1502,13 @@ val slice_program : VS.t -> program -> (VS.t * program)
  *)
 
 val slice_spec : spec -> spec
-(** [slice_spec vs s] slices a specification according to a set of relevant variables. *)
+(** [slice_spec s] slices a specification. *)
 
 val slice_espec : espec -> espec
-(** [slice_espec vs s] slices an algebraic specification according to a set of relevant variables. *)
+(** [slice_espec s] slices an algebraic specification. *)
 
 val slice_rspec : rspec -> rspec
-(** [slice_rspec vs s] slices a range specification according to a set of relevant variables. *)
+(** [slice_rspec s] slices a range specification. *)
 
 val eexp_vars_sat : VS.t -> eexp list -> VS.t
 (** [eexp_vars_sat vs [e1; ...; en]] calculates the transitive closure of variables in [e1; ...; en] related to the set of variables [vs].*)

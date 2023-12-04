@@ -112,3 +112,7 @@ val instr_safe : 'a manager_t -> 'a abs_t -> instr -> bool
 
 val zinterval_of_var : 'a manager_t -> 'a abs_t -> Ast.Cryptoline.var -> Z.t * Z.t
 (** return the interval of a variable in an abstract value *)
+
+val rbexp_apply_abs_interp : rbexp -> bool
+(** [rbexp_apply_abs_interp e] is [true] if abstract interpretation may be good
+    in verifying the range predicate [e] *)

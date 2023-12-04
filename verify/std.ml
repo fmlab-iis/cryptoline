@@ -669,8 +669,9 @@ let verify_rspec_single_conjunct_abs_interp s hashopt =
 (* Applied in this function: slicing, solving *)
 let verify_rspec_single_conjunct ?comments s hashopt =
   let heuristics s =
-    !Options.Std.abs_interp &&
-      verify_rspec_single_conjunct_abs_interp s hashopt in
+    !Options.Std.abs_interp
+    && List.for_all (fun (e, _) -> Absdom.Common.rbexp_apply_abs_interp e) s.rspost
+    && verify_rspec_single_conjunct_abs_interp s hashopt in
   let verify s =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in

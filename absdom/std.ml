@@ -32,3 +32,5 @@ let instr_safe = Common.instr_safe
 let string_of_abs = Common.string_of_abs
 
 let zinterval_of_var = Common.zinterval_of_var
+
+let rbexp_apply_abs_interp = Common.rbexp_apply_abs_interp

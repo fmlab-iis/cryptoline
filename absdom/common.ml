@@ -1032,7 +1032,17 @@ let instr_safe (mgr, env) dom instr =
     let dom' = Abstract1.assign_texpr mgr dom (apvar v) te None in
     Abstract1.sat_interval mgr dom' (apvar v)
       (interval_of_typ (typ_of_var v)) in
-  let shr_safe _mgr _env _dom _v _a0 _a1 = false in
+  let shr_safe _mgr _env _dom _v _a0 _a1 =
+    (* a better domain is needed *)
+    (*
+      let te0 = texpr_of_atom env _a0 in
+      let te1 = texpr_of_atom env _a1 in
+      let (te0h, te0l) = texpr_split_e _env te0 te1 in
+      if atom_is_signed _a0 then Abstract1.sat_tcons _mgr _dom (tcons_le (texpr_zero env) te0h)
+                                 && Abstract1.sat_tcons _mgr _dom (tcons_eq te0l (texpr_zero env))
+      else Abstract1.sat_tcons _mgr _dom (tcons_eq te0l (texpr_zero env))
+   *)
+    false in
   let sar_safe _mgr _env _dom _v _a0 _a1 = false in
   let cshr_safe _mgr _env _dom _vh _vl _a0 _a1 _z = false
   in
@@ -1056,3 +1066,12 @@ let instr_safe (mgr, env) dom instr =
   | Icshr (vh, vl, a0, a1, z) -> cshr_safe mgr env dom vh vl a0 a1 z
   | Ivpc (v, a) -> vpc_safe mgr env dom v a
   | Icut _ -> assert false
+
+let rec rbexp_apply_abs_interp e =
+  match e with
+  | Rtrue -> true
+  | Req _ -> VS.cardinal (vars_rbexp e) <= 1
+  | Rneg e -> rbexp_apply_abs_interp e
+  | Rcmp _ -> false
+  | Rand (e1, e2)
+    | Ror (e1, e2) -> rbexp_apply_abs_interp e1 || rbexp_apply_abs_interp e2

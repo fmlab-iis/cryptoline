@@ -684,9 +684,10 @@ let verify_rspec_single_conjunct ?comments header s hashopt =
    @param hashopt
    @return rspec list with splitted rpost
  *)
-let verify_rspec_no_rcut_abs_interp s =
+let verify_rspec_no_rcut_abs_interp hashopt s =
   let splitted_s = split_rspec_post s in
-  if !Options.Std.abs_interp then
+  if !Options.Std.abs_interp && List.for_all (fun (e, _) -> Absdom.Common.rbexp_apply_abs_interp e) s.rspost then
+    let s = if !apply_slicing then slice_rspec_ssa s hashopt else s in
     let vs = vars_rspec s in
     let mgr = Absdom.Std.create_manager vs in
     let vars_dom = Absdom.Std.abs_of_vars mgr
@@ -739,7 +740,7 @@ let verify_rspec_no_rcut_abs_interp s =
  *)
 let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
   let verify comments s = fun () -> verify_rspec_single_conjunct ?comments header s hashopt in
-  verify_rspec_no_rcut_abs_interp s |>
+  verify_rspec_no_rcut_abs_interp hashopt s |>
   List.rev_map (verify comments) |> List.rev
 
 let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
