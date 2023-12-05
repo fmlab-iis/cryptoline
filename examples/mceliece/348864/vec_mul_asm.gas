@@ -13,16 +13,26 @@
 #! %r$1c = %%r$1c
 #! %ymm$1c = %%ymm$1c
 
-#! mov $1v, $2v -> mov $2v $1v
-#! xor $1v, $2v -> adds dc $2v $2v $1v
-#! vmovupd $1ea, $2v -> mov $2v_0 $1ea[+0];\nmov $2v_1 $1ea[+8];\nmov $2v_2 $1ea[+16];\nmov $2v_3 $1ea[+24]
-#! vmovupd $1v, $2ea -> mov $2ea[+0] $1v_0;\nmov $2ea[+8] $1v_1;\nmov $2ea[+16] $1v_2;\nmov $2ea[+24] $1v_3
-#! vpermq \$0x44, $1v, $2v -> mov perm0 $1v_0;\nmov perm1 $1v_1;\nmov perm2 $1v_0;\nmov perm3 $1v_1;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
-#! vpermq \$0x50, $1v, $2v -> mov perm0 $1v_0;\nmov perm1 $1v_0;\nmov perm2 $1v_1;\nmov perm3 $1v_1;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
-#! vpermq \$0xee, $1v, $2v -> mov perm0 $1v_2;\nmov perm1 $1v_3;\nmov perm2 $1v_2;\nmov perm3 $1v_3;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
-#! vpermq \$0xfa, $1v, $2v -> mov perm0 $1v_2;\nmov perm1 $1v_2;\nmov perm2 $1v_3;\nmov perm3 $1v_3;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
-#! vpand $1v, $2v, $3v -> mul $3v_0 $2v_0 $1v_0;\nmul $3v_1 $2v_1 $1v_1;\nmul $3v_2 $2v_2 $1v_2;\nmul $3v_3 $2v_3 $1v_3
-#! vpxor $1v, $2v, $3v -> adds dc $3v_0 $2v_0 $1v_0;\nadds dc $3v_1 $2v_1 $1v_1;\nadds dc $3v_2 $2v_2 $1v_2;\nadds dc $3v_3 $2v_3 $1v_3
+# mov $1v, $2v -> mov $2v $1v
+#! mov $1v, $2v -> mov %$2v %$1v
+# xor $1v, $2v -> adds dc $2v $2v $1v
+#! xor $1v, $2v -> adds %dc %$2v %$2v %$1v
+# vmovupd $1ea, $2v -> mov $2v_0 $1ea[+0];\nmov $2v_1 $1ea[+8];\nmov $2v_2 $1ea[+16];\nmov $2v_3 $1ea[+24]
+#! vmovupd $1ea, $2v -> mov %$2v_0 %$1ea[+0];\nmov %$2v_1 %$1ea[+8];\nmov %$2v_2 %$1ea[+16];\nmov %$2v_3 %$1ea[+24]
+# vmovupd $1v, $2ea -> mov $2ea[+0] $1v_0;\nmov $2ea[+8] $1v_1;\nmov $2ea[+16] $1v_2;\nmov $2ea[+24] $1v_3
+#! vmovupd $1v, $2ea -> mov %$2ea[+0] %$1v_0;\nmov %$2ea[+8] %$1v_1;\nmov %$2ea[+16] %$1v_2;\nmov %$2ea[+24] %$1v_3
+# vpermq \$0x44, $1v, $2v -> mov perm0 $1v_0;\nmov perm1 $1v_1;\nmov perm2 $1v_0;\nmov perm3 $1v_1;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
+#! vpermq \$0x44, $1v, $2v -> mov %perm0 %$1v_0;\nmov %perm1 %$1v_1;\nmov %perm2 %$1v_0;\nmov %perm3 %$1v_1;\nmov %$2v_0 %perm0;\nmov %$2v_1 %perm1;\nmov %$2v_2 %perm2;\nmov %$2v_3 %perm3
+# vpermq \$0x50, $1v, $2v -> mov perm0 $1v_0;\nmov perm1 $1v_0;\nmov perm2 $1v_1;\nmov perm3 $1v_1;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
+#! vpermq \$0x50, $1v, $2v -> mov %perm0 %$1v_0;\nmov %perm1 %$1v_0;\nmov %perm2 %$1v_1;\nmov %perm3 %$1v_1;\nmov %$2v_0 %perm0;\nmov %$2v_1 %perm1;\nmov %$2v_2 %perm2;\nmov %$2v_3 %perm3
+# vpermq \$0xee, $1v, $2v -> mov perm0 $1v_2;\nmov perm1 $1v_3;\nmov perm2 $1v_2;\nmov perm3 $1v_3;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
+#! vpermq \$0xee, $1v, $2v -> mov %perm0 %$1v_2;\nmov %perm1 %$1v_3;\nmov %perm2 %$1v_2;\nmov %perm3 %$1v_3;\nmov %$2v_0 %perm0;\nmov %$2v_1 %perm1;\nmov %$2v_2 %perm2;\nmov %$2v_3 %perm3
+# vpermq \$0xfa, $1v, $2v -> mov perm0 $1v_2;\nmov perm1 $1v_2;\nmov perm2 $1v_3;\nmov perm3 $1v_3;\nmov $2v_0 perm0;\nmov $2v_1 perm1;\nmov $2v_2 perm2;\nmov $2v_3 perm3
+#! vpermq \$0xfa, $1v, $2v -> mov %perm0 %$1v_2;\nmov %perm1 %$1v_2;\nmov %perm2 %$1v_3;\nmov %perm3 %$1v_3;\nmov %$2v_0 %perm0;\nmov %$2v_1 %perm1;\nmov %$2v_2 %perm2;\nmov %$2v_3 %perm3
+# vpand $1v, $2v, $3v -> mul $3v_0 $2v_0 $1v_0;\nmul $3v_1 $2v_1 $1v_1;\nmul $3v_2 $2v_2 $1v_2;\nmul $3v_3 $2v_3 $1v_3
+#! vpand $1v, $2v, $3v -> mul %$3v_0 %$2v_0 %$1v_0;\nmul %$3v_1 %$2v_1 %$1v_1;\nmul %$3v_2 %$2v_2 %$1v_2;\nmul %$3v_3 %$2v_3 %$1v_3
+# vpxor $1v, $2v, $3v -> adds dc $3v_0 $2v_0 $1v_0;\nadds dc $3v_1 $2v_1 $1v_1;\nadds dc $3v_2 $2v_2 $1v_2;\nadds dc $3v_3 $2v_3 $1v_3
+#! vpxor $1v, $2v, $3v -> adds %dc %$3v_0 %$2v_0 %$1v_0;\nadds %dc %$3v_1 %$2v_1 %$1v_1;\nadds %dc %$3v_2 %$2v_2 %$1v_2;\nadds %dc %$3v_3 %$2v_3 %$1v_3
 
 
 

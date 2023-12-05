@@ -9,19 +9,32 @@
 #! %ymm$1c = %%ymm$1c
 #! %xmm$1c = %%xmm$1c
 
-#! vbroadcasti128 $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea
-#! vinsertf128 \$0x0, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $1ea;\nmov $3ymm_1 $2ymm_1
-#! vinsertf128 \$0x1, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0;\nmov $3ymm_1 $1ea
-#! vmovupd $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+16]
-#! vmovupd $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+16] $1ymm_1
-#! movdqa $1xmm, $2xmm -> mov $2xmm $1xmm
-#! movdqu $1ea, $2xmm -> mov $2xmm $1ea
-#! movdqu $1xmm, $2ea -> mov $2ea $1xmm
-#! vpand $1ymm, $2ymm, $3ymm -> mul $3ymm_0 $2ymm_0 $1ymm_0;\nmul $3ymm_1 $2ymm_1 $1ymm_1
-#! vpxor $1xmm, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1xmm
-#! vpxor $1ea, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1ea
-#! vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ymm_0;\nadds dc $3ymm_1 $2ymm_1 $1ymm_1
-#! vzeroupper -> mov xmm0 ymm0_0;\nmov xmm1 ymm1_0;\nmov xmm2 ymm2_0;\nmov xmm3 ymm3_0;\nmov xmm4 ymm4_0;\nmov xmm5 ymm5_0;\nmov xmm6 ymm6_0;\nmov xmm7 ymm7_0;\nmov xmm8 ymm8_0;\nmov xmm9 ymm9_0;\nmov xmm10 ymm10_0;\nmov xmm11 ymm11_0
+# vbroadcasti128 $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea
+#! vbroadcasti128 $1ea, $2ymm -> mov %$2ymm_0 %$1ea; mov %$2ymm_1 %$1ea
+# vinsertf128 \$0x0, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $1ea;\nmov $3ymm_1 $2ymm_1
+#! vinsertf128 \$0x0, $1ea, $2ymm, $3ymm -> mov %$3ymm_0 %$1ea; mov %$3ymm_1 %$2ymm_1
+# vinsertf128 \$0x1, $1ea, $2ymm, $3ymm -> mov $3ymm_0 $2ymm_0;\nmov $3ymm_1 $1ea
+#! vinsertf128 \$0x1, $1ea, $2ymm, $3ymm -> mov %$3ymm_0 %$2ymm_0; mov %$3ymm_1 %$1ea
+# vmovupd $1ea, $2ymm -> mov $2ymm_0 $1ea;\nmov $2ymm_1 $1ea[+16]
+#! vmovupd $1ea, $2ymm -> mov %$2ymm_0 %$1ea; mov %$2ymm_1 %$1ea[+16]
+# vmovupd $1ymm, $2ea -> mov $2ea $1ymm_0;\nmov $2ea[+16] $1ymm_1
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm_0; mov %$2ea[+16] %$1ymm_1
+# movdqa $1xmm, $2xmm -> mov $2xmm $1xmm
+#! movdqa $1xmm, $2xmm -> mov %$2xmm %$1xmm
+# movdqu $1ea, $2xmm -> mov $2xmm $1ea
+#! movdqu $1ea, $2xmm -> mov %$2xmm %$1ea
+# movdqu $1xmm, $2ea -> mov $2ea $1xmm
+#! movdqu $1xmm, $2ea -> mov %$2ea %$1xmm
+# vpand $1ymm, $2ymm, $3ymm -> mul $3ymm_0 $2ymm_0 $1ymm_0;\nmul $3ymm_1 $2ymm_1 $1ymm_1
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm_0 %$2ymm_0 %$1ymm_0; mul %$3ymm_1 %$2ymm_1 %$1ymm_1
+# vpxor $1xmm, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1xmm
+#! vpxor $1xmm, $2xmm, $3xmm -> adds %dc %$3xmm %$2xmm %$1xmm
+# vpxor $1ea, $2xmm, $3xmm -> adds dc $3xmm $2xmm $1ea
+#! vpxor $1ea, $2xmm, $3xmm -> adds %dc %$3xmm %$2xmm %$1ea
+# vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm_0 $2ymm_0 $1ymm_0;\nadds dc $3ymm_1 $2ymm_1 $1ymm_1
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %dc %$3ymm_0 %$2ymm_0 %$1ymm_0; adds %dc %$3ymm_1 %$2ymm_1 %$1ymm_1
+# vzeroupper -> mov xmm0 ymm0_0;\nmov xmm1 ymm1_0;\nmov xmm2 ymm2_0;\nmov xmm3 ymm3_0;\nmov xmm4 ymm4_0;\nmov xmm5 ymm5_0;\nmov xmm6 ymm6_0;\nmov xmm7 ymm7_0;\nmov xmm8 ymm8_0;\nmov xmm9 ymm9_0;\nmov xmm10 ymm10_0;\nmov xmm11 ymm11_0
+#! vzeroupper -> mov %xmm0 %ymm0_0; mov %xmm1 %ymm1_0; mov %xmm2 %ymm2_0; mov %xmm3 %ymm3_0;\nmov %xmm4 %ymm4_0; mov %xmm5 %ymm5_0; mov %xmm6 %ymm6_0; mov %xmm7 %ymm7_0;\nmov %xmm8 %ymm8_0; mov %xmm9 %ymm9_0; mov %xmm10 %ymm10_0; mov %xmm11 %ymm11_0
 
 #vec128_mul_asm:
 # %rdi = 0x7fffffff6b00

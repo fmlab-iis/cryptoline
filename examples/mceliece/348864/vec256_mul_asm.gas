@@ -6,12 +6,18 @@
 #! (%rsi) = %%EA
 #! %ymm$1c = %%ymm$1c
 
-#! vmovupd $1ea, $2ymm -> mov $2ymm $1ea
-#! vmovupd $1ymm, $2ea -> mov $2ea $1ymm
-#! vpand $1ea, $2ymm, $3ymm -> mul $3ymm $2ymm $1ea
-#! vpand $1ymm, $2ymm, $3ymm -> mul $3ymm $2ymm $1ymm
-#! vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm $2ymm $1ymm
-#! vmovapd $1ymm, $2ymm -> mov $2ymm $1ymm
+# vmovupd $1ea, $2ymm -> mov $2ymm $1ea
+#! vmovupd $1ea, $2ymm -> mov %$2ymm %$1ea
+# vmovupd $1ymm, $2ea -> mov $2ea $1ymm
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm
+# vpand $1ea, $2ymm, $3ymm -> mul $3ymm $2ymm $1ea
+#! vpand $1ea, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ea
+# vpand $1ymm, $2ymm, $3ymm -> mul $3ymm $2ymm $1ymm
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ymm
+# vpxor $1ymm, $2ymm, $3ymm -> adds dc $3ymm $2ymm $1ymm
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %dc %$3ymm %$2ymm %$1ymm
+# vmovapd $1ymm, $2ymm -> mov $2ymm $1ymm
+#! vmovapd $1ymm, $2ymm -> mov %$2ymm %$1ymm
 
 #vec256_mul_asm:
 # %rdi = 0x7ffffff8e9c0
