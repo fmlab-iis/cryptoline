@@ -298,8 +298,9 @@ let texpr_bv_cat env sz1 te0 te1 =
 
 let texpr_bv_const ~signed env w z =
   let tz = texpr_cst env z in
-  let utz = texpr_to_unsigned_i env w tz in
-  if signed then texpr_to_signed_i env w utz else utz
+  if is_representable (if signed then Tsint w else Tuint w) z then tz
+  else let utz = texpr_to_unsigned_i env w tz in
+       if signed then texpr_to_signed_i env w utz else utz
 
 let texpr_bv_not ~signed env sz te =
   if signed then texpr_sub (texpr_neg te) (texpr_one env)
