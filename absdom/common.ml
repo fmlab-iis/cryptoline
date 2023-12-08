@@ -58,6 +58,13 @@ let _string_of_dom (_mgr, _env) dom =
   let _ = Format.pp_print_flush buf_fmtter () in
   Buffer.contents buf
 
+let mpq_of_z z = Mpq.of_string (Z.to_string z)
+let _scalar_of_z z = Scalar.of_mpq (mpq_of_z z)
+let _coeff_of_z z = Coeff.Scalar (_scalar_of_z z)
+let _interval_of_z inf sup = Interval.of_mpq (mpq_of_z inf) (mpq_of_z sup)
+let z_of_scalar s = Z.of_string (Scalar.to_string s)
+let z_of_interval iv = (z_of_scalar iv.Interval.inf, z_of_scalar iv.Interval.sup)
+
 let top (mgr, env) = Abstract1.top mgr env
 let bottom (mgr, env) = Abstract1.bottom mgr env
 
@@ -77,7 +84,7 @@ let interval_union i0 i1 =
   let sup = if Scalar.cmp sup0 sup1 > 0 then sup0
             else if Scalar.cmp sup0 sup1 < 0 then sup1
             else sup0 in
-  Interval.of_infsup inf sup
+  Interval.of_scalar inf sup
 
 let interval_of_typ typ =
   match typ with
@@ -98,22 +105,20 @@ let interval_of_typ typ =
 let interval_of_atom mgr dom a =
   match a with
   | Avar v -> Abstract1.bound_variable mgr dom (apvar v)
-  | Aconst (_, z) -> Interval.of_mpq (Mpq.of_string (Z.to_string z))
-                       (Mpq.of_string (Z.to_string z))
+  | Aconst (_, z) -> Interval.of_mpq (mpq_of_z z)
+                       (mpq_of_z z)
 
 let _interval_of_texpr mgr abs e = Abstract1.bound_texpr mgr abs e
 
 let interval_of_var mgr dom v =
   Abstract1.bound_variable mgr dom (apvar v)
 let zinterval_of_var (mgr, _) dom v =
-  let ivl = interval_of_var mgr dom v in
-  (Z.of_string (Scalar.to_string (ivl.Interval.inf)),
-   Z.of_string (Scalar.to_string (ivl.Interval.sup)))
+  z_of_interval (interval_of_var mgr dom v)
 
 let texpr_var env v =
   Texpr1.var env (apvar v)
 let texpr_cst env z =
-  Texpr1.cst env (Coeff.s_of_mpq (Mpq.of_string (Z.to_string z)))
+  Texpr1.cst env (Coeff.s_of_mpq (mpq_of_z z))
 let texpr_neg te =
   Texpr1.unop Texpr1.Neg te Texpr1.Int Texpr1.Near
 let texpr_add te' te'' =
@@ -188,11 +193,11 @@ let texpr_of_atom env a =
 let meet (mgr, _env) dom0 dom1 = Abstract1.meet mgr dom0 dom1
 
 (* create_env vs creates an Environment from vs *)
-let create_manager vs =
+let create_manager ?(domain=(!domain)) vs =
   let vars = List.rev_map apvar
                (VS.elements vs) in
   let ret = Environment.make (Array.of_list vars) [| |] in
-  match !domain with
+  match domain with
   | `Box -> (Box.manager_of_box (Box.manager_alloc ()), ret)
   | `Oct -> (Oct.manager_of_oct (Oct.manager_alloc ()), ret)
   | `Polka -> let m =
