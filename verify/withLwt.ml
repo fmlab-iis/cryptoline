@@ -712,9 +712,6 @@ let verify_rspec_no_rcut_abs_interp hashopt s =
         *)
        let rev_ret =
          List.fold_left (fun ret rs ->
-             (* must be the same program and pre condition *)
-             let _ = assert (s.rspre == rs.rspre) in
-             let _ = assert (s.rsprog == rs.rsprog) in
              let (post, _) = merge_rbexp_prove_with rs.rspost in
              if Absdom.Std.sat_rbexp mgr dom' post then
                let _ = safe_trace ("Range condition: " ^

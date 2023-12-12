@@ -1143,6 +1143,6 @@ let rec rbexp_apply_abs_interp e =
   | Rtrue -> true
   | Req _ -> VS.cardinal (vars_rbexp e) <= 1
   | Rneg e -> rbexp_apply_abs_interp e
-  | Rcmp _ -> false
+  | Rcmp _ -> true
   | Rand (e1, e2)
     | Ror (e1, e2) -> rbexp_apply_abs_interp e1 || rbexp_apply_abs_interp e2
