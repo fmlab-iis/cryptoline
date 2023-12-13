@@ -21,6 +21,7 @@ verbose = False
 use_re = False
 auto_carries = False
 auto_unused = False
+sort_rules = True
 
 counters = {}
 
@@ -94,7 +95,7 @@ def process_builtin_variables(pat, rep, indices):
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
       elif lhs.find("$" + str(i) + "v") != -1:
-        pv = lhs.replace("$" + str(i) + "v", "%%(?P<v" + str(i) + ">[a-zA-Z]\\w*)", 1)
+        pv = lhs.replace("$" + str(i) + "v", "%%(?P<v" + str(i) + ">[a-zA-Z]\\w*(?:\[\d+\])?)", 1)
         pv = pv.replace("$" + str(i) + "v", "%%(?P=v" + str(i) + ")")
         rv = rhs.replace("$" + str(i) + "v", "\\g<v" + str(i) + ">")
         tmp.append((pv, rv))
@@ -162,7 +163,7 @@ def mk_tspec(substs, rules):
 
 # Sort variable substitution rules in a tspec
 def sort_tspec(tspec):
-  substs = sorted(tspec[0].items(), key=lambda rule: len(rule[0]), reverse=True)
+  substs = sorted(tspec[0].items(), key=lambda rule: len(rule[0]), reverse=True) if sort_rules else tspec[0].items()
   rules = tspec[1]
   return (collections.OrderedDict(substs), rules)
 
@@ -385,7 +386,7 @@ def string_of_typed_arg(v, vtypes, default):
     return v
 
 def main():
-  global verbose, use_re, auto_carries, auto_unused
+  global verbose, use_re, auto_carries, auto_unused, sort_rules
 
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
@@ -394,6 +395,7 @@ def main():
   parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
+  parser.add_argument("--no-sort", help="do not sort rules by length", dest="nosort", action="store_true")
   parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
   parser.add_argument("-r", action="append", help="a file containing translation rules. Multiple -r arguments can be provided. A rule of a pattern in a former file has a higher priority than another rule of the same pattern in a latter file.", dest="rules", default=[])
   parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
@@ -406,6 +408,7 @@ def main():
   if args.use_re: use_re = True
   if args.auto_carries: auto_carries = True
   if args.auto_unused: auto_unused = True
+  if args.nosort: sort_rules = False
 
   vtypes = {}
   if args.vt:
