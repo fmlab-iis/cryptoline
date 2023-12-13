@@ -173,7 +173,9 @@ instr:
   | lval DOT lval DOT lval EQOP CSHRS atom atom const_exp_primary
                                                   { (get_line_start(), `CSHRS ($1, $3, $5, $8, $9, $10)) }
   | ROL lval atom atom                            { (get_line_start(), `ROL ($2, $3, $4)) }
+  | ROL lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VROL ($2, $3, $4)) }
   | ROR lval atom atom                            { (get_line_start(), `ROR ($2, $3, $4)) }
+  | ROR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VROR ($2, $3, $4)) }
   | SET lval                                      { (get_line_start(), `SET $2) }
   | SET lval_v                                    { (get_line_start(), `VSET $2) }
   | CLEAR lval                                    { (get_line_start(), `CLEAR $2) }

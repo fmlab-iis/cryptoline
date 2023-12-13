@@ -339,7 +339,9 @@ type instr_t =
   | `CSHR of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHRS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `ROL of lval_t * atom_t * atom_t
+  | `VROL of lval_vec_t * atom_vec_t * atom_vec_t
   | `ROR of lval_t * atom_t * atom_t
+  | `VROR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SET of lval_t
   | `VSET of lval_vec_t
   | `CLEAR of lval_t

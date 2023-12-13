@@ -386,7 +386,9 @@ type instr_t =
   | `CSHR of lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `CSHRS of lval_t * lval_t * lval_t * atom_t * atom_t * Z.t contextual
   | `ROL of lval_t * atom_t * atom_t
+  | `VROL of lval_vec_t * atom_vec_t * atom_vec_t
   | `ROR of lval_t * atom_t * atom_t
+  | `VROR of lval_vec_t * atom_vec_t * atom_vec_t
   | `SET of lval_t
   | `VSET of lval_vec_t
   | `CLEAR of lval_t
@@ -2267,8 +2269,12 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_cshrs_at ctx lno destH destL lostL src1 src2 num
   | `ROL (`LVPLAIN dest, src, num) ->
      parse_rol_at ctx lno dest src num
+  | `VROL (dest, src, num) ->
+     unpack_vinstr_12 parse_rol_at ctx lno dest src num
   | `ROR (`LVPLAIN dest, src, num) ->
      parse_ror_at ctx lno dest src num
+  | `VROR (dest, src, num) ->
+     unpack_vinstr_12 parse_ror_at ctx lno dest src num
   | `SET (`LVPLAIN dest) ->
      parse_set_at ctx lno dest
   | `VSET (dest) ->
