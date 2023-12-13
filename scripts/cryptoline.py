@@ -235,9 +235,12 @@ def get_vars(iname, str):
     else:
         ms = find_variables_per_argument(str)
         ms = [strip_explicit_types(m) for m in ms]
-        lvs = set(filter_variables_of_arguments([ms[i] for i in s['lvs-idx']]))
-        rvs = set(filter_variables_of_arguments([ms[i] for i in s['rvs-idx']]))
-        cvs = set(filter_variables_of_arguments([ms[i] for i in s['cvs-idx']]))
+        try:
+          lvs = set(filter_variables_of_arguments([ms[i] for i in s['lvs-idx']]))
+          rvs = set(filter_variables_of_arguments([ms[i] for i in s['rvs-idx']]))
+          cvs = set(filter_variables_of_arguments([ms[i] for i in s['cvs-idx']]))
+        except IndexError:
+            raise Exception(f"The number of arguments is incorrect: {iname} {str}")
         gvs = set()
         return { 'lvs': lvs, 'rvs': rvs, 'cvs': cvs, 'gvs': gvs }
 
