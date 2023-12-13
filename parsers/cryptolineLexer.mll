@@ -1,5 +1,6 @@
 {
   open CryptolineParser
+  open Common
   exception Eof
 
   let keywords = Hashtbl.create 100
@@ -263,3 +264,4 @@ token = parse
   | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
                                      PATH p }
   | eof                            { EOF }
+  | _                              { raise (Invalid_argument ("Unexpected character: " ^ Lexing.lexeme lexbuf ^ " at line " ^ string_of_int (get_line_end()))) }
