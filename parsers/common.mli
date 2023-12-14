@@ -933,6 +933,12 @@ val parse_rexp_sub : lno -> rexp contextual -> rexp contextual -> rexp contextua
 val parse_rexp_mul : lno -> rexp contextual -> rexp contextual -> rexp contextual
 (** [parse_rexp_mul lno e1_tok e2_tok] parses a multiplication of rexps *)
 
+val parse_rexp_udiv : lno -> rexp contextual -> rexp contextual -> rexp contextual
+(** [parse_rexp_udiv lno e1_tok e2_tok] parses an unsigned division of rexps *)
+
+val parse_rexp_sdiv : lno -> rexp contextual -> rexp contextual -> rexp contextual
+(** [parse_rexp_sdiv lno e1_tok e2_tok] parses a signed division of rexps *)
+
 val parse_rexp_sq : lno -> rexp contextual -> rexp contextual
 (** [parse_rexp_sq lno e] parses a square of rexps *)
 
@@ -1008,11 +1014,17 @@ val parse_vrexp_sub : lno -> rexp list contextual -> rexp list contextual -> rex
 val parse_vrexp_mul : lno -> rexp list contextual -> rexp list contextual -> rexp list contextual
 (** [parse_vrexp_mul lno e1_tok e2_tok] parses a multiplication of rexp *)
 
+val parse_vrexp_udiv : lno -> rexp list contextual -> rexp list contextual -> rexp list contextual
+(** [parse_vrexp_udiv lno e1_tok e2_tok] parses an unsigned division of rexp *)
+
 val parse_vrexp_sq : lno -> rexp list contextual -> rexp list contextual
 (** [parse_vrexp_sq lno ve_tok] parses a square of a vector rexp *)
 
 val parse_vrexp_umod : lno -> rexp list contextual -> rexp list contextual -> rexp list contextual
 (** [parse_vrexp_umod lno e1_tok e2_tok] parses an unsigned mod of rexp *)
+
+val parse_vrexp_sdiv : lno -> rexp list contextual -> rexp list contextual -> rexp list contextual
+(** [parse_vrexp_sdiv lno e1_tok e2_tok] parses a signed division of rexp *)
 
 val parse_vrexp_srem : lno -> rexp list contextual -> rexp list contextual -> rexp list contextual
 (** [parse_vrexp_srem lno e1_tok e2_tok] parses a signed remainder of rexp *)

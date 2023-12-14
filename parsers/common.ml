@@ -2762,6 +2762,8 @@ let parse_rlistop op lno es_tok =
 let parse_rexp_add = parse_rbinop radd
 let parse_rexp_sub = parse_rbinop rsub
 let parse_rexp_mul = parse_rbinop rmul
+let parse_rexp_udiv = parse_rbinop rudiv
+let parse_rexp_sdiv = parse_rbinop rsdiv
 
 let parse_rexp_sq _lno e_tok =
   fun ctx ->
@@ -2866,6 +2868,8 @@ let parse_vrexp_not = lift_runop_vec rnotb
 let parse_vrexp_add = lift_rbinop_vec radd
 let parse_vrexp_sub = lift_rbinop_vec rsub
 let parse_vrexp_mul = lift_rbinop_vec rmul
+let parse_vrexp_udiv = lift_rbinop_vec rudiv
+let parse_vrexp_sdiv = lift_rbinop_vec rsdiv
 
 let parse_vrexp_sq _lno ve_tok =
   fun ctx ->

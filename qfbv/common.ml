@@ -23,7 +23,9 @@ type exp =
   | Add of size * exp * exp
   | Sub of size * exp * exp
   | Mul of size * exp * exp
+  | Udiv of size * exp * exp
   | Mod of size * exp * exp
+  | Sdiv of size * exp * exp
   | Srem of size * exp * exp
   | Smod of size * exp * exp
   | Shl of size * exp * exp
@@ -101,9 +103,17 @@ let rec string_of_exp (e : exp) : string =
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " * "
      ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+  | Udiv (_w, e1, e2) ->
+     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     ^ " / "
+     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Mod (_w, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " % "
+     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+  | Sdiv (_w, e1, e2) ->
+     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     ^ " sdiv "
      ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Srem (_w, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
@@ -192,7 +202,9 @@ let rec vars_exp e =
   | Add (_, e1, e2)
   | Sub (_, e1, e2)
   | Mul (_, e1, e2)
+  | Udiv (_, e1, e2)
   | Mod (_, e1, e2)
+  | Sdiv (_, e1, e2)
   | Srem (_, e1, e2)
   | Smod (_, e1, e2)
   | Shl (_, e1, e2)
@@ -374,9 +386,19 @@ object(self)
     let _ = self#addstmt (Printf.sprintf "%d mul %d %d %d" bv w e1 e2) in
     bv
 
+  method mkudiv w e1 e2 =
+    let bv = self#newvar in
+    let _ = self#addstmt (Printf.sprintf "%d udiv %d %d %d" bv w e1 e2) in
+    bv
+
   method mkmod w e1 e2 =
     let bv = self#newvar in
     let _ = self#addstmt (Printf.sprintf "%d urem %d %d %d" bv w e1 e2) in
+    bv
+
+  method mksdiv w e1 e2 =
+    let bv = self#newvar in
+    let _ = self#addstmt (Printf.sprintf "%d sdiv %d %d %d" bv w e1 e2) in
     bv
 
   method mksrem w e1 e2 =
@@ -551,7 +573,9 @@ let rec btor_of_exp m e =
   | Add (w, e1, e2) -> m#mkadd w (btor_of_exp m e1) (btor_of_exp m e2)
   | Sub (w, e1, e2) -> m#mksub w (btor_of_exp m e1) (btor_of_exp m e2)
   | Mul (w, e1, e2) -> m#mkmul w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Udiv (w, e1, e2) -> m#mkudiv w (btor_of_exp m e1) (btor_of_exp m e2)
   | Mod (w, e1, e2) -> m#mkmod w (btor_of_exp m e1) (btor_of_exp m e2)
+  | Sdiv (w, e1, e2) -> m#mksdiv w (btor_of_exp m e1) (btor_of_exp m e2)
   | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
   | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
   | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
@@ -949,7 +973,9 @@ let bvneg e = "(bvneg " ^ e ^ ")"
 let bvadd e1 e2 = "(bvadd " ^ e1 ^ " " ^ e2 ^ ")"
 let bvsub e1 e2 = "(bvsub " ^ e1 ^ " " ^ e2 ^ ")"
 let bvmul e1 e2 = "(bvmul " ^ e1 ^ " " ^ e2 ^ ")"
+let bvudiv e1 e2 = "(bvudiv " ^ e1 ^ " " ^ e2 ^ ")"
 let bvmod e1 e2 = "(bvurem " ^ e1 ^ " " ^ e2 ^ ")"
+let bvsdiv e1 e2 = "(bvsdiv " ^ e1 ^ " " ^ e2 ^ ")"
 let bvsrem e1 e2 = "(bvsrem " ^ e1 ^ " " ^ e2 ^ ")"
 let bvsmod e1 e2 = "(bvsmod " ^ e1 ^ " " ^ e2 ^ ")"
 let bvshl e1 e2 = "(bvshl " ^ e1 ^ " " ^ e2 ^ ")"
@@ -1033,7 +1059,9 @@ let rec smtlib2_of_exp e =
   | Add (_w, e1, e2) -> bvadd (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Sub (_w, e1, e2) -> bvsub (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Mul (_w, e1, e2) -> bvmul (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | Udiv (_w, e1, e2) -> bvudiv (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Mod (_w, e1, e2) -> bvmod (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | Sdiv (_w, e1, e2) -> bvsdiv (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Srem (_w, e1, e2) -> bvsrem (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Smod (_w, e1, e2) -> bvsmod (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Shl (_w, e1, e2) -> bvshl (smtlib2_of_exp e1) (smtlib2_of_exp e2)
@@ -1580,7 +1608,9 @@ object(self)
        let (clauses2, e2) = self#bit_blast_exp e2 in
        let (clauses3, rs) = self#bit_blast_mul w e1 e2 in
        (clauses1@@clauses2@@clauses3, rs)
+    | Udiv (_w, _e1, _e2) -> failwith "Not supported: Udiv"
     | Mod (_w, _e1, _e2) -> failwith "Not supported: Mod"
+    | Sdiv (_w, _e1, _e2) -> failwith "Not supported: Sdiv"
     | Srem (_w, _e1, _e2) -> failwith "Not supported: Srem"
     | Smod (_w, _e1, _e2) -> failwith "Not supported: Smod"
     | Shl (w, e1, e2) ->

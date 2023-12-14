@@ -19,7 +19,7 @@
 /* Instructions */
 %token CONST MOV EXTRACT
 %token BROADCAST
-%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ SPLIT SPL
+%token ADD ADDS ADC ADCS SUB SUBC SUBB SBC SBCS SBB SBBS MUL MULS MULL MULJ UDIV SDIV SPLIT SPL
 %token UADD UADDS UADC UADCS USUB USUBC USUBB USBC USBCS USBB USBBS UMUL UMULS UMULL UMULJ USPLIT USPL
 %token SADD SADDS SADC SADCS SSUB SSUBC SSUBB SSBC SSBCS SSBB SSBBS SMUL SMULS SMULL SMULJ SSPLIT SSPL
 %token SHL SHLS SHR SHRS SAR SARS CSHL CSHLS CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
@@ -738,8 +738,10 @@ rexp:
   | ADD rexp_primary rexp_primary                 { parse_rexp_add (get_line_start()) $2 $3 }
   | SUB rexp_primary rexp_primary                 { parse_rexp_sub (get_line_start()) $2 $3 }
   | MUL rexp_primary rexp_primary                 { parse_rexp_mul (get_line_start()) $2 $3 }
+  | UDIV rexp_primary rexp_primary                 { parse_rexp_udiv (get_line_start()) $2 $3 }
   | SQ rexp_primary                               { parse_rexp_sq (get_line_start()) $2 }
   | UMOD rexp_primary rexp_primary                { parse_rexp_umod (get_line_start()) $2 $3 }
+  | SDIV rexp_primary rexp_primary                { parse_rexp_sdiv (get_line_start()) $2 $3 }
   | SREM rexp_primary rexp_primary                { parse_rexp_srem (get_line_start()) $2 $3 }
   | SMOD rexp_primary rexp_primary                { parse_rexp_smod (get_line_start()) $2 $3 }
   | AND rexp_primary rexp_primary                 { parse_rexp_and (get_line_start()) $2 $3 }
@@ -795,8 +797,10 @@ vrexp:
   | ADD vrexp_primary vrexp_primary               { parse_vrexp_add (get_line_start()) $2 $3 }
   | SUB vrexp_primary vrexp_primary               { parse_vrexp_sub (get_line_start()) $2 $3 }
   | MUL vrexp_primary vrexp_primary               { parse_vrexp_mul (get_line_start()) $2 $3 }
+  | UDIV vrexp_primary vrexp_primary              { parse_vrexp_udiv (get_line_start()) $2 $3 }
   | SQ vrexp_primary                              { parse_vrexp_sq (get_line_start()) $2 }
   | UMOD vrexp_primary vrexp_primary              { parse_vrexp_umod (get_line_start()) $2 $3 }
+  | SDIV vrexp_primary vrexp_primary              { parse_vrexp_sdiv (get_line_start()) $2 $3 }
   | SREM vrexp_primary vrexp_primary              { parse_vrexp_srem (get_line_start()) $2 $3 }
   | SMOD vrexp_primary vrexp_primary              { parse_vrexp_smod (get_line_start()) $2 $3 }
   | AND vrexp_primary vrexp_primary               { parse_vrexp_and (get_line_start()) $2 $3 }

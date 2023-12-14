@@ -26,6 +26,7 @@
               "muls"                       , MULS;
               "mull"                       , MULL;
               "mulj"                       , MULJ;
+              "udiv"                       , UDIV;
               "spl"                        , SPL;
               "split"                      , SPLIT;
               "uadd"                       , UADD;
@@ -62,6 +63,7 @@
               "smuls"                      , SMULS;
               "smull"                      , SMULL;
               "smulj"                      , SMULJ;
+              "sdiv"                       , SDIV;
               "sspl"                       , SSPL;
               "ssplit"                     , SSPLIT;
               "shl"                        , SHL;

@@ -217,7 +217,9 @@ type rbinop =
   | Radd
   | Rsub
   | Rmul
+  | Rudiv
   | Rumod
+  | Rsdiv (* 2's complement signed division *)
   | Rsrem (* 2's complement signed remainder (sign follows dividend) *)
   | Rsmod (* 2's complement signed remainder (sign follows divisor) *)
   | Randb
@@ -595,7 +597,9 @@ let rnotb w e = Runop (w, Rnotb, e)
 let radd w e1 e2 = Rbinop (w, Radd, e1, e2)
 let rsub w e1 e2 = Rbinop (w, Rsub, e1, e2)
 let rmul w e1 e2 = Rbinop (w, Rmul, e1, e2)
+let rudiv w e1 e2 = Rbinop (w, Rudiv, e1, e2)
 let rumod w e1 e2 = Rbinop (w, Rumod, e1, e2)
+let rsdiv w e1 e2 = Rbinop (w, Rsdiv, e1, e2)
 let rsrem w e1 e2 = Rbinop (w, Rsrem, e1, e2)
 let rsmod w e1 e2 = Rbinop (w, Rsmod, e1, e2)
 let randb w e1 e2 = Rbinop (w, Randb, e1, e2)
@@ -1181,7 +1185,9 @@ let string_of_rbinop op =
   | Radd -> "add"
   | Rsub -> "sub"
   | Rmul -> "mul"
+  | Rudiv -> "udiv"
   | Rumod -> "umod"
+  | Rsdiv -> "sdiv"
   | Rsrem -> "srem"
   | Rsmod -> "smod"
   | Randb -> "and"
@@ -4021,7 +4027,9 @@ let rec eval_rexp_const e =
                                | Radd -> addB v1 v2
                                | Rsub -> subB v1 v2
                                | Rmul -> mulB v1 v2
+                               | Rudiv -> udivB v1 v2
                                | Rumod -> uremB v1 v2
+                               | Rsdiv -> sdivB v1 v2
                                | Rsrem -> sremB v1 v2
                                | Rsmod -> smodB v1 v2
                                | Randb -> andB v1 v2
@@ -4082,7 +4090,9 @@ let bvcryptoline_of_rbinop op =
   | Radd -> "bvradd"
   | Rsub -> "bvrsub"
   | Rmul -> "bvrmul"
+  | Rudiv -> raise (UnsupportedException "The unsigned division operation over range expressions is not supported by BvCryptoLine.")
   | Rumod -> raise (UnsupportedException "The unsigned modulo operation over range expressions is not supported by BvCryptoLine.")
+  | Rsdiv -> raise (UnsupportedException "The signed division operation over range expressions is not supported by BvCryptoLine.")
   | Rsrem -> raise (UnsupportedException "The 2's complement signed remainder operation over range expressions is not supported by BvCryptoLine.")
   | Rsmod -> raise (UnsupportedException "The 2's complement signed remainder operation over range expressions is not supported by BvCryptoLine.")
   | Randb -> raise (UnsupportedException "The bit-wise AND operation over range expressions is not supported by BvCryptoLine.")

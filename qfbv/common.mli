@@ -19,7 +19,9 @@ type exp =
   | Add of size * exp * exp             (** addition *)
   | Sub of size * exp * exp             (** subtraction *)
   | Mul of size * exp * exp             (** multiplication *)
+  | Udiv of size * exp * exp             (** unsigned division *)
   | Mod of size * exp * exp             (** unsigned mod *)
+  | Sdiv of size * exp * exp            (** 2's complement signed division *)
   | Srem of size * exp * exp            (** 2's complement signed remainder (sign follows dividend) *)
   | Smod of size * exp * exp            (** 2's complement signed remainder (sign follows divisor) *)
   | Shl of size * exp * exp             (** left shift *)
@@ -96,6 +98,7 @@ class btor_manager :
     method mklow : size -> int -> int -> int
     method mkmod : size -> int -> int -> int
     method mkmul : size -> int -> int -> int
+    method mkudiv : size -> int -> int -> int
     method mkneg : size -> int -> int
     method mknot : size -> int -> int
     method mkor : size -> int -> int -> int
@@ -109,6 +112,7 @@ class btor_manager :
     method mkslice : size -> int -> int -> int -> int
     method mksll : size -> int -> int -> int
     method mkslt : size -> int -> int
+    method mksdiv : size -> int -> int -> int
     method mksmod : size -> int -> int -> int
     method mksmulo : size -> int -> int
     method mksra : size -> int -> int -> int
