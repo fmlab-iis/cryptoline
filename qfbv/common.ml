@@ -892,11 +892,15 @@ let btor_instr m i =
   | Iseteq (v, a1, a2) -> let a1_btor = btor_atom m a1 in
                           let a2_btor = btor_atom m a2 in
                           let sv = size_of_var v in
-                          m#setvar v (m#mksub sv (m#mkconstd sv Z.zero) (m#mkzext 1 (sv - 1) (m#mkeq a1_btor a2_btor)))
+                          if sv == 0 then assert false
+                          else if sv == 1 then m#setvar v (m#mkeq a1_btor a2_btor)
+                          else m#setvar v (m#mksub sv (m#mkconstd sv Z.zero) (m#mkzext 1 (sv - 1) (m#mkeq a1_btor a2_btor)))
   | Isetne (v, a1, a2) -> let a1_btor = btor_atom m a1 in
                           let a2_btor = btor_atom m a2 in
                           let sv = size_of_var v in
-                          m#setvar v (m#mksub sv (m#mkconstd sv Z.zero) (m#mkzext 1 (sv - 1) (m#mkne a1_btor a2_btor)))
+                          if sv == 0 then assert false
+                          else if sv == 1 then m#setvar v (m#mkne a1_btor a2_btor)
+                          else m#setvar v (m#mksub sv (m#mkconstd sv Z.zero) (m#mkzext 1 (sv - 1) (m#mkne a1_btor a2_btor)))
   | Iand (v, a1, a2) -> let w = size_of_var v in
                         let a1_btor = btor_atom m a1 in
                         let a2_btor = btor_atom m a2 in
