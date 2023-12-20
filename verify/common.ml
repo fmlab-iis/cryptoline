@@ -629,7 +629,9 @@ let bexp_atom_ushl_safe w a p =
         High (w - n, n, exp_atom a),
         Const (n, Z.zero))
   else
-    True
+    Eq (w,
+        Lshr (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
+        Const (w, Z.zero))
 
 let bexp_atom_sshl_safe w a p =
   if atom_is_const p then
@@ -638,7 +640,15 @@ let bexp_atom_sshl_safe w a p =
         SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
         exp_atom a)
   else
-    True
+    let shifted =
+      Ashr (w,
+            exp_atom a,
+            Sub (w,
+                 Sub (w, Const (w, Z.of_int w), exp_atom p),
+                 Const (w, Z.one))) in
+    Disj
+      (Eq (w, shifted, Const (w, Z.zero)),
+       Eq (w, shifted, Sub (w, Const (w, Z.zero), Const (w, Z.one))))
 
 let bexp_atom_ushr_safe w a p =
   if atom_is_const p then
@@ -647,7 +657,9 @@ let bexp_atom_ushr_safe w a p =
         Low (n, w - n, exp_atom a),
         Const (n, Z.zero))
   else
-    True
+    Eq (w,
+        Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
+        Const (w, Z.zero))
 
 let bexp_atom_sshr_safe w a p =
   if atom_is_const p then
@@ -656,7 +668,9 @@ let bexp_atom_sshr_safe w a p =
       (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
        Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
   else
-    True
+    Conj
+      (Eq (w, Lshr (w, exp_atom a, Const (w, Z.of_int (w - 1))), Const (w, Z.zero)),
+       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)), Const (w, Z.zero)))
 
 let bexp_atom_usar_safe w a p =
   if atom_is_const p then
@@ -665,7 +679,9 @@ let bexp_atom_usar_safe w a p =
       (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
        Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
   else
-    True
+    Conj
+      (Eq (w, Lshr (w, exp_atom a, Const (w, Z.of_int (w - 1))), Const (w, Z.zero)),
+       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)), Const (w, Z.zero)))
 
 let bexp_atom_ssar_safe w a p =
   if atom_is_const p then
@@ -674,7 +690,9 @@ let bexp_atom_ssar_safe w a p =
         Low (n, w - n, exp_atom a),
         Const (n, Z.zero))
   else
-    True
+    Eq (w,
+        Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
+        Const (w, Z.zero))
 
 let bexp_atom_ucshl_safe w a1 _a2 n =
   Conj
