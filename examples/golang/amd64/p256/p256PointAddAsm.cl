@@ -7797,6 +7797,8 @@ ghost X1@uint256, Y1@uint256, Z1@uint256,
   &&
   true;
 
+(* Spec w.r.t. https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-1998-cmo-2 *)
+
 ghost Z1Z1@uint256, Z2Z2@uint256, U1@uint256, U2@uint256, 
       S1@uint256, S2@uint256, H@uint256, HH@uint256, HHH@uint256, 
       r@uint256, V@uint256, X3@uint256, Y3@uint256, Z3@uint256:
