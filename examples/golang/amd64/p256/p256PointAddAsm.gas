@@ -1,3 +1,36 @@
+#! $1c(%rsp) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rsp) = %%EA
+#! (%rdp) = %%EA
+#! %r$1c = %%r$1c
+#! %rdi = %%rdi
+#! %rsi = %%rsi
+#! %rcx = %%rcx
+#! %rax = %%rax
+#! %rdx = %%rdx
+#! %rsp = %%rsp
+#! %rdp = %%rdp
+#! mov $1ea, $2v -> mov $2v $1ea
+#! mov $1v, $2v -> mov $2v $1v
+#! mul $1v -> mull rdx rax rax $1v;\nsubc carry dc rdx 1@uint64; mov overflow carry
+#! add $1v, $2v -> adds carry $2v $2v $1v
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+#! shl $1c, $2v -> split ddc $2v $2v (64-$1c);\nshl $2v $2v $1c@uint64
+#! shr $1c, $2v -> split $2v dc $2v $1c;\nassert true && ddc = $2v;\nassume ddc = $2v && true
+#! mulq $1ea -> mull rdx rax rax $1ea
+#! adc $1v, $2v -> adcs carry $2v $2v $1v carry
+#! adc $1c, $2v -> adcs carry $2v $2v $1c@uint64 carry
+#! sub $1c, $2v -> subb carry $2v $2v $1c@uint64
+#! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
+#! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! mov $1v, $2ea -> mov $2ea $1v
 crypto/elliptic.p256PointAddAsm.abi0:
 	sub    $0x2b0,%rsp                              #! PC = 0x4c8c5b
 	mov    %rbp,0x2a8(%rsp)                         #! EA = L0xc0000b14c8; PC = 0x4c8c62
