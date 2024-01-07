@@ -4228,6 +4228,8 @@ ghost X1@uint256, Y1@uint256, Z1@uint256, a@uint256:
   &&
   true;
 
+(*https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#doubling-dbl-1998-cmo-2*)
+
 ghost XX@uint256, YY@uint256, ZZ@uint256, S@uint256, 
       M@uint256, T@uint256, XR@uint256, YR@uint256, ZR@uint256:
   and [
