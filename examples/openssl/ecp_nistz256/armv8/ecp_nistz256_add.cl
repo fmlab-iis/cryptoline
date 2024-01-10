@@ -108,9 +108,9 @@ mov r3 L0x4000839970;
 {
   true
 &&
-  and [eqsmod (ulimbs 64 [r0, r1, r2, r3])
-              (ulimbs 64 [a0, a1, a2, a3] + ulimbs 64 [b0, b1, b2, b3])
-              (ulimbs 64 [p0, p1, p2, p3]),
+  and [eqsmod (ulimbs 64 [r0, r1, r2, r3, 0@64])
+              (ulimbs 64 [a0, a1, a2, a3, 0@64] + ulimbs 64 [b0, b1, b2, b3, 0@64])
+              (ulimbs 64 [p0, p1, p2, p3, 0@64]),
        ulimbs 64 [r0, r1, r2, r3] <u ulimbs 64 [p0, p1, p2, p3]]
 }
 
