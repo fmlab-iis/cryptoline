@@ -231,9 +231,9 @@ mov c2 L0xc00018a150;
 mov c3 L0xc00018a158;
 
 {
-  eqmod limbs 64 [a0, a1, a2, a3]
-        limbs 64 [0, 0, 0, 0, c0, c1, c2, c3]
-        limbs 64 [m0, m1, m2, m3]
+  eqmod (limbs 64 [a0, a1, a2, a3])
+        (limbs 64 [0, 0, 0, 0, c0, c1, c2, c3])
+        (limbs 64 [m0, m1, m2, m3])
   &&
   true
 }

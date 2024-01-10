@@ -109,10 +109,10 @@ mov c2 L0xc000196130;
 mov c3 L0xc000196138;
 
 {
-  eqmod  limbs 64 [c0, c1, c2, c3, 0] +
-         limbs 64 [a0o, a1o, a2o, a3o, 0]
-         limbs 64 [a0o, a1o, a2o, a3o, 0] * 2 * zero
-         limbs 64 [m0, m1, m2, m3, 0]
+  eqmod  (limbs 64 [c0, c1, c2, c3, 0] +
+          limbs 64 [a0o, a1o, a2o, a3o, 0])
+         (limbs 64 [a0o, a1o, a2o, a3o, 0] * 2 * zero)
+         (limbs 64 [m0, m1, m2, m3, 0])
   &&
   ulimbs 64 [c0, c1, c2, c3] <=u ulimbs 64 [m0, m1, m2, m3]
   (* <"="u because a = 0@256 -> c = m *)
