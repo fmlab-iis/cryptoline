@@ -1,24 +1,26 @@
-(*quine:
-Parsing Cryptoline file:    [OK]    0.002034 seconds
-Checking well-formedness:   [OK]    0.000567 seconds
-Transforming to SSA form:   [OK]    0.000280 seconds
-Normalizing specification:    [OK]    0.000281 seconds
-Rewriting assignments:      [OK]    0.000312 seconds
-Verifying program safety:   
-   Cut 0
-       Round 1 (4 safety conditions, timeout = 300 seconds)
-     Safety condition #1  [OK]
-     Safety condition #0  [OK]
-     Safety condition #2  [OK]
-     Safety condition #3  [OK]
-   Overall      [OK]    0.149091 seconds
-Verifying range assertions:   [OK]    0.371818 seconds
-Verifying range specification:    [OK]    0.003010 seconds
-Rewriting value-preserved casting:  [OK]    0.000032 seconds
-Verifying algebraic assertions:   [OK]    0.000511 seconds
-Verifying algebraic specification:  [OK]    0.103171 seconds
-Verification result:      [OK]    0.631781 seconds
+(* popper: cv -v -jobs 24 -isafety -slicing -no_carry_constraint
+Parsing CryptoLine file:			[OK]		0.0007 seconds
+Checking well-formedness:			[OK]		0.0002 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:			[OK]		0.0001 seconds
+Normalizing specification:			[OK]		0.0001 seconds
+Rewriting assignments:				[OK]		0.0001 seconds
+Verifying program safety:
+	Overall					[OK]		0.0069 seconds
+Verifying range assertions:			[OK]		0.0716 seconds
+Verifying range specification:			[OK]		0.0000 seconds
+Rewriting value-preserved casting:		[OK]		0.0000 seconds
+Verifying algebraic assertions:			[OK]		0.0000 seconds
+Verifying algebraic specification:		[OK]		0.0752 seconds
+Procedure verification:				[OK]		0.1541 seconds
+
+Summary
+-------
+Verification result:				[OK]		0.1550 seconds
 *)
+
 proc main (uint64 a0, uint64 a1, uint64 a2, uint64 a3,
            uint64 m0, uint64 m1, uint64 m2, uint64 m3) =
 {
@@ -204,6 +206,10 @@ sbbs carry r13 r13 L0x4bef88 carry;
 sbbs carry r8 r8 0x0@uint64 carry;
 (* sbb    0x42805(%rip),%r9        # 0x4bef90 <p256const1>#! EA = L0x4bef90; Value = 0xffffffff00000001; PC = 0x47c784 *)
 sbbs carry r9 r9 L0x4bef90 carry;
+
+assert true && carry * (1@1 - carry) = 0@1;
+assume carry * (1 - carry) = 0 && true;
+
 (* cmovb  %rsi,%r12                                #! PC = 0x47c78b *)
 cmov r12 carry rsi r12;
 (* cmovb  %r11,%r13                                #! PC = 0x47c78f *)
@@ -231,9 +237,9 @@ mov c2 L0xc00018a150;
 mov c3 L0xc00018a158;
 
 {
-  eqmod limbs 64 [a0, a1, a2, a3]
-        limbs 64 [0, 0, 0, 0, c0, c1, c2, c3]
-        limbs 64 [m0, m1, m2, m3]
+  eqmod (limbs 64 [a0, a1, a2, a3])
+        (limbs 64 [0, 0, 0, 0, c0, c1, c2, c3])
+        (limbs 64 [m0, m1, m2, m3])
   &&
   true
 }
