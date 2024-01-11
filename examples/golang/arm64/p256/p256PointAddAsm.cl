@@ -1,3 +1,26 @@
+(* macbook: cv -v -jobs 8 -slicing -isafety p256PointAddAsm.cl
+Parsing CryptoLine file:			[OK]		0.0188 seconds
+Checking well-formedness:			[OK]		0.0095 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:			[OK]		0.0029 seconds
+Normalizing specification:			[OK]		0.0043 seconds
+Rewriting assignments:				[OK]		0.0018 seconds
+Verifying program safety:	
+	Overall					[OK]		48.7247 seconds
+Verifying range assertions:			[OK]		24.4756 seconds
+Verifying range specification:			[OK]		156.0350 seconds
+Rewriting value-preserved casting:		[OK]		0.0010 seconds
+Verifying algebraic assertions:			[OK]		0.0054 seconds
+Verifying algebraic specification:		[OK]		216.6470 seconds
+Procedure verification:				[OK]		445.8993 seconds
+
+Summary
+-------
+Verification result:				[OK]		445.9277 seconds
+*)
+
 const P256_0 = 0xffffffffffffffff
 const P256_1 = 0x00000000ffffffff
 const P256_2 = 0x0000000000000000
@@ -10,11 +33,8 @@ proc main (uint64 x1R_0, uint64 x1R_1, uint64 x1R_2, uint64 x1R_3,
            uint64 y2R_0, uint64 y2R_1, uint64 y2R_2, uint64 y2R_3,
            uint64 z2R_0, uint64 z2R_1, uint64 z2R_2, uint64 z2R_3) =
 {
-  and [eqmod limbs 64 [z1R_0, z1R_1, z1R_2, z1R_3]
-             2**256 limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [z2R_0, z2R_1, z2R_2, z2R_3]
-             2**256 limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]]
-&&
+  true
+  &&
   and [limbs 64 [x1R_0,x1R_1,x1R_2,x1R_3] <u
        limbs 64 [$P256_0@64,$P256_1@64,$P256_2@64,$P256_3@64],
        limbs 64 [y1R_0,y1R_1,y1R_2,y1R_3] <u
@@ -35,24 +55,24 @@ ghost x1_0@uint64, x1_1@uint64, x1_2@uint64, x1_3@uint64,
       x2_0@uint64, x2_1@uint64, x2_2@uint64, x2_3@uint64,
       y2_0@uint64, y2_1@uint64, y2_2@uint64, y2_3@uint64,
       z2_0@uint64, z2_1@uint64, z2_2@uint64, z2_3@uint64 :
-  and [eqmod limbs 64 [x1R_0,x1R_1,x1R_2,x1R_3]
-             2**256 * limbs 64 [x1_0,x1_1,x1_2,x1_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [y1R_0,y1R_1,y1R_2,y1R_3]
-             2**256 * limbs 64 [y1_0,y1_1,y1_2,y1_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [z1R_0,z1R_1,z1R_2,z1R_3]
-             2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [x2R_0,x2R_1,x2R_2,x2R_3]
-             2**256 * limbs 64 [x2_0,x2_1,x2_2,x2_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [y2R_0,y2R_1,y2R_2,y2R_3]
-             2**256 * limbs 64 [y2_0,y2_1,y2_2,y2_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3],
-       eqmod limbs 64 [z2R_0,z2R_1,z2R_2,z2R_3]
-             2**256 * limbs 64 [z2_0,z2_1,z2_2,z2_3]
-             limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]]
+  and [eqmod (limbs 64 [x1R_0,x1R_1,x1R_2,x1R_3])
+             (2**256 * limbs 64 [x1_0,x1_1,x1_2,x1_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]),
+       eqmod (limbs 64 [y1R_0,y1R_1,y1R_2,y1R_3])
+             (2**256 * limbs 64 [y1_0,y1_1,y1_2,y1_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]),
+       eqmod (limbs 64 [z1R_0,z1R_1,z1R_2,z1R_3])
+             (2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]),
+       eqmod (limbs 64 [x2R_0,x2R_1,x2R_2,x2R_3])
+             (2**256 * limbs 64 [x2_0,x2_1,x2_2,x2_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]),
+       eqmod (limbs 64 [y2R_0,y2R_1,y2R_2,y2R_3])
+             (2**256 * limbs 64 [y2_0,y2_1,y2_2,y2_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3]),
+       eqmod (limbs 64 [z2R_0,z2R_1,z2R_2,z2R_3])
+             (2**256 * limbs 64 [z2_0,z2_1,z2_2,z2_3])
+             (limbs 64 [$P256_0,$P256_1,$P256_2,$P256_3])]
     && true;
 
 mov L0x400018f6e8 x1R_0; mov L0x400018f6f0 x1R_1;
@@ -399,9 +419,9 @@ mov L0x400018f4a8 x23; mov L0x400018f4b0 x24;
 mov L0x400018f4b8 x25; mov L0x400018f4c0 x26;
 
 (* 0 *)
-cut eqmod limbs 64 [L0x400018f4a8, L0x400018f4b0, L0x400018f4b8, L0x400018f4c0]
-          2**256 * limbs 64 [z2_0, z2_1, z2_2, z2_3]**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [L0x400018f4a8, L0x400018f4b0, L0x400018f4b8, L0x400018f4c0])
+          (2**256 * limbs 64 [z2_0, z2_1, z2_2, z2_3]**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [ precondition, all ghosts ]
  && limbs 64 [L0x400018f4a8, L0x400018f4b0, L0x400018f4b8, L0x400018f4c0] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -756,9 +776,9 @@ cmov x26 carry x14 x6;
 #ret                                            #! 0xc3c98 = 0xc3c98;
 
 (* 1 *)
-cut eqmod limbs 64 [x23, x24, x25, x26]
-          2**256 * limbs 64 [z2_0, z2_1, z2_2, z2_3]**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [x23, x24, x25, x26])
+          (2**256 * limbs 64 [z2_0, z2_1, z2_2, z2_3]**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [x23, x24, x25, x26] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -1121,10 +1141,10 @@ mov L0x400018f4c8 x23; mov L0x400018f4d0 x24;
 mov L0x400018f4d8 x25; mov L0x400018f4e0 x26;
 
 (* 2 *)
-cut eqmod limbs 64 [L0x400018f4c8, L0x400018f4d0, L0x400018f4d8, L0x400018f4e0]
-          2**256 *
-          limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [L0x400018f4c8, L0x400018f4d0, L0x400018f4d8, L0x400018f4e0])
+          (2**256 *
+          limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [L0x400018f4c8, L0x400018f4d0, L0x400018f4d8, L0x400018f4e0] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -1421,9 +1441,9 @@ mov L0x400018f3e8 x23; mov L0x400018f3f0 x24;
 mov L0x400018f3f8 x25; mov L0x400018f400 x26;
 
 (* 3 *)
-cut eqmod limbs 64 [L0x400018f3e8, L0x400018f3f0, L0x400018f3f8, L0x400018f400]
-          2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [L0x400018f3e8, L0x400018f3f0, L0x400018f3f8, L0x400018f400])
+          (2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [L0x400018f3e8, L0x400018f3f0, L0x400018f3f8, L0x400018f400] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -1778,9 +1798,9 @@ cmov x26 carry x14 x6;
 #ret                                            #! 0xc3c98 = 0xc3c98;
 
 (* 4 *)
-cut eqmod limbs 64 [x23, x24, x25, x26]
-          2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [x23, x24, x25, x26])
+          (2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [x23, x24, x25, x26] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -2139,10 +2159,10 @@ cmov x26 carry x14 x6;
 #ret                                            #! 0xc3c98 = 0xc3c98;
 
 (* 5 *)
-cut eqmod limbs 64 [x23, x24, x25, x26]
-          2**256 *
-          limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [x23, x24, x25, x26])
+          (2**256 *
+          limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [x23, x24, x25, x26] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -2204,11 +2224,11 @@ mov L0x400018f428 x19; mov L0x400018f430 x20;
 mov L0x400018f438 x21; mov L0x400018f440 x22;
 
 (* 6 *)
-cut eqmod limbs 64 [L0x400018f428, L0x400018f430, L0x400018f438, L0x400018f440]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f428, L0x400018f430, L0x400018f438, L0x400018f440])
+          (2**256 *
           (limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [2]]
  && limbs 64 [L0x400018f428, L0x400018f430, L0x400018f438, L0x400018f440] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -2605,10 +2625,10 @@ mov L0x400018f4e8 x23; mov L0x400018f4f0 x24;
 mov L0x400018f4f8 x25; mov L0x400018f500 x26;
 
 (* 7 *)
-cut eqmod limbs 64 [L0x400018f4e8, L0x400018f4f0, L0x400018f4f8, L0x400018f500]
-          2**256 *
-          limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [L0x400018f4e8, L0x400018f4f0, L0x400018f4f8, L0x400018f500])
+          (2**256 *
+          limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [0]]
  && limbs 64 [L0x400018f4e8, L0x400018f4f0, L0x400018f4f8, L0x400018f500] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -2975,10 +2995,10 @@ mov L0x400018f508 x23; mov L0x400018f510 x24;
 mov L0x400018f518 x25; mov L0x400018f520 x26;
 
 (* 8 *)
-cut eqmod limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520]
-          2**256 *
-          limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520])
+          (2**256 *
+          limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [3]]
  && limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -3040,11 +3060,11 @@ mov L0x400018f408 x19; mov L0x400018f410 x20;
 mov L0x400018f418 x21; mov L0x400018f420 x22;
 
 (* 9 *)
-cut eqmod limbs 64 [L0x400018f408, L0x400018f410, L0x400018f418, L0x400018f420]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f408, L0x400018f410, L0x400018f418, L0x400018f420])
+          (2**256 *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [7]]
  && limbs 64 [L0x400018f408, L0x400018f410, L0x400018f418, L0x400018f420] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -3373,11 +3393,11 @@ mov L0x400018f468 x23; mov L0x400018f470 x24;
 mov L0x400018f478 x25; mov L0x400018f480 x26;
 
 (* 10 *)
-cut eqmod limbs 64 [L0x400018f468, L0x400018f470, L0x400018f478, L0x400018f480]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f468, L0x400018f470, L0x400018f478, L0x400018f480])
+          (2**256 *
           (limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [6]]
  && limbs 64 [L0x400018f468, L0x400018f470, L0x400018f478, L0x400018f480] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -3674,11 +3694,11 @@ mov L0x400018f448 x23; mov L0x400018f450 x24;
 mov L0x400018f458 x25; mov L0x400018f460 x26;
 
 (* 11 *)
-cut eqmod limbs 64 [L0x400018f448, L0x400018f450, L0x400018f458, L0x400018f460]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f448, L0x400018f450, L0x400018f458, L0x400018f460])
+          (2**256 *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [9]]
  && limbs 64 [L0x400018f448, L0x400018f450, L0x400018f458, L0x400018f460] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -4041,11 +4061,11 @@ mov L0x400018f488 x23; mov L0x400018f490 x24;
 mov L0x400018f498 x25; mov L0x400018f4a0 x26;
 
 (* 12 *)
-cut eqmod limbs 64 [L0x400018f488, L0x400018f490, L0x400018f498, L0x400018f4a0]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f488, L0x400018f490, L0x400018f498, L0x400018f4a0])
+          (2**256 *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [9]]
  && limbs 64 [L0x400018f488, L0x400018f490, L0x400018f498, L0x400018f4a0] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -4408,13 +4428,13 @@ mov L0x400018f3c8 x23; mov L0x400018f3d0 x24;
 mov L0x400018f3d8 x25; mov L0x400018f3e0 x26;
 
 (* 13 *)
-cut eqmod limbs 64 [L0x400018f3c8, L0x400018f3d0, L0x400018f3d8, L0x400018f3e0]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f3c8, L0x400018f3d0, L0x400018f3d8, L0x400018f3e0])
+          (2**256 *
           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3
           *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [2]]
  && limbs 64 [L0x400018f3c8, L0x400018f3d0, L0x400018f3d8, L0x400018f3e0] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -4777,9 +4797,9 @@ cmov x26 carry x14 x6;
 #ret                                            #! 0xc3c98 = 0xc3c98;
 
 (* 14 *)
-cut eqmod limbs 64 [x23, x24, x25, x26]
-          2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+cut eqmod (limbs 64 [x23, x24, x25, x26])
+          (2**256 * limbs 64 [z1_0,z1_1,z1_2,z1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3])
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [x23, x24, x25, x26] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5144,13 +5164,13 @@ mov L0x400018f728 x23; mov L0x400018f730 x24;
 mov L0x400018f738 x25; mov L0x400018f740 x26;
 
 (* 15 *)
-cut eqmod limbs 64 [L0x400018f728, L0x400018f730, L0x400018f738, L0x400018f740]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f728, L0x400018f730, L0x400018f738, L0x400018f740])
+          (2**256 *
           (limbs 64 [z1_0,z1_1,z1_2,z1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3])
           *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [9]]
  && limbs 64 [L0x400018f728, L0x400018f730, L0x400018f738, L0x400018f740] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5517,13 +5537,13 @@ mov L0x400018f508 x23; mov L0x400018f510 x24;
 mov L0x400018f518 x25; mov L0x400018f520 x26;
 
 (* 16 *)
-cut eqmod limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520])
+          (2**256 *
           (limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
           *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [7, 11]]
  && limbs 64 [L0x400018f508, L0x400018f510, L0x400018f518, L0x400018f520] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5568,13 +5588,13 @@ cmov x21 carry x13 x21;
 cmov x22 carry x14 x22;
 
 (* 17 *)
-cut eqmod limbs 64 [x19, x20, x21, x22]
-          2**256 *
+cut eqmod (limbs 64 [x19, x20, x21, x22])
+          (2**256 *
           2* limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2
           *
           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts]
  && limbs 64 [x19, x20, x21, x22] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5632,16 +5652,16 @@ cmov x22 zero x6 x10;
 #ret                                            #! 0xc397c = 0xc397c;
 
 (* 18 *)
-cut eqmod limbs 64 [x19, x20, x21, x22]
-          2**256 *
+cut eqmod (limbs 64 [x19, x20, x21, x22])
+          (2**256 *
           ((limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
             limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2
            -
            2* limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2
            *
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [10]]
  && limbs 64 [x19, x20, x21, x22] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5711,8 +5731,8 @@ mov L0x400018f6e8 x19; mov L0x400018f6f0 x20;
 mov L0x400018f6f8 x21; mov L0x400018f700 x22;
 
 (* 19 *)
-cut eqmod limbs 64 [L0x400018f6e8, L0x400018f6f0, L0x400018f6f8, L0x400018f700]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f6e8, L0x400018f6f0, L0x400018f6f8, L0x400018f700])
+          (2**256 *
           ((limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
             limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2
            -
@@ -5722,8 +5742,8 @@ cut eqmod limbs 64 [L0x400018f6e8, L0x400018f6f0, L0x400018f6f8, L0x400018f700]
             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
            -
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [12]]
  && limbs 64 [L0x400018f6e8, L0x400018f6f0, L0x400018f6f8, L0x400018f700] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -5781,8 +5801,8 @@ cmov x22 zero x6 x10;
 #ret                                            #! 0xc397c = 0xc397c;
 
 (* 20 *)
-cut eqmod limbs 64 [x19, x20, x21, x22]
-          2**256 *
+cut eqmod (limbs 64 [x19, x20, x21, x22])
+          (2**256 *
           ((limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
            *
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
@@ -5797,8 +5817,8 @@ cut eqmod limbs 64 [x19, x20, x21, x22]
             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
            +
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [16]]
  && limbs 64 [x19, x20, x21, x22] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -6157,8 +6177,8 @@ cmov x26 carry x14 x6;
 #ret                                            #! 0xc3c98 = 0xc3c98;
 
 (* 21 *)
-cut eqmod limbs 64 [x23, x24, x25, x26]
-          2**256 *
+cut eqmod (limbs 64 [x23, x24, x25, x26])
+          (2**256 *
           ((limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
            *
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
@@ -6175,8 +6195,8 @@ cut eqmod limbs 64 [x23, x24, x25, x26]
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)*
           (limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [6]]
  && limbs 64 [x23, x24, x25, x26] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -6238,8 +6258,8 @@ mov L0x400018f708 x19; mov L0x400018f710 x20;
 mov L0x400018f718 x21; mov L0x400018f720 x22;
 
 (* 22 *)
-cut eqmod limbs 64 [L0x400018f708, L0x400018f710, L0x400018f718, L0x400018f720]
-          2**256 *
+cut eqmod (limbs 64 [L0x400018f708, L0x400018f710, L0x400018f718, L0x400018f720])
+          (2**256 *
           (((limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
             *
             (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
@@ -6261,8 +6281,8 @@ cut eqmod limbs 64 [L0x400018f708, L0x400018f710, L0x400018f718, L0x400018f720]
            limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3
            *
            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3))
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
     prove with [precondition, all ghosts, cuts [13]]
  && limbs 64 [L0x400018f708, L0x400018f710, L0x400018f718, L0x400018f720] <u
     limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
@@ -6290,69 +6310,56 @@ mov y3_2 L0x400018f718; mov y3_3 L0x400018f720;
 mov z3_0 L0x400018f728; mov z3_1 L0x400018f730;
 mov z3_2 L0x400018f738; mov z3_3 L0x400018f740;
 
-(*
-https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-2007-bl
-source 2007 Bernstein--Lange
-assume Z1=1
-assume Z2=1
-compute H = X2-X1
-compute HH = H^2
-compute I = 4 HH
-compute J = H I
-compute r = 2 (Y2-Y1)
-compute V = X1 I
-compute X3 = r^2-J-2 V
-compute Y3 = r (V-X3)-2 Y1 J
-compute Z3 = 2 H
-*)
 
+ghost X1@uint256, Y1@uint256, Z1@uint256,
+      X2@uint256, Y2@uint256, Z2@uint256:
+  and [
+    X1 = limbs 64 [x1_0, x1_1, x1_2, x1_3],
+    Y1 = limbs 64 [y1_0, y1_1, y1_2, y1_3],
+    Z1 = limbs 64 [z1_0, z1_1, z1_2, z1_3],
+    X2 = limbs 64 [x2_0, x2_1, x2_2, x2_3],
+    Y2 = limbs 64 [y2_0, y2_1, y2_2, y2_3],
+    Z2 = limbs 64 [z2_0, z2_1, z2_2, z2_3]
+  ]
+  &&
+  true;
+
+
+(* Spec w.r.t. https://hyperelliptic.org/EFD/g1p/auto-shortw-jacobian-3.html#addition-add-1998-cmo-2 *)
+
+ghost Z1Z1@uint256, Z2Z2@uint256, U1@uint256, U2@uint256, 
+      S1@uint256, S2@uint256, H@uint256, HH@uint256, HHH@uint256, 
+      r@uint256, V@uint256, X3@uint256, Y3@uint256, Z3@uint256:
+  and [
+    Z1Z1 = Z1 * Z1,
+    Z2Z2 = Z2 * Z2,
+    U1 = X1 * Z2Z2,
+    U2 = X2 * Z1Z1,
+    S1 = Y1 * Z2 * Z2Z2,
+    S2 = Y2 * Z1 * Z1Z1,
+    H = U2 - U1,
+    HH = H * H,
+    HHH = H * HH,
+    r = S2 - S1,
+    V = U1 * HH,
+    X3 = r * r - HHH - 2 * V,
+    Y3 = r * (V - X3) - S1 * HHH,
+    Z3 = Z1 * Z2 * H
+  ]
+  && 
+  true;
+  
 {
   and [
-    eqmod limbs 64 [x3_0, x3_1, x3_2, x3_3]
-          2**256 *
-          ((limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-            limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2
-           -
-           2* limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2
-           *
-           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-           -
-           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3],
-    eqmod limbs 64 [y3_0, y3_1, y3_2, y3_3]
-          2**256 *
-          (((limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
-            *
-            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-            -
-            (limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-             limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3)**2
-            +
-            2* limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2
-            *
-            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**2
-            +
-            (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-             limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-           *
-           (limbs 64 [y2_0,y2_1,y2_2,y2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**3 -
-            limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3) -
-           limbs 64 [y1_0,y1_1,y1_2,y1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**3
-           *
-           (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-            limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)**3)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3],
-    eqmod limbs 64 [z3_0, z3_1, z3_2, z3_3]
-          2**256 *
-          (limbs 64 [z1_0,z1_1,z1_2,z1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3])
-          *
-          (limbs 64 [x2_0,x2_1,x2_2,x2_3] * limbs 64 [z1_0,z1_1,z1_2,z1_3]**2 -
-           limbs 64 [x1_0,x1_1,x1_2,x1_3] * limbs 64 [z2_0,z2_1,z2_2,z2_3]**2)
-          limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+    eqmod (limbs 64 [x3_0, x3_1, x3_2, x3_3])
+          (2**256 * X3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]),
+    eqmod (limbs 64 [y3_0, y3_1, y3_2, y3_3])
+          (2**256 * Y3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]),
+    eqmod (limbs 64 [z3_0, z3_1, z3_2, z3_3])
+          (2**256 * Z3)
+          (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
   ] prove with [ cuts [15, 19, 22] ]
 &&
   and [limbs 64 [x3_0, x3_1, x3_2, x3_3] <u
