@@ -68,9 +68,9 @@ cmov x22 zero x6 x10;
 mov r0 x19; mov r1 x20; mov r2 x21; mov r3 x22;
 
 {
-   eqmod limbs 64 [r0, r1, r2, r3]
-         limbs 64 [a0, a1, a2, a3] - limbs 64 [b0, b1, b2, b3]
-         limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3]
+   eqmod (limbs 64 [r0, r1, r2, r3])
+         (limbs 64 [a0, a1, a2, a3] - limbs 64 [b0, b1, b2, b3])
+         (limbs 64 [$P256_0, $P256_1, $P256_2, $P256_3])
 &&
    limbs 64 [r0, r1, r2, r3] <u
    limbs 64 [$P256_0@64, $P256_1@64, $P256_2@64, $P256_3@64]
