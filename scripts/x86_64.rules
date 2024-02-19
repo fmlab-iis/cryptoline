@@ -28,6 +28,7 @@
 #! %rcx = %%rcx
 #! %rdx = %%rdx
 #! %rbp = %%rbp
+#! %rsi = %%rsi
 #! %xmm$1c = %%xmm$1c
 #! %ymm$1c = %%ymm$1c
 
