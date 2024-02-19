@@ -69,7 +69,7 @@
 #! shlx $1c, $2v, $3v -> split dc $3v $2v (64-$1c);\nshl $3v $3v $1c@uint64
 #! shl $1c, $2v -> split dc $2v $2v (64-$1c);\nshl $2v $2v $1c@uint64
 #! shrx $1c, $2v, $3v -> split $3v dc $2v $1c
-#! shr $1c, $2v -> split $2v dc $1c
+#! shr $1c, $2v -> split $2v dc $2v $1c
 #! test $1v, $1v -> subb zero dontcare $1v 1@uint64
 #! test \$0x1, $1v -> and tmp@uint64 0x1@uint64 $1v;\nsubb zero dontcare tmp 0x1@uint64
 #! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
