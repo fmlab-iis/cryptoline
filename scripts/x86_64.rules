@@ -43,6 +43,7 @@
 #! adcx $1v, $2v -> adcs carry $2v $2v $1v carry
 #! adox $1v, $2v -> adcs overflow $2v $2v $1v overflow
 #! and $1v, $2v -> and $2v@uint64 $2v $1v
+#! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
 #! andn $1v, $2v, $3v -> not $2v_n@uint64 $2v; and $3v@uint64 $2v_n $1v
 #! cmovb $1v, $2v -> cmov $2v carry $1v $2v
 #! cmove $1v, $2v -> cmov $2v zero $1v $2v
