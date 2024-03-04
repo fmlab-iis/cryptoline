@@ -474,10 +474,10 @@ sbbs carry r11 r11 rax carry;
 
 (* NOTE: final reduction *)
 assert true
-    && eqmod (limbs 64 [r9, r10, r8, r11])
-             (limbs 64 [r12, r13, r14, rcx])
-             (limbs 64 [0xa700000000000013@64, 0x6121000000000013@64,
-                        0xba344d8000000008@64, 0x2523648240000001@64]);
+    && eqsmod (limbs 64 [r9, r10, r8, r11])
+              (limbs 64 [r12, r13, r14, rcx])
+              (limbs 64 [0xa700000000000013@64, 0x6121000000000013@64,
+                         0xba344d8000000008@64, 0x2523648240000001@64]);
 assume eqmod (limbs 64 [r9, r10, r8, r11])
              (limbs 64 [r12, r13, r14, rcx])
              (limbs 64 [0xa700000000000013, 0x6121000000000013,
