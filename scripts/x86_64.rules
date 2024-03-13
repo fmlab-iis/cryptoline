@@ -79,16 +79,66 @@
 # vector instructions
 # w = 16 bits, d = 32 bits, q = 64 bits
 
-#! movdqa $1xmm, $2xmm -> mov $2xmm_0 $1xmm_0; mov $2xmm_1 $1xmm_1;\nmov $2xmm_2 $1xmm_2; mov $2xmm_3 $1xmm_3
-#! movdqa $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
-#! movdqu $1ea, $2xmm -> mov $2xmm_0 $1ea; mov $2xmm_1 $1ea[+4];\nmov $2xmm_2 $1ea[+8]; mov $2xmm_3 $1ea[+12]
-#! movdqu $1xmm, $2ea -> mov $2ea $1xmm_0; mov $2ea[+4] $1xmm_1;\nmov $2ea[+8] $1xmm_2; mov $2ea[+12] $1xmm_3
-#! paddd $1xmm, $2xmm -> adds dc $2xmm_0 $2xmm_0 $1xmm_0; adds dc $2xmm_1 $2xmm_1 $1xmm_1;\nadds dc $2xmm_2 $2xmm_2 $1xmm_2; adds dc $2xmm_3 $2xmm_3 $1xmm_3
-#! palignr \$0x4, $1xmm, $2xmm -> mov a0 $1xmm_1; mov a1 $1xmm_2; mov a2 $1xmm_3; mov a3 $2xmm_0;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
-#! palignr \$0x8, $1xmm, $2xmm -> mov a0 $1xmm_2; mov a1 $1xmm_3; mov a2 $2xmm_0; mov a3 $2xmm_1;\nmov $2xmm_0 a0; mov $2xmm_1 a1; mov $2xmm_2 a2; mov $2xmm_3 a3
-#! pshufb $1xmm, $2xmm -> assert true &&\n       and [$1xmm_0 = 0x00010203@32, $1xmm_1 = 0x04050607@32,\n            $1xmm_2 = 0x08090a0b@32, $1xmm_3 = 0x0c0d0e0f@32];\nspl xfe xdc $2xmm_3 16;spl xba x98 $2xmm_2 16;spl x76 x54 $2xmm_1 16;spl x32 x10 $2xmm_0 16;\nspl xf xe xfe 8; spl xd xc xdc 8; spl xb xa xba 8; spl x9 x8 x98 8;\nspl x7 x6 x76 8; spl x5 x4 x54 8; spl x3 x2 x32 8; spl x1 x0 x10 8;\njoin sfe xc xd; join sdc xe xf; join sba x8 x9; join s98 xa xb;\njoin s76 x4 x5; join s54 x6 x7; join s32 x0 x1; join s10 x2 x3;\njoin $2xmm_3 sfe sdc; join $2xmm_2 sba s98; join $2xmm_1 s76 s54; join $2xmm_0 s32 s10
-#! pshufd \$0xe, $1xmm, $2xmm -> mov sh0 $1xmm_2; mov sh1 $1xmm_3; mov sh2 $1xmm_0; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
-#! pshufd \$0x1b, $1xmm, $2xmm -> mov sh0 $1xmm_3; mov sh1 $1xmm_2; mov sh2 $1xmm_1; mov sh3 $1xmm_0;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
-#! pshufd \$0xb1, $1xmm, $2xmm -> mov sh0 $1xmm_1; mov sh1 $1xmm_0; mov sh2 $1xmm_3; mov sh3 $1xmm_2;\nmov $2xmm_0 sh0; mov $2xmm_1 sh1; mov $2xmm_2 sh2; mov $2xmm_3 sh3
-#! punpcklqdq $1xmm, $2xmm -> mov p0 $2xmm_0; mov p1 $2xmm_1; mov p2 $1xmm_0; mov p3 $1xmm_1;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
-#! punpckhqdq $1xmm, $2xmm -> mov p0 $2xmm_2; mov p1 $2xmm_3; mov p2 $1xmm_2; mov p3 $1xmm_3;\nmov $2xmm_0 p0; mov $2xmm_1 p1; mov $2xmm_2 p2; mov $2xmm_3 p3
+#! movdqa $1xmm, $2xmm -> mov %$2xmm %$1xmm@uint64[2]
+#! movdqa $1ea, $2xmm -> mov %$2xmm@uint64[2] [$1ea, $1ea[+8]]
+#! movdqu $1ea, $2xmm -> mov %$2xmm@uint64[2] [$1ea, $1ea[+8]]
+#! movdqu $1xmm, $2ea -> mov [$2ea, $2ea[+8]] %$1xmm@uint64[2]
+#! movddup $1ea, $2xmm -> mov %$2xmm@uint64[2] [ $1ea, $1ea ]
+#! paddd $1xmm, $2xmm -> adds %dc %$2xmm@uint32[4] %$2xmm %$1xmm
+#! palignr \$0x4, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[1, 2, 3] ++ %$2xmm[0])
+#! palignr \$0x8, $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$1xmm[1], %$2xmm[0]]
+#! pextrq \$0x0, $1xmm, $2v -> mov %pextrq@uint64[2] %$1xmmq; mov [$2v, _] %pextrq
+#! pshufd \$0xe, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[2, 3, 0, 0])
+#! pshufd \$0x1b, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[3, 2, 1, 0])
+#! pshufd \$0xb1, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[1, 0, 3, 2])
+#! psllq $1c, $2xmm -> split %dc %$2xmmL %$2xmm@uint64[2] `64 - $1c`;\nbroadcast %off 2 [$1c@uint64]; shl %$2xmm %$2xmmL %off
+#! psllq $1c, $2ymm -> split %dc %$2ymmL %$2ymm@uint64[4] `64 - $1c`;\nbroadcast %off 4 [$1c@uint64]; shl %$2ymm %$2ymmL %off
+#! psrlq $1c, $2xmm -> split %$2xmm %dc %$2xmm@uint64[2] $1c
+#! psrlq $1c, $2ymm -> split %$2ymm %dc %$2ymm@uint64[4] $1c
+#! punpcklqdq $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$2xmm[0], %$1xmm[0]]
+#! punpckhqdq $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$2xmm[1], %$1xmm[1]]
+#! vmovapd $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea,$1ea[+8],$1ea[+16],$1ea[+24]]
+#! vmovapd $1ymm, $2ea -> mov [$2ea,$2ea[+8],$2ea[+16],$2ea[+24]] %$1ymm@uint64[4]
+#! vmovdqa $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea,$1ea[+8],$1ea[+16],$1ea[+24]]
+#! vmovdqa $1ymm, $2ea -> mov [$2ea,$2ea[+8],$2ea[+16],$2ea[+24]] %$1ymm@uint64[4]
+#! vmovdqu $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea, $1ea[+8], $1ea[+16], $1ea[+24]]
+#! vmovsldup $1ymm, $2ymm -> mov %$2ymm@sint32[8] (%$1ymm[0, 0, 2, 2, 4, 4, 6, 6])
+#! vmovshdup $1ymm, $2ymm -> mov %$2ymm@sint32[8] (%$1ymm[1, 1, 3, 3, 5, 5, 7, 7])
+#! vmovupd $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea,$1ea[+8],$1ea[+16],$1ea[+24]]
+#! vmovupd $1ymm, $2ea -> mov [$2ea,$2ea[+8],$2ea[+16],$2ea[+24]] %$1ymm@uint64[4]
+#! vpaddd $1ymm, $2ymm, $3ymm -> add %$3ymm@sint32[8] %$2ymm %$1ymm
+#! vpaddw $1ymm, $2ymm, $3ymm -> add %$3ymm@sint16[16] %$1ymm %$2ymm
+#! vpand $1xmm, $2xmm, $3xmm -> and %$3xmm@uint64[2] %$2xmm %$1xmm
+#! vpand $1ymm, $2ymm, $3ymm -> and %$3ymm@uint64[4] %$2ymm %$1ymm
+#! vpblendd \$0xaa, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] [%$2ymm[0], %$1ymm[1], %$2ymm[2], %$1ymm[3], %$2ymm[4], %$1ymm[5], %$2ymm[6], %$1ymm[7]]
+#! vpblendw \$0xaa, $2ymm, $1ymm, $3ymm -> mov %$3ymm@sint16[16] [%$1ymm[0], %$2ymm[0], %$1ymm[2], %$2ymm[2], %$1ymm[4], %$2ymm[4], %$1ymm[6], %$2ymm[6], %$1ymm[8], %$2ymm[8], %$1ymm[10], %$2ymm[10], %$1ymm[12], %$2ymm[12], %$1ymm[14], %$2ymm[14]]
+#! vpbroadcastd $1ea, $2ymm -> broadcast %$2ymm@uint32[8] 8 [$1ea]
+#! vperm2i128 \$0x20, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[0, 1, 2, 3] ++ %$1ymm[0, 1, 2, 3])
+#! vperm2i128 \$0x31, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[4, 5, 6, 7] ++ %$1ymm[4, 5, 6, 7])
+#! vpmuldq $1ymm, $2ymm, $3ymm -> mulj %$3ymm@sint64[4] (%$2ymm[0, 2, 4, 6]) (%$1ymm[0, 2, 4, 6])
+#! vpmullw $1ymm, $2ymm, $3ymm -> smull %dc %$3ymm@uint16[16] %$1ymm %$2ymm
+#! vpmulhw $1ymm, $2ymm, $3ymm -> smull %$3ymm@sint16[16] %dc %$1ymm %$2ymm
+#! vpor $1xmm, $2xmm, $3xmm -> or %$3xmm@uint64[2] %$2xmm %$1xmm
+#! vpor $1ymm, $2ymm, $3ymm -> or %$3ymm@uint64[4] %$2ymm %$1ymm
+#! vpxor $1xmm, $2xmm, $3xmm -> xor %$3xmm@uint64[2] %$2xmm %$1xmm
+#! vpxor $1ymm, $2ymm, $3ymm -> xor %$3ymm@uint64[4] %$2ymm %$1ymm
+#! vpslld $1c, $2xmm, $3xmm -> split %dc %$2xmmL %$2xmm@uint32[4] `32 - $1c`;\nbroadcast %off 4 [$1c@uint32]; shl %$3xmm %$2xmmL %off
+#! vpslld $1c, $2ymm, $3ymm -> split %dc %$2ymmL %$2ymm@uint32[8] `32 - $1c`;\nbroadcast %off 8 [$1c@uint32]; shl %$3ymm %$2ymmL %off
+#! vpsrld $1c, $2xmm, $3xmm -> split %$3xmm %dc %$2xmm@uint32[4] $1c
+#! vpsrld $1c, $2ymm, $3ymm -> split %$3ymm %dc %$2ymm@uint32[8] $1c
+#! vpsllq $1c, $2xmm, $3xmm -> split %dc %$2xmmL %$2xmm@uint64[2] `64 - $1c`;\nbroadcast %off 2 [$1c@uint64]; shl %$3xmm %$2xmmL %off
+#! vpsllq $1c, $2ymm, $3ymm -> split %dc %$2ymmL %$2ymm@uint64[4] `64 - $1c`;\nbroadcast %off 4 [$1c@uint64]; shl %$3ymm %$2ymmL %off
+#! vpsrlq $1c, $2xmm, $3xmm -> split %$3xmm %dc %$2xmm@uint64[2] $1c
+#! vpsrlq $1c, $2ymm, $3ymm -> split %$3ymm %dc %$2ymm@uint64[4] $1c
+#! vpsllw $1c, $2xmm, $3xmm -> split %dc %$2xmmL %$2xmm@uint16[8] `16 - $1c`;\nbroadcast %off 8 [$1c@uint16]; shl %$3xmm %$2xmmL %off
+#! vpsllw $1c, $2ymm, $3ymm -> split %dc %$2ymmL %$2ymm@uint16[16] `16 - $1c`;\nbroadcast %off 16 [$1c@uint16]; shl %$3ymm %$2ymmL %off
+#! vpsraw $1c, $2xmm, $3xmm -> ssplit %$3xmm %dc %$2xmm@sint16[8] $1c
+#! vpsraw $1c, $2ymm, $3ymm -> ssplit %$3ymm %dc %$2ymm@sint16[16] $1c
+#! vpsrlw $1c, $2xmm, $3xmm -> split %$3xmm %dc %$2xmm@uint16[8] $1c
+#! vpsrlw $1c, $2ymm, $3ymm -> split %$3ymm %dc %$2ymm@uint16[16] $1c
+#! vpsubd $1ymm, $2ymm, $3ymm -> sub %$3ymm@sint32[8] %$2ymm %$1ymm
+#! vpsubw $1ymm, $2ymm, $3ymm -> sub %$3ymm@sint16[16] %$2ymm %$1ymm
+#! vpunpcklqdq $1xmm, $2xmm, $3xmm -> mov %$3xmm@uint64[2] [%$2xmm[0], %$1xmm[0]]
+#! vpunpcklqdq $1ymm, $2ymm, $3ymm -> mov %$3ymm@uint64[4] [%$2ymm[0], %$1ymm[0], %$2ymm[2], %$1ymm[2]]
+#! vpunpckhqdq $1xmm, $2xmm, $3xmm -> mov %$3xmm@uint64[2] [%$2xmm[1], %$1xmm[1]]
+#! vpunpckhqdq $1ymm, $2ymm, $3ymm -> mov %$3ymm@uint64[4] [%$2ymm[1], %$1ymm[1], %$2ymm[3], %$1ymm[3]]
