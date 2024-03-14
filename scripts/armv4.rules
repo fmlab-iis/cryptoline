@@ -1,0 +1,59 @@
+#! [r$1c] = %%EA
+#! [r$1c, #$2c] = %%EA
+#! [sp] = %%EA
+#! [sp, #$1c] = %%EA
+#! r$1c = %%r$1c
+#! lr = %%lr
+
+#! adc $1v, $2v, $3c -> adc $1v $2v $3c@uint32 carry
+#! adc.w $1v, $2v, $3c -> adc $1v $2v $3c@uint32 carry
+#! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! adc.w $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! add.w $1v, $2v, $3c -> add $1v $2v $3c@uint32
+#! add.w $1v, $2v, $3v -> add $1v $2v $3v
+#! adds $1v, $2v, $3c -> adds carry $1v $2v $3c@uint32
+#! adds.w $1v, $2v, $3c -> adds carry $1v $2v $3c@uint32
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adds.w $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adcs $1v, $2v -> adcs carry $1v $1v $2v carry
+#! adcs $1v, $2v, $3c -> adcs carry $1v $2v $3c@uint32 carry
+#! adcs.w $1v, $2v, $3c -> adcs carry $1v $2v $3c@uint32 carry
+#! adcs $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! adcs.w $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
+#! bic.w $1v, $2v, $3v, ror $4c -> ror $3v_r@uint32 $3v $4c; not $3v_n@uint32 $3v_r; and $1v@uint32 $2v $3v_n
+#! bic.w $1v, $2v, $3v -> not $3v_n@uint32 $3v; and $1v@uint32 $2v $3v_n
+#! eor.w $1v, $1v, $1v -> mov $1v 0@uint32
+#! eor.w $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
+#! eor.w $1v, $2v, $3v, ror $4c -> ror $3v_r $3v $4c; xor $1v@uint32 $2v $3v_r
+#! sbc $1v, $2v, $3c -> sbc $1v $2v $3c@uint32 carry
+#! sbc.w $1v, $2v, $3c -> sbc $1v $2v $3c@uint32 carry
+#! sbc $1v, $2v, $3v -> sbc $1v $2v $3v carry
+#! sbc.w $1v, $2v, $3v -> sbc $1v $2v $3v carry
+#! sbcs $1v, $2v, $3c -> sbcs carry $1v $2v $3c@uint32 carry
+#! sbcs.w $1v, $2v, $3c -> sbcs carry $1v $2v $3c@uint32 carry
+#! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! sbcs.w $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! str $1v, $2ea ; $3c -> mov $2ea $1v
+#! str $1v, $2ea -> mov $2ea $1v
+#! str.w $1v, $2ea -> mov $2ea $1v
+#! strd $1v, $2v, $3ea ; $4c -> mov $3ea $1v; mov $3ea[+4] $2v
+#! strd $1v, $2v, $3ea -> mov $3ea $1v; mov $3ea[+4] $2v
+#! subs $1v, $2v, $3c -> subc carry $1v $2v $3c@uint32
+#! subs.w $1v, $2v, $3c -> subc carry $1v $2v $3c@uint32
+#! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! subs.w $1v, $2v, $3v -> subc carry $1v $2v $3v
+#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v, $6v, $7v \} -> mov $2v $1ea; mov $3v $1ea[+4]; mov $4v $1ea[+8];\nmov $5v $1ea[+12]; mov $6v $1ea[+16]; mov $7v $1ea[+20]
+#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v \} -> mov $2v $1ea; mov $3v $1ea[+4];\nmov $4v $1ea[+8]; mov $5v $1ea[+12]
+#! ldmia.w $1ea, \{ $2v, $3v \} -> mov $2v $1ea; mov $3v $1ea[+4]
+#! ldr $1v, $2v ; $3c -> mov $1v $2v
+#! ldr $1v, $2v -> mov $1v $2v
+#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr.w $1v, $2v -> mov $1v $2v
+#! ldrd $1v, $2v, $3ea ; $4c -> mov $1v $3ea; mov $2v $3ea[+4]
+#! ldrd $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+4]
+#! mov $1v, $2c -> mov $1v $2c@uint32
+#! mov $1v, $2v -> mov $1v $2v
+#! mov.w $1v, $2v, ror $3c -> ror $1v@uint32 $2v $3c
+#! umull $1v, $2v, $3v, $4v -> umull $2v $1v $3v $4v
+#! umlal $1v, $2v, $3v, $4v -> umull tH tL $3v $4v;\nadds tc $1v $1v tL;\nadc $2v $2v tH tc
+
