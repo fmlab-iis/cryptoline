@@ -1,7 +1,10 @@
+#! ldmia.w r$1c = ldmia.w %%EA
+#! ldmia.w lr = ldmia.w %%EA
+#! stmia.w r$1c = ldmia.w %%EA
+#! stmia.w lr = ldmia.w %%EA
 #! [r$1c] = %%EA
 #! [r$1c, #$2c] = %%EA
-#! [sp] = %%EA
-#! [sp, #$1c] = %%EA
+#! [lr, #$1c] = %%EA
 #! r$1c = %%r$1c
 #! lr = %%lr
 
@@ -9,8 +12,12 @@
 #! adc.w $1v, $2v, $3c -> adc $1v $2v $3c@uint32 carry
 #! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
 #! adc.w $1v, $2v, $3v -> adc $1v $2v $3v carry
+#! add $1v, $2v, $3c ; $4c -> add $1v $2v $3c@uint32
+#! add $1v, $2v, $3c -> add $1v $2v $3c@uint32
+#! add $1v, $2v, $3v -> add $1v $2v $3v
 #! add.w $1v, $2v, $3c -> add $1v $2v $3c@uint32
 #! add.w $1v, $2v, $3v -> add $1v $2v $3v
+#! addcc $1v, $2v, $3c -> add tmp $2v $3c@uint32; cmov $1v carry $1v tmp
 #! adds $1v, $2v, $3c -> adds carry $1v $2v $3c@uint32
 #! adds.w $1v, $2v, $3c -> adds carry $1v $2v $3c@uint32
 #! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
@@ -22,9 +29,37 @@
 #! adcs.w $1v, $2v, $3v -> adcs carry $1v $2v $3v carry
 #! bic.w $1v, $2v, $3v, ror $4c -> ror $3v_r@uint32 $3v $4c; not $3v_n@uint32 $3v_r; and $1v@uint32 $2v $3v_n
 #! bic.w $1v, $2v, $3v -> not $3v_n@uint32 $3v; and $1v@uint32 $2v $3v_n
+#! eor $1v, $2v, $3v, ror $4c -> ror $3vr@uint32 $3v $4c; xor $1v@uint32 $2v $3vr
 #! eor.w $1v, $1v, $1v -> mov $1v 0@uint32
 #! eor.w $1v, $2v, $3v -> xor $1v@uint32 $2v $3v
 #! eor.w $1v, $2v, $3v, ror $4c -> ror $3v_r $3v $4c; xor $1v@uint32 $2v $3v_r
+#! ldm $1ea, {$2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v} -> mov [$2v,$3v,$4v,$5v,$6v,$7v,$8v,$9v] [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20],$1ea[+24],$1ea[+28]]
+#! ldm $1ea, {$2v, $3v, $4v, $5v} -> mov [$2v,$3v,$4v,$5v] [$1ea,$1ea[+4],$1ea[+8],$1ea[+12]]
+#! ldm $1ea, {$2v, $3v} -> mov [$2v,$3v] [$1ea,$1ea[+4]]
+#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v \} -> mov [$2v,$3v,$4v,$5v,$6v,$7v,$8v,$9v] [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20],$1ea[+24],$1ea[+28]]
+#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v, $6v, $7v \} -> mov [$2v,$3v,$4v,$5v,$6v,$7v] [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20]]
+#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v \} -> mov [$2v,$3v,$4v, $5v] [$1ea,$1ea[+4],$1ea[+8],$1ea[+12]]
+#! ldmia.w $1ea, \{ $2v, $3v \} -> mov [$2v,$3v] [$1ea,$1ea[+4]]
+#! ldr $1v, $2v ; $3c -> mov $1v $2v
+#! ldr $1v, $2v -> mov $1v $2v
+#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
+#! ldr.w $1v, $2v -> mov $1v $2v
+#! ldrcs $1v, $2ea ; $3c -> cmov $1v carry $2ea $1v
+#! ldrcs $1v, $2ea -> cmov $1v carry $2ea $1v
+#! ldrd $1v, $2v, $3ea ; $4c -> mov $1v $3ea; mov $2v $3ea[+4]
+#! ldrd $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+4]
+#! ldrh.w $1v, $2ea -> join $1v 0@uint16 $2ea@uint16
+#! mov $1v, $2c -> mov $1v $2c@uint32
+#! mov $1v, $2v -> mov $1v $2v
+#! mov.w $1v, $2v, ror $3c -> ror $1v@uint32 $2v $3c
+#! movt $1v, $2c ; $3c -> split dc $1vL $1v 16; join $1v $2c@uin16 $1vL
+#! movt $1v, $2c -> split dc $1vL $1v 16; join $1v $2c@uin16 $1vL
+#! movw $1v, $2c ; $3c -> mov $1v $2c@uint32
+#! movw $1v, $2c -> mov $1v $2c@uint32
+#! orr $1v, $2v, $3v -> or $1v@uint32 $2v $3v
+#! pkhtb $1v, $2v, $3v, asr \#16 -> split $2vH dc $2v 16; split $3vH dc $3v 16; join $1v $2vH $3vH
+#! pkhbt $1v, $2v, $3v, lsl \#16 -> split dc $2vL $2v 16; split dc $3vL $3v 16; join $1v $3vL $2vL
+#! ror $1v, $2v, $3c -> ror $1v@uint32 $2v $3c
 #! sbc $1v, $2v, $3c -> sbc $1v $2v $3c@uint32 carry
 #! sbc.w $1v, $2v, $3c -> sbc $1v $2v $3c@uint32 carry
 #! sbc $1v, $2v, $3v -> sbc $1v $2v $3v carry
@@ -33,27 +68,31 @@
 #! sbcs.w $1v, $2v, $3c -> sbcs carry $1v $2v $3c@uint32 carry
 #! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
 #! sbcs.w $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
+#! smlabb $1v, $2v, $3v, $4v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vL $3vL; add $1v $1v prod
+#! smulbb $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vL $3vL
+#! smulbt $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split $3vH dc $3v 16; smulj $1v $2vL $3vH
+#! smultb $1v, $2v, $3v -> split $2vH dc $2v 16; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vH $3vL
+#! smultt $1v, $2v, $3v -> split $2vH dc $2v 16; split $3vH dc $3v 16; smulj $1v $2vH $3vH
+#! stmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20],$1ea[+24],$1ea[+28]] [$2v,$3v,$4v,$5v,$6v,$7v,$8v,$9v]
+#! stmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20]] [$2v,$3v,$4v,$5v,$6v,$7v]
+#! stmia.w $1ea, { $2v, $3v, $4v, $5v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12]] [$2v,$3v,$4v,$5v]
+#! stmia.w $1ea, { $2v, $3v } -> mov [$1ea,$1ea[+4]] [$2v,$3v]
 #! str $1v, $2ea ; $3c -> mov $2ea $1v
 #! str $1v, $2ea -> mov $2ea $1v
+#! str.w $1v, $2ea ; $3c -> mov $2ea $1v
 #! str.w $1v, $2ea -> mov $2ea $1v
 #! strd $1v, $2v, $3ea ; $4c -> mov $3ea $1v; mov $3ea[+4] $2v
 #! strd $1v, $2v, $3ea -> mov $3ea $1v; mov $3ea[+4] $2v
+#! strhi $1v, $2ea ; $3c -> cmov $2ea carry $1v $2ea
+#! sub.w $1v, $2v, $3c ; $4c -> sub $1v $2v $3c@uint32
+#! sub.w $1v, $2v, $3c -> sub $1v $2v $3c@uint32
+#! sub.w $1v, $2v, $3v -> sub $1v $2v $3v
 #! subs $1v, $2v, $3c -> subc carry $1v $2v $3c@uint32
 #! subs.w $1v, $2v, $3c -> subc carry $1v $2v $3c@uint32
 #! subs $1v, $2v, $3v -> subc carry $1v $2v $3v
 #! subs.w $1v, $2v, $3v -> subc carry $1v $2v $3v
-#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v, $6v, $7v \} -> mov $2v $1ea; mov $3v $1ea[+4]; mov $4v $1ea[+8];\nmov $5v $1ea[+12]; mov $6v $1ea[+16]; mov $7v $1ea[+20]
-#! ldmia.w $1ea, \{ $2v, $3v, $4v, $5v \} -> mov $2v $1ea; mov $3v $1ea[+4];\nmov $4v $1ea[+8]; mov $5v $1ea[+12]
-#! ldmia.w $1ea, \{ $2v, $3v \} -> mov $2v $1ea; mov $3v $1ea[+4]
-#! ldr $1v, $2v ; $3c -> mov $1v $2v
-#! ldr $1v, $2v -> mov $1v $2v
-#! ldr.w $1v, $2ea ; $3c -> mov $1v $2ea
-#! ldr.w $1v, $2v -> mov $1v $2v
-#! ldrd $1v, $2v, $3ea ; $4c -> mov $1v $3ea; mov $2v $3ea[+4]
-#! ldrd $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+4]
-#! mov $1v, $2c -> mov $1v $2c@uint32
-#! mov $1v, $2v -> mov $1v $2v
-#! mov.w $1v, $2v, ror $3c -> ror $1v@uint32 $2v $3c
+#! uadd16 $1v, $2v, $3v -> split $2vH $2vL $2v 16; split $3vH $3vL $3v 16; add $1vH $2vH $3vH; add $1vL $2vL $3vL; join $1v $1vH $1vL
 #! umull $1v, $2v, $3v, $4v -> umull $2v $1v $3v $4v
 #! umlal $1v, $2v, $3v, $4v -> umull tH tL $3v $4v;\nadds tc $1v $1v tL;\nadc $2v $2v tH tc
+#! usub16 $1v, $2v, $3v -> split $2vH $2vL $2v 16; split $3vH $3vL $3v 16; sub $1vH $2vH $3vH; sub $1vL $2vL $3vL; join $1v $1vH $1vL
 
