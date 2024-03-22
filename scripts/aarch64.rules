@@ -90,20 +90,23 @@
 # vector instructions
 # b = 8 bits, s = 32 bits, d = 64 bits
 
-#! add $1v.4s, $2v.4s, $3v.4s -> adds dc $1v_0 $2v_0 $3v_0; adds dc $1v_1 $2v_1 $3v_1;\nadds dc $1v_2 $2v_2 $3v_2; adds dc $1v_3 $2v_3 $3v_3
-#! eor $1v.16b, $2v.16b, $3v.16b -> xor $1v_0@uint32 $2v_0 $3v_0; xor $1v_1@uint32 $2v_1 $3v_1;\nxor $1v_2@uint32 $2v_2 $3v_2; xor $1v_3@uint32 $2v_3 $3v_3
-# ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov ext_0 $3v_1; mov ext_1 $3v_2; mov ext_2 $3v_3; mov ext_3 $2v_0;\nmov $1v_0 ext_0; mov $1v_1 ext_1; mov $1v_2 ext_2; mov $1v_3 ext_3
-#! ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov ext_0 $2v_1; mov ext_1 $2v_2; mov ext_2 $2v_3; mov ext_3 $3v_0;\nmov $1v_0 ext_0; mov $1v_1 ext_1; mov $1v_2 ext_2; mov $1v_3 ext_3
-#! ld1	{$1v.16b}, $2ea -> mov $1v_0 $2ea[+0]; mov $1v_1 $2ea[+4];\nmov $1v_2 $2ea[+8]; mov $1v_3 $2ea[+12]
-#! ld1	{$1v.4s}, $2ea -> mov $1v_0 $2ea[+0]; mov $1v_1 $2ea[+4];\nmov $1v_2 $2ea[+8]; mov $1v_3 $2ea[+12]
-#! mov d19, $1v.d\[1\] -> mov v19_0 $1v_2; mov v19_1 $1v_3; mov v19_2 0@uint32; mov v19_3 0@uint32
-#! mov $1v.d\[1\], $2v.d\[0\] -> mov $1v_2 $2v_0; mov $1v_3 $2v_1
-#! rev32 $1v.16b, $2v.16b -> spl s10 s00 $2v_0 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_0 t10 t00;\nspl s10 s00 $2v_1 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_1 t10 t00;\nspl s10 s00 $2v_2 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_2 t10 t00;\nspl s10 s00 $2v_3 16; spl s08 s00 s00 8; spl s18 s10 s10 8;\njoin t10 s00 s08; join t00 s10 s18; join $1v_3 t10 t00
-#! sli $1v.4s, $2v.4s, $3c -> split dc slil $2v_0 (32-$3c); shl slih slil $3c;\nsplit dc $1v_0 $1v_0 $3c; or $1v_0@uint32 slih $1v_0;\nsplit dc slil $2v_1 (32-$3c); shl slih slil $3c;\nsplit dc $1v_1 $1v_1 $3c; or $1v_1@uint32 slih $1v_1;\nsplit dc slil $2v_2 (32-$3c); shl slih slil $3c;\nsplit dc $1v_2 $1v_2 $3c; or $1v_2@uint32 slih $1v_2;\nsplit dc slil $2v_3 (32-$3c); shl slih slil $3c;\nsplit dc $1v_3 $1v_3 $3c; or $1v_3@uint32 slih $1v_3
-#! st1 {$1v.4s}, $2ea -> mov $2ea $1v_0; mov $2ea[+4] $1v_1;\nmov $2ea[+8] $1v_2; mov $2ea[+12] $1v_3
-#! st1 {$1v.4s, $2v.4s}, $3ea -> mov $3ea $1v_0; mov $3ea[+4] $1v_1;\nmov $3ea[+8] $1v_2; mov $3ea[+12] $1v_3;\nmov $3ea[+16] $2v_0; mov $3ea[+20] $2v_1;\nmov $3ea[+24] $2v_2; mov $3ea[+28] $2v_3
+#! add $1v.4s, $2v.4s, $3v.4s -> add %dc %$1v %$2v %$3v
+#! add $1v.8h, $2v.8h, $3v.8h -> add %dc %$1v %$2v %$3v
+#! eor $1v.16b, $2v.16b, $3v.16b -> xor %$1v@uint8[16] %$2v %$3v
+#! ext $1v.16b, $2v.16b, $3v.16b, \#4 -> mov %$1v [%$2v[4],%$2v[5],%$2v[6],%$2v[7],%$2v[8],%$2v[9],%$2v[10],%$2v[11],\n        %$2v[12],%$2v[13],%$2v[14],%$2v[15],%$3v[0],%$3v[1],%$3v[2],%$3v[3]]
+#! ld1	{$1v.16b}, $2ea -> mov %$1v [$2ea[+0],$2ea[+1],$2ea[+2],$2ea[+3],\n        $2ea[+4],$2ea[+5],$2ea[+6],$2ea[+7],\n        $2ea[+8],$2ea[+9],$2ea[+10],$2ea[+11],\n        $2ea[+12],$2ea[+13],$2ea[+14],$2ea[+15]]
+#! ld1	{$1v.4s}, $2ea -> mov %$1v [$2ea[+0],$2ea[+4],$2ea[+8],$2ea[+12]]
+#! mov $1v.d\[1\], $2v.d\[0\] -> mov %$1v[1] %$2v[0]
+#! rev32 $1v.16b, $2v.16b -> mov %$1v [%$2v[3],%$2v[2],%$2v[1],%$2v[0],%$2v[7],%$2v[6],%$2v[5],%$2v[4],\n        %$2v[11],%$2v[10],%$2v[9],%$2v[8],%$2v[15],%$2v[14],%$2v[13],%$2v[12]]
+#! sli $1v.4s, $2v.4s, $3c -> split %dc %slil %$2v (32-$3c); shl %slih $3c;\nsplit %dc %$1v %$1v $3c; or %$1v@uint32[4] %slih %$1v
+#! st1 {$1v.4s}, $2ea -> mov [$2ea,$2ea[+4],$2ea[+8],$2ea[+12]] %$1v
+#! st1 {$1v.4s, $2v.4s}, $3ea -> mov [$3ea,$3ea[+4],$3ea[+8],$3ea[+12]] %$1v;\nmov [$3ea[+16],$3ea[+20],$3ea[+24],$3ea[+12]] %$2v
+#! sub $1v.8h, $2v.8h, $3v.8h -> sub %$1v %$2v %$3v
+#! sub $1v.4s, $2v.4s, $3v.4s -> sub %$1v %$2v %$3v
 #! ushr $1v.4s, $2v.4s, $3c -> split $1v_0 dc $2v_0 $3c; split $1v_1 dc $2v_1 $3c;\nsplit $1v_2 dc $2v_2 $3c; split $1v_3 dc $2v_3 $3c
-#! mul $1v.16b, $2v.16b, $3v.16b -> mull %$dc %$1v %$2v %$3v
-#! mul $1v.8h, $2v.8h, $3v.8h -> mull %$dc %$1v %$2v %$3v
-#! mul $1v.4s, $2v.4s, $3v.4s -> mull %$dc %$1v %$2v %$3v
-#! sqrdmulh $1v.4s $2v.4s $3v.4s -> smull %L1 %L0 %$2v %$3v;\n usplit %L00 %dc %L0 31;\n cast %L01@sint32[4] %L00;\n add %$1v_0 %L1 %L01;
+#! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
+#! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
+#! mul $1v.16b, $2v.16b, $3v.16b -> mull %dc %$1v %$2v %$3v
+#! mul $1v.8h, $2v.8h, $3v.8h -> mull %$dc %1v %$2v %$3v
+#! mul $1v.4s, $2v.4s, $3v.4s -> mull %$dc %1v %$2v %$3v
+#! sqrdmulh $1v.4s $2v.4s $3v.4s -> smull %L0 %L1 %$2v %$3v;\n usplit %L00 %dc %L0 31;\n cast %L01@sint32[4] %L00;\n add %$1v_0 %L1 %L01;
