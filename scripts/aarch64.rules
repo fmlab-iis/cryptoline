@@ -107,6 +107,6 @@
 #! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mul $1v.16b, $2v.16b, $3v.16b -> mull %dc %$1v %$2v %$3v
-#! mul $1v.8h, $2v.8h, $3v.8h -> mull %$dc %1v %$2v %$3v
-#! mul $1v.4s, $2v.4s, $3v.4s -> mull %$dc %1v %$2v %$3v
+#! mul $1v.8h, $2v.8h, $3v.8h -> mull %dc %1v %$2v %$3v
+#! mul $1v.4s, $2v.4s, $3v.4s -> mull %dc %1v %$2v %$3v
 #! sqrdmulh $1v.4s $2v.4s $3v.4s -> smull %L0 %L1 %$2v %$3v;\n usplit %L00 %dc %L0 31;\n cast %L01@sint32[4] %L00;\n add %$1v_0 %L1 %L01;
