@@ -17,14 +17,6 @@
 
 # scalar instructions
 
-#! add $1v, $2v, $3v -> add $1v $2v $3v
-#! add $1v, $2c, $3v -> add $1v $2c@uint63 $3v
-#! add $1v, $2v, $3c -> add $1v $2v $3c@uint64
-#! adds $1v, $2v, $3v, lsl $4c -> split dcH $3v_t $3v `64 - $4c`; shl $3v_t $3v_t $4c; adds carry $1v $2v $3v_t
-#! adds $1v, $2v, $3v, lsr $4c -> split $3v_t dcL $3v $4c; adds carry $1v $2v $3v_t
-#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
-#! adds $1v, $2c, $3v -> adds carry $1v $2c@uint64 $3v
-#! adds $1v, $2v, $3c -> adds carry $1v $2v $3c@uint64
 #! adc $1v, $2v, $3v -> adc $1v $2v $3v carry
 #! adc $1v, $2c, $3v -> adc $1v $2c@uint64 $3v carry
 #! adc $1v, $2v, $3c -> adc $1v $2v $3c@uint64 carry
@@ -35,6 +27,14 @@
 #! adcs $1v, $2c, $3v -> adcs carry $1v $2c@uint64 $3v carry
 #! adcs $1v, $2v, $3c -> adcs carry $1v $2v $3c@uint64 carry
 #! adcs $1v, $2v, xzr -> adcs carry $1v $2v 0@uint64 carry
+#! add $1v, $2v, $3v -> add $1v $2v $3v
+#! add $1v, $2c, $3v -> add $1v $2c@uint63 $3v
+#! add $1v, $2v, $3c -> add $1v $2v $3c@uint64
+#! adds $1v, $2v, $3v, lsl $4c -> split dcH $3v_t $3v `64 - $4c`; shl $3v_t $3v_t $4c; adds carry $1v $2v $3v_t
+#! adds $1v, $2v, $3v, lsr $4c -> split $3v_t dcL $3v $4c; adds carry $1v $2v $3v_t
+#! adds $1v, $2v, $3v -> adds carry $1v $2v $3v
+#! adds $1v, $2c, $3v -> adds carry $1v $2c@uint64 $3v
+#! adds $1v, $2v, $3c -> adds carry $1v $2v $3c@uint64
 #! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
 #! ands $1v, $2v, $3c -> and $1v@uint64 $2v $3c@uint64; subc zero dc 0@uint64 $1v
 #! bic $1v, $2v, $3v -> not $3v_n@uint64 $3v; and $1v@uint64 $2v $3v_n
@@ -103,3 +103,6 @@
 #! st1 {$1v.4s}, $2ea -> mov $2ea $1v_0; mov $2ea[+4] $1v_1;\nmov $2ea[+8] $1v_2; mov $2ea[+12] $1v_3
 #! st1 {$1v.4s, $2v.4s}, $3ea -> mov $3ea $1v_0; mov $3ea[+4] $1v_1;\nmov $3ea[+8] $1v_2; mov $3ea[+12] $1v_3;\nmov $3ea[+16] $2v_0; mov $3ea[+20] $2v_1;\nmov $3ea[+24] $2v_2; mov $3ea[+28] $2v_3
 #! ushr $1v.4s, $2v.4s, $3c -> split $1v_0 dc $2v_0 $3c; split $1v_1 dc $2v_1 $3c;\nsplit $1v_2 dc $2v_2 $3c; split $1v_3 dc $2v_3 $3c
+#! mul $1v.16b, $2v.16b, $3v.16b -> mull %$dc %$1v %$2v %$3v
+#! mul $1v.8h, $2v.8h, $3v.8h -> mull %$dc %$1v %$2v %$3v
+#! mul $1v.4s, $2v.4s, $3v.4s -> mull %$dc %$1v %$2v %$3v
