@@ -106,3 +106,4 @@
 #! mul $1v.16b, $2v.16b, $3v.16b -> mull %$dc %$1v %$2v %$3v
 #! mul $1v.8h, $2v.8h, $3v.8h -> mull %$dc %$1v %$2v %$3v
 #! mul $1v.4s, $2v.4s, $3v.4s -> mull %$dc %$1v %$2v %$3v
+#! sqrdmulh $1v.4s $2v.4s $3v.4s -> smull L1 L0 $2v_0 $3v_0;\n usplit L00 dontcare L0 31;\n cast L01@sint32 L00;\n add $1v_0 L1 L01;\n smull L1 L0 $2v_1 $3v_1;\n usplit L00 dontcare L0 31;\n cast L01@sint32 L00;\n add $1v_1 L1 L01;\n smull L1 L0 $2v_2 $3v_2;\n usplit L00 dontcare L0 31;\n cast L01@sint32 L00;\n add $1v_2 L1 L01;\n smull L1 L0 $2v_3 $3v_3;\n usplit L00 dontcare L0 31;\n cast L01@sint32 L00;\n add $1v_3 L1 L01;\n
