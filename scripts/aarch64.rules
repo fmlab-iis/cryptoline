@@ -103,7 +103,8 @@
 #! st1 {$1v.4s, $2v.4s}, $3ea -> mov [$3ea,$3ea[+4],$3ea[+8],$3ea[+12]] %$1v;\nmov [$3ea[+16],$3ea[+20],$3ea[+24],$3ea[+12]] %$2v
 #! sub $1v.8h, $2v.8h, $3v.8h -> sub %$1v %$2v %$3v
 #! sub $1v.4s, $2v.4s, $3v.4s -> sub %$1v %$2v %$3v
-#! ushr $1v.4s, $2v.4s, $3c -> split $1v_0 dc $2v_0 $3c; split $1v_1 dc $2v_1 $3c;\nsplit $1v_2 dc $2v_2 $3c; split $1v_3 dc $2v_3 $3c
+#! ushr $1v.4s, $2v.4s, $3c -> split %$1v %dc %$2v $3c
+#! sshr $1v.4s, $2v.4s, $3c -> split %$1v %dc %$2v $3c
 #! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mla $1v.8h, $2v.8h, $3v.8h -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
