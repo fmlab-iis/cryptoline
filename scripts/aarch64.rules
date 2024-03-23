@@ -105,6 +105,8 @@
 #! sub $1v.4s, $2v.4s, $3v.4s -> sub %$1v %$2v %$3v
 #! ushr $1v.4s, $2v.4s, $3c -> split %$1v %dc %$2v $3c
 #! sshr $1v.4s, $2v.4s, $3c -> split %$1v %dc %$2v $3c
+#! trn1 $1v.4s, $2v.4s, $3v.4s -> mov %$1v@sint32[4] [%$2v[0],%$3v[0],%$2v[2],%$3v[2]]
+#! trn2 $1v.4s, $2v.4s, $3v.4s -> mov %$1v@sint32[4] [%$2v[1],%$3v[1],%$2v[3],%$3v[3]]
 #! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mla $1v.8h, $2v.8h, $3v.8h -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
