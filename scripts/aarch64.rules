@@ -117,4 +117,5 @@
 #! sqdmulh $1v.4s $2v.4s $3v.4s -> smulj %LO %$2v %$3v;\n ssplit %LO0 %dc %LO 31;\n vpc %LO01@sint32[4] %LO0;\n 
 #! sqdmulh $1v.8h $2v.8h $3v.8h -> smulj %LO %$2v %$3v;\n ssplit %LO0 %dc %LO 15;\n vpc %LO01@sint32[4] %LO0;\n 
 #! srshr $1v.4s, $2v.4s, $3c -> split %HI %LO %$2v $3c;\n split %LO1 %dc %LO ($3c-1);\n cast %LO0@sint32[4] %LO1;\n add %$1v %HI %LO0 
+#! srshr $1v.8h, $2v.8h, $3c -> split %HI %LO %$2v $3c;\n split %LO1 %dc %LO ($3c-1);\n cast %LO0@sint32[4] %LO1;\n add %$1v %HI %LO0 
 
