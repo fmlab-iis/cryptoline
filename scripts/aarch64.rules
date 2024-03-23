@@ -106,6 +106,8 @@
 #! ushr $1v.4s, $2v.4s, $3c -> split $1v_0 dc $2v_0 $3c; split $1v_1 dc $2v_1 $3c;\nsplit $1v_2 dc $2v_2 $3c; split $1v_3 dc $2v_3 $3c
 #! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
+#! mla $1v.8h, $2v.8h, $3v.8h -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
+#! mla $1v.4s, $2v.4s, $3v.4s -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
 #! mul $1v.16b, $2v.16b, $3v.16b -> mull %dc %$1v %$2v %$3v
 #! mul $1v.8h, $2v.8h, $3v.8h -> mull %dc %1v %$2v %$3v
 #! mul $1v.4s, $2v.4s, $3v.4s -> mull %dc %1v %$2v %$3v
