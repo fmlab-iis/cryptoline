@@ -359,6 +359,9 @@ instr:
                                                     | _ -> failwith "" }
   | lval EQOP CAST atom                           { (get_line_start(), `CAST (None, $1, $4)) }
   | VPC lval atom                                 { (get_line_start(), `VPC ($2, $3)) }
+  | VPC lval_v atom_v_primary                     { (get_line_start(), `VVPC ($2, $3)) }
+  // XXX: the "[]" is to workaround a r/r conflict (TODO: remove this rule as the conflict has been resolved)
+  | VPC LSQUARE RSQUARE lval_v atom_v_primary     { (get_line_start(), `VVPC ($4, $5)) }
   | lval EQOP VPC atom                            { (get_line_start(), `VPC ($1, $4)) }
   | JOIN lval atom atom                           { (get_line_start(), `JOIN ($2, $3, $4)) }
   | lval EQOP JOIN atom atom                      { (get_line_start(), `JOIN ($1, $4, $5)) }

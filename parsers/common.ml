@@ -493,6 +493,7 @@ type instr_t =
   | `CAST of lval_t option * lval_t * atom_t
   | `VCAST of lval_vec_t option * lval_vec_t * atom_vec_t
   | `VPC of lval_t * atom_t
+  | `VVPC of lval_vec_t * atom_vec_t
   | `JOIN of lval_t * atom_t * atom_t
   | `ASSERT of (bexp_prove_with contextual)
   | `EASSERT of (ebexp_prove_with contextual)
@@ -2217,6 +2218,28 @@ let parse_vcast_at ctx lno dest_tok src_tok =
   else
     raise_at_line lno "Destination vector should be as long as the source vector."
 
+let parse_vvpc_at ctx lno dest_tok src_tok =
+  let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
+  let (tar_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok None in
+
+  let _ = if (List.length dest_names) <> (List.length src) then
+            raise_at_line lno "Destination vector should be as long as the source vector."
+          else () in
+
+  let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
+  let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
+
+  let map_func (lvname, rv) = (
+      let lvtoken = {lvname; lvtyphint=Some tar_typ} in
+      parse_vpc_at ctx lno lvtoken rv
+    ) in
+  let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
+  (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
+  (* Clean up temp. names so that they are invisible to latter parts of the source *)
+  let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+  List.concat (aliasing_instrs::iss)
+
+
 let parse_vbroadcast_at ctx lno dest_tok num src_tok =
   let n = num ctx in
   (* type check is done when unpacking, so relmtyp is not needed here *)
@@ -2485,6 +2508,8 @@ let recognize_instr_at ctx lno (instr : instr_t) =
     | None -> parse_vcast_at ctx lno dest src)
   | `VPC (`LVPLAIN dest, src) ->
      parse_vpc_at ctx lno dest src
+  | `VVPC (dest, src) ->
+     parse_vvpc_at ctx lno dest src
   | `JOIN (`LVPLAIN dest, srcH, srcL) ->
      parse_join_at ctx lno dest srcH srcL
   | `ASSERT bexp_prove_with_list ->

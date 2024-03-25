@@ -446,6 +446,7 @@ type instr_t =
   | `CAST of lval_t option * lval_t * atom_t
   | `VCAST of lval_vec_t option * lval_vec_t * atom_vec_t
   | `VPC of lval_t * atom_t
+  | `VVPC of lval_vec_t * atom_vec_t
   | `JOIN of lval_t * atom_t * atom_t
   | `ASSERT of (bexp_prove_with contextual)
   | `EASSERT of (ebexp_prove_with contextual)
@@ -784,6 +785,9 @@ val unpack_vmulj : (lv_prim_t -> atom_t -> atom_t -> lined_program) lined contex
 
 val parse_vcast_at : (lval_vec_t -> atom_vec_t -> lined_program) lined contextual
 (** [parse_vcast_at ctx lno dst_tok src_tok] parses a cast instruction for vectors *)
+
+val parse_vvpc_at : (lval_vec_t -> atom_vec_t -> lined_program) lined contextual
+(** [parse_vvpc_at ctx lno dst_tok src_tok] parses a vpc instruction for vectors *)
 
 val parse_vbroadcast_at : (lval_vec_t -> Z.t contextual -> atom_vec_t -> lined_program) lined contextual
 (** [parse_vbroadcast_at ctx lno dst_tok num src_tok] parses a broadcast instruction *)
