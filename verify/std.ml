@@ -3,6 +3,7 @@ open Options.Std
 open Ast.Cryptoline
 open Qfbv.Common
 open Qfbv.Std
+open Smt
 open Common
 open Utils
 open Utils.Std
@@ -49,7 +50,7 @@ let verify_instruction_safety ?comments timeout sid f p n hashopt =
                                                               "Instruction: " ^ string_of_instr i ])
                  ~timeout:timeout (fp@[q]))
   in
-  let q = bexp_instr_safe i in
+  let q = Common.bexp_instr_safe i in
   do_verify f p q
 
 (*

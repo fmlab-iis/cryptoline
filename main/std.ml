@@ -384,9 +384,9 @@ let anon file =
                        |> (fun (vgen, ps) -> if !apply_rewrite_poly then Verify.Common.rewrite_poly_spec vgen ps else (vgen, ps))
                        |> snd in
      let os_of_ps ps = {
-         Ast.Cryptoline.spre = (eands (ps.Verify.Common.ppre::ps.Verify.Common.pprog), rtrue);
+         Ast.Cryptoline.spre = (eands (ps.Verify.Cas.ppre::ps.Verify.Cas.pprog), rtrue);
          Ast.Cryptoline.sprog = [Inop];
-         Ast.Cryptoline.spost = ([(ps.Verify.Common.ppost, [])], [])
+         Ast.Cryptoline.spost = ([(ps.Verify.Cas.ppost, [])], [])
        } in
      let vs_of_os os = let uniform_vtyp v = { vname = v.vname;
                                               vtyp = Tuint 64;

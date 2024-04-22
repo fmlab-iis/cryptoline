@@ -83,9 +83,9 @@ let anon file =
        try
          begin
            match Verify.Std.verify_instruction_safety ~comments !Options.Std.incremental_safety_timeout !id spec.rspre spec.rsprog !instr_index None with
-           | Verify.Common.Solved Qfbv.Common.Sat -> print_endline "sat"
-           | Verify.Common.Solved Qfbv.Common.Unsat -> print_endline "unsat"
-           | Verify.Common.Solved Qfbv.Common.Unknown -> print_endline "unknown"
+           | Verify.Smt.Solved Qfbv.Common.Sat -> print_endline "sat"
+           | Verify.Smt.Solved Qfbv.Common.Unsat -> print_endline "unsat"
+           | Verify.Smt.Solved Qfbv.Common.Unknown -> print_endline "unknown"
            | _ -> failwith "Unfinished tasks. Should not happen!"
          end
        with Utils.Tasks.TimeoutException ->

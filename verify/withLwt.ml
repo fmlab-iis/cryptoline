@@ -4,6 +4,7 @@ open Options.WithLwt
 open Ast.Cryptoline
 open Qfbv.Common
 open Qfbv.WithLwt
+open Smt
 open Common
 open Utils
 open Utils.Std
@@ -701,12 +702,12 @@ let verify_rspec_no_rcut_abs_interp hashopt s =
                Format.pp_print_string Format.std_formatter "Start domain:";
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter
-                 (Absdom.Std.string_of_dom mgr dom);
+                 (Absdom.Std.string_of_abs mgr dom);
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter "End domain:";
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter
-                 (Absdom.Std.string_of_dom mgr dom');
+                 (Absdom.Std.string_of_abs mgr dom');
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_flush Format.std_formatter () in
         *)
