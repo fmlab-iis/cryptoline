@@ -382,10 +382,17 @@ val eq_rexp : rexp -> rexp -> bool
 
 (** {1 Algebraic Predicates} *)
 
+type ecmpop =
+  | Elt     (** less than *)
+  | Ele     (** less than or equal to *)
+  | Egt     (** greater than *)
+  | Ege     (** greater than or equal to *)
+
 type ebexp =
   | Etrue                              (** true *)
   | Eeq of eexp * eexp                 (** equality *)
   | Eeqmod of eexp * eexp * eexp list  (** equality modulo a list of moduli *)
+  | Ecmp of ecmpop * eexp * eexp
   | Eand of ebexp * ebexp              (** conjunction *) (* *)
 (** algebraic predicates *)
 

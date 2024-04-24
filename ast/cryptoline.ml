@@ -648,10 +648,17 @@ let rec eq_rexp e1 e2 =
 
 (** Algebraic Predicates *)
 
+type ecmpop =
+  | Elt     (** less than *)
+  | Ele     (** less than or equal to *)
+  | Egt     (** greater than *)
+  | Ege     (** greater than or equal to *)
+
 type ebexp =
   | Etrue
   | Eeq of eexp * eexp
   | Eeqmod of eexp * eexp * eexp list
+  | Ecmp of ecmpop * eexp * eexp
   | Eand of ebexp * ebexp
 
 let etrue = Etrue
@@ -1230,6 +1237,11 @@ let rec string_of_ebexp ?typ:(typ=false) e =
         | [] -> ""
         | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
         | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
+  | Ecmp (op, e1, e2) ->
+     let string_of_op op =
+       match op with
+       | Elt -> " < " | Ele -> " <= " | Egt -> " > " | Ege -> " >= " in
+     string_of_eexp ~typ:typ e1 ^ (string_of_op op) ^ string_of_eexp ~typ:typ e2
   | Eand (e1, e2) ->
      let es = split_eand e in
      match es with
@@ -1417,6 +1429,7 @@ let rec vars_rexp e =
 let rec vars_ebexp e =
   match e with
   | Etrue -> VS.empty
+  | Ecmp (_, e1, e2)
   | Eeq (e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
   | Eeqmod (e1, e2, ps) -> VS.union (vars_eexp e1) (List.fold_left (fun vs p -> VS.union vs (vars_eexp p)) (vars_eexp e2) ps)
   | Eand (e1, e2) -> VS.union (vars_ebexp e1) (vars_ebexp e2)
@@ -1686,6 +1699,7 @@ let rec vids_eexp e =
 let rec vids_ebexp e =
   match e with
   | Etrue -> IS.empty
+  | Ecmp (_, e1, e2)
   | Eeq (e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
   | Eeqmod (e1, e2, ps) -> List.fold_left IS.union (IS.union (vids_eexp e1) (vids_eexp e2)) (List.map vids_eexp ps)
   | Eand (e1, e2) -> IS.union (vids_ebexp e1) (vids_ebexp e2)
@@ -1996,6 +2010,7 @@ let rec ssa_ebexp m e =
   | Etrue -> Etrue
   | Eeq (e1, e2) -> Eeq (ssa_eexp m e1, ssa_eexp m e2)
   | Eeqmod (e1, e2, ps) -> Eeqmod (ssa_eexp m e1, ssa_eexp m e2, List.rev (List.rev_map (ssa_eexp m) ps))
+  | Ecmp (op, e1, e2) -> Ecmp (op, ssa_eexp m e1, ssa_eexp m e2)
   | Eand (e1, e2) -> Eand (ssa_ebexp m e1, ssa_ebexp m e2)
 
 let rec ssa_rbexp m e =
@@ -2805,6 +2820,7 @@ let rec subst_ebexp em e =
   | Etrue -> e
   | Eeq (e1, e2) -> Eeq (subst_eexp em e1, subst_eexp em e2)
   | Eeqmod (e1, e2, ms) -> Eeqmod (subst_eexp em e1, subst_eexp em e2, List.rev (List.rev_map (subst_eexp em) ms))
+  | Ecmp (op, e1, e2) -> Ecmp (op, subst_eexp em e1, subst_eexp em e2)
   | Eand (e1, e2) -> Eand (subst_ebexp em e1, subst_ebexp em e2)
 
 let rec subst_rbexp rm e =
@@ -2978,6 +2994,7 @@ let bexp_vids_sat vars e =
 let rec slice_ebexp vars e =
   match e with
   | Etrue -> e
+  | Ecmp (_, e1, e2)
   | Eeq (e1, e2) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) then Etrue
                     else e
   | Eeqmod (e1, e2, ps) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) && (List.for_all (VS.disjoint vars) (List.rev (List.rev_map vars_eexp ps))) then Etrue
@@ -3523,6 +3540,8 @@ let rec visit_ebexp visitor e =
         | Etrue -> Etrue
         | Eeq (e1, e2) -> Eeq (visit_eexp visitor e1, visit_eexp visitor e2)
         | Eeqmod (e1, e2, ms) -> Eeqmod (visit_eexp visitor e1, visit_eexp visitor e2, List.rev (List.rev_map (visit_eexp visitor) ms))
+        | Ecmp (op, e1, e2) ->
+           Ecmp (op, visit_eexp visitor e1, visit_eexp visitor e2)
         | Eand (e1, e2) -> Eand (visit_ebexp visitor e1, visit_ebexp visitor e2))
 
 let rec visit_rbexp visitor e =
@@ -4081,6 +4100,7 @@ let rec bvcryptoline_of_ebexp e =
        | _ -> raise (UnsupportedException "Multi-moduli is not supported by BvCryptoLine.")
      end
   | Eand (e1, e2) -> Printf.sprintf "(bveAnd %s %s)" (bvcryptoline_of_ebexp e1) (bvcryptoline_of_ebexp e2)
+  | Ecmp _ -> raise (UnsupportedException "Algebraic range predicates are not supported by BvCryptoLine.")
 let bvcryptoline_of_runop op =
   match op with
   | Rnegb -> raise (UnsupportedException "Two's complement negation is not supported by BvCryptoLine.")
@@ -4294,6 +4314,7 @@ let rec update_variable_id_eexp m e =
 let rec update_variable_id_ebexp m e =
   match e with
   | Etrue -> m
+  | Ecmp (_, e1, e2)
   | Eeq (e1, e2) -> update_variable_id_eexp (update_variable_id_eexp m e1) e2
   | Eeqmod (e1, e2, es) -> List.fold_left update_variable_id_eexp (update_variable_id_eexp (update_variable_id_eexp m e1) e2) es
   | Eand (e1, e2) -> update_variable_id_ebexp (update_variable_id_ebexp m e1) e2

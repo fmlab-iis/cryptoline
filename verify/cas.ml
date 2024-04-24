@@ -570,6 +570,7 @@ let rec polys_of_ebexp vgen e =
      let (vgen, tmps1, ps1) = polys_of_ebexp vgen e1 in
      let (vgen, tmps2, ps2) = polys_of_ebexp vgen e2 in
      (vgen, tmps1 @@ tmps2, ps1 @@ ps2)
+  | Ecmp _ -> failwith "Internal error: algebraic range predicates cannot appear in polys_of_ebexp"
 
 let polys_of_ebexps vgen es =
   let (vgen, tmps_rev, ps_rev) = List.fold_left (
@@ -662,7 +663,8 @@ let polys_of_espec vgen s =
        let vars = vars_in_order (rcons ideal p) in
        [(post, vars, ideal, p)]
     | Eand (e1, e2) ->
-       (convert generator_ps e1) @@ (convert generator_ps e2) in
+       (convert generator_ps e1) @@ (convert generator_ps e2)
+    | Ecmp _ -> failwith "Internal error: algebraic range predicates cannot appear in polys_of_espec." in
   (vgen, convert generator_ps pspec.ppost)
 
 (**
@@ -755,7 +757,8 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
         | Etrue -> []
         | Eeq (e1, e2) -> [(e, IS.union (vids_ebexp e) sc, emuls ((esub e1 e2)::apspec.apextra), [])]
         | Eeqmod (e1, e2, ms) -> [(e, IS.union (vids_ebexp e) sc, emuls ((esub e1 e2)::apspec.apextra), ms)]
-        | Eand (e1, e2) -> (helper e1) @@ (helper e2) in
+        | Eand (e1, e2) -> (helper e1) @@ (helper e2)
+        | Ecmp _ -> failwith "Internal error: algebraic range predicates cannot appear in polys_of_espec_two_phase" in
       helper e in
     (* First phase rewriting, do not consider moduli *)
     let first_phase_rewriting ideal_aps post_p_ms_list = do_rewriting ideal_aps post_p_ms_list [] in

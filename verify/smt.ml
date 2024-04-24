@@ -838,6 +838,9 @@ let smtlib_define_expn () =
   | Some op -> "(define-fun expn ((x Int) (n Int)) Int (" ^ op ^ " x n))"
   | _ -> "(define-fun-rec expn ((x Int) (n Int)) Int (ite (= n 0) 1 (* x (expn x (- n 1)))))"
 
+let smt_of_op op = match op with
+  | Elt -> "(< " | Ele -> "(<= " | Egt -> "(> " | Ege -> "(>= "
+
 let rec smtlib_ebexp_premise vgen e =
   match e with
   | Etrue -> (vgen, "true")
@@ -846,6 +849,7 @@ let rec smtlib_ebexp_premise vgen e =
      let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ ->
         let (k, vgen) = Cas.gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
      (vgen, String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"])
+  | Ecmp (op, e1, e2) -> (vgen, String.concat "" [smt_of_op op; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
   | Eand (e1, e2) ->
      let (vgen, e1) = smtlib_ebexp_premise vgen e1 in
      let (vgen, e2) = smtlib_ebexp_premise vgen e2 in
@@ -861,6 +865,7 @@ let rec smtlib_ebexp_consequence vgen e =
      let unquantified = String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"] in
      let quantified = List.fold_left (fun quantified k -> smtlib_exists k quantified) unquantified ks_rev in
      (vgen, ks_rev, quantified)
+  | Ecmp (op, e1, e2) -> (vgen, [], String.concat "" [smt_of_op op; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
   | Eand (e1, e2) ->
      let (vgen, ks_rev1, e1) = smtlib_ebexp_consequence vgen e1 in
      let (vgen, ks_rev2, e2) = smtlib_ebexp_consequence vgen e2 in
