@@ -189,9 +189,9 @@ let bv2mip vgen i constrs ivars cvars =
   | Iseteq (v, _, _) | Isetne (v, _, _)
   | Inot (v, _) | Iand (v, _, _) | Ior (v, _, _) | Ixor (v, _, _) ->
      (vgen, constrs, ivars, v::cvars)
-  | Iassert _ | Inop -> (vgen, [], ivars, cvars)
+  | Iassert _ | Inop -> (vgen, constrs, ivars, cvars)
   | Icut (_::_, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
-  | Icut _ ->
+  | Icut _ -> (vgen, constrs, ivars, cvars)
   | _ -> failwith "unfinished"
 (*
   | Ishls (l, v, a, n) ->
