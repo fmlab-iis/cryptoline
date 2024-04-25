@@ -33,6 +33,7 @@ type poly_spec =
     pextra : Ast.Cryptoline.eexp list        (** extra polynomials to be multiplied to each atomic postcondition *)
   }
 
+val bv2z_atom : Ast.Cryptoline.atom -> Ast.Cryptoline.eexp
 
 val bv2z_espec : var_gen -> Ast.Cryptoline.espec ->
                  var_gen * poly_spec
