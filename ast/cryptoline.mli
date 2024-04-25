@@ -405,6 +405,18 @@ val eeq : eexp -> eexp -> ebexp
 val eeqmod : eexp -> eexp -> eexp -> ebexp
 (** [eeqmod e1 e2 ms] is [Eeqmod (e1, e2. ms)]. *)
 
+val elt : eexp -> eexp -> ebexp
+(** [elt e1 e2] is [Ecmp (Elt, e1, e2)]. *)
+
+val ele : eexp -> eexp -> ebexp
+(** [ele e1 e2] is [Ecmp (Ele, e1, e2)]. *)
+
+val egt : eexp -> eexp -> ebexp
+(** [egt e1 e2] is [Ecmp (Egt, e1, e2)]. *)
+
+val ege : eexp -> eexp -> ebexp
+(** [ege e1 e2] is [Ecmp (Ege, e1, e2)]. *)
+
 val eand : ebexp -> ebexp -> ebexp
 (** [eand e1 e2] is [Eand (e1, e2)]. *)
 

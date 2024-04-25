@@ -664,6 +664,12 @@ type ebexp =
 let etrue = Etrue
 let eeq e1 e2 = Eeq (e1, e2)
 let eeqmod e1 e2 m = Eeqmod (e1, e2, [ m ])
+let elt e1 e2 = Ecmp (Elt, e1, e2)
+let ele e1 e2 = Ecmp (Ele, e1, e2)
+let egt e1 e2 = Ecmp (Egt, e1, e2)
+let ege e1 e2 = Ecmp (Ege, e1, e2)
+(** [ege e1 e2] is [Ege (e1, e2)]. *)
+
 (*let eand b1 b2 = Eand (b1, b2)*)
 
 let eand e1 e2 =
