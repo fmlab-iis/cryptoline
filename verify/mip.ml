@@ -209,3 +209,6 @@ let bv2mip vgen i constrs ivars cvars =
   | Iassume e ->
   | Ighost (_, e) ->
 *)
+
+let of_espec _vgen _es = failwith "not implemented"
+
