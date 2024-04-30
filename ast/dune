@@ -1,6 +1,17 @@
 (library
   (name        ast)
+  (preprocess  (pps ppx_optcomp))
+  (preprocessor_deps config.mlh)
   (libraries   options zarith utils nBits)
   (flags       (:standard -w -3))
   (public_name cryptoline.ast)
+)
+
+(rule
+  (target  config.mlh)
+  (action
+    (with-stdout-to %{target}
+      (run ./get-config.sh)
+    )
+  )
 )

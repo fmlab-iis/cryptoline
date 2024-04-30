@@ -14,8 +14,11 @@
 (package
   (name cryptoline)
   (synopsis "CryptoLine Verifier")
+  (homepage https://github.com/fmlab-iis/cryptoline)
   (depends
-  lwt
-  lwt_ppx
-  num
-  zarith))
+    lwt
+    lwt_ppx
+    num
+    zarith
+  )
+)

@@ -134,10 +134,21 @@ let typ_map f ty =
   | Tuint w -> Tuint (f w)
   | Tsint w -> Tsint (f w)
 
+[%%import "config.mlh"]
+[%%if Z_version <= (1, 12)]
+let random_value ty =
+  let size = let s = size_of_typ ty in
+             if typ_is_unsigned ty then s else s - 1 in
+  let sign = Random.bool () in
+  let bits = List.init size (fun _ -> if Random.bool () then "1" else "0") in
+  let bits = if sign && List.for_all (fun s -> s = "0") bits then ("1"::bits) else bits in
+  Z.of_string_base 2 (if sign then "-" else "" ^ String.concat "" bits)
+[%%else]
 let random_value ty =
   let min = min_of_typ ty in
   let max = max_of_typ ty in
   Z.add min (Z.random_int (Z.add (Z.sub max min) Z.one))
+[%%endif]
 
 let is_representable ty v =
   not (Z.lt v (min_of_typ ty) || Z.gt v (max_of_typ ty))

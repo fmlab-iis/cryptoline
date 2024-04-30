@@ -18,19 +18,23 @@ To compile and run CryptoLine, the following packages need to be installed.
 
 - [OCaml compiler](https://ocaml.org) (version 4.11 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: dune, ocamlfind, lwt, lwt_ppx, num, zarith
+- OCaml packages: `dune, ocamlfind, lwt, lwt_ppx, num, zarith, ppx_optcomp`
+- [apron](https://antoinemine.github.io/Apron/doc/)
 - One of the following computer algebra systems:
-  + [Singular](https://www.singular.uni-kl.de) (recommended, the default to be used)
+  + [Singular](https://www.singular.uni-kl.de) (recommended, the default to
+    be used)
   + [SageMath](http://www.sagemath.org)
   + [Magma](http://magma.maths.usyd.edu.au/magma/)
   + [Mathematica](https://www.wolfram.com/mathematica/)
   + [Macaulay2](https://faculty.math.illinois.edu/Macaulay2/)
   + [Maple](https://www.maplesoft.com)
 - One of the following SMT solvers:
-  + [Boolector](https://boolector.github.io) (recommended, the default to be used)
+  + [Boolector](https://boolector.github.io) (recommended, the default to be
+    used)
   + [Z3](https://github.com/Z3Prover/z3)
   + [Mathsat](http://mathsat.fbk.eu)
-- [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) for equivalence checking
+- [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) for equivalence
+  checking
 
 
 Installation
@@ -39,20 +43,8 @@ Installation
 On Linux
 --------
 
-Follow the instructions below to build and install CryptoLine as well as
-the computer algebra system Singular and the SMT QF_BV solver Boolector
-on Ubuntu 23.04.
-
-```
-$ sudo apt -y install \
-        build-essential ocaml ocaml-dune libzarith-ocaml-dev liblwt-ocaml-dev \
-        curl git bc cmake libreadline-dev python3 gdb
-$ ./scripts/install-boolector.sh
-$ ./scripts/install-singular.sh
-$ ./scripts/install-abc.sh
-$ dune build
-$ dune install
-```
+See `misc/Dockerfile.apt` or `misc/Dockerfile.opam` for instructions to install
+CryptoLine on Ubuntu 23.04.
 
 Run the following command to see the available command-line arguments.
 
@@ -69,13 +61,16 @@ $ dune uninstall
 Using Docker
 ------------
 
-A Dockerfile is provided in CryptoLine. Run the following commands to build
+Two dockerfiles are provided in CryptoLine. Run the following commands to build
 a docker image and run a new container from the image.
 
 ```
-$ docker build -t cryptoline - < Dockerfile
-$ docker run -it --name cryptoline cryptoline bash
+$ docker build -t cryptoline - < misc/Dockerfile.apt
+$ docker run -it --name cryptoline cryptoline bash -l
 ```
+
+Replace `misc/Dockerfile.apt` with `misc/Dockerfile.opam` if you want to manage
+OCaml packages using [opam](https://opam.ocaml.org).
 
 Simple Test
 -----------

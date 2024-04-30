@@ -1,0 +1,33 @@
+FROM ubuntu:23.04
+
+SHELL ["/bin/bash", "-l", "-c"]
+
+# Install Ubuntu packages
+RUN apt update && apt upgrade -y
+RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
+                   libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
+                   libreadline-dev opam
+
+# Install OCaml packages
+RUN opam init -a --disable-sandboxing \
+    && eval $(opam env) \
+    && opam switch create 4.14.2 4.14.2 \
+    && eval $(opam env) && opam install -y \
+    ocamlfind dune zarith lwt lwt_ppx ppx_optcomp apron
+
+# Download CryptoLine and some external tools
+WORKDIR /home
+RUN git clone https://github.com/berkeley-abc/abc.git abc
+RUN git clone https://github.com/fmlab-iis/cryptoline.git cryptoline
+
+# Install abc
+WORKDIR /home/abc
+RUN make && install -m 755 -s abc /usr/bin/
+
+# Install CryptoLine
+WORKDIR /home/cryptoline
+RUN dune build && dune install
+
+# Install Boolector and Singular
+RUN ./scripts/install-boolector.sh
+RUN ./scripts/install-singular.sh
