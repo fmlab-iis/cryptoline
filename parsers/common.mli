@@ -810,6 +810,9 @@ val parse_ebexp_eqmod1 : lno -> eexp contextual -> eexp contextual -> eexp conte
 val parse_ebexp_eqmodN : lno -> eexp contextual -> eexp contextual -> eexp list contextual -> ebexp contextual
 (** [parse_ebexp_eqmodN lno e1_tok e2_tok ms_tok] parses modular equality of eexps with multiple moduli *)
 
+val parse_ebexp_cmp : lno -> ecmpop -> eexp contextual -> eexp contextual -> ebexp contextual
+(** [parse_ebexp_cmp lno e0_tok e1_tok] parses algebraic range predicates *)
+
 val parse_ebexp_veq_modopt : lno -> eexp list contextual -> eexp list contextual -> eexp list list option contextual -> ebexp contextual
 (** [parse_ebexp_veq_modopt lno ve1_tok ve2_tok mssopt_tok] parses a (modular) equality of vector eexps *)
 
@@ -821,6 +824,10 @@ val parse_ebexp_veqmod1 : lno -> eexp list contextual -> eexp list contextual ->
 
 val parse_ebexp_veqmodN : lno -> eexp list contextual -> eexp list contextual -> eexp list list contextual -> ebexp contextual
 (** [parse_ebexp_veqmodN lno ve1_tok ve2_tok vms_tok] parses modular equality of vector eexps *)
+
+val parse_ebexp_vcmp : lno -> ecmpop -> eexp list contextual -> eexp list contextual -> ebexp contextual
+(** [parse_ebexp_vcmp lno e0_tok e1_tok] parses algebraic range predicates of vector eexps *)
+
 
 val parse_eexp_vec_elem : lno -> eexp list contextual -> Z.t -> eexp contextual
 (** [parse_eexp_vec_elem lno ve_tok zi] parses an access to a vector element *)

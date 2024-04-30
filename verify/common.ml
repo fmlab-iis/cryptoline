@@ -313,3 +313,33 @@ let redlog_of_espec es =
 let redlog_of_espec es =
   let ess = cut_espec es |> List.map List.split |> List.map snd in
   String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
+
+let mip_of_espec = Mip.of_espec
+
+let rec ppl_of_eexp e =
+  match e with
+  | Evar v -> string_of_var v
+  | Econst n -> Z.to_string n
+  | Eunop (op, e) ->
+     symbol_of_eunop op ^ (if is_eexp_atom e then ppl_of_eexp e
+                           else " (" ^ ppl_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     (if eexp_ebinop_open e Epow then ppl_of_eexp e
+      else "(" ^ ppl_of_eexp e ^ ")") ^ "**" ^ Z.to_string z
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op then ppl_of_eexp e1
+      else "(" ^ ppl_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2 then ppl_of_eexp e2
+        else "(" ^ ppl_of_eexp e2 ^ ")")
+
+let ppl_of_ebexp eb =
+  match eb with
+  | Etrue -> ""
+  | Eeq (e0, e1) -> ppl_of_eexp e0 ^ " == " ^ ppl_of_eexp e1
+  | Ecmp (Elt, e0, e1) -> ppl_of_eexp e0 ^ " <= " ^ ppl_of_eexp e1 ^ " - 1"
+  | Ecmp (Ele, e0, e1) -> ppl_of_eexp e0 ^ " <= " ^ ppl_of_eexp e1
+  | Ecmp (Egt, e0, e1) -> ppl_of_eexp e0 ^ " >= " ^ ppl_of_eexp e1 ^ " + 1"
+  | Ecmp (Ege, e0, e1) -> ppl_of_eexp e0 ^ " >= " ^ ppl_of_eexp e1
+  | Eeqmod _ | Eand _ -> failwith "Internal error: Eeqmod and Eand are not allowed in ppl_of_ebexp"
+

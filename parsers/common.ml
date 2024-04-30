@@ -2554,6 +2554,9 @@ let parse_ebexp_eq lno e1_tok e2_tok = parse_ebexp_eq_modopt lno e1_tok e2_tok (
 let parse_ebexp_eqmod1 lno e1_tok e2_tok m_tok = parse_ebexp_eq_modopt lno e1_tok e2_tok (fun ctx -> Some ([m_tok ctx]))
 let parse_ebexp_eqmodN lno e1_tok e2_tok ms_tok = parse_ebexp_eq_modopt lno e1_tok e2_tok (fun ctx -> Some (ms_tok ctx))
 
+let parse_ebexp_cmp _lno eop e0_tok e1_tok =
+  fun ctx -> Ecmp (eop, e0_tok ctx, e1_tok ctx)
+
 let parse_ebexp_veq_modopt lno ve1_tok ve2_tok mssopt_tok =
   fun ctx ->
   let es1 = ve1_tok ctx in
@@ -2573,6 +2576,13 @@ let parse_ebexp_veqmod1 lno ve1_tok ve2_tok vm_tok =
 
 let parse_ebexp_veqmodN lno ve1_tok ve2_tok vms_tok =
   parse_ebexp_veq_modopt lno ve1_tok ve2_tok (fun ctx -> Some (vms_tok ctx))
+
+let parse_ebexp_vcmp lno op ve0_tok ve1_tok =
+  fun ctx ->
+  let es0 = ve0_tok ctx in
+  let es1 = ve1_tok ctx in
+  let _ = check_vec_sizes2 lno es0 es1 in
+  List.rev_map2 (fun e0 e1 -> Ecmp (op, e0, e1)) es0 es1 |> List.rev |> eands
 
 let parse_eexp_vec_elem lno ve_tok zi =
   fun ctx ->

@@ -158,7 +158,8 @@
               "qfbv"                       , QFBV;
               "qf_bv"                      , QFBV;
               "solver"                     , SOLVER;
-              "smt"                        , SMT
+              "smt"                        , SMT;
+              "ppl"                        , PPL
             ]
 }
 

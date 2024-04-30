@@ -120,3 +120,17 @@ val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.
    Convert a precondition and a program to QF_BV predicates according to a
    safety condition. The precondition and the program may be sliced.
  *)
+
+val mip_of_espec : var_gen -> Ast.Cryptoline.espec ->
+    var_gen * Ast.Cryptoline.ebexp list list *
+      Ast.Cryptoline.var list * Ast.Cryptoline.var list
+(**
+   Convert an espec to mixed integer programming problems with integer
+   and continuous variable lists
+ *)
+
+val ppl_of_eexp : eexp -> string
+(** Convert an eexp to pplpy string *)
+
+val ppl_of_ebexp : ebexp -> string
+(** Convert an ebexp to pplpy string *)

@@ -570,7 +570,7 @@ let rec polys_of_ebexp vgen e =
      let (vgen, tmps1, ps1) = polys_of_ebexp vgen e1 in
      let (vgen, tmps2, ps2) = polys_of_ebexp vgen e2 in
      (vgen, tmps1 @@ tmps2, ps1 @@ ps2)
-  | Ecmp _ -> failwith "Internal error: algebraic range predicates cannot appear in polys_of_ebexp"
+  | Ecmp _ -> (vgen, [], []) (* no polynomial for comparison *)
 
 let polys_of_ebexps vgen es =
   let (vgen, tmps_rev, ps_rev) = List.fold_left (

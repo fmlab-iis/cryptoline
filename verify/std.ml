@@ -641,6 +641,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let res = read_maple_output ofile in
        res = "true"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
+    | PPL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in
   let _ = cleanup [ifile; ofile] in
   res
@@ -754,6 +755,20 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
   let _ = cleanup [ifile; ofile] in
   res
 
+(* Verify an algebraic specification using a mixed integer programming solver.
+    *)
+let verify_espec_single_conjunct_mip ?comments _vgen s =
+  let ifile = tmpfile "inputmip_" ".py" in
+  let ofile = tmpfile "outputmip_" "" in
+  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
+  let _ =
+    let ch = open_out ifile in
+    let _ = if !debug then output_string ch comments in
+    let _ = close_out ch in
+    () in
+  failwith "PPL solver is not implemented."
+
 (* Verify an algebraic specification. The solver used can be specified in the
    prove-with clauses of the specification.
    Applied in this function: slicing *)
@@ -761,6 +776,7 @@ let verify_espec_single_conjunct ?comments vgen s hashopt =
   let verify =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
+    | PPL -> verify_espec_single_conjunct_mip ?comments
     | _ -> verify_espec_single_conjunct_ideal ?comments in
   is_espec_trivial s || Deduce.espec_prover s ||
     (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))

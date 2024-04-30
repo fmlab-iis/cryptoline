@@ -17,6 +17,7 @@ type algebra_solver =
   | Macaulay2
   | Maple
   | SMTSolver of string
+  | PPL
 
 type variable_order =
   | LexOrder
@@ -40,6 +41,7 @@ let magma_path = ref "magma"
 let mathematica_path = ref "wolframscript"
 let macaulay2_path = ref "M2"
 let maple_path = ref "maple"
+let python_path = ref "python"
 
 let algebra_solver = ref default_algebra_solver
 let algebra_solver_args = ref ""
@@ -52,6 +54,7 @@ let string_of_algebra_solver s =
   | Macaulay2 -> "macaulay2"
   | Maple -> "maple"
   | SMTSolver solver -> "smt:\"" ^ solver ^ "\""
+  | PPL -> "ppl"
 let parse_algebra_solver str =
   if str = string_of_algebra_solver Singular then Singular
   else if str = string_of_algebra_solver Sage then Sage
@@ -60,6 +63,7 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver Macaulay2 then Macaulay2
   else if str = string_of_algebra_solver Maple then Maple
   else if Str.string_match (Str.regexp "^smt:\\(.*\\)") str 0 then SMTSolver (Str.matched_group 1 str)
+  else if str = string_of_algebra_solver PPL then PPL
   else raise (UnknownAlgebraSolver ("Unknown algebra solver: " ^ str))
 
 let apply_rewrite_mov = ref true

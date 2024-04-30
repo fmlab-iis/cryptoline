@@ -1,6 +1,7 @@
 
 open Ast.Cryptoline
 
+(* uint0 denotes exact integers *)
 let z_pow_2 n = Z.pow (Z.of_int 2) n
 let var_range v =
   let t_size = size_of_var v in
@@ -10,18 +11,71 @@ let var_range v =
     [ele (econst (Z.neg (z_pow_2 (pred t_size)))) (evar v);
      elt (evar v) (econst (z_pow_2 (pred t_size)))]
 
+let new_tmp_var = Cas.mk_newvar
+
+(* convert_moduli vgen [m0; m1; ...; mk] ivars returns a new generator,
+   m0*t0+m1*t1+...+mk*tk, and adds [t0; t1; ...; tk] to ivars *)
+let convert_moduli vgen mods ivars =
+  let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
+  let m0 = emul' (List.hd mods) (evar tmp) in
+  List.fold_left (fun (vgen, res, ivars) m ->
+      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
+      (vgen', eadd' res (emul' m (evar tmp)), tmp::ivars))
+    (vgen', m0, ivars) (List.tl mods)
+
+let split_and_convert_eqmod vgen res ebexp ivars =
+  let ebexps = split_eand ebexp in
+  let convert_eqmod vgen e0 e1 mods ivars =
+    let (vgen'', lmods, ivars') = convert_moduli vgen mods ivars in
+    (vgen'', eeq e0 (eadd' e1 lmods), ivars') in
+  List.fold_left
+    (fun (vgen, res, ivars) be ->
+      match be with
+      | Eeqmod (e0, e1, mods) ->
+         let (vgen', e, ivars') = convert_eqmod vgen e0 e1 mods ivars in
+         (vgen', e::res, ivars')
+      | _ -> (vgen, be::res, ivars))
+    (vgen, res, ivars) ebexps
+
+let convert_post vgen pre_prog_constr post ivars  =
+  match post with
+  | Etrue -> (vgen, [[eeq (econst Z.zero) (econst Z.one)]], ivars)
+  | Eeq (e0, e1) ->
+     let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
+     let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
+     (vgen',
+      [List.rev (tmp_gt_0::eeq (eadd' e0 (evar tmp)) e1::pre_prog_constr);
+       List.rev (tmp_gt_0::eeq e0 (eadd' e1 (evar tmp))::pre_prog_constr)],
+      tmp::ivars)
+  | Eeqmod (e0, e1, ms) ->
+     let (vgen', lmods, ivars') = convert_moduli vgen ms ivars in
+     let (vgen'', tmp) = new_tmp_var vgen' (uint_t 0) in
+     let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
+     let pre_prog_tmp_constr = List.fold_left (fun res m -> elt (evar tmp) m::res)
+                     (tmp_gt_0::pre_prog_constr) ms in
+     (vgen'',
+      [List.rev (eeq e0 (eadds' [e1; (evar tmp); lmods])::pre_prog_tmp_constr);
+       List.rev (eeq (eadd' e0 (evar tmp)) (eadd' e1 lmods)::pre_prog_tmp_constr)],
+      tmp::ivars')
+  | Ecmp (op, e0, e1) ->
+     (match op with
+      | Elt -> (vgen, [List.rev (ege e0 e1::pre_prog_constr)], ivars)
+      | Ele -> (vgen, [List.rev (egt e0 e1::pre_prog_constr)], ivars)
+      | Egt -> (vgen, [List.rev (ele e0 e1::pre_prog_constr)], ivars)
+      | Ege -> (vgen, [List.rev (elt e0 e1::pre_prog_constr)], ivars))
+  | Eand _ -> failwith "Internal error: only atomic algebraic predicates are sllowed (Mip.convert_post)"
+
 (* returns (vgen, eq_ebexps, int_vars, cont_vars) where
    - vgen: new variable generator
    - eq_ebexps: ebexps equation constraints
    - int_vars: integer variables
    - cont_vars: continuous variables
  *)
-let bv2mip vgen i constrs ivars cvars =
+let bv2mip (vgen, constrs, ivars, cvars) i =
   let eexp_atom = Cas.bv2z_atom in
   let eexp_assign v e = eeq (evar v) e in
   let emulpow2 e n = emul' (econst (z_pow_2 n)) e in
   let emaddpow2 e0 e1 n = eadd' e0 (emulpow2 e1 n) in
-  let new_tmp_var = Cas.mk_newvar in
   match i with
   | Imov (v, a) -> (* v == a *)
      (vgen, eexp_assign v (eexp_atom a)::constrs, ivars, v::cvars)
@@ -190,6 +244,10 @@ let bv2mip vgen i constrs ivars cvars =
   | Inot (v, _) | Iand (v, _, _) | Ior (v, _, _) | Ixor (v, _, _) ->
      (vgen, constrs, ivars, v::cvars)
   | Iassert _ | Inop -> (vgen, constrs, ivars, cvars)
+  | Iassume (e, _) | Ighost (_, (e, _)) ->
+     let (vgen', constrs', ivars') =
+       split_and_convert_eqmod vgen constrs e ivars in
+     (vgen', constrs', ivars', cvars)
   | Icut (_::_, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
   | Icut _ -> (vgen, constrs, ivars, cvars)
   | _ -> failwith "unfinished"
@@ -206,9 +264,20 @@ let bv2mip vgen i constrs ivars cvars =
   | Icmov (v, c, a0, a1) ->
   | Imuls (l, v, a0, a1) ->
   | Icast (l, v, a) ->
-  | Iassume e ->
-  | Ighost (_, e) ->
 *)
 
-let of_espec _vgen _es = failwith "not implemented"
+let of_espec vgen es =
+  let (vgen', pre_constr, ivars) =
+    split_and_convert_eqmod vgen [] es.espre [] in
+  let pre_vars = vars_ebexp es.espre in
+  let (vgen'', rev_constr, ivars', cvars) =
+    List.fold_left bv2mip (vgen', pre_constr, ivars, VS.elements pre_vars)
+      es.esprog in
+  let post =
+    match es.espost with
+    | [ (p, _) ] -> p | _ -> failwith "Internal error: single algebraic post-condition is expected (Mip.of_espec)" in
+  let (vgen''', constrs, ivars'') =
+    convert_post vgen'' rev_constr post ivars' in
+  let constrs' = List.rev_map Rewrite.rewrite_ebexps constrs |> List.rev in
+  (vgen''', constrs', ivars'', cvars)
 

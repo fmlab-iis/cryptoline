@@ -31,7 +31,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
-%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
+%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT PPL
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -493,6 +493,7 @@ prove_with_spec:
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
   | ALGEBRA SOLVER ID                             { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver $3) }
   | ALGEBRA SOLVER SMT COLON path                 { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver ("smt:" ^ $5)) }
+  | ALGEBRA SOLVER PPL                            { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver "ppl") }
   | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
   | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
 ;
@@ -520,6 +521,10 @@ ebexp:
   | EQMOD eexp_primary eexp_primary LSQUARE eexps RSQUARE
                                                   { parse_ebexp_eqmodN (get_line_start()) $2 $3 $5 }
   | eexp EQOP eexp eq_suffix                      { parse_ebexp_eq_modopt (get_line_start()) $1 $3 $4 }
+  | eexp ULTOP eexp                               { parse_ebexp_cmp (get_line_start ()) Elt $1 $3 }
+  | eexp ULEOP eexp                               { parse_ebexp_cmp (get_line_start ()) Ele $1 $3 }
+  | eexp UGTOP eexp                               { parse_ebexp_cmp (get_line_start ()) Egt $1 $3 }
+  | eexp UGEOP eexp                               { parse_ebexp_cmp (get_line_start ()) Ege $1 $3 }
   // Vector
   | EQ veexp_primary veexp_primary                { parse_ebexp_veq (get_line_start()) $2 $3 }
   | EQMOD veexp_primary veexp_primary veexp_primary
@@ -527,6 +532,10 @@ ebexp:
   | EQMOD veexp_primary veexp_primary LSQUARE veexps RSQUARE
                                                   { parse_ebexp_veqmodN (get_line_start()) $2 $3 $5 }
   | veexp EQOP veexp veq_suffix                   { parse_ebexp_veq_modopt (get_line_start()) $1 $3 $4 }
+  | veexp ULTOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Elt $1 $3 }
+  | veexp ULEOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Ele $1 $3 }
+  | veexp UGTOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Egt $1 $3 }
+  | veexp UGEOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Ege $1 $3 }
   // Logical
   | AND ebexp_primary ebexp_primary               { fun ctx -> Eand ($2 ctx, $3 ctx) }
   | ebexp LANDOP ebexp                            { fun ctx -> Eand ($1 ctx, $3 ctx) }

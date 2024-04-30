@@ -240,6 +240,7 @@ let rewrite_eqmod eqns epost =
   | Etrue -> true
   | Eeq (l, r) | Eeqmod (l, r, _) ->
      (l = r) || simple_rewrite valid_eqns l r
+  | Ecmp _ -> false
   | _ -> failwith ("rewrite_eqmod does not allow post conjunctions: " ^
                      (string_of_ebexp epost))
   

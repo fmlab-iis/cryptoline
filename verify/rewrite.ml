@@ -268,3 +268,24 @@ let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * IS.t * e
   do_rewrite [] (add_vids ideal_aps) (add_vids_post_p_ms_list post_p_ms_list)
 
 
+(** Rewriting in mixed integer programming *)
+
+let rewrite_ebexps ebexps =
+  let rec is_const e =
+    match e with
+    | Evar _ -> false
+    | Econst _ -> true
+    | Eunop (_, e') -> is_const e'
+    | Ebinop (_, e0, e1) -> is_const e0 && is_const e1 in
+  let rec helper res current =
+    match current with
+    | (Eeq (Evar v, e) as hd)::tl | (Eeq (e, Evar v) as hd)::tl ->
+       if is_const e then
+         let em = VM.add v e VM.empty in
+         helper res (List.rev_map (subst_ebexp em) tl |> List.rev)
+       else
+         helper (hd::res) tl
+    | hd::tl -> helper (hd::res) tl
+    | [] -> res in
+  helper [] ebexps |> List.rev
+

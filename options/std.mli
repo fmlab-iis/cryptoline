@@ -108,6 +108,7 @@ type algebra_solver =
   | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
   | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
   | SMTSolver of string      (** [SMTSolver s] is the SMT solver [s] that supports UFNIA. *) (* *)
+  | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
 (** supported algebra solvers *)
 
 type variable_order =
@@ -150,6 +151,9 @@ val macaulay2_path : string ref
 
 val maple_path : string ref
 (** the path to maple *)
+
+val python_path : string ref
+(** the path to python *)
 
 val apply_rewrite_mov : bool ref
 (** [true] to apply rewriting based on mov statements *)
