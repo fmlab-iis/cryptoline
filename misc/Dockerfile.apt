@@ -1,5 +1,7 @@
 FROM ubuntu:23.04
 
+SHELL ["/bin/bash", "-l", "-c"]
+
 # Install Ubuntu packages
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
@@ -30,8 +32,9 @@ RUN ./configure && make && make install
 # Install CryptoLine
 WORKDIR /home/cryptoline
 # Default installation of camlidl from apt is not compatible with dune
-RUN echo "export OCAMLPATH=`ocamlfind query apron`/.." >> ~/.bashrc
-RUN mkdir -p $OCAMLPATH/camlidl/caml \
+RUN echo "export OCAMLPATH=`ocamlfind query apron`/.." >> ~/.bashrc \
+    && export OCAMLPATH=`ocamlfind query apron`/.. \
+    && mkdir -p $OCAMLPATH/camlidl/caml \
     && cp `ocamlc -where`/com.* $OCAMLPATH/camlidl/ \
     && cp `ocamlc -where`/libcamlidl.a $OCAMLPATH/camlidl/ \
     && cp `ocamlc -where`/caml/camlidlruntime.h $OCAMLPATH/camlidl/caml/ \
