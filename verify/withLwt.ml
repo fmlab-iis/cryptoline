@@ -444,7 +444,7 @@ let write_maple_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_ppl_input ?comments ifile ivars cvars constrs =
+let write_ppl_input ?comments ifile ivars cvars var_ranges constrs =
   let ppl_variables start vars =
     String.concat "\n"
       (List.mapi (fun i v ->
@@ -463,7 +463,7 @@ let write_ppl_input ?comments ifile ivars cvars constrs =
     ^ (ppl_variables (List.length ivars) cvars) ^ "\n"
     ^ "mip = MIP_Problem(" ^
            string_of_int (List.length ivars + List.length cvars) ^ ")\n"
-    ^ ppl_constraints "mip" constrs ^ "\n"
+    ^ ppl_constraints "mip" (List.rev_append var_ranges constrs) ^ "\n"
     ^ "mip.add_to_integer_space_dimensions(ivars)\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
@@ -845,29 +845,28 @@ let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
   Lwt.return (res = "unsat")
 
 let is_constrs_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
-      ivars cvars constrs =
-  let ifile = tmpfile "inputf_" "" in
-  let ofile = tmpfile "outputfgb_" "" in
+      ivars cvars var_ranges constrs =
+  let ifile = tmpfile "inputfmip_" "" in
+  let ofile = tmpfile "outputfmip_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   match solver with
   | PPL ->
      let ifile = ifile ^ ".py" in
-     let%lwt _ = write_ppl_input ~comments ifile ivars cvars constrs in
+     let%lwt _ = write_ppl_input ~comments ifile ivars cvars var_ranges constrs in
      let%lwt _ = run_ppl headers ifile ofile in
      let%lwt res = read_ppl_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
      Lwt.return (res = "False")
   | _ -> failwith "Algebraic range condition needs PPL solver."
-  
 
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_mip ?comments headers vgen s =
-  let (_, constrss, ivars, cvars) = mip_of_espec vgen s in
+  let (_, constrss, ivars, cvars, var_ranges) = mip_of_espec vgen s in
   let solver =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   let helper constrs =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constrs_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers ivars cvars constrs in
+    is_constrs_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers ivars cvars var_ranges constrs in
   Lwt_list.for_all_p helper constrss
 
 (*

@@ -6,7 +6,8 @@ let z_pow_2 n = Z.pow (Z.of_int 2) n
 let var_range v =
   let t_size = size_of_var v in
   if var_is_unsigned v then
-    [ele (econst Z.zero) (evar v); elt (evar v) (econst (z_pow_2 t_size))]
+    if t_size = 0 then []
+    else [ele (econst Z.zero) (evar v); elt (evar v) (econst (z_pow_2 t_size))]
   else
     [ele (econst (Z.neg (z_pow_2 (pred t_size)))) (evar v);
      elt (evar v) (econst (z_pow_2 (pred t_size)))]
@@ -71,87 +72,69 @@ let convert_post vgen pre_prog_constr post ivars  =
    - int_vars: integer variables
    - cont_vars: continuous variables
  *)
-let bv2mip (vgen, constrs, ivars, cvars) i =
+let bv2mip (vgen, constrs, ivars) i =
   let eexp_atom = Cas.bv2z_atom in
   let eexp_assign v e = eeq (evar v) e in
   let emulpow2 e n = emul' (econst (z_pow_2 n)) e in
   let emaddpow2 e0 e1 n = eadd' e0 (emulpow2 e1 n) in
   match i with
   | Imov (v, a) -> (* v == a *)
-     (vgen, eexp_assign v (eexp_atom a)::constrs, ivars, v::cvars)
+     (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
   | Ishl (v, a, n) -> (* v == a * 2**n *)
       if atom_is_const n then
         let c = Z.to_int (const_of_atom n) in
-        (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs,
-         ivars, v::cvars)
+        (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs, ivars)
       else
-        (vgen, constrs, ivars, v::cvars)
+        (vgen, constrs, ivars)
   | Ishr (v, a, n) ->
      if atom_is_const n then
-       if atom_is_signed a then
-         (* CHECK *)
-         (* 0 <= tmp0 < 2**|a|,
-            tmp0 == a + 2**|a| * tmp1, 2**n * v == tmp0 *)
-         let sizea = size_of_atom a in
-         let c = Z.to_int (const_of_atom n) in
-         let (vgen', tmp0) =
-           new_tmp_var vgen (typ_to_unsigned (typ_of_atom a)) in
-         let (vgen'', tmp1) = new_tmp_var vgen' (uint_t 1) in
-         (vgen'', eexp_assign tmp0
-                    (emaddpow2 (eexp_atom a) (evar tmp1) sizea)::
-                    eeq (emulpow2 (evar v) c) (evar tmp0)::constrs,
-          tmp1::ivars, v::cvars)
-       else
-         (* 2**n * v == a *)
-         let c = Z.to_int (const_of_atom n) in
-         (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs,
-          ivars, v::cvars)
+       (* 2**n * v == a *)
+       let c = Z.to_int (const_of_atom n) in
+       (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
      else
-       (vgen, constrs, ivars, v::cvars)
+       (vgen, constrs, ivars)
   | Isar (v, a, n) -> (* v * 2**n == a *)
       if atom_is_const n then
         let c = Z.to_int (const_of_atom n) in
-        (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs,
-         ivars, v::cvars)
+        (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
       else
-        (vgen, constrs, ivars, v::cvars)
-  | Inondet v -> (vgen, constrs, ivars, v::cvars)
+        (vgen, constrs, ivars)
+  | Inondet _ -> (vgen, constrs, ivars)
   | Iadd (v, a0, a1) -> (* v == a0 + a1 *)
      (vgen, eexp_assign v (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
-      ivars, v::cvars)
+      ivars)
   | Iadds (c, v, a0, a1) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
        (* v + 2**|v| * c == a0 + a1 *)
        (vgen, eeq (emaddpow2 (evar v) (evar c) sizev)
                 (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
-        c::ivars, v::cvars)
+        c::ivars)
      else
        (* v + 2**|v| * tmp == a0 + a1 *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen', eeq (emaddpow2 (evar v) (evar tmp) sizev)
                  (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
-        tmp::ivars, v::cvars)
+        tmp::ivars)
   | Iadc (v, a0, a1, y) -> (* v == a0 + a1 + y *)
      (vgen, eexp_assign v
               (eadds' [eexp_atom a0; eexp_atom a1; eexp_atom y])::constrs,
-      ivars, v::cvars)
+      ivars)
   | Iadcs (c, v, a0, a1, y) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
        (* v + 2**|v| * c == a0 + a1 + y *)
        (vgen, eeq (emaddpow2 (evar v) (evar c) sizev)
                 (eadds' [eexp_atom a0; eexp_atom a1; eexp_atom y])::constrs,
-        c::ivars, v::ivars)
+        c::ivars)
      else
        (* v + 2**|v| * tmp == a0 + a1 + y *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen', eeq (emaddpow2 (evar v) (evar tmp) sizev)
                  (eadds' [eexp_atom a0; eexp_atom a1; eexp_atom y])::constrs,
-        tmp::ivars, v::cvars)
+        tmp::ivars)
   | Isub (v, a0, a1) -> (* v + a1 == a0 *)
-     (vgen, eeq (eadd' (evar v) (eexp_atom a1)) (eexp_atom a0)::constrs,
-      ivars, v::cvars)
+     (vgen, eeq (eadd' (evar v) (eexp_atom a1)) (eexp_atom a0)::constrs, ivars)
   | Isubc (c, v, a0, a1) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
@@ -159,30 +142,30 @@ let bv2mip (vgen, constrs, ivars, cvars) i =
        (vgen,
         eeq (eadd' (evar v) (emaddpow2 (eexp_atom a1) (evar c) sizev))
           (eadd' (eexp_atom a0) (econst (z_pow_2 sizev)))::constrs,
-        c::ivars, v::cvars)
+        c::ivars)
      else
        (* v + a1 + 2**|v| * tmp == a0 *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen',
         eeq (eadd' (evar v) (emaddpow2 (eexp_atom a1) (evar tmp) sizev))
-          (eexp_atom a0)::constrs, tmp::c::ivars, v::cvars)
+          (eexp_atom a0)::constrs,
+        tmp::c::ivars)
   | Isubb (b, v, a0, a1) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
        (* v + a1 == a0 + 2**|v| * b *)
        (vgen, eeq (eadd' (evar v) (eexp_atom a1))
                 (emaddpow2 (eexp_atom a0) (evar b) sizev)::constrs,
-        b::ivars, v::cvars)
+        b::ivars)
      else
        (* v + a1 == a0 + 2**|v| * tmp *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen', eeq (eadd' (evar v) (eexp_atom a1))
                  (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs,
-        tmp::b::ivars, v::cvars)
+        tmp::b::ivars)
   | Isbc (v, a0, a1, y) -> (* v + a1 + 1 == a0 + y *)
      (vgen, eeq (eadds' [evar v; eexp_atom a1; econst Z.one])
-              (eadd' (eexp_atom a0) (eexp_atom y))::constrs,
-      ivars, v::cvars)
+              (eadd' (eexp_atom a0) (eexp_atom y))::constrs, ivars)
   | Isbcs (c, v, a0, a1, y) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
@@ -191,65 +174,96 @@ let bv2mip (vgen, constrs, ivars, cvars) i =
         eeq (eadds' [evar v; emaddpow2 (eexp_atom a1) (evar c) sizev;
                      econst Z.one])
           (eadds' [eexp_atom a0; econst (z_pow_2 sizev); eexp_atom y])::
-          constrs,
-        c::ivars, v::cvars)
+          constrs, c::ivars)
      else
        (* v + a1 + 2**|v| * tmp + 1 == a0 + y *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen',
         eeq (eadds' [evar v; emaddpow2 (eexp_atom a1) (evar tmp) sizev;
                      econst Z.one])
-          (eadd' (eexp_atom a0) (eexp_atom y))::constrs,
-        tmp::c::ivars, v::cvars)
+          (eadd' (eexp_atom a0) (eexp_atom y))::constrs, tmp::c::ivars)
   | Isbb (v, a0, a1, y) -> (* v + a1 + y == a0 *)
      (vgen, eeq (eadds' [evar v; eexp_atom a1; eexp_atom y])
-              (eexp_atom a0)::constrs,
-      ivars, v::cvars)
+              (eexp_atom a0)::constrs, ivars)
   | Isbbs (b, v, a0, a1, y) ->
      let sizev = size_of_var v in
      if var_is_unsigned v then
        (* v + a1 + y == a0 + 2**|v| * b *)
        (vgen, eeq (eadds' [evar v; eexp_atom a1; eexp_atom y])
-                (emaddpow2 (eexp_atom a0) (evar b) sizev)::constrs,
-        b::ivars, v::cvars)
+                (emaddpow2 (eexp_atom a0) (evar b) sizev)::constrs, b::ivars)
      else
        (* v + a1 + y == a0 + 2**|v| * tmp *)
        let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
        (vgen',
         eeq (eadds' [evar v; eexp_atom a1; eexp_atom y])
-          (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs,
-        tmp::b::ivars, v::cvars)
+          (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs, tmp::b::ivars)
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
-     (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs,
-      ivars, v::cvars)
+     (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
-              (emul' (eexp_atom a0) (eexp_atom a1))::constrs,
-      vh::ivars, vl::cvars)
+              (emul' (eexp_atom a0) (eexp_atom a1))::constrs, vh::ivars)
   | Ispl (vh, vl, a, n)
   | Isplit (vh, vl, a, n) -> (* vh * 2**n + vl == a *)
      let c = Z.to_int n in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) c) (eexp_atom a)::constrs,
-      vh::ivars, vl::cvars)
+      vh::ivars)
   | Ivpc (v, a) -> (* v == a *)
-     (vgen, eeq (evar v) (eexp_atom a)::constrs, ivars, v::cvars)
+     (vgen, eeq (evar v) (eexp_atom a)::constrs, ivars)
   | Ijoin (v, a0, a1) -> (* v = a0 * 2**|a1| + a1 *)
      let tsize1 = size_of_atom a1 in
      (vgen, eexp_assign v
-              (emaddpow2 (eexp_atom a1) (eexp_atom a0) tsize1)::constrs,
-      ivars, v::cvars)
-  | Iseteq (v, _, _) | Isetne (v, _, _)
-  | Inot (v, _) | Iand (v, _, _) | Ior (v, _, _) | Ixor (v, _, _) ->
-     (vgen, constrs, ivars, v::cvars)
-  | Iassert _ | Inop -> (vgen, constrs, ivars, cvars)
+              (emaddpow2 (eexp_atom a1) (eexp_atom a0) tsize1)::constrs, ivars)
+  | Iseteq (_, _, _) | Isetne (_, _, _)
+  | Inot (_, _) | Iand (_, _, _) | Ior (_, _, _) | Ixor (_, _, _) ->
+     (vgen, constrs, ivars)
+  | Iassert _ | Inop -> (vgen, constrs, ivars)
   | Iassume (e, _) | Ighost (_, (e, _)) ->
      let (vgen', constrs', ivars') =
        split_and_convert_eqmod vgen constrs e ivars in
-     (vgen', constrs', ivars', cvars)
+     (vgen', constrs', ivars')
+  | Icast (l, v, a) ->
+     (match typ_of_var v, typ_of_atom a with
+      | Tuint wv, Tuint wa ->
+         if wv >= wa then (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
+         else
+           let (vgen', tmp) = match l with
+             | None -> new_tmp_var vgen (uint_t (wa - wv))
+             | Some t -> (vgen, t) in
+           (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
+                     constrs, tmp::ivars)
+      | Tuint wv, Tsint wa ->
+         if wv >= wa then
+           let (vgen', tmp) = match l with
+             | None -> new_tmp_var vgen (uint_t 1)
+             | Some t -> (vgen, t) in
+           (vgen', eexp_assign v (emaddpow2 (eexp_atom a) (evar tmp) wv)::
+                     constrs, tmp::ivars)
+         else
+           let (vgen', tmp) = match l with
+             | None -> new_tmp_var vgen (int_t (wa - wv))
+             | Some t -> (vgen, t) in
+           (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
+                     constrs, tmp::ivars)
+      | Tsint wv, Tuint wa ->
+         if wv > wa then (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
+         else
+           let (vgen', tmp) = match l with
+             | None -> new_tmp_var vgen (uint_t (wa - wv + 1))
+             | Some t -> (vgen, t) in
+           (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
+                     constrs, tmp::ivars)
+      | Tsint wv, Tsint wa ->
+         if wv >= wa then (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
+         else
+           let (vgen', tmp) = match l with
+             | None -> new_tmp_var vgen (int_t (wa - wv + 1))
+             | Some t -> (vgen, t) in
+           (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
+                     constrs, tmp::ivars))
   | Icut (_::_, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
-  | Icut _ -> (vgen, constrs, ivars, cvars)
+  | Icut _ -> (vgen, constrs, ivars)
   | _ -> failwith "unfinished"
 (*
   | Ishls (l, v, a, n) ->
@@ -263,21 +277,26 @@ let bv2mip (vgen, constrs, ivars, cvars) i =
   | Iror (v, a, n) ->
   | Icmov (v, c, a0, a1) ->
   | Imuls (l, v, a0, a1) ->
-  | Icast (l, v, a) ->
 *)
 
 let of_espec vgen es =
   let (vgen', pre_constr, ivars) =
     split_and_convert_eqmod vgen [] es.espre [] in
-  let pre_vars = vars_ebexp es.espre in
-  let (vgen'', rev_constr, ivars', cvars) =
-    List.fold_left bv2mip (vgen', pre_constr, ivars, VS.elements pre_vars)
-      es.esprog in
+  let (vgen'', rev_constr, ivars') =
+    List.fold_left bv2mip (vgen', pre_constr, ivars) es.esprog in
   let post =
     match es.espost with
     | [ (p, _) ] -> p | _ -> failwith "Internal error: single algebraic post-condition is expected (Mip.of_espec)" in
   let (vgen''', constrs, ivars'') =
     convert_post vgen'' rev_constr post ivars' in
   let constrs' = List.rev_map Rewrite.rewrite_ebexps constrs |> List.rev in
-  (vgen''', constrs', ivars'', cvars)
+  let cvars =
+    let all_var_set =
+      VS.union (vars_program es.esprog)
+        (VS.union (vars_ebexp es.espre) (vars_ebexp post)) in
+    let ivar_set = VS.of_list ivars'' in
+    VS.elements (VS.diff all_var_set ivar_set) in
+  let var_ranges =
+    List.flatten (List.rev_map var_range (List.rev_append ivars'' cvars)) in
+  (vgen''', constrs', ivars'', cvars, var_ranges)
 

@@ -489,6 +489,35 @@ let write_maple_input ?comments ifile vars gen p =
   trace_file ifile;
   trace ""
 
+let write_ppl_input ?comments ifile ivars cvars var_ranges constrs =
+  let ppl_variables start vars =
+    String.concat "\n"
+      (List.mapi (fun i v ->
+           (string_of_var v) ^
+             " = Variable(" ^ (string_of_int (start+i)) ^ ")") vars) in
+  let ppl_constraints mip constrs =
+    String.concat "\n"
+      (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
+         constrs) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from ppl import MIP_Problem, Variable, Variables_Set\n"
+    ^ (ppl_variables 0 ivars) ^ "\n"
+    ^ "ivars = Variables_Set(0, " ^ string_of_int (List.length ivars-1) ^ ")\n"
+    ^ (ppl_variables (List.length ivars) cvars) ^ "\n"
+    ^ "mip = MIP_Problem(" ^
+           string_of_int (List.length ivars + List.length cvars) ^ ")\n"
+    ^ ppl_constraints "mip" (List.rev_append var_ranges constrs) ^ "\n"
+    ^ "mip.add_to_integer_space_dimensions(ivars)\n"
+    ^ "print(mip.is_satisfiable())\n"
+    ^ "exit()\n" in
+  let ch = open_out ifile in
+  let _ = output_string ch input_text; close_out ch in
+  trace "INPUT TO PYPPL:";
+  trace_file ifile;
+  trace ""
+
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
@@ -540,6 +569,15 @@ let run_maple ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of Maple: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM MAPLE:";
+  trace_file ofile;
+  trace ""
+
+let run_ppl ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  trace ("Execution time of PYPPL: " ^ string_of_running_time t1 t2);
+  trace "OUTPUT FROM PYPPL:";
   trace_file ofile;
   trace ""
 
@@ -599,6 +637,8 @@ let read_mathematica_output = read_one_line
 let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
+
+let read_ppl_output = read_one_line
 
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
@@ -755,19 +795,31 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
   let _ = cleanup [ifile; ofile] in
   res
 
+let is_constrs_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
+      ivars cvars var_ranges constrs =
+  let ifile = tmpfile "inputf_" "" in
+  let ofile = tmpfile "outputfgb_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  match solver with
+  | PPL ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_ppl_input ~comments ifile ivars cvars var_ranges constrs in
+     let _ = run_ppl ifile ofile in
+     let res = read_ppl_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "False"
+  | _ -> failwith "Algebraic range condition needs PPL solver."
+
 (* Verify an algebraic specification using a mixed integer programming solver.
     *)
-let verify_espec_single_conjunct_mip ?comments _vgen s =
-  let ifile = tmpfile "inputmip_" ".py" in
-  let ofile = tmpfile "outputmip_" "" in
-  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
-                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
-  let _ =
-    let ch = open_out ifile in
-    let _ = if !debug then output_string ch comments in
-    let _ = close_out ch in
-    () in
-  failwith "PPL solver is not implemented."
+let verify_espec_single_conjunct_mip ?comments vgen s =
+  let (_, constrss, ivars, cvars, var_ranges) = mip_of_espec vgen s in
+  let solver =
+    algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
+  let helper constrs =
+    let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
+    is_constrs_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver ivars cvars var_ranges constrs in
+  List.for_all helper constrss
 
 (* Verify an algebraic specification. The solver used can be specified in the
    prove-with clauses of the specification.

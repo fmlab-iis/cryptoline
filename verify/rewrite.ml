@@ -277,15 +277,23 @@ let rewrite_ebexps ebexps =
     | Econst _ -> true
     | Eunop (_, e') -> is_const e'
     | Ebinop (_, e0, e1) -> is_const e0 && is_const e1 in
-  let rec helper res current =
+  let rec helper (em, rvs) res current =
     match current with
     | (Eeq (Evar v, e) as hd)::tl | (Eeq (e, Evar v) as hd)::tl ->
-       if is_const e then
-         let em = VM.add v e VM.empty in
-         helper res (List.rev_map (subst_ebexp em) tl |> List.rev)
+       if (* true || *) is_const e then
+         if VS.mem v rvs then
+           let em' = VM.add v e VM.empty in
+           let rvs' = VS.empty in
+           helper (em', rvs') (List.rev_map (subst_ebexp em) res |> List.rev)
+             (List.rev_map (subst_ebexp em) tl |> List.rev)
+         else
+           let em' = VM.add v e em in
+           let rvs' = VS.union rvs (vars_eexp e) in
+           helper (em', rvs') res tl
        else
-         helper (hd::res) tl
-    | hd::tl -> helper (hd::res) tl
+         helper (em, rvs) (hd::res) tl
+    | Etrue::tl -> helper (em, rvs) res tl
+    | hd::tl -> helper (em, rvs) (hd::res) tl
     | [] -> res in
-  helper [] ebexps |> List.rev
+  helper (VM.empty, VS.empty) [] ebexps |> List.rev
 

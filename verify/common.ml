@@ -317,6 +317,10 @@ let redlog_of_espec es =
 let mip_of_espec = Mip.of_espec
 
 let rec ppl_of_eexp e =
+  let ppl_symbol_of_ebinop op =
+    match op with
+    | Esub -> "+ (-1) *"
+    | _ -> algebra_symbol_of_ebinop op in
   match e with
   | Evar v -> string_of_var v
   | Econst n -> Z.to_string n
@@ -329,17 +333,17 @@ let rec ppl_of_eexp e =
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then ppl_of_eexp e1
       else "(" ^ ppl_of_eexp e1 ^ ")")
-     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ " " ^ ppl_symbol_of_ebinop op ^ " "
      ^ (if ebinop_eexp_open op e2 then ppl_of_eexp e2
         else "(" ^ ppl_of_eexp e2 ^ ")")
 
 let ppl_of_ebexp eb =
   match eb with
-  | Etrue -> ""
   | Eeq (e0, e1) -> ppl_of_eexp e0 ^ " == " ^ ppl_of_eexp e1
   | Ecmp (Elt, e0, e1) -> ppl_of_eexp e0 ^ " <= " ^ ppl_of_eexp e1 ^ " - 1"
   | Ecmp (Ele, e0, e1) -> ppl_of_eexp e0 ^ " <= " ^ ppl_of_eexp e1
   | Ecmp (Egt, e0, e1) -> ppl_of_eexp e0 ^ " >= " ^ ppl_of_eexp e1 ^ " + 1"
   | Ecmp (Ege, e0, e1) -> ppl_of_eexp e0 ^ " >= " ^ ppl_of_eexp e1
-  | Eeqmod _ | Eand _ -> failwith "Internal error: Eeqmod and Eand are not allowed in ppl_of_ebexp"
+  | Etrue | Eeqmod _ | Eand _ ->
+     failwith "Internal error: Etrue, Eeqmod, and Eand are not allowed in ppl_of_ebexp"
 
