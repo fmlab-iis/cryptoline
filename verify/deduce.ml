@@ -160,11 +160,11 @@ let simple_rewrite all_eqns l r =
       | None -> (None, [])
       | Some edges ->
          match e with
-         | Etrue -> (dep, eqns)
+         | Etrue | Ecmp _ -> (dep, eqns)
          | Eeq (l, r) | Eeqmod (l, r, _) ->
             (add_edges l r edges, add_eqns l r eqns)
          | _ ->
-            failwith ("simple_rewrite does not conjunctive equations: " ^
+            failwith ("simple_rewrite does not support conjunctive equations: " ^
                       (string_of_ebexp e)) in
     List.fold_left helper (Some [], []) all_eqns in
   let do_rewrite order rules e =

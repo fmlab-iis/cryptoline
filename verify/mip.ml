@@ -1,5 +1,6 @@
 
 open Ast.Cryptoline
+open Utils.Std
 
 (* uint0 denotes exact integers *)
 let z_pow_2 n = Z.pow (Z.of_int 2) n
@@ -13,6 +14,36 @@ let var_range v =
      elt (evar v) (econst (z_pow_2 (pred t_size)))]
 
 let new_tmp_var = Cas.mk_newvar
+
+let rec is_const_eexp e =
+  match e with
+  | Evar _ -> false
+  | Econst _ -> true
+  | Eunop (_, e') -> is_const_eexp e'
+  | Ebinop (_, e0, e1) -> is_const_eexp e0 && is_const_eexp e1
+
+let rec is_linear_eexp e =
+  match e with
+  | Evar _ | Econst _ -> true
+  | Eunop (_, e') -> is_linear_eexp e'
+  | Ebinop (Eadd, e0, e1) | Ebinop (Esub, e0, e1) ->
+     is_linear_eexp e0 && is_linear_eexp e1
+  | Ebinop (Emul, e0, e1) ->
+     let e0_const = is_const_eexp e0 in
+     let e1_const = is_const_eexp e1 in
+     (e0_const && e1_const) || (e0_const && is_linear_eexp e1) ||
+       (e1_const && is_linear_eexp e0)
+  | Ebinop (Epow, e0, Econst z) ->
+     z = Z.zero || (z = Z.one && is_linear_eexp e0)
+  | Ebinop (Epow, e0, _) -> is_const_eexp e0
+
+let is_linear_ebexp b =
+  match b with
+  | Etrue -> true
+  | Eeq (e0, e1) | Ecmp (_, e0, e1) -> is_linear_eexp e0 && is_linear_eexp e1
+  | Eeqmod (e0, e1, ms) ->
+     List.for_all is_const_eexp ms && is_linear_eexp e0 && is_linear_eexp e1
+  | Eand _ -> failwith "Internal error: conjunctive algebraic Boolean expressions are not allowed in is_linear_ebexp"
 
 (* convert_moduli vgen [m0; m1; ...; mk] ivars returns a new generator,
    m0*t0+m1*t1+...+mk*tk, and adds [t0; t1; ...; tk] to ivars *)
@@ -290,6 +321,8 @@ let of_espec vgen es =
   let (vgen''', constrs, ivars'') =
     convert_post vgen'' rev_constr post ivars' in
   let constrs' = List.rev_map Rewrite.rewrite_ebexps constrs |> List.rev in
+  let linear_constrs =
+    tmap (tfilter is_linear_ebexp) constrs' in
   let cvars =
     let all_var_set =
       VS.union (vars_program es.esprog)
@@ -298,5 +331,5 @@ let of_espec vgen es =
     VS.elements (VS.diff all_var_set ivar_set) in
   let var_ranges =
     List.flatten (List.rev_map var_range (List.rev_append ivars'' cvars)) in
-  (vgen''', constrs', ivars'', cvars, var_ranges)
+  (vgen''', linear_constrs, ivars'', cvars, var_ranges)
 

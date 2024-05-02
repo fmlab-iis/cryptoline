@@ -63,6 +63,9 @@ let tappend xs ys = List.rev_append (List.rev xs) ys
 
 let tmap f xs = List.rev_map f xs |> List.rev
 
+let tfilter f xs =
+  List.fold_left (fun res x -> if f x then x::res else res) [] xs |> List.rev
+
 let (@@) ls1 ls2 = tappend ls1 ls2
 
 let rcons xs x = List.rev (x::List.rev xs)

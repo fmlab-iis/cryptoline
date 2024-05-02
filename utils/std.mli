@@ -55,7 +55,10 @@ val tappend : 'a list -> 'a list -> 'a list
 (** A tail-recursive concatenation of two lists *)
 
 val tmap : ('a -> 'b) -> 'a list -> 'b list
-(** A tail-recutsive version of [List.map] *)
+(** A tail-recursive version of [List.map] *)
+
+val tfilter : ('a -> bool) -> 'a list -> 'a list
+(** A tail-recursive version of [List.filter] *)
 
 val (@@) : 'a list -> 'a list -> 'a list
 (** [l1 @@ l2] is [tappend l1 l2]. *)
