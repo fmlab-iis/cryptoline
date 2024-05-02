@@ -797,8 +797,8 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
 
 let is_constrs_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
       ivars cvars var_ranges constrs =
-  let ifile = tmpfile "inputf_" "" in
-  let ofile = tmpfile "outputfgb_" "" in
+  let ifile = tmpfile "inputfimp_" "" in
+  let ofile = tmpfile "outputfimp_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   match solver with
   | PPL ->

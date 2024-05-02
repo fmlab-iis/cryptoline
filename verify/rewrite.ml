@@ -283,9 +283,9 @@ let rewrite_ebexps ebexps =
        if (* true || *) is_const e then
          if VS.mem v rvs then
            let em' = VM.add v e VM.empty in
-           let rvs' = VS.empty in
-           helper (em', rvs') (List.rev_map (subst_ebexp em) res |> List.rev)
-             (List.rev_map (subst_ebexp em) tl |> List.rev)
+           let rvs' = vars_eexp e in
+           helper (em', rvs') (tmap (subst_ebexp em) res)
+             (tmap (subst_ebexp em) tl)
          else
            let em' = VM.add v e em in
            let rvs' = VS.union rvs (vars_eexp e) in
