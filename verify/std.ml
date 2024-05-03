@@ -489,16 +489,16 @@ let write_maple_input ?comments ifile vars gen p =
   trace_file ifile;
   trace ""
 
-let write_ppl_input ?comments ifile ivars cvars var_ranges constrs =
+let write_ppl_input ?comments ifile ivars cvars constr =
   let ppl_variables start vars =
     String.concat "\n"
       (List.mapi (fun i v ->
            (string_of_var v) ^
              " = Variable(" ^ (string_of_int (start+i)) ^ ")") vars) in
-  let ppl_constraints mip constrs =
+  let ppl_constraints mip constr =
     String.concat "\n"
       (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
-         constrs) in
+         constr) in
   let input_text =
     let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
     comment
@@ -508,7 +508,7 @@ let write_ppl_input ?comments ifile ivars cvars var_ranges constrs =
     ^ (ppl_variables (List.length ivars) cvars) ^ "\n"
     ^ "mip = MIP_Problem(" ^
            string_of_int (List.length ivars + List.length cvars) ^ ")\n"
-    ^ ppl_constraints "mip" (List.rev_append var_ranges constrs) ^ "\n"
+    ^ ppl_constraints "mip" constr ^ "\n"
     ^ "mip.add_to_integer_space_dimensions(ivars)\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
@@ -795,15 +795,15 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
   let _ = cleanup [ifile; ofile] in
   res
 
-let is_constrs_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
-      ivars cvars var_ranges constrs =
+let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
+      ivars cvars constr =
   let ifile = tmpfile "inputfimp_" "" in
   let ofile = tmpfile "outputfimp_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   match solver with
   | PPL ->
      let ifile = ifile ^ ".py" in
-     let _ = write_ppl_input ~comments ifile ivars cvars var_ranges constrs in
+     let _ = write_ppl_input ~comments ifile ivars cvars constr in
      let _ = run_ppl ifile ofile in
      let res = read_ppl_output ofile in
      let _ = cleanup [ifile; ofile] in
@@ -813,13 +813,13 @@ let is_constrs_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
 (* Verify an algebraic specification using a mixed integer programming solver.
     *)
 let verify_espec_single_conjunct_mip ?comments vgen s =
-  let (_, constrss, ivars, cvars, var_ranges) = mip_of_espec vgen s in
+  let (_, vars_constrs) = mip_of_espec vgen s in
   let solver =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-  let helper constrs =
+  let helper (ivars, cvars, constr) =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constrs_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver ivars cvars var_ranges constrs in
-  List.for_all helper constrss
+    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver ivars cvars constr in
+  List.for_all helper vars_constrs
 
 (* Verify an algebraic specification. The solver used can be specified in the
    prove-with clauses of the specification.

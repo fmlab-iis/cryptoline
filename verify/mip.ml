@@ -45,6 +45,22 @@ let is_linear_ebexp b =
      List.for_all is_const_eexp ms && is_linear_eexp e0 && is_linear_eexp e1
   | Eand _ -> failwith "Internal error: conjunctive algebraic Boolean expressions are not allowed in is_linear_ebexp"
 
+let slicing_constr vars constr =
+  let constr_vars = tmap vars_ebexp constr in
+  let rec helper again res finished todo =
+    match todo with
+    | hd::tl -> if VS.is_empty (VS.inter res hd)
+                then helper again res (hd::finished) tl
+                else helper true (VS.union res hd) finished tl
+    | _ -> if again then helper false res [] (List.rev finished)
+           else res in
+  let relevant_vars = helper false vars [] (List.rev constr_vars) in
+  let rev_ret =
+    List.fold_left2 (fun res vs b ->
+        if VS.is_empty (VS.inter relevant_vars vs) then res else b::res)
+      [] constr_vars constr in
+  (relevant_vars, List.rev rev_ret)
+
 (* convert_moduli vgen [m0; m1; ...; mk] ivars returns a new generator,
    m0*t0+m1*t1+...+mk*tk, and adds [t0; t1; ...; tk] to ivars *)
 let convert_moduli vgen mods ivars =
@@ -76,8 +92,8 @@ let convert_post vgen pre_prog_constr post ivars  =
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
      let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
      (vgen',
-      [List.rev (tmp_gt_0::eeq (eadd' e0 (evar tmp)) e1::pre_prog_constr);
-       List.rev (tmp_gt_0::eeq e0 (eadd' e1 (evar tmp))::pre_prog_constr)],
+      [List.rev (eeq (eadd' e0 (evar tmp)) e1::tmp_gt_0::pre_prog_constr);
+       List.rev (eeq e0 (eadd' e1 (evar tmp))::tmp_gt_0::pre_prog_constr)],
       tmp::ivars)
   | Eeqmod (e0, e1, ms) ->
      let (vgen', lmods, ivars') = convert_moduli vgen ms ivars in
@@ -320,16 +336,18 @@ let of_espec vgen es =
     | [ (p, _) ] -> p | _ -> failwith "Internal error: single algebraic post-condition is expected (Mip.of_espec)" in
   let (vgen''', constrs, ivars'') =
     convert_post vgen'' rev_constr post ivars' in
-  let constrs' = List.rev_map Rewrite.rewrite_ebexps constrs |> List.rev in
-  let linear_constrs =
-    tmap (tfilter is_linear_ebexp) constrs' in
-  let cvars =
-    let all_var_set =
-      VS.union (vars_program es.esprog)
-        (VS.union (vars_ebexp es.espre) (vars_ebexp post)) in
+  let constrs' = tmap Rewrite.rewrite_ebexps constrs in
+  let linear_constrs = tmap (tfilter is_linear_ebexp) constrs' in
+  let rel_vars_linear_constrs =
+    tmap (slicing_constr (vars_ebexp post)) linear_constrs in
+  let vars_linear_constrs =
     let ivar_set = VS.of_list ivars'' in
-    VS.elements (VS.diff all_var_set ivar_set) in
-  let var_ranges =
-    List.flatten (List.rev_map var_range (List.rev_append ivars'' cvars)) in
-  (vgen''', linear_constrs, ivars'', cvars, var_ranges)
+    tmap (fun (vars, constr) ->
+        let ivars = VS.elements (VS.inter ivar_set vars) in
+        let cvars = VS.elements (VS.diff vars ivar_set) in
+        let range_constr =
+          List.flatten (tmap var_range (List.rev_append ivars cvars)) in
+        (ivars, cvars, List.rev_append range_constr constr))
+      rel_vars_linear_constrs in
+  (vgen''', vars_linear_constrs)
 

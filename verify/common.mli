@@ -122,9 +122,11 @@ val safety_assumptions : Ast.Cryptoline.rbexp -> Ast.Cryptoline.program -> Qfbv.
  *)
 
 val mip_of_espec : var_gen -> Ast.Cryptoline.espec ->
-    var_gen * Ast.Cryptoline.ebexp list list *
-      Ast.Cryptoline.var list * Ast.Cryptoline.var list *
-        Ast.Cryptoline.ebexp list
+    var_gen *
+      (Ast.Cryptoline.var list *   (* integer variables *)
+       Ast.Cryptoline.var list *   (* rational variables *)
+       Ast.Cryptoline.ebexp list)  (* constraints *)
+        list
 (**
    Convert an espec to mixed integer programming problems with integer
    and continuous variable lists
