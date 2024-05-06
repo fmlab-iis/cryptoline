@@ -34,7 +34,7 @@ let rec is_linear_eexp e =
      (e0_const && e1_const) || (e0_const && is_linear_eexp e1) ||
        (e1_const && is_linear_eexp e0)
   | Ebinop (Epow, e0, Econst z) ->
-     z = Z.zero || (z = Z.one && is_linear_eexp e0)
+     z = Z.zero || is_const_eexp e0 || (z = Z.one && is_linear_eexp e0)
   | Ebinop (Epow, e0, _) -> is_const_eexp e0
 
 let is_linear_ebexp b =

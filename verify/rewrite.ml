@@ -294,6 +294,6 @@ let rewrite_ebexps ebexps =
          helper (em, rvs) (hd::res) tl
     | Etrue::tl -> helper (em, rvs) res tl
     | hd::tl -> helper (em, rvs) (hd::res) tl
-    | [] -> res in
+    | [] -> tmap (subst_ebexp em) res in
   helper (VM.empty, VS.empty) [] ebexps |> List.rev
 
