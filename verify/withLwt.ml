@@ -458,13 +458,16 @@ let write_ppl_input ?comments ifile ivars cvars constr =
     let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
     comment
     ^ "from ppl import MIP_Problem, Variable, Variables_Set\n"
-    ^ (ppl_variables 0 ivars) ^ "\n"
-    ^ "ivars = Variables_Set(0, " ^ string_of_int (List.length ivars-1) ^ ")\n"
+    ^ if ivars = [] then ""
+      else (ppl_variables 0 ivars) ^ "\n"
+           ^ "ivars = Variables_Set(0, "
+           ^ string_of_int (List.length ivars-1) ^ ")\n"
     ^ (ppl_variables (List.length ivars) cvars) ^ "\n"
     ^ "mip = MIP_Problem(" ^
            string_of_int (List.length ivars + List.length cvars) ^ ")\n"
     ^ ppl_constraint "mip" constr ^ "\n"
-    ^ "mip.add_to_integer_space_dimensions(ivars)\n"
+    ^ if ivars = [] then ""
+      else "mip.add_to_integer_space_dimensions(ivars)\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
