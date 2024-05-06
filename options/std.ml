@@ -69,17 +69,20 @@ let parse_algebra_solver str =
 let apply_rewrite_mov = ref true
 let apply_rewrite_vpc = ref true
 let apply_rewrite_poly = ref true
+let apply_rewrite_eqmod = ref false
 let polys_rewrite_replace_eexp = ref false
 
 let disable_rewriting () =
   apply_rewrite_mov := false;
   apply_rewrite_vpc := false;
-  apply_rewrite_poly := false
+  apply_rewrite_poly := false;
+  apply_rewrite_eqmod := false
 
 let enable_rewriting () =
   apply_rewrite_mov := true;
   apply_rewrite_vpc := true;
-  apply_rewrite_poly := true
+  apply_rewrite_poly := true;
+  apply_rewrite_eqmod := false
 
 let apply_slicing = ref false
 

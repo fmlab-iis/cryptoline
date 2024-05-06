@@ -52,6 +52,7 @@ let args_verifier =
     ("-disable_rewriting:mov", Clear apply_rewrite_mov, mk_arg_desc([""; "Disable rewriting based on mov statements"]));
     ("-disable_rewriting:vpc", Clear apply_rewrite_vpc, mk_arg_desc([""; "Disable rewriting based on vpc statements"]));
     ("-disable_rewriting:poly", Clear apply_rewrite_poly, mk_arg_desc([""; "Disable rewriting polynomials"]));
+    ("-enable_rewriting:eqmod", Set apply_rewrite_eqmod, mk_arg_desc([""; "Enable rewriting eqmod"]));
     ("-expand-poly", Set Options.Std.expand_poly, mk_arg_desc([""; "Expand polynomials before sending them to computer algebra systems"; "(experimental)"]));
     ("-implicit-const-conversion", Set implicit_const_conversion, mk_arg_desc([""; "Implicitly convert constants to fit into their types"]));
     ("-isafety", Set incremental_safety, mk_arg_desc(["  Verify program safety incrementally."]));

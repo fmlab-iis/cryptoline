@@ -164,6 +164,9 @@ val apply_rewrite_vpc : bool ref
 val apply_rewrite_poly : bool ref
 (** [true] to apply rewriting polynomials *)
 
+val apply_rewrite_eqmod : bool ref
+(** [true] to apply rewriting modular equations *)
+
 val disable_rewriting : unit -> unit
 (** disable all rewriting *)
 

@@ -80,8 +80,11 @@ let split_and_convert_eqmod vgen res ebexp ivars =
     (fun (vgen, res, ivars) be ->
       match be with
       | Eeqmod (e0, e1, mods) ->
-         let (vgen', e, ivars') = convert_eqmod vgen e0 e1 mods ivars in
-         (vgen', e::res, ivars')
+         if !Options.Std.apply_rewrite_eqmod then
+           let (vgen', e, ivars') = convert_eqmod vgen e0 e1 mods ivars in
+           (vgen', e::res, ivars')
+         else
+           (vgen, res, ivars)
       | _ -> (vgen, be::res, ivars))
     (vgen, res, ivars) ebexps
 
@@ -96,15 +99,19 @@ let convert_post vgen pre_prog_constr post ivars  =
        List.rev (eeq e0 (eadd' e1 (evar tmp))::tmp_gt_0::pre_prog_constr)],
       tmp::ivars)
   | Eeqmod (e0, e1, ms) ->
-     let (vgen', lmods, ivars') = convert_moduli vgen ms ivars in
-     let (vgen'', tmp) = new_tmp_var vgen' (uint_t 0) in
-     let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
-     let pre_prog_tmp_constr = List.fold_left (fun res m -> elt (evar tmp) m::res)
-                     (tmp_gt_0::pre_prog_constr) ms in
-     (vgen'',
-      [List.rev (eeq e0 (eadds' [e1; (evar tmp); lmods])::pre_prog_tmp_constr);
-       List.rev (eeq (eadd' e0 (evar tmp)) (eadd' e1 lmods)::pre_prog_tmp_constr)],
-      tmp::ivars')
+     if !Options.Std.apply_rewrite_eqmod then
+       let (vgen', lmods, ivars') = convert_moduli vgen ms ivars in
+       let (vgen'', tmp) = new_tmp_var vgen' (uint_t 0) in
+       let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
+       let pre_prog_tmp_constr =
+         List.fold_left (fun res m -> elt (evar tmp) m::res)
+           (tmp_gt_0::pre_prog_constr) ms in
+       (vgen'',
+        [List.rev (eeq e0 (eadds' [e1; (evar tmp); lmods])::pre_prog_tmp_constr);
+         List.rev (eeq (eadd' e0 (evar tmp)) (eadd' e1 lmods)::pre_prog_tmp_constr)],
+        tmp::ivars')
+     else
+       (vgen, [pre_prog_constr], ivars)
   | Ecmp (op, e0, e1) ->
      (match op with
       | Elt -> (vgen, [List.rev (ege e0 e1::pre_prog_constr)], ivars)
