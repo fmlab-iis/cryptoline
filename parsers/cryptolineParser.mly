@@ -31,7 +31,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
-%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT PPL
+%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -493,7 +493,6 @@ prove_with_spec:
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
   | ALGEBRA SOLVER ID                             { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver $3) }
   | ALGEBRA SOLVER SMT COLON path                 { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver ("smt:" ^ $5)) }
-  | ALGEBRA SOLVER PPL                            { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver "ppl") }
   | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
   | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
 ;
