@@ -2605,7 +2605,13 @@ let cut_rspec rs =
   helper [] (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog) |> List.rev |> numbering
 *)
 
-let insert_pwss es pwss = tmap (fun (e, ps) -> (e, tappend pwss ps)) es
+let insert_pwss_exclude_solver es pwss =
+  let not_solver_pw p =
+    match p with
+    | AlgebraSolver _ | RangeSolver _ -> false
+    | _ -> true in
+  let pwss_ex_solver = List.filter not_solver_pw pwss in
+  tmap (fun (e, ps) -> (e, tappend pwss_ex_solver ps)) es
 
 (* Cut algebraic assertions in SSA and return `(espec list) list`.
  * The i-th item in the returned list represents the assertions in
@@ -2629,7 +2635,7 @@ let cut_eassert es =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          (* add the prove-with clauses from the next cut *)
-         let es_extended_pwss = insert_pwss es (first_ecut_pwss prog) in
+         let es_extended_pwss = insert_pwss_exclude_solver es (first_ecut_pwss prog) in
          let assert_as_specs = tmap (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) es_extended_pwss in
          (res_rev, tappend assert_as_specs easserts_rev)
       | Icut _ -> ((List.rev easserts_rev)::res_rev, [])
@@ -2644,7 +2650,7 @@ let cut_eassert es =
        let visited = List.rev visited_rev in
        let before = List.rev before_rev in
        (* add the prove-with clauses from the next cut *)
-       let es_extended_pwss = insert_pwss es (first_ecut_pwss tl) in
+       let es_extended_pwss = insert_pwss_exclude_solver es (first_ecut_pwss tl) in
        let assert_as_specs = tmap (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) es_extended_pwss in
        helper (res_rev, tappend assert_as_specs easserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
     | (Icut ([], _))::tl -> helper (res_rev, easserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl)
@@ -2677,7 +2683,7 @@ let cut_rassert rs =
          let visited = List.rev visited_rev in
          let before = List.rev before_rev in
          (* add the prove-with clauses from the next cut *)
-         let rs_extended_pwss = insert_pwss rs (first_rcut_pwss prog) in
+         let rs_extended_pwss = insert_pwss_exclude_solver rs (first_rcut_pwss prog) in
          let assert_as_specs = tmap (rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited)) rs_extended_pwss in
          (res_rev, tappend assert_as_specs rasserts_rev)
       | Icut _ -> ((List.rev rasserts_rev)::res_rev, [])
@@ -2692,7 +2698,7 @@ let cut_rassert rs =
        let visited = List.rev visited_rev in
        let before = List.rev before_rev in
        (* add the prove-with clauses from the next cut *)
-       let rs_extended_pwss = insert_pwss rs (first_rcut_pwss tl) in
+       let rs_extended_pwss = insert_pwss_exclude_solver rs (first_rcut_pwss tl) in
        let assert_as_specs = tmap (rspec_of_rbexp_prove_with (precond, before, cuts_rev) (pre, visited)) rs_extended_pwss in
        helper (res_rev, tappend assert_as_specs rasserts_rev) (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
     | (Icut (_, []))::tl -> helper (res_rev, rasserts_rev) (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, tl)
