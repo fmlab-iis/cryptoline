@@ -2,6 +2,8 @@
 open Ast.Cryptoline
 open Utils.Std
 
+type mip_var = IVar of var | CVar of var
+
 (* uint0 denotes exact integers *)
 let z_pow_2 n = Z.pow (Z.of_int 2) n
 let var_range v =
@@ -254,6 +256,7 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
+  | Imuls (vh, vl, a0, a1)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
@@ -330,7 +333,6 @@ let bv2mip (vgen, constrs, ivars) i =
   | Irol (v, a, n) ->
   | Iror (v, a, n) ->
   | Icmov (v, c, a0, a1) ->
-  | Imuls (l, v, a0, a1) ->
 *)
 
 let of_espec vgen es =
