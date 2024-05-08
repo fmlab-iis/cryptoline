@@ -314,6 +314,10 @@ let redlog_of_espec es =
   let ess = cut_espec es |> List.map List.split |> List.map snd in
   String.concat "\n\n" (List.map redlog_of_espec (List.flatten ess))
 
+let is_mip_ivar = Mip.is_ivar
+let is_mip_cvar = Mip.is_cvar
+let var_of_mip = Mip.var_of_mip
+
 let mip_of_espec = Mip.of_espec
 
 let rec ppl_of_eexp e =

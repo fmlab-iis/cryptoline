@@ -444,30 +444,34 @@ let write_maple_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_ppl_input ?comments ifile ivars cvars constr =
-  let ppl_variables start vars =
+let write_ppl_input ?comments ifile mipvars constr =
+  let ppl_variables mipvars =
     String.concat "\n"
-      (List.mapi (fun i v ->
-           (string_of_var v) ^
-             " = Variable(" ^ (string_of_int (start+i)) ^ ")") vars) in
+      (List.mapi (fun i mv ->
+           (string_of_var (var_of_mip mv)) ^
+             " = Variable(" ^ (string_of_int i) ^ ")") mipvars) in
   let ppl_constraint mip constr =
     String.concat "\n"
       (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
          constr) in
+  let set_ppl_ivariable mipvars =
+    let (_, rev_ppl_cmds) =
+      List.fold_left (fun (i, ret) mv ->
+          (succ i,
+           if is_mip_cvar mv then ret
+           else ("mip.add_to_integer_space_dimensions(Variables_Set("
+                 ^ string_of_int i ^ "))")::ret))
+        (0, []) mipvars in
+    String.concat "\n" (List.rev rev_ppl_cmds) in
   let input_text =
     let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
     comment
     ^ "from ppl import MIP_Problem, Variable, Variables_Set\n"
-    ^ (if ivars = [] then ""
-       else (ppl_variables 0 ivars) ^ "\n"
-            ^ "ivars = Variables_Set(0, "
-            ^ string_of_int (List.length ivars-1) ^ ")\n")
-    ^ (ppl_variables (List.length ivars) cvars) ^ "\n"
+    ^ (ppl_variables mipvars) ^ "\n"
     ^ "mip = MIP_Problem(" ^
-           string_of_int (List.length ivars + List.length cvars) ^ ")\n"
+           string_of_int (List.length mipvars) ^ ")\n"
     ^ ppl_constraint "mip" constr ^ "\n"
-    ^ (if ivars = [] then ""
-       else "mip.add_to_integer_space_dimensions(ivars)\n")
+    ^ set_ppl_ivariable mipvars ^ "\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
@@ -848,14 +852,14 @@ let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
   Lwt.return (res = "unsat")
 
 let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
-      ivars cvars constr =
+      mipvars constr =
   let ifile = tmpfile "inputfmip_" "" in
   let ofile = tmpfile "outputfmip_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   match solver with
   | PPL ->
      let ifile = ifile ^ ".py" in
-     let%lwt _ = write_ppl_input ~comments ifile ivars cvars constr in
+     let%lwt _ = write_ppl_input ~comments ifile mipvars constr in
      let%lwt _ = run_ppl headers ifile ofile in
      let%lwt res = read_ppl_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
@@ -864,13 +868,13 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
 
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_mip ?comments headers vgen s =
-  let (_, vars_constrs) = mip_of_espec vgen s in
+  let (_, mipvars_constrs) = mip_of_espec vgen s in
   let solver =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-  let helper (ivars, cvars, constr) =
+  let helper (mipvars, constr) =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers ivars cvars constr in
-  Lwt_list.for_all_p helper vars_constrs
+    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers mipvars constr in
+  Lwt_list.for_all_p helper mipvars_constrs
 
 (*
  * Verify an algebraic specification containing neither cut nor conjunction.

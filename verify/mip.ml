@@ -4,6 +4,10 @@ open Utils.Std
 
 type mip_var = IVar of var | CVar of var
 
+let is_ivar mv = match mv with IVar _ -> true | _ -> false
+let is_cvar mv = match mv with CVar _ -> true | _ -> false
+let var_of_mip mv = match mv with IVar v | CVar v -> v
+
 (* uint0 denotes exact integers *)
 let z_pow_2 n = Z.pow (Z.of_int 2) n
 let var_range v =
@@ -335,6 +339,26 @@ let bv2mip (vgen, constrs, ivars) i =
   | Icmov (v, c, a0, a1) ->
 *)
 
+let reverse_appearing_vars mip_vars constr =
+  let (_, vm) = List.fold_left (fun (i, res) be ->
+                    let vars = vars_ebexp be in
+                    (succ i, VS.fold (fun v -> VM.add v i) vars res))
+                  (0, VM.empty) constr in
+  List.sort (fun mu mv ->
+      let u = match mu with IVar u | CVar u -> u in
+      let v = match mv with IVar v | CVar v -> v in
+      VM.find u vm - VM.find v vm) mip_vars
+
+let _appearing_vars mip_vars constr =
+  let (_, vm) = List.fold_left (fun (i, res) be ->
+                    let vars = vars_ebexp be in
+                    (succ i, VS.fold (fun v -> VM.add v i) vars res))
+                  (0, VM.empty) constr in
+  List.sort (fun mu mv ->
+      let u = match mu with IVar u | CVar u -> u in
+      let v = match mv with IVar v | CVar v -> v in
+      VM.find v vm - VM.find u vm) mip_vars
+
 let of_espec vgen es =
   let (vgen', pre_constr, ivars) =
     split_and_convert_eqmod vgen [] es.espre [] in
@@ -354,9 +378,12 @@ let of_espec vgen es =
     tmap (fun (vars, constr) ->
         let ivars = VS.elements (VS.inter ivar_set vars) in
         let cvars = VS.elements (VS.diff vars ivar_set) in
+        let mipvars = List.rev_append (List.rev_map (fun v -> IVar v) ivars)
+                        (List.rev_map (fun v -> CVar v) cvars) in
+        let rev_app_mipvars = reverse_appearing_vars mipvars constr in
         let range_constr =
           List.flatten (tmap var_range (List.rev_append ivars cvars)) in
-        (ivars, cvars, List.rev_append range_constr constr))
+        (rev_app_mipvars, List.rev_append range_constr constr))
       rel_vars_linear_constrs in
   (vgen''', vars_linear_constrs)
 
