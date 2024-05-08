@@ -45,8 +45,8 @@ class Instr:
   def applySubst(self):
     for (lhs, rhs) in self.substs:
       self.dsl = re.sub(lhs, rhs, self.dsl)
-  def to_string(self):
-    return '(* ' + self.asm + ' *)\n' + self.dsl
+  def to_string(self, pasm=True):
+    return '(* ' + self.asm + ' *)\n' + self.dsl if pasm else self.dsl
 
 # Flatten a list of lists
 def flatten(vs):
@@ -95,7 +95,7 @@ def process_builtin_variables(pat, rep, indices):
         rc = rhs.replace("$" + str(i) + "c", "\\g<c" + str(i) + ">")
         tmp.append((pc, rc))
       elif lhs.find("$" + str(i) + "v") != -1:
-        pv = lhs.replace("$" + str(i) + "v", "%%(?P<v" + str(i) + ">[a-zA-Z]\\w*(?:\[\d+\])?)", 1)
+        pv = lhs.replace("$" + str(i) + "v", "%%(?P<v" + str(i) + ">[a-zA-Z]\\w*(?:\\[\\d+\\])?)", 1)
         pv = pv.replace("$" + str(i) + "v", "%%(?P=v" + str(i) + ")")
         rv = rhs.replace("$" + str(i) + "v", "\\g<v" + str(i) + ">")
         tmp.append((pv, rv))
@@ -228,8 +228,8 @@ def parse_subst(line):
       lhs = tokens[0]
     else:
       lhs = re.escape(tokens[0])
-      lhs = lhs.replace('\$', '$')          # x86 constants start with '$'
-      lhs = lhs.replace('\#', '#')          # arm constants start with '#'
+      lhs = lhs.replace('\\$', '$')          # x86 constants start with '$'
+      lhs = lhs.replace('\\#', '#')          # arm constants start with '#'
     lhs = re.sub(r"(\\ )+", "\\\\s+", lhs)
     rhs = tokens[1]
     pairs = process_builtin_variables(lhs, rhs, indices)
@@ -362,9 +362,9 @@ def parse_gas(fn):
           instr.addSubst(subst)
   return (sort_tspec(mk_tspec(substs, rules)), instrs)
 
-def print_instrs(instrs):
+def print_instrs(instrs, pasm=True):
   for instr in instrs:
-    print(instr.to_string())
+    print(instr.to_string(pasm=pasm))
 
 def string_of_typed_arg(v, vtypes, default):
   """
@@ -402,6 +402,7 @@ def main():
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
   parser.add_argument("-vt", help="the type of a specific input variable", nargs=2, metavar=('VAR', 'TYPE'), action="append")
   parser.add_argument("-v", "--verbose", help="print verbose messages", dest="verbose", action="store_true")
+  parser.add_argument('--no-asm', help="no comments containing the original assembly code", dest="noasm", action="store_true")
   args = parser.parse_args()
 
   if args.verbose: verbose = True
@@ -409,6 +410,7 @@ def main():
   if args.auto_carries: auto_carries = True
   if args.auto_unused: auto_unused = True
   if args.nosort: sort_rules = False
+  print_asm = False if args.noasm else True
 
   vtypes = {}
   if args.vt:
@@ -451,7 +453,7 @@ def main():
     if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
     print ("proc main (%s) =" % ", ".join([string_of_typed_arg(i, vtypes, args.type) for i in inputs]))
   if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
-  instr_strs = list(map((lambda i: i.to_string() + ";"), instrs))
+  instr_strs = list(map((lambda i: i.to_string(print_asm) + ";"), instrs))
   instr_strs = flatten([str.split("\n") for str in instr_strs])
   if auto_carries:
     instr_strs = cryptoline.assert_unused_carries(instr_strs, annot=True)
