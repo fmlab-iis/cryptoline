@@ -342,7 +342,7 @@ let bv2mip (vgen, constrs, ivars) i =
 let reverse_appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
                     let vars = vars_ebexp be in
-                    (succ i, VS.fold (fun v -> VM.add v i) vars res))
+                    (succ i, VS.fold (fun v vm -> VM.add v i vm) vars res))
                   (0, VM.empty) constr in
   List.sort (fun mu mv ->
       let u = match mu with IVar u | CVar u -> u in
@@ -352,7 +352,7 @@ let reverse_appearing_vars mip_vars constr =
 let _appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
                     let vars = vars_ebexp be in
-                    (succ i, VS.fold (fun v -> VM.add v i) vars res))
+                    (succ i, VS.fold (fun v vm -> VM.add v i vm) vars res))
                   (0, VM.empty) constr in
   List.sort (fun mu mv ->
       let u = match mu with IVar u | CVar u -> u in
