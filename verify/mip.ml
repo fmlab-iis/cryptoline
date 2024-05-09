@@ -345,9 +345,7 @@ let reverse_appearing_vars mip_vars constr =
                     (succ i, VS.fold (fun v vm -> VM.add v i vm) vars res))
                   (0, VM.empty) constr in
   List.sort (fun mu mv ->
-      let u = match mu with IVar u | CVar u -> u in
-      let v = match mv with IVar v | CVar v -> v in
-      VM.find u vm - VM.find v vm) mip_vars
+      VM.find (var_of_mip mv) vm - VM.find (var_of_mip mu) vm) mip_vars
 
 let _appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
@@ -357,9 +355,7 @@ let _appearing_vars mip_vars constr =
                                  else VM.add v i vm) vars res))
                   (0, VM.empty) constr in
   List.sort (fun mu mv ->
-      let u = match mu with IVar u | CVar u -> u in
-      let v = match mv with IVar v | CVar v -> v in
-      VM.find v vm - VM.find u vm) mip_vars
+      VM.find (var_of_mip mu) vm - VM.find (var_of_mip mv) vm) mip_vars
 
 let of_espec vgen es =
   let (vgen', pre_constr, ivars) =
@@ -382,10 +378,10 @@ let of_espec vgen es =
         let cvars = VS.elements (VS.diff vars ivar_set) in
         let mipvars = List.rev_append (List.rev_map (fun v -> IVar v) ivars)
                         (List.rev_map (fun v -> CVar v) cvars) in
-        let rev_app_mipvars = reverse_appearing_vars mipvars constr in
+        let ordered_mipvars = reverse_appearing_vars mipvars constr in
         let range_constr =
           List.flatten (tmap var_range (List.rev_append ivars cvars)) in
-        (rev_app_mipvars, List.rev_append range_constr constr))
+        (ordered_mipvars, List.rev_append range_constr constr))
       rel_vars_linear_constrs in
   (vgen''', vars_linear_constrs)
 
