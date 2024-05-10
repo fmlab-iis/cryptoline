@@ -339,7 +339,7 @@ let bv2mip (vgen, constrs, ivars) i =
   | Icmov (v, c, a0, a1) ->
 *)
 
-let reverse_appearing_vars mip_vars constr =
+let _reverse_appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
                     let vars = vars_ebexp be in
                     (succ i, VS.fold (fun v vm -> VM.add v i vm) vars res))
@@ -347,7 +347,7 @@ let reverse_appearing_vars mip_vars constr =
   List.sort (fun mu mv ->
       VM.find (var_of_mip mv) vm - VM.find (var_of_mip mu) vm) mip_vars
 
-let _appearing_vars mip_vars constr =
+let appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
                     let vars = vars_ebexp be in
                     (succ i, VS.fold (fun v vm ->
@@ -378,7 +378,7 @@ let of_espec vgen es =
         let cvars = VS.elements (VS.diff vars ivar_set) in
         let mipvars = List.rev_append (List.rev_map (fun v -> IVar v) ivars)
                         (List.rev_map (fun v -> CVar v) cvars) in
-        let ordered_mipvars = reverse_appearing_vars mipvars constr in
+        let ordered_mipvars = appearing_vars mipvars constr in
         let range_constr =
           List.flatten (tmap var_range (List.rev_append ivars cvars)) in
         (ordered_mipvars, List.rev_append range_constr constr))
