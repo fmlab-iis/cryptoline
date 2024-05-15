@@ -263,7 +263,11 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
-  | Imuls (vh, vl, a0, a1)
+  | Imuls (_, v, a0, a1) ->  (* tmp * 2**|vl| + v == a0 * a1 *)
+     let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
+     let l_tsize = size_of_var v in
+     (vgen', eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
+               (emul' (eexp_atom a0) (eexp_atom a1))::constrs, tmp::ivars)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
