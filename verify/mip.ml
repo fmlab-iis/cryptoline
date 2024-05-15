@@ -78,7 +78,7 @@ let convert_moduli vgen mods ivars =
   List.fold_left (fun (vgen, res, ivars) m ->
       let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
       (vgen', eadd' res (emul' m (evar tmp)), tmp::ivars))
-    (vgen', m0, ivars) (List.tl mods)
+    (vgen', m0, tmp::ivars) (List.tl mods)
 
 let split_and_convert_eqmod vgen res ebexp ivars =
   let ebexps = split_eand ebexp in
@@ -116,8 +116,7 @@ let convert_post vgen pre_prog_constr post ivars  =
          List.fold_left (fun res m -> elt (evar tmp) m::res)
            (tmp_gt_0::pre_prog_constr) ms in
        (vgen'',
-        [List.rev (eeq e0 (eadds' [e1; (evar tmp); lmods])::pre_prog_tmp_constr);
-         List.rev (eeq (eadd' e0 (evar tmp)) (eadd' e1 lmods)::pre_prog_tmp_constr)],
+        [List.rev (eeq e0 (eadds' [e1; (evar tmp); lmods])::pre_prog_tmp_constr)],
         tmp::ivars')
      else
        (vgen, [pre_prog_constr], ivars)
@@ -263,7 +262,7 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
-  | Imuls (_, v, a0, a1) ->  (* tmp * 2**|vl| + v == a0 * a1 *)
+  | Imuls (_, v, a0, a1) ->  (* tmp * 2**|v| + v == a0 * a1 *)
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
      let l_tsize = size_of_var v in
      (vgen', eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
