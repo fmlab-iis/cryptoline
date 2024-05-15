@@ -60,7 +60,10 @@ let slicing_constr vars constr =
                 else helper true (VS.union res hd) finished tl
     | _ -> if again then helper false res [] (List.rev finished)
            else res in
-  let relevant_vars = helper false vars [] (List.rev constr_vars) in
+  let relevant_vars =
+    (* make sure all relevant_vars are from constr_vars *)
+    VS.inter (helper false vars [] (List.rev constr_vars))
+      (List.fold_left VS.union VS.empty constr_vars) in
   let rev_ret =
     List.fold_left2 (fun res vs b ->
         if VS.is_empty (VS.inter relevant_vars vs) then res else b::res)
@@ -268,7 +271,9 @@ let bv2mip (vgen, constrs, ivars) i =
   | Ispl (vh, vl, a, n)
   | Isplit (vh, vl, a, n) -> (* vh * 2**n + vl == a *)
      let c = Z.to_int n in
-     (vgen, eeq (emaddpow2 (evar vl) (evar vh) c) (eexp_atom a)::constrs,
+     let rng = elt (evar vl) (econst (z_pow_2 c)) in
+     let eq = eeq (emaddpow2 (evar vl) (evar vh) c) (eexp_atom a) in
+     (vgen, eq::rng::constrs,
       vh::ivars)
   | Ivpc (v, a) -> (* v == a *)
      (vgen, eeq (evar v) (eexp_atom a)::constrs, ivars)
