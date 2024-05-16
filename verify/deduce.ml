@@ -240,7 +240,17 @@ let rewrite_eqmod eqns epost =
   | Etrue -> true
   | Eeq (l, r) | Eeqmod (l, r, _) ->
      (l = r) || simple_rewrite valid_eqns l r
-  | Ecmp _ -> false
+  | Ecmp _ ->
+     let normalize_cmp e =
+       match e with
+       | Ecmp (Egt, l, r) -> Ecmp (Elt, r, l)
+       | Ecmp (Ege, l, r) -> Ecmp (Ele, r, l)
+       | _ -> e in
+     let valid_cmps =
+       let match_cmps e =
+         match e with | Ecmp _ -> true | _ -> false in
+       List.filter match_cmps eqns |> List.rev_map normalize_cmp in
+     List.mem epost valid_cmps
   | _ -> failwith ("rewrite_eqmod does not allow post conjunctions: " ^
                      (string_of_ebexp epost))
   
