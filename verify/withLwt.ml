@@ -765,12 +765,12 @@ let verify_rspec_no_rcut_abs_interp hashopt s =
                Format.pp_print_string Format.std_formatter "Start domain:";
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter
-                 (Absdom.Std.string_of_abs mgr dom);
+                 (Absdom.Std.string_of_abs dom);
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter "End domain:";
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_string Format.std_formatter
-                 (Absdom.Std.string_of_abs mgr dom');
+                 (Absdom.Std.string_of_abs dom');
                Format.pp_force_newline Format.std_formatter ();
                Format.pp_print_flush Format.std_formatter () in
         *)
@@ -784,6 +784,12 @@ let verify_rspec_no_rcut_abs_interp hashopt s =
                                      (Absdom.Std.string_of_abs dom')) in
                ret
              else
+               (*
+               let _ = safe_trace ("Range condition: " ^
+                                     (string_of_rbexp post) ^ " [fail]") in
+               let _ = safe_trace ("End abstract domain: " ^
+                                     (Absdom.Std.string_of_abs dom')) in
+               *)
                rs::ret) [] splitted_s in
        List.rev rev_ret
     | None -> splitted_s
