@@ -454,7 +454,7 @@ let write_ppl_input ?comments ifile mipvars constr =
     String.concat "\n"
       (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
          constr) in
-  let set_ppl_ivariable mipvars =
+  let set_ppl_ivariable delimiter mipvars =
     let (_, rev_ppl_cmds) =
       List.fold_left (fun (i, ret) mv ->
           (succ i,
@@ -462,7 +462,7 @@ let write_ppl_input ?comments ifile mipvars constr =
            else ("mip.add_to_integer_space_dimensions(Variables_Set("
                  ^ string_of_int i ^ "))")::ret))
         (0, []) mipvars in
-    String.concat "\n" (List.rev rev_ppl_cmds) in
+    String.concat delimiter rev_ppl_cmds in
   let input_text =
     let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
     let nvars = List.length mipvars in
@@ -471,10 +471,11 @@ let write_ppl_input ?comments ifile mipvars constr =
     ^ (ppl_variables mipvars) ^ "\n"
     ^ "ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n"
     ^ ppl_constraint "ph" constr ^ "\n"
-    ^ "ph.minimized_constraints()\n"
+    (* ^ "ph.minimized_constraints()\n" *)
     ^ "mip = MIP_Problem(" ^ string_of_int nvars ^ ")\n"
-    ^ set_ppl_ivariable mipvars ^ "\n"
     ^ "mip.add_constraints(ph.constraints())\n"
+    (* ^ set_ppl_ivariable "\n" mipvars ^ "\n" *)
+    ^ set_ppl_ivariable "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n" mipvars ^ "\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
