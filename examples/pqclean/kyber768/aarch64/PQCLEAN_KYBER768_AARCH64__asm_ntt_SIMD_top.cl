@@ -1,3 +1,25 @@
+(* quine: cv.exe -v -isafety -slicing -jobs 40 -vo lex PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_top.cl
+Parsing CryptoLine file:                     [OK]            0.1323 seconds
+Checking well-formedness:                    [OK]            0.0358 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:                    [OK]            0.0346 seconds
+Normalizing specification:                   [OK]            0.0267 seconds
+Rewriting assignments:                       [OK]            0.0254 seconds
+Verifying program safety:                    [OK]            46.8781 seconds
+Verifying range assertions:                  [OK]            96.4204 seconds
+Verifying range specification:               [OK]            9.4083 seconds
+Rewriting value-preserved casting:           [OK]            0.0254 seconds
+Verifying algebraic assertions:              [OK]            3252.1331 seconds
+Verifying algebraic specification:           [OK]            146.8818 seconds
+Procedure verification:                      [OK]            3551.8484 seconds
+
+Summary
+-------
+Verification result:                         [OK]            3552.0164 seconds
+*)
+
 (* quine: cv.exe -v -slicing -jobs 32 -isafety -vo lex PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_top.cl
 Parsing CryptoLine file:                        [OK]            0.1306 seconds
 Checking well-formedness:                       [OK]            0.0366 seconds
