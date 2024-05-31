@@ -516,7 +516,8 @@ let write_ppl_input ?comments ifile mipvars constr =
     ^ (ppl_variables mipvars) ^ "\n"
     ^ "ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n"
     ^ ppl_constraint "ph" constr ^ "\n"
-    (* ^ "ph.minimized_constraints()\n" *)
+    ^ (if !Options.Std.minimize_constraint then "ph.minimized_constraints()\n"
+       else "")
     ^ "mip = MIP_Problem(" ^ string_of_int nvars ^ ")\n"
     ^ "mip.add_constraints(ph.constraints())\n"
     (* ^ set_ppl_ivariable "\n" mipvars ^ "\n" *)
