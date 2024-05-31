@@ -181,6 +181,8 @@ val polys_rewrite_replace_eexp : bool ref
 
 val carry_constraint : bool ref
 (** [true] to add constraints for carries in verifying algebraic specifications *)
+val minimize_constraint : bool ref
+(** [true] to minimize constraints for verifying algebraic range specifications *)
 
 val variable_ordering : variable_order ref
 (** the variable order to be used in the computation of Groebner basis *)
