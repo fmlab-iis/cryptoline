@@ -1,4 +1,22 @@
-PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_top:
+#! add $1v.8h, $2v.8h, $3v.8h -> add %$1v %$2v %$3v
+#! add %%sp, %%sp, $1c -> adds dc sp sp $1c@uint64
+#! add $1v, %%x$2c, $3c -> adds dc $1v x$2c $3c@uint64
+#! sub $1v, %%x$2c, $3c -> subc dc $1v x$2c $3c@uint64
+#! ldp d$1c, d$2c, $3ea -> mov %v$1c [$3ea[+0],$3ea[+2],$3ea[+4],$3ea[+6]]++%v$1c[4:8];\nmov %v$2c [$3ea[+8], $3ea[+10], $3ea[+12], $3ea[+14]]++%v$2c[4:8]
+#! ldr q$1c, $2ea -> mov %v$1c [$2ea[+0],$2ea[+2],$2ea[+4],$2ea[+6],$2ea[+8],$2ea[+10],$2ea[+12],$2ea[+14]]
+#! ldrsh %%w$1c, $2ea -> mov w$1c $2ea
+#! ldur %%w$1c, $2ea -> mov %w$1c@int16[2] [$2ea, $2ea[+2]]
+#! mls $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %mls 8 [%$3v[$4c]]; mull %dc %mls %$2v %mls;\ncast %mls@int16[8] %mls; subc %mdc %$1v %$1v %mls
+#! mov %%v0.h\[0\], %%w$1c -> mov %v0 [w$1c]++%v0[1:8]
+#! mov %%v4.s\[0\], %%w$1c -> mov %v4 %w$1c[0:2]++%v4[2:8]
+#! mov %%v4.s\[1\], %%w$1c -> mov %v4 %v4[0:2]++%w$1c[0:2]++%v4[4:8]
+#! mul $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %mul 8 [%$3v[$4c]]; mull %mdc %$1v %$2v %mul; cast %$1v@int16[8] %$1v
+#! stp d$1c, d$2c, $3ea -> mov [$3ea[+0],$3ea[+2],$3ea[+4],$3ea[+6]] %v$1c[0:4];\nmov [$3ea[+8],$3ea[+10],$3ea[+12],$3ea[+14]] %v$2c[0:4]
+#! str q$1c, $2ea -> mov [$2ea[+0],$2ea[+2],$2ea[+4],$2ea[+6],$2ea[+8],$2ea[+10],$2ea[+12],$2ea[+14]] %v$1c
+#! sub $1v.8h, $2v.8h, $3v.8h -> sub %$1v %$2v %$3v
+#! sub %%sp, %%sp, $1c -> subc dc sp sp $1c@uint64
+
+#PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_top:
 # x0 = 0xffffffffc3a0
 # x1 = 0x414cc0
 # x2 = 0x414860

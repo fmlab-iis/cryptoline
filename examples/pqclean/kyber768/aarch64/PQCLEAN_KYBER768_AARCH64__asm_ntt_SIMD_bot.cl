@@ -1,23 +1,24 @@
-(* quine: cv.exe -v -isafety -slicing -jobs 40 PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_bot.cl
-Parsing CryptoLine file:                     [OK]            0.1245 seconds
-Checking well-formedness:                    [OK]            0.0368 seconds
+(* quine: cv.exe -v -isafety -slicing -no_carry_constraint -jobs 40 -vo appearing -no_minimize_constraint PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_bot.cl
+Parsing CryptoLine file:                     [OK]            0.1277 seconds
+Checking well-formedness:                    [OK]            0.0361 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                    [OK]            0.0336 seconds
-Normalizing specification:                   [OK]            0.0285 seconds
-Rewriting assignments:                       [OK]            0.0273 seconds
-Verifying program safety:                    [OK]            31.9645 seconds
-Verifying range assertions:                  [OK]            51.6553 seconds
-Verifying range specification:               [OK]            0.2568 seconds
-Rewriting value-preserved casting:           [OK]            0.0139 seconds
-Verifying algebraic assertions:              [OK]            1398.3237 seconds
-Verifying algebraic specification:           [OK]            54.7690 seconds
-Procedure verification:                      [OK]            1537.0887 seconds
+Transforming to SSA form:                    [OK]            0.0338 seconds
+Normalizing specification:                   [OK]            0.0291 seconds
+Rewriting assignments:                       [OK]            0.0276 seconds
+Verifying program safety:                    [OK]            40.2121 seconds
+Verifying range assertions:                  [OK]            205.2333 seconds
+Verifying range specification:               [OK]            0.2479 seconds
+Rewriting value-preserved casting:           [OK]            0.0182 seconds
+Verifying algebraic assertions:              [OK]            1358.4827 seconds
+Verifying algebraic specification:           [OK]            52.3851 seconds
+Procedure verification:                      [OK]            1656.6860 seconds
 
 Summary
 -------
-Verification result:                         [OK]            1537.2503 seconds
+Verification result:                         [OK]            1656.8500 seconds
+
 *)
 proc main (
 int16 L0xffffffffc400,int16 L0xffffffffc402,int16 L0xffffffffc404,int16 L0xffffffffc406,
@@ -1457,14 +1458,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-       %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-       %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-       %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-       %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+       %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+       %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+       %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+       %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 2 2 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -1531,14 +1532,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-    %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-    %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-    %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-    %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+    %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+    %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+    %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+    %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [precondition];
 
 ghost %v27o1@int16[8],%v31o1@int16[8]:
@@ -1617,14 +1618,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-       %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-       %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-       %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-       %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+       %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+       %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+       %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+       %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 3 3 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -1691,14 +1692,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-    %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-    %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-    %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-    %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+    %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+    %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+    %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+    %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [precondition];
 
 ghost %v26o1@int16[8],%v30o1@int16[8]:
@@ -1777,14 +1778,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-       %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-       %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-       %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-       %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+       %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+       %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+       %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+       %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 4 4 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -1883,14 +1884,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [2], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-    %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-    %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-    %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-    %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+    %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+    %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+    %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+    %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [precondition, cuts [2]];
 
 ghost %v25o2@int16[8],%v27o2@int16[8]:
@@ -1963,14 +1964,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-       %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-       %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-       %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-       %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+       %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+       %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+       %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+       %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 5 5 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -2069,14 +2070,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [3], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-    %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-    %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-    %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-    %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+    %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+    %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+    %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+    %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [precondition, cuts [3]];
 
 ghost %v29o2@int16[8],%v31o2@int16[8]:
@@ -2128,6 +2129,10 @@ assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
+
+ghost %v24o3@int16[8],%v25o3@int16[8],%v26o3@int16[8],%v27o3@int16[8]:
+      %v24o3=%v24 /\ %v25o3=%v25 /\ %v26o3=%v26 /\ %v27o3=%v27
+   && %v24o3=%v24 /\ %v25o3=%v25 /\ %v26o3=%v26 /\ %v27o3=%v27;
 
 (* sqdmulh	v20.8h, v24.8h, v0.h[1]                 #! PC = 0x411ae4 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v24 %sqdmulh;
@@ -2188,13 +2193,10 @@ assume
 /\ %v31<[7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2]
 && true;
 
-ghost %v24o3@int16[8],%v25o3@int16[8],%v26o3@int16[8],%v27o3@int16[8],
-      %v28o3@int16[8],%v29o3@int16[8],%v30o3@int16[8],%v31o3@int16[8]:
-      %v24o3=%v24 /\ %v25o3=%v25 /\ %v26o3=%v26 /\ %v27o3=%v27 /\
+ghost %v28o3@int16[8],%v29o3@int16[8],%v30o3@int16[8],%v31o3@int16[8]:
       %v28o3=%v28 /\ %v29o3=%v29 /\ %v30o3=%v30 /\ %v31o3=%v31
-   && %v24o3=%v24 /\ %v25o3=%v25 /\ %v26o3=%v26 /\ %v27o3=%v27 /\
-      %v28o3=%v28 /\ %v29o3=%v29 /\ %v30o3=%v30 /\ %v31o3=%v31;
- 
+   && %v28o3=%v28 /\ %v29o3=%v29 /\ %v30o3=%v30 /\ %v31o3=%v31;
+
 (* sqdmulh	v16.8h, v28.8h, v0.h[1]                 #! PC = 0x411b04 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v28 %sqdmulh;
 ssplit %LO0 %dc %LO 15; vpc %v16@sint16[8] %LO0;
@@ -2263,11 +2265,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
 assert true
-    && eqmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition];
+    && eqsmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q];
 assume eqmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -2854,14 +2859,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-       %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-       %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-       %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-       %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+       %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+       %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+       %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+       %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 9 9 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -2928,14 +2933,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-    %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-    %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-    %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-    %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+    %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+    %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+    %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+    %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [7]];
 
 ghost %v27o5@int16[8],%v31o5@int16[8]:
@@ -3017,14 +3022,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-       %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-       %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-       %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-       %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+       %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+       %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+       %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+       %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 10 10 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -3091,14 +3096,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-    %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-    %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-    %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-    %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+    %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+    %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+    %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+    %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [7]];
 
 ghost %v26o5@int16[8],%v30o5@int16[8]:
@@ -3180,14 +3185,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-       %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-       %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-       %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-       %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+       %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+       %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+       %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+       %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 11 11 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -3286,14 +3291,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [9], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-    %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-    %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-    %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-    %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+    %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+    %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+    %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+    %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [7, 9]];
 
 ghost %v25o4@int16[8],%v27o4@int16[8]:
@@ -3368,14 +3373,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-       %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-       %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-       %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-       %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+       %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+       %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+       %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+       %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 12 12 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -3474,14 +3479,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [10], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-    %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-    %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-    %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-    %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+    %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+    %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+    %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+    %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [7, 10]];
 
 ghost %v29o6@int16[8],%v31o6@int16[8]:
@@ -3538,6 +3543,10 @@ assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
 
 
+ghost %v24o7@int16[8],%v25o7@int16[8],%v26o7@int16[8],%v27o7@int16[8]:
+      %v24o7=%v24 /\ %v25o7=%v25 /\ %v26o7=%v26 /\ %v27o7=%v27
+   && %v24o7=%v24 /\ %v25o7=%v25 /\ %v26o7=%v26 /\ %v27o7=%v27;
+
 (* sqdmulh	v20.8h, v24.8h, v0.h[1]                 #! PC = 0x411d40 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v24 %sqdmulh;
 ssplit %LO0 %dc %LO 15; vpc %v20@sint16[8] %LO0;
@@ -3559,12 +3568,9 @@ ssplit %LO0 %dc %LO 15; vpc %v23@sint16[8] %LO0;
 (* add	v30.8h, v30.8h, v17.8h                      #! PC = 0x411d5c *)
 add %v30 %v30 %v17;
 
-ghost %v24o7@int16[8],%v25o7@int16[8],%v26o7@int16[8],%v27o7@int16[8],
-      %v28o7@int16[8],%v29o7@int16[8],%v30o7@int16[8],%v31o7@int16[8]:
-      %v24o7=%v24 /\ %v25o7=%v25 /\ %v26o7=%v26 /\ %v27o7=%v27 /\
+ghost %v28o7@int16[8],%v29o7@int16[8],%v30o7@int16[8],%v31o7@int16[8]:
       %v28o7=%v28 /\ %v29o7=%v29 /\ %v30o7=%v30 /\ %v31o7=%v31
-   && %v24o7=%v24 /\ %v25o7=%v25 /\ %v26o7=%v26 /\ %v27o7=%v27 /\
-      %v28o7=%v28 /\ %v29o7=%v29 /\ %v30o7=%v30 /\ %v31o7=%v31;
+   && %v28o7=%v28 /\ %v29o7=%v29 /\ %v30o7=%v30 /\ %v31o7=%v31;
 
 (* sqdmulh	v16.8h, v28.8h, v0.h[1]                 #! PC = 0x411d60 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v28 %sqdmulh;
@@ -3634,10 +3640,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
 assert true
-    && eqmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v28 %v28o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q]
+    && eqsmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v28 %v28o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v29 %v29o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q]
        prove with [cuts [7]];
 assume eqmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -4228,14 +4238,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-       %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-       %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-       %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-       %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+       %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+       %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+       %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+       %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 16 16 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -4302,14 +4312,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-    %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-    %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-    %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-    %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+    %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+    %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+    %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+    %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [14]];
 
 ghost %v27o9@int16[8],%v31o9@int16[8]:
@@ -4391,14 +4401,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-       %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-       %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-       %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-       %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+       %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+       %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+       %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+       %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 17 17 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -4465,14 +4475,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-    %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-    %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-    %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-    %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+    %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+    %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+    %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+    %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [14]];
 
 ghost %v26o9@int16[8],%v30o9@int16[8]:
@@ -4554,14 +4564,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-       %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-       %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-       %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-       %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+       %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+       %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+       %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+       %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 18 18 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -4660,14 +4670,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [16], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-    %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-    %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-    %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-    %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+    %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+    %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+    %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+    %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [14, 16]];
 
 ghost %v25o8@int16[8],%v27o8@int16[8]:
@@ -4742,14 +4752,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-       %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-       %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-       %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-       %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+       %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+       %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+       %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+       %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 19 19 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -4848,14 +4858,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [17], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-    %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-    %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-    %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-    %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+    %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+    %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+    %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+    %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [14, 17]];
 
 ghost %v29o10@int16[8],%v31o10@int16[8]:
@@ -4911,6 +4921,9 @@ assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
 
+ghost %v24o11@int16[8],%v25o11@int16[8],%v26o11@int16[8],%v27o11@int16[8]:
+      %v24o11=%v24 /\ %v25o11=%v25 /\ %v26o11=%v26 /\ %v27o11=%v27
+   && %v24o11=%v24 /\ %v25o11=%v25 /\ %v26o11=%v26 /\ %v27o11=%v27;
 
 (* sqdmulh	v20.8h, v24.8h, v0.h[1]                 #! PC = 0x411d40 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v24 %sqdmulh;
@@ -4933,12 +4946,9 @@ ssplit %LO0 %dc %LO 15; vpc %v23@sint16[8] %LO0;
 (* add	v30.8h, v30.8h, v17.8h                      #! PC = 0x411d5c *)
 add %v30 %v30 %v17;
 
-ghost %v24o11@int16[8],%v25o11@int16[8],%v26o11@int16[8],%v27o11@int16[8],
-      %v28o11@int16[8],%v29o11@int16[8],%v30o11@int16[8],%v31o11@int16[8]:
-      %v24o11=%v24 /\ %v25o11=%v25 /\ %v26o11=%v26 /\ %v27o11=%v27 /\
+ghost %v28o11@int16[8],%v29o11@int16[8],%v30o11@int16[8],%v31o11@int16[8]:
       %v28o11=%v28 /\ %v29o11=%v29 /\ %v30o11=%v30 /\ %v31o11=%v31
-   && %v24o11=%v24 /\ %v25o11=%v25 /\ %v26o11=%v26 /\ %v27o11=%v27 /\
-      %v28o11=%v28 /\ %v29o11=%v29 /\ %v30o11=%v30 /\ %v31o11=%v31;
+   && %v28o11=%v28 /\ %v29o11=%v29 /\ %v30o11=%v30 /\ %v31o11=%v31;
 
 (* sqdmulh	v16.8h, v28.8h, v0.h[1]                 #! PC = 0x411d60 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v28 %sqdmulh;
@@ -5008,10 +5018,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
 assert true
-    && eqmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v28 %v28o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q]
+    && eqsmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v28 %v28o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v29 %v29o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q]
        prove with [cuts [14]];
 assume eqmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -5601,14 +5615,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-       %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-       %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-       %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-       %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+       %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+       %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+       %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+       %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 23 23 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -5675,14 +5689,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v25 /\
-    %v25<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v27 /\
-    %v27<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v29 /\
-    %v29<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v31 /\
-    %v31<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+[5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v25 /\
+    %v25<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v27 /\
+    %v27<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v29 /\
+    %v29<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v31 /\
+    %v31<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [21]];
 
 ghost %v27o13@int16[8],%v31o13@int16[8]:
@@ -5764,14 +5778,14 @@ assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-       %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-       %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-       %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-       %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
+    && [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+       %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+       %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+       %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+       [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+       %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2];
 
 (* CUT 24 24 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -5838,14 +5852,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v24 /\
-    %v24<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v26 /\
-    %v26<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v28 /\
-    %v28<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
-    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<%v30 /\
-    %v30<[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v24 /\
+    %v24<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v26 /\
+    %v26<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v28 /\
+    %v28<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2] /\
+    [5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2,5@16*NQ+NQ2]<s%v30 /\
+    %v30<s[5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2,5@16*Q+Q2]
     prove with [cuts [21]];
 
 ghost %v26o13@int16[8],%v30o13@int16[8]:
@@ -5927,14 +5941,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-       %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-       %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-       %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-       %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+       %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+       %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+       %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+       %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 25 25 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -6033,14 +6047,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [23], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v25 /\
-    %v25<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v27 /\
-    %v27<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v29 /\
-    %v29<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v31 /\
-    %v31<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v25 /\
+    %v25<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v27 /\
+    %v27<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v29 /\
+    %v29<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v31 /\
+    %v31<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [21, 23]];
 
 ghost %v25o12@int16[8],%v27o12@int16[8]:
@@ -6115,14 +6129,14 @@ assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-       %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-       %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-       %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-       %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
+    && [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+       %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+       %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+       %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+       [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+       %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2];
 
 (* CUT 26 26 *)
 cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
@@ -6221,14 +6235,14 @@ cut Q = 3329 /\ Q2 = 1665 /\ NQ = -3329 /\ NQ2 = -1665 /\
     prove with [cuts [24], all ghosts]
  && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v24 /\
-    %v24<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v26 /\
-    %v26<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v28 /\
-    %v28<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
-    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<%v30 /\
-    %v30<[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v24 /\
+    %v24<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v26 /\
+    %v26<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v28 /\
+    %v28<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2] /\
+    [6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2,6@16*NQ+NQ2]<s%v30 /\
+    %v30<s[6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2,6@16*Q+Q2]    
     prove with [cuts [21, 24]];
 
 ghost %v29o14@int16[8],%v31o14@int16[8]:
@@ -6283,6 +6297,9 @@ assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
 
+ghost %v24o15@int16[8],%v25o15@int16[8],%v26o15@int16[8],%v27o15@int16[8]:
+      %v24o15=%v24 /\ %v25o15=%v25 /\ %v26o15=%v26 /\ %v27o15=%v27
+   && %v24o15=%v24 /\ %v25o15=%v25 /\ %v26o15=%v26 /\ %v27o15=%v27;
 
 (* sqdmulh	v20.8h, v24.8h, v0.h[1]                 #! PC = 0x411d40 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v24 %sqdmulh;
@@ -6305,12 +6322,9 @@ ssplit %LO0 %dc %LO 15; vpc %v23@sint16[8] %LO0;
 (* add	v30.8h, v30.8h, v17.8h                      #! PC = 0x411d5c *)
 add %v30 %v30 %v17;
 
-ghost %v24o15@int16[8],%v25o15@int16[8],%v26o15@int16[8],%v27o15@int16[8],
-      %v28o15@int16[8],%v29o15@int16[8],%v30o15@int16[8],%v31o15@int16[8]:
-      %v24o15=%v24 /\ %v25o15=%v25 /\ %v26o15=%v26 /\ %v27o15=%v27 /\
+ghost %v28o15@int16[8],%v29o15@int16[8],%v30o15@int16[8],%v31o15@int16[8]:
       %v28o15=%v28 /\ %v29o15=%v29 /\ %v30o15=%v30 /\ %v31o15=%v31
-   && %v24o15=%v24 /\ %v25o15=%v25 /\ %v26o15=%v26 /\ %v27o15=%v27 /\
-      %v28o15=%v28 /\ %v29o15=%v29 /\ %v30o15=%v30 /\ %v31o15=%v31;
+   && %v28o15=%v28 /\ %v29o15=%v29 /\ %v30o15=%v30 /\ %v31o15=%v31;
 
 (* sqdmulh	v16.8h, v28.8h, v0.h[1]                 #! PC = 0x411d60 *)
 broadcast %sqdmulh 8 [%v0[1]]; smulj %LO %v28 %sqdmulh;
@@ -6380,10 +6394,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
 assert true
-    && eqmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v28 %v28o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q]
+    && eqsmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v28 %v28o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v29 %v29o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqsmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q]
        prove with [cuts [21]];
 assume eqmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
