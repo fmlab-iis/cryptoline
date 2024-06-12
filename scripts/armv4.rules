@@ -68,11 +68,16 @@
 #! sbcs.w $1v, $2v, $3c -> sbcs carry $1v $2v $3c@uint32 carry
 #! sbcs $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
 #! sbcs.w $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
-#! smlabb $1v, $2v, $3v, $4v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vL $3vL; add $1v $1v prod
+#! smlabb $1v, $2v, $3v, $4v -> spl dc $2vL $2v 16; cast $2vL@sint16 $2vL; spl dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vL $3vL; add $1v $4v prod
+#! smlabt $1v, $2v, $3v, $4v -> spl dc $2vL $2v 16; cast $2vL@sint16 $2vL; spl $3vH dc $3v 16; smulj prod $2vL $3vH; add $1v $4v prod
+#! smlatb $1v, $2v, $3v, $4v -> spl $2vH dc $2v 16; spl dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vH $3vL; add $1v $4v prod
+#! smlatt $1v, $2v, $3v, $4v -> spl $2vH dc $2v 16; spl $3vH dc $3v 16; smulj prod $2vH $3vH; add $1v $4v prod
 #! smulbb $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vL $3vL
 #! smulbt $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split $3vH dc $3v 16; smulj $1v $2vL $3vH
 #! smultb $1v, $2v, $3v -> split $2vH dc $2v 16; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vH $3vL
 #! smultt $1v, $2v, $3v -> split $2vH dc $2v 16; split $3vH dc $3v 16; smulj $1v $2vH $3vH
+#! smulwb $1v, $2v, $3v -> split dc $3vL $3v 16; cast $3vL@sint32 $3vL; smulj $1vW $2v $3vL;\nspl $1vW dc $1vW 16; vpc $1v@sint32 $1vW
+#! smulwt $1v, $2v, $3v -> split $3vH dc $3v 16; smulj $1vW $2v $3vH;\nspl $1vW dc $1vW 16; vpc $1v@sint32 $1vW
 #! stmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v, $8v, $9v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20],$1ea[+24],$1ea[+28]] [$2v,$3v,$4v,$5v,$6v,$7v,$8v,$9v]
 #! stmia.w $1ea, { $2v, $3v, $4v, $5v, $6v, $7v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20]] [$2v,$3v,$4v,$5v,$6v,$7v]
 #! stmia.w $1ea, { $2v, $3v, $4v, $5v } -> mov [$1ea,$1ea[+4],$1ea[+8],$1ea[+12]] [$2v,$3v,$4v,$5v]
