@@ -116,12 +116,15 @@
 #! mls $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %mls 8 [%$3v[$4c]]; mull %dc %mls %$2v %mls; sub %$1v %$1v %mls
 #! mls $1v.8h, $2v.8h, $3v.8h -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
 #! mls $1v.4s, $2v.4s, $3v.4s -> mull %dc %mls %$2v %$3v; sub %$1v %$1v %mls
+#! mls $1v.4s, $2v.4s, $3v.s\[$4c\] -> broadcast %mls 4 [%$3v[$4c]]; mull %dc %mls %$2v %mls; sub %$1v %$1v %mls
 #! mla $1v.8h, $2v.8h, $3v.8h -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
 #! mla $1v.4s, $2v.4s, $3v.4s -> mull %dc %mla %$2v %$3v; add %$1v %$1v %mla
-#! mul $1v.16b, $2v.16b, $3v.16b -> mull %dc %$1v %$2v %$3v
-#! mul $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %mul 8 [%$3v[$4c]]; mull %dc %$1v %$2v %mul
-#! mul $1v.8h, $2v.8h, $3v.8h -> mull %dc %$1v %$2v %$3v
-#! mul $1v.4s, $2v.4s, $3v.4s -> mull %dc %$1v %$2v %$3v
+#! mul $1v.16b, $2v.16b, $3v.16b -> mul %$1v %$2v %$3v
+#! mul $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %mul 8 [%$3v[$4c]]; mul %$1v %$2v %mul
+#! mul $1v.8h, $2v.8h, $3v.8h -> mul %$1v %$2v %$3v
+#! mul $1v.4s, $2v.4s, $3v.4s -> mul %$1v %$2v %$3v
+#! mul $1v.4s, $2v.4s, $3v.s\[$4c\] -> broadcast %mul 4 [%$3v[$4c]]; mul %$1v %$2v %mul
+#! sqrdmulh $1v.4s, $2v.4s, $3v.s\[$4c\] -> broadcast %sqrdmulh 4 [%$3v[$4c]]; smulj %LO %$2v %sqrdmulh;\nssplit %LO1 %LO0 %LO 31; usplit %LO00 %dc %LO0 30;\nvpc %LO01@sint32[4] %LO00; vpc %LO11@sint32[4] %LO1;\nadd %$1v %LO11 %LO01
 #! sqrdmulh $1v.4s, $2v.4s, $3v.4s -> smulj %LO %$2v %$3v; ssplit %LO1 %LO0 %LO 31; usplit %LO00 %dc %LO0 30;\nvpc %LO01@sint32[4] %LO00; vpc %LO11@sint32[4] %LO1;\nadd %$1v %LO11 %LO01
 #! sqrdmulh $1v.8h, $2v.8h, $3v.h\[$4c\] -> broadcast %sqrdmulh 8 [%$3v[$4c]]; smulj %LO %$2v %sqrdmulh;\nssplit %LO1 %LO0 %LO 15; usplit %LO00 %dc %LO0 14;\nvpc %LO01@sint16[8] %LO00; vpc %LO11@sint16[8] %LO1;\nadd %$1v %LO11 %LO01
 #! sqrdmulh $1v.8h, $2v.8h, $3v.8h -> smulj %LO %$2v %$3v;\nssplit %LO1 %LO0 %LO 15; usplit %LO00 %dc %LO0 14;\nvpc %LO01@sint16[8] %LO00; vpc %LO11@sint16[8] %LO1;\nadd %$1v %LO11 %LO01
