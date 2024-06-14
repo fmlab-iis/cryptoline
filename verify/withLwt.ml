@@ -487,6 +487,36 @@ let write_ppl_input ?comments ifile mipvars constr =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
+let write_scip_input ?comments ifile mipvars constr =
+  let scip_variables mip mipvars =
+    String.concat "\n"
+      (List.map (fun mv ->
+           (string_of_var (var_of_mip mv)) ^
+             " = " ^ mip ^ ".addVar(vtype=" ^
+               (if is_mip_cvar mv then "'C'" else "'I'") ^
+                 ")") mipvars) in
+  let scip_constraint mip constr =
+    String.concat "\n"
+      (List.map (fun c -> mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")")
+         constr) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from pyscipopt import Model\n"
+    ^ "mip = Model('SCIP Solver')\n"
+    ^ (scip_variables "mip" mipvars) ^ "\n"
+    ^ scip_constraint "mip" constr ^ "\n"
+    ^ "mip.optimize()\n"
+    ^ "print(mip.getStatus())\n"
+    ^ "exit()\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
 let run_singular header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ =
@@ -603,6 +633,22 @@ let run_ppl header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
+let run_scip header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO PYSCIPOPT:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM PYSCIPOPT:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
 
 let read_one_line ofile =
   let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
@@ -653,6 +699,17 @@ let read_macaulay2_output = read_one_line
 let read_maple_output = read_one_line
 
 let read_ppl_output = read_one_line
+
+let read_scip_output ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt lines =
+    try%lwt
+      Lwt.return (Lwt_io.read_lines ch)
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt lines = Lwt_stream.to_list lines in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return (lines |> List.rev |> List.hd)
 
 (**
    [is_in_ideal header vars ideal p] returns [true] if the polynomial [p] is in
@@ -710,7 +767,7 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
-    | PPL -> failwith ("Ideal membership queries are not supported by MIP solver.")
+    | PPL | SCIP -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in
   res
 
@@ -875,6 +932,13 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
      let%lwt res = read_ppl_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
      Lwt.return (res = "False")
+  | SCIP ->
+     let ifile = ifile ^ ".py" in
+     let%lwt _ = write_scip_input ~comments ifile mipvars constr in
+     let%lwt _ = run_scip headers ifile ofile in
+     let%lwt res = read_scip_output ofile in
+     let%lwt _ = cleanup_lwt [ifile; ofile] in
+     Lwt.return (res = "infeasible")
   | _ -> failwith "Algebraic range condition needs PPL solver."
 
 (* Verify an algebraic specification using a specified SMT solver. *)
@@ -895,7 +959,7 @@ let verify_espec_single_conjunct ?comments cut_headers vgen s hashopt =
   let verify_one =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
-    | PPL -> verify_espec_single_conjunct_mip ?comments
+    | PPL | SCIP -> verify_espec_single_conjunct_mip ?comments
     | _ -> verify_espec_single_conjunct_ideal ?comments in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_espec_trivial s || Deduce.espec_prover s

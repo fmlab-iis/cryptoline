@@ -109,6 +109,7 @@ type algebra_solver =
   | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
   | SMTSolver of string      (** [SMTSolver s] is the SMT solver [s] that supports UFNIA. *) (* *)
   | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
+  | SCIP                      (** {{:https://scipopt.org}The SCIP Optimization Suite} *)
 (** supported algebra solvers *)
 
 type variable_order =

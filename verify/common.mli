@@ -140,3 +140,9 @@ val ppl_of_eexp : eexp -> string
 
 val ppl_of_ebexp : ebexp -> string
 (** Convert an ebexp to pplpy string *)
+
+val scip_of_eexp : eexp -> string
+(** Convert an eexp to pyscipopt string *)
+
+val scip_of_ebexp : ebexp -> string
+(** Convert an ebexp to pyscipopt string *)

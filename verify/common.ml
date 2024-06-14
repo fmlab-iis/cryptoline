@@ -351,3 +351,6 @@ let ppl_of_ebexp eb =
   | Etrue | Eeqmod _ | Eand _ ->
      failwith "Internal error: Etrue, Eeqmod, and Eand are not allowed in ppl_of_ebexp"
 
+let scip_of_eexp = ppl_of_eexp
+let scip_of_ebexp = ppl_of_ebexp
+

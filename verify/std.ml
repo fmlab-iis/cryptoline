@@ -530,6 +530,34 @@ let write_ppl_input ?comments ifile mipvars constr =
   trace_file ifile;
   trace ""
 
+let write_scip_input ?comments ifile mipvars constr =
+  let scip_variables mip mipvars =
+    String.concat "\n"
+      (List.map (fun mv ->
+           (string_of_var (var_of_mip mv)) ^
+             " = " ^ mip ^ ".addVar(vtype=" ^
+               (if is_mip_cvar mv then "'C'" else "'I'") ^
+                 ")") mipvars) in
+  let scip_constraint mip constr =
+    String.concat "\n"
+      (List.map (fun c -> mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")")
+         constr) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from pyscipopt import Model\n"
+    ^ "mip = Model('SCIP Solver')\n"
+    ^ (scip_variables "mip" mipvars) ^ "\n"
+    ^ scip_constraint "mip" constr ^ "\n"
+    ^ "mip.optimize()\n"
+    ^ "print(mip.getStatus())\n"
+    ^ "exit()\n" in
+  let ch = open_out ifile in
+  let _ = output_string ch input_text; close_out ch in
+  trace "INPUT TO PYSCIPOPT:";
+  trace_file ifile;
+  trace ""
+
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
@@ -593,6 +621,15 @@ let run_ppl ifile ofile =
   trace_file ofile;
   trace ""
 
+let run_scip ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2);
+  trace "OUTPUT FROM PYSCIPOPT:";
+  trace_file ofile;
+  trace ""
+
 let read_singular_output ofile =
   let line = ref "" in
   let ch = open_in ofile in
@@ -652,6 +689,16 @@ let read_maple_output = read_one_line
 
 let read_ppl_output = read_one_line
 
+let read_scip_output ofile =
+  let ch = open_in ofile in
+  let last_line =
+    let rec help line =
+      try help (input_line ch) with End_of_file -> line in
+    try help (input_line ch) with _ ->
+       failwith "Failed to read the output file" in
+  let _ = close_in ch in
+  last_line
+
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
@@ -693,7 +740,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let res = read_maple_output ofile in
        res = "true"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
-    | PPL -> failwith ("Ideal membership queries are not supported by MIP solver.")
+    | PPL | SCIP -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in
   let _ = cleanup [ifile; ofile] in
   res
@@ -820,7 +867,14 @@ let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
      let res = read_ppl_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "False"
-  | _ -> failwith "Algebraic range condition needs PPL solver."
+  | SCIP ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_scip_input ~comments ifile mipvars constr in
+     let _ = run_scip ifile ofile in
+     let res = read_scip_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "infeasible"
+  | _ -> failwith "Algebraic range condition needs MIP solver."
 
 (* Verify an algebraic specification using a mixed integer programming solver.
     *)
@@ -840,7 +894,7 @@ let verify_espec_single_conjunct ?comments vgen s hashopt =
   let verify =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
-    | PPL -> verify_espec_single_conjunct_mip ?comments
+    | PPL | SCIP -> verify_espec_single_conjunct_mip ?comments
     | _ -> verify_espec_single_conjunct_ideal ?comments in
   is_espec_trivial s || Deduce.espec_prover s ||
     (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))

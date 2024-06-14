@@ -18,6 +18,7 @@ type algebra_solver =
   | Maple
   | SMTSolver of string
   | PPL
+  | SCIP
 
 type variable_order =
   | LexOrder
@@ -55,6 +56,7 @@ let string_of_algebra_solver s =
   | Maple -> "maple"
   | SMTSolver solver -> "smt:\"" ^ solver ^ "\""
   | PPL -> "ppl"
+  | SCIP -> "scip"
 let parse_algebra_solver str =
   if str = string_of_algebra_solver Singular then Singular
   else if str = string_of_algebra_solver Sage then Sage
@@ -64,6 +66,7 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver Maple then Maple
   else if Str.string_match (Str.regexp "^smt:\\(.*\\)") str 0 then SMTSolver (Str.matched_group 1 str)
   else if str = string_of_algebra_solver PPL then PPL
+  else if str = string_of_algebra_solver SCIP then SCIP
   else raise (UnknownAlgebraSolver ("Unknown algebra solver: " ^ str))
 
 let apply_rewrite_mov = ref true
