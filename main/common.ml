@@ -75,7 +75,7 @@ let args_verifier =
     ("-mathematica_path", String (fun str -> mathematica_path := str),
      mk_arg_desc(["PATH"; "Set the path to Mathematica command-line script interpreter."]));
     ("-no_carry_constraint", Clear carry_constraint, mk_arg_desc([""; "Do not add carry constraints."]));
-    ("-no_minimize_constraint", Clear minimize_constraint, mk_arg_desc([""; "Do not minimize constraints."]));
+    ("-minimize_constraint", Set minimize_constraint, mk_arg_desc([""; "Minimize constraints."]));
     ("-python_path", String (fun str -> python_path := str),
      mk_arg_desc(["PATH"; "Set the path to Python with pplpy."]));
     ("-qfbv_args", String (fun str -> range_solver_args := str),

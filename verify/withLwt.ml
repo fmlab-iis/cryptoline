@@ -445,6 +445,10 @@ let write_maple_input ?comments ifile vars gen p =
   Lwt.return_unit
 
 let write_ppl_input ?comments ifile mipvars constr =
+  let partition_variables mipvars =
+    List.fold_left (fun (i, c) mv ->
+        if is_mip_cvar mv then (i, mv::c) else (mv::i, c))
+      ([], []) mipvars in
   let ppl_variables mipvars =
     String.concat "\n"
       (List.mapi (fun i mv ->
@@ -465,18 +469,27 @@ let write_ppl_input ?comments ifile mipvars constr =
     String.concat delimiter rev_ppl_cmds in
   let input_text =
     let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    let nvars = List.length mipvars in
+    let (rev_ivars, rev_cvars) = partition_variables mipvars in
+    let (nivars, icvars) = (List.length rev_ivars, List.length rev_cvars) in
+    let ordered_mipvars = List.rev_append rev_ivars (List.rev rev_cvars) in
+    let nvars = nivars + icvars in
     comment
     ^ "from ppl import Variable, Variables_Set, C_Polyhedron, MIP_Problem\n"
-    ^ (ppl_variables mipvars) ^ "\n"
+    ^ (ppl_variables ordered_mipvars) ^ "\n"
     ^ "ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n"
     ^ ppl_constraint "ph" constr ^ "\n"
-    ^ (if !Options.Std.minimize_constraint then "ph.minimized_constraints()\n"
+    ^ (if !Options.Std.minimize_constraint
+       then "ph.remove_higher_space_dimensions(" ^ string_of_int nivars ^ ")\n"
        else "")
-    ^ "mip = MIP_Problem(" ^ string_of_int nvars ^ ")\n"
-    ^ "mip.add_constraints(ph.constraints())\n"
-    (* ^ set_ppl_ivariable "\n" mipvars ^ "\n" *)
-    ^ set_ppl_ivariable "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n" mipvars ^ "\n"
+    ^ "mip = MIP_Problem("
+    ^ string_of_int (if !Options.Std.minimize_constraint
+                     then nivars else nvars)
+    ^ ")\n"
+    ^ "mip.add_constraints("
+    ^ (if !Options.Std.minimize_constraint
+       then "ph.minimized_constraints ())\n" else "ph.constraints())\n")
+    (* ^ set_ppl_ivariable "\n" ordered_mipvars ^ "\n" *)
+    ^ set_ppl_ivariable "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n" ordered_mipvars ^ "\n"
     ^ "print(mip.is_satisfiable())\n"
     ^ "exit()\n" in
   let%lwt ifd = Lwt_unix.openfile ifile

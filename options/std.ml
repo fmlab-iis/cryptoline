@@ -124,7 +124,7 @@ let incremental_safety = ref false
 let incremental_safety_timeout = ref 300
 
 let carry_constraint = ref true
-let minimize_constraint = ref true
+let minimize_constraint = ref false
 
 let verbose = ref false
 
