@@ -354,3 +354,30 @@ let ppl_of_ebexp eb =
 let scip_of_eexp = ppl_of_eexp
 let scip_of_ebexp = ppl_of_ebexp
 
+let rec isl_of_eexp e =
+  if is_eexp_over_const e then
+    Z.to_string (eval_eexp_const e)
+  else
+    match e with
+    | Evar v -> string_of_var v
+    | Econst n -> Z.to_string n
+    | Eunop (op, e') ->
+       symbol_of_eunop op ^ (if is_eexp_atom e' then isl_of_eexp e'
+                             else " (" ^ isl_of_eexp e' ^ ")")
+    | Ebinop (Epow, _e, Econst _z) ->
+       failwith "isl_of_eexp: " ^ (string_of_eexp e) ^ " is not a constant expression."
+  | Ebinop (op, e1, e2) ->
+     isl_of_eexp e1
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ isl_of_eexp e2
+
+let isl_of_ebexp eb =
+  match eb with
+  | Eeq (e0, e1) -> isl_of_eexp e0 ^ " = " ^ isl_of_eexp e1
+  | Ecmp (Elt, e0, e1) -> isl_of_eexp e0 ^ " < " ^ isl_of_eexp e1
+  | Ecmp (Ele, e0, e1) -> isl_of_eexp e0 ^ " <= " ^ isl_of_eexp e1
+  | Ecmp (Egt, e0, e1) -> isl_of_eexp e0 ^ " > " ^ isl_of_eexp e1
+  | Ecmp (Ege, e0, e1) -> isl_of_eexp e0 ^ " >= " ^ isl_of_eexp e1
+  | Etrue | Eeqmod _ | Eand _ ->
+     failwith "Internal error: Etrue, Eeqmod, and Eand are not allowed in isl_of_ebexp"
+

@@ -539,7 +539,7 @@ let write_ppl_input ?comments ifile mipvars constr =
     ^ "exit()\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO PYPPL:";
+  trace "INPUT TO PPLPY:";
   trace_file ifile;
   trace ""
 
@@ -568,6 +568,33 @@ let write_scip_input ?comments ifile mipvars constr =
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   trace "INPUT TO PYSCIPOPT:";
+  trace_file ifile;
+  trace ""
+
+let write_isl_input ?comments ifile mipvars constr =
+  let isl_variables mipvars =
+    String.concat ", "
+      (tmap (fun mv -> "'" ^ string_of_var (var_of_mip mv) ^ "'") mipvars) in
+  let isl_set_header mipvars =
+    "{[" ^ String.concat ", "
+             (tmap (fun mv -> string_of_var (var_of_mip mv)) mipvars) ^ "]:" in
+  let isl_constraint constr =
+    String.concat " and '\\\n"
+      (tmap (fun eb -> "'" ^ isl_of_ebexp eb) constr) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from islpy import Space, BasicSet, DEFAULT_CONTEXT\n"
+    ^ "variables = [" ^ isl_variables mipvars ^ "]\n"
+    ^ "space = Space.create_from_names(DEFAULT_CONTEXT, set = variables)\n"
+    ^ "bset = "
+    ^ "'" ^ isl_set_header mipvars ^ "'\\\n"
+    ^ isl_constraint constr ^ "}'\n"
+    ^ "print(BasicSet(bset).is_empty())\n"
+    ^ "exit()\n" in
+  let ch = open_out ifile in
+  let _ = output_string ch input_text; close_out ch in
+  trace "INPUT TO ISLPY:";
   trace_file ifile;
   trace ""
 
@@ -629,8 +656,8 @@ let run_ppl ifile ofile =
   let t1 = Unix.gettimeofday() in
   let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of PYPPL: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM PYPPL:";
+  trace ("Execution time of PPLPY: " ^ string_of_running_time t1 t2);
+  trace "OUTPUT FROM PPLPY:";
   trace_file ofile;
   trace ""
 
@@ -640,6 +667,15 @@ let run_scip ifile ofile =
   let t2 = Unix.gettimeofday() in
   trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2);
   trace "OUTPUT FROM PYSCIPOPT:";
+  trace_file ofile;
+  trace ""
+
+let run_isl ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  trace ("Execution time of ISLPY: " ^ string_of_running_time t1 t2);
+  trace "OUTPUT FROM ISLPY:";
   trace_file ofile;
   trace ""
 
@@ -712,6 +748,8 @@ let read_scip_output ofile =
   let _ = close_in ch in
   last_line
 
+let read_isl_output = read_one_line
+
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
@@ -753,7 +791,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let res = read_maple_output ofile in
        res = "true"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
-    | PPL | SCIP -> failwith ("Ideal membership queries are not supported by MIP solver.")
+    | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in
   let _ = cleanup [ifile; ofile] in
   res
@@ -887,6 +925,13 @@ let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
      let res = read_scip_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "infeasible"
+  | ISL ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_isl_input ~comments ifile mipvars constr in
+     let _ = run_isl ifile ofile in
+     let res = read_isl_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "True"
   | _ -> failwith "Algebraic range condition needs MIP solver."
 
 (* Verify an algebraic specification using a mixed integer programming solver.
@@ -907,7 +952,7 @@ let verify_espec_single_conjunct ?comments vgen s hashopt =
   let verify =
     match algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) with
     | SMTSolver solver -> verify_espec_single_conjunct_smt solver ?comments
-    | PPL | SCIP -> verify_espec_single_conjunct_mip ?comments
+    | PPL | SCIP | ISL -> verify_espec_single_conjunct_mip ?comments
     | _ -> verify_espec_single_conjunct_ideal ?comments in
   is_espec_trivial s || Deduce.espec_prover s ||
     (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))
