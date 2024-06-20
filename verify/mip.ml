@@ -366,7 +366,7 @@ let appearing_vars mip_vars constr =
       VM.find (var_of_mip mu) vm - VM.find (var_of_mip mv) vm) mip_vars
 
 let of_espec vgen es =
-  let prevars = VS.to_list (vars_ebexp es.espre) in
+  let prevars = VS.elements (vars_ebexp es.espre) in
   let (vgen', pre_constr, ivars) =
     split_and_convert_eqmod vgen [] es.espre prevars in
   let (vgen'', rev_constr, ivars') =
