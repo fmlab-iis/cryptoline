@@ -366,18 +366,24 @@ let rec isl_of_eexp e =
                              else " (" ^ isl_of_eexp e' ^ ")")
     | Ebinop (Epow, _e, Econst _z) ->
        failwith "isl_of_eexp: " ^ (string_of_eexp e) ^ " is not a constant expression."
-  | Ebinop (op, e1, e2) ->
-     isl_of_eexp e1
-     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
-     ^ isl_of_eexp e2
+    | Ebinop (op, e1, e2) ->
+       (if eexp_ebinop_open e1 op then isl_of_eexp e1
+        else "(" ^ isl_of_eexp e1 ^ ")")
+       ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+       ^ (if ebinop_eexp_open op e2 || is_eexp_over_const e2
+          then isl_of_eexp e2
+          else "(" ^ isl_of_eexp e2 ^ ")")
 
 let isl_of_ebexp eb =
   match eb with
-  | Eeq (e0, e1) -> isl_of_eexp e0 ^ " = " ^ isl_of_eexp e1
-  | Ecmp (Elt, e0, e1) -> isl_of_eexp e0 ^ " < " ^ isl_of_eexp e1
-  | Ecmp (Ele, e0, e1) -> isl_of_eexp e0 ^ " <= " ^ isl_of_eexp e1
-  | Ecmp (Egt, e0, e1) -> isl_of_eexp e0 ^ " > " ^ isl_of_eexp e1
-  | Ecmp (Ege, e0, e1) -> isl_of_eexp e0 ^ " >= " ^ isl_of_eexp e1
+  | Eeq (e0, e1) -> isl_of_eexp (simplify_eexp e0) ^ " = " ^
+                      isl_of_eexp (simplify_eexp e1)
+  | Ecmp (eop, e0, e1) ->
+     let e0' = simplify_eexp e0 in
+     let e1' = simplify_eexp e1 in
+     let eop_str = match eop with
+       | Elt -> " < " | Ele -> " <= " | Egt -> " > " | Ege -> " >= " in
+     isl_of_eexp e0' ^ eop_str ^ isl_of_eexp e1'
   | Etrue | Eeqmod _ | Eand _ ->
      failwith "Internal error: Etrue, Eeqmod, and Eand are not allowed in isl_of_ebexp"
 
