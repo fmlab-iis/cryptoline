@@ -50,6 +50,9 @@
 #! extr $1v, $2v, $3v, $4c -> spl dc extr_H $2v $4c; spl extr_L dc $3v $4c; join $1v extr_H extr_L
 #! ldp $1v, $2v, $3ea -> mov $1v $3ea; mov $2v $3ea[+8]
 #! ld1 {$1v.8h}, $2ea -> mov %$1v [$2ea[+0],$2ea[+2],$2ea[+4],$2ea[+6],$2ea[+8],$2ea[+10],$2ea[+12],$2ea[+14]]
+#! ld1 { $1v.4s }, $2ea -> mov %$1v [$2ea, $2ea[+4], $2ea[+8], $2ea[+12]]
+#! ld1 { $1v.4s, $2v.4s }, $3ea -> mov %$1v [$3ea[+0], $3ea[+4], $3ea[+8], $3ea[+12]];\nmov %$2v [$3ea[+16], $3ea[+20], $3ea[+24], $3ea[+28]]
+#! ld2 { $1v.4s, $2v.4s }, $3ea -> mov %$1v [$3ea[+0], $3ea[+8], $3ea[+16], $3ea[+24]];\nmov %$2v [$3ea[+4], $3ea[+12], $3ea[+20], $3ea[+28]]
 #! ldr $1v, $2ea -> mov $1v $2ea
 #! ldur $1v, $2ea -> mov $1v $2ea
 #! lsl $1v, $2v, $3c -> split dcH $1v $2v (64-$3c); shl $1v $1v $3c
