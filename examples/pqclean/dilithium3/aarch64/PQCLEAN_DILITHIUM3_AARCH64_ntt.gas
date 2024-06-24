@@ -1,4 +1,60 @@
-PQCLEAN_DILITHIUM3_AARCH64_ntt:
+#! [sp, $1c]! = %%EA
+#! [sp, $1c] = %%EA
+#! [sp], $1c = %%EA
+#! [sp] = %%EA
+#! [x$1c], $2c = %%EA
+#! [x$1c] = %%EA
+#! v$1c.s[$2c] = %%v$1c[$2c]
+#! v$1c.4s = %%v$1c
+
+#! add sp, sp, $1c -> nop
+#! adrp .* -> nop
+#! mov x29, sp -> nop
+#! sub sp, sp, $1c -> nop
+
+#! add x$1c, x$2c, $3c -> adds dc x$1c x$2c ($3c)@uint64
+#! add $1v, $2v, $3c -> adds dc $1v $2v $3c@uint64
+#! ldp d$1c, d$2c, $3ea -> mov d$1c $3ea[+0]; mov d$2c $3ea[+8]
+#! ldp x$1c, x$2c, $3ea -> mov x$1c $3ea[+0]; mov x$2c $3ea[+8]
+#! ldr w$1c, $2ea -> mov w$1c $2ea
+#! ldr x$1c, $2ea -> mov x$1c $2ea
+#! mov x$1c, $2c // $3c -> mov x$1c ($2c)@uint64
+#! mov x$1c, $2c -> mov x$1c ($2c)@uint64
+#! mov x$1c, x$2c -> mov x$1c x$2c
+#! mov $1v, $2v -> mov $1v $2v
+#! mov $1v\[0\], w$2c -> mov [_, m1, m2, m3] %$1v; mov %$1v [w$2c, m1, m2, m3]
+#! sub x$1c, x$2c, $3c -> subs dc x$1c x$2c ($3c)@uint64
+#! stp d$1c, d$2c, $3ea -> mov $3ea d$1c; mov $3ea[+8] d$2c
+#! stp x$1c, x$2c, $3ea -> mov $3ea x$1c; mov $3ea[+8] x$2c
+#! str x$1c, $2ea -> mov $2ea x$1c
+
+#! add $1v, $2v, $3v -> add %$1v %$2v %$3v
+#! ld1 { %%v0 - %%v3 }, $1ea -> mov %v0 [$1ea[+0], $1ea[+4], $1ea[+8], $1ea[+12]];\nmov %v1 [$1ea[+16], $1ea[+20], $1ea[+24], $1ea[+28]];\nmov %v2 [$1ea[+32], $1ea[+36], $1ea[+40], $1ea[+44]];\nmov %v3 [$1ea[+48], $1ea[+52], $1ea[+56], $1ea[+60]]
+#! ld1 { %%v16 - %%v19 }, $1ea -> mov %v16 [$1ea[+0], $1ea[+4], $1ea[+8], $1ea[+12]];\nmov %v17 [$1ea[+16], $1ea[+20], $1ea[+24], $1ea[+28]];\nmov %v18 [$1ea[+32], $1ea[+36], $1ea[+40], $1ea[+44]];\nmov %v19 [$1ea[+48], $1ea[+52], $1ea[+56], $1ea[+60]]
+#! ld1 { %%v20 - %%v23 }, $1ea -> mov %v20 [$1ea[+0], $1ea[+4], $1ea[+8], $1ea[+12]];\nmov %v21 [$1ea[+16], $1ea[+20], $1ea[+24], $1ea[+28]];\nmov %v22 [$1ea[+32], $1ea[+36], $1ea[+40], $1ea[+44]];\nmov %v23 [$1ea[+48], $1ea[+52], $1ea[+56], $1ea[+60]]
+#! ld1 { %%v24 - %%v27 }, $1ea -> mov %v24 [$1ea[+0], $1ea[+4], $1ea[+8], $1ea[+12]];\nmov %v25 [$1ea[+16], $1ea[+20], $1ea[+24], $1ea[+28]];\nmov %v26 [$1ea[+32], $1ea[+36], $1ea[+40], $1ea[+44]];\nmov %v27 [$1ea[+48], $1ea[+52], $1ea[+56], $1ea[+60]]
+#! ld1 { $1v }, $2ea -> mov %$1v [$2ea, $2ea[+4], $2ea[+8], $2ea[+12]]
+#! ld1 { $1v, $2v }, $3ea -> mov %$1v [$3ea[+0], $3ea[+4], $3ea[+8], $3ea[+12]];\nmov %$2v [$3ea[+16], $3ea[+20], $3ea[+24], $3ea[+28]]
+#! ld2 { $1v, $2v }, $3ea -> mov %$1v [$3ea[+0], $3ea[+8], $3ea[+16], $3ea[+24]];\nmov %$2v [$3ea[+4], $3ea[+12], $3ea[+20], $3ea[+28]]
+#! ld4 { %%v8 - %%v11 }, $1ea -> mov %v8 [$1ea[+0], $1ea[+16], $1ea[+32], $1ea[+48]];\nmov %v9 [$1ea[+4], $1ea[+20], $1ea[+36], $1ea[+52]];\nmov %v10 [$1ea[+8], $1ea[+24], $1ea[+40], $1ea[+56]];\nmov %v11 [$1ea[+12], $1ea[+28], $1ea[+44], $1ea[+60]]
+#! ld4 { %%v24 - %%v27 }, $1ea -> mov %v24 [$1ea[+0], $1ea[+16], $1ea[+32], $1ea[+48]];\nmov %v25 [$1ea[+4], $1ea[+20], $1ea[+36], $1ea[+52]];\nmov %v26 [$1ea[+8], $1ea[+24], $1ea[+40], $1ea[+56]];\nmov %v27 [$1ea[+12], $1ea[+28], $1ea[+44], $1ea[+60]]
+#! mul $1v, $2v, $3v\[1\] -> mov [_, m, _, _] %$3v; mov %mm [m, m, m, m];\nmull %dc %$1v %$2v %mm; cast [] %$1v@int32[4] %$1v
+#! mul $1v, $2v, $3v\[3\] -> mov [_, _, _, m] %$3v; mov %mm [m, m, m, m];\nmull %dc %$1v %$2v %mm; cast [] %$1v@int32[4] %$1v
+#! mul $1v, $2v, $3v -> mull %dc %$1v %$2v %$3v; cast [] %$1v@int32[4] %$1v
+#! sqrdmulh $1v, $2v, $3v\[0\] -> mov [m, _, _, _] %$3v; mov %mm [m, m, m, m];\nmulj %mm %$2v %mm; shl %mm %mm [1@int64, 1@int64, 1@int64, 1@int64];\nspl %mm %dc %mm 31; add %mm %mm [1@int33,1@int33,1@int33,1@int33];\nspl %$1v %dc %mm 1
+#! sqrdmulh $1v, $2v, $3v\[2\] -> mov [_, _, m, _] %$3v; mov %mm [m, m, m, m];\nmulj %mm %$2v %mm; shl %mm %mm [1@int64, 1@int64, 1@int64, 1@int64];\nspl %mm %dc %mm 31; add %mm %mm [1@int33,1@int33,1@int33,1@int33];\nspl %$1v %dc %mm 1
+#! sqrdmulh $1v, $2v, $3v -> mulj %mm %$2v %$3v; shl %mm %mm [1@int64, 1@int64, 1@int64, 1@int64];\nspl %mm %dc %mm 31; add %mm %mm [1@int33,1@int33,1@int33,1@int33];\nspl %$1v %dc %mm 1
+#! mls $1v, $2v, $3v\[0\] -> mov [m, _, _, _] %$3v; mov %mm [m, m, m, m];\nmull %dc %mm %$2v %mm; cast [] %mm@int32[4] %mm; subs %dc %$1v %$1v %mm
+#! st1 {$1v}, $2ea -> mov [$2ea[+0], $2ea[+4], $2ea[+8], $2ea[+12]] %$1v
+#! st4 { %%v0 - %%v3 }, $1ea -> mov [t00, t10, t20, t30] %v0; mov [t01, t11, t21, t31] %v1;\nmov [t02, t12, t22, t32] %v2; mov [t03, t13, t23, t33] %v3;\nmov $1ea[+0] t00; mov $1ea[+4] t01; mov $1ea[+8] t02; mov $1ea[+12] t03;\nmov $1ea[+16] t10; mov $1ea[+20] t11; mov $1ea[+24] t12; mov $1ea[+28] t13;\nmov $1ea[+32] t20; mov $1ea[+36] t21; mov $1ea[+40] t22; mov $1ea[+44] t23;\nmov $1ea[+48] t30; mov $1ea[+52] t31; mov $1ea[+56] t32; mov $1ea[+60] t33
+#! st4 { %%v16 - %%v19 }, $1ea -> mov [t00, t10, t20, t30] %v16; mov [t01, t11, t21, t31] %v17;\nmov [t02, t12, t22, t32] %v18; mov [t03, t13, t23, t33] %v19;\nmov $1ea[+0] t00; mov $1ea[+4] t01; mov $1ea[+8] t02; mov $1ea[+12] t03;\nmov $1ea[+16] t10; mov $1ea[+20] t11; mov $1ea[+24] t12; mov $1ea[+28] t13;\nmov $1ea[+32] t20; mov $1ea[+36] t21; mov $1ea[+40] t22; mov $1ea[+44] t23;\nmov $1ea[+48] t30; mov $1ea[+52] t31; mov $1ea[+56] t32; mov $1ea[+60] t33
+#! sub $1v, $2v, $3v -> sub %$1v %$2v %$3v
+#! trn1 $1v, $2v, $3v -> mov [t0, _, t2, _] %$2v; mov [t1, _, t3, _] %$3v; mov %$1v [t0, t1, t2, t3]
+#! trn1 v$1c.2d, v$2c.2d, v$3c.2d -> mov [t0, t1, _, _] %v$2c; mov [t2, t3, _, _] %v$3c; mov %v$1c [t0, t1, t2, t3]
+#! trn2 $1v, $2v, $3v -> mov [_, t0, _, t2] %$2v; mov [_, t1, _, t3] %$3v; mov %$1v [t0, t1, t2, t3]
+#! trn2 v$1c.2d, v$2c.2d, v$3c.2d -> mov [_, _, t0, t1] %v$2c; mov [_, _, t2, t3] %v$3c; mov %v$1c [t0, t1, t2, t3]
+
+#PQCLEAN_DILITHIUM3_AARCH64_ntt:
 # x0 = 0x7ffffed8d0
 # x1 = 0x7ffffed890
 # x2 = 0xfffffffffffffff0
