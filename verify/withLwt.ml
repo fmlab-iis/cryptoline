@@ -974,7 +974,8 @@ let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
       let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
       let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
       let%lwt _ = Options.WithLwt.trace_file ofile in
-      Options.WithLwt.trace "" in
+      let%lwt _ = Options.WithLwt.trace "" in
+      Options.WithLwt.log_unlock () in
     Lwt.return_unit in
   let%lwt res = read_one_line ofile in
   let%lwt _ = cleanup_lwt [ifile; ofile] in
