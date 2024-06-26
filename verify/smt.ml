@@ -838,38 +838,42 @@ let smtlib_define_expn () =
   | Some op -> "(define-fun expn ((x Int) (n Int)) Int (" ^ op ^ " x n))"
   | _ -> "(define-fun-rec expn ((x Int) (n Int)) Int (ite (= n 0) 1 (* x (expn x (- n 1)))))"
 
-let smt_of_op op = match op with
-  | Elt -> "(< " | Ele -> "(<= " | Egt -> "(> " | Ege -> "(>= "
+let smt_of_ecmpop op = match op with
+  | Elt -> "<" | Ele -> "<=" | Egt -> ">" | Ege -> ">="
+
+let smtlib_eq e1 e2 = String.concat "" ["(= "; e1; " "; e2; ")"]
+let smtlib_and e1 e2 = String.concat "" ["(and "; e1; " "; e2; ")"]
+let smtlib_ecmpop op e1 e2 = String.concat "" ["("; smt_of_ecmpop op; " "; e1; " "; e2; ")"]
 
 let rec smtlib_ebexp_premise vgen e =
   match e with
   | Etrue -> (vgen, "true")
-  | Eeq (e1, e2) -> (vgen, String.concat "" ["(= "; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Eeq (e1, e2) -> (vgen, smtlib_eq (smtlib_eexp e1) (smtlib_eexp e2))
   | Eeqmod (e1, e2, ms) ->
      let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ ->
         let (k, vgen) = Cas.gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
      (vgen, String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"])
-  | Ecmp (op, e1, e2) -> (vgen, String.concat "" [smt_of_op op; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Ecmp (op, e1, e2) -> (vgen, smtlib_ecmpop op (smtlib_eexp e1) (smtlib_eexp e2))
   | Eand (e1, e2) ->
      let (vgen, e1) = smtlib_ebexp_premise vgen e1 in
      let (vgen, e2) = smtlib_ebexp_premise vgen e2 in
-     (vgen, String.concat "" ["(and "; e1; " "; e2; ")"])
+     (vgen, smtlib_and e1 e2)
 
 let rec smtlib_ebexp_consequence vgen e =
   match e with
   | Etrue -> (vgen, [], "true")
-  | Eeq (e1, e2) -> (vgen, [], String.concat "" ["(= "; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Eeq (e1, e2) -> (vgen, [], smtlib_eq (smtlib_eexp e1) (smtlib_eexp e2))
   | Eeqmod (e1, e2, ms) ->
      let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ ->
         let (k, vgen) = Cas.gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
-     let unquantified = String.concat "" ["(= "; smtlib_eexp (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms); ")"] in
+     let unquantified = smtlib_eq (smtlib_eexp (esub e1 e2)) (smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp m)) (List.rev ks_rev) ms)) in
      let quantified = List.fold_left (fun quantified k -> smtlib_exists k quantified) unquantified ks_rev in
      (vgen, ks_rev, quantified)
-  | Ecmp (op, e1, e2) -> (vgen, [], String.concat "" [smt_of_op op; smtlib_eexp e1; " "; smtlib_eexp e2; ")"])
+  | Ecmp (op, e1, e2) -> (vgen, [], smtlib_ecmpop op (smtlib_eexp e1) (smtlib_eexp e2))
   | Eand (e1, e2) ->
      let (vgen, ks_rev1, e1) = smtlib_ebexp_consequence vgen e1 in
      let (vgen, ks_rev2, e2) = smtlib_ebexp_consequence vgen e2 in
-     (vgen, List.rev_append ks_rev1 ks_rev2, String.concat "" ["(and "; e1; " "; e2; ")"])
+     (vgen, List.rev_append ks_rev1 ks_rev2, smtlib_and e1 e2)
 
 (*
  * Convert `eeqmod e1 e2 [m1; m2; ...; mn]` to `e1 - e2 = k1 * m1 + k2 * m2 + ... + kn * mn`
@@ -888,6 +892,15 @@ let rec translate_eeqmod vgen e =
      (vgen, Eand (e1, e2))
   | _ -> (vgen, e)
 
+let smtlib_var_ranges vgen vs =
+  let smtlib_var_range_acc (vgen, res) v =
+    let ty = typ_of_var v in
+    let min_Z = min_of_typ ty in
+    let max_Z = max_of_typ ty in
+    let (vgen, min_smtlib) = smtlib_ebexp_premise vgen (Ecmp (Ele, Econst min_Z, Evar v)) in
+    let (vgen, max_smtlib) = smtlib_ebexp_premise vgen (Ecmp (Ele, Evar v, Econst max_Z)) in
+    (vgen, (smtlib_and min_smtlib max_smtlib)::res) in
+  List.fold_left smtlib_var_range_acc (vgen, []) vs
 
 let smtlib_espec vgen es =
   let (vgen, zs) = Cas.bv2z_espec vgen es in
@@ -904,12 +917,20 @@ let smtlib_espec vgen es =
     let (vgen, p_rev) = List.fold_left (fun (vgen, p_rev) e -> let (vgen, e) = smtlib_ebexp_premise vgen e in (vgen, e::p_rev)) (vgen, []) zp in
     let (vgen, ks_rev, g) = smtlib_ebexp_consequence vgen zg in
     (vgen, ks_rev, f, List.rev p_rev, g) in
+  (*
+    Variable ranges
+    Ghost variables are excluded because their ranges may be unbounded.
+   *)
+  let (vgen, var_ranges) =
+    let program_vars = VS.diff (vars_espec es) (gvs_program es.esprog) in
+    smtlib_var_ranges vgen (VS.elements program_vars) in
   (* Return the string representation in SMTLIB *)
   (vgen,
    String.concat "\n" [
-       "(set-logic UFNIA)";
+       "(set-logic NIA)";
        smtlib_define_expn();
        String.concat "\n" (List.map smtlib_declare_int (List.map string_of_var vars));
+       String.concat "\n" (List.map smtlib_assert var_ranges);
        smtlib_assert f;
        String.concat "\n" (List.map smtlib_assert p);
        (smtlib_assert (smtlib_not g));
