@@ -1,24 +1,23 @@
-(* quine: cv.exe -v -isafety -slicing -no_carry_constraint -jobs 40 -vo appearing -no_minimize_constraint PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_bot.cl
-Parsing CryptoLine file:                     [OK]            0.1277 seconds
-Checking well-formedness:                    [OK]            0.0361 seconds
+(* quine: cv.exe -v -slicing -isafety -jobs 40 -vo lex -enable_rewriting:eqmod -no_carry_constraint PQCLEAN_KYBER768_AARCH64__asm_ntt_SIMD_bot.cl
+Parsing CryptoLine file:                    [OK]            0.1261 seconds
+Checking well-formedness:                   [OK]            0.0342 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                    [OK]            0.0338 seconds
-Normalizing specification:                   [OK]            0.0291 seconds
-Rewriting assignments:                       [OK]            0.0276 seconds
-Verifying program safety:                    [OK]            40.2121 seconds
-Verifying range assertions:                  [OK]            205.2333 seconds
-Verifying range specification:               [OK]            0.2479 seconds
-Rewriting value-preserved casting:           [OK]            0.0182 seconds
-Verifying algebraic assertions:              [OK]            1358.4827 seconds
-Verifying algebraic specification:           [OK]            52.3851 seconds
-Procedure verification:                      [OK]            1656.6860 seconds
+Transforming to SSA form:                   [OK]            0.0329 seconds
+Normalizing specification:                  [OK]            0.0270 seconds
+Rewriting assignments:                      [OK]            0.0263 seconds
+Verifying program safety:                   [OK]            37.8725 seconds
+Verifying range assertions:                 [OK]            0.0131 seconds
+Verifying range specification:              [OK]            0.2323 seconds
+Rewriting value-preserved casting:          [OK]            0.0188 seconds
+Verifying algebraic assertions:             [OK]            90.9883 seconds
+Verifying algebraic specification:          [OK]            54.6463 seconds
+Procedure verification:                     [OK]            183.3274 seconds
 
 Summary
 -------
-Verification result:                         [OK]            1656.8500 seconds
-
+Verification result:                        [OK]            183.4898 seconds
 *)
 proc main (
 int16 L0xffffffffc400,int16 L0xffffffffc402,int16 L0xffffffffc404,int16 L0xffffffffc406,
@@ -1350,20 +1349,15 @@ mov %v25@sint16[8] [%v21[0],%v21[1],%v21[2],%v21[3],%v23[0],%v23[1],%v23[2],%v23
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v29o0 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o0 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v18 (%v29o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v29o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v29o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -1423,20 +1417,15 @@ cast %mls@int16[8] %mls; subc %mdc %v16 %v16 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v28o0 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o0 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v16 (%v28o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v28o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v28o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o0 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -1449,7 +1438,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, precondition] && true;
+       prove with [algebra solver isl, precondition] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v25 /\
        %v25<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v27 /\
@@ -1583,20 +1572,15 @@ cast %mls@int16[8] %mls; subc %mdc %v18 %v18 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v27o1 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o1 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v18 (%v27o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v27o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v27o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -1609,7 +1593,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, precondition] && true;
+       prove with [algebra solver isl, precondition] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v24 /\
        %v24<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v26 /\
@@ -1743,20 +1727,15 @@ cast %mls@int16[8] %mls; subc %mdc %v16 %v16 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v26o1 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o1 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v16 (%v26o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v26o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v26o1 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o1 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -1769,7 +1748,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [2]] && true;
+       prove with [algebra solver isl, cuts [2]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v25 /\
        %v25<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v27 /\
@@ -1929,20 +1908,15 @@ cast %mls@int16[8] %mls; subc %mdc %v18 %v18 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v27 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v25o2 16 * sext %v9 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v27o2 16 * sext %v11 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v18 (%v25o2 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v27o2 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v25o2 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o2 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v25o2 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o2 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -1955,7 +1929,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [3]] && true;
+       prove with [algebra solver isl, cuts [3]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v24 /\
        %v24<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v26 /\
@@ -2113,19 +2087,14 @@ cast %mls@int16[8] %mls; subc %mdc %v16 %v16 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v29o2 16 * sext %v13 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v31o2 16 * sext %v15 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v16 (%v29o2 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v31o2 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v29o2 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o2 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       prove with [precondition, algebra solver isl] && true;
+assume eqmod %v16 (%v29o2 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o2 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -2172,7 +2141,7 @@ assert
 /\ %v30<[7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2]
 /\ [7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2]<%v31
 /\ %v31<[7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2,7*Q+Q2]
-   prove with [algebra solver ppl, cuts [5]]
+   prove with [algebra solver isl, cuts [5]]
 && true;
 assume
    [7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2,7*NQ+NQ2]<%v24
@@ -2264,22 +2233,11 @@ mov %v22@sint16[8] [%v26[0],%v26[1],%v27[0],%v27[1],%v26[4],%v26[5],%v27[4],%v27
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
-assert true
-    && eqsmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q];
-assume eqmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q]
-    && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -2287,9 +2245,13 @@ assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v29 /\ %v29<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v30 /\ %v30<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v31 /\ %v31<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [algebra solver ppl, precondition, cuts [4]]
+       prove with [algebra solver isl, precondition, cuts [4]]
     && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v24 %v24o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v26 %v26o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v28 %v28o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o3 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -2752,20 +2714,15 @@ mov %v25@sint16[8] [%v21[0],%v21[1],%v21[2],%v21[3],%v23[0],%v23[1],%v23[2],%v23
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v29o4 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o4 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [7]];
-assume eqmod %v18 (%v29o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v29o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7], algebra solver ppl] && true;
+       prove with [cuts [7], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v29o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -2823,21 +2780,15 @@ cast %mls@int16[8] %mls; subc %mdc %v16 %v16 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
-
-assert true
-    && eqsmod (sext %v16 16) (sext %v28o4 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o4 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [precondition];
-assume eqmod %v16 (%v28o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v28o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [precondition, algebra solver ppl] && true;
+       prove with [precondition, algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v28o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o4 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -2850,7 +2801,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [7]] && true;
+       prove with [algebra solver isl, cuts [7]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v25 /\
        %v25<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v27 /\
@@ -2985,22 +2936,15 @@ cast %mls@int16[8] %mls; subc %mdc %v18 %v18 %mls;
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
-
-
-assert true
-    && eqsmod (sext %v18 16) (sext %v27o5 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o5 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [7]];
-assume eqmod %v18 (%v27o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v27o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7], algebra solver ppl] && true;
+       prove with [cuts [7], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v27o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -3013,7 +2957,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [7]] && true;
+       prove with [algebra solver isl, cuts [7]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v24 /\
        %v24<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v26 /\
@@ -3150,20 +3094,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v26o5 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o5 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [7]];
-assume eqmod %v16 (%v26o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v26o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7], algebra solver ppl] && true;
+       prove with [cuts [7], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v26o5 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o5 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -3176,7 +3115,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [9]] && true;
+       prove with [algebra solver isl, cuts [9]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v25 /\
        %v25<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v27 /\
@@ -3338,20 +3277,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v27 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v25o4 16 * sext %v9 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v27o4 16 * sext %v11 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [7]];
-assume eqmod %v18 (%v25o4 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v27o4 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v25o4 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o4 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7], algebra solver ppl] && true;
+       prove with [cuts [7], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v25o4 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o4 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -3364,7 +3298,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [10]] && true;
+       prove with [algebra solver isl, cuts [10]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v24 /\
        %v24<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v26 /\
@@ -3525,19 +3459,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v29o6 16 * sext %v13 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v31o6 16 * sext %v15 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [7]];
-assume eqmod %v16 (%v29o6 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v31o6 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v29o6 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o6 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7], algebra solver ppl] && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       prove with [cuts [7], algebra solver isl] && true;
+assume eqmod %v16 (%v29o6 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o6 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -3639,23 +3568,12 @@ mov %v22@sint16[8] [%v26[0],%v26[1],%v27[0],%v27[1],%v26[4],%v26[5],%v27[4],%v27
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
-assert true
-    && eqsmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v28 %v28o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v29 %v29o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [7]];
-assume eqmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+
+assert eqmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v28 %v28o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q]
-    && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -3663,9 +3581,13 @@ assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v29 /\ %v29<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v30 /\ %v30<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v31 /\ %v31<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [7, 11]]
+       prove with [algebra solver isl, cuts [7, 11]]
     && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v24 %v24o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v26 %v26o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v28 %v28o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o7 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -4130,20 +4052,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v29o8 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o8 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v18 (%v29o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v29o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
+       prove with [cuts [14], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v29o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -4203,20 +4120,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v28o8 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o8 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v16 (%v28o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v28o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
+       prove with [cuts [14], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v28o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o8 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -4229,7 +4141,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [14]] && true;
+       prove with [algebra solver isl, cuts [14]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v25 /\
        %v25<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v27 /\
@@ -4366,20 +4278,15 @@ cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v27o9 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o9 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v18 (%v27o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v27o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
+       prove with [cuts [14], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v27o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -4392,7 +4299,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [14]] && true;
+       prove with [algebra solver isl, cuts [14]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v24 /\
        %v24<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v26 /\
@@ -4529,20 +4436,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v26o9 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o9 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v16 (%v26o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v26o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
+       prove with [cuts [14], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v26o9 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o9 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -4555,7 +4457,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [16]] && true;
+       prove with [algebra solver isl, cuts [16]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v25 /\
        %v25<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v27 /\
@@ -4717,20 +4619,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v27 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v25o8 16 * sext %v9 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v27o8 16 * sext %v11 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v18 (%v25o8 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v27o8 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v25o8 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o8 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
+       prove with [cuts [14], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v25o8 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o8 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -4743,7 +4640,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [17]] && true;
+       prove with [algebra solver isl, cuts [17]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v24 /\
        %v24<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v26 /\
@@ -4904,19 +4801,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v29o10 16 * sext %v13 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v31o10 16 * sext %v15 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [14]];
-assume eqmod %v16 (%v29o10 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v31o10 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v29o10 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o10 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14], algebra solver ppl] && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       prove with [cuts [14], algebra solver isl] && true;
+assume eqmod %v16 (%v29o10 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o10 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -5017,23 +4909,11 @@ mov %v22@sint16[8] [%v26[0],%v26[1],%v27[0],%v27[1],%v26[4],%v26[5],%v27[4],%v27
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
-assert true
-    && eqsmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v28 %v28o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v29 %v29o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [14]];
-assume eqmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v28 %v28o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q]
-    && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -5041,9 +4921,13 @@ assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v29 /\ %v29<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v30 /\ %v30<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v31 /\ %v31<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [14, 18]]
+       prove with [algebra solver isl, cuts [14, 18]]
     && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v24 %v24o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v26 %v26o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v28 %v28o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o11 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -5507,20 +5391,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v29o12 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o12 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v18 (%v29o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v29o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
+       prove with [cuts [21], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v29o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -5580,20 +5459,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v28o12 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o12 16 * sext %v3 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v16 (%v28o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v28o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
+       prove with [cuts [21], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v28o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o12 * %v3) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -5606,7 +5480,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v29<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v31 /\
        %v31<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [21]] && true;
+       prove with [algebra solver isl, cuts [21]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v25 /\
        %v25<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v27 /\
@@ -5743,20 +5617,15 @@ cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v27o13 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v31o13 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v18 (%v27o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v31o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v27o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
+       prove with [cuts [21], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v27o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v31o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -5769,7 +5638,7 @@ assert [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]
        %v28<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v30 /\
        %v30<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2]
-       prove with [algebra solver ppl, cuts [21]] && true;
+       prove with [algebra solver isl, cuts [21]] && true;
 assume [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v24 /\
        %v24<[5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2,5*Q+Q2] /\
        [5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2,5*NQ+NQ2]<%v26 /\
@@ -5906,20 +5775,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v30 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v26o13 16 * sext %v5 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v30o13 16 * sext %v7 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v16 (%v26o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v30o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v26o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
+       prove with [cuts [21], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v16 (%v26o13 * %v5) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v30o13 * %v7) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -5932,7 +5796,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v29<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v31 /\
        %v31<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [23]] && true;
+       prove with [algebra solver isl, cuts [23]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v25 /\
        %v25<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v27 /\
@@ -6094,20 +5958,15 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v27 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v19 %v19 %mls;
 
 
-assert true
-    && eqsmod (sext %v18 16) (sext %v25o12 16 * sext %v9 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v19 16) (sext %v27o12 16 * sext %v11 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v18 (%v25o12 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v19 (%v27o12 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v18 (%v25o12 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o12 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
+       prove with [cuts [21], algebra solver isl] && true;
 
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v18 (%v25o12 * %v9) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v19 (%v27o12 * %v11) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v18 /\ %v18<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v18 /\ %v18<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -6120,7 +5979,7 @@ assert [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]
        %v28<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v30 /\
        %v30<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2]
-       prove with [algebra solver ppl, cuts [24]] && true;
+       prove with [algebra solver isl, cuts [24]] && true;
 assume [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v24 /\
        %v24<[6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2,6*Q+Q2] /\
        [6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2,6*NQ+NQ2]<%v26 /\
@@ -6280,19 +6139,14 @@ broadcast %mls 8 [%v0[0]]; mull %dc %mls %v31 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v17 %v17 %mls;
 
 
-assert true
-    && eqsmod (sext %v16 16) (sext %v29o14 16 * sext %v13 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16) /\
-       eqsmod (sext %v17 16) (sext %v31o14 16 * sext %v15 16)
-              (sext [Q,Q,Q,Q,Q,Q,Q,Q] 16)
-       prove with [cuts [21]];
-assume eqmod %v16 (%v29o14 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v17 (%v31o14 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v16 (%v29o14 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o14 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21], algebra solver ppl] && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       prove with [cuts [21], algebra solver isl] && true;
+assume eqmod %v16 (%v29o14 * %v13) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v17 (%v31o14 * %v15) [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v16 /\ %v16<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v17 /\ %v17<[Q,Q,Q,Q,Q,Q,Q,Q]
     && [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v16 /\ %v16<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v17 /\ %v17<s[Q,Q,Q,Q,Q,Q,Q,Q];
@@ -6393,23 +6247,11 @@ mov %v22@sint16[8] [%v26[0],%v26[1],%v27[0],%v27[1],%v26[4],%v26[5],%v27[4],%v27
 broadcast %mls 8 [%v0[0]]; mull %dc %mls %v19 %mls;
 cast %mls@int16[8] %mls; subc %mdc %v31 %v31 %mls;
 
-assert true
-    && eqsmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v28 %v28o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v29 %v29o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqsmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [cuts [21]];
-assume eqmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+assert eqmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
        eqmod %v28 %v28o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
-       eqmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q]
-    && true;
-
-assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
@@ -6417,9 +6259,13 @@ assert [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v29 /\ %v29<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v30 /\ %v30<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v31 /\ %v31<[Q,Q,Q,Q,Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [21, 25]]
+       prove with [algebra solver isl, cuts [21, 25]]
     && true;
-assume [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
+assume eqmod %v24 %v24o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v25 %v25o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v26 %v26o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v27 %v27o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v28 %v28o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v29 %v29o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       eqmod %v30 %v30o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\ eqmod %v31 %v31o15 [Q,Q,Q,Q,Q,Q,Q,Q] /\
+       [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v24 /\ %v24<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v25 /\ %v25<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v26 /\ %v26<[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v27 /\ %v27<[Q,Q,Q,Q,Q,Q,Q,Q] /\
