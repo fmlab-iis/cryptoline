@@ -367,7 +367,7 @@ let rec isl_of_eexp e =
     | Ebinop (Epow, _e, Econst _z) ->
        failwith "isl_of_eexp: " ^ (string_of_eexp e) ^ " is not a constant expression."
     | Ebinop (op, e1, e2) ->
-       (if eexp_ebinop_open e1 op then isl_of_eexp e1
+       (if eexp_ebinop_open e1 op || is_eexp_over_const e1 then isl_of_eexp e1
         else "(" ^ isl_of_eexp e1 ^ ")")
        ^ " " ^ algebra_symbol_of_ebinop op ^ " "
        ^ (if ebinop_eexp_open op e2 || is_eexp_over_const e2
