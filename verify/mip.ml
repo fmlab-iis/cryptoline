@@ -52,23 +52,17 @@ let is_linear_ebexp b =
   | Eand _ -> failwith "Internal error: conjunctive algebraic Boolean expressions are not allowed in is_linear_ebexp"
 
 let slicing_constr vars constr =
-  let constr_vars = tmap vars_ebexp constr in
-  let rec helper again res finished todo =
-    match todo with
-    | hd::tl -> if VS.is_empty (VS.inter res hd)
-                then helper again res (hd::finished) tl
-                else helper true (VS.union res hd) finished tl
-    | _ -> if again then helper false res [] (List.rev finished)
-           else res in
-  let relevant_vars =
-    (* make sure all relevant_vars are from constr_vars *)
-    VS.inter (helper false vars [] (List.rev constr_vars))
-      (List.fold_left VS.union VS.empty constr_vars) in
-  let rev_ret =
-    List.fold_left2 (fun res vs b ->
-        if VS.is_empty (VS.inter relevant_vars vs) then res else b::res)
-      [] constr_vars constr in
-  (relevant_vars, List.rev rev_ret)
+  let rev_var_constr = List.rev_map (fun e -> (vars_ebexp e, e)) constr in
+  let (constr_vars, relevant_vars, ret) =
+    let helper (cvars, rvars, ret) (vs, e) =
+      let cvars' = VS.union cvars vs in
+      if VS.is_empty (VS.inter rvars vs)
+      then (cvars', rvars, ret)
+      else (cvars', VS.union rvars vs, e::ret) in
+    List.fold_left helper (VS.empty, vars, []) rev_var_constr in
+  (* make sure all relevant_vars are from constr_vars *)
+  let relevant_vars' = VS.inter constr_vars relevant_vars in
+  (relevant_vars', ret)
 
 (* convert_moduli vgen [m0; m1; ...; mk] ivars returns a new generator,
    m0*t0+m1*t1+...+mk*tk, and adds [t0; t1; ...; tk] to ivars *)
