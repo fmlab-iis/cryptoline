@@ -2782,6 +2782,33 @@ mov [L0xffffffffc480,L0xffffffffc482,L0xffffffffc484,L0xffffffffc486,L0xffffffff
 (* ldr	q15, [x0, #240]                             #! EA = L0xffffffffc490; Value = 0x011b053901aeff68; PC = 0x41276c *)
 mov %v15 [L0xffffffffc490,L0xffffffffc492,L0xffffffffc494,L0xffffffffc496,L0xffffffffc498,L0xffffffffc49a,L0xffffffffc49c,L0xffffffffc49e];
 
+assert [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
+       %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
+       %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
+       %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
+       %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B]
+       prove with [algebra solver isl, precondition]
+   && true;
+assume [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
+       %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
+       %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
+       %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
+       %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B]
+    && [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v16 /\
+       %v16<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v18 /\
+       %v18<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v20 /\
+       %v20<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v22 /\
+       %v22<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B];
+
 (* CUT 7 7 *)
 cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
     %v16 = [L0xffffffffc4b0,L0xffffffffc4b2,L0xffffffffc4b4,L0xffffffffc4b6,
@@ -2871,10 +2898,26 @@ cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
     eqmod [L0xffffffffc580,L0xffffffffc582,L0xffffffffc584,L0xffffffffc586,
            L0xffffffffc588,L0xffffffffc58a,L0xffffffffc58c,L0xffffffffc58e]
           ((%v15o3-%v23o3)*[%v4[3],%v4[3],%v4[3],%v4[3],%v4[3],%v4[3],%v4[3],%v4[3]])
-          [Q,Q,Q,Q,Q,Q,Q,Q]
+          [Q,Q,Q,Q,Q,Q,Q,Q] /\
+    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
+    %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
+    %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
+    %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
+    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
+    %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B]
     prove with [all ghosts, cuts [5]]
  &&
 Q = 3329@16 /\ NQ = (-3329)@16 /\ B = 1665@16 /\ NB = (-1665)@16 /\
+[2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v16 /\
+%v16<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+[2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v18 /\
+%v18<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+[2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v20 /\
+%v20<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
+[2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v22 /\
+%v22<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
 [NQ,NQ,NQ,NQ]<s[L0xffffffffc3a0,L0xffffffffc3a2,L0xffffffffc3a4,L0xffffffffc3a6]/\
 [L0xffffffffc3a0,L0xffffffffc3a2,L0xffffffffc3a4,L0xffffffffc3a6]<s[Q,Q,Q,Q]/\
 [NQ,NQ,NQ,NQ]<s[L0xffffffffc3c0,L0xffffffffc3c2,L0xffffffffc3c4,L0xffffffffc3c6]/\
@@ -3005,15 +3048,8 @@ assume eqmod %v17 (%v28o3*[%v3[1],%v3[1],%v3[1],%v3[1],%v3[1],%v3[1],%v3[1],%v3[
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v21 /\ %v21<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v23 /\ %v23<s[Q,Q,Q,Q,Q,Q,Q,Q];
-assert [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
-       %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
-       %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
-       %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
-       %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v8 /\
+
+assert [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v8 /\
        %v8<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
        [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v10 /\
        %v10<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
@@ -3029,17 +3065,8 @@ assert [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
        %v26<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
        [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v27 /\
        %v27<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B]
-       prove with [algebra solver isl, precondition]
-   && true;
-assume [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
-       %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
-       %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
-       %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
-       %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-       [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v8 /\
+       prove with [algebra solver isl, precondition] && true;
+assume [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v8 /\
        %v8<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
        [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v10 /\
        %v10<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
@@ -3055,15 +3082,7 @@ assume [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
        %v26<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
        [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v27 /\
        %v27<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B]
-    && [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v16 /\
-       %v16<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v18 /\
-       %v18<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v20 /\
-       %v20<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v22 /\
-       %v22<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-       [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v8 /\
+&&     [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v8 /\
        %v8<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
        [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v10 /\
        %v10<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
@@ -3080,24 +3099,9 @@ assume [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
        [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v27 /\
        %v27<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B];
 
+
 (* CUT 8 8 *)
 cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
-    %v16 = [L0xffffffffc4b0,L0xffffffffc4b2,L0xffffffffc4b4,L0xffffffffc4b6,
-            L0xffffffffc4b8,L0xffffffffc4ba,L0xffffffffc4bc,L0xffffffffc4be] +
-           [L0xffffffffc4d0,L0xffffffffc4d2,L0xffffffffc4d4,L0xffffffffc4d6,
-            L0xffffffffc4d8,L0xffffffffc4da,L0xffffffffc4dc,L0xffffffffc4de] /\
-    %v18 = [L0xffffffffc4f0,L0xffffffffc4f2,L0xffffffffc4f4,L0xffffffffc4f6,
-            L0xffffffffc4f8,L0xffffffffc4fa,L0xffffffffc4fc,L0xffffffffc4fe] +
-           [L0xffffffffc510,L0xffffffffc512,L0xffffffffc514,L0xffffffffc516,
-            L0xffffffffc518,L0xffffffffc51a,L0xffffffffc51c,L0xffffffffc51e] /\
-    %v20 = [L0xffffffffc530,L0xffffffffc532,L0xffffffffc534,L0xffffffffc536,
-            L0xffffffffc538,L0xffffffffc53a,L0xffffffffc53c,L0xffffffffc53e] +
-           [L0xffffffffc550,L0xffffffffc552,L0xffffffffc554,L0xffffffffc556,
-            L0xffffffffc558,L0xffffffffc55a,L0xffffffffc55c,L0xffffffffc55e] /\
-    %v22 = [L0xffffffffc570,L0xffffffffc572,L0xffffffffc574,L0xffffffffc576,
-            L0xffffffffc578,L0xffffffffc57a,L0xffffffffc57c,L0xffffffffc57e] +
-           [L0xffffffffc590,L0xffffffffc592,L0xffffffffc594,L0xffffffffc596,
-            L0xffffffffc598,L0xffffffffc59a,L0xffffffffc59c,L0xffffffffc59e] /\
      %v8 =  %v8o5 +  %v9o5 /\ %v10 = %v10o5 + %v11o5 /\
     %v12 = %v12o5 + %v13o5 /\ %v14 = %v14o5 + %v15o5 /\
     %v24 =  %v8o5 -  %v9o5 /\ %v25 = %v10o5 - %v11o5 /\
@@ -3114,14 +3118,6 @@ cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v19 /\ %v19<[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v21 /\ %v21<[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<%v23 /\ %v23<[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v16 /\
-    %v16<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v18 /\
-    %v18<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v20 /\
-    %v20<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
-    [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v22 /\
-    %v22<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
     [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v8 /\
     %v8<[2*B,2*B,2*B,2*B,2*B,2*B,2*B,2*B] /\
     [2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB,2*NB]<%v10 /\
@@ -3143,14 +3139,6 @@ cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v19 /\ %v19<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v21 /\ %v21<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
     [NQ,NQ,NQ,NQ,NQ,NQ,NQ,NQ]<s%v23 /\ %v23<s[Q,Q,Q,Q,Q,Q,Q,Q] /\
-    [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v16 /\
-    %v16<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-    [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v18 /\
-    %v18<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-    [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v20 /\
-    %v20<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
-    [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v22 /\
-    %v22<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
     [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v8 /\
     %v8<s[2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B,2@16*B] /\
     [2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB,2@16*NB]<s%v10 /\
@@ -3281,7 +3269,7 @@ assert [4*NB,4*NB,4*NB,4*NB,4*NB,4*NB,4*NB,4*NB]<%v16 /\
        %v30<[4*B,4*B,4*B,4*B,4*B,4*B,4*B,4*B] /\
        [2*NQ,2*NQ,2*NQ,2*NQ,2*NQ,2*NQ,2*NQ,2*NQ]<%v31 /\
        %v31<[2*Q,2*Q,2*Q,2*Q,2*Q,2*Q,2*Q,2*Q]
-       prove with [algebra solver isl, precondition]
+       prove with [algebra solver isl, cuts [7]]
    && true;
 assume [4*NB,4*NB,4*NB,4*NB,4*NB,4*NB,4*NB,4*NB]<%v16 /\
        %v16<[4*B,4*B,4*B,4*B,4*B,4*B,4*B,4*B] /\
