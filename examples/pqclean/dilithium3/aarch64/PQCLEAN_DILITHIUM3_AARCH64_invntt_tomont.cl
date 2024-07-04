@@ -10126,7 +10126,8 @@ split w21 dc w20 1;
 (* neg	w22, w21                                    #! PC = 0x4136c8 *)
 sub w22 0@int32 w21;
 
-assert true && w21 = 4190208@32 /\ w22 = (-4190208)@32;
+assert w21 = 4190208 /\ w22 = -4190208 prove with [algebra solver isl]
+   && true;
 assume w21 = 4190208 /\ w22 = -4190208
     && w21 = 4190208@32 /\ w22 = (-4190208)@32;
 
