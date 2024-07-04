@@ -158,7 +158,9 @@
               "qfbv"                       , QFBV;
               "qf_bv"                      , QFBV;
               "solver"                     , SOLVER;
-              "smt"                        , SMT
+              "smt"                        , SMT;
+              "nia"                        , NIA;
+              "lia"                        , LIA
             ]
 }
 

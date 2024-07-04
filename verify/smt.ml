@@ -902,6 +902,25 @@ let smtlib_var_ranges vgen vs =
     (vgen, (smtlib_and min_smtlib max_smtlib)::res) in
   List.fold_left smtlib_var_range_acc (vgen, []) vs
 
+let smtlib_ebexps_lia vgen es =
+  let vars = VS.elements (List.fold_left (fun res e -> VS.union res (vars_ebexp e)) VS.empty es) in
+  (* Convert to SMTLIB format *)
+  let (vgen, smtlibs) =
+    let (vgen, smtlibs_rev) =
+      List.fold_left (
+          fun (vgen, smtlibs_rev) e ->
+          let (vgen, _, e) = smtlib_ebexp_consequence vgen e in (vgen, e::smtlibs_rev)
+        ) (vgen, []) es in
+    (vgen, List.rev smtlibs_rev) in
+  (* Return the string representation in SMTLIB *)
+  (vgen,
+   String.concat "\n" [
+       "(set-logic LIA)";
+       String.concat "\n" (List.map smtlib_declare_int (List.map string_of_var vars));
+       String.concat "\n" (List.map smtlib_assert smtlibs);
+       "(check-sat)"
+  ])
+
 let smtlib_espec vgen es =
   let (vgen, zs) = Cas.bv2z_espec vgen es in
   (* Convert to ebexp *)

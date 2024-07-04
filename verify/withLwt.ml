@@ -950,36 +950,46 @@ let verify_espec_single_conjunct_ideal ?comments headers vgen s =
 
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
-  let (_, smtlib) = smtlib_espec vgen s in
-  let ifile = tmpfile "inputfgb_" ".smt2" in
-  let ofile = tmpfile "outputfgb_" "" in
-  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
-                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
-  let%lwt _ =
-    let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
-    let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-    let%lwt _ = Lwt_io.write ch comments in
-    let%lwt _ = Lwt_io.write ch smtlib in
-    Lwt_io.close ch in
-  let%lwt _ =
-    let t1 = Unix.gettimeofday() in
-    let%lwt _ = Options.WithLwt.unix (solver ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-    let t2 = Unix.gettimeofday() in
+  let verify_one_smtlib smtlib =
+    let ifile = tmpfile "inputfgb_" ".smt2" in
+    let ofile = tmpfile "outputfgb_" "" in
+    let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                                     "Output file: " ^ ofile ] |> make_line_comments ";" in
     let%lwt _ =
-      let%lwt _ = Options.WithLwt.log_lock () in
-      let%lwt _ = write_header_to_log cut_headers in
-      let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
-      let%lwt _ = Options.WithLwt.trace_file ifile in
-      let%lwt _ = Options.WithLwt.trace "" in
-      let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2) in
-      let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
-      let%lwt _ = Options.WithLwt.trace_file ofile in
-      let%lwt _ = Options.WithLwt.trace "" in
-      Options.WithLwt.log_unlock () in
-    Lwt.return_unit in
-  let%lwt res = read_one_line ofile in
-  let%lwt _ = cleanup_lwt [ifile; ofile] in
-  Lwt.return (res = "unsat")
+      let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
+      let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+      let%lwt _ = Lwt_io.write ch comments in
+      let%lwt _ = Lwt_io.write ch smtlib in
+      Lwt_io.close ch in
+    let%lwt _ =
+      let t1 = Unix.gettimeofday() in
+      let%lwt _ = Options.WithLwt.unix (solver.algsmt_path ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+      let t2 = Unix.gettimeofday() in
+      let%lwt _ =
+        let%lwt _ = Options.WithLwt.log_lock () in
+        let%lwt _ = write_header_to_log cut_headers in
+        let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
+        let%lwt _ = Options.WithLwt.trace_file ifile in
+        let%lwt _ = Options.WithLwt.trace "" in
+        let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ solver.algsmt_path ^ ": " ^ string_of_running_time t1 t2) in
+        let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
+        let%lwt _ = Options.WithLwt.trace_file ofile in
+        let%lwt _ = Options.WithLwt.trace "" in
+        Options.WithLwt.log_unlock () in
+      Lwt.return_unit in
+    let%lwt res = read_one_line ofile in
+    let%lwt _ = cleanup_lwt [ifile; ofile] in
+    Lwt.return (res = "unsat") in
+  let verify_one_mipvars_constr vgen (_mipvars, constrs) =
+    let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+    verify_one_smtlib smtlib in
+  let res =
+    match solver.algsmt_logic with
+    | NIA -> let (_, smtlib) = smtlib_espec vgen s in
+             verify_one_smtlib smtlib
+    | LIA -> let (_, mipvars_constrs) = mip_of_espec vgen s in
+             Lwt_list.for_all_p (verify_one_mipvars_constr vgen) mipvars_constrs in
+  res
 
 let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
       mipvars constr =
@@ -1434,7 +1444,7 @@ let run_cli_vespec ?comments header s =
                             | Options.Std.Sage -> "-sage " ^ !Options.Std.sage_path
                             | Options.Std.Mathematica -> "-mathematica " ^ !Options.Std.mathematica_path
                             | Options.Std.Macaulay2 -> "-macaulay2 " ^ !Options.Std.macaulay2_path
-                            | Options.Std.SMTSolver solver -> "smt:" ^ solver
+                            | Options.Std.SMTSolver solver -> "smt:" ^ solver.algsmt_path
                             | _ -> "");
                            (if !Options.Std.algebra_solver_args = "" then ""
                             else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");

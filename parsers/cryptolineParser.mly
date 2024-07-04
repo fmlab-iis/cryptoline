@@ -31,7 +31,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
-%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT
+%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -492,7 +492,7 @@ prove_with_spec:
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
   | ALGEBRA SOLVER ID                             { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver $3) }
-  | ALGEBRA SOLVER SMT COLON path                 { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver ("smt:" ^ $5)) }
+  | ALGEBRA SOLVER SMT COLON path smt_logic_opt   { fun _ -> AlgebraSolver (Options.Std.SMTSolver { algsmt_path = $5; algsmt_logic = $6 }) }
   | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
   | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
 ;
@@ -500,6 +500,13 @@ prove_with_spec:
 path:
     ID                                            { $1 }
   | PATH                                          { $1 }
+;
+
+smt_logic_opt:
+                                                  { Options.Std.default_algsmt_option.algsmt_logic }
+  | COLON NIA                                     { Options.Std.NIA }
+  | COLON LIA                                     { Options.Std.LIA }
+  | COLON ID error                                { Stdlib.invalid_arg ("Unknown SMT logic " ^ $2) }
 ;
 
 bexp:

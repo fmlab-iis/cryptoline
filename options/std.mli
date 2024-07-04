@@ -100,6 +100,19 @@ val implicit_const_conversion : bool ref
 
 (** {1 Algebra-Specific Options} *)
 
+type algsmt_logic =
+  NIA
+| LIA
+(** SMT logics for algebraic properties *)
+
+type algsmt_option =
+  { algsmt_path : string;
+    algsmt_logic : algsmt_logic }
+(** Options for SMT solvers in solving algebraic properties *)
+
+val default_algsmt_option : algsmt_option
+(** The default options for SMT solvers in solving algebraic properties *)
+
 type algebra_solver =
   | Singular                 (** {{:https://www.singular.uni-kl.de}Singular} *)
   | Sage                     (** {{:https://www.sagemath.org}Sage} *)
@@ -107,9 +120,10 @@ type algebra_solver =
   | Mathematica              (** {{:https://www.wolfram.com/mathematica/}Mathematica} *)
   | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
   | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
-  | SMTSolver of string      (** [SMTSolver s] is the SMT solver [s] that supports UFNIA. *) (* *)
+  | SMTSolver of algsmt_option
+                             (** SMT solvers that support {{:https://smtlib.cs.uiowa.edu}SMTLIB format} *) (* *)
   | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
-  | SCIP                      (** {{:https://scipopt.org}The SCIP Optimization Suite} *)
+  | SCIP                     (** {{:https://scipopt.org}The SCIP Optimization Suite} *)
   | ISL                      (** {{:https://libisl.sourceforge.io/}Intger Set Library *)
 (** supported algebra solvers *)
 

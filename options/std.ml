@@ -9,6 +9,18 @@ let main_proc_name = "main"
 
 let veri_proc_name = ref None
 
+type algsmt_logic =
+  NIA
+| LIA
+
+type algsmt_option =
+  { algsmt_path : string;
+    algsmt_logic : algsmt_logic }
+
+let default_algsmt_option =
+  { algsmt_path = "z3";
+    algsmt_logic = NIA }
+
 type algebra_solver =
   | Singular
   | Sage
@@ -16,7 +28,7 @@ type algebra_solver =
   | Mathematica
   | Macaulay2
   | Maple
-  | SMTSolver of string
+  | SMTSolver of algsmt_option
   | PPL
   | SCIP
   | ISL
@@ -26,6 +38,12 @@ type variable_order =
   | AppearingOrder
   | RevLexOrder
   | RevAppearingOrder
+
+let algsmt_logic_of_string l =
+  let l = String.uppercase_ascii l in
+  if l = "NIA" then NIA
+  else if l = "LIA" then LIA
+  else Stdlib.invalid_arg ("Invalid SMT logic: " ^ l)
 
 let default_range_solver = "boolector"
 
@@ -47,6 +65,14 @@ let python_path = ref "python"
 
 let algebra_solver = ref default_algebra_solver
 let algebra_solver_args = ref ""
+let string_of_algsmt_logic l =
+  match l with
+  | NIA -> "nia"
+  | LIA -> "lia"
+let string_of_algsmt_option o =
+  let path = o.algsmt_path in
+  let logic = string_of_algsmt_logic (o.algsmt_logic) in
+  ":\"" ^ path ^ "\":" ^ logic
 let string_of_algebra_solver s =
   match s with
   | Singular -> "singular"
@@ -55,7 +81,7 @@ let string_of_algebra_solver s =
   | Mathematica -> "mathematica"
   | Macaulay2 -> "macaulay2"
   | Maple -> "maple"
-  | SMTSolver solver -> "smt:\"" ^ solver ^ "\""
+  | SMTSolver o -> "smt:" ^ string_of_algsmt_option o ^ ""
   | PPL -> "ppl"
   | SCIP -> "scip"
   | ISL -> "isl"
@@ -66,7 +92,21 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver Mathematica then Mathematica
   else if str = string_of_algebra_solver Macaulay2 then Macaulay2
   else if str = string_of_algebra_solver Maple then Maple
-  else if Str.string_match (Str.regexp "^smt:\\(.*\\)") str 0 then SMTSolver (Str.matched_group 1 str)
+  else if Str.string_match (Str.regexp "^smt\\(:[^:*]\\)\\(:[^:*]\\)?") str 0 then
+    let path =
+      match String.split_on_char ':' (Str.matched_group 1 str) with
+      | _::p::_ -> p
+      | _ -> Stdlib.invalid_arg "Invalid path to SMT solver" in
+    let logic =
+      try
+        match String.split_on_char ':' (Str.matched_group 2 str) with
+        | _::l::_ -> algsmt_logic_of_string l
+        | _ -> Stdlib.invalid_arg "Invalid SMT logic"
+      with Not_found ->
+        default_algsmt_option.algsmt_logic
+    in
+    SMTSolver { algsmt_path = path;
+                algsmt_logic = logic }
   else if str = string_of_algebra_solver PPL then PPL
   else if str = string_of_algebra_solver SCIP then SCIP
   else if str = string_of_algebra_solver ISL then ISL

@@ -881,28 +881,39 @@ let verify_espec_single_conjunct_ideal ?comments vgen s =
 (* Verify an algebraic specification using a specified SMT solver.
    Applied in this function: solving *)
 let verify_espec_single_conjunct_smt solver ?comments vgen s =
-  let (_, smtlib) = smtlib_espec vgen s in
-  let ifile = tmpfile "inputfgb_" ".smt2" in
-  let ofile = tmpfile "outputfgb_" "" in
-  let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
-                                                   "Output file: " ^ ofile ] |> make_line_comments ";" in
-  let _ =
-    let ch = open_out ifile in
-    let _ = if !debug then output_string ch comments in
-    let _ = output_string ch smtlib; close_out ch in
-    trace "INPUT TO SMT Solver:";
-    trace_file ifile;
-    trace "" in
-  let _ =
-    let t1 = Unix.gettimeofday() in
-    let _ = unix (solver ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-    let t2 = Unix.gettimeofday() in
-    trace ("Execution time of SMT Solver " ^ solver ^ ": " ^ string_of_running_time t1 t2);
-    trace "OUTPUT FROM SMT SOLVER:";
-    trace_file ofile;
-    trace "" in
-  let res = read_one_line ofile = "unsat" in
-  let _ = cleanup [ifile; ofile] in
+  let verify_one_smtlib smtlib =
+    let ifile = tmpfile "inputfgb_" ".smt2" in
+    let ofile = tmpfile "outputfgb_" "" in
+    let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                                     "Output file: " ^ ofile ] |> make_line_comments ";" in
+    let _ =
+      let ch = open_out ifile in
+      let _ = if !debug then output_string ch comments in
+      let _ = output_string ch smtlib; close_out ch in
+      trace "INPUT TO SMT Solver:";
+      trace_file ifile;
+      trace "" in
+    let _ =
+      let t1 = Unix.gettimeofday() in
+      let _ = unix (solver.algsmt_path ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+      let t2 = Unix.gettimeofday() in
+      trace ("Execution time of SMT Solver " ^ solver.algsmt_path ^ ": " ^ string_of_running_time t1 t2);
+      trace "OUTPUT FROM SMT SOLVER:";
+      trace_file ofile;
+      trace "" in
+    let res = read_one_line ofile = "unsat" in
+    let _ = cleanup [ifile; ofile] in
+    res in
+  let verify_one_mipvars_constr vgen (_mipvars, constrs) =
+    let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+    verify_one_smtlib smtlib in
+  let res =
+    match solver.algsmt_logic with
+    | NIA -> let (_, smtlib) = smtlib_espec vgen s in
+             verify_one_smtlib smtlib
+    | LIA -> let (_, mipvars_constrs) = mip_of_espec vgen s in
+             List.for_all (verify_one_mipvars_constr vgen) mipvars_constrs
+  in
   res
 
 let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))

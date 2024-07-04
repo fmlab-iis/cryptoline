@@ -28,6 +28,26 @@ val bexp_program_safe : Ast.Cryptoline.instr list -> Qfbv.Common.bexp
     [bexp_program_safe_conds]. *)
 
 
+val smtlib_ebexp_premise : Cas.var_gen -> Ast.Cryptoline.ebexp ->
+                           Cas.var_gen * string
+(** Convert a premise to SMTLIB format *)
+
+val smtlib_ebexp_consequence : Cas.var_gen -> Ast.Cryptoline.ebexp ->
+                               Cas.var_gen * string list * string
+(**
+ * Convert a consequence to SMTLIB format.
+ * [smtlib_ebexp_premise] and [smtlib_ebexp_consequence] are different
+ * in translating eqmod formulas. The second returned element is a list
+ * of existentially quantified variables in translating eqmod formulas.
+ *)
+
+val smtlib_ebexps_lia : Cas.var_gen -> Ast.Cryptoline.ebexp list ->
+                        Cas.var_gen * string
+(**
+ * Assert a list of linear algebraic predicates in SMTLIB format.
+ * The predicates have to be linear but not checked in this function.
+ *)
+
 val smtlib_espec : Cas.var_gen -> Ast.Cryptoline.espec ->
                    Cas.var_gen * string
 (** Converts an algebraic specification to SMTLIB format. *)
