@@ -148,6 +148,12 @@ let bv2mip (vgen, constrs, ivars) i =
         (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs, ivars)
       else
         (vgen, constrs, ivars)
+  | Ishls (f, v, a, n) ->
+     (* f * 2**|v| + v == a * 2**n *)
+     let l_tsize = size_of_var v in
+     let eq = eeq (emaddpow2 (evar v) (evar f) l_tsize)
+                (emulpow2 (eexp_atom a) (Z.to_int n)) in
+     (vgen, eq::constrs, ivars)
   | Ishr (v, a, n) ->
      if atom_is_const n then
        (* 2**n * v == a *)
@@ -155,12 +161,20 @@ let bv2mip (vgen, constrs, ivars) i =
        (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
      else
        (vgen, constrs, ivars)
+  | Ishrs (v, f, a, n) ->
+     (* f + 2**n * v == a *)
+     let eq = eeq (emaddpow2 (evar f) (evar v) (Z.to_int n)) (eexp_atom a) in
+     (vgen, eq::constrs, ivars)
   | Isar (v, a, n) -> (* v * 2**n == a *)
       if atom_is_const n then
         let c = Z.to_int (const_of_atom n) in
         (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
       else
         (vgen, constrs, ivars)
+  | Isars (v, f, a, n) ->
+     (* f + 2**n * v == a *)
+     let eq = eeq (emaddpow2 (evar f) (evar v) (Z.to_int n)) (eexp_atom a) in
+     (vgen, eq::constrs, ivars)
   | Inondet _ -> (vgen, constrs, ivars)
   | Iadd (v, a0, a1) -> (* v == a0 + a1 *)
      (vgen, eexp_assign v (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
@@ -262,11 +276,15 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
-  | Imuls (_, v, a0, a1) ->  (* tmp * 2**|v| + v == a0 * a1 *)
+  | Imuls (f, v, a0, a1) ->
+     (* tmp * 2**|v| + v == a0 * a1, f <= tmp, tmp <= f * 2**|v| *)
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
      let l_tsize = size_of_var v in
-     (vgen', eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
-               (emul' (eexp_atom a0) (eexp_atom a1))::constrs, tmp::ivars)
+     let le0 = ele (evar f) (evar tmp) in
+     let le1 = ele (evar tmp) (emulpow2 (evar f) l_tsize) in
+     let eq = eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
+                (emul' (eexp_atom a0) (eexp_atom a1)) in
+     (vgen', eq::le1::le0::constrs, tmp::ivars)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
@@ -276,14 +294,87 @@ let bv2mip (vgen, constrs, ivars) i =
      let c = Z.to_int n in
      let rng = elt (evar vl) (econst (z_pow_2 c)) in
      let eq = eeq (emaddpow2 (evar vl) (evar vh) c) (eexp_atom a) in
-     (vgen, eq::rng::constrs,
-      vh::ivars)
+     (vgen, eq::rng::constrs, vh::ivars)
   | Ivpc (v, a) -> (* v == a *)
      (vgen, eeq (evar v) (eexp_atom a)::constrs, ivars)
   | Ijoin (v, a0, a1) -> (* v = a0 * 2**|a1| + a1 *)
-     let tsize1 = size_of_atom a1 in
-     (vgen, eexp_assign v
-              (emaddpow2 (eexp_atom a1) (eexp_atom a0) tsize1)::constrs, ivars)
+     let l_tsize = size_of_atom a1 in
+     (vgen,
+      eexp_assign v
+        (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize)::constrs, ivars)
+  | Icshl (vh, vl, a0, a1, n) ->
+     (* vh * 2**(|v|-c) + vl == a0 * 2**|v| + a1, vl < 2**(|v|-c) *)
+     let l_tsize = size_of_var vl in
+     let c = Z.to_int n in
+     let rng = elt (evar vl) (econst (z_pow_2 (l_tsize - c))) in
+     let eq = eeq (emaddpow2 (evar vl) (evar vh) (l_tsize - c))
+                (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize) in
+     (vgen, eq::rng::constrs, vh::ivars)
+  | Icshls (f, vh, vl, a0, a1, n) ->
+     (* f * 2**(2*|v|-c) + vh * 2**(|v|-c) + vl == a0 * 2**|v| + a1,
+        vl < 2**(|v|-c) *)
+     let l_tsize = size_of_var vl in
+     let c = Z.to_int n in
+     let rng = elt (evar vl) (econst (z_pow_2 (l_tsize - c))) in
+     let eq = eeq (emaddpow2
+                     (emaddpow2 (evar vl) (evar vh) (l_tsize - c))
+                     (evar f) (2*l_tsize - c))
+                (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize) in
+     (vgen, eq::rng::constrs, vh::ivars)
+  | Icshr (vh, vl, a0, a1, n) ->
+     (* (vh * 2**|v| + vl) * 2**c == a0 * 2**|v| + a1 *)
+     let l_tsize = size_of_var vl in
+     let c = Z.to_int n in
+     let eq = eeq (emulpow2 (emaddpow2 (evar vl) (evar vh) l_tsize) c)
+                (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize) in
+     (vgen, eq::constrs, vh::ivars)
+  | Icshrs (vh, vl, f, a0, a1, n) ->
+     (* f + (vh * 2**|v| + vl) * 2**c == a0 * 2**|v| + a1 *)
+     let l_tsize = size_of_var vl in
+     let c = Z.to_int n in
+     let eq = eeq (emaddpow2 (evar f)
+                     (emaddpow2 (evar vl) (evar vh) l_tsize) c)
+                (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize) in
+     (vgen, eq::constrs, vh::ivars)
+  | Irol (v, a, n) ->
+     if atom_is_const n then
+       (* h * 2**|a| + l == a * 2**n, v == h + l *)
+       let l_tsize = size_of_atom a in
+       let c = Z.to_int (const_of_atom n) in
+       let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
+       let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
+       let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
+                      (emulpow2 (eexp_atom a) c) in
+       let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
+       (vgen'', rotate::splita::constrs, h::ivars)
+     else
+       (vgen, constrs, ivars)
+  | Iror (v, a, n) ->
+     if atom_is_const n then
+       (* h * 2**|a| + l == a * 2**(|a|-n), v == h + l *)
+       let l_tsize = size_of_atom a in
+       let c = Z.to_int (const_of_atom n) in
+       let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
+       let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
+       let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
+                      (emulpow2 (eexp_atom a) (l_tsize - c)) in
+       let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
+       (vgen'', rotate::splita::constrs, h::ivars)
+     else
+       (vgen, constrs, ivars)
+  | Icmov (v, c, a0, a1) ->
+     (* v - a0 <= 2**(|v|+1)*(1-c), -2**(|v|+1)(1-c) <= v - a0,
+        v - a1 <= 2**(|v|+1)*c, -2**(|v|+1)c <= v - a1 *)
+     let l_tsize = size_of_atom a0 in
+     let (le00, le01) =
+       let b0 = emulpow2 (esub (econst Z.one) (eexp_of_atom c)) (succ l_tsize) in
+       let sub0 = esub (evar v) (eexp_of_atom a0) in
+       (ele sub0 b0, ele (econst Z.zero) (eadd sub0 b0)) in
+     let (le10, le11) =
+       let b1 = emulpow2 (eexp_of_atom c) (succ l_tsize) in
+       let sub1 = esub (evar v) (eexp_of_atom a1) in
+       (ele sub1 b1, ele (econst Z.zero) (eadd sub1 b1)) in
+     (vgen, le11::le10::le01::le00::constrs, ivars)
   | Iseteq (_, _, _) | Isetne (_, _, _)
   | Inot (_, _) | Iand (_, _, _) | Ior (_, _, _) | Ixor (_, _, _) ->
      (vgen, constrs, ivars)
@@ -295,8 +386,11 @@ let bv2mip (vgen, constrs, ivars) i =
   | Icast (l, v, a) ->
      (match typ_of_var v, typ_of_atom a with
       | Tuint wv, Tuint wa ->
-         if wv >= wa then (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
+         if wv >= wa then
+           (* v == a *)
+           (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
          else
+           (* tmp * 2**|v| + v == a, 0 <= tmp < 2**(|a|-|v|) *)
            let (vgen', tmp) = match l with
              | None -> new_tmp_var vgen (uint_t (wa - wv))
              | Some t -> (vgen, t) in
@@ -304,12 +398,14 @@ let bv2mip (vgen, constrs, ivars) i =
                      constrs, tmp::ivars)
       | Tuint wv, Tsint wa ->
          if wv >= wa then
+           (* v == tmp * 2**|v| + a, 0 <= tmp < 2 *)
            let (vgen', tmp) = match l with
              | None -> new_tmp_var vgen (uint_t 1)
              | Some t -> (vgen, t) in
            (vgen', eexp_assign v (emaddpow2 (eexp_atom a) (evar tmp) wv)::
                      constrs, tmp::ivars)
          else
+           (* tmp * 2**|v| + v == a, -2**(|a|-|v|) <= tmp < 2**(|a|-|v|) *)
            let (vgen', tmp) = match l with
              | None -> new_tmp_var vgen (int_t (wa - wv))
              | Some t -> (vgen, t) in
@@ -324,8 +420,11 @@ let bv2mip (vgen, constrs, ivars) i =
            (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
                      constrs, tmp::ivars)
       | Tsint wv, Tsint wa ->
-         if wv >= wa then (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
+         if wv >= wa then
+           (* v == a *)
+           (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
          else
+           (* tmp * 2**|v| + v == a, -2**(|a|-|v|+1) <= tmp < -2**(|a|-|v|+1) *)
            let (vgen', tmp) = match l with
              | None -> new_tmp_var vgen (int_t (wa - wv + 1))
              | Some t -> (vgen, t) in
@@ -333,19 +432,6 @@ let bv2mip (vgen, constrs, ivars) i =
                      constrs, tmp::ivars))
   | Icut (_::_, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
   | Icut _ -> (vgen, constrs, ivars)
-  | _ -> failwith "unfinished"
-(*
-  | Ishls (l, v, a, n) ->
-  | Ishrs (l, v, a, n) ->
-  | Isars (l, v, a, n) ->
-  | Icshl (vh, vl, a0, a1, n) ->
-  | Icshls (l, vh, vl, a0, a1, n) ->
-  | Icshr (vh, vl, a0, a1, n) ->
-  | Icshrs (l, vh, vl, a0, a1, n) ->
-  | Irol (v, a, n) ->
-  | Iror (v, a, n) ->
-  | Icmov (v, c, a0, a1) ->
-*)
 
 let _reverse_appearing_vars mip_vars constr =
   let (_, vm) = List.fold_left (fun (i, res) be ->
