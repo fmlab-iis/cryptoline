@@ -1,23 +1,23 @@
-(* quine: cv.exe -v -slicing -isafety -jobs 40 -vo lex -enable_rewriting:eqmod PQCLEAN_DILITHIUM3_AARCH64_ntt.cl
-Parsing CryptoLine file:                    [OK]            0.2879 seconds
-Checking well-formedness:                   [OK]            0.0820 seconds
+(* quine: cv.exe -v -slicing -isafety -vo lex -jobs 40 -enable_rewriting:eqmod PQCLEAN_DILITHIUM3_AARCH64_ntt.cl
+Parsing CryptoLine file:                    [OK]            0.2928 seconds
+Checking well-formedness:                   [OK]            0.0844 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                   [OK]            0.0681 seconds
-Normalizing specification:                  [OK]            0.0612 seconds
-Rewriting assignments:                      [OK]            0.0852 seconds
-Verifying program safety:                   [OK]            588.3271 seconds
-Verifying range assertions:                 [OK]            0.0184 seconds
-Verifying range specification:              [OK]            0.4826 seconds
-Rewriting value-preserved casting:          [OK]            0.0218 seconds
-Verifying algebraic assertions:             [OK]            137.5970 seconds
-Verifying algebraic specification:          [OK]            90.5831 seconds
-Procedure verification:                     [OK]            817.2788 seconds
+Transforming to SSA form:                   [OK]            0.0720 seconds
+Normalizing specification:                  [OK]            0.0610 seconds
+Rewriting assignments:                      [OK]            0.0864 seconds
+Verifying program safety:Overall                             [OK]            589.6629 seconds
+Verifying range assertions:                 [OK]            0.0164 seconds
+Verifying range specification:              [OK]            0.4909 seconds
+Rewriting value-preserved casting:          [OK]            0.0249 seconds
+Verifying algebraic assertions:             [OK]            150.7923 seconds
+Verifying algebraic specification:          [OK]            90.9884 seconds
+Procedure verification:                     [OK]            832.2304 seconds
 
 Summary
 -------
-Verification result:                        [OK]            817.6496 seconds
+Verification result:                        [OK]            832.6084 seconds
 *)
 proc main (
 int32 A00,int32 A01,int32 A02,int32 A03,int32 A04,int32 A05,int32 A06,int32 A07,
@@ -9134,7 +9134,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v18 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v19 /\
        %v19 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [38]] && true;
+       prove with [algebra solver isl, cuts [38]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v16 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v17 /\
@@ -10169,7 +10169,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v30 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v31 /\
        %v31 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [47]] && true;
+       prove with [algebra solver isl, cuts [47]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v28 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v29 /\
@@ -11202,7 +11202,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v18 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v19 /\
        %v19 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [56]] && true;
+       prove with [algebra solver isl, cuts [56]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v16 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v17 /\
@@ -12239,7 +12239,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v30 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v31 /\
        %v31 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [65]] && true;
+       prove with [algebra solver isl, cuts [65]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v28 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v29 /\
@@ -13271,7 +13271,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v18 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v19 /\
        %v19 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [74]] && true;
+       prove with [algebra solver isl, cuts [74]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v16 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v17 /\
@@ -14307,7 +14307,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v30 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v31 /\
        %v31 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [83]] && true;
+       prove with [algebra solver isl, cuts [83]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v28 /\
        %v28 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v29 /\
@@ -15339,7 +15339,7 @@ assert [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v18 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v19 /\
        %v19 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2]
-       prove with [algebra solver ppl, cuts [92]] && true;
+       prove with [algebra solver isl, cuts [92]] && true;
 assume [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v16 /\
        %v16 < [8*Q+Q2,8*Q+Q2,8*Q+Q2,8*Q+Q2] /\
        [8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2,8*NQ+NQ2] < %v17 /\

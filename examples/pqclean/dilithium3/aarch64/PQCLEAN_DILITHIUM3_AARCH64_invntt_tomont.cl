@@ -1,23 +1,23 @@
-(* quine: cv.exe -v -slicing -isafety -jobs 40 -vo lex -enable_rewriting:eqmod PQCLEAN_DILITHIUM3_AARCH64_invntt_tomont.cl
-Parsing CryptoLine file:                    [OK]            0.2992 seconds
-Checking well-formedness:                   [OK]            0.0870 seconds
+(* quine: cv.exe -v -slicing -isafety -vo lex -jobs 40 -enable_rewriting:eqmod PQCLEAN_DILITHIUM3_AARCH64_invntt_tomont.cl
+Parsing CryptoLine file:                    [OK]            0.3058 seconds
+Checking well-formedness:                   [OK]            0.0886 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                   [OK]            0.0801 seconds
-Normalizing specification:                  [OK]            0.0685 seconds
-Rewriting assignments:                      [OK]            0.0932 seconds
-Verifying program safety:                   [OK]            166.7945 seconds
-Verifying range assertions:                 [OK]            2.4070 seconds
-Verifying range specification:              [OK]            9.0771 seconds
-Rewriting value-preserved casting:          [OK]            0.0234 seconds
-Verifying algebraic assertions:             [OK]            335.8466 seconds
-Verifying algebraic specification:          [OK]            23.0598 seconds
-Procedure verification:                     [OK]            537.4852 seconds
+Transforming to SSA form:                   [OK]            0.0816 seconds
+Normalizing specification:                  [OK]            0.0698 seconds
+Rewriting assignments:                      [OK]            0.0916 seconds
+Verifying program safety:                   [OK]            162.9998 seconds
+Verifying range assertions:                 [OK]            2.3695 seconds
+Verifying range specification:              [OK]            9.2182 seconds
+Rewriting value-preserved casting:          [OK]            0.0255 seconds
+Verifying algebraic assertions:             [OK]            170.4136 seconds
+Verifying algebraic specification:          [OK]            22.1666 seconds
+Procedure verification:                     [OK]            367.4720 seconds
 
 Summary
 -------
-Verification result:                        [OK]            537.8730 seconds
+Verification result:                        [OK]            367.8680 seconds
 *)
 
 proc main (
@@ -2027,7 +2027,7 @@ assert eqmod [L0xffffffff0610,L0xffffffff0614,L0xffffffff0618,L0xffffffff061c]
        [L0xffffffff0830,L0xffffffff0834,L0xffffffff0838,L0xffffffff083c]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0840,L0xffffffff0844,L0xffffffff0848,L0xffffffff084c] /\
        [L0xffffffff0840,L0xffffffff0844,L0xffffffff0848,L0xffffffff084c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [7, 8]] && true;
+       prove with [algebra solver isl, cuts [7, 8]] && true;
 
 assume eqmod [L0xffffffff0610,L0xffffffff0614,L0xffffffff0618,L0xffffffff061c]
               %v0o04 [Q, Q, Q, Q] /\
@@ -3117,7 +3117,7 @@ assert eqmod [L0xffffffff0650,L0xffffffff0654,L0xffffffff0658,L0xffffffff065c]
        [L0xffffffff0870,L0xffffffff0874,L0xffffffff0878,L0xffffffff087c]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0880,L0xffffffff0884,L0xffffffff0888,L0xffffffff088c] /\
        [L0xffffffff0880,L0xffffffff0884,L0xffffffff0888,L0xffffffff088c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [18, 19]] && true;
+       prove with [algebra solver isl, cuts [18, 19]] && true;
 
 assume eqmod [L0xffffffff0650,L0xffffffff0654,L0xffffffff0658,L0xffffffff065c]
               %v0o09 [Q, Q, Q, Q] /\
@@ -4205,7 +4205,7 @@ assert eqmod [L0xffffffff0690,L0xffffffff0694,L0xffffffff0698,L0xffffffff069c]
        [L0xffffffff08b0,L0xffffffff08b4,L0xffffffff08b8,L0xffffffff08bc]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff08c0,L0xffffffff08c4,L0xffffffff08c8,L0xffffffff08cc] /\
        [L0xffffffff08c0,L0xffffffff08c4,L0xffffffff08c8,L0xffffffff08cc]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [29, 30]] && true;
+       prove with [algebra solver isl, cuts [29, 30]] && true;
 
 assume eqmod [L0xffffffff0690,L0xffffffff0694,L0xffffffff0698,L0xffffffff069c]
               %v0o0e [Q, Q, Q, Q] /\
@@ -5293,7 +5293,7 @@ assert eqmod [L0xffffffff06d0,L0xffffffff06d4,L0xffffffff06d8,L0xffffffff06dc]
        [L0xffffffff08f0,L0xffffffff08f4,L0xffffffff08f8,L0xffffffff08fc]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0900,L0xffffffff0904,L0xffffffff0908,L0xffffffff090c] /\
        [L0xffffffff0900,L0xffffffff0904,L0xffffffff0908,L0xffffffff090c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [40, 41]] && true;
+       prove with [algebra solver isl, cuts [40, 41]] && true;
 
 assume eqmod [L0xffffffff06d0,L0xffffffff06d4,L0xffffffff06d8,L0xffffffff06dc]
               %v0o13 [Q, Q, Q, Q] /\
@@ -6381,7 +6381,7 @@ assert eqmod [L0xffffffff0710,L0xffffffff0714,L0xffffffff0718,L0xffffffff071c]
        [L0xffffffff0930,L0xffffffff0934,L0xffffffff0938,L0xffffffff093c]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0940,L0xffffffff0944,L0xffffffff0948,L0xffffffff094c] /\
        [L0xffffffff0940,L0xffffffff0944,L0xffffffff0948,L0xffffffff094c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [51, 52]] && true;
+       prove with [algebra solver isl, cuts [51, 52]] && true;
 
 assume eqmod [L0xffffffff0710,L0xffffffff0714,L0xffffffff0718,L0xffffffff071c]
               %v0o18 [Q, Q, Q, Q] /\
@@ -7469,7 +7469,7 @@ assert eqmod [L0xffffffff0750,L0xffffffff0754,L0xffffffff0758,L0xffffffff075c]
        [L0xffffffff0970,L0xffffffff0974,L0xffffffff0978,L0xffffffff097c]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0980,L0xffffffff0984,L0xffffffff0988,L0xffffffff098c] /\
        [L0xffffffff0980,L0xffffffff0984,L0xffffffff0988,L0xffffffff098c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [62, 63]] && true;
+       prove with [algebra solver isl, cuts [62, 63]] && true;
 
 assume eqmod [L0xffffffff0750,L0xffffffff0754,L0xffffffff0758,L0xffffffff075c]
               %v0o1d [Q, Q, Q, Q] /\
@@ -8557,7 +8557,7 @@ assert eqmod [L0xffffffff0790,L0xffffffff0794,L0xffffffff0798,L0xffffffff079c]
        [L0xffffffff09b0,L0xffffffff09b4,L0xffffffff09b8,L0xffffffff09bc]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff09c0,L0xffffffff09c4,L0xffffffff09c8,L0xffffffff09cc] /\
        [L0xffffffff09c0,L0xffffffff09c4,L0xffffffff09c8,L0xffffffff09cc]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [73, 74]] && true;
+       prove with [algebra solver isl, cuts [73, 74]] && true;
 
 assume eqmod [L0xffffffff0790,L0xffffffff0794,L0xffffffff0798,L0xffffffff079c]
               %v0o22 [Q, Q, Q, Q] /\
@@ -9613,7 +9613,7 @@ assert eqmod [L0xffffffff07d0,L0xffffffff07d4,L0xffffffff07d8,L0xffffffff07dc]
        [L0xffffffff09f0,L0xffffffff09f4,L0xffffffff09f8,L0xffffffff09fc]<[Q,Q,Q,Q] /\
        [NQ,NQ,NQ,NQ]<[L0xffffffff0a00,L0xffffffff0a04,L0xffffffff0a08,L0xffffffff0a0c] /\
        [L0xffffffff0a00,L0xffffffff0a04,L0xffffffff0a08,L0xffffffff0a0c]<[Q,Q,Q,Q]
-       prove with [algebra solver ppl, cuts [84, 85]] && true;
+       prove with [algebra solver isl, cuts [84, 85]] && true;
 
 assume eqmod [L0xffffffff07d0,L0xffffffff07d4,L0xffffffff07d8,L0xffffffff07dc]
               %v0o27 [Q, Q, Q, Q] /\

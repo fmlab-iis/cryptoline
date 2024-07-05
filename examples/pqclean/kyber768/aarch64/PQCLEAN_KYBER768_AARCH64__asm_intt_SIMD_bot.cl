@@ -1,23 +1,23 @@
-(* quine: cv.exe -v -slicing -isafety -jobs 40 -vo lex -enable_rewriting:eqmod -no_carry_constraint PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_bot.cl
-Parsing CryptoLine file:                    [OK]            0.1144 seconds
-Checking well-formedness:                   [OK]            0.0330 seconds
+(* quine: cv.exe -v -slicing -isafety -vo lex -jobs 40 -enable_rewriting:eqmod PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_bot.cl
+Parsing CryptoLine file:                    [OK]            0.1136 seconds
+Checking well-formedness:                   [OK]            0.0326 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                   [OK]            0.0311 seconds
-Normalizing specification:                  [OK]            0.0256 seconds
-Rewriting assignments:                      [OK]            0.0277 seconds
-Verifying program safety:                   [OK]            16.7168 seconds
-Verifying range assertions:                 [OK]            0.0106 seconds
-Verifying range specification:              [OK]            0.7790 seconds
-Rewriting value-preserved casting:          [OK]            0.0227 seconds
-Verifying algebraic assertions:             [OK]            510.6782 seconds
-Verifying algebraic specification:          [OK]            9.0885 seconds
-Procedure verification:                     [OK]            537.3952 seconds
+Transforming to SSA form:                   [OK]            0.0312 seconds
+Normalizing specification:                  [OK]            0.0246 seconds
+Rewriting assignments:                      [OK]            0.0273 seconds
+Verifying program safety:                   [OK]            16.8162 seconds
+Verifying range assertions:                 [OK]            0.0084 seconds
+Verifying range specification:              [OK]            0.7851 seconds
+Rewriting value-preserved casting:          [OK]            0.0240 seconds
+Verifying algebraic assertions:             [OK]            60.3204 seconds
+Verifying algebraic specification:          [OK]            9.1907 seconds
+Procedure verification:                     [OK]            87.2430 seconds
 
 Summary
 -------
-Verification result:                        [OK]            537.5429 seconds
+Verification result:                        [OK]            87.3894 seconds
 *)
 
 proc main (

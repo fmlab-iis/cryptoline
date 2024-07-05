@@ -1,23 +1,23 @@
-(* quine: cv.exe -v -vo appearing -slicing -isafety -jobs 40 -enable_rewriting:eqmod -no_carry_constraint PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_top.cl
-Parsing CryptoLine file:                        [OK]            0.1372 seconds
-Checking well-formedness:                       [OK]            0.0443 seconds
+(* quine: cv.exe -v -slicing -isafety -vo appearing -jobs 40 -enable_rewriting:eqmod PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_bot.cl
+Parsing CryptoLine file:                    [OK]            0.1142 seconds
+Checking well-formedness:                   [OK]            0.0329 seconds
 
 Procedure main
 --------------
-Transforming to SSA form:                   [OK]            0.0334 seconds
-Normalizing specification:                  [OK]            0.0284 seconds
-Rewriting assignments:                      [OK]            0.0262 seconds
-Verifying program safety:                   [OK]            31.7952 seconds
-Verifying range assertions:                 [OK]            0.0103 seconds
-Verifying range specification:              [OK]            2.0408 seconds
-Rewriting value-preserved casting:          [OK]            0.0270 seconds
-Verifying algebraic assertions:             [OK]            78.3399 seconds
-Verifying algebraic specification:          [OK]            24.8375 seconds
-Procedure verification:                     [OK]            137.1574 seconds
+Transforming to SSA form:                   [OK]            0.0318 seconds
+Normalizing specification:                  [OK]            0.0250 seconds
+Rewriting assignments:                      [OK]            0.0278 seconds
+Verifying program safety:Overall                             [OK]            16.9187 seconds
+Verifying range assertions:                 [OK]            0.0041 seconds
+Verifying range specification:              [OK]            0.7687 seconds
+Rewriting value-preserved casting:          [OK]            0.0239 seconds
+Verifying algebraic assertions:             [OK]            61.9630 seconds
+Verifying algebraic specification:          [OK]            7.2919 seconds
+Procedure verification:                     [OK]            87.0701 seconds
 
 Summary
 -------
-Verification result:                        [OK]            137.3394 seconds
+Verification result:                        [OK]            87.2174 seconds
 *)
 
 proc main (
