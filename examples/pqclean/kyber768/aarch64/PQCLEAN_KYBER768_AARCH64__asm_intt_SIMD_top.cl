@@ -7,7 +7,7 @@ Procedure main
 Transforming to SSA form:                   [OK]            0.0318 seconds
 Normalizing specification:                  [OK]            0.0250 seconds
 Rewriting assignments:                      [OK]            0.0278 seconds
-Verifying program safety:Overall                             [OK]            16.9187 seconds
+Verifying program safety                    [OK]            16.9187 seconds
 Verifying range assertions:                 [OK]            0.0041 seconds
 Verifying range specification:              [OK]            0.7687 seconds
 Rewriting value-preserved casting:          [OK]            0.0239 seconds
