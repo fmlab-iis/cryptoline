@@ -1,5 +1,6 @@
 
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Qfbv.Common
 open Options.Std
 open Utils.Std
@@ -9,6 +10,21 @@ type var_gen = Cas.var_gen
 type round_result = Smt.round_result
 
 type poly_spec = Cas.poly_spec
+
+let get_tags_to_be_verified ts =
+  let available_tags = tagged_spec_tags ts in
+  match !Options.Std.verify_tracks with
+  | None -> available_tags
+  | Some tags ->
+     if Utils.Hashset.mem tags all_track then available_tags
+     else
+       let tags_no_all =
+         let tmp = Utils.Hashset.copy tags in
+         let _ = Utils.Hashset.remove tmp all_track in
+         tmp in
+       (* Check if the specified tags are available in the specification *)
+       let _ = Utils.Hashset.iter (fun t -> if not (SS.mem t available_tags) then invalid_arg ("Track " ^ t ^ " is not available.")) tags_no_all in
+       Utils.Hashset.fold (fun tag res -> SS.add tag res) tags_no_all SS.empty
 
 let vgen_of_spec = Cas.vgen_of_spec
 

@@ -2,6 +2,7 @@
 open Options.Std
 open Options.WithLwt
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Qfbv.Common
 open Qfbv.WithLwt
 open Smt
@@ -158,7 +159,7 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
  * Verify safety of a specification instruction by instruction parallelly.
  * A single predicate is created for the safety of each instruction.
  *)
-let verify_safety_inc_lwt ?comments s hashopt =
+let verify_safety_inc_lwt options ?comments s hashopt =
   let continue_helper ((res, _), _) = res in
   let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, i, q, res_str, timedout, safe) =
     let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
@@ -167,7 +168,8 @@ let verify_safety_inc_lwt ?comments s hashopt =
     let%lwt res =
       try%lwt
             match%lwt solve_simp
-                    ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid ;
+                    ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                                 "Cut: #" ^ string_of_int cid;
                                                                  "Safety condition: #" ^ string_of_int id;
                                                                  "Instruction: " ^ string_of_instr i ])
                     ~timeout ~header q with
@@ -179,7 +181,7 @@ let verify_safety_inc_lwt ?comments s hashopt =
     Lwt.return res in
   let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
     let verify_cut_helper promises_rev (id, i, q) =
-      if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids id
       then let promise =  make_promise (cid, !incremental_safety_timeout,
                                         header, id, i, q) in
            promise::promises_rev
@@ -223,7 +225,7 @@ let verify_safety_inc_lwt ?comments s hashopt =
                         else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
                 add_to_pending continue_helper delivered_helper ((res, next_sid), timedouts) pending (List.rev promises_rev)
     else (((res, sid), timedouts), pending) in
-  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished !verify_scuts verify_cut ((true, 0), []) [] (cut_safety (rspec_of_spec s)) in
+  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished options.st_verify_scuts verify_cut ((true, 0), []) [] (cut_safety (rspec_of_spec s)) in
   let (res, _) = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) ((res, sid), List.rev timedouts_rev) pending in
   res
 
@@ -231,11 +233,12 @@ let verify_safety_inc_lwt ?comments s hashopt =
  * Verify safety of a specification cut by cut parallelly.
  * A single predicate is created for the safety of each cut.
  *)
-let verify_safety_all_lwt ?comments s hashopt =
+let verify_safety_all_lwt options ?comments s hashopt =
   let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
   let verify_cut cid header ((res, sid), pending) (_, s) =
-    if res then if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids sid
-                then let comments = append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+    if res then if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
+                then let comments = append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                                      "Cut: #" ^ string_of_int cid;
                                                                       "Target: all instructions in this cut" ] in
                      let promise () = let g = bexp_program_safe s.rsprog in
                                       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
@@ -244,13 +247,13 @@ let verify_safety_all_lwt ?comments s hashopt =
                      add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
                 else ((res, sid + 1), pending)
     else ((res, sid), pending) in
-  let (res, _) = apply_to_cuts_lwt !verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
+  let (res, _) = apply_to_cuts_lwt options.st_verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
   res
 
 (* Verify safety of a specification parallelly *)
-let verify_safety_lwt ?comments s hashopt =
-  if !incremental_safety then verify_safety_inc_lwt ?comments s hashopt
-  else verify_safety_all_lwt ?comments s hashopt
+let verify_safety_lwt options ?comments s hashopt =
+  if !incremental_safety then verify_safety_inc_lwt options ?comments s hashopt
+  else verify_safety_all_lwt options ?comments s hashopt
 
 
 let write_header_to_log header =
@@ -1078,7 +1081,7 @@ let verify_espec_no_ecut ?comments headers vgen s hashopt =
     tmap verify_task (split_espec_post s) |> tflatten
 
 (* The top function of verifying algebraic assertions when !jobs > 1. *)
-let verify_eassert vgen s hashopt =
+let verify_eassert options vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers (sid, s) =
@@ -1095,16 +1098,17 @@ let verify_eassert vgen s hashopt =
       verify_spec ?comments cut_headers (res', pending') s in
   (* Check previous result *)
   let verify cid cut_headers (res, pending) (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid
+    if res && Options.Std.mem_hashset_opt options.st_verify_eassert_ids sid
     then verify_spec
            ~comments:[ "Verify: algebraic assertions";
+                       Printf.sprintf "Track: %s" options.st_tag;
                        "Cut: #" ^ string_of_int cid ]
            cut_headers (res, pending) (sid, s)
     else (res, pending) in
-  apply_to_cuts_lwt !verify_eacuts verify delivered_helper true [] (cut_eassert (espec_of_spec s))
+  apply_to_cuts_lwt options.st_verify_eacuts verify delivered_helper true [] (cut_eassert (espec_of_spec s))
 
 (* The top function of verifying range assertions when !jobs > 1. *)
-let verify_rassert s hashopt =
+let verify_rassert options s hashopt =
   let _ = safe_trace "===== Verifying range assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers (sid, s) =
@@ -1121,16 +1125,17 @@ let verify_rassert s hashopt =
       verify_spec ?comments headers (res', promised) s in
   (* Check previous result *)
   let verify cid headers (res, pending) (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid
+    if res && Options.Std.mem_hashset_opt options.st_verify_rassert_ids sid
     then verify_spec
            ~comments:[ "Verify: range assertions";
+                       Printf.sprintf "Track: %s" options.st_tag;
                        "Cut: #" ^ string_of_int cid ]
            headers (res, pending) (sid, s)
     else (res, pending) in
-  apply_to_cuts_lwt !verify_racuts verify delivered_helper true [] (cut_rassert (rspec_of_spec s))
+  apply_to_cuts_lwt options.st_verify_racuts verify delivered_helper true [] (cut_rassert (rspec_of_spec s))
 
 (* The top function of verifying range specifications when !jobs > 1. *)
-let verify_rspec s hashopt =
+let verify_rspec options s hashopt =
   let _ = safe_trace "===== Verifying range specifications =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers s = verify_rspec_no_rcut ?comments headers s hashopt in
@@ -1139,11 +1144,12 @@ let verify_rspec s hashopt =
   let verify cid headers (res, pending) (sid, s) =
     if res then verify_ands
                   ~comments:[ "Verify: range specifications";
+                              Printf.sprintf "Track: %s" options.st_tag;
                               "Cut: #" ^ string_of_int cid;
                               "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ]
                   headers (res, pending) s
     else (res, pending) in
-  apply_to_cuts_lwt !verify_rcuts verify delivered_helper true [] (cut_rspec s)
+  apply_to_cuts_lwt options.st_verify_rcuts verify delivered_helper true [] (cut_rspec s)
 
 (**
    The top function of verifying range specifications when !jobs > 1.
@@ -1152,7 +1158,7 @@ let verify_rspec s hashopt =
    @param hashopt
    @return [true] if the algebraic specification is verified successfully
  *)
-let verify_espec vgen s hashopt =
+let verify_espec options vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers s = verify_espec_no_ecut ?comments headers vgen s hashopt in
@@ -1161,11 +1167,12 @@ let verify_espec vgen s hashopt =
   let verify cid headers (res, pending) (sid, s) =
     if res then verify_ands
                   ~comments:[ "Verify: algebraic specifications";
+                              Printf.sprintf "Track: %s" options.st_tag;
                               "Cut: #" ^ string_of_int cid;
                               "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ]
                   headers (res, pending) s
     else (res, pending) in
-  apply_to_cuts_lwt !verify_ecuts verify (&&) true [] (cut_espec s)
+  apply_to_cuts_lwt options.st_verify_ecuts verify (&&) true [] (cut_espec s)
 
 type cli_round_result =
   Solved of result
@@ -1315,7 +1322,7 @@ let run_cli_vsafety ?comments id s =
               | _ -> failwith ("Unknown result from the CLI: " ^ line))
 
 (* Options.vscuts is handled in Std.verify_safety. *)
-let verify_safety_conditions_cli ?comments sid f p =
+let verify_safety_conditions_cli options ?comments sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
   let _ = if !debug then
@@ -1359,7 +1366,7 @@ let verify_safety_conditions_cli ?comments sid f p =
            verify_rec [] (res'', pending'') in
   let add_instr_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
   let filter_out_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
-  let in_verify_safety_ids (id, _, _, _) = mem_hashset_opt !Options.Std.verify_safety_ids id in
+  let in_verify_safety_ids (id, _, _, _) = mem_hashset_opt options.st_verify_safety_ids id in
   let add_cond_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (sid + id, timeout, idx, i)) qs in
   let all_safety_conds = add_instr_index p |> filter_out_true |> add_cond_id in
   let res = verify_rec (all_safety_conds |> List.filter in_verify_safety_ids |> List.rev) (Solved Unsat, []) in
@@ -1510,16 +1517,17 @@ let run_cli_vespec ?comments header s =
   Lwt.return res
 
 (* The top function of verifying algebraic specifications when !jobs > 1 and CLI is enabled. *)
-let verify_espec_cli s =
+let verify_espec_cli options s =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
   verify_spec_cli
     s
     run_cli_vespec
     (fun cid (sid, s) -> Some [ "Verify: algebraic specifications";
+                                Printf.sprintf "Track: %s" options.st_tag;
                                 "Cut: #" ^ string_of_int cid;
                                 "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
     (fun _ _ cut_header -> cut_header)
-    split_espec_post cut_espec !verify_ecuts None
+    split_espec_post cut_espec options.st_verify_ecuts None
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
 let run_cli_vrspec ?comments header s =
@@ -1601,42 +1609,45 @@ let run_cli_vrspec ?comments header s =
   Lwt.return res
 
 (* The top function of verifying range specifications when !jobs > 1 and CLI is enabled. *)
-let verify_rspec_cli s _ =
+let verify_rspec_cli options s _ =
   let _ = safe_trace "===== Verifying range specifications =====" in
   verify_spec_cli
     s
     run_cli_vrspec
     (fun cid (sid, s) -> Some [ "Verify: range specifications";
+                                Printf.sprintf "Track: %s" options.st_tag;
                                 "Cut: #" ^ string_of_int cid;
                                 "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
     (fun _ _ cut_header -> cut_header)
-    split_rspec_post cut_rspec !verify_rcuts None
+    split_rspec_post cut_rspec options.st_verify_rcuts None
 
 (* The top function of verifying algebraic assertions when !jobs > 1 and CLI is enabled. *)
-let verify_eassert_cli s =
+let verify_eassert_cli options s =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   verify_spec_cli
     (espec_of_spec s)
     run_cli_vespec
     (fun cid (sid, s) -> Some [ "Verify: algebraic assertions";
+                                Printf.sprintf "Track: %s" options.st_tag;
                                 "Cut: #" ^ string_of_int cid;
                                 "Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
     (fun _ _ cut_header -> cut_header)
-    split_espec_post cut_eassert !verify_eacuts !Options.Std.verify_eassert_ids
+    split_espec_post cut_eassert options.st_verify_eacuts options.st_verify_eassert_ids
 
 (* The top function of verifying range assertions when !jobs > 1 and CLI is enabled. *)
-let verify_rassert_cli s =
+let verify_rassert_cli options s =
   let _ = safe_trace "===== Verifying range assertions =====" in
   verify_spec_cli
     (rspec_of_spec s)
     run_cli_vrspec
     (fun cid (sid, s) -> Some [ "Verify: range assertions";
+                                Printf.sprintf "Track: %s" options.st_tag;
                                 "Cut: #" ^ string_of_int cid;
                                 "Range assertion #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
     (fun _ _ cut_header -> cut_header)
-    split_rspec_post cut_rassert !verify_racuts !Options.Std.verify_rassert_ids
+    split_rspec_post cut_rassert options.st_verify_racuts options.st_verify_rassert_ids
 
-let verify_safety_inc_cli ?comments s _hashopt =
+let verify_safety_inc_cli options ?comments s _hashopt =
   let continue_helper ((res, _, _), _) = res in
   let delivered_helper ((rsafe, rsid, rifiles), rtimedouts) (cid, id, timeout, idx, i, ifile, res_str, timedout, safe) =
     let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
@@ -1655,7 +1666,7 @@ let verify_safety_inc_cli ?comments s _hashopt =
       let add_instr_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
       let filter_out_true = fun qs -> List.filter (fun (_, _, i) -> bexp_instr_safe i <> True) qs in
       let add_cond_id = fun qs -> List.mapi (fun id (timeout, idx, i) -> (sid + id, timeout, idx, i, ifile)) qs in
-      let in_verify_safety_ids (id, _, _, _, _) = mem_hashset_opt !Options.Std.verify_safety_ids id in
+      let in_verify_safety_ids (id, _, _, _, _) = mem_hashset_opt options.st_verify_safety_ids id in
       let conds = add_instr_index s.rsprog |> filter_out_true |> add_cond_id |> List.filter in_verify_safety_ids in
       let next_sid = sid + List.length conds in
       let promises_rev = List.fold_left (
@@ -1667,34 +1678,34 @@ let verify_safety_inc_cli ?comments s _hashopt =
               else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
       add_to_pending continue_helper delivered_helper ((res, next_sid, ifile::ifiles), timedouts) pending (List.rev promises_rev)
     else (((res, sid, ifiles), timedouts), pending) in
-  let (((res, sid, ifiles), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished !verify_scuts verify_cut ((true, 0, []), []) [] (cut_safety (rspec_of_spec s)) in
+  let (((res, sid, ifiles), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished options.st_verify_scuts verify_cut ((true, 0, []), []) [] (cut_safety (rspec_of_spec s)) in
   let (res, _, _) = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) ((res, sid, ifiles), List.rev timedouts_rev) pending in
   let _ = cleanup_lwt ifiles in
   res
 
-let verify_safety_all_cli ?comments s _hashopt =
+let verify_safety_all_cli options ?comments s _hashopt =
   let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
   let verify_cut cid _header ((res, sid), pending) (_, s) =
-    if res then if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids sid
+    if res then if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
                 then let comments = append_comments_option comments [ "Cut: #" ^ string_of_int cid;
                                                                       "Target: all instructions in this cut" ] in
                      let promise () = run_cli_vsafety ~comments sid s in
                      add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
                 else ((res, sid + 1), pending)
     else ((res, sid), pending) in
-  let (res, _) = apply_to_cuts_lwt !verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
+  let (res, _) = apply_to_cuts_lwt options.st_verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
   res
 
 (* verify safety parallelly by CLI *)
-let verify_safety_cli ?comments s hashopt =
-  if !incremental_safety then verify_safety_inc_cli ?comments s hashopt
-  else verify_safety_all_cli ?comments s hashopt
+let verify_safety_cli options ?comments s hashopt =
+  if !incremental_safety then verify_safety_inc_cli options ?comments s hashopt
+  else verify_safety_all_cli options ?comments s hashopt
 
 
 
 
 
-let test_absdom_lwt ?(safe=true) s =
+let test_absdom_lwt options ?(safe=true) s =
   let test_var cid mgr dom s v =
     fun () ->
     let (inf, sup) = Absdom.Std.zinterval_of_var mgr dom v in
@@ -1730,6 +1741,12 @@ let test_absdom_lwt ?(safe=true) s =
                            vprintln(Printf.sprintf "%-55s%-8s" str "[SKIP]") in
                    (res, pending)
     else (res, pending) in
-  let res = apply_to_cuts_lwt !verify_rcuts test_cut delivered_helper true [] (remove_assert_spec s |> merge_bexp_prove_with_spec |> rspec_of_spec |> cut_rspec) in
+  let res = apply_to_cuts_lwt options.st_verify_rcuts test_cut delivered_helper true [] (remove_assert_spec s |> merge_bexp_prove_with_spec |> rspec_of_spec |> cut_rspec) in
   res
 
+let test_tagged_absdom_lwt options ?(safe=true) ts =
+  let verify_one_track tag =
+    let options = st_options_of_tag tag options in
+    let s = spec_of_tag tag ts in
+    test_absdom_lwt options ~safe:safe s in
+  SS.for_all verify_one_track (Common.get_tags_to_be_verified ts)

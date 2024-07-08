@@ -2,6 +2,7 @@
 open Parsing
 open Utils.Std
 open Ast.Cryptoline
+open Ast.MultiTrack
 
 
 (* ---------- Positions ---------- *)
@@ -173,9 +174,9 @@ type func =
     fvm : var SM.t;             (* a map from a name to a variable (including carry variables) *)
     fym : var SM.t;             (* a map from a name to a carry variable *)
     fgm : var SM.t;             (* a map from a name to a ghost variable *)
-    fbody : lined_program;
-    fpre : bexp;
-    fpost : bexp_prove_with
+    fbody : lined_tagged_program;
+    fpre : tagged_bexp;
+    fpost : tagged_bexp_prove_with
   }
 
 
@@ -503,6 +504,14 @@ type instr_t =
   | `ECUT of (ebexp_prove_with contextual)
   | `RCUT of (rbexp_prove_with contextual)
   | `GHOST of ((var list * vecvar list) contextual) * (bexp contextual)
+  | `TASSERT of (tagged_bexp_prove_with contextual)
+  | `TEASSERT of (tagged_ebexp_prove_with contextual)
+  | `TRASSERT of (tagged_rbexp_prove_with contextual)
+  | `TASSUME of (tagged_bexp contextual)
+  | `TCUT of (tagged_bexp_prove_with contextual)
+  | `TECUT of (tagged_ebexp_prove_with contextual)
+  | `TRCUT of (tagged_rbexp_prove_with contextual)
+  | `TGHOST of ((var list * vecvar list) contextual) * (tagged_bexp contextual)
   | `CALL of string * ((typ list * typ list -> atom list) contextual)
   | `INLINE of string * ((typ list * typ list -> atom list) contextual)
   | `NOP
@@ -725,7 +734,7 @@ let parse_imov_at ctx lno dest src =
   let a = resolve_atom_with ctx lno src in
   let ty = typ_of_atom a in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imov (v, a)]
+  [lno, TImov (v, a)]
 
 let parse_ishl_at ctx lno dest src num =
   let a1 = resolve_atom_with ctx lno src in
@@ -741,7 +750,7 @@ let parse_ishl_at ctx lno dest src num =
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
     | _ -> ()
   in
-  [lno, Ishl (v, a1, a2)]
+  [lno, TIshl (v, a1, a2)]
 
 let parse_ishls_at ctx lno lost dest src num =
   let a = resolve_atom_with ctx lno src in
@@ -755,7 +764,7 @@ let parse_ishls_at ctx lno lost dest src num =
       raise_at_line lno ("An shls instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
   in
-  [lno, Ishls (l, v, a, n)]
+  [lno, TIshls (l, v, a, n)]
 
 let parse_ishr_at ctx lno dest src num =
   let a1 = resolve_atom_with ctx lno src in
@@ -771,7 +780,7 @@ let parse_ishr_at ctx lno dest src num =
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
     | _ -> ()
   in
-  [lno, Ishr (v, a1, a2)]
+  [lno, TIshr (v, a1, a2)]
 
 let parse_ishrs_at ctx lno dest lost src num =
   let a = resolve_atom_with ctx lno src in
@@ -785,7 +794,7 @@ let parse_ishrs_at ctx lno dest lost src num =
       raise_at_line lno ("An shrs instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
   in
-  [lno, Ishrs (v, l, a, n)]
+  [lno, TIshrs (v, l, a, n)]
 
 let parse_isar_at ctx lno dest src num =
   let a1 = resolve_atom_with ctx lno src in
@@ -801,7 +810,7 @@ let parse_isar_at ctx lno dest src num =
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
     | _ -> ()
   in
-  [lno, Isar (v, a1, a2)]
+  [lno, TIsar (v, a1, a2)]
 
 let parse_isars_at ctx lno dest lost src num =
   let a = resolve_atom_with ctx lno src in
@@ -815,7 +824,7 @@ let parse_isars_at ctx lno dest lost src num =
       raise_at_line lno ("An sars instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                          ^ " An offset not in the range is found: " ^ Z.to_string n ^ ".")
   in
-  [lno, Isars (v, l, a, n)]
+  [lno, TIsars (v, l, a, n)]
 
 let parse_cshl_at ctx lno destH destL src1 src2 num =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -824,7 +833,7 @@ let parse_cshl_at ctx lno destH destL src1 src2 num =
   let n = num ctx in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
-  [lno, Icshl (vh, vl, a1, a2, n)]
+  [lno, TIcshl (vh, vl, a1, a2, n)]
 
 let parse_cshls_at ctx lno lostL destH destL src1 src2 num =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -834,7 +843,7 @@ let parse_cshls_at ctx lno lostL destH destL src1 src2 num =
   let l = resolve_lv_with ctx lno lostL (Some (typ_to_size ty (Z.to_int n))) in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
-  [lno, Icshls (l, vh, vl, a1, a2, n)]
+  [lno, TIcshls (l, vh, vl, a1, a2, n)]
 
 let parse_cshr_at ctx lno destH destL src1 src2 num =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -843,7 +852,7 @@ let parse_cshr_at ctx lno destH destL src1 src2 num =
   let n = num ctx in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
-  [lno, Icshr (vh, vl, a1, a2, n)]
+  [lno, TIcshr (vh, vl, a1, a2, n)]
 
 let parse_cshrs_at ctx lno destH destL lostL src1 src2 num =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -853,33 +862,33 @@ let parse_cshrs_at ctx lno destH destL lostL src1 src2 num =
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
   let l = resolve_lv_with ctx lno lostL (Some (Tuint (Z.to_int n))) in
-  [lno, Icshrs (vh, vl, l, a1, a2, n)]
+  [lno, TIcshrs (vh, vl, l, a1, a2, n)]
 
 let parse_rol_at ctx lno dest src num =
   let a = resolve_atom_with ctx lno src in
   let ty = typ_of_atom a in
   let n = resolve_atom_with ctx lno ~typ:ty num in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Irol (v, a, n)]
+  [lno, TIrol (v, a, n)]
 
 let parse_ror_at ctx lno dest src num =
   let a = resolve_atom_with ctx lno src in
   let ty = typ_of_atom a in
   let n = resolve_atom_with ctx lno ~typ:ty num in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iror (v, a, n)]
+  [lno, TIror (v, a, n)]
 
 let parse_set_at ctx lno dest =
   let c = resolve_lcarry_with ctx lno dest in
-  [lno, Imov (c, Aconst (bit_t, Z.one)) ]
+  [lno, TImov (c, Aconst (bit_t, Z.one)) ]
 
 let parse_clear_at ctx lno dest =
   let c = resolve_lcarry_with ctx lno dest in
-  [lno, Imov (c, Aconst (bit_t, Z.zero))]
+  [lno, TImov (c, Aconst (bit_t, Z.zero))]
 
 let parse_nondet_at ctx lno dest =
   let v = resolve_lv_with ctx lno dest None in
-  [lno, Inondet v]
+  [lno, TInondet v]
 
 let parse_cmov_at ctx lno dest carry src1 src2 =
   let c = resolve_atom_with ctx lno carry in
@@ -887,14 +896,14 @@ let parse_cmov_at ctx lno dest carry src1 src2 =
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Icmov (v, c, a1, a2)]
+  [lno, TIcmov (v, c, a1, a2)]
 
 let parse_add_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadd (v, a1, a2)]
+  [lno, TIadd (v, a1, a2)]
 
 let parse_adds_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -902,7 +911,7 @@ let parse_adds_at ctx lno flag dest src1 src2 =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadds (c, v, a1, a2)]
+  [lno, TIadds (c, v, a1, a2)]
 
 let parse_adc_at ctx lno dest src1 src2 (carry : atom_t) =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -910,7 +919,7 @@ let parse_adc_at ctx lno dest src1 src2 (carry : atom_t) =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadc (v, a1, a2, y)]
+  [lno, TIadc (v, a1, a2, y)]
 
 let parse_adcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -919,14 +928,14 @@ let parse_adcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadcs (c, v, a1, a2, y)]
+  [lno, TIadcs (c, v, a1, a2, y)]
 
 let parse_sub_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isub (v, a1, a2)]
+  [lno, TIsub (v, a1, a2)]
 
 let parse_subc_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -934,7 +943,7 @@ let parse_subc_at ctx lno flag dest src1 src2 =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubc (c, v, a1, a2)]
+  [lno, TIsubc (c, v, a1, a2)]
 
 let parse_subb_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -942,7 +951,7 @@ let parse_subb_at ctx lno flag dest src1 src2 =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubb (c, v, a1, a2)]
+  [lno, TIsubb (c, v, a1, a2)]
 
 let parse_sbc_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -950,7 +959,7 @@ let parse_sbc_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbc (v, a1, a2, y)]
+  [lno, TIsbc (v, a1, a2, y)]
 
 let parse_sbcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -959,7 +968,7 @@ let parse_sbcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbcs (c, v, a1, a2, y)]
+  [lno, TIsbcs (c, v, a1, a2, y)]
 
 let parse_sbb_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -967,7 +976,7 @@ let parse_sbb_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbb (v, a1, a2, y)]
+  [lno, TIsbb (v, a1, a2, y)]
 
 let parse_sbbs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -976,14 +985,14 @@ let parse_sbbs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbbs (c, v, a1, a2, y)]
+  [lno, TIsbbs (c, v, a1, a2, y)]
 
 let parse_mul_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imul (v, a1, a2)]
+  [lno, TImul (v, a1, a2)]
 
 let parse_muls_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -991,7 +1000,7 @@ let parse_muls_at ctx lno flag dest src1 src2 =
   let ty = typ_of_atom a1 in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imuls (c, v, a1, a2)]
+  [lno, TImuls (c, v, a1, a2)]
 
 let parse_mull_at ctx lno destH destL src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -999,14 +1008,14 @@ let parse_mull_at ctx lno destH destL src1 src2 =
   let ty = typ_of_atom a1 in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
-  [lno, Imull (vh, vl, a1, a2)]
+  [lno, TImull (vh, vl, a1, a2)]
 
 let parse_mulj_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some (typ_to_double_size ty)) in
-  [lno, Imulj (v, a1, a2)]
+  [lno, TImulj (v, a1, a2)]
 
 let parse_split_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1019,7 +1028,7 @@ let parse_split_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Isplit (vh, vl, a, n)]
+  [lno, TIsplit (vh, vl, a, n)]
 
 let parse_spl_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1032,7 +1041,7 @@ let parse_spl_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a spl should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Ispl (vh, vl, a, n)]
+  [lno, TIspl (vh, vl, a, n)]
 
 let parse_seteq_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1043,7 +1052,7 @@ let parse_seteq_at ctx lno dest src1 src2 =
       None -> (Some bit_t)
     | Some ty -> (Some ty) in
   let v = resolve_lv_with ctx lno dest dest_typ in
-  [lno, Iseteq (v, a1, a2)]
+  [lno, TIseteq (v, a1, a2)]
 
 let parse_setne_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1054,14 +1063,14 @@ let parse_setne_at ctx lno dest src1 src2 =
       None -> (Some bit_t)
     | Some ty -> (Some ty) in
   let v = resolve_lv_with ctx lno dest dest_typ in
-  [lno, Isetne (v, a1, a2)]
+  [lno, TIsetne (v, a1, a2)]
 
 let parse_uadd_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadd (v, a1, a2)]
+  [lno, TIadd (v, a1, a2)]
 
 let parse_uadds_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1069,7 +1078,7 @@ let parse_uadds_at ctx lno flag dest src1 src2 =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadds (c, v, a1, a2)]
+  [lno, TIadds (c, v, a1, a2)]
 
 let parse_uadc_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1077,7 +1086,7 @@ let parse_uadc_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadc (v, a1, a2, y)]
+  [lno, TIadc (v, a1, a2, y)]
 
 let parse_uadcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1086,14 +1095,14 @@ let parse_uadcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadcs (c, v, a1, a2, y)]
+  [lno, TIadcs (c, v, a1, a2, y)]
 
 let parse_usub_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isub (v, a1, a2)]
+  [lno, TIsub (v, a1, a2)]
 
 let parse_usubc_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1101,7 +1110,7 @@ let parse_usubc_at ctx lno flag dest src1 src2 =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubc (c, v, a1, a2)]
+  [lno, TIsubc (c, v, a1, a2)]
 
 let parse_usubb_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1109,7 +1118,7 @@ let parse_usubb_at ctx lno flag dest src1 src2 =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubb (c, v, a1, a2)]
+  [lno, TIsubb (c, v, a1, a2)]
 
 let parse_usbc_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1117,7 +1126,7 @@ let parse_usbc_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbc (v, a1, a2, y)]
+  [lno, TIsbc (v, a1, a2, y)]
 
 let parse_usbcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1126,7 +1135,7 @@ let parse_usbcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbcs (c, v, a1, a2, y)]
+  [lno, TIsbcs (c, v, a1, a2, y)]
 
 let parse_usbb_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1134,7 +1143,7 @@ let parse_usbb_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbb (v, a1, a2, y)]
+  [lno, TIsbb (v, a1, a2, y)]
 
 let parse_usbbs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1143,14 +1152,14 @@ let parse_usbbs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbbs (c, v, a1, a2, y)]
+  [lno, TIsbbs (c, v, a1, a2, y)]
 
 let parse_umul_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imul (v, a1, a2)]
+  [lno, TImul (v, a1, a2)]
 
 let parse_umuls_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1158,7 +1167,7 @@ let parse_umuls_at ctx lno flag dest src1 src2 =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imuls (c, v, a1, a2)]
+  [lno, TImuls (c, v, a1, a2)]
 
 let parse_umull_at ctx lno destH destL src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1166,14 +1175,14 @@ let parse_umull_at ctx lno destH destL src1 src2 =
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some ty) in
-  [lno, Imull (vh, vl, a1, a2)]
+  [lno, TImull (vh, vl, a1, a2)]
 
 let parse_umulj_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_unsigned (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some (typ_to_double_size ty)) in
-  [lno, Imulj (v, a1, a2)]
+  [lno, TImulj (v, a1, a2)]
 
 let parse_usplit_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1186,7 +1195,7 @@ let parse_usplit_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Isplit (vh, vl, a, n)]
+  [lno, TIsplit (vh, vl, a, n)]
 
 let parse_uspl_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1199,14 +1208,14 @@ let parse_uspl_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Ispl (vh, vl, a, n)]
+  [lno, TIspl (vh, vl, a, n)]
 
 let parse_sadd_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadd (v, a1, a2)]
+  [lno, TIadd (v, a1, a2)]
 
 let parse_sadds_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1214,7 +1223,7 @@ let parse_sadds_at ctx lno flag dest src1 src2 =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadds (c, v, a1, a2)]
+  [lno, TIadds (c, v, a1, a2)]
 
 let parse_sadc_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1222,7 +1231,7 @@ let parse_sadc_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadc (v, a1, a2, y)]
+  [lno, TIadc (v, a1, a2, y)]
 
 let parse_sadcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1231,14 +1240,14 @@ let parse_sadcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Iadcs (c, v, a1, a2, y)]
+  [lno, TIadcs (c, v, a1, a2, y)]
 
 let parse_ssub_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isub (v, a1, a2)]
+  [lno, TIsub (v, a1, a2)]
 
 let parse_ssubc_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1246,7 +1255,7 @@ let parse_ssubc_at ctx lno flag dest src1 src2 =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubc (c, v, a1, a2)]
+  [lno, TIsubc (c, v, a1, a2)]
 
 let parse_ssubb_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1254,7 +1263,7 @@ let parse_ssubb_at ctx lno flag dest src1 src2 =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isubb (c, v, a1, a2)]
+  [lno, TIsubb (c, v, a1, a2)]
 
 let parse_ssbc_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1262,7 +1271,7 @@ let parse_ssbc_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbc (v, a1, a2, y)]
+  [lno, TIsbc (v, a1, a2, y)]
 
 let parse_ssbcs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1271,7 +1280,7 @@ let parse_ssbcs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbcs (c, v, a1, a2, y)]
+  [lno, TIsbcs (c, v, a1, a2, y)]
 
 let parse_ssbb_at ctx lno dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1279,7 +1288,7 @@ let parse_ssbb_at ctx lno dest src1 src2 carry =
   let y = resolve_atom_with ctx lno carry in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbb (v, a1, a2, y)]
+  [lno, TIsbb (v, a1, a2, y)]
 
 let parse_ssbbs_at ctx lno flag dest src1 src2 carry =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1288,14 +1297,14 @@ let parse_ssbbs_at ctx lno flag dest src1 src2 carry =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Isbbs (c, v, a1, a2, y)]
+  [lno, TIsbbs (c, v, a1, a2, y)]
 
 let parse_smul_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imul (v, a1, a2)]
+  [lno, TImul (v, a1, a2)]
 
 let parse_smuls_at ctx lno flag dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1303,7 +1312,7 @@ let parse_smuls_at ctx lno flag dest src1 src2 =
   let ty = typ_to_signed (typ_of_atom a1) in
   let c = resolve_lcarry_with ctx lno flag in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Imuls (c, v, a1, a2)]
+  [lno, TImuls (c, v, a1, a2)]
 
 let parse_smull_at ctx lno destH destL src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
@@ -1311,14 +1320,14 @@ let parse_smull_at ctx lno destH destL src1 src2 =
   let ty = typ_to_signed (typ_of_atom a1) in
   let vh = resolve_lv_with ctx lno destH (Some ty) in
   let vl = resolve_lv_with ctx lno destL (Some (typ_to_unsigned ty)) in
-  [lno, Imull (vh, vl, a1, a2)]
+  [lno, TImull (vh, vl, a1, a2)]
 
 let parse_smulj_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let ty = typ_to_signed (typ_of_atom a1) in
   let v = resolve_lv_with ctx lno dest (Some (typ_to_double_size ty)) in
-  [lno, Imulj (v, a1, a2)]
+  [lno, TImulj (v, a1, a2)]
 
 let parse_ssplit_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1331,7 +1340,7 @@ let parse_ssplit_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Isplit (vh, vl, a, n)]
+  [lno, TIsplit (vh, vl, a, n)]
 
 let parse_sspl_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -1344,30 +1353,30 @@ let parse_sspl_at ctx lno destH destL src num =
     if Z.leq n Z.zero || Z.geq n (Z.of_int w) then
       raise_at_line lno ("The position of a split should be in between 0 and " ^ string_of_int w ^ " (both excluded)")
   in
-  [lno, Ispl (vh, vl, a, n)]
+  [lno, TIspl (vh, vl, a, n)]
 
 let parse_and_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let v = resolve_lv_with ctx lno dest None in
-  [lno, Iand (v, a1, a2)]
+  [lno, TIand (v, a1, a2)]
 
 let parse_or_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let v = resolve_lv_with ctx lno dest None in
-  [lno, Ior (v, a1, a2)]
+  [lno, TIor (v, a1, a2)]
 
 let parse_xor_at ctx lno dest src1 src2 =
   let a1 = resolve_atom_with ctx lno src1 in
   let a2 = resolve_atom_with ctx lno src2 in
   let v = resolve_lv_with ctx lno dest None in
-  [lno, Ixor (v, a1, a2)]
+  [lno, TIxor (v, a1, a2)]
 
 let parse_not_at ctx lno dest src =
   let a = resolve_atom_with ctx lno src in
   let v = resolve_lv_with ctx lno dest None in
-  [lno, Inot (v, a)]
+  [lno, TInot (v, a)]
 
 let parse_cast_at ctx lno optlv dest src =
   let a = resolve_atom_with ctx lno src in
@@ -1391,43 +1400,43 @@ let parse_cast_at ctx lno optlv dest src =
 	   Some d in
   (* the discarded part must be a ghost variable *)
   let _ = apply_to_some (ctx_define_ghost ctx) od in
-  [lno, Icast (od, v, a)]
+  [lno, TIcast (od, v, a)]
 
 let parse_vpc_at ctx lno dest src =
   let a = resolve_atom_with ctx lno src in
   let v = resolve_lv_or_lcarry_with ctx lno dest in
-  [lno, Ivpc (v, a)]
+  [lno, TIvpc (v, a)]
 
 let parse_join_at ctx lno dest srcH srcL =
   let ah = resolve_atom_with ctx lno srcH in
   let al = resolve_atom_with ctx lno srcL in
   let ty = typ_map ((+) (size_of_atom al)) (typ_of_atom ah) in
   let v = resolve_lv_with ctx lno dest (Some ty) in
-  [lno, Ijoin (v, ah, al)]
+  [lno, TIjoin (v, ah, al)]
 
 let parse_assert_at ctx lno bexp_prove_with_list_token =
-  [lno, Iassert (bexp_prove_with_list_token ctx)]
+  [lno, TIassert (tagged_bexp_prove_with_singleton Options.Std.default_track (bexp_prove_with_list_token ctx))]
 
 let parse_eassert_at ctx lno ebexp_prove_with_list_token =
-  [lno, Iassert (ebexp_prove_with_list_token ctx, [])]
+  [lno, TIassert (tagged_ebexp_prove_with_singleton Options.Std.default_track (ebexp_prove_with_list_token ctx), tagged_rbexp_prove_with_empty ())]
 
 let parse_rassert_at ctx lno rbexp_prove_with_list_token =
-  [lno, Iassert ([], rbexp_prove_with_list_token ctx)]
+  [lno, TIassert (tagged_ebexp_prove_with_empty (), tagged_rbexp_prove_with_singleton Options.Std.default_track (rbexp_prove_with_list_token ctx))]
 
 let parse_assume_at ctx lno bexp_token =
-  [lno, Iassume (bexp_token ctx)]
+  [lno, TIassume (tagged_bexp_singleton Options.Std.default_track (bexp_token ctx))]
 
 let parse_cut_at ctx lno bexp_prove_with_list_token =
-  let (ecuts, rcuts) = bexp_prove_with_list_token ctx in
-  [lno, Icut (ecuts, rcuts)]
+  let bpwss = bexp_prove_with_list_token ctx in
+  [lno, TIcut (tagged_bexp_prove_with_singleton Options.Std.default_track bpwss)]
 
 let parse_ecut_at ctx lno ebexp_prove_with_list_token =
-  let ecuts = ebexp_prove_with_list_token ctx in
-  [lno, Icut (ecuts, [])]
+  let epwss = ebexp_prove_with_list_token ctx in
+  [lno, TIcut (tagged_ebexp_prove_with_singleton Options.Std.default_track epwss, tagged_rbexp_prove_with_empty ())]
 
 let parse_rcut_at ctx lno rbexp_prove_with_list_token =
-  let rcuts = rbexp_prove_with_list_token ctx in
-  [lno, Icut ([], rcuts)]
+  let rpwss = rbexp_prove_with_list_token ctx in
+  [lno, TIcut (tagged_ebexp_prove_with_empty (), tagged_rbexp_prove_with_singleton Options.Std.default_track rpwss)]
 
 let parse_ghost_at ctx lno gvars_token bexp_token =
   let (sgvars, vgvars) = gvars_token ctx in
@@ -1444,7 +1453,53 @@ let parse_ghost_at ctx lno gvars_token bexp_token =
   let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
   if List.length bad_ebexps > 0 then raise_at_line lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
   else if List.length bad_rbexps > 0 then raise_at_line lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
-  else [lno, Ighost (gvars, e)]
+  else [lno, TIghost (gvars, tagged_bexp_singleton Options.Std.default_track e)]
+
+
+
+let parse_tassert_at ctx lno tbexp_prove_with_list_token =
+  [lno, TIassert (tbexp_prove_with_list_token ctx)]
+
+let parse_teassert_at ctx lno tebexp_prove_with_list_token =
+  [lno, TIassert (tebexp_prove_with_list_token ctx, tagged_rbexp_prove_with_empty ())]
+
+let parse_trassert_at ctx lno trbexp_prove_with_list_token =
+  [lno, TIassert (tagged_ebexp_prove_with_empty (), trbexp_prove_with_list_token ctx)]
+
+let parse_tassume_at ctx lno tbexp_token =
+  [lno, TIassume (tbexp_token ctx)]
+
+let parse_tcut_at ctx lno tbexp_prove_with_list_token =
+  let tb = tbexp_prove_with_list_token ctx in
+  [lno, TIcut tb]
+
+let parse_tecut_at ctx lno tebexp_prove_with_list_token =
+  let ecuts = tebexp_prove_with_list_token ctx in
+  [lno, TIcut (ecuts, tagged_rbexp_prove_with_empty ())]
+
+let parse_trcut_at ctx lno trbexp_prove_with_list_token =
+  let rcuts = trbexp_prove_with_list_token ctx in
+  [lno, TIcut (tagged_ebexp_prove_with_empty (), rcuts)]
+
+let parse_tghost_at ctx lno gvars_token tbexp_token =
+  let (sgvars, vgvars) = gvars_token ctx in
+  let _ = List.iter (ctx_define_ghost ctx) sgvars in
+  let _ = List.iter (fun (vecname, vectyp) -> ctx_define_vec_ghost ctx vecname vectyp) vgvars in
+  (* We need to define ghost vector elements here. *)
+  let vgelems = List.rev_map (fun (vecname, vectyp) -> vars_of_vec vecname vectyp) vgvars |> List.rev |> tflatten in
+  let _ = List.iter (ctx_define_ghost ctx) vgelems in
+  let gvars =
+    let add_fun = fun res v -> VS.add v res in
+    List.fold_left add_fun (List.fold_left add_fun VS.empty sgvars)  vgelems in
+  let te = tbexp_token ctx in
+  let e = tagged_bexp_untag te in
+  let bad_ebexps = List.filter (fun e -> not (eq_ebexp e etrue) && VS.is_empty (VS.inter gvars (vars_ebexp e))) (split_eand (eqn_bexp e)) in
+  let bad_rbexps = List.filter (fun e -> not (eq_rbexp e rtrue) && VS.is_empty (VS.inter gvars (vars_rbexp e))) (split_rand (rng_bexp e)) in
+  if List.length bad_ebexps > 0 then raise_at_line lno ("The algebraic expression " ^ string_of_ebexp (List.hd bad_ebexps) ^ " is defined without using any ghost variable.")
+  else if List.length bad_rbexps > 0 then raise_at_line lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
+  else [lno, TIghost (gvars, te)]
+
+
 
 let parse_call_at ctx lno fname_token actuals_token =
   (* The function name *)
@@ -1504,7 +1559,7 @@ let parse_call_at ctx lno fname_token actuals_token =
        List.rev_map2 (fun avar gvar -> mk_req avar gvar)
          defined_actuals ghost_actuals |> List.rev |> rands) in
     let ghostVS = VS.of_list ghost_actuals in
-    Ighost (ghostVS, ghost_bexp) in
+    TIghost (ghostVS, tagged_bexp_singleton Options.Std.all_track ghost_bexp) in
   let (ghost_ins, _) =
     Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
   (* Assert precondition (involving only input parameters) *)
@@ -1513,11 +1568,11 @@ let parse_call_at ctx lno fname_token actuals_token =
       List.combine f.fargs
         (List.rev (List.rev_map mkatom_var ghost_ins)) in
     let (_, em, rm) = subst_maps_of_list assert_pats in
-    let to_prove_with (ebexp, rbexp) = ([(ebexp, [])], [(rbexp, [])]) in
-    Iassert (subst_bexp_prove_with em rm (to_prove_with f.fpre)) in
+    let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te, tagged_rbexp_prove_with_of_tagged_rbexp tr) in
+    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f.fpre)) in
   (* Make nondeterministic assignments to actual output parameters *)
   let nondet_instrs =
-    List.fold_left (fun r ovar -> (lno, Inondet ovar)::r)
+    List.fold_left (fun r ovar -> (lno, TInondet ovar)::r)
       [] (List.rev_map var_of_atom actual_outs) in
   (* Assume precondition (involving input and output parameters *)
   let assume_instr =
@@ -1526,13 +1581,8 @@ let parse_call_at ctx lno fname_token actuals_token =
         (List.rev_append (List.rev_map mkatom_var ghost_ins)
            actual_outs) in
     let (_, em, rm) = subst_maps_of_list assume_pats in
-    let from_prove_with (ebexp_prove_withs, rbexp_prove_withs) =
-      let ebexps = List.rev_map fst ebexp_prove_withs in
-      let rbexps = List.rev_map fst rbexp_prove_withs in
-      let ebexp = List.fold_left (fun e ret -> Eand (e, ret)) Etrue ebexps in
-      let rbexp = List.fold_left (fun r ret -> Rand (r, ret)) Rtrue rbexps in
-      (ebexp, rbexp) in
-    Iassume (subst_bexp em rm (from_prove_with f.fpost)) in
+    let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss, tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
+    TIassume (subst_tagged_bexp em rm (from_prove_with f.fpost)) in
   (* Add actual output parameters to the parsing context *)
   let _ =
     let actual_vars = List.rev (List.rev_map (fun a ->
@@ -1567,10 +1617,10 @@ let parse_inline_at ctx lno fname_token actuals_token =
       let fys = VS.map rename_var (vs_of_vm f.fym) in
       let fgs = VS.map rename_var (vs_of_vm f.fgm) in
       let local_renamer = object (* (self) *)
-          inherit nop_visitor
-          method! vvar v = ChangeTo (rename_var v)
+          inherit tnop_visitor
+          method! tvvar v = ChangeTo (rename_var v)
         end in
-      let fbody = visit_lined_program local_renamer f.fbody in
+      let fbody = tvisit_lined_program local_renamer f.fbody in
       (fbody, fargs, fouts, fvs, fys, fgs)
     else
       (f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
@@ -1624,7 +1674,7 @@ let parse_inline_at ctx lno fname_token actuals_token =
       raise_at_line lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
   in
   let (am, em, rm) = subst_maps_of_list pats in
-  let p = subst_lined_program am em rm fbody in
+  let p = subst_lined_tagged_program am em rm fbody in
   (* Update variable types *)
   let subst_varmap vs =
     (*
@@ -1681,7 +1731,7 @@ let gen_tmp_movs ctx lno (rwpairs: (string list * atom_t) list) relmtyp =
   (* Save into temp. variables with mov instructions *)
   let aliasing_instrs = List.rev (
                             SM.fold (fun tmp_name orig instrs ->
-                                let instr = (lno, Imov (ctx_find_var ctx tmp_name, Avar (mkvar orig.atmname relmtyp))) in
+                                let instr = (lno, TImov (ctx_find_var ctx tmp_name, Avar (mkvar orig.atmname relmtyp))) in
                                 instr::instrs) tmp_to_orig []) in
 
   (aliasing_instrs, tmp_names, src_safe)
@@ -2514,20 +2564,36 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_join_at ctx lno dest srcH srcL
   | `ASSERT bexp_prove_with_list ->
      parse_assert_at ctx lno bexp_prove_with_list
+  | `TASSERT bexp_prove_with_list ->
+     parse_tassert_at ctx lno bexp_prove_with_list
   | `EASSERT ebexp_prove_with_list ->
      parse_eassert_at ctx lno ebexp_prove_with_list
+  | `TEASSERT ebexp_prove_with_list ->
+     parse_teassert_at ctx lno ebexp_prove_with_list
   | `RASSERT rbexp_prove_with_list ->
      parse_rassert_at ctx lno rbexp_prove_with_list
+  | `TRASSERT rbexp_prove_with_list ->
+     parse_trassert_at ctx lno rbexp_prove_with_list
   | `ASSUME bexp ->
      parse_assume_at ctx lno bexp
+  | `TASSUME bexp ->
+     parse_tassume_at ctx lno bexp
   | `CUT bexp_prove_with_list ->
      parse_cut_at ctx lno bexp_prove_with_list
+  | `TCUT bexp_prove_with_list ->
+     parse_tcut_at ctx lno bexp_prove_with_list
   | `ECUT ebexp_prove_with_list ->
      parse_ecut_at ctx lno ebexp_prove_with_list
+  | `TECUT ebexp_prove_with_list ->
+     parse_tecut_at ctx lno ebexp_prove_with_list
   | `RCUT rbexp_prove_with_list ->
      parse_rcut_at ctx lno rbexp_prove_with_list
+  | `TRCUT rbexp_prove_with_list ->
+     parse_trcut_at ctx lno rbexp_prove_with_list
   | `GHOST (gvars, bexp) ->
      parse_ghost_at ctx lno gvars bexp
+  | `TGHOST (gvars, bexp) ->
+     parse_tghost_at ctx lno gvars bexp
   | `CALL (id, actuals) ->
      parse_call_at ctx lno id actuals
   | `INLINE (id, actuals) ->
@@ -3135,12 +3201,12 @@ let parse_proc lno fname (args, outs) pre_tok instrs post_tok =
     let _ = ctx.cghosts <- SM.empty in
     let f =
       match pre_tok ctx with
-      | None -> btrue
+      | None -> tagged_bexp_singleton Options.Std.default_track btrue
       | Some e -> e in
     let p = parse_instrs ctx instrs in
     let g =
       match post_tok ctx with
-      | None -> ([], [])
+      | None -> tagged_bexp_prove_with_empty ()
       | Some e -> e in
     (* Validate pre-/post-conditions *)
     let _ =
@@ -3150,7 +3216,7 @@ let parse_proc lno fname (args, outs) pre_tok instrs post_tok =
         (* 1. pre-condition can access only input variables *)
         (* => this is checked in parsing the pre-condition *)
         (* 2. post-condition can access only input and output variables *)
-        let undefined_post = VS.diff (vars_bexp_prove_with g) (VS.union fins fouts) in
+        let undefined_post = VS.diff (vars_bexp_prove_with (tagged_bexp_prove_with_untag g)) (VS.union fins fouts) in
         let _ = if not (VS.is_empty undefined_post) then raise_at_line lno ("Variable " ^ string_of_var (VS.min_elt undefined_post) ^ " is not a formal parameter of procedure " ^ fname ^ ". "^
                                                                               "Variables in post-conditions for procedures other than " ^ Options.Std.main_proc_name ^ " must be formal input or output variables.") in
         () in
@@ -3166,7 +3232,7 @@ let parse_proc lno fname (args, outs) pre_tok instrs post_tok =
     ()
 
 let parse_specs procs_tok =
-  let inputs_spec_pair m = ((m.fargs, m.fouts), { Typecheck.Std.spre = m.fpre; Typecheck.Std.sprog = m.fbody; Typecheck.Std.spost = m.fpost }) in
+  let inputs_spec_pair m = ((m.fargs, m.fouts), { Typecheck.Std.tspre = m.fpre; Typecheck.Std.tsprog = m.fbody; Typecheck.Std.tspost = m.fpost }) in
   let ctx = empty_parsing_context() in
   let _ = procs_tok ctx in
   SM.fold (fun fn f fm -> SM.add fn (inputs_spec_pair f) fm) ctx.cfuns SM.empty
@@ -3176,6 +3242,6 @@ let parse_spec procs_tok =
   let _ = procs_tok ctx in
   try
     let m = SM.find Options.Std.main_proc_name ctx.cfuns in
-    (m.fargs, { Typecheck.Std.spre = m.fpre; Typecheck.Std.sprog = m.fbody; Typecheck.Std.spost = m.fpost })
+    (m.fargs, { Typecheck.Std.tspre = m.fpre; Typecheck.Std.tsprog = m.fbody; Typecheck.Std.tspost = m.fpost })
   with Not_found ->
     raise (ParseError ("A " ^ Options.Std.main_proc_name ^ " function is required."))

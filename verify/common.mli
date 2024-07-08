@@ -2,6 +2,8 @@
 (** This module provides help functions for the verification of specifications in SSA. *)
 
 open Ast.Cryptoline
+open Ast.MultiTrack
+
 
 (** {1 Verifying Algebraic Specifications} *)
 
@@ -86,6 +88,7 @@ val redlog_of_espec : espec -> string
 val rewrite_poly_spec : Cas.var_gen -> Cas.poly_spec -> Cas.var_gen * Cas.poly_spec
 (** [rewrite_poly_spec s] applies rewriting to [s]. *)
 
+
 (** {1 Verifying Safety and Range Specifications} *)
 
 type round_result = Smt.round_result
@@ -152,3 +155,8 @@ val isl_of_eexp : eexp -> string
 
 val isl_of_ebexp : ebexp -> string
 (** Convert an ebexp to islpy string *)
+
+
+(** {1 Others} *)
+
+val get_tags_to_be_verified : tagged_spec -> SS.t

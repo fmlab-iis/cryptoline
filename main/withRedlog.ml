@@ -22,7 +22,7 @@ let parse_spec file =
 let anon file =
   let _ = Random.self_init() in
   let (_vs, spec) = parse_spec file in
-  let spec_ssa = ssa_spec (from_typecheck_spec spec) in
+  let spec_ssa = from_typecheck_tagged_spec spec |> Ast.MultiTrack.tagged_spec_untag |> ssa_spec in
   let res = redlog_of_espec (espec_of_spec spec_ssa) in
   print_endline res
 (*

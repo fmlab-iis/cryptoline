@@ -2,6 +2,7 @@
 open Arg
 open Options.Std
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Typecheck.Std
 open Parsers.Std
 open Utils
@@ -56,9 +57,10 @@ let print_with_types = ref false
 
 let absdom_assume_safe = ref false
 
-let str_to_ids str =
-  if str = "-" then Hashset.of_list []
-  else (Str.split (Str.regexp ",") str) |> List.map (parse_range) |> List.map flatten_range |> List.flatten |> Hashset.of_list
+let tmp_arg1 = ref ""
+
+let str_of_hasset str =
+  Str.split (Str.regexp ",") str |> Hashset.of_list
 
 let suggest_name name ext id =
   let nth_name id = !name ^ "_" ^ string_of_int id in
@@ -126,9 +128,12 @@ let args = [
                          "entailment problems. A root entailment problem is represented";
                          "as a specification containing only algebraic pre- and";
                          "post-conditions."]));
+    ("-safety-track", String (fun str -> safety_track := str), Common.mk_arg_desc(["NAME"; "Verify safety conditions on the specified track."]));
     ("-save-rep-uniform-types", Set save_rep_uniform_types, Common.mk_arg_desc([""; "Make the types of variables uniform when -save-rep is specified."]));
-    ("-pbtor", String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
-                                  action := PrintBtor), Common.mk_arg_desc(["    Print the input program in BTOR format. Input variables are renamed"; "uniformly."]));
+    ("-pbtor",
+     String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
+                        action := PrintBtor),
+     Common.mk_arg_desc(["VARS"; "Print the output variables (VARS, comma separated) in BTOR format."; "Input variables are renamed uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
     ("-pprof", Unit (fun () -> action := PrintProfile), Common.mk_arg_desc(["    Print the profile of a specification."]));
     ("-interactive", Set interactive_simulation,
@@ -136,8 +141,8 @@ let args = [
     ("-rmcuts", Set apply_remove_cuts, Common.mk_arg_desc(["   Remove cuts. Use with -pssa."]));
     ("-rmecuts", Set apply_remove_ecuts, Common.mk_arg_desc(["  Remove algebraic cuts. Use with -pssa."]));
     ("-rmrcuts", Set apply_remove_rcuts, Common.mk_arg_desc(["  Remove range cuts. Use with -pssa."]));
-    ("-rmalg", Set apply_remove_algebra, Common.mk_arg_desc(["    Remove all algebraic predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
-    ("-rmrng", Set apply_remove_range, Common.mk_arg_desc(["    Remove all range predicates from assertions, cuts, and"; "postconditions in a specification.. Use with -p or -pssa."]));
+    ("-rmalg", Set apply_remove_algebra, Common.mk_arg_desc(["    Remove all algebraic predicates from assertions, cuts, and"; "postconditions in a specification. Use with -p or -pssa."]));
+    ("-rmrng", Set apply_remove_range, Common.mk_arg_desc(["    Remove all range predicates from assertions, cuts, and"; "postconditions in a specification. Use with -p or -pssa."]));
     ("-sim", String (
                  fun s ->
                  action := Simulation;
@@ -159,28 +164,110 @@ let args = [
     ("-save_bvcryptoline", String (fun str -> let _ = save_bvcryptoline_filename := str in action := SaveBvCryptoline),
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
     ("-save-cuts", String (fun str -> let _ = save_cuts_filename := str in action := SaveCuts),
-     Common.mk_arg_desc(["FILENAME"; "Cut the specification and save cuts separatedly."]));
-    ("-vecuts", String (fun str -> verify_ecuts := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
-    ("-vea", String (fun str -> verify_eassert_ids := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify algebraic assertions of specific IDs."]));
-    ("-veacuts", String (fun str -> verify_eacuts := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify the specified algebraic assertions before the specified";
+     Common.mk_arg_desc(["FILENAME"; "Cut the specification and save cuts separatedly. Multi-track cuts,"; "ecuts, and rcuts are not supported."]));
+    ("-vecuts", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_ecuts with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_ecuts <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify the specified algebraic cuts (comma separated). The indices"; "start with 0. The algebraic postcondition is the last cut."]));
+    ("-vea", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_eassert_ids with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_eassert_ids <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify algebraic assertions of specific IDs."]));
+    ("-veacuts", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_eacuts with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_eacuts <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify the specified algebraic assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the algebraic assertions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
-    ("-vrcuts", String (fun str -> verify_rcuts := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify the specified range cuts (comma separated). The indices";
+    ("-vrcuts", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_rcuts with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_rcuts <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify the specified range cuts (comma separated). The indices";
                          "start with 0. The range postcondition is the last cut."]));
-    ("-vra", String (fun str -> verify_rassert_ids := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify range assertions of specific IDs."]));
-    ("-vracuts", String (fun str -> verify_racuts := Some (str_to_ids str)),
-     Common.mk_arg_desc(["INDICES"; "Verify the specified range assertions before the specified";
+    ("-vra", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_rassert_ids with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_rassert_ids <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify range assertions of specific IDs."]));
+    ("-vracuts", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_racuts with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_racuts <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+     Common.mk_arg_desc(["TRACK INDICES"; "Verify the specified range assertions before the specified";
                          "cuts (comma separated). The indices For each i in the specified"; "indices, the range assertions between the (i-1)-th cut (or";
                          "the precondition if i = 0) and the i-th cut will be checked."]));
-     ("-vs", String (fun str -> verify_safety_ids := Some (str_to_ids str)),
-      Common.mk_arg_desc(["INDICES"; "Verify safety conditions of specific IDs. Use with -isafety. Note"; "that -vscuts may change the IDs of safety conditions."]));
-     ("-vscuts", String (fun str -> verify_scuts := Some (str_to_ids str)),
-      Common.mk_arg_desc(["INDICES"; "Verify safety of instructions before the specified cuts (comma";
+     ("-vs", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_safety_ids with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_safety_ids <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+      Common.mk_arg_desc(["TRACK INDICES"; "Verify safety conditions of specific IDs. Use with -isafety. Note"; "that -vscuts may change the IDs of safety conditions."]));
+     ("-vt", String (fun str -> verify_tracks := Some (str_of_hasset str)),
+      Common.mk_arg_desc(["TRACKS"; "Verify tracks of specific names."]));
+     ("-vscuts", Tuple [
+                 String (fun str -> tmp_arg1 := str);
+                 String (fun str -> let tbl =
+                                      match mt_options.mt_verify_scuts with
+                                      | None -> let tbl = Hashtbl.create 10 in
+                                                let _ = mt_options.mt_verify_scuts <- Some tbl in
+                                                tbl
+                                      | Some tbl -> tbl in
+                                    let _ = Options.Std.parse_and_add_ids !tmp_arg1 str tbl in
+                                    tmp_arg1 := "")
+               ],
+      Common.mk_arg_desc(["TRACK INDICES"; "Verify safety of instructions before the specified cuts (comma";
                           "separated). The indices start with 0. For each i in the specified"; "indices, the safety of instructions between the (i-1)-th cut (or";
                           "the precondition if i = 0) and the i-th cut will be checked."]))
   ]@Common.args_parsing@Common.args_io@Common.args_verifier
@@ -236,7 +323,11 @@ let print_data_flow p fout =
   output_string fout "}\n"
 
 let anon file =
-  let vprintln_title title =
+  let vprintln_title1 title =
+    let _ = vprintln ("\n" ^ title) in
+    let _ = vprintln (String.concat "" (List.init (String.length title) (fun _ -> "="))) in
+    () in
+  let vprintln_title2 title =
     let _ = vprintln ("\n" ^ title) in
     let _ = vprintln (String.concat "" (List.init (String.length title) (fun _ -> "-"))) in
     () in
@@ -250,7 +341,7 @@ let anon file =
     print_endline ("proc " ^ fn ^ "(" ^ ivs_str ^ ovs_str ^ ") =") in
   let print_procedure fn ivs ovs s =
     print_procedure_sig fn ivs ovs;
-    print_endline (string_of_spec ~typ:!print_with_types s) in
+    print_endline (string_of_tagged_spec ~typ:!print_with_types s) in
   let t1 = Unix.gettimeofday() in
   let _ = Random.self_init() in
   match !action with
@@ -265,15 +356,16 @@ let anon file =
                    fun fn (_, s) res ->
                    let _ = logfile := propose_logfile (Some fn) in
                    let lt1 = Unix.gettimeofday() in
-                   let _ = vprintln_title ("Procedure " ^ fn) in
-                   let r = Verify.Std.verify_spec s in
+                   let _ = vprintln_title1 ("Procedure " ^ fn) in
+                   let r = Verify.Std.verify_tagged_spec Options.Std.mt_options s in
                    let lt2 = Unix.gettimeofday() in
+                   let _ = vprintln_title2 ("Procedure Summary") in
                    let _ = vprintln ("Procedure verification:\t\t\t\t"
                                      ^ (if r then "[OK]\t" else "[FAILED]") ^ "\t"
                                      ^ string_of_running_time lt1 lt2) in
                    r && res) specs true in
      let t2 = Unix.gettimeofday() in
-     let _ = vprintln_title "Summary" in
+     let _ = vprintln_title1 "Summary" in
      let _ = print_endline ("Verification result:\t\t\t\t"
                             ^ (if res then "[OK]\t" else "[FAILED]") ^ "\t"
                             ^ string_of_running_time t1 t2) in
@@ -282,8 +374,8 @@ let anon file =
      let specs = Common.parse_and_check_all file in
      let _ = SM.iter (fun fn ((ivs, ovs), s) ->
                  let s = List.fold_left (|>) s
-                           ((if !apply_remove_algebra then [remove_algebra_spec] else [])
-                            @(if !apply_remove_range then [remove_range_spec] else [])) in
+                           ((if !apply_remove_algebra then [remove_algebra_tagged_spec] else [])
+                            @(if !apply_remove_range then [remove_range_tagged_spec] else [])) in
                  print_procedure fn ivs ovs s; print_endline "") specs
      in
      ()
@@ -291,14 +383,14 @@ let anon file =
      let specs = Common.parse_and_check_all file in
      let _ = SM.iter (fun fn ((ivs, ovs), s) ->
                  let ivs = List.map (ssa_var VM.empty) ivs in
-                 let (ssa_vm, init_spec) = ssa_spec_full s in
+                 let (ssa_vm, init_spec) = ssa_tagged_spec_full s in
                  let ovs = List.map (ssa_var ssa_vm) ovs in
-                 let post_processes = (if !apply_move_assert then [move_asserts] else [])
-                                      @(if !apply_remove_cuts then [remove_cut_spec] else [])
-                                      @(if !apply_remove_ecuts then [remove_ecut_spec] else [])
-                                      @(if !apply_remove_rcuts then [remove_rcut_spec] else [])
-                                      @(if !apply_remove_algebra then [remove_algebra_spec] else [])
-                                      @(if !apply_remove_range then [remove_range_spec] else [])
+                 let post_processes = (if !apply_move_assert then [move_tagged_asserts] else [])
+                                      @(if !apply_remove_cuts then [remove_cut_tagged_spec] else [])
+                                      @(if !apply_remove_ecuts then [remove_ecut_tagged_spec] else [])
+                                      @(if !apply_remove_rcuts then [remove_rcut_tagged_spec] else [])
+                                      @(if !apply_remove_algebra then [remove_algebra_tagged_spec] else [])
+                                      @(if !apply_remove_range then [remove_range_tagged_spec] else [])
                  in
                  let s = List.fold_left (|>) init_spec post_processes in
                  print_procedure fn ivs ovs s; print_endline "") specs in
@@ -311,16 +403,18 @@ let anon file =
      print_endline (string_of_rspec ~typ:!print_with_types s)
   | PrintDataFlow ->
      let (_, s) = Common.parse_and_check file in
-     let s = ssa_spec s in
+     let s = tagged_spec_untag s |> ssa_spec in
      print_data_flow s.sprog stdout
   | PrintBtor ->
      let ((ivs, _), s) = Common.parse_and_check file in
+     let s = tagged_spec_untag s in
      let m = new Qfbv.Common.btor_manager in
      let outs = Common.find_output_vars s.sprog !output_vars in
      let str = Qfbv.Common.btor_program ~rename:true m s.sprog ivs outs in
      print_endline str
   | PrintProfile ->
      let (_, s) = Common.parse_and_check file in
+     let s = tagged_spec_untag s in
      let p = profile_spec s in
      print_endline (String.concat "\n" [
                         "Types (excluding carries and annotations): " ^ String.concat ", " (List.map string_of_typ p.program_typs_exclude_carries);
@@ -358,6 +452,8 @@ let anon file =
        let _ = close_out ch in
        () in
      let (_, s) = Common.parse_and_check file in
+     let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
+     let s = tagged_spec_untag s in
      let postprocess s =
        List.fold_left (|>) s
          ((if !apply_remove_algebra then [remove_algebra_spec] else [])
@@ -369,9 +465,11 @@ let anon file =
      List.iteri output (List.rev_map postprocess (List.rev ss))
   | SaveREP ->
      (* Print the algebraic part as root entailment problems *)
-     let s = Common.parse_and_check file |> snd |> normalize_spec |> ssa_spec in
+     let (_, s) = Common.parse_and_check file in
+     let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
+     let s = tagged_spec_untag s |> normalize_spec |> ssa_spec in
      let vgen = Verify.Common.vgen_of_spec s in
-     let ess = normalize_spec s
+     let ess = s
                |> (if !apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
                |> (if !apply_rewrite_vpc then rewrite_vpc_ssa_spec else Fun.id)
                |> espec_of_spec
@@ -427,6 +525,8 @@ let anon file =
        let _ = close_out ch in
        () in
      let (_, s) = Common.parse_and_check file in
+     let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
+     let s = tagged_spec_untag s in
      let coq_specs = spec_to_coqcryptoline s in
      List.iteri output coq_specs
   | SaveBvCryptoline ->
@@ -445,17 +545,21 @@ let anon file =
        let _ = close_out ch in
        () in
      let (_, s) = Common.parse_and_check file in
+     let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
+     let s = tagged_spec_untag s in
      let bvspecs = spec_to_bvcryptoline s in
      List.iteri output bvspecs
   | Simulation ->
      let _ = Random.self_init () in
      let ((ivs, _), s) = Common.parse_and_check file in
+     let s = tagged_spec_untag s in
      let vals = parse_initial_values ivs in
      let m = Simulator.make_map ivs vals in
      if !interactive_simulation then Simulator.shell m s.sprog
      else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
   | PrintAbsdom ->
      let (_, s) = Common.parse_and_check file in
+     let s = tagged_spec_untag s in
      let rs = rspec_of_spec (ssa_spec (remove_cut_spec s)) in
      let vars = vars_rspec rs in
      let mgr = Absdom.Std.create_manager vars in
@@ -474,7 +578,7 @@ let anon file =
      let _ = Options.Std.abs_interp := false in
      let t1 = Unix.gettimeofday() in
      let (_, s) = Common.parse_and_check file in
-     let res = Verify.WithLwt.test_absdom_lwt ~safe:!absdom_assume_safe (ssa_spec s) in
+     let res = Verify.WithLwt.test_tagged_absdom_lwt Options.Std.mt_options ~safe:!absdom_assume_safe (ssa_tagged_spec s) in
      let t2 = Unix.gettimeofday() in
      let _ = print_endline (Printf.sprintf "%-55s%-8s%-14s" "Final result:"  (if res then "[OK]" else "[FAIL]") (string_of_running_time t1 t2)) in
      ()

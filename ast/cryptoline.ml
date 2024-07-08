@@ -18,7 +18,6 @@ module IS = Set.Make(Int)
 
 let union_iss iss = List.fold_left IS.union IS.empty iss
 
-
 (** Auxiliary Functions *)
 
 let z_two = Z.of_int 2
@@ -504,6 +503,7 @@ let limbs r es =
 let poly p es =
   let mons = List.mapi (fun i e ->
                  if i = 0 then e  (* assuming any n (incl. 0) to the power of 0 is 1 *)
+                 else if i = 1 then emul e p
                  else emul e (epow p (econst (Z.of_int i)))) es in
   match add_assoc with
   | LeftAssoc -> eadds mons
@@ -860,6 +860,13 @@ type ebexp_prove_with = (ebexp * prove_with_spec list) list
 type rbexp_prove_with = (rbexp * prove_with_spec list) list
 
 type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
+
+let ebexp_prove_with_of_ebexp e = [(e, [])]
+let rbexp_prove_with_of_rbexp r = [(r, [])]
+let bexp_prove_with_of_bexp (e, r) = (ebexp_prove_with_of_ebexp e, rbexp_prove_with_of_rbexp r)
+let ebexp_of_ebexp_prove_with epwss = eands (List.rev_map fst epwss |> List.rev)
+let rbexp_of_rbexp_prove_with rpwss = rands (List.rev_map fst rpwss |> List.rev)
+let bexp_of_bexp_prove_with bpwss = (ebexp_of_ebexp_prove_with (fst bpwss), rbexp_of_rbexp_prove_with (snd bpwss))
 
 (* Simplify prove-with clauses. *)
 let simplify_prove_with_specs pwss =
@@ -1329,7 +1336,7 @@ let string_of_atom ?typ:(typ=false) a =
      if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_typ ty
      else Z.to_string n ^ typ_delim ^ string_of_typ ty
 
-let string_of_instr ?typ:(typ=false) i =
+let string_of_instr_no_semicolon ?typ:(typ=false) i =
   let vstr v = string_of_var ~typ:typ v in
   let astr a = string_of_atom ~typ:typ a in
   match i with
@@ -1397,7 +1404,7 @@ let string_of_instr ?typ:(typ=false) i =
       | _, _ -> "cut " ^ string_of_bexp_prove_with (ecuts, rcuts))
   | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
-let string_of_instr ?typ:(typ=false) i = string_of_instr ~typ:typ i ^ ";"
+let string_of_instr ?semicolon:(semicolon=true) ?typ:(typ=false) i = string_of_instr_no_semicolon ~typ:typ i ^ (if semicolon then ";" else "")
 
 let string_of_program ?insert_nop:(insert=true) ?typ:(typ=false) p =
   let p = if insert && p = [] then [Inop]
@@ -3470,8 +3477,6 @@ object (* (self) *)
   method vvar _v = DoChildren
 end
 
-let id x = x
-
 let visit_var visitor v =
   match visitor#vvar v with
   | SkipChildren | DoChildren -> v
@@ -3504,7 +3509,7 @@ let visit_atom visitor a =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (a, f) =
        match act with
-       | DoChildren -> (a, id)
+       | DoChildren -> (a, Fun.id)
        | ChangeDoChildrenPost (a', f) -> (a', f)
        | _ -> failwith ("Never happen") in
      f (match a with
@@ -3519,7 +3524,7 @@ let rec visit_eexp visitor e =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (e, f) =
        match act with
-       | DoChildren -> (e, id)
+       | DoChildren -> (e, Fun.id)
        | ChangeDoChildrenPost (e', f) -> (e', f)
        | _ -> failwith ("Never happen") in
      f (match e with
@@ -3536,7 +3541,7 @@ let rec visit_rexp visitor e =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (e, f) =
        match act with
-       | DoChildren -> (e, id)
+       | DoChildren -> (e, Fun.id)
        | ChangeDoChildrenPost (e', f) -> (e', f)
        | _ -> failwith ("Never happen") in
      f (match e with
@@ -3556,7 +3561,7 @@ let rec visit_ebexp visitor e =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (e, f) =
        match act with
-       | DoChildren -> (e, id)
+       | DoChildren -> (e, Fun.id)
        | ChangeDoChildrenPost (e', f) -> (e', f)
        | _ -> failwith ("Never happen") in
      f (match e with
@@ -3575,7 +3580,7 @@ let rec visit_rbexp visitor e =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (e, f) =
        match act with
-       | DoChildren -> (e, id)
+       | DoChildren -> (e, Fun.id)
        | ChangeDoChildrenPost (e', f) -> (e', f)
        | _ -> failwith ("Never happen") in
      f (match e with
@@ -3594,7 +3599,7 @@ let visit_bexp visitor e =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (e, f) =
        match act with
-       | DoChildren -> (e, id)
+       | DoChildren -> (e, Fun.id)
        | ChangeDoChildrenPost (e', f) -> (e', f)
        | _ -> failwith ("Never happen") in
      f (match e with
@@ -3614,7 +3619,7 @@ let visit_instr visitor i =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (i, f) =
        match act with
-       | DoChildren -> (i, id)
+       | DoChildren -> (i, Fun.id)
        | ChangeDoChildrenPost (i', f) -> (i', f)
        | _ -> failwith ("Never happen") in
      f (match i with
@@ -3677,7 +3682,7 @@ let visit_program visitor p =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (p, f) =
        match act with
-       | DoChildren -> (p, id)
+       | DoChildren -> (p, Fun.id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
      f (List.map (visit_instr visitor) p)
@@ -3690,7 +3695,7 @@ let visit_lined_program visitor p =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (p, f) =
        match act with
-       | DoChildren -> (p, id)
+       | DoChildren -> (p, Fun.id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
      f (tmap (fun (lno, i) -> lno, visit_instr visitor i) p)
@@ -3703,7 +3708,7 @@ let visit_spec visitor s =
   | DoChildren | ChangeDoChildrenPost _ ->
      let (s, f) =
        match act with
-       | DoChildren -> (s, id)
+       | DoChildren -> (s, Fun.id)
        | ChangeDoChildrenPost (s', f) -> (s', f)
        | _ -> failwith ("Never happen") in
      f ({ spre = visit_bexp visitor s.spre;

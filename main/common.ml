@@ -4,6 +4,7 @@ open Options.Std
 open Typecheck.Std
 open Parsers.Std
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Utils.Std
 
 let mk_arg_desc lines = (String.concat "\n\t     " lines) ^ "\n"
@@ -124,20 +125,20 @@ let parse_and_check_all file =
     let ropt = SM.fold (
                    fun _ ((ivs, _), s) ropt ->
                    match ropt with
-                   | None -> illformed_spec_reason (VS.of_list ivs) s
+                   | None -> illformed_tagged_spec_reason (VS.of_list ivs) s
                    | _ -> ropt) specs None in
     let wf = ropt = None in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if wf then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     let _ =
       match ropt with
-      | Some (IllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_bexp e ^ ".\nReason: " ^ r)
-      | Some (IllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_instr i ^ ".\nReason: " ^ r)
-      | Some (IllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_bexp_prove_with e ^ ".\nReason: " ^ r)
+      | Some (TIllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_tagged_bexp e ^ ".\nReason: " ^ r)
+      | Some (TIllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_tagged_instr i ^ ".\nReason: " ^ r)
+      | Some (TIllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_tagged_bexp_prove_with e ^ ".\nReason: " ^ r)
       | _ -> () in
     wf in
   let specs = parse_specs file in
-  if check_well_formedness specs then SM.map (fun (vs, s) -> (vs, from_typecheck_spec s)) specs
+  if check_well_formedness specs then SM.map (fun (vs, s) -> (vs, from_typecheck_tagged_spec s)) specs
   else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
   else exit 1
 
@@ -162,19 +163,19 @@ let parse_and_check ?(proc = main_proc_name) file =
   let check_well_formedness vs s =
     let t1 = Unix.gettimeofday() in
     let _ = vprint ("Checking well-formedness:\t\t\t") in
-    let ropt = illformed_spec_reason vs s in
+    let ropt = illformed_tagged_spec_reason vs s in
     let wf = ropt = None in
     let t2 = Unix.gettimeofday() in
     let _ = vprintln ((if wf then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
     let _ =
       match ropt with
-      | Some (IllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_bexp e ^ ".\nReason: " ^ r)
-      | Some (IllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_instr i ^ ".\nReason: " ^ r)
-      | Some (IllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_bexp_prove_with e ^ ".\nReason: " ^ r)
+      | Some (TIllPrecondition e, r) -> vprintln("Ill-formed precondition: " ^ string_of_tagged_bexp e ^ ".\nReason: " ^ r)
+      | Some (TIllInstruction i, r) -> vprintln("Ill-formed instruction: " ^ string_of_tagged_instr i ^ ".\nReason: " ^ r)
+      | Some (TIllPostcondition e, r) -> vprintln("Ill-formed postcondition: " ^ string_of_tagged_bexp_prove_with e ^ ".\nReason: " ^ r)
       | _ -> () in
     wf in
   let ((ivs, ovs), s) = parse_spec file in
-  if check_well_formedness (VS.of_list ivs) s then ((ivs, ovs), from_typecheck_spec s)
+  if check_well_formedness (VS.of_list ivs) s then ((ivs, ovs), from_typecheck_tagged_spec s)
   else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
   else exit 1
 

@@ -6,6 +6,7 @@
  *)
 
   open Ast.Cryptoline
+  open Ast.MultiTrack
   open Common
 
 %}
@@ -54,9 +55,9 @@
 %start specs
 %start spec
 %start prog
-%type <((Ast.Cryptoline.var list * Ast.Cryptoline.var list) * Typecheck.Std.spec) Ast.Cryptoline.SM.t> specs
-%type <(Ast.Cryptoline.var list * Typecheck.Std.spec)> spec
-%type <Ast.Cryptoline.lined_program> prog
+%type <((Ast.Cryptoline.var list * Ast.Cryptoline.var list) * Typecheck.Std.tagged_spec) Ast.Cryptoline.SM.t> specs
+%type <(Ast.Cryptoline.var list * Typecheck.Std.tagged_spec)> spec
+%type <Ast.MultiTrack.lined_tagged_program> prog
 
 %type <lval_t> lval
 %type <lval_vec_t> lval_v
@@ -85,12 +86,12 @@ proc:
 ;
 
 pre:
-    LBRAC bexp RBRAC                              { fun ctx -> Some ($2 ctx) }
+    LBRAC tagged_bexp RBRAC                       { fun ctx -> Some ($2 ctx) }
   |                                               { fun _ -> None }
 ;
 
 post:
-    LBRAC bexp_prove_with_list RBRAC              { fun ctx -> Some ($2 ctx) }
+    LBRAC tagged_bexp_prove_with_list RBRAC       { fun ctx -> Some ($2 ctx) }
   |                                               { fun _ -> None }
 ;
 
@@ -365,6 +366,7 @@ instr:
   | lval EQOP VPC atom                            { (get_line_start(), `VPC ($1, $4)) }
   | JOIN lval atom atom                           { (get_line_start(), `JOIN ($2, $3, $4)) }
   | lval EQOP JOIN atom atom                      { (get_line_start(), `JOIN ($1, $4, $5)) }
+/*
   | ASSERT bexp_prove_with_list                   { (get_line_start(), `ASSERT $2) }
   | EASSERT ebexp_prove_with_list                 { (get_line_start(), `EASSERT $2) }
   | RASSERT rbexp_prove_with_list                 { (get_line_start(), `RASSERT $2) }
@@ -373,6 +375,15 @@ instr:
   | ECUT ebexp_prove_with_list                    { (get_line_start(), `ECUT $2) }
   | RCUT rbexp_prove_with_list                    { (get_line_start(), `RCUT $2) }
   | GHOST gvars COLON bexp                        { (get_line_start(), `GHOST ($2, $4)) }
+*/
+  | ASSERT tagged_bexp_prove_with_list            { (get_line_start(), `TASSERT $2) }
+  | EASSERT tagged_ebexp_prove_with_list          { (get_line_start(), `TEASSERT $2) }
+  | RASSERT tagged_rbexp_prove_with_list          { (get_line_start(), `TRASSERT $2) }
+  | ASSUME tagged_bexp                            { (get_line_start(), `TASSUME $2) }
+  | CUT tagged_bexp_prove_with_list               { (get_line_start(), `TCUT $2) }
+  | ECUT tagged_ebexp_prove_with_list             { (get_line_start(), `TECUT $2) }
+  | RCUT tagged_rbexp_prove_with_list             { (get_line_start(), `TRCUT $2) }
+  | GHOST gvars COLON tagged_bexp                 { (get_line_start(), `TGHOST ($2, $4)) }
   /* Extensions */
   | CALL ID LPAR actuals RPAR                     { (get_line_start(), `CALL ($2, $4)) }
   | INLINE ID LPAR actuals RPAR                   { (get_line_start(), `INLINE ($2, $4)) }
@@ -444,20 +455,46 @@ instr:
   | INLINE error                                  { raise_at_line (get_line_start()) ("Bad inline instruction") }
 ;
 
+tagged_bexp_prove_with_list:
+    TRUE                                          { fun _ -> (tagged_ebexp_prove_with_singleton Options.Std.default_track [(etrue, [])], tagged_rbexp_prove_with_singleton Options.Std.default_track [(rtrue, [])]) }
+  | tagged_ebexp_prove_with_list VBAR tagged_rbexp_prove_with_list
+                                                  { fun ctx -> ($1 ctx, $3 ctx) }
+;
+
+tagged_ebexp_prove_with_list:
+    tagged_ebexp_prove_with                       { fun ctx -> $1 ctx }
+  | tagged_ebexp_prove_with DOT tagged_ebexp_prove_with_list
+                                                  { fun ctx -> tagged_ebexp_prove_with_union ($1 ctx) ($3 ctx) }
+;
+
+tagged_rbexp_prove_with_list:
+    tagged_rbexp_prove_with                       { fun ctx -> $1 ctx }
+  | tagged_rbexp_prove_with DOT tagged_rbexp_prove_with_list
+                                                  { fun ctx -> tagged_rbexp_prove_with_union ($1 ctx) ($3 ctx) }
+;
+
+tagged_ebexp_prove_with:
+    ebexp_prove_with_list                         { fun ctx -> tagged_ebexp_prove_with_init Options.Std.default_track [($1 ctx)] }
+  | ids COLON ebexp_prove_with_list               { fun ctx -> tagged_ebexp_prove_with_inits $1 [($3 ctx)] }
+  | MULOP COLON ebexp_prove_with_list             { fun ctx -> tagged_ebexp_prove_with_init Options.Std.all_track [($3 ctx)] }
+  | ALL COLON ebexp_prove_with_list               { fun ctx -> tagged_ebexp_prove_with_init Options.Std.all_track [($3 ctx)] }
+;
+
+tagged_rbexp_prove_with:
+    rbexp_prove_with_list                         { fun ctx -> tagged_rbexp_prove_with_init Options.Std.default_track [($1 ctx)] }
+  | ids COLON rbexp_prove_with_list               { fun ctx -> tagged_rbexp_prove_with_inits $1 [($3 ctx)] }
+  | MULOP COLON rbexp_prove_with_list             { fun ctx -> tagged_rbexp_prove_with_init Options.Std.all_track [($3 ctx)] }
+  | ALL COLON rbexp_prove_with_list               { fun ctx -> tagged_rbexp_prove_with_init Options.Std.all_track [($3 ctx)] }
+;
+
 ebexp_prove_with_list:
-  ebexp_prove_with                                { fun ctx -> [($1 ctx)] }
-| ebexp_prove_with COMMA ebexp_prove_with_list    { fun ctx -> ($1 ctx)::($3 ctx) }
+    ebexp_prove_with                              { fun ctx -> [($1 ctx)] }
+  | ebexp_prove_with COMMA ebexp_prove_with_list  { fun ctx -> ($1 ctx)::($3 ctx) }
 ;
 
 rbexp_prove_with_list:
-  rbexp_prove_with                                { fun ctx -> [($1 ctx)] }
-| rbexp_prove_with COMMA rbexp_prove_with_list    { fun ctx -> ($1 ctx)::($3 ctx) }
-;
-
-bexp_prove_with_list:
-  TRUE                                            { fun _ctx -> ([(etrue, [])], [(rtrue, [])]) }
-| ebexp_prove_with_list VBAR rbexp_prove_with_list
-                                                  { fun ctx -> ($1 ctx, $3 ctx) }
+    rbexp_prove_with                              { fun ctx -> [($1 ctx)] }
+  | rbexp_prove_with COMMA rbexp_prove_with_list  { fun ctx -> ($1 ctx)::($3 ctx) }
 ;
 
 ebexp_prove_with:
@@ -509,14 +546,54 @@ smt_logic_opt:
   | COLON ID error                                { Stdlib.invalid_arg ("Unknown SMT logic " ^ $2) }
 ;
 
-bexp:
-    TRUE                                          { fun _ -> btrue }
-  | ebexp VBAR rbexp                              { fun ctx -> ($1 ctx, $3 ctx) }
-  | ebexp VBAR error                              { let lno = get_line_start() in
+ids:
+    ID                                            { [ $1 ] }
+  | ID COMMA ids                                  { $1::$3 }
+;
+
+tagged_bexp:
+    TRUE                                          { fun _ -> (tagged_ebexp_singleton Options.Std.default_track etrue, tagged_rbexp_singleton Options.Std.default_track rtrue) }
+  | tagged_ebexps VBAR tagged_rbexps              { fun ctx -> ($1 ctx, $3 ctx) }
+;
+
+tagged_ebexps:
+    tagged_ebexp                                  { fun ctx -> $1 ctx }
+  | tagged_ebexp DOT tagged_ebexps                { fun ctx -> tagged_ebexp_union ($1 ctx) ($3 ctx) }
+;
+
+tagged_rbexps:
+    tagged_rbexp                                  { fun ctx -> $1 ctx }
+  | tagged_rbexp DOT tagged_rbexps                { fun ctx -> tagged_rbexp_union ($1 ctx) ($3 ctx) }
+;
+
+tagged_ebexp:
+    ebexps                                        { fun ctx -> tagged_ebexp_inits [Options.Std.default_track] ($1 ctx) }
+  | ids COLON ebexps                              { fun ctx -> tagged_ebexp_inits $1 ($3 ctx) }
+  | MULOP COLON ebexps                            { fun ctx -> tagged_ebexp_inits [Options.Std.all_track] ($3 ctx) }
+  | ALL COLON ebexps                              { fun ctx -> tagged_ebexp_inits [Options.Std.all_track] ($3 ctx) }
+;
+
+tagged_rbexp:
+    rbexps                                        { fun ctx -> tagged_rbexp_inits [Options.Std.default_track] ($1 ctx) }
+  | ids COLON rbexps                              { fun ctx -> tagged_rbexp_inits $1 ($3 ctx) }
+  | MULOP COLON rbexps                            { fun ctx -> tagged_rbexp_inits [Options.Std.all_track] ($3 ctx) }
+  | ALL COLON rbexps                              { fun ctx -> tagged_rbexp_inits [Options.Std.all_track] ($3 ctx) }
+;
+
+ebexps:
+    ebexp COMMA ebexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
+  | ebexp                                         { fun ctx -> [$1 ctx] }
+  | ebexp error                                   { let lno = get_line_start() in
                                                     fun ctx ->
-                                                    raise_at_line lno ("Invalid range predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
+                                                    raise_at_line lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
                                                   }
-  | ebexp error                                   { raise_at_line (get_line_start()) ("Please use '&&' to separate algebraic predicates and range predicates.") }
+;
+
+rbexps:
+    rbexp                                         { fun ctx -> [$1 ctx] }
+  | rbexp COMMA rbexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
+  | rbexp COMMA error                             { raise_at_line (get_line_start()) ("Invalid range predicates.") }
+  | rbexp error                                   { raise_at_line (get_line_start()) ("A ',' is used to separate range predicates") }
 ;
 
 ebexp:
@@ -564,15 +641,6 @@ veq_suffix:
                                                   { fun _ -> None }
   | LPAR MOD veexp RPAR                           { fun ctx -> Some (List.rev (List.rev_map (fun e -> [e]) ($3 ctx))) }
   | LPAR MOD LSQUARE veexps RSQUARE RPAR          { fun ctx -> Some ($4 ctx) }
-;
-
-ebexps:
-    ebexp COMMA ebexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
-  | ebexp                                         { fun ctx -> [$1 ctx] }
-  | ebexp error                                   { let lno = get_line_start() in
-                                                    fun ctx ->
-                                                    raise_at_line lno ("Failed to parse the algebra predicate after '" ^ string_of_ebexp ($1 ctx) ^ "'.")
-                                                  }
 ;
 
 cmpop_infix:
@@ -730,13 +798,6 @@ cmpop_prefix:
   | SLE                                           { Rsle }
   | SGT                                           { Rsgt }
   | SGE                                           { Rsge }
-;
-
-rbexps:
-    rbexp                                         { fun ctx -> [$1 ctx] }
-  | rbexp COMMA rbexps                            { fun ctx -> ($1 ctx)::($3 ctx) }
-  | rbexp COMMA error                             { raise_at_line (get_line_start()) ("Invalid range predicates.") }
-  | rbexp error                                   { raise_at_line (get_line_start()) ("A ',' is used to separate range predicates") }
 ;
 
 rexp_primary:

@@ -440,6 +440,7 @@ let check_equivalence_file file1 file2 =
     else List.iter2 (fun outs1 outs2 -> if List.length outs1 <> List.length outs2 then failwith("Number of outputs mismatch")) !outputs1 !outputs2 in
   let ((ivs1, _), s1) = Common.parse_and_check file1 in
   let ((ivs2, _), s2) = Common.parse_and_check file2 in
+  let (s1, s2) = (Ast.MultiTrack.tagged_spec_untag s1, Ast.MultiTrack.tagged_spec_untag s2) in
   let groups1 = tmap (Common.find_output_vars s1.sprog) !outputs1 in
   let groups2 = tmap (Common.find_output_vars s2.sprog) !outputs2 in
   (* Convert programs to AIG *)

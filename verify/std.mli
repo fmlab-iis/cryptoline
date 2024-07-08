@@ -2,21 +2,24 @@
 (** This module provides functions for the verification of specifications in SSA. *)
 
 open Ast.Cryptoline
-
+open Ast.MultiTrack
 
 (** {1 Top-level Verification Functions} *)
 
-val verify_safety : spec -> VS.t atomhash_t option -> bool
-(** [verify_safety s o] is [true] if the safety conditions of the specification
+val verify_safety : Options.Std.st_options -> spec -> VS.t atomhash_t option -> bool
+(** [verify_safety options s o] is [true] if the safety conditions of the specification
     [s] in SSA are verified successfully. *)
 
-val verify_spec : spec -> bool
-(** [verify_spec s] is [true] if the specification [s] is valid. SSA
+val verify_spec : Options.Std.st_options -> spec -> bool
+(** [verify_spec options s] is [true] if the specification [s] is valid. SSA
     transformation, normalization, safety verification, assertion verification,
     algebraic specification verification, and range specification verification
     are performed in this function. Depending on {!Options.Std.jobs}, sequential
     verification functions in this module or parallel verification functions in
     {!WithLwt} are invoked. *)
+
+val verify_tagged_spec : Options.Std.mt_options -> tagged_spec -> bool
+(** Verify a multi-track specification. Soundness conditions (safety conditions) are only verified on the default track. *)
 
 
 (** {1 Sequential Verification Functions} *)
@@ -34,26 +37,27 @@ val verify_safety_conditions :
     {!Options.Std.debug} is enabled. *)
 
 val verify_safety_all_seq :
+  Options.Std.st_options ->
   ?comments:(string list) -> int -> rspec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   bool * int
 (** Verify safety condition of a whole specification containing no cut. *)
 
-val verify_eassert : Common.var_gen -> spec -> VS.t atomhash_t option -> bool
+val verify_eassert : Options.Std.st_options -> Common.var_gen -> spec -> VS.t atomhash_t option -> bool
 (** [verify_eassert g s o] sequentially verifies all algebraic assertions of the
    specification [s] in SSA. {!Options.Std.verify_eacuts} is considered in this
    function. *)
 
-val verify_rassert : spec -> VS.t atomhash_t option -> bool
+val verify_rassert : Options.Std.st_options -> spec -> VS.t atomhash_t option -> bool
 (** [verify_rassert s o] sequentially verifies all range assertions of the
    specification [s] in SSA. {!Options.Std.verify_racuts} is considered in this
    function. *)
 
-val verify_espec : Common.var_gen -> espec -> VS.t atomhash_t option -> bool
+val verify_espec : Options.Std.st_options -> Common.var_gen -> espec -> VS.t atomhash_t option -> bool
 (** [verify_espec g s o] sequentially verifies the algebraic specification [s]
     in SSA. *)
 
-val verify_rspec : rspec -> VS.t atomhash_t option -> bool
+val verify_rspec : Options.Std.st_options -> rspec -> VS.t atomhash_t option -> bool
 (** [verify_rspec s o] sequentially verifies the range specification [s]
     in SSA. *)
 

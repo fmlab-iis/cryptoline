@@ -35,29 +35,59 @@ val verify_eassertion : bool ref
 val verify_rassertion : bool ref
 (** [true] to verify range assertions *)
 
-val verify_ecuts : (int Utils.Hashset.t) option ref
-(** Limit the algebraic cut conditions to be verified in the specified algebraic cuts *)
+val parse_and_add_ids : string -> string -> (string, int Utils.Hashset.t) Hashtbl.t -> unit
+(** [parse_and_add_ids tag idsstr tbl] parses the IDs in [idstr] and adds the IDs to [tbl] with the key [tag] *)
 
-val verify_rcuts : (int Hashset.t) option ref
-(** Limit the range cut conditions to be verified in the specified range cuts *)
+val default_track : string
+(** the tag name of the default track *)
 
-val verify_eacuts : (int Hashset.t) option ref
-(** Limit the algebraic assertions to be verified in the specified algebraic cuts *)
+val all_track : string
+(** the tag name denoting all tracks *)
 
-val verify_racuts : (int Hashset.t) option ref
-(** Limit the range assertions to be verified in the specified range cuts *)
+val safety_track : string ref
+(** Verify safety conditions on this track ([default_track] by default) *)
 
-val verify_scuts : (int Hashset.t) option ref
-(** Limit the safety conditions to be verified in the specified range cuts *)
+val verify_tracks : (string Hashset.t) option ref
+(** Skip tracks not in the specified names *)
 
-val verify_eassert_ids : (int Hashset.t) option ref
-(** Skip algebraic assertions not in the specified IDs *)
+type st_options =
+  {
+    mutable st_tag : string;                                       (** The track where these options are applied *)
+    mutable st_verify_ecuts : (int Utils.Hashset.t) option;        (** Verify the algebraic postconditions in the ecut of the specified IDs; None to verify all *)
+    mutable st_verify_rcuts : (int Utils.Hashset.t) option;        (** Verify the range postconditions in the rcut of the specified IDs; None to verify all *)
+    mutable st_verify_eacuts : (int Utils.Hashset.t) option;       (** Verify the algebraic assertions in the ecut of the specified IDs; None to verify all *)
+    mutable st_verify_racuts : (int Utils.Hashset.t) option;       (** Verify the range assertions in the rcut of the specified IDs; None to verify all *)
+    mutable st_verify_scuts : (int Utils.Hashset.t) option;        (** Verify the safety conditions in the rcut of the specified IDs; None to verify all *)
+    mutable st_verify_eassert_ids : (int Utils.Hashset.t) option;  (** Verify the algebraic assertions of the specified IDs; None to verify all *)
+    mutable st_verify_rassert_ids : (int Utils.Hashset.t) option;  (** Verify the algebraic assertions of the specified IDs; None to verify all *)
+    mutable st_verify_safety_ids : (int Utils.Hashset.t) option;   (** Verify the safety conditions of the specified IDs; None to verify all *)
+  }
+(** Verification options specific to single track specifications *)
 
-val verify_rassert_ids : (int Hashset.t) option ref
-(** Skip range assertions not in the specified IDs *)
+type mt_options =
+  {
+    mutable mt_verify_ecuts : (string, int Utils.Hashset.t) Hashtbl.t option;        (** Verify the algebraic postconditions in the ecut of the specified IDs for each specified track; None to verify all *)
+    mutable mt_verify_rcuts : (string, int Utils.Hashset.t) Hashtbl.t option;        (** Verify the range postconditions in the rcut of the specified IDs for each specified track; None to verify all *)
+    mutable mt_verify_eacuts : (string, int Utils.Hashset.t) Hashtbl.t option;       (** Verify the algebraic assertions in the ecut of the specified IDs for each specified track; None to verify all *)
+    mutable mt_verify_racuts : (string, int Utils.Hashset.t) Hashtbl.t option;       (** Verify the range assertions in the rcut of the specified IDs for each specified track; None to verify all *)
+    mutable mt_verify_scuts : (string, int Utils.Hashset.t) Hashtbl.t option;        (** Verify the safety conditions in the rcut of the specified IDs for each specified track; None to verify all *)
+    mutable mt_verify_eassert_ids : (string, int Utils.Hashset.t) Hashtbl.t option;  (** Verify the algebraic assertions of the specified IDs; None to verify all *)
+    mutable mt_verify_rassert_ids : (string, int Utils.Hashset.t) Hashtbl.t option;  (** Verify the algebraic assertions of the specified IDs; None to verify all *)
+    mutable mt_verify_safety_ids : (string, int Utils.Hashset.t) Hashtbl.t option;   (** Verify the safety conditions of the specified IDs for each specified track; None to verify all *)
+  }
+(** Verification options specific to multi-track specifications *)
 
-val verify_safety_ids : (int Hashset.t) option ref
-(** Skip safety conditions not in the specified IDs *)
+val default_st_options : st_options
+(** The default options for the verification single track specifications *)
+
+val default_mt_options : mt_options
+(** The default options for the verification multi-track specifications *)
+
+val mt_options : mt_options
+(** The options used for the verification multi-track specifications *)
+
+val st_options_of_tag : string -> mt_options -> st_options
+(** Return the options for the verification of a specified track *)
 
 val mem_hashset_opt : ('a Hashset.t) option -> 'a -> bool
 (** [mem_hashset_opt so a] is true if [so] is [None] and [Hashset.mem s a] if [so] is [Some s]. *)
@@ -97,6 +127,7 @@ val cryptoline_filename_extension : string
 
 val implicit_const_conversion : bool ref
 (** [true] to convert constants to desired types implicitly *)
+
 
 (** {1 Algebra-Specific Options} *)
 
@@ -215,6 +246,7 @@ val track_split : bool ref
 val expand_poly : bool ref
 (** [true] to expand polynomials before sending them to computer algebra systems *)
 
+
 (** {1 Range-Specific Options} *)
 
 val default_range_solver : string
@@ -234,6 +266,9 @@ val use_binary_repr : bool ref
 
 val native_smtlib_expn_operator : string option ref
 (** the native exponential operator supported by the chosen SMT solver *)
+
+val abs_interp : bool ref
+(** enable abstract interpretation for range *)
 
 
 (** {1 Logging} *)
@@ -289,6 +324,3 @@ val abc_path : string ref
 
 val boolector_path : string ref
 (** The path to Boolector *)
-
-val abs_interp : bool ref
-(** enable abstract interpretation for range *)

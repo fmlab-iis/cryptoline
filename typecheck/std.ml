@@ -1,5 +1,6 @@
 
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Utils.Std
 
 type spec =
@@ -16,6 +17,21 @@ type rspec =
   { rspre : rbexp;
     rsprog : lined_program;
     rspost : rbexp_prove_with }
+
+type tagged_spec =
+  { tspre : tagged_bexp;
+    tsprog : lined_tagged_program;
+    tspost : tagged_bexp_prove_with }
+
+type tagged_espec =
+  { tespre : tagged_ebexp;
+    tesprog : lined_tagged_program;
+    tespost : tagged_ebexp_prove_with }
+
+type tagged_rspec =
+  { trspre : tagged_rbexp;
+    trsprog : lined_tagged_program;
+    trspost : tagged_rbexp_prove_with }
 
 (** Well-formedness *)
 
@@ -379,6 +395,68 @@ let _well_formed_bexp vs e = (illformed_bexp_reason vs e = None)
 let well_formed_spec vs s = (illformed_spec_reason vs s = None)
 
 
+let illformed_ebexps_reason vs (es : ebexp list) = tmap (illformed_ebexp_reason vs) es |> chain_reasons
+let illformed_rbexps_reason vs (es : rbexp list) = tmap (illformed_rbexp_reason vs) es |> chain_reasons
+let illformed_ebexp_prove_withs_reason vs es = tmap (illformed_ebexp_prove_with_reason vs) es |> chain_reasons
+let illformed_rbexp_prove_withs_reason vs es = tmap (illformed_rbexp_prove_with_reason vs) es |> chain_reasons
+let illformed_tagged_instr_reason vs cs gs lno ti = illformed_instr_reason vs cs gs lno (tagged_instr_untag ti)
+let rec illformed_tagged_program_reason vs cs gs p =
+  match p with
+  | [] -> None
+  | (lno, hd)::tl ->
+     (match illformed_tagged_instr_reason vs cs gs lno hd with
+      | Some r -> Some (hd, r)
+      | None ->
+         let hd = tagged_instr_untag hd in
+         illformed_tagged_program_reason (VS.union vs (lvs_instr hd)) (VS.union (VS.diff cs (lvs_instr hd)) (lbits_instr hd)) (VS.union gs (gvs_instr hd)) tl
+     )
+let illformed_tagged_ebexp_reason vs (te : tagged_ebexp) =
+  SM.fold (
+      fun _ es res ->
+      if res = None then illformed_ebexps_reason vs es
+      else res
+    ) te None
+let illformed_tagged_rbexp_reason vs te =
+  SM.fold (
+      fun _ es res ->
+      if res = None then illformed_rbexps_reason vs es
+      else res
+    ) te None
+let illformed_tagged_bexp_reason vs e = chain_reasons [illformed_tagged_ebexp_reason vs (fst e); illformed_tagged_rbexp_reason vs (snd e)]
+let illformed_tagged_ebexp_prove_with_reason vs es =
+  SM.fold (
+      fun _ es res ->
+      if res = None then illformed_ebexp_prove_withs_reason vs es
+      else res
+    ) es None
+let illformed_tagged_rbexp_prove_with_reason vs rs =
+  SM.fold (
+      fun _ es res ->
+      if res = None then illformed_rbexp_prove_withs_reason vs es
+      else res
+    ) rs None
+let illformed_tagged_bexp_prove_with_reason vs (es, rs) =
+  chain_reasons [illformed_tagged_ebexp_prove_with_reason vs es; illformed_tagged_rbexp_prove_with_reason vs rs]
+
+type tagged_ill_formed =
+  TIllPrecondition of tagged_bexp
+| TIllInstruction of tagged_instr
+| TIllPostcondition of tagged_bexp_prove_with
+
+let illformed_tagged_spec_reason vs s =
+  match illformed_tagged_bexp_reason vs s.tspre with
+  | Some r -> Some (TIllPrecondition s.tspre, r)
+  | None ->
+    (match illformed_tagged_program_reason vs (VS.filter var_is_bit vs) VS.empty s.tsprog with
+     | Some (i, r) -> Some (TIllInstruction i, r)
+     | None ->
+        (match illformed_tagged_bexp_prove_with_reason (VS.union vs (vars_lined_program (lined_tagged_program_untag s.tsprog))) s.tspost with
+         | Some r -> Some (TIllPostcondition s.tspost, r)
+         | None -> None))
+let well_formed_tagged_instr vs cs gs lno i = (illformed_tagged_instr_reason vs cs gs lno i = None)
+let well_formed_tagged_program vs cs gs p = (illformed_tagged_program_reason vs cs gs p = None)
+let well_formed_tagged_spec vs s = (illformed_tagged_spec_reason vs s = None)
+
 
 (** Conversion *)
 
@@ -403,4 +481,25 @@ let from_typecheck_rspec rspec_tc =
     Ast.Cryptoline.rspre = rspec_tc.rspre;
     Ast.Cryptoline.rsprog = from_lined_program rspec_tc.rsprog;
     Ast.Cryptoline.rspost = rspec_tc.rspost
+  }
+
+let from_typecheck_tagged_spec spec_tc =
+  {
+    Ast.MultiTrack.tspre = spec_tc.tspre;
+    Ast.MultiTrack.tsprog = from_lined_program spec_tc.tsprog;
+    Ast.MultiTrack.tspost = spec_tc.tspost
+  }
+
+let from_typecheck_tagged_espec espec_tc =
+  {
+    Ast.MultiTrack.tespre = espec_tc.tespre;
+    Ast.MultiTrack.tesprog = from_lined_program espec_tc.tesprog;
+    Ast.MultiTrack.tespost = espec_tc.tespost
+  }
+
+let from_typecheck_tagged_rspec rspec_tc =
+  {
+    Ast.MultiTrack.trspre = rspec_tc.trspre;
+    Ast.MultiTrack.trsprog = from_lined_program rspec_tc.trsprog;
+    Ast.MultiTrack.trspost = rspec_tc.trspost
   }

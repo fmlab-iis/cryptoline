@@ -21,6 +21,12 @@ val map_fst : ('a -> 'c) -> ('a * 'b) list -> ('c * 'b) list
 val map_snd : ('b -> 'c) -> ('a * 'b) list -> ('a * 'c) list
 (** [map_snd f [(a1, b1); ...; (an, bn)]] is [[(a1, f b1); ...; (an, f bn)]]. *)
 
+module SS : Set.S with type elt = string
+(** set of strings *)
+
+module SM : Map.S with type key = string
+(** map with strings as its keys *)
+
 
 (** {1 Types} *)
 
@@ -530,6 +536,9 @@ val split_ror : rbexp -> rbexp list
 type bexp = ebexp * rbexp
 (** a predicate is a pair of an algebraic predicate and a range predicate. *)
 
+val bexp_separator : string
+(** The separator between algebraic predicates and range predicates *)
+
 val btrue : bexp
 (** [btrue] is [(Etrue, Rtrue)]. *)
 
@@ -570,6 +579,24 @@ type rbexp_prove_with = (rbexp * prove_with_spec list) list
 type bexp_prove_with = ebexp_prove_with * rbexp_prove_with
 (** Predicates associated with prove-with clauses *)
 
+val ebexp_prove_with_of_ebexp : ebexp -> ebexp_prove_with
+(** Insert empty prove-with clauses *)
+
+val rbexp_prove_with_of_rbexp : rbexp -> rbexp_prove_with
+(** Insert empty prove-with clauses *)
+
+val bexp_prove_with_of_bexp : bexp -> bexp_prove_with
+(** Insert empty prove-with clauses *)
+
+val ebexp_of_ebexp_prove_with : ebexp_prove_with -> ebexp
+(** Remove prove-with clauses *)
+
+val rbexp_of_rbexp_prove_with : rbexp_prove_with -> rbexp
+(** Remove prove-with clauses *)
+
+val bexp_of_bexp_prove_with : bexp_prove_with -> bexp
+(** Remove prove-with clauses *)
+
 val band_prove_with : bexp_prove_with -> bexp_prove_with -> bexp_prove_with
 (** Conjunctions of two [bexp_prove_with]. *)
 
@@ -603,6 +630,9 @@ val merge_rbexp_prove_with : rbexp_prove_with -> rbexp * prove_with_spec list
 
 val merge_bexp_prove_with : bexp_prove_with -> (ebexp * prove_with_spec list) * (rbexp * prove_with_spec list)
 (** [merge_bexp_prove_with (es, rs)] is [(merge_ebexp_prove_with es, merge_rbexp_prove_with rs)] *)
+
+val remove_prove_with_cuts : ('a * prove_with_spec list) list -> ('a * prove_with_spec list) list
+(** Remove prove with cuts in predicates *)
 
 
 (** {1 Instructions} *)
@@ -1007,12 +1037,6 @@ val range_solver_of_prove_with : prove_with_spec list -> string
     in the prove-with clauses [pwss]. If no range solver is specified,
     [!Options.Std.range_solver] is returned. *)
 
-module SS : Set.S with type elt = string
-(** set of strings *)
-
-module SM : Map.S with type key = string
-(** map with strings as its keys *)
-
 val new_name : ?prefix:string -> SS.t -> string
 (** [new_name ~prefix:s ss] suggests a new name that does not appear in [ss]. The returned name has a prefix [s]. *)
 
@@ -1118,8 +1142,11 @@ val string_of_bexp_prove_with : ?typ:bool -> bexp_prove_with -> string
 val string_of_atom : ?typ:bool -> atom -> string
 (** [string_of_atom ~typ:b a] is the string representation of an atom [a]. If [b] is true, types will also be outputted. *)
 
-val string_of_instr : ?typ:bool -> instr -> string
-(** [string_of_instr ~typ:b i] is the string representation of an instruction [i]. If [b] is true, types will also be outputted. *)
+val string_of_instr : ?semicolon:bool -> ?typ:bool -> instr -> string
+(** [string_of_instr ~semicolon:s ~typ:b i] is the string representation of an
+    instruction [i]. If [b] is [true], types will also be outputted. If [s] is
+    [true], the ending semicolon will be appended. By default, [b] is [false]
+    while [s] is [true]. *)
 
 val string_of_program : ?insert_nop:bool -> ?typ:bool -> program -> string
 (** [string_of_program ~typ:b p] is the string representation of a program [p]. If [b] is true, types will also be outputted. *)
@@ -1935,3 +1962,4 @@ val profile_program : program -> profile
 
 val profile_spec : spec -> profile
 (** Return the profile of a specification. *)
+

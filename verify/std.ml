@@ -1,6 +1,7 @@
 
 open Options.Std
 open Ast.Cryptoline
+open Ast.MultiTrack
 open Qfbv.Common
 open Qfbv.Std
 open Smt
@@ -21,13 +22,14 @@ let apply_to_cuts ids f res ss =
     match ss with
     | [] -> res
     | hd::tl -> if Options.Std.mem_hashset_opt ids i then
-                  let _ = trace ("=== Cut #" ^ string_of_int i ^ " ===") in
+                  let _ = Options.Std.trace ("=== Cut #" ^ string_of_int i ^ " ===") in
                   let res = List.fold_left (f i) res hd in
                   helper (i+1) res tl
                 else
-                  let _ = trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+                  let _ = Options.Std.trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
                   helper (i+1) res tl in
   helper 0 res ss
+
 
 (** Verification *)
 
@@ -80,19 +82,19 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
        let t1 = Unix.gettimeofday() in
        let res =
          try
-           let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
+           let _ = Options.Std.vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
            let (revp', p') = find_program_prefix i revp p in
            let fp = safety_assumptions f (List.rev revp') q hashopt in
            match solve_simp ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
                                                                          "Instruction: " ^ string_of_instr i ]) ~timeout:timeout (fp@[q]) with
-           | Sat -> let _ = vprintln "[FAILED]" in (Solved Sat, revp', p')
-           | Unknown -> let _ = vprintln "[FAILED]" in (Solved Unknown, revp', p')
-           | Unsat -> let _ = vprintln "[OK]" in (res, revp', p')
+           | Sat -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Sat, revp', p')
+           | Unknown -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Unknown, revp', p')
+           | Unsat -> let _ = Options.Std.vprintln "[OK]" in (res, revp', p')
          with Tasks.TimeoutException ->
-           let _ = vprintln "[TIMEOUT]" in
+           let _ = Options.Std.vprintln "[TIMEOUT]" in
            (add_unsolved (id, i, q) res, revp, p) in
        let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2 ^ "\n") in
+       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2 ^ "\n") in
        res in
   let rec fold_fun_abs_interp (res, revp, p, mgr, dom) (id, i, q) =
     match res with
@@ -139,25 +141,25 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
  * sid: the ID of the next safety condition
  * s: a cut (of type rspec) to be verified
  *)
-let verify_safety_of_cut_inc ?comments sid s hashopt =
+let verify_safety_of_cut_inc options ?comments sid s hashopt =
   let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
-  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
+  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
   let round = ref 1 in
-  let timeout = ref !incremental_safety_timeout in
+  let timeout = ref !Options.Std.incremental_safety_timeout in
   let safety = ref None in
   let all_conds = bexp_program_safe_conds s.rsprog in
   let next_sid = sid + List.length all_conds in
   let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
   let _ =
     while !safety = None do
-      let _ = trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
-      let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
+      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
+      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                         ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
                         ^ string_of_int !timeout ^ " seconds)") in
       let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
                                                        "Timeout: " ^ string_of_int !timeout ] in
       let res =
-        if !jobs > 1 then
+        if !Options.Std.jobs > 1 then
           WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
         else
           verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
@@ -189,47 +191,48 @@ let verify_safety_of_cut ?comments sid s hashopt =
   let fp = safety_assumptions s.rspre s.rsprog g hashopt in
   let res = solve_simp ~comments:(rcons_comments_option comments "Target: all instructions in this cut") (fp@[g]) = Unsat in
   let t2 = Unix.gettimeofday() in
-  let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+  let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
   (res, sid + 1)
 
 (* Verify safety conditions cut by cut.
    Verify the safety conditions of the next cut when all the safety conditions
    of the previous cut have been verified. *)
-let verify_safety_cut_by_cut s hashopt =
-  let _ = trace "===== Verifying program safety =====" in
-  let _ = if !incremental_safety then vprintln "" in
+let verify_safety_cut_by_cut options s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
   let verify_safety_without_cuts cid (_, sid) s =
     let msgs = [ "Verify: safety";
+                 Printf.sprintf "Track: %s" options.st_tag;
                  "Cut: #" ^ string_of_int cid ] in
-    if !incremental_safety then
-      let _ = vprintln ("\tCut " ^ string_of_int cid) in
-      if !jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_conditions_cli ~comments:msgs sid s.rspre s.rsprog
-      else verify_safety_of_cut_inc ~comments:msgs sid s hashopt
+    if !Options.Std.incremental_safety then
+      let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
+      if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_conditions_cli options ~comments:msgs sid s.rspre s.rsprog
+      else verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
     else verify_safety_of_cut ~comments:msgs sid s hashopt in
   (* Check previous result, cid: cut id, sid: id of the next safety condition *)
   let verify_safety_without_cuts cid (res, sid) (_, s) =
     if res then verify_safety_without_cuts cid (res, sid) s
     else (res, sid) in
-  let (res, _) = apply_to_cuts !verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
-  let _ = if !incremental_safety then vprint "\tOverall\t\t\t\t\t" in
+  let (res, _) = apply_to_cuts options.st_verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall\t\t\t\t\t" in
   res
 
 
 
 (* Verify safety of a cut per instruction incrementally and sequentially *)
-let verify_safety_inc_seq ?comments sid s hashopt =
+let verify_safety_inc_seq options ?comments sid s hashopt =
   let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
-  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids id in
+  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
   let round = ref 1 in
-  let timeout = ref !incremental_safety_timeout in
+  let timeout = ref !Options.Std.incremental_safety_timeout in
   let safety = ref None in
   let all_conds = bexp_program_safe_conds s.rsprog in
   let next_sid = sid + List.length all_conds in
   let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
   let _ =
     while !safety = None do
-      let _ = trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
-      let _ = vprintln ("\t     Round " ^ string_of_int !round ^ " ("
+      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
+      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                         ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
                         ^ string_of_int !timeout ^ " seconds)") in
       let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
@@ -253,43 +256,44 @@ let verify_safety_inc_seq ?comments sid s hashopt =
   (res, next_sid)
 
 (* Verify safety of a cut as a single predicate. *)
-let verify_safety_all_seq ?comments sid s hashopt =
-  if Options.Std.mem_hashset_opt !Options.Std.verify_safety_ids sid
+let verify_safety_all_seq options ?comments sid s hashopt =
+  if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
   then let t1 = Unix.gettimeofday() in
        let g = bexp_program_safe s.rsprog in
        let fp = safety_assumptions s.rspre s.rsprog g hashopt in
        let res = solve_simp ~comments:(rcons_comments_option comments "Verify: safety (all in one query)") (fp@[g]) = Unsat in
        let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ string_of_running_time t1 t2) in
+       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
        (res, sid + 1)
   else (true, sid + 1)
 
 (* Verify safety of a specification sequentially *)
-let verify_safety_seq ?comments s hashopt =
+let verify_safety_seq options ?comments s hashopt =
   (* cid: cut id, sid: id of the next safety condition *)
   let verify_cut cid (res, sid) (_, s) =
-    if res then let comments = rcons_comments_option comments ("Cut: #" ^ string_of_int cid) in
-                if !incremental_safety then let _ = vprintln ("\tCut " ^ string_of_int cid) in
-                                            verify_safety_inc_seq ~comments sid s hashopt
-                else verify_safety_all_seq ~comments sid s hashopt
+    if res then let comments = append_comments_option comments [Printf.sprintf "Track: %s" options.st_tag;
+                                                                "Cut: #" ^ string_of_int cid] in
+                if !Options.Std.incremental_safety then let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
+                                            verify_safety_inc_seq options ~comments sid s hashopt
+                else verify_safety_all_seq options ~comments sid s hashopt
     else (res, sid) in
-  let (res, _) = apply_to_cuts !verify_scuts verify_cut (true, 0) (cut_safety (rspec_of_spec s)) in
+  let (res, _) = apply_to_cuts options.st_verify_scuts verify_cut (true, 0) (cut_safety (rspec_of_spec s)) in
   res
 
 (* Verify safety of a specification across cuts.
    Verify the safety conditions of the next cut whenever there are free
    job workers.
  *)
-let verify_safety_across_cuts s hashopt =
-  let _ = trace "===== Verifying program safety =====" in
-  let _ = if !incremental_safety then vprintln "" in
+let verify_safety_across_cuts options s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
   let comments = [ "Verify: safety" ] in
   let res =
-    if !jobs > 1 then
-      if !use_cli then WithLwt.verify_safety_cli ~comments s hashopt
-      else WithLwt.verify_safety_lwt ~comments s hashopt
-    else verify_safety_seq ~comments s hashopt in
-  let _ = if !incremental_safety then vprint "\tOverall safety\t\t\t\t" in
+    if !Options.Std.jobs > 1 then
+      if !Options.Std.use_cli then WithLwt.verify_safety_cli options ~comments s hashopt
+      else WithLwt.verify_safety_lwt options ~comments s hashopt
+    else verify_safety_seq options ~comments s hashopt in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall safety\t\t\t\t" in
   res
 
 (*
@@ -305,9 +309,9 @@ let verify_safety_across_cuts s hashopt =
  *                                                                |                        |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
  *                                                                |- verify_safety_of_cut
  *)
-let verify_safety s hashopt =
-  if !cross_cuts then verify_safety_across_cuts s hashopt
-  else verify_safety_cut_by_cut s hashopt
+let verify_safety options s hashopt =
+  if !cross_cuts then verify_safety_across_cuts options s hashopt
+  else verify_safety_cut_by_cut options s hashopt
 
 
 
@@ -346,9 +350,9 @@ let write_singular_input ?comments ifile vars gen p =
     ^ "exit;\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO SINGULAR:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO SINGULAR:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 (*
  * ideals: https://doc.sagemath.org/html/en/reference/rings/sage/rings/ideal.html
@@ -369,9 +373,9 @@ let write_sage_input ?comments ifile vars gen p =
     ^ "assert P in I\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO SAGE:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO SAGE:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 (*
  * ideals: https://magma.maths.usyd.edu.au/magma/handbook/text/413
@@ -400,9 +404,9 @@ let write_magma_input ?comments ifile vars gen p =
     ^ "exit;\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO MAGMA:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO MAGMA:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_mathematica_input ?comments ifile vars gen p =
   let input_text =
@@ -422,9 +426,9 @@ let write_mathematica_input ?comments ifile vars gen p =
     ^ "Print[r];\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO MATHEMATICA:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO MATHEMATICA:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_macaulay2_input ?comments ifile vars gen p =
   let input_text =
@@ -454,9 +458,9 @@ let write_macaulay2_input ?comments ifile vars gen p =
     ^ "print myRes\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO MACAULAY2:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO MACAULAY2:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_maple_input ?comments ifile vars gen p =
   let const_gen =
@@ -485,9 +489,9 @@ let write_maple_input ?comments ifile vars gen p =
     ^ "quit:\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO MAPLE:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO MAPLE:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_ppl_input ?comments ifile mipvars constr =
   let partition_variables mipvars =
@@ -539,9 +543,9 @@ let write_ppl_input ?comments ifile mipvars constr =
     ^ "exit()\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO PPLPY:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO PPLPY:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_scip_input ?comments ifile mipvars constr =
   let scip_variables mip mipvars =
@@ -567,9 +571,9 @@ let write_scip_input ?comments ifile mipvars constr =
     ^ "exit()\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO PYSCIPOPT:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO PYSCIPOPT:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let write_isl_input ?comments ifile mipvars constr =
   let isl_variables mipvars =
@@ -594,90 +598,90 @@ let write_isl_input ?comments ifile mipvars constr =
     ^ "exit()\n" in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
-  trace "INPUT TO ISLPY:";
-  trace_file ifile;
-  trace ""
+  Options.Std.trace "INPUT TO ISLPY:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
 
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Singular: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM SINGULAR:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Singular: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM SINGULAR:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_sage ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Sage: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM SAGE:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Sage: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM SAGE:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_magma ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Magma: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM MAGMA:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Magma: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MAGMA:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_mathematica ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM MATHEMATICA:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Mathematica: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MATHEMATICA:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_macaulay2 ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM MACAULAY2:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Macaulay2: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MACAULAY2:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_maple ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of Maple: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM MAPLE:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MAPLE:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_ppl ifile ofile =
   let t1 = Unix.gettimeofday() in
   let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of PPLPY: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM PPLPY:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of PPLPY: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM PPLPY:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_scip ifile ofile =
   let t1 = Unix.gettimeofday() in
   let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM PYSCIPOPT:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of PYSCIPOPT: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM PYSCIPOPT:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let run_isl ifile ofile =
   let t1 = Unix.gettimeofday() in
   let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
-  trace ("Execution time of ISLPY: " ^ string_of_running_time t1 t2);
-  trace "OUTPUT FROM ISLPY:";
-  trace_file ofile;
-  trace ""
+  Options.Std.trace ("Execution time of ISLPY: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM ISLPY:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
 
 let read_singular_output ofile =
   let line = ref "" in
@@ -842,20 +846,21 @@ let verify_rspec_without_cuts ?comments hashopt s =
   List.fold_left verify true (split_rspec_post s)
 
 (* Applied in this function: split cuts *)
-let verify_rspec_with_cuts ?comments hashopt s =
+let verify_rspec_with_cuts options ?comments hashopt s =
   (* Check previous result *)
   let verify cid res (sid, s) =
     if res then verify_rspec_without_cuts
-                  ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                  ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                               "Cut: #" ^ string_of_int cid;
                                                                "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
                   hashopt s
     else res in
-  apply_to_cuts !verify_rcuts verify true (cut_rspec s)
+  apply_to_cuts options.st_verify_rcuts verify true (cut_rspec s)
 
 (* The top function of verifying range specifications when !jobs <= 1 *)
-let verify_rspec s hashopt =
-  let _ = trace "===== Verifying range specifications =====" in
-  verify_rspec_with_cuts ~comments:["Verify: range specifications"] hashopt s
+let verify_rspec options s hashopt =
+  let _ = Options.Std.trace "===== Verifying range specifications =====" in
+  verify_rspec_with_cuts options ~comments:["Verify: range specifications"] hashopt s
 
 let verify_entailments ?comments ?(solver=(!algebra_solver)) entailments =
   List.fold_left
@@ -890,17 +895,17 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
       let ch = open_out ifile in
       let _ = if !debug then output_string ch comments in
       let _ = output_string ch smtlib; close_out ch in
-      trace "INPUT TO SMT Solver:";
-      trace_file ifile;
-      trace "" in
+      Options.Std.trace "INPUT TO SMT Solver:";
+      Options.Std.trace_file ifile;
+      Options.Std.trace "" in
     let _ =
       let t1 = Unix.gettimeofday() in
       let _ = unix (solver.algsmt_path ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
       let t2 = Unix.gettimeofday() in
-      trace ("Execution time of SMT Solver " ^ solver.algsmt_path ^ ": " ^ string_of_running_time t1 t2);
-      trace "OUTPUT FROM SMT SOLVER:";
-      trace_file ofile;
-      trace "" in
+      Options.Std.trace ("Execution time of SMT Solver " ^ solver.algsmt_path ^ ": " ^ Options.Std.string_of_running_time t1 t2);
+      Options.Std.trace "OUTPUT FROM SMT SOLVER:";
+      Options.Std.trace_file ofile;
+      Options.Std.trace "" in
     let res = read_one_line ofile = "unsat" in
     let _ = cleanup [ifile; ofile] in
     res in
@@ -992,55 +997,58 @@ let verify_espec_without_cuts ?comments hashopt vgen s =
     List.fold_left verify true (split_espec_post s)
 
 (* Applied in this function: split cuts *)
-let verify_espec_with_cuts ?comments hashopt vgen s =
+let verify_espec_with_cuts options ?comments hashopt vgen s =
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify cid res (sid, s) =
     if res then verify_espec_without_cuts
-                  ~comments:(append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                  ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                               "Cut: #" ^ string_of_int cid;
                                                                "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
                   hashopt vgen s
     else res in
-  apply_to_cuts !verify_ecuts verify true (cut_espec s)
+  apply_to_cuts options.st_verify_ecuts verify true (cut_espec s)
 
 (* The top function of verifying algebraic specifications when !jobs <= 1 *)
-let verify_espec vgen s hashopt =
-  let _ = trace "===== Verifying algebraic specifications =====" in
-  verify_espec_with_cuts ~comments:[ "Verify: algebraic specifications" ] hashopt vgen s
+let verify_espec options vgen s hashopt =
+  let _ = Options.Std.trace "===== Verifying algebraic specifications =====" in
+  verify_espec_with_cuts options ~comments:[ "Verify: algebraic specifications" ] hashopt vgen s
 
 (* The top function of verifying algebraic assertions when !jobs <= 1.
    Applied in this function: split cuts *)
-let verify_eassert vgen s hashopt =
-  let _ = trace "===== Verifying algebraic assertions =====" in
+let verify_eassert options vgen s hashopt =
+  let _ = Options.Std.trace "===== Verifying algebraic assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify cid res (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_eassert_ids sid then
+    if res && Options.Std.mem_hashset_opt options.st_verify_eassert_ids sid then
       verify_espec_without_cuts
         ~comments:[ "Verify: algebraic assertions";
+                    Printf.sprintf "Track: %s" options.st_tag;
                     "Cut: #" ^ string_of_int cid;
                     "Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost ]
         hashopt vgen s
     else
       res in
-  apply_to_cuts !verify_eacuts verify true (cut_eassert (espec_of_spec s))
+  apply_to_cuts options.st_verify_eacuts verify true (cut_eassert (espec_of_spec s))
 
 (* The top function of verifying range assertions when !jobs <= 1.
    Applied in this function: split cuts *)
-let verify_rassert s hashopt =
-  let _ = trace "===== Verifying range assertions =====" in
+let verify_rassert options s hashopt =
+  let _ = Options.Std.trace "===== Verifying range assertions =====" in
   (* Check previous result (verify cut_id previous_result (specification_id, specification)) *)
   let verify cid res (sid, s) =
-    if res && Options.Std.mem_hashset_opt !Options.Std.verify_rassert_ids sid then
+    if res && Options.Std.mem_hashset_opt options.st_verify_rassert_ids sid then
       verify_rspec_without_cuts
         ~comments:[ "Verify: range assertions";
+                    Printf.sprintf "Track: %s" options.st_tag;
                     "Cut: #" ^ string_of_int cid;
                     "Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost ]
         hashopt s
     else
       res in
-  apply_to_cuts !verify_racuts verify true (cut_rassert (rspec_of_spec s))
+  apply_to_cuts options.st_verify_racuts verify true (cut_rassert (rspec_of_spec s))
 
-(* The main verification process *)
-let verify_spec s =
+(* The main verification process for a specification *)
+let verify_spec options s =
   let vgen = vgen_of_spec s in
   let has_assert p = List.exists
                        (fun i ->
@@ -1049,103 +1057,103 @@ let verify_spec s =
                          | _ -> false) p in
   let spec_to_ssa (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Transforming to SSA form:\t\t\t") in
+    let _ = Options.Std.vprint ("Transforming to SSA form:\t\t\t") in
     let ssa = ssa_spec s in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ("[OK]\t\t" ^ Options.Std.string_of_running_time t1 t2) in
     (true, ssa, hashopt) in
   let normalize_spec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Normalizing specification:\t\t\t") in
+    let _ = Options.Std.vprint ("Normalizing specification:\t\t\t") in
     let ns = normalize_spec s in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ("[OK]\t\t" ^ Options.Std.string_of_running_time t1 t2) in
     (true, ns, hashopt) in
   let rewrite_assignments (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Rewriting assignments:\t\t\t\t") in
+    let _ = Options.Std.vprint ("Rewriting assignments:\t\t\t\t") in
     let s = rewrite_mov_ssa_spec s in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ("[OK]\t\t" ^ Options.Std.string_of_running_time t1 t2) in
     (true, s, hashopt) in
   let _build_var_dep_hash (s, _) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Computing Variable Dependency:\t\t\t" in
+    let _ = Options.Std.vprint "Computing Variable Dependency:\t\t\t" in
     let hash = Ast.Cryptoline.mk_var_dep_hash s.sprog in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ("[OK]\t\t" ^ Options.Std.string_of_running_time t1 t2) in
     (true, s, Some hash) in
   let program_safe (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Verifying program safety:\t\t\t" in
-    let b = verify_safety s hashopt in
+    let _ = Options.Std.vprint "Verifying program safety:\t\t\t" in
+    let b = verify_safety options s hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let rewrite_vpc (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint ("Rewriting value-preserved casting:\t\t") in
+    let _ = Options.Std.vprint ("Rewriting value-preserved casting:\t\t") in
     let s = rewrite_vpc_ssa_spec s in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ("[OK]\t\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ("[OK]\t\t" ^ Options.Std.string_of_running_time t1 t2) in
     (true, s, hashopt) in
   let valid_eassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Verifying algebraic assertions:\t\t\t" in
-    let b = if !jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_eassert_cli s
-               else WithLwt.verify_eassert vgen s hashopt)
+    let _ = Options.Std.vprint "Verifying algebraic assertions:\t\t\t" in
+    let b = if !Options.Std.jobs > 1 then
+              (if !Options.Std.use_cli then WithLwt.verify_eassert_cli options s
+               else WithLwt.verify_eassert options vgen s hashopt)
             else
-              verify_eassert vgen s hashopt in
+              verify_eassert options vgen s hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_rassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Verifying range assertions:\t\t\t" in
-    let b = if !jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_rassert_cli s
-               else WithLwt.verify_rassert s hashopt)
+    let _ = Options.Std.vprint "Verifying range assertions:\t\t\t" in
+    let b = if !Options.Std.jobs > 1 then
+              (if !Options.Std.use_cli then WithLwt.verify_rassert_cli options s
+               else WithLwt.verify_rassert options s hashopt)
             else
-              verify_rassert s hashopt in
+              verify_rassert options s hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_rspec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Verifying range specification:\t\t\t" in
-    let b = if !jobs > 1 then
+    let _ = Options.Std.vprint "Verifying range specification:\t\t\t" in
+    let b = if !Options.Std.jobs > 1 then
               (if !Options.Std.use_cli
                then WithLwt.verify_rspec_cli else WithLwt.verify_rspec)
-                (rspec_of_spec s) hashopt
+                options (rspec_of_spec s) hashopt
             else
-              verify_rspec (rspec_of_spec s) hashopt in
+              verify_rspec options (rspec_of_spec s) hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_espec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
-    let _ = vprint "Verifying algebraic specification:\t\t" in
-    let b = if !jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_espec_cli (espec_of_spec s)
-               else WithLwt.verify_espec vgen (espec_of_spec s) hashopt)
+    let _ = Options.Std.vprint "Verifying algebraic specification:\t\t" in
+    let b = if !Options.Std.jobs > 1 then
+              (if !Options.Std.use_cli then WithLwt.verify_espec_cli options (espec_of_spec s)
+               else WithLwt.verify_espec options vgen (espec_of_spec s) hashopt)
             else
-              verify_espec vgen (espec_of_spec s) hashopt in
+              verify_espec options vgen (espec_of_spec s) hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ string_of_running_time t1 t2) in
+    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option
                    -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option) list =
     [spec_to_ssa; normalize_spec]
     @(if !apply_rewrite_mov then [rewrite_assignments] else [])
     (* @(if !apply_slicing then [build_var_dep_hash] else []) *)
-    @(if !verify_program_safety then [program_safe] else [])
-    @(if !verify_rassertion && has_assert s.sprog then [valid_rassert] else [])
-    @(if !verify_rpost then [valid_rspec] else [])
+    @(if !Options.Std.verify_program_safety && options.st_tag = !Options.Std.safety_track then [program_safe] else [])
+    @(if !Options.Std.verify_rassertion && has_assert s.sprog then [valid_rassert] else [])
+    @(if !Options.Std.verify_rpost then [valid_rspec] else [])
     (* It is important that rewriting of value-preserved casting must be done after all range properties. *)
     @(if !apply_rewrite_vpc then [rewrite_vpc] else [])
-    @(if !verify_eassertion && has_assert s.sprog then [valid_eassert] else [])
-    @(if !verify_epost then [valid_espec] else []) in
+    @(if !Options.Std.verify_eassertion && has_assert s.sprog then [valid_eassert] else [])
+    @(if !Options.Std.verify_epost then [valid_espec] else []) in
   let (result, _, _) = List.fold_left
                          (fun (res, s, hashopt) verifier ->
                            if res then verifier (s, hashopt)
@@ -1153,3 +1161,25 @@ let verify_spec s =
                          (true, s, None)
                          verifiers in
   result
+
+(* The main verification process for a tagged specification *)
+let verify_tagged_spec options ts =
+  let vprintln_title title =
+    let _ = Options.Std.vprintln ("\n" ^ title) in
+    let _ = Options.Std.vprintln (String.concat "" (List.init (String.length title) (fun _ -> "-"))) in
+    () in
+  let tags = Common.get_tags_to_be_verified ts in
+  let n_tags = SS.cardinal tags in
+  if n_tags = 0 then failwith ("No tag is specified")
+  else if n_tags = 1 then let tag = SS.choose tags in
+                          verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts)
+  else SS.for_all (
+           fun tag ->
+           let t1 = Unix.gettimeofday() in
+           let _ = vprintln_title ("Track " ^ tag) in
+           let b = verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts) in
+           let t2 = Unix.gettimeofday() in
+           let _ = Options.Std.vprint("Track verification:\t\t\t\t") in
+           let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
+           b
+         ) tags

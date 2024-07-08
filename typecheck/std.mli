@@ -1,5 +1,6 @@
 
 open Ast.Cryptoline
+open Ast.MultiTrack
 
 type spec =
   { spre : bexp;
@@ -15,6 +16,22 @@ type rspec =
   { rspre : rbexp;
     rsprog : lined_program;
     rspost : rbexp_prove_with }
+
+type tagged_spec =
+  { tspre : tagged_bexp;
+    tsprog : lined_tagged_program;
+    tspost : tagged_bexp_prove_with }
+
+type tagged_espec =
+  { tespre : tagged_ebexp;
+    tesprog : lined_tagged_program;
+    tespost : tagged_ebexp_prove_with }
+
+type tagged_rspec =
+  { trspre : tagged_rbexp;
+    trsprog : lined_tagged_program;
+    trspost : tagged_rbexp_prove_with }
+
 
 (** Well-formedness *)
 
@@ -52,9 +69,26 @@ val well_formed_instr : VS.t -> VS.t -> VS.t -> int -> instr -> bool
 val well_formed_program : VS.t -> VS.t -> VS.t -> lined_program -> bool
 val well_formed_spec : VS.t -> spec -> bool
 
+type tagged_ill_formed =
+  TIllPrecondition of tagged_bexp
+| TIllInstruction of tagged_instr
+| TIllPostcondition of tagged_bexp_prove_with
+val illformed_tagged_instr_reason : VS.t -> VS.t -> VS.t -> int -> tagged_instr -> string option
+val illformed_tagged_program_reason : VS.t -> VS.t -> VS.t -> lined_tagged_program -> (tagged_instr * string) option
+val illformed_tagged_ebexp_reason : VS.t -> tagged_ebexp -> string option
+val illformed_tagged_rbexp_reason : VS.t -> tagged_rbexp -> string option
+val illformed_tagged_bexp_reason : VS.t -> tagged_bexp -> string option
+val illformed_tagged_spec_reason : VS.t -> tagged_spec -> (tagged_ill_formed * string) option
+val well_formed_tagged_instr : VS.t -> VS.t -> VS.t -> int -> tagged_instr -> bool
+val well_formed_tagged_program : VS.t -> VS.t -> VS.t -> lined_tagged_program -> bool
+val well_formed_tagged_spec : VS.t -> tagged_spec -> bool
+
 (** Conversion *)
 
 val from_typecheck_spec : spec -> Ast.Cryptoline.spec
 val from_typecheck_espec : espec -> Ast.Cryptoline.espec
 val from_typecheck_rspec : rspec -> Ast.Cryptoline.rspec
 
+val from_typecheck_tagged_spec : tagged_spec -> Ast.MultiTrack.tagged_spec
+val from_typecheck_tagged_espec : tagged_espec -> Ast.MultiTrack.tagged_espec
+val from_typecheck_tagged_rspec : tagged_rspec -> Ast.MultiTrack.tagged_rspec
