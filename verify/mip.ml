@@ -181,9 +181,10 @@ let bv2mip (vgen, constrs, ivars) i =
                 (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
         c::ivars)
      else
-       (* v + 2**|v| * tmp == a0 + a1 *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
-       (vgen', eeq (emaddpow2 (evar v) (evar tmp) sizev)
+       (* v + 2**|v| * c - 2**(|v|+1) * tmp == a0 + a1 *)
+       let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
+       (vgen', eeq (eadd (emaddpow2 (evar v) (evar c) sizev)
+                      (emulpow2 (evar tmp) (succ sizev)))
                  (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
         tmp::ivars)
   | Iadc (v, a0, a1, y) -> (* v == a0 + a1 + y *)
@@ -271,12 +272,14 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
   | Imuls (f, v, a0, a1) ->
-     (* tmp * 2**|v| + v == a0 * a1, f <= tmp, tmp <= f * 2**|v| *)
+     (* NOTE: make sure eq won't be sliced by adding 'f - f' *)
+     (* (f - f) + tmp * 2**|v| + v == a0 * a1, f <= tmp, tmp <= f * 2**|v| *)
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
      let l_tsize = size_of_var v in
      let le0 = ele (evar f) (evar tmp) in
      let le1 = ele (evar tmp) (emulpow2 (evar f) l_tsize) in
-     let eq = eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
+     let eq = eeq (eadd (esub (evar f) (evar f))
+                     (emaddpow2 (evar v) (evar tmp) l_tsize))
                 (emul' (eexp_atom a0) (eexp_atom a1)) in
      (vgen', eq::le1::le0::constrs, tmp::ivars)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
