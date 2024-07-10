@@ -181,10 +181,9 @@ let bv2mip (vgen, constrs, ivars) i =
                 (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
         c::ivars)
      else
-       (* v + 2**|v| * c - 2**(|v|+1) * tmp == a0 + a1 *)
-       let (vgen', tmp) = new_tmp_var vgen (uint_t 1) in
-       (vgen', eeq (eadd (emaddpow2 (evar v) (evar c) sizev)
-                      (emulpow2 (evar tmp) (succ sizev)))
+       (* v + 2**|v| * tmp == a0 + a1 *)
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
+       (vgen', eeq (emaddpow2 (evar v) (evar tmp) sizev)
                  (eadd' (eexp_atom a0) (eexp_atom a1))::constrs,
         tmp::ivars)
   | Iadc (v, a0, a1, y) -> (* v == a0 + a1 + y *)
@@ -200,7 +199,7 @@ let bv2mip (vgen, constrs, ivars) i =
         c::ivars)
      else
        (* v + 2**|v| * tmp == a0 + a1 + y *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen', eeq (emaddpow2 (evar v) (evar tmp) sizev)
                  (eadds' [eexp_atom a0; eexp_atom a1; eexp_atom y])::constrs,
         tmp::ivars)
@@ -216,7 +215,7 @@ let bv2mip (vgen, constrs, ivars) i =
         c::ivars)
      else
        (* v + a1 + 2**|v| * tmp == a0 *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen',
         eeq (eadd' (evar v) (emaddpow2 (eexp_atom a1) (evar tmp) sizev))
           (eexp_atom a0)::constrs,
@@ -230,7 +229,7 @@ let bv2mip (vgen, constrs, ivars) i =
         b::ivars)
      else
        (* v + a1 == a0 + 2**|v| * tmp *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen', eeq (eadd' (evar v) (eexp_atom a1))
                  (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs,
         tmp::b::ivars)
@@ -248,7 +247,7 @@ let bv2mip (vgen, constrs, ivars) i =
           constrs, c::ivars)
      else
        (* v + a1 + 2**|v| * tmp + 1 == a0 + y *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen',
         eeq (eadds' [evar v; emaddpow2 (eexp_atom a1) (evar tmp) sizev;
                      econst Z.one])
@@ -264,7 +263,7 @@ let bv2mip (vgen, constrs, ivars) i =
                 (emaddpow2 (eexp_atom a0) (evar b) sizev)::constrs, b::ivars)
      else
        (* v + a1 + y == a0 + 2**|v| * tmp *)
-       let (vgen', tmp) = new_tmp_var vgen (int_t 1) in
+       let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen',
         eeq (eadds' [evar v; eexp_atom a1; eexp_atom y])
           (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs, tmp::b::ivars)
