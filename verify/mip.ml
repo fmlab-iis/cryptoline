@@ -136,8 +136,9 @@ let bv2mip (vgen, constrs, ivars) i =
   match i with
   | Imov (v, a) -> (* v == a *)
      (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
-  | Ishl (v, a, n) -> (* v == a * 2**n *)
+  | Ishl (v, a, n) ->
       if atom_is_const n then
+        (* v == a * 2**n *)
         let c = Z.to_int (const_of_atom n) in
         (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs, ivars)
       else
@@ -270,17 +271,13 @@ let bv2mip (vgen, constrs, ivars) i =
   | Imulj (v, a0, a1)
   | Imul (v, a0, a1) -> (* v = a0 * a1 *)
      (vgen, eeq (evar v) (emul' (eexp_atom a0) (eexp_atom a1))::constrs, ivars)
-  | Imuls (f, v, a0, a1) ->
-     (* NOTE: make sure eq won't be sliced by adding 'f - f' *)
-     (* (f - f) + tmp * 2**|v| + v == a0 * a1, f <= tmp, tmp <= f * 2**|v| *)
+  | Imuls (_, v, a0, a1) ->
+     (* tmp * 2**|v| + v == a0 * a1 *)
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
      let l_tsize = size_of_var v in
-     let le0 = ele (evar f) (evar tmp) in
-     let le1 = ele (evar tmp) (emulpow2 (evar f) l_tsize) in
-     let eq = eeq (eadd (esub (evar f) (evar f))
-                     (emaddpow2 (evar v) (evar tmp) l_tsize))
+     let eq = eeq (emaddpow2 (evar v) (evar tmp) l_tsize)
                 (emul' (eexp_atom a0) (eexp_atom a1)) in
-     (vgen', eq::le1::le0::constrs, tmp::ivars)
+     (vgen', eq::constrs, tmp::ivars)
   | Imull (vh, vl, a0, a1) -> (* vh * 2**|vl| + vl == a0 * a1 *)
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
