@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if ! command -v bc &> /dev/null
+then
+  echo "bc could not be found."
+  exit 1
+fi
+
 version=$1
 major=`echo ${version} | cut -d "." -f 1 | bc`
 minor=`echo ${version} | cut -d "." -f 2 | bc`
