@@ -1,3 +1,24 @@
+(* M2: cv.exe -v -isafety -enable_rewriting:eqmod -jobs 8 -slicing -abs_interp invntt_fast_plant.cl
+Parsing CryptoLine file:                    [OK]            0.1493 seconds
+Checking well-formedness:                   [OK]            0.0488 seconds
+
+Procedure main
+--------------
+Transforming to SSA form:                   [OK]            0.0317 seconds
+Normalizing specification:                  [OK]            0.0280 seconds
+Rewriting assignments:                      [OK]            0.0295 seconds
+Verifying program safety:                   [OK]            4.8408 seconds
+Verifying range assertions:                 [OK]            0.0441 seconds
+Verifying range specification:              [OK]            7.9180 seconds
+Rewriting value-preserved casting:          [OK]            0.0213 seconds
+Verifying algebraic assertions:             [OK]            186.9362 seconds
+Verifying algebraic specification:          [OK]            18.7222 seconds
+Procedure verification:                     [OK]            218.5880 seconds
+
+Summary
+-------
+Verification result:                        [OK]            218.7866 seconds
+*)
 (* M2: cv.exe -v -isafety -enable_rewriting:eqmod -jobs 8 -slicing invntt_fast_plant.cl
 Parsing CryptoLine file:                    [OK]            0.1463 seconds
 Checking well-formedness:                   [OK]            0.0485 seconds
