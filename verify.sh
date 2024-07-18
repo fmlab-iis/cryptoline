@@ -12,6 +12,12 @@
 cv_name='cv'
 cv_cli_name='cv_cli'
 
+if [[ `uname` == Darwin ]]; then
+  APRON_LIB_PATH=`ocamlfind query -format "%d" apron`
+  export DYLD_LIBRARY_PATH="$HOMEBREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
+  export DYLD_LIBRARY_PATH="$APRON_LIB_PATH:$DYLD_LIBRARY_PATH"
+fi
+
 cv_path=''
 cv_cli_path=''
 
