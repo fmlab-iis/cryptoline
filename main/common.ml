@@ -58,7 +58,7 @@ let args_verifier =
     ("-implicit-const-conversion", Set implicit_const_conversion, mk_arg_desc([""; "Implicitly convert constants to fit into their types"]));
     ("-isafety", Set incremental_safety, mk_arg_desc(["  Verify program safety incrementally."]));
     ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i), mk_arg_desc(["INT"; "Set initial timeout for incremental verification of program safety."]));
-    ("-isafety-across-cuts", Set cross_cuts, mk_arg_desc(["  Verify safety conditions across cuts."]));
+    ("-isafety-across-cuts", Set cross_cuts, mk_arg_desc([""; "Verify safety conditions across cuts."]));
     ("-macaulay2", String (fun str -> macaulay2_path := str; algebra_solver := Macaulay2),
      mk_arg_desc(["PATH"; "Use Macaulay2 at the specified path."]));
     ("-macaulay2_path", String (fun str -> macaulay2_path := str),
@@ -75,6 +75,11 @@ let args_verifier =
      mk_arg_desc(["PATH"; "Use Mathematica command-line script interpreter at the specified"; "path."]));
     ("-mathematica_path", String (fun str -> mathematica_path := str),
      mk_arg_desc(["PATH"; "Set the path to Mathematica command-line script interpreter."]));
+    ("-mip-safety-solver", Symbol (["isl"; "ppl"],
+                                   fun solver -> if solver = "isl" then Options.Std.mip_safety_solver := Options.Std.ISL
+                                                 else if solver = "ppl" then Options.Std.mip_safety_solver := Options.Std.PPL
+                                                 else Stdlib.invalid_arg (Printf.sprintf "Unknown MIP solver for safety: %s" solver)),
+                           mk_arg_desc([""; "Specify the MIP solver for safety checking. Use with the argument"; "`-safety-engine mip`."]));
     ("-no_carry_constraint", Clear carry_constraint, mk_arg_desc([""; "Do not add carry constraints."]));
     ("-minimize_constraint", Set minimize_constraint, mk_arg_desc([""; "Minimize constraints."]));
     ("-python_path", String (fun str -> python_path := str),
@@ -86,6 +91,11 @@ let args_verifier =
                   "must output one of \"sat\", \"unsat\", or \"unknown\" for any QF_BV";
                   "query in SMTLIB format."]));
     ("-re", Set polys_rewrite_replace_eexp, mk_arg_desc(["\t     Replace expressions rather than variables in the rewriting of"; "polynomials (experimental)."]));
+    ("-safety-engine", Symbol (["smt"; "abs_interp"; "mip"], fun engine -> if engine = "smt" then ()
+                                                                           else if engine = "abs_interp" then Options.Std.abs_interp := true
+                                                                           else if engine = "mip" then Options.Std.safety_by_mip := true
+                                                                           else Stdlib.invalid_arg (Printf.sprintf "Unknown engine for safety checking: %s" engine)),
+     mk_arg_desc([""; "Specify the engine for safety checking. The argument `-safety-engine abs_interp` is equivalent to `-abs_interp`."]));
     ("-sage", String (fun str -> sage_path := str; algebra_solver := Sage),
      mk_arg_desc(["PATH"; "Use Sage at the specified path."]));
     ("-sage_path", String (fun str -> sage_path := str),

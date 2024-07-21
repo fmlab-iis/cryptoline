@@ -1,7 +1,7 @@
 
-type round_result =
-  Solved of Qfbv.Common.result                          (** Safety conditions are solved with a result *)
-| Unfinished of (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list   (** Safety conditions are not finished due to some timed-out safety conditions *) (* *)
+type 'a round_result =
+  Solved of Qfbv.Common.result        (** Safety conditions are solved with a result *)
+| Unfinished of 'a list               (** Safety conditions that are not finished due to some timed-out safety conditions *) (* *)
 (** results in verifying safety conditions incrementally *)
 
 val bexp_rbexp : Ast.Cryptoline.rbexp -> Qfbv.Common.bexp

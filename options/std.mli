@@ -246,6 +246,12 @@ val track_split : bool ref
 val expand_poly : bool ref
 (** [true] to expand polynomials before sending them to computer algebra systems *)
 
+val mip_safety_solver : algebra_solver ref
+(** the MIP-based solver for checking safety conditions *)
+
+val safety_by_mip : bool ref
+(** [true] to use MIP for safety checking *)
+
 
 (** {1 Range-Specific Options} *)
 

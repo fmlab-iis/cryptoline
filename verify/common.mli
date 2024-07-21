@@ -91,7 +91,7 @@ val rewrite_poly_spec : Cas.var_gen -> Cas.poly_spec -> Cas.var_gen * Cas.poly_s
 
 (** {1 Verifying Safety and Range Specifications} *)
 
-type round_result = Smt.round_result
+type 'a round_result = 'a Smt.round_result
 
 val bexp_rbexp : Ast.Cryptoline.rbexp -> Qfbv.Common.bexp
 (** Convert a range predicate to a QF_BV predicate. *)

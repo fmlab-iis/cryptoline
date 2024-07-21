@@ -29,14 +29,14 @@ val verify_safety_conditions :
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
-  Common.round_result
+  (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
 (** [verify_safety_conditions ?comments t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
     sequentially verifies the safety conditions [e1; ...; en] of the program [p]
     under the precondition [f]. [t] is the timeout.
     [comments] are comments written to input files for external solvers if
     {!Options.Std.debug} is enabled. *)
 
-val verify_safety_all_seq :
+val verify_safety_of_cut :
   Options.Std.st_options ->
   ?comments:(string list) -> int -> rspec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
@@ -66,7 +66,7 @@ val verify_rspec : Options.Std.st_options -> rspec -> VS.t atomhash_t option -> 
 
 val verify_instruction_safety : ?comments:(string list) -> int -> int -> rbexp -> program -> int ->
                                 VS.t atomhash_t option ->
-                                Common.round_result
+                                (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
 (**
    [verify_instruction_safety ?comments t j f p i o] verifies the safety condition of the
    [i]-th instruction of the program [p] in SSA under the precondition [f]. [t]

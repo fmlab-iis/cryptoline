@@ -91,7 +91,7 @@ let anon file =
        with Utils.Tasks.TimeoutException ->
              print_endline "timeout"
      else
-       if fst (Verify.Std.verify_safety_all_seq Options.Std.default_st_options ~comments !id spec None) then print_endline "unsat"
+       if fst (Verify.Std.verify_safety_of_cut Options.Std.default_st_options ~comments !id spec None) then print_endline "unsat"
        else print_endline "sat"
   | ParseESpec ->
      let spec = from_typecheck_espec (snd (espec_from_file file)) in

@@ -9,6 +9,10 @@ open Common
 open Utils
 open Utils.Std
 
+
+
+(** Apply Verification Functions to Cuts *)
+
 (*
  * `apply_to_cuts ids vf res combine cuts` applies verifiction function vf to cuts with ID specified in ids.
  * The verification function vf has three arguments: the previous result, the ID of a cut to be verified, and the cut.
@@ -31,291 +35,8 @@ let apply_to_cuts ids f res ss =
   helper 0 res ss
 
 
-(** Verification *)
 
-(*
- * Verify the safety of the n-th instruction in a program in SSA.
- * Raise TimeoutException if the SMT solver timed out.
- * Currently, this function is only used in the CLI mode.
- *)
-let verify_instruction_safety ?comments timeout sid f p n hashopt =
-  let i =
-    try List.nth p n
-    with Failure _ -> failwith ("The program does not contain the instruction: #" ^ string_of_int n) in
-  let do_verify f p q =
-    match q with
-    | True -> Solved Unsat
-    | _ ->
-       let fp = safety_assumptions f p q hashopt in
-       Solved (solve_simp
-                 ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int sid;
-                                                              "Instruction: " ^ string_of_instr i ])
-                 ~timeout:timeout (fp@[q]))
-  in
-  let q = Common.bexp_instr_safe i in
-  do_verify f p q
-
-(*
- * Verify safety conditions [qs].
- * f: precondition
- * p: program
- * qs: safety conditions represented as a list of tuples (id, i, q) where
- *     id is the safety condition ID, i is the instruction, q is the safety
- *     condition of i (without any premises)
- *)
-let verify_safety_conditions ?comments timeout f p qs hashopt =
-  let add_unsolved q res =
-    match res with
-    | Solved Unsat -> Unfinished [q]
-    | Unfinished unsolved -> Unfinished (q::unsolved)
-    | _ -> assert false in
-  let rec find_program_prefix i revp p =
-    match p with
-    | [] -> failwith "find_program_prefix fails"
-    | hd::tl -> if i = hd then (hd::revp, tl)
-                else find_program_prefix i (hd::revp) tl in
-  let fold_fun (res, revp, p) (id, i, q) =
-    match res with
-      Solved Sat
-    | Solved Unknown -> (res, revp, p)
-    | _ ->
-       let t1 = Unix.gettimeofday() in
-       let res =
-         try
-           let _ = Options.Std.vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
-           let (revp', p') = find_program_prefix i revp p in
-           let fp = safety_assumptions f (List.rev revp') q hashopt in
-           match solve_simp ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
-                                                                         "Instruction: " ^ string_of_instr i ]) ~timeout:timeout (fp@[q]) with
-           | Sat -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Sat, revp', p')
-           | Unknown -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Unknown, revp', p')
-           | Unsat -> let _ = Options.Std.vprintln "[OK]" in (res, revp', p')
-         with Tasks.TimeoutException ->
-           let _ = Options.Std.vprintln "[TIMEOUT]" in
-           (add_unsolved (id, i, q) res, revp, p) in
-       let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2 ^ "\n") in
-       res in
-  let rec fold_fun_abs_interp (res, revp, p, mgr, dom) (id, i, q) =
-    match res with
-      Solved Sat
-    | Solved Unknown -> (res, revp, p, mgr, dom)
-    | _ -> match p with
-           | h::t -> if i <> h then
-                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
-                                    mgr dom h in
-                       fold_fun_abs_interp (res, h::revp, t, mgr, dom')
-                         (id, i, q)
-                     else if Absdom.Std.instr_safe mgr dom i then
-                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
-                                    mgr dom i in
-                       (res, h::revp, t, mgr, dom')
-                     else let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom i in
-                          let (res', revp', p') =
-                            fold_fun (res, revp, p) (id, i, q) in
-                          let _ = assert (t == p') in
-                          (res', revp', p', mgr, dom')
-           | [] -> failwith "fold_fun_abs_interp fails" in
-  let res =
-    if !Options.Std.abs_interp then
-      let vars = VS.union (vars_rbexp f) (vars_program p) in
-      let mgr = Absdom.Std.create_manager vars in
-      let vars_dom = Absdom.Std.abs_of_vars mgr
-                       (VS.diff vars (lvs_program p)) in
-      match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom f with
-      | Some dom ->
-         let start_dom = Absdom.Std.meet mgr dom vars_dom in
-         let (res, _, _, _, _) = List.fold_left fold_fun_abs_interp
-                                   (Solved Unsat, [], p, mgr, start_dom) qs in
-         res
-      | None -> let (res, _, _) =
-                  List.fold_left fold_fun (Solved Unsat, [], p) qs in
-                res
-    else
-      let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
-      res in
-  res
-
-(*
- * Verify safety conditions of a cut incrementally.
- * sid: the ID of the next safety condition
- * s: a cut (of type rspec) to be verified
- *)
-let verify_safety_of_cut_inc options ?comments sid s hashopt =
-  let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
-  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
-  let round = ref 1 in
-  let timeout = ref !Options.Std.incremental_safety_timeout in
-  let safety = ref None in
-  let all_conds = bexp_program_safe_conds s.rsprog in
-  let next_sid = sid + List.length all_conds in
-  let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
-  let _ =
-    while !safety = None do
-      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
-      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
-                        ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
-                        ^ string_of_int !timeout ^ " seconds)") in
-      let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
-                                                       "Timeout: " ^ string_of_int !timeout ] in
-      let res =
-        if !Options.Std.jobs > 1 then
-          WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
-        else
-          verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
-      let _ =
-        match res with
-          Solved r -> safety := if r = Unsat then Some true else Some false
-        | Unfinished rest ->
-           qs := List.sort
-                   (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
-                   rest in
-      let _ = round := !round + 1 in
-      let _ = timeout := !timeout * 2 in
-      ()
-    done in
-  let res =
-    match !safety with
-    | Some r -> r
-    | None -> assert false in
-  (res, next_sid)
-
-(*
- * Verify safety conditions of a whole cut as a single predicate.
- * sid: the ID of the next safety condition
- * s: a cut (of type rspec) to be verified
- *)
-let verify_safety_of_cut ?comments sid s hashopt =
-  let t1 = Unix.gettimeofday() in
-  let g = bexp_program_safe s.rsprog in
-  let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-  let res = solve_simp ~comments:(rcons_comments_option comments "Target: all instructions in this cut") (fp@[g]) = Unsat in
-  let t2 = Unix.gettimeofday() in
-  let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
-  (res, sid + 1)
-
-(* Verify safety conditions cut by cut.
-   Verify the safety conditions of the next cut when all the safety conditions
-   of the previous cut have been verified. *)
-let verify_safety_cut_by_cut options s hashopt =
-  let _ = Options.Std.trace "===== Verifying program safety =====" in
-  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
-  let verify_safety_without_cuts cid (_, sid) s =
-    let msgs = [ "Verify: safety";
-                 Printf.sprintf "Track: %s" options.st_tag;
-                 "Cut: #" ^ string_of_int cid ] in
-    if !Options.Std.incremental_safety then
-      let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
-      if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_conditions_cli options ~comments:msgs sid s.rspre s.rsprog
-      else verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
-    else verify_safety_of_cut ~comments:msgs sid s hashopt in
-  (* Check previous result, cid: cut id, sid: id of the next safety condition *)
-  let verify_safety_without_cuts cid (res, sid) (_, s) =
-    if res then verify_safety_without_cuts cid (res, sid) s
-    else (res, sid) in
-  let (res, _) = apply_to_cuts options.st_verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
-  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall\t\t\t\t\t" in
-  res
-
-
-
-(* Verify safety of a cut per instruction incrementally and sequentially *)
-let verify_safety_inc_seq options ?comments sid s hashopt =
-  let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
-  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
-  let round = ref 1 in
-  let timeout = ref !Options.Std.incremental_safety_timeout in
-  let safety = ref None in
-  let all_conds = bexp_program_safe_conds s.rsprog in
-  let next_sid = sid + List.length all_conds in
-  let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
-  let _ =
-    while !safety = None do
-      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
-      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
-                        ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
-                        ^ string_of_int !timeout ^ " seconds)") in
-      let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
-                                                       "Timeout: " ^ string_of_int !timeout ] in
-      let res = verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
-      let _ =
-        match res with
-          Solved r -> safety := if r = Unsat then Some true else Some false
-        | Unfinished rest ->
-           qs := List.sort
-                   (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
-                   rest in
-      let _ = round := !round + 1 in
-      let _ = timeout := !timeout * 2 in
-      ()
-    done in
-  let res =
-    match !safety with
-    | Some r -> r
-    | None -> assert false in
-  (res, next_sid)
-
-(* Verify safety of a cut as a single predicate. *)
-let verify_safety_all_seq options ?comments sid s hashopt =
-  if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
-  then let t1 = Unix.gettimeofday() in
-       let g = bexp_program_safe s.rsprog in
-       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-       let res = solve_simp ~comments:(rcons_comments_option comments "Verify: safety (all in one query)") (fp@[g]) = Unsat in
-       let t2 = Unix.gettimeofday() in
-       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
-       (res, sid + 1)
-  else (true, sid + 1)
-
-(* Verify safety of a specification sequentially *)
-let verify_safety_seq options ?comments s hashopt =
-  (* cid: cut id, sid: id of the next safety condition *)
-  let verify_cut cid (res, sid) (_, s) =
-    if res then let comments = append_comments_option comments [Printf.sprintf "Track: %s" options.st_tag;
-                                                                "Cut: #" ^ string_of_int cid] in
-                if !Options.Std.incremental_safety then let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
-                                            verify_safety_inc_seq options ~comments sid s hashopt
-                else verify_safety_all_seq options ~comments sid s hashopt
-    else (res, sid) in
-  let (res, _) = apply_to_cuts options.st_verify_scuts verify_cut (true, 0) (cut_safety (rspec_of_spec s)) in
-  res
-
-(* Verify safety of a specification across cuts.
-   Verify the safety conditions of the next cut whenever there are free
-   job workers.
- *)
-let verify_safety_across_cuts options s hashopt =
-  let _ = Options.Std.trace "===== Verifying program safety =====" in
-  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
-  let comments = [ "Verify: safety" ] in
-  let res =
-    if !Options.Std.jobs > 1 then
-      if !Options.Std.use_cli then WithLwt.verify_safety_cli options ~comments s hashopt
-      else WithLwt.verify_safety_lwt options ~comments s hashopt
-    else verify_safety_seq options ~comments s hashopt in
-  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall safety\t\t\t\t" in
-  res
-
-(*
- * The top function of verifying safety conditions.
- *
- * cross_cuts? -- verify_safety_across_cuts -- jobs > 1? -- use_cli? -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
- *             |                                         |           |                                                   |- WithLiwt.verify_safety_all_cli
- *             |                                         |           |- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
- *             |                                         |                                                               |- WithLwt.verify_safety_all_lwt
- *             |                                         |- verify_safety_seq -- incremental_safety? -- verify_safety_inc_seq
- *             |                                                                                     |- verify_safety_all_seq
- *             |- verify_safety_cut_by_cut -- incremental_safety? -- jobs > 1? &% use_cli? -- WithLwt.verify_safety_conditions_cli
- *                                                                |                        |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
- *                                                                |- verify_safety_of_cut
- *)
-let verify_safety options s hashopt =
-  if !cross_cuts then verify_safety_across_cuts options s hashopt
-  else verify_safety_cut_by_cut options s hashopt
-
-
-
-
+(** Low-Level Interaction of CAS *)
 
 (*
  * groebner: https://www.singular.uni-kl.de/Manual/4-3-2/sing_261.htm#SEC301
@@ -493,6 +214,121 @@ let write_maple_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
+let run_singular ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Singular: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM SINGULAR:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_sage ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Sage: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM SAGE:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_magma ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Magma: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MAGMA:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_mathematica ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Mathematica: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MATHEMATICA:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_macaulay2 ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Macaulay2: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MACAULAY2:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_maple ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MAPLE:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let read_singular_output ofile =
+  let line = ref "" in
+  let ch = open_in ofile in
+  let _ =
+    try
+        line := input_line ch
+    with _ ->
+      failwith "Failed to read the output file" in
+  let _ =
+    if String.sub (!line) 0 (min 2 (String.length !line)) = "//" then
+      try
+        line := input_line ch
+      with _ ->
+        failwith "Failed to read the output file"
+    else
+      () in
+  let _ = close_in ch in
+  String.trim !line
+
+let read_sage_output ofile =
+  let line = ref "true" in
+  let has_output = ref false in
+  let ch = open_in ofile in
+  let _ =
+    try
+      while true do
+        let str = input_line ch in
+        let _ = has_output := true in
+	    if str = "AssertionError" then line := "false"
+      done
+    with
+      End_of_file -> ()
+    | _ ->
+       failwith "Failed to read the output file" in
+  let _ = close_in ch in
+  if !has_output && !line = "true" then failwith "Unknown error in Sage"
+  else !line
+
+let read_one_line ofile =
+  let line = ref "" in
+  let ch = open_in ofile in
+  let _ =
+    try
+      line := input_line ch
+    with _ ->
+      failwith "Failed to read the output file" in
+  let _ = close_in ch in
+  String.trim !line
+
+let read_magma_output = read_one_line
+
+let read_mathematica_output = read_one_line
+
+let read_macaulay2_output = read_one_line
+
+let read_maple_output = read_one_line
+
+
+
+(** Low-Level Interaction of MIP Solvers *)
+
 let write_ppl_input ?comments ifile mipvars constr =
   let partition_variables mipvars =
     List.fold_left (fun (i, c) mv ->
@@ -602,60 +438,6 @@ let write_isl_input ?comments ifile mipvars constr =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let run_singular ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Singular: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM SINGULAR:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
-let run_sage ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Sage: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM SAGE:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
-let run_magma ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Magma: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM MAGMA:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
-let run_mathematica ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Mathematica: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM MATHEMATICA:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
-let run_macaulay2 ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Macaulay2: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM MACAULAY2:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
-let run_maple ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
-  let t2 = Unix.gettimeofday() in
-  Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
-  Options.Std.trace "OUTPUT FROM MAPLE:";
-  Options.Std.trace_file ofile;
-  Options.Std.trace ""
-
 let run_ppl ifile ofile =
   let t1 = Unix.gettimeofday() in
   let _ = unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
@@ -683,63 +465,6 @@ let run_isl ifile ofile =
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let read_singular_output ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-        line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ =
-    if String.sub (!line) 0 (min 2 (String.length !line)) = "//" then
-      try
-        line := input_line ch
-      with _ ->
-        failwith "Failed to read the output file"
-    else
-      () in
-  let _ = close_in ch in
-  String.trim !line
-
-let read_sage_output ofile =
-  let line = ref "true" in
-  let has_output = ref false in
-  let ch = open_in ofile in
-  let _ =
-    try
-      while true do
-        let str = input_line ch in
-        let _ = has_output := true in
-	    if str = "AssertionError" then line := "false"
-      done
-    with
-      End_of_file -> ()
-    | _ ->
-       failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  if !has_output && !line = "true" then failwith "Unknown error in Sage"
-  else !line
-
-let read_one_line ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-      line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
-
-let read_magma_output = read_one_line
-
-let read_mathematica_output = read_one_line
-
-let read_macaulay2_output = read_one_line
-
-let read_maple_output = read_one_line
-
 let read_ppl_output = read_one_line
 
 let read_scip_output ofile =
@@ -753,6 +478,10 @@ let read_scip_output ofile =
   last_line
 
 let read_isl_output = read_one_line
+
+
+
+(** Interfaces of Solvers *)
 
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
   let ideal = if expand then tmap expand_eexp ideal else ideal in
@@ -800,6 +529,397 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
   let _ = cleanup [ifile; ofile] in
   res
 
+let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
+      mipvars constr =
+  let ifile = tmpfile "inputfimp_" "" in
+  let ofile = tmpfile "outputfimp_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  match solver with
+  | PPL ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_ppl_input ~comments ifile mipvars constr in
+     let _ = run_ppl ifile ofile in
+     let res = read_ppl_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "False"
+  | SCIP ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_scip_input ~comments ifile mipvars constr in
+     let _ = run_scip ifile ofile in
+     let res = read_scip_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "infeasible"
+  | ISL ->
+     let ifile = ifile ^ ".py" in
+     let _ = write_isl_input ~comments ifile mipvars constr in
+     let _ = run_isl ifile ofile in
+     let res = read_isl_output ofile in
+     let _ = cleanup [ifile; ofile] in
+     res = "True"
+  | _ -> failwith "Algebraic range condition needs MIP solver."
+
+
+
+(** Verification of Safety Conditions *)
+
+(*
+ * Verify the safety of the n-th instruction in a program in SSA.
+ * Raise TimeoutException if the SMT solver timed out.
+ * Currently, this function is only used in the CLI mode.
+ *)
+let verify_instruction_safety ?comments timeout sid f p n hashopt =
+  let i =
+    try List.nth p n
+    with Failure _ -> failwith ("The program does not contain the instruction: #" ^ string_of_int n) in
+  let do_verify f p q =
+    match q with
+    | True -> Solved Unsat
+    | _ ->
+       let fp = safety_assumptions f p q hashopt in
+       Solved (solve_simp
+                 ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int sid;
+                                                              "Instruction: " ^ string_of_instr i ])
+                 ~timeout:timeout (fp@[q]))
+  in
+  let q = Common.bexp_instr_safe i in
+  do_verify f p q
+
+(*
+ * Verify safety conditions [qs].
+ * f: precondition
+ * p: program
+ * qs: safety conditions represented as a list of tuples (id, i, q) where
+ *     id is the safety condition ID, i is the instruction, q is the safety
+ *     condition of i (without any premises)
+ *)
+let verify_safety_conditions ?comments timeout f p qs hashopt =
+  let add_unsolved q res =
+    match res with
+    | Solved Unsat -> Unfinished [q]
+    | Unfinished unsolved -> Unfinished (q::unsolved)
+    | _ -> assert false in
+  let rec find_program_prefix i revp p =
+    match p with
+    | [] -> failwith "find_program_prefix fails"
+    | hd::tl -> if i = hd then (hd::revp, tl)
+                else find_program_prefix i (hd::revp) tl in
+  let fold_fun (res, revp, p) (id, i, q) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (res, revp, p)
+    | _ ->
+       let t1 = Unix.gettimeofday() in
+       let res =
+         try
+           let _ = Options.Std.vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
+           let (revp', p') = find_program_prefix i revp p in
+           let fp = safety_assumptions f (List.rev revp') q hashopt in
+           match solve_simp ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
+                                                                         "Instruction: " ^ string_of_instr i ]) ~timeout:timeout (fp@[q]) with
+           | Sat -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Sat, revp', p')
+           | Unknown -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Unknown, revp', p')
+           | Unsat -> let _ = Options.Std.vprintln "[OK]" in (res, revp', p')
+         with Tasks.TimeoutException ->
+           let _ = Options.Std.vprintln "[TIMEOUT]" in
+           (add_unsolved (id, i, q) res, revp, p) in
+       let t2 = Unix.gettimeofday() in
+       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2 ^ "\n") in
+       res in
+  let rec fold_fun_abs_interp (res, revp, p, mgr, dom) (id, i, q) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (res, revp, p, mgr, dom)
+    | _ -> match p with
+           | h::t -> if i <> h then
+                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
+                                    mgr dom h in
+                       fold_fun_abs_interp (res, h::revp, t, mgr, dom')
+                         (id, i, q)
+                     else if Absdom.Std.instr_safe mgr dom i then
+                       let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true
+                                    mgr dom i in
+                       (res, h::revp, t, mgr, dom')
+                     else let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom i in
+                          let (res', revp', p') =
+                            fold_fun (res, revp, p) (id, i, q) in
+                          let _ = assert (t == p') in
+                          (res', revp', p', mgr, dom')
+           | [] -> failwith "fold_fun_abs_interp fails" in
+  let res =
+    if !Options.Std.abs_interp then
+      let vars = VS.union (vars_rbexp f) (vars_program p) in
+      let mgr = Absdom.Std.create_manager vars in
+      let vars_dom = Absdom.Std.abs_of_vars mgr
+                       (VS.diff vars (lvs_program p)) in
+      match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom f with
+      | Some dom ->
+         let start_dom = Absdom.Std.meet mgr dom vars_dom in
+         let (res, _, _, _, _) = List.fold_left fold_fun_abs_interp
+                                   (Solved Unsat, [], p, mgr, start_dom) qs in
+         res
+      | None -> let (res, _, _) =
+                  List.fold_left fold_fun (Solved Unsat, [], p) qs in
+                res
+    else
+      let (res, _, _) = List.fold_left fold_fun (Solved Unsat, [], p) qs in
+      res in
+  res
+
+(*
+ * Verify safety conditions of a cut incrementally.
+ * Use multi-cores if Options.Std.jobs is greater than 1.
+ * sid: the ID of the next safety condition
+ * s: a cut (of type rspec) to be verified
+ *)
+let verify_safety_of_cut_inc options ?comments sid s hashopt =
+  let add_offset_to_safety_ids offset (id, instr, cond) = (id + offset, instr, cond) in
+  let in_verify_safety_ids (id, _, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
+  let round = ref 1 in
+  let timeout = ref !Options.Std.incremental_safety_timeout in
+  let safety = ref None in
+  let all_conds = bexp_program_safe_conds s.rsprog in
+  let next_sid = sid + List.length all_conds in
+  let qs = ref (all_conds |> tmap (add_offset_to_safety_ids sid) |> List.filter in_verify_safety_ids) in
+  let _ =
+    while !safety = None do
+      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
+      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
+                        ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
+                        ^ string_of_int !timeout ^ " seconds)") in
+      let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
+                                                       "Timeout: " ^ string_of_int !timeout ] in
+      let res =
+        if !Options.Std.jobs > 1 then
+          WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
+        else
+          verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
+      let _ =
+        match res with
+          Solved r -> safety := if r = Unsat then Some true else Some false
+        | Unfinished rest ->
+           qs := List.sort
+                   (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
+                   rest in
+      let _ = round := !round + 1 in
+      let _ = timeout := !timeout * 2 in
+      ()
+    done in
+  let res =
+    match !safety with
+    | Some r -> r
+    | None -> assert false in
+  (res, next_sid)
+
+(*
+ * Verify safety conditions of a whole cut as a single predicate.
+ * sid: the ID of the next safety condition
+ * s: a cut (of type rspec) to be verified
+ *)
+let verify_safety_of_cut options ?comments sid s hashopt =
+  if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
+  then let t1 = Unix.gettimeofday() in
+       let g = bexp_program_safe s.rsprog in
+       let fp = safety_assumptions s.rspre s.rsprog g hashopt in
+       let res = solve_simp ~comments:(rcons_comments_option comments "Verify: safety (all in one query)") (fp@[g]) = Unsat in
+       let t2 = Unix.gettimeofday() in
+       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
+       (res, sid + 1)
+  else (true, sid + 1)
+
+(* Verify safety conditions cut by cut.
+   Verify the safety conditions of the next cut when all the safety conditions
+   of the previous cut have been verified. *)
+let verify_safety_cut_by_cut options s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
+  let verify_safety_without_cuts cid (_, sid) s =
+    let msgs = [ "Verify: safety";
+                 Printf.sprintf "Track: %s" options.st_tag;
+                 "Cut: #" ^ string_of_int cid ] in
+    if !Options.Std.incremental_safety then
+      let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
+      if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_conditions_cli options ~comments:msgs sid s.rspre s.rsprog
+      else verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
+    else verify_safety_of_cut options ~comments:msgs sid s hashopt in
+  (* Check previous result, cid: cut id, sid: id of the next safety condition *)
+  let verify_safety_without_cuts cid (res, sid) (_, s) =
+    if res then verify_safety_without_cuts cid (res, sid) s
+    else (res, sid) in
+  let (res, _) = apply_to_cuts options.st_verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall\t\t\t\t\t" in
+  res
+
+(* Verify safety of a specification across cuts.
+   Verify the safety conditions of the next cut whenever there are free
+   job workers.
+ *)
+let verify_safety_across_cuts options s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
+  let comments = [ "Verify: safety" ] in
+  let res =
+    if !Options.Std.jobs > 1 then
+      if !Options.Std.use_cli then WithLwt.verify_safety_cli options ~comments s hashopt
+      else WithLwt.verify_safety_lwt options ~comments s hashopt
+    else verify_safety_cut_by_cut options s hashopt in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall safety\t\t\t\t" in
+  res
+
+
+(* Verify safety conditions using MIP solvers. *)
+let verify_safety_mip_conditions ?comments _timeout indexed_infos _hashopt =
+  let add_unsolved q res =
+    match res with
+    | Solved Unsat -> Unfinished [q]
+    | Unfinished unsolved -> Unfinished (q::unsolved)
+    | _ -> assert false in
+  let mip_verifier ?comments (mipvars, constr) =
+    is_constr_feasible ~comments:(append_comments_option comments []) ~solver:!Options.Std.mip_safety_solver mipvars constr in
+  let fold_fun res (id, info) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> res
+    | _ ->
+       let t1 = Unix.gettimeofday() in
+       let res =
+         try
+           let _ = Options.Std.vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
+           if mip_verifier ~comments:(append_comments_option comments [ Printf.sprintf "Safety condition: #%d" id;
+                                                                        Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                                        Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                                        Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ]) (*~timeout:timeout*) info.mip_sndcond_constrs
+           then let _ = Options.Std.vprintln "[OK]" in res
+           else let _ = Options.Std.vprintln "[FAILED]" in Solved Sat
+         with Tasks.TimeoutException ->
+           let _ = Options.Std.vprintln "[TIMEOUT]" in
+           (add_unsolved (id, info) res) in
+       let t2 = Unix.gettimeofday() in
+       let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2 ^ "\n") in
+       res in
+  List.fold_left fold_fun (Solved Unsat) indexed_infos
+
+(*
+ * Verify safety conditions of a cut incrementally.
+ * sid: the ID of the next safety condition
+ * s: a cut (of type rspec) to be verified
+ *)
+let verify_safety_mip_of_cut_inc options ?comments vgen sid s hashopt =
+  let assoc_safety_ids base i info = (base + i, info) in
+  let in_verify_safety_ids (id, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
+  let round = ref 1 in
+  let timeout = ref !Options.Std.incremental_safety_timeout in
+  let safe = ref None in
+  let (_, infos) = Mip.safety_conditions_of_program vgen s.espre s.esprog in
+  let next_sid = sid + List.length infos in
+  let indexed_infos = ref (List.mapi (assoc_safety_ids sid) infos |> List.filter in_verify_safety_ids) in
+  let _ =
+    while !safe = None do
+      let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !indexed_infos) ^ " ==") in
+      let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
+                        ^ string_of_int (List.length !indexed_infos) ^ " safety conditions, timeout = "
+                        ^ string_of_int !timeout ^ " seconds)") in
+      let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
+                                                       "Timeout: " ^ string_of_int !timeout ] in
+      let res =
+        if !Options.Std.jobs > 1 then
+          WithLwt.verify_safety_mip_conditions ~comments !timeout !indexed_infos hashopt
+        else
+          verify_safety_mip_conditions ~comments !timeout !indexed_infos hashopt in
+      let _ =
+        match res with
+          Solved r -> safe := if r = Unsat then Some true else Some false
+        | Unfinished rest ->
+           indexed_infos := List.sort
+                              (fun (id0, _) (id1, _) -> compare id0 id1)
+                              rest in
+      let _ = round := !round + 1 in
+      let _ = timeout := !timeout * 2 in
+      ()
+    done in
+  let res =
+    match !safe with
+    | Some r -> r
+    | None -> assert false in
+  (res, next_sid)
+
+(* Verify safety conditions cut by cut.
+   Verify the safety conditions of the next cut when all the safety conditions
+   of the previous cut have been verified. *)
+let verify_safety_mip_cut_by_cut options vgen s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
+  let verify_safety_without_cuts cid (_, sid) s =
+    let msgs = [ "Verify: safety";
+                 Printf.sprintf "Track: %s" options.st_tag;
+                 "Cut: #" ^ string_of_int cid ] in
+    let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
+    if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_mip_conditions_cli options ~comments:msgs vgen sid s
+    else verify_safety_mip_of_cut_inc options ~comments:msgs vgen sid s hashopt in
+  (* Check previous result, cid: cut id, sid: id of the next safety condition *)
+  let verify_safety_without_cuts cid (res, sid) (_, s) =
+    if res then verify_safety_without_cuts cid (res, sid) s
+    else (res, sid) in
+  let (res, _) = apply_to_cuts options.st_verify_scuts verify_safety_without_cuts (true, 0) (cut_esafety (espec_of_spec s)) in
+  let _ = Options.Std.vprint "\tOverall\t\t\t\t\t" in
+  res
+
+(* Verify safety of a specification across cuts.
+   Verify the safety conditions of the next cut whenever there are free
+   job workers.
+ *)
+let verify_safety_mip_across_cuts options vgen s hashopt =
+  let _ = Options.Std.trace "===== Verifying program safety =====" in
+  let _ = Options.Std.vprintln "" in
+  let comments = [ "Verify: safety" ] in
+  let res =
+    if !Options.Std.jobs > 1 then
+      if !Options.Std.use_cli then WithLwt.verify_safety_mip_cross_cuts_cli options ~comments vgen s
+      else WithLwt.verify_safety_mip_cross_cuts_lwt options ~comments vgen s hashopt
+    else verify_safety_mip_cut_by_cut options vgen s hashopt in
+  let _ = Options.Std.vprint "\tOverall safety\t\t\t\t" in
+  res
+
+let verify_safety_mip options s hashopt =
+  let vgen = vgen_of_spec s in
+  if !Options.Std.cross_cuts then verify_safety_mip_across_cuts options vgen s hashopt
+  else verify_safety_mip_cut_by_cut options vgen s hashopt
+
+(*
+ * The top function of verifying safety conditions.
+ *
+ * if verify_safety_mip then:
+ *
+ * cross_cuts? -- verify_safety_mip_across_cuts -- jobs > 1? -- use_cli? -- WithLwt.verify_safety_mip_cross_cuts_cli
+ *             |                                         |               |- WithLwt.verify_safety_mip_cross_cuts_lwt
+ *             |                                         |- verify_safety_mip_cut_by_cut
+ *             |- verify_safety_mip_cut_by_cut -- jobs > 1? && use_cli? -- WithLwt.verify_safety_mip_conditions_cli
+ *                                                                      |- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
+ *
+ * else:
+ *
+ * cross_cuts? -- verify_safety_across_cuts -- jobs > 1? -- use_cli? -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
+ *             |           (dispatch)                    |           |                                                   |
+ *             |                                         |           |                                                   |- WithLiwt.verify_safety_all_cli
+ *             |                                         |           |- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
+ *             |                                         |                                                               |- WithLwt.verify_safety_all_lwt
+ *             |                                         |- verify_safety_cut_by_cut (same as cross_cuts = false)
+ *             |
+ *             |- verify_safety_cut_by_cut -- incremental_safety? -- jobs > 1? && use_cli? -- WithLwt.verify_safety_conditions_cli
+ *                     (cut specs)                                |                        |
+ *                                                                |                        |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
+ *                                                                |                               (Verify safety of each instruction in a cut)
+ *                                                                |- verify_safety_of_cut
+ *                                                              (verify safety of a whole cut)
+ *)
+let verify_safety options s hashopt =
+  if !Options.Std.safety_by_mip then verify_safety_mip options s hashopt
+  else
+    if !cross_cuts then verify_safety_across_cuts options s hashopt
+    else verify_safety_cut_by_cut options s hashopt
+
+
+
+(** Verification of Assertions and Specifications *)
 
 let verify_rspec_single_conjunct_abs_interp s hashopt =
   let s' = if !apply_slicing then slice_rspec_ssa s hashopt else s in
@@ -921,35 +1041,6 @@ let verify_espec_single_conjunct_smt solver ?comments vgen s =
   in
   res
 
-let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
-      mipvars constr =
-  let ifile = tmpfile "inputfimp_" "" in
-  let ofile = tmpfile "outputfimp_" "" in
-  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
-  match solver with
-  | PPL ->
-     let ifile = ifile ^ ".py" in
-     let _ = write_ppl_input ~comments ifile mipvars constr in
-     let _ = run_ppl ifile ofile in
-     let res = read_ppl_output ofile in
-     let _ = cleanup [ifile; ofile] in
-     res = "False"
-  | SCIP ->
-     let ifile = ifile ^ ".py" in
-     let _ = write_scip_input ~comments ifile mipvars constr in
-     let _ = run_scip ifile ofile in
-     let res = read_scip_output ofile in
-     let _ = cleanup [ifile; ofile] in
-     res = "infeasible"
-  | ISL ->
-     let ifile = ifile ^ ".py" in
-     let _ = write_isl_input ~comments ifile mipvars constr in
-     let _ = run_isl ifile ofile in
-     let res = read_isl_output ofile in
-     let _ = cleanup [ifile; ofile] in
-     res = "True"
-  | _ -> failwith "Algebraic range condition needs MIP solver."
-
 (* Verify an algebraic specification using a mixed integer programming solver.
     *)
 let verify_espec_single_conjunct_mip ?comments vgen s =
@@ -1046,6 +1137,10 @@ let verify_rassert options s hashopt =
     else
       res in
   apply_to_cuts options.st_verify_racuts verify true (cut_rassert (rspec_of_spec s))
+
+
+
+(** Top-Level Verification Functions *)
 
 (* The main verification process for a specification *)
 let verify_spec options s =

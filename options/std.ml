@@ -302,6 +302,10 @@ let native_smtlib_expn_operator = ref None
 
 let abs_interp = ref false
 
+let mip_safety_solver = ref ISL
+
+let safety_by_mip = ref false
+
 
 (** Logging *)
 

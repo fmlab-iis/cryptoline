@@ -5,9 +5,9 @@ open Options.Std
 open Utils.Std
 
 
-type round_result =
+type 'a round_result =
   Solved of Qfbv.Common.result
-| Unfinished of (int * instr * Qfbv.Common.bexp) list
+| Unfinished of 'a list
 
 
 (** Conversion from range specifications to QFBV. *)

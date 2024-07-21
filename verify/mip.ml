@@ -121,7 +121,7 @@ let convert_post vgen pre_prog_constr post ivars  =
       | Ele -> (vgen, [List.rev (egt e0 e1::pre_prog_constr)], ivars)
       | Egt -> (vgen, [List.rev (ele e0 e1::pre_prog_constr)], ivars)
       | Ege -> (vgen, [List.rev (elt e0 e1::pre_prog_constr)], ivars))
-  | Eand _ -> failwith "Internal error: only atomic algebraic predicates are sllowed (Mip.convert_post)"
+  | Eand _ -> failwith "Internal error: only atomic algebraic predicates are allowed (Mip.convert_post)"
 
 (* returns (vgen, eq_ebexps, int_vars, cont_vars) where
    - vgen: new variable generator
@@ -472,4 +472,171 @@ let of_espec vgen es =
         (ordered_mipvars, List.rev_append range_constr constr))
       rel_vars_linear_constrs in
   (vgen''', vars_linear_constrs)
+
+
+(** MIP for Safety Conditions *)
+
+type mip_safety_condition_info =
+  {
+    mip_sndcond_instr : Ast.Cryptoline.instr;                       (** an instruction *)
+    mip_sndcond_cond : Ast.Cryptoline.ebexp;                        (** the safety condition of the instruction *)
+    mip_sndcond_constrs : mip_var list * Ast.Cryptoline.ebexp list; (** one of the MIP constraints for the safety condition *)
+    mip_sndcond_index : int;                                        (** the index of the MIP constraint for the safety condition *)
+  }
+(** information about safety conditions *)
+
+let safety_conditions_of_instr vgen i =
+  let in_typ_range e t = [ege e (econst (min_of_typ t)); ele e (econst (max_of_typ t))] in
+  let in_var_range e v = in_typ_range e (typ_of_var v) in
+  match i with
+  | Imov _ -> (vgen, [])
+  | Ishl (v, a, n) ->
+     let a = eexp_of_atom a in
+     let n = eexp_of_atom n in
+     (vgen, in_var_range (emulpow2e a n) v)
+  | Ishls _ -> (vgen, [])
+  | Ishr (_v, a, n) ->
+     let a = eexp_of_atom a in
+     let n = eexp_of_atom n in
+     (vgen, [
+        ele ezero a; (* 0 <= a *)
+        eeqmod a ezero (epow2e n); (* a = 0 (mod 2**n) *)
+     ])
+  | Ishrs _ -> (vgen, [])
+  | Isar (_v, a, n) ->
+     let a = eexp_of_atom a in
+     let n = eexp_of_atom n in
+     (vgen, [
+        eeqmod a ezero (epow2e n); (* a = 0 (mod 2**n) *)
+     ])
+  | Isars _ -> (vgen, [])
+  | Icshl (vh, vl, a1, a2, n) ->
+     let w = size_of_var vl in
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     let n = econst n in
+     (vgen,
+      in_typ_range
+        (emulpow2e (eadd (emulpow2i a1 w) a2) n) (* (a1 * 2**w + a2) * 2**n *)
+        (typ_to_size (typ_of_var vh) (2 * w))
+     )
+  | Icshls _ -> (vgen, [])
+  | Icshr (_vh, vl, a1, a2, n) ->
+     let w = size_of_var vl in
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     let n = econst n in
+     (vgen,
+      [
+        ele ezero a1; (* 0 <= a1 *)
+        eeqmod (eadd (emulpow2i a1 w) a2) ezero (epow2e n) (* eqmod (a1 * 2**w + a2) 0 (2**w) *)
+      ])
+  | Icshrs _ -> (vgen, [])
+  | Irol _ -> (vgen, [])
+  | Iror _ -> (vgen, [])
+  | Inondet _ -> (vgen, [])
+  | Icmov _ -> (vgen, [])
+  | Inop -> (vgen, [])
+  | Iadd (v, a1, a2) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     (vgen, in_var_range (eadd a1 a2) v)
+  | Iadds _ -> (vgen, [])
+  | Iadc (v, a1, a2, y) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     let y = eexp_of_atom y in
+     (vgen, in_var_range (eadd (eadd a1 a2) y) v)
+  | Iadcs _ -> (vgen, [])
+  | Isub (v, a1, a2) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     (vgen, in_var_range (esub a1 a2) v)
+  | Isubc _ -> (vgen, [])
+  | Isubb _ -> (vgen, [])
+  | Isbc (v, a1, a2, y) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     let y = eexp_of_atom y in
+     let borrow = eneg y in
+     (vgen,
+      tappend
+        (in_var_range (eadd a2 borrow) v)
+        (in_var_range (esub a1 (eadd a2 borrow)) v)
+     )
+  | Isbcs _ -> (vgen, [])
+  | Isbb (v, a1, a2, y) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     let y = eexp_of_atom y in
+     (vgen,
+      tappend
+        (in_var_range (eadd a2 y) v)
+        (in_var_range (esub a1 (eadd a2 y)) v)
+     )
+  | Isbbs _ -> (vgen, [])
+  | Imul (v, a1, a2) ->
+     let a1 = eexp_of_atom a1 in
+     let a2 = eexp_of_atom a2 in
+     (vgen, in_var_range (emul a1 a2) v)
+  | Imuls _ -> (vgen, [])
+  | Imull _
+    | Imulj _ -> (vgen, [])
+  | Isplit _ -> (vgen, [])
+  | Ispl _ -> (vgen, [])
+  | Iseteq _ -> (vgen, [])
+  | Isetne _ -> (vgen, [])
+  | Iand _ -> (vgen, [])
+  | Ior _ -> (vgen, [])
+  | Ixor _ -> (vgen, [])
+  | Inot _ -> (vgen, [])
+  | Icast (_, _v, _a) -> (vgen, [])
+  | Ivpc (v, a) ->
+     let ea = eexp_of_atom a in
+     begin
+       match v.vtyp, typ_of_atom a with
+       | Tuint wv, Tuint wa ->
+          if wv >= wa then (vgen, [])
+          else (vgen, in_var_range ea v)
+       | Tsint wv, Tuint wa ->
+          if wv > wa then (vgen, [])
+          else (vgen, in_typ_range ea (Tuint (wv - 1)))
+       | Tuint wv, Tsint wa ->
+          if wv >= wa - 1 then (vgen, [ele ezero ea])
+          else (vgen, in_typ_range ea (Tuint wv))
+       | Tsint wv, Tsint wa ->
+          if wv >= wa then (vgen, [])
+          else (vgen, in_var_range ea v)
+     end
+  | Ijoin (_v, _ah, _al) -> (vgen, [])
+  | Iassert _ -> (vgen, [])
+  | Iassume _ -> (vgen, [])
+  | Icut _ -> (vgen, [])
+  | Ighost _ -> (vgen, [])
+
+let safety_conditions_of_program vgen f p =
+  let rec helper vgen rev_res rev_p f p =
+    match p with
+    | [] -> (vgen, rev_res)
+    | i::p ->
+       let (vgen, sndconds) = safety_conditions_of_instr vgen i in
+       if List.length sndconds = 0 then helper vgen rev_res (i::rev_p) f p
+       else let (vgen, rev_sndcond_mips) =
+              List.fold_left
+                (fun (vgen, rev_sndcond_mips) sndcond ->
+                  let (vgen, sndcond_mips) = of_espec vgen { espre = f; esprog = List.rev rev_p; espost = [(sndcond, [])] } in
+                  (vgen, List.rev_append sndcond_mips rev_sndcond_mips)) (vgen, []) sndconds in
+            let sndconds_in_one = eands sndconds in
+            let infos = List.mapi
+                          (fun idx constrs ->
+                            {
+                              mip_sndcond_instr = i;
+                              mip_sndcond_cond = sndconds_in_one;
+                              mip_sndcond_constrs = constrs;
+                              mip_sndcond_index = idx
+                            }
+                          ) (List.rev rev_sndcond_mips) in
+            helper vgen (List.rev_append infos rev_res) (i::rev_p) f p in
+  let (vgen, rev_res) = helper vgen [] [] f p in
+  (vgen, List.rev rev_res)
 

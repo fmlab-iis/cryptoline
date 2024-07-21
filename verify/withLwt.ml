@@ -11,6 +11,9 @@ open Utils
 open Utils.Std
 open Tasks
 
+
+(** Apply Verification Functions to Cuts *)
+
 let apply_to_cuts_lwt ids f delivered_helper res pending ss =
   let ids = ids |> Option.map Hashset.to_list |> Option.map (List.rev_map (normalize_index (List.length ss))) |> Option.map List.rev |> Option.map Hashset.of_list in
   let rec helper i (res, pending) ss =
@@ -44,6 +47,629 @@ let apply_to_cuts_lwt_unfinished ids f res pending ss =
                   helper (i+1) (res, pending) tl in
   helper 0 (res, pending) ss
 
+
+
+(** Low-Level Interaction of CAS *)
+
+let write_header_to_log header =
+   Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
+                             Lwt.return_unit) header
+
+let write_singular_input ?comments ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map singular_of_eexp gen |> List.rev)) in
+    let poly = singular_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "proc is_generator(poly p, ideal I) {\n"
+    ^ "  int idx;\n"
+    ^ "  for (idx=1; idx<=size(I); idx++) {\n"
+    ^ "    if (p == I[idx]) { return (0==0); }\n"
+    ^ "  }\n"
+    ^ "  return (0==1);\n"
+    ^ "}\n\n"
+    ^ "ring r = integer, (" ^ varseq ^ "), lp;\n"
+    ^ "ideal gs = " ^ generator ^ ";\n"
+    ^ "poly p = " ^ poly ^ ";\n"
+    ^ "if (is_generator(p, gs) || reduce(p, gs) == 0) {\n"
+    ^ "  0;\n"
+    ^ "} else {\n"
+    ^ "  ideal I = groebner(gs);\n"
+    ^ "  reduce(p, I);\n"
+    ^ "}\n"
+    ^ "exit;\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_sage_input ?comments ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map sage_of_eexp gen |> List.rev)) in
+    let poly = sage_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (max 1 (List.length vars)) ^ ")\n"
+    ^ "I = (" ^ generator ^ ") * R\n"
+    ^ "P = " ^ poly ^ "\n"
+    ^ "assert P in I\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_magma_input ?comments ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let varlen = max 1 (List.length vars) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map magma_of_eexp gen |> List.rev)) in
+    let poly = magma_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    comment
+    ^ "function is_generator(p, I)\n"
+    ^ "  for q in I do\n"
+    ^ "    if p eq q then\n"
+    ^ "      return true;\n"
+    ^ "    end if;\n"
+    ^ "  end for;\n"
+    ^ "  return false;\n"
+    ^ "end function;\n\n"
+    ^ "R := IntegerRing();\n"
+    ^ "S<" ^ varseq ^ "> := PolynomialRing(R, " ^ string_of_int varlen ^ ");\n"
+    ^ "B := [" ^ generator ^ "];\n"
+    ^ "I := ideal<S|B>;\n"
+    ^ "g := " ^ poly ^ ";\n"
+    ^ "if is_generator(g, B) or g in I then\n"
+    ^ "  true;\n"
+    ^ "else\n"
+    ^ "  J := GroebnerBasis(I);\n"
+    ^ "  g in J;\n"
+    ^ "end if;\n"
+    ^ "exit;\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_mathematica_input ?comments ifile vars gen p =
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map mathematica_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map mathematica_of_eexp gen |> List.rev)) in
+    let poly = mathematica_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_block_comments "(*" "*)") comments) ~default:"" else "" in
+    comment
+    ^ "vars = {" ^ varseq ^ "};\n"
+    ^ "gs = {" ^ generator ^ "};\n"
+    ^ "p = " ^ poly ^ ";\n"
+    ^ "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers];\n"
+    ^ "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers];\n"
+    ^ "Print[r];\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_macaulay2_input ?comments ifile vars gen p =
+  let input_text =
+    let (vars, gen, p, default_generator) =
+      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The type is no matter here. *) in
+      let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
+      if no_var_in_generator then
+        (dummy_var::vars,
+         List.rev_map (emul (evar dummy_var)) gen |> List.rev,
+         emul (evar dummy_var) p,
+         string_of_var dummy_var ^ "*0")
+      else
+        (vars, gen, p, "0") in
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map macaulay2_of_var vars |> List.rev) in
+    let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.rev_map macaulay2_of_eexp gen |> List.rev)) in
+    let poly = macaulay2_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_line_comments "--") comments) ~default:"" else "" in
+    comment
+    ^ "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
+    ^ "myIdeal = ideal(" ^ generator ^ ")\n"
+    ^ "myPoly = " ^ poly ^ "\n"
+    ^ "myBasis = groebnerBasis myIdeal\n"
+    ^ "myRes = toString (myPoly % myBasis)\n"
+    ^ "print myRes\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_maple_input ?comments ifile vars gen p =
+  let const_gen =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
+    match const_gen with
+    | [] -> Econst Z.zero
+    | c::[] -> c
+    | _ -> failwith("Multi-moduli is not supported when using maple.") in
+  let input_text =
+    let varseq =
+      match vars with
+      | [] -> "x"
+      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
+    let poly = magma_of_eexp p in
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "interface(prettyprint=0):\n"
+    ^ "with(PolynomialIdeals):\n"
+    ^ "with(Groebner):\n"
+    ^ "Ord := plex(" ^ varseq ^ "):\n"
+    ^ "g := " ^ poly ^ ":\n"
+    ^ "J := PolynomialIdeal([], characteristic=" ^ magma_of_eexp const_gen ^ "):\n"
+    ^ "res := IdealMembership(g, J):\n"
+    ^ "res;\n"
+    ^ "quit:\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let run_singular header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO SINGULAR:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SINGULAR:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_sage header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO SAGE:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SAGE:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_magma header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO MAGMA:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAGMA:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_mathematica header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO MATHEMATICA:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MATHEMATICA:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_macaulay2 header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO MACAULAY2:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MACAULAY2:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_maple header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO MAPLE:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Maple: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAPLE:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let read_one_line ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt line =
+    try%lwt
+          Lwt_io.read_line ch
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return (String.trim line)
+
+let read_singular_output ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt first =
+    try%lwt
+          Lwt_io.read_line ch
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt line =
+    if String.sub first 0 (min 2 (String.length first)) = "//" then
+      try%lwt
+            Lwt_io.read_line ch
+      with _ -> failwith "Failed to read the output file"
+    else
+      Lwt.return first in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return (String.trim line)
+
+let read_sage_output ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt lines =
+    try%lwt
+      Lwt.return (Lwt_io.read_lines ch)
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt lines = Lwt_stream.to_list lines in
+  let%lwt _ = Lwt_io.close ch in
+  if List.mem "AssertionError" lines then Lwt.return "false"
+  else if List.length lines = 0 then Lwt.return "true"
+  else failwith "Unknown error in Sage"
+
+let read_magma_output = read_one_line
+
+let read_mathematica_output = read_one_line
+
+let read_macaulay2_output = read_one_line
+
+let read_maple_output = read_one_line
+
+
+
+(** Low-Level Interaction of MIP Solvers *)
+
+let write_ppl_input ?comments ifile mipvars constr =
+  let partition_variables mipvars =
+    List.fold_left (fun (i, c) mv ->
+        if is_mip_cvar mv then (i, mv::c) else (mv::i, c))
+      ([], []) mipvars in
+  let ppl_variables mipvars =
+    String.concat "\n"
+      (List.mapi (fun i mv ->
+           (string_of_var (var_of_mip mv)) ^
+             " = Variable(" ^ (string_of_int i) ^ ")") mipvars) in
+  let ppl_constraint mip constr =
+    String.concat "\n"
+      (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
+         constr) in
+  let set_ppl_ivariable delimiter mipvars =
+    let (_, rev_ppl_cmds) =
+      List.fold_left (fun (i, ret) mv ->
+          (succ i,
+           if is_mip_cvar mv then ret
+           else ("mip.add_to_integer_space_dimensions(Variables_Set("
+                 ^ string_of_int i ^ "))")::ret))
+        (0, []) mipvars in
+    String.concat delimiter rev_ppl_cmds in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    let (rev_ivars, rev_cvars) = partition_variables mipvars in
+    let (nivars, icvars) = (List.length rev_ivars, List.length rev_cvars) in
+    let ordered_mipvars = List.rev_append rev_ivars (List.rev rev_cvars) in
+    let nvars = nivars + icvars in
+    comment
+    ^ "from ppl import Variable, Variables_Set, C_Polyhedron, MIP_Problem\n"
+    ^ (ppl_variables ordered_mipvars) ^ "\n"
+    ^ "ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n"
+    ^ ppl_constraint "ph" constr ^ "\n"
+    ^ (if !Options.Std.minimize_constraint
+       then "ph.remove_higher_space_dimensions(" ^ string_of_int nivars ^ ")\n"
+       else "")
+    ^ "mip = MIP_Problem("
+    ^ string_of_int (if !Options.Std.minimize_constraint
+                     then nivars else nvars)
+    ^ ")\n"
+    ^ "mip.add_constraints("
+    ^ (if !Options.Std.minimize_constraint
+       then "ph.minimized_constraints ())\n" else "ph.constraints())\n")
+    (* ^ set_ppl_ivariable "\n" ordered_mipvars ^ "\n" *)
+    ^ set_ppl_ivariable "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n" ordered_mipvars ^ "\n"
+    ^ "print(mip.is_satisfiable())\n"
+    ^ "exit()\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_scip_input ?comments ifile mipvars constr =
+  let scip_variables mip mipvars =
+    String.concat "\n"
+      (List.map (fun mv ->
+           (string_of_var (var_of_mip mv)) ^
+             " = " ^ mip ^ ".addVar(vtype=" ^
+               (if is_mip_cvar mv then "'C'" else "'I'") ^
+                 ")") mipvars) in
+  let scip_constraint mip constr =
+    String.concat "\n"
+      (List.map (fun c -> mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")")
+         constr) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from pyscipopt import Model\n"
+    ^ "mip = Model('SCIP Solver')\n"
+    ^ (scip_variables "mip" mipvars) ^ "\n"
+    ^ scip_constraint "mip" constr ^ "\n"
+    ^ "mip.optimize()\n"
+    ^ "print(mip.getStatus())\n"
+    ^ "exit()\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let write_isl_input ?comments ifile mipvars constr =
+  let isl_variables mipvars =
+    String.concat ", "
+      (tmap (fun mv -> "'" ^ string_of_var (var_of_mip mv) ^ "'") mipvars) in
+  let isl_set_header mipvars =
+    "{[" ^ String.concat ", "
+             (tmap (fun mv -> string_of_var (var_of_mip mv)) mipvars) ^ "]:" in
+  let isl_constraint constr =
+    String.concat " and '\\\n"
+      (tmap (fun eb -> "'" ^ isl_of_ebexp eb) constr) in
+  let input_text =
+    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    comment
+    ^ "from islpy import Space, BasicSet, DEFAULT_CONTEXT\n"
+    ^ "variables = [" ^ isl_variables mipvars ^ "]\n"
+    ^ "space = Space.create_from_names(DEFAULT_CONTEXT, set = variables)\n"
+    ^ "bset = "
+    ^ "'" ^ isl_set_header mipvars ^ "'\\\n"
+    ^ isl_constraint constr ^ "}'\n"
+    ^ "print(BasicSet(bset).is_empty())\n"
+    ^ "exit()\n" in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch input_text in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
+let run_ppl header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO PPLPY:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of PPLPY: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM PPLPY:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_scip header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO PYSCIPOPT:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM PYSCIPOPT:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let run_isl header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ =
+    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO ISLPY:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of ISLPY: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM ISLPY:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
+let read_ppl_output = read_one_line
+
+let read_scip_output ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt lines =
+    try%lwt
+      Lwt.return (Lwt_io.read_lines ch)
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt lines = Lwt_stream.to_list lines in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return (lines |> List.rev |> List.hd)
+
+let read_isl_output = read_one_line
+
+
+
+(** Interfaces of Solvers *)
+
+(**
+   [is_in_ideal header vars ideal p] returns [true] if the polynomial [p] is in
+   the ideal generated by [ideal].
+   @param ?solver the computer algebra system to be used
+   @param header a header to be outputted to the log file
+   @param vars a list of variables in some order
+   @param ideal the generator of an ideal
+   @param p a polynomial
+*)
+let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
+  let ideal = if expand then tmap expand_eexp ideal else ideal in
+  let p = if expand then expand_eexp p else p in
+  let ifile = tmpfile "inputfgb_" "" in
+  let ofile = tmpfile "outputfgb_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  let res =
+    match solver with
+    | Singular ->
+       let%lwt _ = write_singular_input ~comments ifile vars ideal p in
+       let%lwt _ = run_singular header ifile ofile in
+       let%lwt res = read_singular_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "0")
+    | Sage ->
+       (* The input file to Sage must have file extension ".sage". *)
+       let ifile = ifile ^ ".sage" in
+       let%lwt _ = write_sage_input ~comments ifile vars ideal p in
+       let%lwt _ = run_sage header ifile ofile in
+       let%lwt res = read_sage_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "true")
+    | Magma ->
+       let%lwt _ = write_magma_input ~comments ifile vars ideal p in
+       let%lwt _ = run_magma header ifile ofile in
+       let%lwt res = read_magma_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "true")
+    | Mathematica ->
+       let%lwt _ = write_mathematica_input ~comments ifile vars ideal p in
+       let%lwt _ = run_mathematica header ifile ofile in
+       let%lwt res = read_mathematica_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "0")
+    | Macaulay2 ->
+       let%lwt _ = write_macaulay2_input ~comments ifile vars ideal p in
+       let%lwt _ = run_macaulay2 header ifile ofile in
+       let%lwt res = read_macaulay2_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "0")
+    | Maple ->
+       let%lwt _ = write_maple_input ~comments ifile vars ideal p in
+       let%lwt _ = run_maple header ifile ofile in
+       let%lwt res = read_maple_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "true")
+    | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
+    | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
+  in
+  res
+
+let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
+      mipvars constr =
+  let ifile = tmpfile "inputfmip_" "" in
+  let ofile = tmpfile "outputfmip_" "" in
+  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  match solver with
+  | PPL ->
+     let ifile = ifile ^ ".py" in
+     let%lwt _ = write_ppl_input ~comments ifile mipvars constr in
+     let%lwt _ = run_ppl headers ifile ofile in
+     let%lwt res = read_ppl_output ofile in
+     let%lwt _ = cleanup_lwt [ifile; ofile] in
+     Lwt.return (res = "False")
+  | SCIP ->
+     let ifile = ifile ^ ".py" in
+     let%lwt _ = write_scip_input ~comments ifile mipvars constr in
+     let%lwt _ = run_scip headers ifile ofile in
+     let%lwt res = read_scip_output ofile in
+     let%lwt _ = cleanup_lwt [ifile; ofile] in
+     Lwt.return (res = "infeasible")
+  | ISL ->
+     let ifile = ifile ^ ".py" in
+     let%lwt _ = write_isl_input ~comments ifile mipvars constr in
+     let%lwt _ = run_isl headers ifile ofile in
+     let%lwt res = read_isl_output ofile in
+     let%lwt _ = cleanup_lwt [ifile; ofile] in
+     Lwt.return (res = "True")
+  | _ -> failwith "Algebraic range condition needs MIP solver."
+
+
+
+(** Verification of Safety Conditions *)
 
 (* Options.vscuts is handled in Std.verify_safety. *)
 let verify_safety_conditions ?comments timeout f prog qs hashopt =
@@ -256,584 +882,106 @@ let verify_safety_lwt options ?comments s hashopt =
   else verify_safety_all_lwt options ?comments s hashopt
 
 
-let write_header_to_log header =
-   Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
-                             Lwt.return_unit) header
-
-let write_singular_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map singular_of_eexp gen |> List.rev)) in
-    let poly = singular_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
-    comment
-    ^ "proc is_generator(poly p, ideal I) {\n"
-    ^ "  int idx;\n"
-    ^ "  for (idx=1; idx<=size(I); idx++) {\n"
-    ^ "    if (p == I[idx]) { return (0==0); }\n"
-    ^ "  }\n"
-    ^ "  return (0==1);\n"
-    ^ "}\n\n"
-    ^ "ring r = integer, (" ^ varseq ^ "), lp;\n"
-    ^ "ideal gs = " ^ generator ^ ";\n"
-    ^ "poly p = " ^ poly ^ ";\n"
-    ^ "if (is_generator(p, gs) || reduce(p, gs) == 0) {\n"
-    ^ "  0;\n"
-    ^ "} else {\n"
-    ^ "  ideal I = groebner(gs);\n"
-    ^ "  reduce(p, I);\n"
-    ^ "}\n"
-    ^ "exit;\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_sage_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.rev_map sage_of_eexp gen |> List.rev)) in
-    let poly = sage_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (max 1 (List.length vars)) ^ ")\n"
-    ^ "I = (" ^ generator ^ ") * R\n"
-    ^ "P = " ^ poly ^ "\n"
-    ^ "assert P in I\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_magma_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
-    let varlen = max 1 (List.length vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map magma_of_eexp gen |> List.rev)) in
-    let poly = magma_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
-    comment
-    ^ "function is_generator(p, I)\n"
-    ^ "  for q in I do\n"
-    ^ "    if p eq q then\n"
-    ^ "      return true;\n"
-    ^ "    end if;\n"
-    ^ "  end for;\n"
-    ^ "  return false;\n"
-    ^ "end function;\n\n"
-    ^ "R := IntegerRing();\n"
-    ^ "S<" ^ varseq ^ "> := PolynomialRing(R, " ^ string_of_int varlen ^ ");\n"
-    ^ "B := [" ^ generator ^ "];\n"
-    ^ "I := ideal<S|B>;\n"
-    ^ "g := " ^ poly ^ ";\n"
-    ^ "if is_generator(g, B) or g in I then\n"
-    ^ "  true;\n"
-    ^ "else\n"
-    ^ "  J := GroebnerBasis(I);\n"
-    ^ "  g in J;\n"
-    ^ "end if;\n"
-    ^ "exit;\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_mathematica_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map mathematica_of_var vars |> List.rev) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map mathematica_of_eexp gen |> List.rev)) in
-    let poly = mathematica_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_block_comments "(*" "*)") comments) ~default:"" else "" in
-    comment
-    ^ "vars = {" ^ varseq ^ "};\n"
-    ^ "gs = {" ^ generator ^ "};\n"
-    ^ "p = " ^ poly ^ ";\n"
-    ^ "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers];\n"
-    ^ "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers];\n"
-    ^ "Print[r];\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_macaulay2_input ?comments ifile vars gen p =
-  let input_text =
-    let (vars, gen, p, default_generator) =
-      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The type is no matter here. *) in
-      let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
-      if no_var_in_generator then
-        (dummy_var::vars,
-         List.rev_map (emul (evar dummy_var)) gen |> List.rev,
-         emul (evar dummy_var) p,
-         string_of_var dummy_var ^ "*0")
-      else
-        (vars, gen, p, "0") in
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map macaulay2_of_var vars |> List.rev) in
-    let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.rev_map macaulay2_of_eexp gen |> List.rev)) in
-    let poly = macaulay2_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "--") comments) ~default:"" else "" in
-    comment
-    ^ "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
-    ^ "myIdeal = ideal(" ^ generator ^ ")\n"
-    ^ "myPoly = " ^ poly ^ "\n"
-    ^ "myBasis = groebnerBasis myIdeal\n"
-    ^ "myRes = toString (myPoly % myBasis)\n"
-    ^ "print myRes\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_maple_input ?comments ifile vars gen p =
-  let const_gen =
-    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
-    let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
-    match const_gen with
-    | [] -> Econst Z.zero
-    | c::[] -> c
-    | _ -> failwith("Multi-moduli is not supported when using maple.") in
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.rev_map string_of_var vars |> List.rev) in
-    let poly = magma_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "interface(prettyprint=0):\n"
-    ^ "with(PolynomialIdeals):\n"
-    ^ "with(Groebner):\n"
-    ^ "Ord := plex(" ^ varseq ^ "):\n"
-    ^ "g := " ^ poly ^ ":\n"
-    ^ "J := PolynomialIdeal([], characteristic=" ^ magma_of_eexp const_gen ^ "):\n"
-    ^ "res := IdealMembership(g, J):\n"
-    ^ "res;\n"
-    ^ "quit:\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_ppl_input ?comments ifile mipvars constr =
-  let partition_variables mipvars =
-    List.fold_left (fun (i, c) mv ->
-        if is_mip_cvar mv then (i, mv::c) else (mv::i, c))
-      ([], []) mipvars in
-  let ppl_variables mipvars =
-    String.concat "\n"
-      (List.mapi (fun i mv ->
-           (string_of_var (var_of_mip mv)) ^
-             " = Variable(" ^ (string_of_int i) ^ ")") mipvars) in
-  let ppl_constraint mip constr =
-    String.concat "\n"
-      (List.map (fun c -> mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")")
-         constr) in
-  let set_ppl_ivariable delimiter mipvars =
-    let (_, rev_ppl_cmds) =
-      List.fold_left (fun (i, ret) mv ->
-          (succ i,
-           if is_mip_cvar mv then ret
-           else ("mip.add_to_integer_space_dimensions(Variables_Set("
-                 ^ string_of_int i ^ "))")::ret))
-        (0, []) mipvars in
-    String.concat delimiter rev_ppl_cmds in
-  let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    let (rev_ivars, rev_cvars) = partition_variables mipvars in
-    let (nivars, icvars) = (List.length rev_ivars, List.length rev_cvars) in
-    let ordered_mipvars = List.rev_append rev_ivars (List.rev rev_cvars) in
-    let nvars = nivars + icvars in
-    comment
-    ^ "from ppl import Variable, Variables_Set, C_Polyhedron, MIP_Problem\n"
-    ^ (ppl_variables ordered_mipvars) ^ "\n"
-    ^ "ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n"
-    ^ ppl_constraint "ph" constr ^ "\n"
-    ^ (if !Options.Std.minimize_constraint
-       then "ph.remove_higher_space_dimensions(" ^ string_of_int nivars ^ ")\n"
-       else "")
-    ^ "mip = MIP_Problem("
-    ^ string_of_int (if !Options.Std.minimize_constraint
-                     then nivars else nvars)
-    ^ ")\n"
-    ^ "mip.add_constraints("
-    ^ (if !Options.Std.minimize_constraint
-       then "ph.minimized_constraints ())\n" else "ph.constraints())\n")
-    (* ^ set_ppl_ivariable "\n" ordered_mipvars ^ "\n" *)
-    ^ set_ppl_ivariable "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n" ordered_mipvars ^ "\n"
-    ^ "print(mip.is_satisfiable())\n"
-    ^ "exit()\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_scip_input ?comments ifile mipvars constr =
-  let scip_variables mip mipvars =
-    String.concat "\n"
-      (List.map (fun mv ->
-           (string_of_var (var_of_mip mv)) ^
-             " = " ^ mip ^ ".addVar(vtype=" ^
-               (if is_mip_cvar mv then "'C'" else "'I'") ^
-                 ")") mipvars) in
-  let scip_constraint mip constr =
-    String.concat "\n"
-      (List.map (fun c -> mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")")
-         constr) in
-  let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "from pyscipopt import Model\n"
-    ^ "mip = Model('SCIP Solver')\n"
-    ^ (scip_variables "mip" mipvars) ^ "\n"
-    ^ scip_constraint "mip" constr ^ "\n"
-    ^ "mip.optimize()\n"
-    ^ "print(mip.getStatus())\n"
-    ^ "exit()\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let write_isl_input ?comments ifile mipvars constr =
-  let isl_variables mipvars =
-    String.concat ", "
-      (tmap (fun mv -> "'" ^ string_of_var (var_of_mip mv) ^ "'") mipvars) in
-  let isl_set_header mipvars =
-    "{[" ^ String.concat ", "
-             (tmap (fun mv -> string_of_var (var_of_mip mv)) mipvars) ^ "]:" in
-  let isl_constraint constr =
-    String.concat " and '\\\n"
-      (tmap (fun eb -> "'" ^ isl_of_ebexp eb) constr) in
-  let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "from islpy import Space, BasicSet, DEFAULT_CONTEXT\n"
-    ^ "variables = [" ^ isl_variables mipvars ^ "]\n"
-    ^ "space = Space.create_from_names(DEFAULT_CONTEXT, set = variables)\n"
-    ^ "bset = "
-    ^ "'" ^ isl_set_header mipvars ^ "'\\\n"
-    ^ isl_constraint constr ^ "}'\n"
-    ^ "print(BasicSet(bset).is_empty())\n"
-    ^ "exit()\n" in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = Lwt_io.write ch input_text in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return_unit
-
-let run_singular header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO SINGULAR:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Singular: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SINGULAR:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_sage header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO SAGE:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Sage: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SAGE:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_magma header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO MAGMA:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Magma: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAGMA:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_mathematica header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO MATHEMATICA:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Mathematica: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MATHEMATICA:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_macaulay2 header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO MACAULAY2:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MACAULAY2:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_maple header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO MAPLE:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of Maple: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAPLE:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_ppl header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO PPLPY:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of PPLPY: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM PPLPY:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_scip header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO PYSCIPOPT:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM PYSCIPOPT:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let run_isl header ifile ofile =
-  let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!python_path ^ " -q \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
-  let t2 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = write_header_to_log header in
-  let%lwt _ = Options.WithLwt.trace "INPUT TO ISLPY:" in
-  let%lwt _ = Options.WithLwt.trace_file ifile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.trace ("Execution time of ISLPY: " ^ string_of_running_time t1 t2) in
-  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM ISLPY:" in
-  let%lwt _ = Options.WithLwt.trace_file ofile in
-  let%lwt _ = Options.WithLwt.trace "" in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  Lwt.return_unit
-
-let read_one_line ofile =
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt line =
-    try%lwt
-          Lwt_io.read_line ch
-    with _ -> failwith "Failed to read the output file" in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return (String.trim line)
-
-let read_singular_output ofile =
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt first =
-    try%lwt
-          Lwt_io.read_line ch
-    with _ -> failwith "Failed to read the output file" in
-  let%lwt line =
-    if String.sub first 0 (min 2 (String.length first)) = "//" then
+let verify_safety_mip_conditions ?comments _timeout indexed_infos _hashopt =
+  let headers = [] in
+  let mip_verifier ?comments (mipvars, constr) =
+    is_constr_feasible ~comments:(append_comments_option comments []) headers ~solver:!Options.Std.mip_safety_solver mipvars constr in
+  let mk_promise (id, info) =
+    let%lwt res =
       try%lwt
-            Lwt_io.read_line ch
-      with _ -> failwith "Failed to read the output file"
-    else
-      Lwt.return first in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return (String.trim line)
+            if%lwt mip_verifier
+                 ~comments:(append_comments_option comments [ Printf.sprintf "Safety condition: #%d" id;
+                                                              Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                              Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                              Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ])
+                 (*~timeout:timeout*) info.mip_sndcond_constrs
+            then Lwt.return (id, info, "[OK]", Solved Unsat)
+            else Lwt.return (id, info, "[FAILED]", Solved Sat)
+      with TimeoutException ->
+        Lwt.return (id, info, "[TIMEOUT]", Unfinished [(id, info)]) in
+    Lwt.return res in
+  let delivered_helper r (id, info, ret_str, ret) =
+    let _ = vprint ("\t\tSafety condition #" ^
+                      string_of_int id ^ "\t\t") in
+    let _ = vprintln ret_str in
+    let add_unsolved q res =
+      match res with
+      | Solved Unsat -> Unfinished [q]
+      | Unfinished unsolved -> Unfinished (q::unsolved)
+      | _ -> assert false in
+    match r with
+    | Solved Sat | Solved Unknown -> r
+    | _ ->
+       (match ret with
+        | Solved Sat | Solved Unknown -> ret
+        | Solved Unsat -> r
+        | Unfinished qs ->
+           let _ = assert (List.length qs = 1) in
+           add_unsolved (id, info) r) in
+  let fold_fun (res, pending) (id, info) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (finish_pending delivered_helper res pending, [])
+    | _ ->
+       if List.length pending < !jobs then
+         let promise = mk_promise (id, info) in
+         (res, promise::pending)
+       else
+         let (res', pending') =
+           work_on_pending delivered_helper res pending in
+         let promise = mk_promise (id, info) in
+         (res', promise::pending') in
+  let (res, pending) = List.fold_left fold_fun (Solved Unsat, []) indexed_infos in
+  finish_pending delivered_helper res pending
 
-let read_sage_output ofile =
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt lines =
-    try%lwt
-      Lwt.return (Lwt_io.read_lines ch)
-    with _ -> failwith "Failed to read the output file" in
-  let%lwt lines = Lwt_stream.to_list lines in
-  let%lwt _ = Lwt_io.close ch in
-  if List.mem "AssertionError" lines then Lwt.return "false"
-  else if List.length lines = 0 then Lwt.return "true"
-  else failwith "Unknown error in Sage"
-
-let read_magma_output = read_one_line
-
-let read_mathematica_output = read_one_line
-
-let read_macaulay2_output = read_one_line
-
-let read_maple_output = read_one_line
-
-let read_ppl_output = read_one_line
-
-let read_scip_output ofile =
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt lines =
-    try%lwt
-      Lwt.return (Lwt_io.read_lines ch)
-    with _ -> failwith "Failed to read the output file" in
-  let%lwt lines = Lwt_stream.to_list lines in
-  let%lwt _ = Lwt_io.close ch in
-  Lwt.return (lines |> List.rev |> List.hd)
-
-let read_isl_output = read_one_line
-
-(**
-   [is_in_ideal header vars ideal p] returns [true] if the polynomial [p] is in
-   the ideal generated by [ideal].
-   @param ?solver the computer algebra system to be used
-   @param header a header to be outputted to the log file
-   @param vars a list of variables in some order
-   @param ideal the generator of an ideal
-   @param p a polynomial
-*)
-let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Options.Std.algebra_solver)) header vars ideal p =
-  let ideal = if expand then tmap expand_eexp ideal else ideal in
-  let p = if expand then expand_eexp p else p in
-  let ifile = tmpfile "inputfgb_" "" in
-  let ofile = tmpfile "outputfgb_" "" in
-  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
-  let res =
-    match solver with
-    | Singular ->
-       let%lwt _ = write_singular_input ~comments ifile vars ideal p in
-       let%lwt _ = run_singular header ifile ofile in
-       let%lwt res = read_singular_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "0")
-    | Sage ->
-       (* The input file to Sage must have file extension ".sage". *)
-       let ifile = ifile ^ ".sage" in
-       let%lwt _ = write_sage_input ~comments ifile vars ideal p in
-       let%lwt _ = run_sage header ifile ofile in
-       let%lwt res = read_sage_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "true")
-    | Magma ->
-       let%lwt _ = write_magma_input ~comments ifile vars ideal p in
-       let%lwt _ = run_magma header ifile ofile in
-       let%lwt res = read_magma_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "true")
-    | Mathematica ->
-       let%lwt _ = write_mathematica_input ~comments ifile vars ideal p in
-       let%lwt _ = run_mathematica header ifile ofile in
-       let%lwt res = read_mathematica_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "0")
-    | Macaulay2 ->
-       let%lwt _ = write_macaulay2_input ~comments ifile vars ideal p in
-       let%lwt _ = run_macaulay2 header ifile ofile in
-       let%lwt res = read_macaulay2_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "0")
-    | Maple ->
-       let%lwt _ = write_maple_input ~comments ifile vars ideal p in
-       let%lwt _ = run_maple header ifile ofile in
-       let%lwt res = read_maple_output ofile in
-       let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "true")
-    | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
-    | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
+(* Verify safety of a specification parallelly *)
+let verify_safety_mip_cross_cuts_lwt options ?comments vgen s _hashopt =
+  let assoc_safety_ids base i info = (base + i, info) in
+  let mip_verifier ?comments header (mipvars, constr) =
+    is_constr_feasible ~comments:(append_comments_option comments []) header ~solver:!Options.Std.mip_safety_solver mipvars constr in
+  let continue_helper ((res, _), _) = res in
+  let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, info, res_str, timedout, safe) =
+    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout * 2, header, id, info)::rtimedouts else rtimedouts) in
+  let make_promise (cid, timeout, header, id, info) () =
+    let%lwt res =
+      try%lwt
+            if%lwt mip_verifier
+                    ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                                 Printf.sprintf "Cut: #%d" cid;
+                                                                 Printf.sprintf "Safety condition: #%d" id;
+                                                                 Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                                 Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                                 Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ])
+                    (*~timeout*) header info.mip_sndcond_constrs
+            then Lwt.return (cid, timeout, header, id, info, "[OK]", false, true)
+            else Lwt.return (cid, timeout, header, id, info, "[FAILED]", false, false)
+      with TimeoutException ->
+        Lwt.return (cid, timeout, header, id, info, "[TIMEOUT]", true, true) in
+    Lwt.return res in
+  let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
+    let verify_cut_helper promises_rev (id, info) =
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids id
+      then let promise = make_promise (cid, !incremental_safety_timeout, header, id, info) in
+           promise::promises_rev
+      else promises_rev in
+    if res
+    then let (_, infos) = Mip.safety_conditions_of_program vgen s.espre s.esprog in
+         let indexed_infos = List.mapi (assoc_safety_ids sid) infos in
+         let next_sid = sid + List.length infos in
+         let promises_rev = List.fold_left verify_cut_helper [] indexed_infos in
+         let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length indexed_infos) sid (next_sid - 1))
+                 else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length indexed_infos)) in
+         add_to_pending continue_helper delivered_helper ((res, next_sid), timedouts) pending (List.rev promises_rev)
+    else (((res, sid), timedouts), pending)
   in
+  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_lwt_unfinished options.st_verify_scuts verify_cut ((true, 0), []) [] (cut_esafety (espec_of_spec s)) in
+  let (res, _) = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) ((res, sid), List.rev timedouts_rev) pending in
   res
+
+
+
+(** Verification of Assertions and Specifications *)
 
 (**
    [verify_rspec_single_conjunct header s hashopt] verifies the range
@@ -994,35 +1142,6 @@ let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
              Lwt_list.for_all_p (verify_one_mipvars_constr vgen) mipvars_constrs in
   res
 
-let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
-      mipvars constr =
-  let ifile = tmpfile "inputfmip_" "" in
-  let ofile = tmpfile "outputfmip_" "" in
-  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
-  match solver with
-  | PPL ->
-     let ifile = ifile ^ ".py" in
-     let%lwt _ = write_ppl_input ~comments ifile mipvars constr in
-     let%lwt _ = run_ppl headers ifile ofile in
-     let%lwt res = read_ppl_output ofile in
-     let%lwt _ = cleanup_lwt [ifile; ofile] in
-     Lwt.return (res = "False")
-  | SCIP ->
-     let ifile = ifile ^ ".py" in
-     let%lwt _ = write_scip_input ~comments ifile mipvars constr in
-     let%lwt _ = run_scip headers ifile ofile in
-     let%lwt res = read_scip_output ofile in
-     let%lwt _ = cleanup_lwt [ifile; ofile] in
-     Lwt.return (res = "infeasible")
-  | ISL ->
-     let ifile = ifile ^ ".py" in
-     let%lwt _ = write_isl_input ~comments ifile mipvars constr in
-     let%lwt _ = run_isl headers ifile ofile in
-     let%lwt res = read_isl_output ofile in
-     let%lwt _ = cleanup_lwt [ifile; ofile] in
-     Lwt.return (res = "True")
-  | _ -> failwith "Algebraic range condition needs MIP solver."
-
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_mip ?comments headers vgen s =
   let (_, mipvars_constrs) = mip_of_espec vgen s in
@@ -1173,6 +1292,10 @@ let verify_espec options vgen s hashopt =
                   headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_ecuts verify (&&) true [] (cut_espec s)
+
+
+
+(** CLI Verification Functions *)
 
 type cli_round_result =
   Solved of result
@@ -1437,14 +1560,10 @@ let run_cli_vespec ?comments header s =
                            "-c vespec";
                            if !debug then "-debug" else "";
                            ("-qfbv_solver " ^ !Options.Std.range_solver);
-                           (if !Options.Std.range_solver_args = "" then ""
-                            else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
-                           (if !Options.Std.use_btor then "-btor"
-                            else "");
-                           (if !Options.Std.incremental_safety then "-isafety"
-                            else "");
-                           (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int !Options.Std.incremental_safety_timeout
-                            else "");
+                           (if !Options.Std.range_solver_args = "" then "" else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
+                           (if !Options.Std.use_btor then "-btor" else "");
+                           (if !Options.Std.incremental_safety then "-isafety" else "");
+                           (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int !Options.Std.incremental_safety_timeout else "");
                            (match !Options.Std.algebra_solver with
                             | Options.Std.Singular -> "-singular " ^ !Options.Std.singular_path
                             | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
@@ -1455,25 +1574,18 @@ let run_cli_vespec ?comments header s =
                             | _ -> "");
                            (if !Options.Std.algebra_solver_args = "" then ""
                             else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");
-                           (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov"
-                            else "");
-                           (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc"
-                            else "");
-                           (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly"
-                            else "");
+                           (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov" else "");
+                           (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc" else "");
+                           (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly" else "");
                            (if !Options.Std.carry_constraint then ""
                             else "-no_carry_constraint");
                            "-vo " ^ string_of_variable_ordering !Options.Std.variable_ordering;
-                           (if !Options.Std.polys_rewrite_replace_eexp then "-re"
-                            else "");
-                           (if !Options.Std.apply_slicing then "-slicing"
-                            else "");
-                           (if !Options.Std.rename_local then "-rename_local"
-                            else "");
-                           (if !Options.Std.two_phase_rewriting then "-two_phase_rewriting"
-                            else "");
-                           (if !Options.Std.track_split then "-track-split"
-                            else "");
+                           (if !Options.Std.polys_rewrite_replace_eexp then "-re" else "");
+                           (if !Options.Std.apply_slicing then "-slicing" else "");
+                           (if !Options.Std.rename_local then "-rename_local" else "");
+                           (if !Options.Std.two_phase_rewriting then "-two_phase_rewriting" else "");
+                           (if !Options.Std.track_split then "-track-split" else "");
+                           (if !Options.Std.apply_rewrite_eqmod then "-enable_rewriting:eqmod" else "");
                            "-o \"" ^ lfile ^ "\"";
                            "\"" ^ ifile ^ "\"";
                            "1> \"" ^ ofile ^ "\" 2>&1"
@@ -1702,8 +1814,98 @@ let verify_safety_cli options ?comments s hashopt =
   else verify_safety_all_cli options ?comments s hashopt
 
 
+let get_filtered_indexed_sndconds options vgen sid f p =
+  let assoc_safety_ids base i sndcond = (base + i, sndcond) in
+  let assoc_program_prefix sndconds =
+    let rec helper res_rev rev_p p sndconds =
+      match p, sndconds with
+      | _, [] -> List.rev res_rev
+      | [], (i, _)::_ -> failwith (Printf.sprintf "Failed to find the program prefix of instruction: %s" (string_of_instr i))
+      | i'::p', (i, sndcond)::sndconds' ->
+         if i = i'
+                  (* Note that an instruction in sndconds may appear more than once *)
+         then helper ((i, f, List.rev rev_p, sndcond)::res_rev) rev_p p sndconds'
+         else helper res_rev (i'::rev_p) p' sndconds in
+    helper [] [] p sndconds in
+  let in_verify_safety_ids (id, _) = Options.Std.mem_hashset_opt options.st_verify_safety_ids id in
+  let (vgen, sndconds_rev) =
+    List.fold_left
+      (fun (vgen, res_rev) i -> let (vgen, conds) = Mip.safety_conditions_of_instr vgen i in
+                                (vgen, (List.rev_map (fun cond -> (i, cond)) conds |> List.rev)::res_rev)
+      ) (vgen, []) p in
+  let sndconds = List.rev sndconds_rev |> tflatten in
+  let indexed_sndconds = assoc_program_prefix sndconds |> List.mapi (assoc_safety_ids sid) |> List.filter in_verify_safety_ids in
+  (vgen, sid + List.length sndconds, indexed_sndconds)
+
+(* the input specification contains no cut *)
+(* todo: support timeout *)
+let verify_safety_mip_conditions_cli options ?comments vgen sid s =
+  let delivered_helper r (id, safe, ret_str) =
+    let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
+    let _ = vprintln ret_str in
+    match r with
+    | Solved Sat | Solved Unknown -> r
+    | _ ->
+       if not safe then Solved Sat
+       else r in
+  let rec verify_round (res, pending) indexed_sndconds =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (res, pending)
+    | _ ->
+       if List.length pending < !jobs then
+         match indexed_sndconds with
+         | [] -> (res, pending)
+         | (id, (_i, f, p, sndcond))::tl ->
+            let espec_for_safety = { espre = f; esprog = p; espost = [(sndcond, [AlgebraSolver !Options.Std.mip_safety_solver])] } in
+            let promise =
+              let%lwt res = run_cli_vespec ?comments "" espec_for_safety in
+              Lwt.return (id, res, if res then "[OK]" else "[FAILED]") in
+            verify_round (res, promise::pending) tl
+       else
+         let (res', pending') = work_on_pending delivered_helper res pending in
+         verify_round (res', pending') indexed_sndconds in
+  let rec verify_rec (res, pending) indexed_sndconds =
+    let (res', pending') = verify_round (res, pending) indexed_sndconds in
+    match res', pending' with
+    | Solved r, [] -> (if r = Unsat then true else false)
+    | Unfinished _, _ -> assert false
+    | _ -> let (res'', pending'') = work_on_pending delivered_helper res' pending' in
+           verify_rec (res'', pending'') [] in
+  let (_, next_sid, indexed_sndconds) = get_filtered_indexed_sndconds options vgen sid s.espre s.esprog in
+  let res = verify_rec (Solved Unsat, []) indexed_sndconds in
+  (res, next_sid)
+
+let verify_safety_mip_cross_cuts_cli options ?comments vgen s =
+  let continue_helper (res, _) = res in
+  let delivered_helper (rsafe, rsid) (cid, id, safe, ret_str) =
+    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d\t\t%s" cid id ret_str) in
+    (rsafe && safe, rsid) in
+  let make_promise (cid, id, f, p, sndcond) () =
+    let espec_for_safety = { espre = f; esprog = p; espost = [(sndcond, [AlgebraSolver !Options.Std.mip_safety_solver])] } in
+    let promise =
+      let%lwt res = run_cli_vespec ?comments "" espec_for_safety in
+      Lwt.return (cid, id, res, if res then "[OK]" else "[FAILED]") in
+    promise in
+  let verify_cut cid _header ((res, sid), pending) (_, s) =
+    if res then
+      let (_, next_sid, indexed_sndconds) = get_filtered_indexed_sndconds options vgen sid s.espre s.esprog in
+      let promises_rev = List.fold_left (
+                             fun promises_rev (id, (_, f, p, sndcond)) ->
+                             let promise = make_promise (cid, id, f, p, sndcond) in
+                             promise::promises_rev
+                           ) [] indexed_sndconds in
+      let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length indexed_sndconds) sid (next_sid - 1))
+              else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length indexed_sndconds)) in
+      add_to_pending continue_helper delivered_helper (res, next_sid) pending (List.rev promises_rev)
+    else ((res, sid), pending) in
+  let ((res, _), pending) = apply_to_cuts_lwt_unfinished options.st_verify_scuts verify_cut (true, 0) [] (cut_esafety (espec_of_spec s)) in
+  let res = finish_pending_with_timedouts continue_helper delivered_helper (tmap make_promise) (res, []) pending in
+  res
 
 
+
+(** Testers for Abstract Interpretation *)
 
 let test_absdom_lwt options ?(safe=true) s =
   let test_var cid mgr dom s v =

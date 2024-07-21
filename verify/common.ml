@@ -7,7 +7,7 @@ open Utils.Std
 
 type var_gen = Cas.var_gen
 
-type round_result = Smt.round_result
+type 'a round_result = 'a Smt.round_result
 
 type poly_spec = Cas.poly_spec
 

@@ -217,9 +217,6 @@ val emuls : eexp list -> eexp
 val emuls' : eexp list -> eexp
 (** [emuls'] is the same as [emuls] except that [emul] is replaced with [emul']. *)
 
-val e2pow : int -> Z.t
-(** [e2pow n] is the constant 2{^n}. *)
-
 val len_eexp : eexp -> int
 (** [len_eexp e] is the length of [e] *)
 
@@ -1040,6 +1037,42 @@ val range_solver_of_prove_with : prove_with_spec list -> string
 val new_name : ?prefix:string -> SS.t -> string
 (** [new_name ~prefix:s ss] suggests a new name that does not appear in [ss]. The returned name has a prefix [s]. *)
 
+val e2pow : int -> Z.t
+(** [e2pow n] is the constant 2{^n}. *)
+
+val ezero : eexp
+(** the eexp 0 *)
+
+val eone : eexp
+(** the eexp 1 *)
+
+val etwo : eexp
+(** the eexp 2 *)
+
+val epow2e : eexp -> eexp
+(** [epow2e n] is the eexp 2**n *)
+
+val epow2z : Z.t -> eexp
+(** [epow2z n] is the eexp 2**n *)
+
+val epow2i : int -> eexp
+(** [epow2i n] is the eexp 2**n *)
+
+val epow2a : atom -> eexp
+(** [epow2a n] is the eexp 2**n *)
+
+val emulpow2e : eexp -> eexp -> eexp
+(** [emulpow2e e n] is the eexp e*(2**n) *)
+
+val emulpow2z : eexp -> Z.t -> eexp
+(** [emulpow2z e n] is the eexp e*(2**n) *)
+
+val emulpow2i : eexp -> int -> eexp
+(** [emulpow2i e n] is the eexp e*(2**n) *)
+
+val emulpow2a : eexp -> atom -> eexp
+(** [emulpow2a e n] is the eexp e*(2**n) *)
+
 
 (** Specifications *)
 
@@ -1498,6 +1531,9 @@ val cut_rassert : rspec -> ((int * rspec) list) list
    postconditions are the range assertions in the [K]-th range cut.
    The integer associated to a returned specification is its ID.
  *)
+
+val cut_esafety : espec -> ((int * espec) list) list
+(** Cut a specification for the verification of safety conditions using algebraic techniques. *)
 
 val cut_safety : rspec -> ((int * rspec) list) list
 (**

@@ -229,6 +229,10 @@ ebexp_atom:
   | eexp EQOP eexp eq_suffix                      { match $4 with
                                                     | None -> Eeq ($1, $3)
                                                     | Some ms -> Eeqmod ($1, $3, ms) }
+  | eexp ULTOP eexp                               { elt $1 $3 }
+  | eexp ULEOP eexp                               { ele $1 $3 }
+  | eexp UGTOP eexp                               { egt $1 $3 }
+  | eexp UGEOP eexp                               { ege $1 $3 }
   | AND LSQUARE ebexps RSQUARE                    { eands $3 }
   | LANDOP LSQUARE ebexps RSQUARE                 { eands $3 }
 ;
@@ -241,6 +245,10 @@ ebexp_atom_without_eqmod:
                                                   { Eand ($2, $3) }
   | LPAR ebexp RPAR                               { $2 }
   | eexp EQOP eexp                                { Eeq ($1, $3) }
+  | eexp ULTOP eexp                               { elt $1 $3 }
+  | eexp ULEOP eexp                               { ele $1 $3 }
+  | eexp UGTOP eexp                               { egt $1 $3 }
+  | eexp UGEOP eexp                               { ege $1 $3 }
   | AND LSQUARE ebexps RSQUARE                    { eands $3 }
   | LANDOP LSQUARE ebexps RSQUARE                 { eands $3 }
 ;

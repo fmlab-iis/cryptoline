@@ -10,7 +10,7 @@ val verify_safety_conditions :
   int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
-  Common.round_result
+  (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
 (** [verify_safety_conditions ?comments t f p [(id1; instr1; e1); ...; (idn; instrn; en)] o]
     parallelly verifies the safety conditions [e1; ...; en] of the program [p]
     under the precondition [f]. [t] is the timeout. [comments] are comments
@@ -20,6 +20,21 @@ val verify_safety_conditions :
 val verify_safety_lwt :
   Options.Std.st_options ->
   ?comments:(string list) -> Ast.Cryptoline.spec ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
+(** Verify safety conditions of a specification. *)
+
+val verify_safety_mip_conditions :
+  ?comments:(string list) ->
+  int ->
+  (int * Mip.mip_safety_condition_info) list ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
+  (int * Mip.mip_safety_condition_info) Common.round_result
+
+val verify_safety_mip_cross_cuts_lwt :
+  Options.Std.st_options ->
+  ?comments:(string list) ->
+  Cas.var_gen ->
+  Ast.Cryptoline.spec ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** Verify safety conditions of a specification. *)
 
@@ -95,3 +110,10 @@ val verify_rassert_cli : Options.Std.st_options -> Ast.Cryptoline.spec -> bool
 (** [verify_rassert_cli s] parallelly verifies all range assertions of the
     specification [s] in SSA. {!Options.Std.verify_racuts} is considered in this
     function. *)
+
+val verify_safety_mip_conditions_cli :
+  Options.Std.st_options -> ?comments:(string list) -> Cas.var_gen -> int -> Ast.Cryptoline.espec -> bool * int
+
+val verify_safety_mip_cross_cuts_cli :
+  Options.Std.st_options -> ?comments:(string list) -> Cas.var_gen -> Ast.Cryptoline.spec -> bool
+

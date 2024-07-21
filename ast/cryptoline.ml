@@ -334,8 +334,6 @@ let emuls' es =
               | LeftAssoc -> List.fold_left (fun res e -> emul' res e) e es
               | RightAssoc -> List.fold_left (fun res e -> emul' e res) e es)
 
-let e2pow n = Z.pow z_two n
-
 let rec len_eexp e =
   match e with
   | Evar _ -> 1
@@ -1045,6 +1043,16 @@ let cmp_atom a1 a2 =
      if c = 0 then Z.compare n1 n2
      else c
 
+let eexp_of_atom a =
+  match a with
+  | Avar v -> Evar v
+  | Aconst (_, n) -> Econst n
+
+let rexp_of_atom a =
+  match a with
+  | Avar v -> Rvar v
+  | Aconst (ty, n) -> Rconst (size_of_typ ty, n)
+
 (* Return the algebra solver specified in the prove-with clauses. If
    no algebra solver is specified, return [!Options.Std.algebra_solver]. *)
 let rec algebra_solver_of_prove_with pwss =
@@ -1109,6 +1117,20 @@ let new_name ?prefix:prefix names =
       done in
     !name
   else prefix
+
+let e2pow n = Z.pow z_two n
+
+let ezero = econst Z.zero
+let eone = econst Z.one
+let etwo = econst z_two
+let epow2e e = epow etwo e
+let epow2z z = epow2e (econst z)
+let epow2i i = epow2z (Z.of_int i)
+let epow2a a = epow2e (eexp_of_atom a)
+let emulpow2e e n = emul e (epow2e n)
+let emulpow2z e n = emul e (epow2z n)
+let emulpow2i e n = emul e (epow2i n)
+let emulpow2a e n = emul e (epow2a n)
 
 
 (** Specifications *)
@@ -2716,6 +2738,32 @@ let cut_rassert rs =
   helper ([], []) (rs.rspre, [], [], []) (rs.rspre, [], rs.rsprog) |> List.rev |> numbering
  *)
 
+(** Cut a specification for the verification of safety conditions using algebraic techniques. *)
+let cut_esafety es =
+  evisit_with_pwss
+    []
+    (fun res (precond, before_rev, cuts_rev) (pre, visited_rev, g) ->
+       let visited = List.rev visited_rev in
+       let before = List.rev before_rev in
+       let (e, pwss) = merge_ebexp_prove_with g in
+       let specs = [espec_of_ebexp_prove_with ~clear_pwss:true (precond, before, cuts_rev) (pre, visited) (e, pwss)] in
+       specs::res
+    )
+    (fun i res (precond, before_rev, cuts_rev) (pre, visited_rev, _) ->
+      match i with
+      | Icut (ecuts, _) ->
+         (* merge prove-with clauses *)
+         (* TODO: add prove-with clauses specific to safety conditions *)
+         let (e, pwss) = merge_ebexp_prove_with ecuts in
+         let cut_as_specs =
+           let visited = List.rev visited_rev in
+           let before = List.rev before_rev in
+           [espec_of_ebexp_prove_with ~clear_pwss:true (precond, before, cuts_rev) (pre, visited) (e, pwss)] in
+         (cut_as_specs::res)
+      | _ -> res
+    )
+    es.espre es.esprog es.espost
+
 (** Cut a specification for the verification of safety conditions. *)
 let cut_safety rs =
   rvisit_with_pwss
@@ -2766,16 +2814,6 @@ let cut_safety rs =
  *)
 
 (** Substitution *)
-
-let eexp_of_atom a =
-  match a with
-  | Avar v -> Evar v
-  | Aconst (_, n) -> Econst n
-
-let rexp_of_atom a =
-  match a with
-  | Avar v -> Rvar v
-  | Aconst (ty, n) -> Rconst (size_of_typ ty, n)
 
 let rec amap_find_transitive v am =
   if VM.mem v am then match VM.find v am with
