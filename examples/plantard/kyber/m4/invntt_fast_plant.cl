@@ -23833,6 +23833,7 @@ cut Q = 3329 /\ NQ = -3329 /\ Q2 = 1665 /\ NQ2 = -1665 /\
 
 
 {
+   (* NOTE: -1353 == 1976 == -2**32 (mod 3329) *)
    eqmod (poly X [L0xbefff1c4,L0xbefff1c6,L0xbefff1c8,L0xbefff1ca,L0xbefff1cc,
                   L0xbefff1ce,L0xbefff1d0,L0xbefff1d2,L0xbefff1d4,L0xbefff1d6,
                   L0xbefff1d8,L0xbefff1da,L0xbefff1dc,L0xbefff1de,L0xbefff1e0,
