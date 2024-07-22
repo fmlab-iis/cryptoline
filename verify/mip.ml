@@ -51,15 +51,16 @@ let is_linear_ebexp b =
      List.for_all is_const_eexp ms && is_linear_eexp e0 && is_linear_eexp e1
   | Eand _ -> failwith "Internal error: conjunctive algebraic Boolean expressions are not allowed in is_linear_ebexp"
 
-let slicing_constr vars constr =
+let slicing_constr constr =
   let rev_var_constr = List.rev_map (fun e -> (vars_ebexp e, e)) constr in
+  let start_vars = fst (List.hd rev_var_constr) in
   let (constr_vars, relevant_vars, ret) =
     let helper (cvars, rvars, ret) (vs, e) =
       let cvars' = VS.union cvars vs in
       if VS.is_empty (VS.inter rvars vs)
       then (cvars', rvars, ret)
       else (cvars', VS.union rvars vs, e::ret) in
-    List.fold_left helper (VS.empty, vars, []) rev_var_constr in
+    List.fold_left helper (VS.empty, start_vars, []) rev_var_constr in
   (* make sure all relevant_vars are from constr_vars *)
   let relevant_vars' = VS.inter constr_vars relevant_vars in
   (relevant_vars', ret)
@@ -457,8 +458,7 @@ let of_espec vgen es =
     convert_post vgen'' rev_constr post ivars' in
   let constrs' = tmap Rewrite.rewrite_ebexps constrs in
   let linear_constrs = tmap (tfilter is_linear_ebexp) constrs' in
-  let rel_vars_linear_constrs =
-    tmap (slicing_constr (vars_ebexp post)) linear_constrs in
+  let rel_vars_linear_constrs = tmap slicing_constr linear_constrs in
   let vars_linear_constrs =
     let ivar_set = VS.of_list ivars'' in
     tmap (fun (vars, constr) ->
