@@ -59,10 +59,10 @@
 #push   %r15                                     #! EA = L0x7fffffffdc18; PC = 0x55555557d4d3
 #cmp    $0x80100,%ecx                            #! PC = 0x55555557d4d5
 #je     0x55555557d500 <ecp_nistz256_sqr_mont+64>#! PC = 0x55555557d4db
-#mov    (%rsi),%rdx                              #! EA = L0x7fffffffdc50; Value = 0x0000000000000000; PC = 0x55555557d500
-#mov    0x8(%rsi),%r14                           #! EA = L0x7fffffffdc58; Value = 0x0000005000000019; PC = 0x55555557d503
-#mov    0x10(%rsi),%r15                          #! EA = L0x7fffffffdc60; Value = 0x0000001000000000; PC = 0x55555557d507
-#mov    0x18(%rsi),%r8                           #! EA = L0x7fffffffdc68; Value = 0x0000000000000000; PC = 0x55555557d50b
+mov    (%rsi),%rdx                              #! EA = L0x7fffffffdc50; Value = 0x0000000000000000; PC = 0x55555557d500
+mov    0x8(%rsi),%r14                           #! EA = L0x7fffffffdc58; Value = 0x0000005000000019; PC = 0x55555557d503
+mov    0x10(%rsi),%r15                          #! EA = L0x7fffffffdc60; Value = 0x0000001000000000; PC = 0x55555557d507
+mov    0x18(%rsi),%r8                           #! EA = L0x7fffffffdc68; Value = 0x0000000000000000; PC = 0x55555557d50b
 #lea    -0x80(%rsi),%rsi                         #! PC = 0x55555557d50f
 #call   0x55555557d960 <__ecp_nistz256_sqr_montx>#! PC = 0x55555557d513
 #! -> SP = 0x7fffffffdc10
@@ -100,14 +100,14 @@ mov    0x90(%rsi),%rdx                          #! EA = L0x7fffffffdc60; Value =
 adcx   %r13,%r13                                #! PC = 0x55555557d9fb
 adox   %rcx,%r10                                #! PC = 0x55555557da01
 adcx   %r14,%r14                                #! PC = 0x55555557da07
-addr32 mulx %rdx,%rcx,%rbp                      #! PC = 0x55555557da0d
+mulx %rdx,%rcx,%rbp                             #! PC = 0x55555557da0d
 mov    0x98(%rsi),%rdx                          #! EA = L0x7fffffffdc68; Value = 0x0000000000000000; PC = 0x55555557da13
 adox   %rax,%r11                                #! PC = 0x55555557da1a
 adcx   %r15,%r15                                #! PC = 0x55555557da20
 adox   %rcx,%r12                                #! PC = 0x55555557da26
 mov    $0x20,%rsi                               #! PC = 0x55555557da2c
 adox   %rbp,%r13                                #! PC = 0x55555557da33
-addr32 addr32 mulx %rdx,%rcx,%rax               #! PC = 0x55555557da39
+mulx %rdx,%rcx,%rax               #! PC = 0x55555557da39
 mov    -0x1a2f(%rip),%rdx        # 0x55555557c018#! EA = L0x55555557c018; Value = 0xffffffff00000001; PC = 0x55555557da40
 adox   %rcx,%r14                                #! PC = 0x55555557da47
 shlx   %rsi,%r8,%rcx                            #! PC = 0x55555557da4d
