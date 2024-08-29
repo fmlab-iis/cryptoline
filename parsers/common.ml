@@ -164,13 +164,53 @@ let vars_of_vec vecname (vtyp, vnum) =
   List.map (fun i -> mkvar (vec_name_fn vecname i) vtyp) (List.init vnum Fun.id)
 
 
+(* ---------- Mix scalar variables and vector variables ---------- *)
+
+type type_kind =
+  | ScalarType of typ
+  | VectorType of vectyp
+
+type var_kind =
+  | ScalarVar of var
+  | VectorVar of vecvar
+
+let name_of_var_kind vk =
+  match vk with
+  | ScalarVar v -> v.vname
+  | VectorVar (vn, _) -> vn
+
+let type_of_var_kind vk =
+  match vk with
+  | ScalarVar v -> ScalarType (typ_of_var v)
+  | VectorVar (_, vt) -> VectorType vt
+
+(* Expand vector variables to scalar variables *)
+let scalar_vars_of_var_kind vk =
+  match vk with
+  | ScalarVar v -> [v]
+  | VectorVar (vn, vt) -> vars_of_vec vn vt
+
+let scalar_vars_of_var_kinds vks =
+  List.fold_left (fun res vk -> List.rev_append (scalar_vars_of_var_kind vk) res) [] vks |> List.rev
+
+let scalar_types_of_var_kind vk =
+  match vk with
+  | ScalarVar v -> [typ_of_var v]
+  | VectorVar (_, (vt, num)) -> List.init num (fun _ -> vt)
+
+let scalar_types_of_var_kinds vks =
+  List.fold_left (fun res vk -> List.rev_append (scalar_types_of_var_kind vk) res) [] vks |> List.rev
+
+
 (* ---------- Functions ---------- *)
 
 type func =
   {
     fname : string;
-    fargs : var list;
-    fouts : var list;
+    farg_kinds : var_kind list; (* formal input variables (vector variables are not expanded) *)
+    fout_kinds : var_kind list; (* formal in-out variables (vector variables are not expanded) *)
+    fargs : var list;           (* formal input variables (vector variables are expanded) *)
+    fouts : var list;           (* formal in-out variables (vector variables are expanded) *)
     fvm : var SM.t;             (* a map from a name to a variable (including carry variables) *)
     fym : var SM.t;             (* a map from a name to a carry variable *)
     fgm : var SM.t;             (* a map from a name to a ghost variable *)
@@ -178,6 +218,7 @@ type func =
     fpre : tagged_bexp;
     fpost : tagged_bexp_prove_with
   }
+(* a parsed function where vector variables are expaneded *)
 
 
 (* ---------- Parsing Context ---------- *)
@@ -512,8 +553,8 @@ type instr_t =
   | `TECUT of (tagged_ebexp_prove_with contextual)
   | `TRCUT of (tagged_rbexp_prove_with contextual)
   | `TGHOST of ((var list * vecvar list) contextual) * (tagged_bexp contextual)
-  | `CALL of string * ((typ list * typ list -> atom list) contextual)
-  | `INLINE of string * ((typ list * typ list -> atom list) contextual)
+  | `CALL of string * ((type_kind list * type_kind list -> atom list) contextual)
+  | `INLINE of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `NOP
   ]
 
@@ -729,6 +770,54 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
        match select_typ typs with
        | None -> raise_at_line lno (Printf.sprintf "Cannot determine the type of vector elements in vector concatenation.")
        | Some t -> (t, List.flatten atomss)
+
+
+let resolve_output_var_with ctx lno ty (`AVAR {atmtyphint; atmname}) =
+  let _ =
+    match atmtyphint with
+    | None -> ()
+    | Some ty_hint ->
+       if ty_hint <> ty
+       then raise_at_line lno (Printf.sprintf "The type (%s) of variable %s does not match the required type %s." (string_of_typ ty_hint) atmname (string_of_typ ty))
+       else () in
+  let v = mkvar atmname ty in
+  let _ =
+    if ctx_ghost_is_defined ctx v then
+      raise_at_line lno (Printf.sprintf "The name %s used as a ghost variable cannot be used as an actual output parameter." v.vname) in
+  v
+
+let rec resolve_output_atom_with ctx lno ty (a: atom_t) =
+  match a with
+  | `ACONST _ -> raise_at_line lno ("A constant cannot be used as an output.")
+  | `AVAR v -> Avar (resolve_output_var_with ctx lno ty (`AVAR v))
+  | `AVECELM _ -> raise_at_line lno ("A vector element cannot be used as an output.")
+  and
+    resolve_output_vec_with ctx lno ty src_tok : atom list =
+    match src_tok with
+    | `AVECT {vecname; vectyphint} ->
+       let _ =
+         match vectyphint with
+         | None -> ()
+         | Some ty_hint ->
+            if ty_hint <> ty
+            then raise_at_line lno (Printf.sprintf "The vector atom type %s does not match the expected type %s." (string_of_vectyp ty_hint) (string_of_vectyp ty))
+            else () in
+       let (rtyphint, rlen) = ty in
+       let gen_avar i = `AVAR {atmname=(vec_name_fn vecname i); atmtyphint=Some rtyphint} in
+       let rvs = List.map gen_avar (0 -- (rlen-1)) in
+       tmap (resolve_output_atom_with ctx lno rtyphint) rvs
+    | `AVLIT rvs ->
+       (match rvs with
+        | [] -> raise_at_line lno "A vector literal cannot be empty."
+        | _ ->
+           let (atom_t, vec_size) = ty in
+           let _ = if vec_size <> List.length rvs then raise_at_line lno
+                                                         (Printf.sprintf ("The size (%d) of vector literals does not match the required size (%d).")
+                                                            (List.length rvs) vec_size) in
+           tmap (resolve_output_atom_with ctx lno atom_t) rvs)
+    | `AVECSEL _ -> raise_at_line lno ("A selection of vector elements cannot be used as an output.")
+    | `AVECCAT _ -> raise_at_line lno ("A vector concatenation cannot be used as an output.")
+
 
 let parse_imov_at ctx lno dest src =
   let a = resolve_atom_with ctx lno src in
@@ -1514,7 +1603,7 @@ let parse_call_at ctx lno fname_token actuals_token =
       raise_at_line lno ("Call an undefined function '" ^ fname ^ "'.") in
   (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
   (* What are checked in parsing actual parameters: length, type, non-ghost *)
-  let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
+  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
   let formals = f.fargs@f.fouts in
   let _ =
     (* The length and type are checked in parsing actual parameters. *)
@@ -1606,7 +1695,7 @@ let parse_inline_at ctx lno fname_token actuals_token =
     with Not_found ->
       raise_at_line lno ("Inline an undefined function '" ^ fname ^ "'.") in
   (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-  let actuals = actuals_token ctx (List.map typ_of_var f.fargs, List.map typ_of_var f.fouts) in
+  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
   (* Rename local variables *)
   let (fbody, fargs, fouts, fvs, fys, fgs) =
     if !Options.Std.rename_local then
@@ -3079,41 +3168,52 @@ let parse_actuals_ins_outs lno ins_tok outs_tok =
     | _, _ -> () in
   List.rev_append (List.rev ias) oas
 
-let parse_actual_atom_const_exp lno cexp_tok tyopt =
+let parse_actual_atom lno atom_tok =
   fun ctx tys ->
   match tys with
-  | (ty::argtys, outtys) ->
-     let _ =
-       match tyopt with
-       | None -> ()
-       | Some ty' -> if ty <> ty' then raise_at_line lno ("The specified type is not compatible to the type of the corresponding formal parameter") in
-     ((argtys, outtys), [parse_typed_const ctx lno ty cexp_tok])
-  | ([], _ty::_) -> raise_at_line lno ("The corresponding formal parameter is an output variable. "
-                                       ^ "The actual parameter must be a variable.")
-  | _ -> raise_at_line lno ("The number of actual input parameters does not match the number of formal input parameters.")
+  | (tyk::argtys, outtys) ->
+     let formal_typ =
+       match tyk with
+       | ScalarType t -> t
+       | VectorType _ -> raise_at_line lno ("An actual scalar parameter is passed while the corresponding formal parameter is a vector variable.") in
+     let atom = resolve_atom_with ctx lno ~typ:formal_typ atom_tok in
+     ((argtys, outtys), [atom])
+  | ([], tyk::outtys) ->
+     let formal_typ =
+       match tyk with
+       | ScalarType t -> t
+       | VectorType _ -> raise_at_line lno ("An actual scalar parameter is passed while the corresponding formal parameter is a vector variable.") in
+     let atom = resolve_output_atom_with ctx lno formal_typ atom_tok in
+     (([], outtys), [atom])
+  | _ -> raise_at_line lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
 
-let parse_actual_atom_var lno vname =
-  if vname = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
-  else
-    fun ctx tys ->
-    match tys with
-    | (ty::argtys, outtys) ->
-       (try
-          let v = ctx_find_var ctx vname in
-          if v.vtyp = ty then ((argtys, outtys), [Avar v])
-          else raise_at_line lno ("The variable type of "
-                                  ^ vname
-                                  ^ " is not compatible to the type of the corresponding formal parameter")
-        with Not_found ->
-          raise_at_line lno ("Failed to determine the type of " ^ vname)
-       )
-    | ([], ty::outtys) ->
-       let v = mkvar vname ty in
-       let _ =
-         if ctx_ghost_is_defined ctx v then
-           raise_at_line lno ("The name " ^ v.vname ^ " used as a ghost variable cannot be used as an actual output parameter.") in
-       (([], outtys), [Avar v])
-    | _ -> raise_at_line lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
+let parse_actual_atom_vec lno atom_v_tok =
+  fun ctx tys ->
+  match tys with
+  | (tyk::argtys, outtys) ->
+     let (atom_typ, atom_t_list) = resolve_vec_with ctx lno atom_v_tok in
+     let atoms = tmap (resolve_atom_with ctx lno ~typ:atom_typ) atom_t_list in
+     let formal_vectyp =
+       match tyk with
+       | ScalarType t ->
+          (* Match an actual vector parameter of size 1 with a scalar formal parameter *)
+          if List.length atoms = 1 then (t, 1)
+          else raise_at_line lno ("An actual vector parameter is passed while the corresponding formal parameter is a scalar variable.")
+       | VectorType t -> t in
+     let atom_vectyp = (atom_typ, List.length atoms) in
+     if formal_vectyp <> atom_vectyp
+     then raise_at_line lno (Printf.sprintf "The type (%s) of actual parameter does not match the type (%s) of the corresponding formal parameter."
+                               (string_of_vectyp atom_vectyp)
+                               (string_of_vectyp formal_vectyp))
+     else ((argtys, outtys), atoms)
+  | ([], tyk::outtys) ->
+     let formal_vectyp =
+       match tyk with
+       | ScalarType _ -> raise_at_line lno ("An actual vector parameter is passed while the corresponding formal parameter is a scalar variable.")
+       | VectorType t -> t in
+     let atoms = resolve_output_vec_with ctx lno formal_vectyp atom_v_tok in
+     (([], outtys), atoms)
+  | _ -> raise_at_line lno ("The number of (all, input, or output) actual parameters does not match the number of (all, input, or output) formal parameters.")
 
 let parse_actual_atom_var_expansion lno prefix st ed =
   fun ctx tys ->
@@ -3121,7 +3221,7 @@ let parse_actual_atom_var_expansion lno prefix st ed =
     List.fold_left (
         fun (tys, atoms_rev) i ->
         let vname = prefix ^ vars_expansion_infix ^ string_of_int i in
-        let (tys, atoms) = parse_actual_atom_var lno vname ctx tys in
+        let (tys, atoms) = parse_actual_atom lno (`AVAR { atmtyphint = None; atmname = vname }) ctx tys in
         (tys, List.rev_append atoms atoms_rev)
       ) (tys, [])
       ((Z.to_int st)--(Z.to_int ed)) in
@@ -3141,7 +3241,6 @@ let parse_var_expansion lno prefix st ed =
       then raise_at_line lno ("Variable " ^ string_of_var v ^ " is not defined.")
       else v
     ) ((Z.to_int st)--(Z.to_int ed))
-
 
 let parse_named_constant lno cname =
   fun ctx ->
@@ -3167,16 +3266,32 @@ let parse_vgvar lno vecname (vtyp, vnum) =
   else if List.exists (ctx_name_is_var ctx) (List.init vnum (vec_name_fn vecname)) then raise_at_line lno ("Some vector element in " ^ vecname ^ " has been defined.")
   else (vecname, (vtyp, vnum))
 
-let parse_fvar _lno vname vtyp = [mkvar vname vtyp]
+let parse_fvar _lno vname vtyp = [ScalarVar (mkvar vname vtyp)]
 
 let parse_fvar_expansion _lno prefix ty st ed =
-  List.rev_map (fun i -> mkvar (prefix ^ vars_expansion_infix ^ string_of_int i) ty) ((Z.to_int st)--(Z.to_int ed)) |> List.rev
+  List.rev_map (fun i -> ScalarVar (mkvar (prefix ^ vars_expansion_infix ^ string_of_int i) ty)) ((Z.to_int st)--(Z.to_int ed)) |> List.rev
 
+let parse_fvar_vec _line vname vtyp = [VectorVar (vname, vtyp)]
+
+(* Make concatenation of two lists of formal variables.
+   Check duplicates in this function.
+   Assume that there is no duplicate in each list. *)
 let parse_fvar_cons lno fvs1 fvs2 =
-  let duplicates = List.filter (fun v -> mem_var v fvs2) fvs1 in
-  if List.length duplicates > 0
-  then raise_at_line lno ("Duplicate argument: " ^ string_of_var (List.hd duplicates))
-  else List.rev_append (List.rev fvs1) fvs2
+  (* Check duplicates without expanding vector variables *)
+  let _ =
+    let names1 = List.rev_map name_of_var_kind fvs1 |> List.rev in
+    let names2 = List.rev_map name_of_var_kind fvs2 |> List.rev in
+    let duplicates = List.filter (fun v -> List.mem v names2) names1 in
+    if List.length duplicates > 0
+    then raise_at_line lno (Printf.sprintf "Duplicate argument: %s" (List.hd duplicates)) in
+  (* Check duplicates with expanding vector variables *)
+  let _ =
+    let svars1 = scalar_vars_of_var_kinds fvs1 in
+    let svars2 = scalar_vars_of_var_kinds fvs2 in
+    let duplicates = List.filter (fun v -> mem_var v svars2) svars1 in
+    if List.length duplicates > 0
+    then raise_at_line lno ("Duplicate argument: " ^ string_of_var (List.hd duplicates)) in
+  List.rev_append (List.rev fvs1) fvs2
 
 
 (* ---------- Globals Parsing ---------- *)
@@ -3189,14 +3304,22 @@ let parse_global_constant lno name n_token =
   else let _ = ctx.cconsts <- SM.add name n ctx.cconsts in
        ()
 
-let parse_proc lno fname (args, outs) pre_tok instrs post_tok =
+let parse_proc lno fname (arg_kinds, out_kinds) pre_tok instrs post_tok =
   fun ctx ->
   if SM.mem fname ctx.cfuns then raise_at_line lno ("The procedure " ^ fname ^ " is redefined.")
   else
     (* Duplicate formal parameters are detected in parsing formal parameters *)
+    let args = scalar_vars_of_var_kinds arg_kinds in
+    let outs = scalar_vars_of_var_kinds out_kinds in
     (* reset maps *)
     let _ = ctx.cvars <- vm_of_list args in
-    let _ = ctx.cvecs <- SM.empty in
+    let _ = let cvecs = List.fold_left (
+                            fun res vk ->
+                            match vk with
+                            | VectorVar (vn, vecty) -> SM.add vn vecty res
+                            | _ -> res
+                          ) SM.empty arg_kinds in
+            ctx.cvecs <- cvecs in
     let _ = ctx.ccarries <- SM.empty in
     let _ = ctx.cghosts <- SM.empty in
     let f =
@@ -3221,6 +3344,8 @@ let parse_proc lno fname (args, outs) pre_tok instrs post_tok =
                                                                               "Variables in post-conditions for procedures other than " ^ Options.Std.main_proc_name ^ " must be formal input or output variables.") in
         () in
     let _ = ctx.cfuns <- SM.add fname { fname = fname;
+                                        farg_kinds = arg_kinds;
+                                        fout_kinds = out_kinds;
                                         fargs = args;
                                         fouts = outs;
                                         fvm = ctx.cvars;

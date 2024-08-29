@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source ~/.cryptoline.rc
 FILES=(
     "examples/qhasm/fe25519_add.cl|"
     "examples/qhasm/fe25519_mul.cl|"

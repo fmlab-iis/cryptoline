@@ -108,10 +108,20 @@ fvars:
 ;
 
 fvar:
+    fvar_primary                                  { $1 }
+  | fvar_vec                                      { $1 }
+;
+
+fvar_primary:
     typ ID                                        { parse_fvar (get_line_start()) $2 $1 }
   | ID AT typ                                     { parse_fvar (get_line_start()) $1 $3 }
   | typ ID OROP NUM DOTDOT NUM                    { parse_fvar_expansion (get_line_start()) $2 $1 $4 $6 }
   | ID AT typ OROP NUM DOTDOT NUM                 { parse_fvar_expansion (get_line_start()) $1 $3 $5 $7 }
+;
+
+fvar_vec:
+    vectyp VEC_ID                                 { parse_fvar_vec (get_line_start()) $2 $1 }
+  | VEC_ID AT vectyp                              { parse_fvar_vec (get_line_start()) $1 $3 }
 ;
 
 prog:
@@ -957,11 +967,18 @@ actual_atoms:
 
 /* We don't check if the actual variables are defined or not because they may just be variable names of procedure outputs. */
 actual_atom:
-    const_exp                                     { parse_actual_atom_const_exp (get_line_start()) $1 None }
-  | const_exp_primary AT typ                      { parse_actual_atom_const_exp (get_line_start()) $1 (Some $3) }
-  | typ const_exp                                 { parse_actual_atom_const_exp (get_line_start()) $2 (Some $1) }
-  | ID                                            { parse_actual_atom_var (get_line_start()) $1 }
+    actual_atom_primary                           { $1 }
+  | atom_v                                        { parse_actual_atom_vec (get_line_start()) $1 }
+;
+
+actual_atom_primary:
+    const_exp                                     { parse_actual_atom (get_line_start()) (`ACONST { atmtyphint = None; atmvalue = $1 }) }
+  | const_exp_primary AT typ                      { parse_actual_atom (get_line_start()) (`ACONST { atmtyphint = Some $3; atmvalue = $1 }) }
+  | typ const_exp                                 { parse_actual_atom (get_line_start()) (`ACONST { atmtyphint = Some $1; atmvalue = $2 }) }
+  | ID                                            { parse_actual_atom (get_line_start()) (`AVAR { atmtyphint = None; atmname = $1 }) }
   | ID OROP NUM DOTDOT NUM                        { parse_actual_atom_var_expansion (get_line_start()) $1 $3 $5 }
+/* The following rule produces shift/reduce conflict */
+/*  | VEC_ID LSQUARE NUM RSQUARE                    { parse_actual_atom (get_line_start()) (`AVECELM { avecname = $1; avecindex = Z.to_int $3 }) } */
 ;
 
 atom:

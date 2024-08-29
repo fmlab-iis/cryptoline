@@ -138,13 +138,35 @@ val vec_name_fn : string -> int -> string
     The name of the vector [v] is expected to start with a "%". *)
 
 
+(* ---------- Mix scalar variables and vector variables ---------- *)
+
+type type_kind =
+  | ScalarType of typ
+  | VectorType of vectyp
+
+type var_kind =
+  | ScalarVar of var
+  | VectorVar of vecvar
+
+val name_of_var_kind : var_kind -> string
+val type_of_var_kind : var_kind -> type_kind
+
+val scalar_vars_of_var_kind : var_kind -> var list
+val scalar_vars_of_var_kinds : var_kind list -> var list
+
+val scalar_types_of_var_kind : var_kind -> typ list
+val scalar_types_of_var_kinds : var_kind list -> typ list
+
+
 (* ---------- Functions ---------- *)
 
 type func =
   {
     fname : string;
-    fargs : var list;
-    fouts : var list;
+    farg_kinds : var_kind list; (* formal input variables (vector variables are not expanded) *)
+    fout_kinds : var_kind list; (* formal in-out variables (vector variables are not expanded) *)
+    fargs : var list;           (* formal input variables (vector variables are expanded) *)
+    fouts : var list;           (* formal in-out variables (vector variables are expanded) *)
     fvm : var SM.t;             (* a map from a name to a variable (including carry variables) *)
     fym : var SM.t;             (* a map from a name to a carry variable *)
     fgm : var SM.t;             (* a map from a name to a ghost variable *)
@@ -465,8 +487,8 @@ type instr_t =
   | `TECUT of (tagged_ebexp_prove_with contextual)
   | `TRCUT of (tagged_rbexp_prove_with contextual)
   | `TGHOST of ((var list * vecvar list) contextual) * (tagged_bexp contextual)
-  | `CALL of string * ((typ list * typ list -> atom list) contextual)
-  | `INLINE of string * ((typ list * typ list -> atom list) contextual)
+  | `CALL of string * ((type_kind list * type_kind list -> atom list) contextual)
+  | `INLINE of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `NOP
   ]
 
@@ -778,10 +800,10 @@ val parse_tghost_at : (((var list * vecvar list) contextual) -> (tagged_bexp con
 (** [parse_tghost_at ctx lno gvars_token bexp_token] parses a ghost instruction *)
 
 
-val parse_call_at : (string -> (typ list * typ list -> atom list) contextual -> lined_tagged_program) lined contextual
+val parse_call_at : (string -> (type_kind list * type_kind list -> atom list) contextual -> lined_tagged_program) lined contextual
 (** [parse_call_at ctx lno fname actuals_token] parses a call instruction *)
 
-val parse_inline_at : (string -> (typ list * typ list -> atom list) contextual -> lined_tagged_program) lined contextual
+val parse_inline_at : (string -> (type_kind list * type_kind list -> atom list) contextual -> lined_tagged_program) lined contextual
 (** [parse_inline_at ctx lno fname actuals_token] parses an inline instruction *)
 
 val unpack_vinstr_1 : (lv_prim_t -> lined_tagged_program) lined contextual -> (lval_vec_t -> lined_tagged_program) lined contextual
@@ -1133,25 +1155,22 @@ val parse_vrexps_cons : lno -> (rexp list) contextual -> (rexp list list) contex
 
 (* ---------- Variables and Constants Parsing ---------- *)
 
-val parse_actuals_all : lno -> (typ list * typ list -> (typ list * typ list) * atom list) contextual -> (typ list * typ list -> atom list) contextual
+val parse_actuals_all : lno -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual -> (type_kind list * type_kind list -> atom list) contextual
 (** [parse_actuals_all lno atoms_tok] parses all actual parameters. *)
 
-val parse_actuals_ins_outs : lno -> (typ list * typ list -> (typ list * typ list) * atom list) contextual -> (typ list * typ list -> (typ list * typ list) * atom list) contextual -> (typ list * typ list -> atom list) contextual
+val parse_actuals_ins_outs : lno -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual -> (type_kind list * type_kind list -> atom list) contextual
 (** [parse_actuals_ins_outs lno ins_tok outs_tok] parses all actual parameters which are groupped as input parameters and output parameters *)
 
-val parse_actual_atom_const_exp : lno -> Z.t contextual -> typ option -> (typ list * typ list -> (typ list * typ list) * atom list) contextual
-(** [parse_actual_atom_const_exp ctx lno cexp_tok tyopt tys] parses a constant expression [cexp_tok] as an actual atom.
-    [tyopt] is an optional type specified explicitly for the constant expression.
-    [tys] specifies the types of formal (input and output) parameters starting from the one for this actual.
-    If the type of this actual and the type of the corresponding formal parameter
-    is compatible, the formal parameter is consumed and the remaining formal parameters are returned. *)
+val parse_actual_atom_var_expansion : lno -> string -> Z.t -> Z.t -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual
+(** [parse_actual_atom_var_expansion lno prefix st ed] parses a variable name expansion as actual atoms *)
 
-val parse_actual_atom_var : lno -> string -> (typ list * typ list -> (typ list * typ list) * atom list) contextual
-(** [parse_actual_atom_var lno vname] parses a variable as an actual atom.
+val parse_actual_atom : lno -> atom_t -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual
+(** [parse_actual_atom lno atom tys] parses an atom as an actual atom.
     [tys] specifies the types of formal (input and output) parameters starting from the one for this actual. *)
 
-val parse_actual_atom_var_expansion : lno -> string -> Z.t -> Z.t -> (typ list * typ list -> (typ list * typ list) * atom list) contextual
-(** [parse_actual_atom_var_expansion lno prefix st ed] parses a variable name expansion as actual atoms *)
+val parse_actual_atom_vec : lno -> atom_vec_t -> (type_kind list * type_kind list -> (type_kind list * type_kind list) * atom list) contextual
+(** [parse_actual_atom_vec lno atoms tys] parses a vector atom as an actual atom.
+    [tys] specifies the types of formal (input and output) parameters starting from the one for this actual. *)
 
 val parse_var_expansion : lno -> string -> Z.t -> Z.t -> var list contextual
 (** [parse_var_expansion lno prefix st ed] parses a variable name expansion with prefix [prefix], initial index [st], and final index [ed] *)
@@ -1168,13 +1187,16 @@ val parse_gvar : lno -> string -> typ -> var contextual
 val parse_vgvar : lno -> string -> vectyp -> vecvar contextual
 (** [parse_vgvar lno vecname vectyp] parses a vector ghost variable *)
 
-val parse_fvar : lno -> string -> typ -> var list
+val parse_fvar : lno -> string -> typ -> var_kind list
 (** [parse_fvar lno vname vtyp] parses a formal variable *)
 
-val parse_fvar_expansion : lno -> string -> typ -> Z.t -> Z.t -> var list
+val parse_fvar_vec : lno -> string -> vectyp -> var_kind list
+(** [parse_fvar_vec lno vname vtyp] parses a formal vector variable *)
+
+val parse_fvar_expansion : lno -> string -> typ -> Z.t -> Z.t -> var_kind list
 (** [parse_fvar_expansion lno prefix ty st ed] parses formal variables with names formed by a prefix [prefix] followed by an index from [st] to [ed] *)
 
-val parse_fvar_cons : lno -> var list -> var list -> var list
+val parse_fvar_cons : lno -> var_kind list -> var_kind list -> var_kind list
 (** [parse_fvar_cons lno fvs1 fvs2] parses a sequence of formal parameters *)
 
 
@@ -1183,7 +1205,7 @@ val parse_fvar_cons : lno -> var list -> var list -> var list
 val parse_global_constant : lno -> string -> Z.t contextual -> unit contextual
 (** [parse_global_constant lno name n_token] parses a globally defined named constant *)
 
-val parse_proc : lno -> string -> var list * var list -> tagged_bexp option contextual -> (lno * instr_t) list -> tagged_bexp_prove_with option contextual -> unit contextual
+val parse_proc : lno -> string -> var_kind list * var_kind list -> tagged_bexp option contextual -> (lno * instr_t) list -> tagged_bexp_prove_with option contextual -> unit contextual
 (** [parse_proc lno fname (args, outs) pre_tok instrs post_tok ] parses a procedure *)
 
 val parse_specs : unit contextual -> ((var list * var list) * Typecheck.Std.tagged_spec) SM.t
