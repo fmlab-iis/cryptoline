@@ -537,6 +537,7 @@ type instr_t =
   | `VPC of lval_t * atom_t
   | `VVPC of lval_vec_t * atom_vec_t
   | `JOIN of lval_t * atom_t * atom_t
+  | `VJOIN of lval_vec_t * atom_vec_t * atom_vec_t
   | `ASSERT of (bexp_prove_with contextual)
   | `EASSERT of (ebexp_prove_with contextual)
   | `RASSERT of (rbexp_prove_with contextual)
@@ -1947,6 +1948,21 @@ let unpack_vinstr_12 ?(fix_dst_ty=true) mapper ctx lno
  * one destination variable, two source atoms
  * Type of destination variable is bit[srclen] by default when its type is not explicitly specified.
  *)
+let unpack_vinstr_1n2_helper mapper ctx lno dest_typ dest_names src1 src2 relmtyp =
+  let _ = if (List.length dest_names) <> List.length src1 then
+            raise_at_line lno "Destination vector should be as long as the source vector."
+          else () in
+  let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2)))
+                  dest_names (List.combine src1 src2) in
+  let (aliasing_instrs, tmp_names, src_safe) =
+    gen_tmp_movs_2 ctx lno rwpairs relmtyp in
+  let map_func (lvname, (rv1, rv2)) =
+    mapper ctx lno {lvname; lvtyphint=Some dest_typ} rv1 rv2 in
+  let iss = List.rev (List.rev_map map_func
+                        (List.combine dest_names src_safe)) in
+  let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
+  List.concat (aliasing_instrs::iss)
+
 let unpack_vinstr_1n2 mapper ctx lno (dest_tok:  [< `LVVECT of vec_prim_t
                                                 | `LVVLIT of lval_t list ]) src1_tok src2_tok =
   let vatm1 = resolve_vec_with ctx lno src1_tok in
@@ -1973,15 +1989,7 @@ let unpack_vinstr_1n2 mapper ctx lno (dest_tok:  [< `LVVECT of vec_prim_t
         | Some ty -> Some (ty, List.length lvs))
   in
   let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok hint_typ in
-  let _ = if (List.length dest_names) <> srclen then
-            raise_at_line lno "Destination vector should be as long as the source vector."
-          else () in
-  let rwpairs = List.map2 (fun d (s1, s2) -> ([d], (s1, s2))) dest_names (List.combine src1 src2) in
-  let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs_2 ctx lno rwpairs relmtyp in
-  let map_func (lvname, (rv1, rv2)) = mapper ctx lno {lvname; lvtyphint=Some dest_typ} rv1 rv2 in
-  let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
-  let _ = ctx.cvars <- remove_keys_from_map tmp_names ctx.cvars in
-  List.concat (aliasing_instrs::iss)
+  unpack_vinstr_1n2_helper mapper ctx lno dest_typ dest_names src1 src2 relmtyp
 
 let unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num =
   let _ = if ((List.length dest1_names) <> (List.length src) ||
@@ -2078,6 +2086,23 @@ let unpack_vinstr_spl mapper ctx lno dest1_tok dest2_tok src_tok num =
   let (_, dest1_names) = resolve_lv_vec_with ctx lno dest1_tok (Some dest1_vectyp) in
   let (_, dest2_names) = resolve_lv_vec_with ctx lno dest2_tok (Some dest2_vectyp) in
   unpack_vinstr_21n_helper mapper ctx lno dest1_names dest2_names src relmtyp num
+
+let unpack_vinstr_join mapper ctx lno dest_tok src1_tok src2_tok =
+  let (relmtyp1, src1) = resolve_vec_with ctx lno src1_tok in
+  let (relmtyp2, src2) = resolve_vec_with ctx lno src2_tok in
+  let srclen1 = List.length src1 in
+  let srcsize1 = size_of_typ relmtyp1 in
+  let dest_vectyp =
+    if srclen1 <> List.length src2 then
+      raise_at_line lno (Printf.sprintf "Two sources should have the same length. One is %d while the other is %d." srclen1 (List.length src2))
+    else if srcsize1 <> size_of_typ relmtyp2 then
+      raise_at_line lno (Printf.sprintf "Two sources should have the same element type size. One is %d while the other is %d." srcsize1 (size_of_typ relmtyp2))
+    else if typ_is_unsigned relmtyp2 then
+      (typ_to_size relmtyp1 (2*srcsize1), srclen1)
+    else raise_at_line lno (Printf.sprintf "The second source should be unsigned.") in
+  let (_, dest_names) =
+    resolve_lv_vec_with ctx lno dest_tok (Some dest_vectyp) in
+  unpack_vinstr_1n2_helper mapper ctx lno (fst dest_vectyp) dest_names src1 src2 relmtyp2
 
 let unpack_vinstr_c12 mapper ctx lno carry_tok dest_tok src1_tok src2_tok =
   let vatm1 = resolve_vec_with ctx lno src1_tok in
@@ -2639,6 +2664,8 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_not_at ctx lno dest src
   | `VNOT (dest, src) ->
      unpack_vinstr_11 ~fix_dst_ty:false parse_not_at ctx lno dest src
+  | `VJOIN (dest, src1, src2) ->
+     unpack_vinstr_join parse_join_at ctx lno dest src1 src2
   | `CAST (optlv, `LVPLAIN dest, src) ->
      parse_cast_at ctx lno optlv dest src
   | `VCAST (optlv, dest, src) -> (

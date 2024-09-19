@@ -376,6 +376,7 @@ instr:
   | lval EQOP VPC atom                            { (get_line_start(), `VPC ($1, $4)) }
   | JOIN lval atom atom                           { (get_line_start(), `JOIN ($2, $3, $4)) }
   | lval EQOP JOIN atom atom                      { (get_line_start(), `JOIN ($1, $4, $5)) }
+  | JOIN lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VJOIN ($2, $3, $4)) }
 /*
   | ASSERT bexp_prove_with_list                   { (get_line_start(), `ASSERT $2) }
   | EASSERT ebexp_prove_with_list                 { (get_line_start(), `EASSERT $2) }

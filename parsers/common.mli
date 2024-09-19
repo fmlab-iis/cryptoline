@@ -471,6 +471,7 @@ type instr_t =
   | `VPC of lval_t * atom_t
   | `VVPC of lval_vec_t * atom_vec_t
   | `JOIN of lval_t * atom_t * atom_t
+  | `VJOIN of lval_vec_t * atom_vec_t * atom_vec_t
   | `ASSERT of (bexp_prove_with contextual)
   | `EASSERT of (ebexp_prove_with contextual)
   | `RASSERT of (rbexp_prove_with contextual)
