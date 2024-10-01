@@ -212,7 +212,7 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver Mathematica then Mathematica
   else if str = string_of_algebra_solver Macaulay2 then Macaulay2
   else if str = string_of_algebra_solver Maple then Maple
-  else if Str.string_match (Str.regexp "^smt\\(:[^:*]\\)\\(:[^:*]\\)?") str 0 then
+  else if Str.string_match (Str.regexp "^smt\\(:[^:]+\\)\\(:[^:]+\\)?") str 0 then
     let path =
       match String.split_on_char ':' (Str.matched_group 1 str) with
       | _::p::_ -> p
