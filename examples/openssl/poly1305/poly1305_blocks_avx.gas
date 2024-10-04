@@ -33,6 +33,9 @@ poly1305_blocks_avx:
 	add    %r12,%r13                                #! PC = 0x555555556089
 	test   $0x1f,%rdx                               #! PC = 0x55555555608c
 	#je     0x5555555560ac <poly1305_blocks_avx+524>#! PC = 0x555555556093
+
+	################################# base 2^64 -> base 2^26
+
 	mov    %r14,%rax                                #! PC = 0x5555555560ac
 	mov    %r14,%rdx                                #! PC = 0x5555555560af
 	shr    $0x34,%r14                               #! PC = 0x5555555560b2
@@ -62,8 +65,14 @@ poly1305_blocks_avx:
 	xor    %rbp,%rbp                                #! PC = 0x555555555ca6
 	lea    0x70(%rdi),%rdi                          #! PC = 0x555555555ca9
 	mov    %r12,%rax                                #! PC = 0x555555555cad
+        
+	# r^2
+        
 	#call   0x555555555c20 <__poly1305_block>       #! PC = 0x555555555cb0
 	#! -> SP = 0x7fffffffde68
+
+#poly1305_iteration
+
 	mul    %r14                                     #! PC = 0x555555555c20
 	mov    %rax,%r9                                 #! PC = 0x555555555c23
 	mov    %r11,%rax                                #! PC = 0x555555555c26
@@ -98,6 +107,9 @@ poly1305_blocks_avx:
 	adc    $0x0,%rbp                                #! PC = 0x555555555c87
 	#! <- SP = 0x7fffffffde68
 	#repz ret                                       #! PC = 0x555555555c8b
+
+	# save interleaved r^2 and r base 2^26
+        
 	mov    $0x3ffffff,%eax                          #! PC = 0x555555555cb5
 	mov    $0x3ffffff,%edx                          #! PC = 0x555555555cba
 	mov    %r14,%r8                                 #! PC = 0x555555555cbf
@@ -160,6 +172,9 @@ poly1305_blocks_avx:
 	mov    %r8d,0x40(%rdi)                          #! EA = L0x55555555d350; PC = 0x555555555d85
 	mov    %r9d,0x44(%rdi)                          #! EA = L0x55555555d354; PC = 0x555555555d89
 	mov    %r12,%rax                                #! PC = 0x555555555d8d
+
+	# r^3
+          
 	#call   0x555555555c20 <__poly1305_block>       #! PC = 0x555555555d90
 	#! -> SP = 0x7fffffffde68
 	mul    %r14                                     #! PC = 0x555555555c20
@@ -196,6 +211,9 @@ poly1305_blocks_avx:
 	adc    $0x0,%rbp                                #! PC = 0x555555555c87
 	#! <- SP = 0x7fffffffde68
 	#repz ret                                       #! PC = 0x555555555c8b
+
+	# save r^3 base 2^26
+        
 	mov    $0x3ffffff,%eax                          #! PC = 0x555555555d95
 	mov    %r14,%r8                                 #! PC = 0x555555555d9a
 	and    %r14d,%eax                               #! PC = 0x555555555d9d
@@ -229,6 +247,9 @@ poly1305_blocks_avx:
 	lea    (%r8,%r8,4),%r8                          #! PC = 0x555555555dfe
 	mov    %r8d,0x4c(%rdi)                          #! EA = L0x55555555d35c; PC = 0x555555555e02
 	mov    %r12,%rax                                #! PC = 0x555555555e06
+
+	# r^4
+        
 	#call   0x555555555c20 <__poly1305_block>       #! PC = 0x555555555e09
 	#! -> SP = 0x7fffffffde68
 	mul    %r14                                     #! PC = 0x555555555c20
@@ -265,6 +286,9 @@ poly1305_blocks_avx:
 	adc    $0x0,%rbp                                #! PC = 0x555555555c87
 	#! <- SP = 0x7fffffffde68
 	#repz ret                                       #! PC = 0x555555555c8b
+
+	# save r^4 base 2^26
+
 	mov    $0x3ffffff,%eax                          #! PC = 0x555555555e0e
 	mov    %r14,%r8                                 #! PC = 0x555555555e13
 	and    %r14d,%eax                               #! PC = 0x555555555e16
@@ -300,6 +324,9 @@ poly1305_blocks_avx:
 	lea    -0x70(%rdi),%rdi                         #! PC = 0x555555555e7f
 	#! <- SP = 0x7fffffffde70
 	#repz ret                                       #! PC = 0x555555555e83
+
+#.Lproceed_avx:
+
 	mov    %r15,%rdx                                #! PC = 0x555555556112
 	mov    (%rsp),%r15                              #! EA = L0x7fffffffde78; Value = 0x0000555555555ea0; PC = 0x555555556115
 	mov    0x8(%rsp),%r14                           #! EA = L0x7fffffffde80; Value = 0x000055555555bda0; PC = 0x555555556119
@@ -310,6 +337,9 @@ poly1305_blocks_avx:
 	lea    0x30(%rsp),%rax                          #! PC = 0x555555556132
 	lea    0x30(%rsp),%rsp                          #! PC = 0x555555556137
 	#jmp    0x555555556158 <poly1305_blocks_avx+696>#! PC = 0x55555555613c
+
+#.Ldo_avx:
+
 	lea    -0x58(%rsp),%r11                         #! PC = 0x555555556158
 	sub    $0x178,%rsp                              #! PC = 0x55555555615d
 	sub    $0x40,%rdx                               #! PC = 0x555555556164
@@ -318,6 +348,10 @@ poly1305_blocks_avx:
 	vmovdqu 0x30(%rdi),%xmm14                       #! EA = L0x55555555d2d0; Value = 0x00cddeef029ea80f; PC = 0x555555556170
 	lea    0x70(%rdi),%rdi                          #! PC = 0x555555556175
 	lea    0x3ec0(%rip),%rcx        # 0x55555555a040#! PC = 0x555555556179
+        
+	################################################################
+	# load input
+        
 	vmovdqu 0x20(%rsi),%xmm5                        #! EA = L0x55555555c080; Value = 0x0000000000000000; PC = 0x555555556180
 	vmovdqu 0x30(%rsi),%xmm6                        #! EA = L0x55555555c090; Value = 0x0000000000000000; PC = 0x555555556185
 	vmovdqa 0x40(%rcx),%xmm15                       #! EA = L0x55555555a080; Value = 0x0000000003ffffff; PC = 0x55555555618a
@@ -336,6 +370,9 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm8,%xmm8                       #! PC = 0x5555555561cc
 	vpor   0x20(%rcx),%xmm9,%xmm9                   #! EA = L0x55555555a060; Value = 0x0000000001000000; PC = 0x5555555561d1
 	#jbe    0x555555556656 <poly1305_blocks_avx+1974>#! PC = 0x5555555561d6
+        
+	# expand and copy pre-calculated table to stack
+        
 	vmovdqu -0x30(%rdi),%xmm11                      #! EA = L0x55555555d2e0; Value = 0x0266aa03032b30fe; PC = 0x5555555561dc
 	vmovdqu -0x20(%rdi),%xmm12                      #! EA = L0x55555555d2f0; Value = 0x0c01520f0fd7f4f6; PC = 0x5555555561e1
 	vpshufd $0xee,%xmm14,%xmm13                     #! PC = 0x5555555561e6
@@ -382,6 +419,27 @@ poly1305_blocks_avx:
 	vmovdqa %xmm13,-0x10(%r11)                      #! EA = L0x7fffffffde40; PC = 0x5555555562d6
 	vmovdqa %xmm12,0x80(%rsp)                       #! EA = L0x7fffffffddb0; PC = 0x5555555562dc
 	#jmp    0x555555556300 <poly1305_blocks_avx+1120>#! PC = 0x5555555562e5
+        
+	################################################################
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^3+inp[7]*r
+	#   \___________________/
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2+inp[8])*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^4+inp[7]*r^2+inp[9])*r
+	#   \___________________/ \____________________/
+	#
+	# Note that we start with inp[2:3]*r^2. This is because it
+	# doesn't depend on reduction in previous iteration.
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+	#
+	# though note that $Tx and $Hx are "reversed" in this section,
+	# and $D4 is preloaded with r0^2...
+
 	vpmuludq %xmm5,%xmm14,%xmm10                    #! PC = 0x555555556300
 	vpmuludq %xmm6,%xmm14,%xmm11                    #! PC = 0x555555556304
 	vmovdqa %xmm2,0x20(%r11)                        #! EA = L0x7fffffffde70; PC = 0x555555556308
@@ -465,6 +523,16 @@ poly1305_blocks_avx:
 	lea    0x40(%rsi),%rsi                          #! PC = 0x555555556482
 	sub    $0x40,%rdx                               #! PC = 0x555555556486
 	cmovb  %rax,%rsi                                #! PC = 0x55555555648a
+
+	################################################################
+	# Now we accumulate (inp[0:1]+hash)*r^4
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+
 	vpmuludq %xmm0,%xmm9,%xmm5                      #! PC = 0x55555555648e
 	vpmuludq %xmm1,%xmm9,%xmm6                      #! PC = 0x555555556492
 	vpaddq %xmm5,%xmm10,%xmm10                      #! PC = 0x555555556496
@@ -539,6 +607,11 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm7,%xmm7                       #! PC = 0x5555555565cd
 	vpand  %xmm15,%xmm8,%xmm8                       #! PC = 0x5555555565d2
 	vpor   0x20(%rcx),%xmm9,%xmm9                   #! EA = L0x55555555a060; Value = 0x0000000001000000; PC = 0x5555555565d7
+
+	################################################################
+	# lazy reduction as discussed in "NEON crypto" by D.J. Bernstein
+	# and P. Schwabe
+
 	vpsrlq $0x1a,%xmm3,%xmm13                       #! PC = 0x5555555565dc
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x5555555565e1
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x5555555565e6
@@ -563,6 +636,27 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x555555556646
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x55555555664b
 	#ja     0x555555556300 <poly1305_blocks_avx+1120>#! PC = 0x555555556650
+        
+	################################################################
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^3+inp[7]*r
+	#   \___________________/
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2+inp[8])*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^4+inp[7]*r^2+inp[9])*r
+	#   \___________________/ \____________________/
+	#
+	# Note that we start with inp[2:3]*r^2. This is because it
+	# doesn't depend on reduction in previous iteration.
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+	#
+	# though note that $Tx and $Hx are "reversed" in this section,
+	# and $D4 is preloaded with r0^2...
+
 	vpmuludq %xmm5,%xmm14,%xmm10                    #! PC = 0x555555556300
 	vpmuludq %xmm6,%xmm14,%xmm11                    #! PC = 0x555555556304
 	vmovdqa %xmm2,0x20(%r11)                        #! EA = L0x7fffffffde70; PC = 0x555555556308
@@ -646,6 +740,16 @@ poly1305_blocks_avx:
 	lea    0x40(%rsi),%rsi                          #! PC = 0x555555556482
 	sub    $0x40,%rdx                               #! PC = 0x555555556486
 	cmovb  %rax,%rsi                                #! PC = 0x55555555648a
+
+	################################################################
+	# Now we accumulate (inp[0:1]+hash)*r^4
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+
 	vpmuludq %xmm0,%xmm9,%xmm5                      #! PC = 0x55555555648e
 	vpmuludq %xmm1,%xmm9,%xmm6                      #! PC = 0x555555556492
 	vpaddq %xmm5,%xmm10,%xmm10                      #! PC = 0x555555556496
@@ -720,6 +824,11 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm7,%xmm7                       #! PC = 0x5555555565cd
 	vpand  %xmm15,%xmm8,%xmm8                       #! PC = 0x5555555565d2
 	vpor   0x20(%rcx),%xmm9,%xmm9                   #! EA = L0x55555555a060; Value = 0x0000000001000000; PC = 0x5555555565d7
+
+	################################################################
+	# lazy reduction as discussed in "NEON crypto" by D.J. Bernstein
+	# and P. Schwabe
+
 	vpsrlq $0x1a,%xmm3,%xmm13                       #! PC = 0x5555555565dc
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x5555555565e1
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x5555555565e6
@@ -744,6 +853,27 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x555555556646
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x55555555664b
 	#ja     0x555555556300 <poly1305_blocks_avx+1120>#! PC = 0x555555556650
+        
+	################################################################
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^3+inp[7]*r
+	#   \___________________/
+	# ((inp[0]*r^4+inp[2]*r^2+inp[4])*r^4+inp[6]*r^2+inp[8])*r^2
+	# ((inp[1]*r^4+inp[3]*r^2+inp[5])*r^4+inp[7]*r^2+inp[9])*r
+	#   \___________________/ \____________________/
+	#
+	# Note that we start with inp[2:3]*r^2. This is because it
+	# doesn't depend on reduction in previous iteration.
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+	#
+	# though note that $Tx and $Hx are "reversed" in this section,
+	# and $D4 is preloaded with r0^2...
+
 	vpmuludq %xmm5,%xmm14,%xmm10                    #! PC = 0x555555556300
 	vpmuludq %xmm6,%xmm14,%xmm11                    #! PC = 0x555555556304
 	vmovdqa %xmm2,0x20(%r11)                        #! EA = L0x7fffffffde70; PC = 0x555555556308
@@ -827,6 +957,16 @@ poly1305_blocks_avx:
 	lea    0x40(%rsi),%rsi                          #! PC = 0x555555556482
 	sub    $0x40,%rdx                               #! PC = 0x555555556486
 	cmovb  %rax,%rsi                                #! PC = 0x55555555648a
+
+	################################################################
+	# Now we accumulate (inp[0:1]+hash)*r^4
+	################################################################
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+
 	vpmuludq %xmm0,%xmm9,%xmm5                      #! PC = 0x55555555648e
 	vpmuludq %xmm1,%xmm9,%xmm6                      #! PC = 0x555555556492
 	vpaddq %xmm5,%xmm10,%xmm10                      #! PC = 0x555555556496
@@ -901,6 +1041,11 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm7,%xmm7                       #! PC = 0x5555555565cd
 	vpand  %xmm15,%xmm8,%xmm8                       #! PC = 0x5555555565d2
 	vpor   0x20(%rcx),%xmm9,%xmm9                   #! EA = L0x55555555a060; Value = 0x0000000001000000; PC = 0x5555555565d7
+
+	################################################################
+	# lazy reduction as discussed in "NEON crypto" by D.J. Bernstein
+	# and P. Schwabe
+
 	vpsrlq $0x1a,%xmm3,%xmm13                       #! PC = 0x5555555565dc
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x5555555565e1
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x5555555565e6
@@ -925,14 +1070,26 @@ poly1305_blocks_avx:
 	vpand  %xmm15,%xmm3,%xmm3                       #! PC = 0x555555556646
 	vpaddq %xmm13,%xmm4,%xmm4                       #! PC = 0x55555555664b
 	#ja     0x555555556300 <poly1305_blocks_avx+1120>#! PC = 0x555555556650
+        
+	################################################################
+	# multiply (inp[0:1]+hash) or inp[2:3] by r^2:r^1
+
 	vpshufd $0x10,%xmm14,%xmm14                     #! PC = 0x555555556656
 	add    $0x20,%rdx                               #! PC = 0x55555555665c
 	#jne    0x555555556676 <poly1305_blocks_avx+2006>#! PC = 0x555555556660
+#.Long_tail_avx:
 	vmovdqa %xmm2,0x20(%r11)                        #! EA = L0x7fffffffde70; PC = 0x555555556676
 	vmovdqa %xmm0,(%r11)                            #! EA = L0x7fffffffde50; PC = 0x55555555667c
 	vmovdqa %xmm1,0x10(%r11)                        #! EA = L0x7fffffffde60; PC = 0x555555556681
 	vmovdqa %xmm3,0x30(%r11)                        #! EA = L0x7fffffffde80; PC = 0x555555556687
 	vmovdqa %xmm4,0x40(%r11)                        #! EA = L0x7fffffffde90; PC = 0x55555555668d
+
+	# d4 = h4*r0 + h3*r1   + h2*r2   + h1*r3   + h0*r4
+	# d3 = h3*r0 + h2*r1   + h1*r2   + h0*r3   + h4*5*r4
+	# d2 = h2*r0 + h1*r1   + h0*r2   + h4*5*r3 + h3*5*r4
+	# d1 = h1*r0 + h0*r1   + h4*5*r2 + h3*5*r3 + h2*5*r4
+	# d0 = h0*r0 + h4*5*r1 + h3*5*r2 + h2*5*r3 + h1*5*r4
+
 	vpmuludq %xmm7,%xmm14,%xmm12                    #! PC = 0x555555556693
 	vpmuludq %xmm5,%xmm14,%xmm10                    #! PC = 0x555555556697
 	vpshufd $0x10,-0x30(%rdi),%xmm2                 #! EA = L0x55555555d2e0; Value = 0x0266aa03032b30fe; PC = 0x55555555669b
@@ -986,6 +1143,9 @@ poly1305_blocks_avx:
 	vpaddq %xmm1,%xmm11,%xmm11                      #! PC = 0x555555556774
 	vpmuludq %xmm6,%xmm3,%xmm3                      #! PC = 0x555555556778
 	vpaddq %xmm3,%xmm10,%xmm10                      #! PC = 0x55555555677c
+
+#	jz		.Lshort_tail_avx
+
 	#je     0x5555555568f2 <poly1305_blocks_avx+2642>#! PC = 0x555555556780
 	vmovdqu (%rsi),%xmm0                            #! EA = L0x55555555c120; Value = 0x0000000000000000; PC = 0x555555556786
 	vmovdqu 0x10(%rsi),%xmm1                        #! EA = L0x55555555c130; Value = 0x0000000000000000; PC = 0x55555555678a
@@ -1009,6 +1169,10 @@ poly1305_blocks_avx:
 	vpaddq 0x20(%r11),%xmm2,%xmm2                   #! EA = L0x7fffffffde70; Value = 0x0000000001889ce6; PC = 0x5555555567e3
 	vpaddq 0x30(%r11),%xmm3,%xmm3                   #! EA = L0x7fffffffde80; Value = 0x00000000038103e0; PC = 0x5555555567e9
 	vpaddq 0x40(%r11),%xmm4,%xmm4                   #! EA = L0x7fffffffde90; Value = 0x00000000034e4beb; PC = 0x5555555567ef
+
+	################################################################
+	# multiply (inp[0:1]+hash) by r^4:r^3 and accumulate
+
 	vpmuludq %xmm0,%xmm9,%xmm5                      #! PC = 0x5555555567f5
 	vpaddq %xmm5,%xmm10,%xmm10                      #! PC = 0x5555555567f9
 	vpmuludq %xmm1,%xmm9,%xmm6                      #! PC = 0x5555555567fd
@@ -1067,6 +1231,10 @@ poly1305_blocks_avx:
 	vpaddq %xmm6,%xmm11,%xmm11                      #! PC = 0x5555555568e5
 	vpmuludq %xmm1,%xmm8,%xmm8                      #! PC = 0x5555555568e9
 	vpaddq %xmm8,%xmm10,%xmm10                      #! PC = 0x5555555568ed
+        
+	################################################################
+	# horizontal addition
+
 	vpsrldq $0x8,%xmm14,%xmm9                       #! PC = 0x5555555568f2
 	vpsrldq $0x8,%xmm13,%xmm8                       #! PC = 0x5555555568f8
 	vpsrldq $0x8,%xmm11,%xmm6                       #! PC = 0x5555555568fe
@@ -1077,6 +1245,10 @@ poly1305_blocks_avx:
 	vpaddq %xmm5,%xmm10,%xmm10                      #! PC = 0x55555555691a
 	vpaddq %xmm6,%xmm11,%xmm11                      #! PC = 0x55555555691e
 	vpaddq %xmm7,%xmm12,%xmm12                      #! PC = 0x555555556922
+
+	################################################################
+	# lazy reduction
+
 	vpsrlq $0x1a,%xmm13,%xmm3                       #! PC = 0x555555556926
 	vpand  %xmm15,%xmm13,%xmm13                     #! PC = 0x55555555692c
 	vpaddq %xmm3,%xmm14,%xmm14                      #! PC = 0x555555556931
