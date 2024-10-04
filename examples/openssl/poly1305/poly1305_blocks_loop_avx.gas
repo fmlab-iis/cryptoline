@@ -73,8 +73,8 @@
 #! vpaddq $1v, $2v, $3v -> add %$3v %$2v %$1v
 #! vpsllq $1c, $2v, $3v -> shl %$3v %$2v [$1c@uint64,$1c@uint64]
 #! vpsrldq \$0x8, $1v, $2v -> mov %$2v [%$1v[1], 0@uint64]
-#! vpsrldq $1c, $2v, $3v -> split %$3v %srldq %$2v `8*$1c`; shl %srldq %srldq [`64-8*$1c`@uint64,`64-8*$1c`@uint64];\nadd %$3v %$3v [%srlq[1],0@uint64]
-#! vpsrlq $1c, $2v, $3v -> split %$3v %srlq %$2v_0 $1c
+#! vpsrldq $1c, $2v, $3v -> split %$3v %srldq %$2v `8*$1c`; shl %srldq %srldq [`64-8*$1c`@uint64,`64-8*$1c`@uint64];\nadd %$3v %$3v [%srldq[1],0@uint64]
+#! vpsrlq $1c, $2v, $3v -> split %$3v %srlq %$2v $1c
 #! vmovdqu $1ea, $2v -> mov %$2v [$1ea,$1ea[+8]]
 #! vpunpckhqdq $1v, $2v, $3v -> mov %$3v [%$2v[1],%$1v[1]]
 #! vpunpcklqdq $1v, $2v, $3v -> mov %$3v [%$2v[0],%$1v[0]]
