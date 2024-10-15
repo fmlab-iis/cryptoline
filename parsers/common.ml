@@ -1590,7 +1590,11 @@ let parse_tghost_at ctx lno gvars_token tbexp_token =
   else [lno, TIghost (gvars, te)]
 
 
-
+(**
+ * Call is the same as inline in semantics.
+ * For verification, we do not inline a called procedure but replace
+ * a call statement with pre-/post-conditions.
+ *)
 let parse_call_at ctx lno fname_token actuals_token =
   (* The function name *)
   let fname = fname_token in
@@ -1602,6 +1606,8 @@ let parse_call_at ctx lno fname_token actuals_token =
       SM.find fname ctx.cfuns
     with Not_found ->
       raise_at_line lno ("Call an undefined function '" ^ fname ^ "'.") in
+  (* The variables updated in the function body *)
+  let lvals = lined_tagged_program_untag f.fbody |> List.split |> snd |> lvs_program in
   (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
   (* What are checked in parsing actual parameters: length, type, non-ghost *)
   let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
@@ -1653,22 +1659,38 @@ let parse_call_at ctx lno fname_token actuals_token =
   let (ghost_ins, _) =
     Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
   (* Assert precondition (involving only input parameters) *)
+  let invars_to_ghosts =
+    List.combine f.fargs
+      (List.rev (List.rev_map mkatom_var ghost_ins)) in
   let assert_instr =
-    let assert_pats =
-      List.combine f.fargs
-        (List.rev (List.rev_map mkatom_var ghost_ins)) in
-    let (_, em, rm) = subst_maps_of_list assert_pats in
+    let (_, em, rm) = subst_maps_of_list invars_to_ghosts in
     let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te, tagged_rbexp_prove_with_of_tagged_rbexp tr) in
     TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f.fpre)) in
-  (* Make nondeterministic assignments to actual output parameters *)
+  (* Make nondeterministic assignments to lvalues (including output parameters) *)
   let nondet_instrs =
+    let actual_out_vars = List.rev_map var_of_atom actual_outs |> List.rev in
+    let vars_for_nondet = VS.elements (VS.union lvals (VS.of_list actual_out_vars)) in
     List.fold_left (fun r ovar -> (lno, TInondet ovar)::r)
-      [] (List.rev_map var_of_atom actual_outs) in
-  (* Assume precondition (involving input and output parameters *)
+      [] (List.rev vars_for_nondet) in
+  (* Assume postcondition (involving input and output parameters *)
   let assume_instr =
+    (*
+      An input variable in the postcondition may refer to
+      - its initial value (the corresponding ghost variable), or
+      - its final value (the variable itself)
+      depending on whether its value is updated in the procedure body
+     *)
+    let invars_at_the_end_rev =
+      List.rev_map
+        (fun (invar, actual_atom) ->
+          if VS.mem invar lvals
+          then mkatom_var invar
+          else actual_atom
+        )
+        invars_to_ghosts in
     let assume_pats =
       List.combine formals
-        (List.rev_append (List.rev_map mkatom_var ghost_ins)
+        (List.rev_append invars_at_the_end_rev
            actual_outs) in
     let (_, em, rm) = subst_maps_of_list assume_pats in
     let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss, tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
