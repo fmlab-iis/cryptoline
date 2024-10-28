@@ -5,10 +5,11 @@ SHELL ["/bin/bash", "-l", "-c"]
 # Install Ubuntu packages
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
-                   ocaml ocaml-dune libzarith-ocaml-dev \
+                   pkg-config ocaml ocaml-dune libzarith-ocaml-dev \
                    liblwt-ocaml-dev libppx-optcomp-ocaml-dev camlidl \
                    libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
-                   libbigarray-compat-ocaml-dev libreadline-dev
+                   libbigarray-compat-ocaml-dev libreadline-dev \
+                   python3-pip libmpc-dev
 
 # Download CryptoLine and some external tools
 WORKDIR /home
@@ -45,3 +46,6 @@ RUN export OCAMLPATH=`ocamlfind query apron`/.. \
 # Install Boolector and Singular
 RUN ./scripts/install-boolector.sh
 RUN ./scripts/install-singular.sh
+
+# Install MIP solvers
+RUN pip3 install --break-system-packages islpy pplpy

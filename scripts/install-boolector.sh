@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Tested on:
-# - Ubuntu: 22.04, 23.04
+# - Ubuntu: 22.04
 
 TOOLS_DIR=tools
-BOOLECTOR_VERSION=3.2.2
+BOOLECTOR_VERSION=3.2.4
 BOOLECTOR_TAR_GZ=${BOOLECTOR_VERSION}.tar.gz
 BOOLECTOR_DIR=boolector-${BOOLECTOR_VERSION}
-BOOLECTOR_URL=https://github.com/Boolector/boolector/archive/refs/tags/3.2.2.tar.gz
+BOOLECTOR_URL=https://github.com/Boolector/boolector/archive/refs/tags/${BOOLECTOR_VERSION}.tar.gz
 
 sudo apt install -y curl build-essential binutils cmake git
 mkdir -p ${TOOLS_DIR}

@@ -6,7 +6,8 @@ SHELL ["/bin/bash", "-l", "-c"]
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
                    libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
-                   libreadline-dev opam
+                   libreadline-dev opam pkg-config \
+                   python3-pip libmpc-dev
 
 # Install OCaml packages
 RUN opam init -a --disable-sandboxing \
@@ -31,3 +32,6 @@ RUN dune build && dune install
 # Install Boolector and Singular
 RUN ./scripts/install-boolector.sh
 RUN ./scripts/install-singular.sh
+
+# Install MIP solvers
+RUN pip3 install --break-system-packages islpy pplpy

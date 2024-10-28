@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Tested on:
-# - Ubuntu: 22.04, 23.04
+# - Ubuntu: 22.04
 
 TOOLS_DIR=tools
-SINGULAR_VERSION=4.3.2p2
+SINGULAR_VERSION=4.4.0p6
 SINGULAR_DIR=singular-${SINGULAR_VERSION}
 SINGULAR_TAR_GZ=singular-${SINGULAR_VERSION}.tar.gz
-SINGULAR_URL=https://github.com/Singular/Singular/archive/refs/tags/Release-4-3-2p2.tar.gz
+SINGULAR_URL=https://github.com/Singular/Singular/archive/refs/tags/Release-${SINGULAR_VERSION//./-}.tar.gz
 
 sudo apt install -y curl build-essential binutils autoconf autogen libtool \
 	libreadline-dev libglpk-dev libgmp-dev libmpfr-dev libcdd-dev \
