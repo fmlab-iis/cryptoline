@@ -8,10 +8,10 @@ unsigned char key[] = {
   0xef, 0xde, 0xcd, 0xbc, 0xab, 0x9a, 0x89, 0x78,
   0x21, 0x32, 0x43, 0x54, 0x65, 0x76, 0x87, 0x98 };
 
-unsigned char inp[256];
+unsigned char inp[1024];
 
 void main () {
   void *ctx = malloc (1024);
   Poly1305_Init (ctx, key);
-  Poly1305_Update (ctx, inp, 256);
+  Poly1305_Update (ctx, inp, 1024);
 }
